@@ -3057,6 +3057,286 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_reversed_start_stop)
     }
 }
 
+BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_timeout_reset, *boost::unit_test::disabled())
+{
+    DnpProtocol dnp;
+
+    BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
+
+    dnp.setAddresses(1024, 10);
+    dnp.setName("OSI RTU");
+
+    dnp.setConfigData(1, DNP::TimeOffset::Utc, true, false, false, false, false, false);
+
+    CtiXfer xfer;
+
+    struct trx {
+        byte_str out;
+        std::vector<byte_str> ins;
+    };
+
+    /*
+    2020-03-03 05:15:01.292  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) OUT:
+    05 64 14 c4 00 04 0a 00 d6 69 c0 c1 01 3c 02 06 3c 03 06 3c 04 06 3c 01 06 7a
+    6f
+    2020-03-03 05:15:01.299  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) IN:
+    05 64 ff 53 0a 00 00 04 bd fa
+
+    2020-03-03 05:15:01.401  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) IN:
+    40 c1 81 00 00 1e 01 00 00 77 01 00 00 00 00 01 9b 8b a7 fe ff ff 01 69 ff ff
+    ff 01 d7 ff ff ff 01 8f 82 14 ff ff ff 01 77 ff ff ff 01 ad fe ff ff 01 8c ff
+    b7 48 ff ff 01 c6 ff ff ff 01 4c fa ff ff 01 62 fc ff 63 7c ff 01 df fe ff ff
+    01 35 fe ff ff 01 ae ff ff ff a8 39 01 f5 fb ff ff 01 11 ff ff ff 01 e7 ff ff
+    ff 01 99 26 48 fe ff ff 01 d2 fe ff ff 01 69 fe ff ff 01 2f ce e8 00 00 00 01
+    06 00 00 00 01 32 00 00 00 01 0f fe a1 24 ff ff 01 c6 fd ff ff 01 f3 ff ff ff
+    01 00 00 00 09 87 00 01 f3 ff ff ff 01 9a fd ff ff 01 b4 fc ff ff ff ca 01 85
+    ff ff ff 01 11 00 00 00 01 a0 fd ff ff 01 e0 25 7e ff ff ff 01 c0 fa ff ff 01
+    11 fe ff ff 01 3b 6e cf ff ff ff 01 ae ff ff ff 01 52 ff ff ff 01 20 ff e8 81
+    ff ff 01 43 00 00 00 01 fd ff ff ff 01 6b fe ff a6 3e ff 01 92 ff ff ff 01 75
+    ff ff ff 01 83 ff ff ff 87 a6 01 56 ff ff ff 01 bd fc ff ff bd 7e
+
+    2020-03-03 05:15:01.497  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) OUT:
+    05 64 05 80 00 04 0a 00 52 18
+
+    2020-03-03 05:15:01.504  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) IN:
+    05 64 ff 73 0a 00 00 04 e0 e2
+
+    2020-03-03 05:15:01.606  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) IN:
+    01 01 d0 ff ff ff 01 ee ff ff ff 01 b6 fd ff ff a5 3e 01 6f ff ff ff 01 94 fc
+    ff ff 01 43 fe ff ff 01 eb 73 6d 00 00 00 01 39 fd ff ff 01 26 00 00 00 01 f2
+    0f da ff ff ff 01 0c 00 00 00 01 66 00 00 00 01 a2 ff b3 70 ff ff 01 6c 00 00
+    00 01 50 ff ff ff 01 aa ff ff 72 ae ff 01 a7 ff ff ff 01 08 fe ff ff 01 e8 fd
+    ff ff 3c 49 01 d6 ff ff ff 01 83 ff ff ff 01 19 00 00 00 01 50 3e b1 00 00 00
+    01 fe fe ff ff 01 c2 02 00 00 01 17 d6 33 ff ff ff 01 fc fe ff ff 01 9e fe ff
+    ff 01 49 00 26 33 00 00 01 73 fc ff ff 01 05 00 00 00 01 94 fe ff e8 fa ff 01
+    d2 fe ff ff 01 10 ff ff ff 01 15 ff ff ff 03 24 01 e4 ff ff ff 01 4e fc ff ff
+    01 e9 ff ff ff 01 03 f1 63 fb ff ff 01 5a ff ff ff 01 ee fd ff ff 01 1a fc 96
+    fe ff ff 01 15 00 00 00 01 78 ff ff ff 01 b2 ff 0a 97 ff ff 01 c3 ff ff ff 01
+    8d ff ff ff 01 06 fe ff 78 e4 ff 01 6e fe ff ff 01 00 00 00 ae 2a
+
+    2020-03-03 05:15:01.703  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) OUT:
+    05 64 05 80 00 04 0a 00 52 18
+
+    2020-03-03 05:15:01.709  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) IN:
+    05 64 75 53 0a 00 00 04 55 57
+
+    2020-03-03 05:15:01.811  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) IN:
+    82 00 01 5f fe ff ff 01 63 fb ff ff 01 86 fb ff 32 35 ff 01 de ff ff ff 01 6f
+    fe ff ff 01 34 fe ff ff cc b8 01 7e fe ff ff 01 8f fd ff ff 01 d5 ff ff ff 01
+    10 73 36 ff ff ff 01 41 fe ff ff 01 d7 f8 ff ff 01 b5 84 7d ff ff ff 01 88 fd
+    ff ff 01 cb fc ff ff 01 55 ff 92 22 ff ff 01 bf 21 02 00 01 09 07 00 00 01 d4
+    bd ff 8d 69 ff 01 48 fd ff ff 01 e4 00 00 00 01 74 fd ff ff 0b ed
+
+    2020-03-03 05:15:01.907  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) OUT:
+    05 64 05 80 00 04 0a 00 52 18
+
+    2020-03-03 05:15:30.516  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) OUT:
+    05 64 14 c4 00 04 0a 00 d6 69 c0 c2 01 3c 02 06 3c 03 06 3c 04 06 3c 01 06 6a
+    2c
+
+    2020-03-03 05:15:30.522  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) IN:
+    05 64 ff 73 0a 00 00 04 e0 e2
+
+    2020-03-03 05:15:30.624  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) IN:
+    40 c2 81 00 00 1e 01 00 00 77 01 00 00 00 00 01 b3 39 8c fe ff ff 01 65 ff ff
+    ff 01 d6 ff ff ff 01 8f e8 62 ff ff ff 01 7a ff ff ff 01 ac fe ff ff 01 8b ff
+    6a d0 ff ff 01 d0 ff ff ff 01 4c fa ff ff 01 61 fc ff 1c 1f ff 01 db fe ff ff
+    01 36 fe ff ff 01 b1 ff ff ff 30 68 01 f4 fb ff ff 01 12 ff ff ff 01 e7 ff ff
+    ff 01 5e 40 45 fe ff ff 01 cd fe ff ff 01 69 fe ff ff 01 2b a2 01 00 00 00 01
+    00 00 00 00 01 28 00 00 00 01 0d fe 06 d3 ff ff 01 b9 fd ff ff 01 f3 ff ff ff
+    01 00 00 00 a5 fd 00 01 f1 ff ff ff 01 97 fd ff ff 01 d8 fc ff ff 6b fd 01 93
+    ff ff ff 01 1b 00 00 00 01 ac fd ff ff 01 b5 e4 7e ff ff ff 01 c1 fa ff ff 01
+    18 fe ff ff 01 39 67 9a ff ff ff 01 b4 ff ff ff 01 50 ff ff ff 01 13 ff 3a 22
+    ff ff 01 4d 00 00 00 01 00 00 00 00 01 6b fe ff ca 76 ff 01 8d ff ff ff 01 77
+    ff ff ff 01 88 ff ff ff b0 93 01 5b ff ff ff 01 bd fc ff ff 94 18
+
+    2020-03-03 05:15:30.721  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) OUT:
+    05 64 05 80 00 04 0a 00 52 18
+
+    2020-03-03 05:15:30.728  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) IN:
+    05 64 ff 53 0a 00 00 04 bd fa
+
+    2020-03-03 05:15:30.829  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) IN:
+    01 01 d5 ff ff ff 01 e9 ff ff ff 01 b6 fd ff ff 20 79 01 70 ff ff ff 01 94 fc
+    ff ff 01 3b fe ff ff 01 42 47 76 00 00 00 01 36 fd ff ff 01 24 00 00 00 01 f1
+    db f3 ff ff ff 01 0c 00 00 00 01 68 00 00 00 01 ab ff be 5b ff ff 01 6c 00 00
+    00 01 52 ff ff ff 01 a9 ff ff 9e a8 ff 01 a9 ff ff ff 01 08 fe ff ff 01 ea fd
+    ff ff 4c bd 01 d6 ff ff ff 01 85 ff ff ff 01 19 00 00 00 01 ee 2f ba 00 00 00
+    01 0b ff ff ff 01 b2 02 00 00 01 16 1a 14 ff ff ff 01 0a ff ff ff 01 a9 fe ff
+    ff 01 3f 00 21 24 00 00 01 61 fc ff ff 01 04 00 00 00 01 97 fe ff 10 be ff 01
+    db fe ff ff 01 13 ff ff ff 01 0d ff ff ff 38 dc 01 e0 ff ff ff 01 49 fc ff ff
+    01 ec ff ff ff 01 d8 79 6c fb ff ff 01 5a ff ff ff 01 ee fd ff ff 01 1a b3 cd
+    fe ff ff 01 12 00 00 00 01 6b ff ff ff 01 b2 ff 2f a9 ff ff 01 c3 ff ff ff 01
+    93 ff ff ff 01 fb fd ff 54 e1 ff 01 73 fe ff ff 01 00 00 00 3d f8
+
+    2020-03-03 05:15:31.033  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) OUT:
+    05 64 05 80 00 04 0a 00 52 18
+
+    2020-03-03 05:15:42.047  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) IN:   1
+    Not Normal (Unsuccessful) Return
+
+    2020-03-03 05:15:42.143  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) OUT:
+    05 64 14 c4 00 04 0a 00 d6 69 c0 c2 01 3c 02 06 3c 03 06 3c 04 06 3c 01 06 6a
+    2c
+
+    2020-03-03 05:15:42.150  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) IN:
+    05 64 05 40 0a 00 00 04 f3 bf
+    2020-03-03 05:15:42.150  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) IN:
+    05 64 05 40 0a 00 00 04 f3 bf
+
+    2020-03-03 05:15:53.060  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) IN:   1
+    Not Normal (Unsuccessful) Return
+    2020-03-03 05:15:53.060  P: 216993 / TCP port TCP PORT CBC  D: 236108 / OSI RTU (192.168.10.12:20010) IN:   1
+    Not Normal (Unsuccessful) Return
+
+    */
+    std::vector<trx> 
+        success {
+            {
+                "05 64 14 c4 00 04 0a 00 d6 69 c0 c1 01 3c 02 06 3c 03 06 3c 04 06 3c 01 06 7a 6f",
+                {   "05 64 ff 53 0a 00 00 04 bd fa",
+                    "40 c1 81 00 00 1e 01 00 00 77 01 00 00 00 00 01 9b 8b a7 fe ff ff 01 69 ff ff "
+                    "ff 01 d7 ff ff ff 01 8f 82 14 ff ff ff 01 77 ff ff ff 01 ad fe ff ff 01 8c ff "
+                    "b7 48 ff ff 01 c6 ff ff ff 01 4c fa ff ff 01 62 fc ff 63 7c ff 01 df fe ff ff "
+                    "01 35 fe ff ff 01 ae ff ff ff a8 39 01 f5 fb ff ff 01 11 ff ff ff 01 e7 ff ff "
+                    "ff 01 99 26 48 fe ff ff 01 d2 fe ff ff 01 69 fe ff ff 01 2f ce e8 00 00 00 01 "
+                    "06 00 00 00 01 32 00 00 00 01 0f fe a1 24 ff ff 01 c6 fd ff ff 01 f3 ff ff ff "
+                    "01 00 00 00 09 87 00 01 f3 ff ff ff 01 9a fd ff ff 01 b4 fc ff ff ff ca 01 85 "
+                    "ff ff ff 01 11 00 00 00 01 a0 fd ff ff 01 e0 25 7e ff ff ff 01 c0 fa ff ff 01 "
+                    "11 fe ff ff 01 3b 6e cf ff ff ff 01 ae ff ff ff 01 52 ff ff ff 01 20 ff e8 81 "
+                    "ff ff 01 43 00 00 00 01 fd ff ff ff 01 6b fe ff a6 3e ff 01 92 ff ff ff 01 75 "
+                    "ff ff ff 01 83 ff ff ff 87 a6 01 56 ff ff ff 01 bd fc ff ff bd 7e" } },
+            {
+                "05 64 05 80 00 04 0a 00 52 18",
+                {   "05 64 ff 73 0a 00 00 04 e0 e2",
+                    "01 01 d0 ff ff ff 01 ee ff ff ff 01 b6 fd ff ff a5 3e 01 6f ff ff ff 01 94 fc "
+                    "ff ff 01 43 fe ff ff 01 eb 73 6d 00 00 00 01 39 fd ff ff 01 26 00 00 00 01 f2 "
+                    "0f da ff ff ff 01 0c 00 00 00 01 66 00 00 00 01 a2 ff b3 70 ff ff 01 6c 00 00 "
+                    "00 01 50 ff ff ff 01 aa ff ff 72 ae ff 01 a7 ff ff ff 01 08 fe ff ff 01 e8 fd "
+                    "ff ff 3c 49 01 d6 ff ff ff 01 83 ff ff ff 01 19 00 00 00 01 50 3e b1 00 00 00 "
+                    "01 fe fe ff ff 01 c2 02 00 00 01 17 d6 33 ff ff ff 01 fc fe ff ff 01 9e fe ff "
+                    "ff 01 49 00 26 33 00 00 01 73 fc ff ff 01 05 00 00 00 01 94 fe ff e8 fa ff 01 "
+                    "d2 fe ff ff 01 10 ff ff ff 01 15 ff ff ff 03 24 01 e4 ff ff ff 01 4e fc ff ff "
+                    "01 e9 ff ff ff 01 03 f1 63 fb ff ff 01 5a ff ff ff 01 ee fd ff ff 01 1a fc 96 "
+                    "fe ff ff 01 15 00 00 00 01 78 ff ff ff 01 b2 ff 0a 97 ff ff 01 c3 ff ff ff 01 "
+                    "8d ff ff ff 01 06 fe ff 78 e4 ff 01 6e fe ff ff 01 00 00 00 ae 2a" } },
+            {
+                "05 64 05 80 00 04 0a 00 52 18",
+                {   "05 64 75 53 0a 00 00 04 55 57",
+                    "82 00 01 5f fe ff ff 01 63 fb ff ff 01 86 fb ff 32 35 ff 01 de ff ff ff 01 6f "
+                    "fe ff ff 01 34 fe ff ff cc b8 01 7e fe ff ff 01 8f fd ff ff 01 d5 ff ff ff 01 "
+                    "10 73 36 ff ff ff 01 41 fe ff ff 01 d7 f8 ff ff 01 b5 84 7d ff ff ff 01 88 fd "
+                    "ff ff 01 cb fc ff ff 01 55 ff 92 22 ff ff 01 bf 21 02 00 01 09 07 00 00 01 d4 "
+                    "bd ff 8d 69 ff 01 48 fd ff ff 01 e4 00 00 00 01 74 fd ff ff 0b ed" } },
+            {
+                "05 64 05 80 00 04 0a 00 52 18", 
+                { } } },
+        failure {
+            {
+                "05 64 14 c4 00 04 0a 00 d6 69 c0 c2 01 3c 02 06 3c 03 06 3c 04 06 3c 01 06 6a 2c",
+                {   "05 64 ff 73 0a 00 00 04 e0 e2",
+                    "40 c2 81 00 00 1e 01 00 00 77 01 00 00 00 00 01 b3 39 8c fe ff ff 01 65 ff ff "
+                    "ff 01 d6 ff ff ff 01 8f e8 62 ff ff ff 01 7a ff ff ff 01 ac fe ff ff 01 8b ff "
+                    "6a d0 ff ff 01 d0 ff ff ff 01 4c fa ff ff 01 61 fc ff 1c 1f ff 01 db fe ff ff "
+                    "01 36 fe ff ff 01 b1 ff ff ff 30 68 01 f4 fb ff ff 01 12 ff ff ff 01 e7 ff ff "
+                    "ff 01 5e 40 45 fe ff ff 01 cd fe ff ff 01 69 fe ff ff 01 2b a2 01 00 00 00 01 "
+                    "00 00 00 00 01 28 00 00 00 01 0d fe 06 d3 ff ff 01 b9 fd ff ff 01 f3 ff ff ff "
+                    "01 00 00 00 a5 fd 00 01 f1 ff ff ff 01 97 fd ff ff 01 d8 fc ff ff 6b fd 01 93 "
+                    "ff ff ff 01 1b 00 00 00 01 ac fd ff ff 01 b5 e4 7e ff ff ff 01 c1 fa ff ff 01 "
+                    "18 fe ff ff 01 39 67 9a ff ff ff 01 b4 ff ff ff 01 50 ff ff ff 01 13 ff 3a 22 "
+                    "ff ff 01 4d 00 00 00 01 00 00 00 00 01 6b fe ff ca 76 ff 01 8d ff ff ff 01 77 "
+                    "ff ff ff 01 88 ff ff ff b0 93 01 5b ff ff ff 01 bd fc ff ff 94 18" } },
+            {
+                "05 64 05 80 00 04 0a 00 52 18",
+                {   "05 64 ff 53 0a 00 00 04 bd fa",
+                    "01 01 d5 ff ff ff 01 e9 ff ff ff 01 b6 fd ff ff 20 79 01 70 ff ff ff 01 94 fc "
+                    "ff ff 01 3b fe ff ff 01 42 47 76 00 00 00 01 36 fd ff ff 01 24 00 00 00 01 f1 "
+                    "db f3 ff ff ff 01 0c 00 00 00 01 68 00 00 00 01 ab ff be 5b ff ff 01 6c 00 00 "
+                    "00 01 52 ff ff ff 01 a9 ff ff 9e a8 ff 01 a9 ff ff ff 01 08 fe ff ff 01 ea fd "
+                    "ff ff 4c bd 01 d6 ff ff ff 01 85 ff ff ff 01 19 00 00 00 01 ee 2f ba 00 00 00 "
+                    "01 0b ff ff ff 01 b2 02 00 00 01 16 1a 14 ff ff ff 01 0a ff ff ff 01 a9 fe ff "
+                    "ff 01 3f 00 21 24 00 00 01 61 fc ff ff 01 04 00 00 00 01 97 fe ff 10 be ff 01 "
+                    "db fe ff ff 01 13 ff ff ff 01 0d ff ff ff 38 dc 01 e0 ff ff ff 01 49 fc ff ff "
+                    "01 ec ff ff ff 01 d8 79 6c fb ff ff 01 5a ff ff ff 01 ee fd ff ff 01 1a b3 cd "
+                    "fe ff ff 01 12 00 00 00 01 6b ff ff ff 01 b2 ff 2f a9 ff ff 01 c3 ff ff ff 01 "
+                    "93 ff ff ff 01 fb fd ff 54 e1 ff 01 73 fe ff ff 01 00 00 00 3d f8" } },
+            {
+                "05 64 05 80 00 04 0a 00 52 18",
+                { "" } } },
+        resets {
+            {
+                "05 64 14 c4 00 04 0a 00 d6 69 c0 c2 01 3c 02 06 3c 03 06 3c 04 06 3c 01 06 6a 2c",
+                {   "05 64 05 40 0a 00 00 04 f3 bf",
+                    "05 64 05 40 0a 00 00 04 f3 bf" } } };
+
+    unsigned scan_num = 0;
+
+    for( const auto scan : { success, failure, resets } )
+    {
+        dnp.setCommand(DnpProtocol::Command_Class1230Read);
+
+        BOOST_TEST_CONTEXT("scan number " << ++scan_num)
+        {
+            unsigned packet_num = 0;
+
+            for( const auto comms : scan )
+            {
+                BOOST_TEST_CONTEXT("transaction number " << ++packet_num)
+                {
+                    BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+                    BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+                    BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+                    BOOST_CHECK_EQUAL_RANGES(comms.out, getOutput(xfer));
+
+                    BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+
+                    BOOST_CHECK_EQUAL(comms.ins.empty(), dnp.isTransactionComplete());
+
+                    unsigned inbound_num = 0;
+
+                    BOOST_TEST_CONTEXT("inbound number " << ++inbound_num)
+                    {
+                        for( const auto inbound : comms.ins )
+                        {
+                            BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+                            BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+                            if( inbound.size() < xfer.getInCountExpected() )
+                            {
+                                //  make sure we don't copy more than they expect
+                                std::copy(inbound.begin(), inbound.end(),
+                                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+
+                                xfer.setInCountActual(inbound.size());
+
+                                BOOST_CHECK_EQUAL(1, dnp.decode(xfer, ClientErrors::ReadTimeout));
+
+                                BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+                            }
+                            else
+                            {
+                                //  make sure we don't copy more than they expect
+                                std::copy(inbound.begin(), inbound.end(),
+                                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+
+                                xfer.setInCountActual(inbound.size());
+
+                                BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+
+                                BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
 {
     DnpProtocol dnp;
