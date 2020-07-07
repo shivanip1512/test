@@ -1,26 +1,18 @@
 package com.eaton.rest.api.assets;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import com.eaton.framework.APIs;
 import com.eaton.rest.api.common.ApiCallHelper;
-import com.eaton.rest.api.dr.PathParameters;
-
 import io.restassured.response.ExtractableResponse;
 
 public class AssetsCreateRequestAPI {
-        public static ExtractableResponse<?> createCommChannelTCP(Object body) {
-        String pathParam = PathParameters.getParam("createCommChannel");
-        
+
+    public static ExtractableResponse<?> createCommChannel(Object body) {
+
+        String pathParam = APIs.CommChannel.createCommChannel;
         ExtractableResponse<?> createResponse = ApiCallHelper.post(pathParam, body);
-        assertTrue("Error in create Comm Channel TCP", createResponse.statusCode() == 200);
+        assertThat(createResponse.statusCode()).isEqualTo(200);
         return createResponse;
-        }
-        
-        public static ExtractableResponse<?> createCommChannelUDP(Object body) {
-            String pathParam = PathParameters.getParam("createCommChannel");
-            
-            ExtractableResponse<?> createResponse = ApiCallHelper.post(pathParam, body);
-            assertTrue("Error in create Comm Channel UDP", createResponse.statusCode() == 200);
-            return createResponse;
     }
 }
