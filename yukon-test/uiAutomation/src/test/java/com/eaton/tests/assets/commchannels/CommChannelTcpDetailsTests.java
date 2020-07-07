@@ -58,14 +58,14 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         channelDetailPage = new CommChannelDetailPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNEL, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTcp_PageTitleCorrect() {
         String EXPECTED_TITLE = commChannelName;
         String actualPageTitle = channelDetailPage.getPageTitle();
         assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNEL, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTcp_TabTitlesCorrect() {
         List<String> titles = channelDetailPage.getTabElement().getTitles();
 
@@ -75,7 +75,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNEL, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTcp_InfoTabLabelsCorrect() {
         String infoTitle = "Info";
         channelDetailPage.getTabElement().clickTab(infoTitle);
@@ -89,7 +89,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNEL, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTcp_InfoTabValuesCorrect() {
         List<String> values = channelDetailPage.getTabElement().getTabValues("Info");
 
@@ -101,7 +101,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNEL, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTcp_ConfigTabTimingSectionDisplayed() {
         String infoTitle = "Configuration";
         
@@ -112,7 +112,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         assertThat(timing.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNEL, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTcp_ConfigTabLabelsCorrect() {
         String infoTitle = "Configuration";
 
@@ -129,7 +129,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNEL, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTcp_ConfigTabValuesCorrect() {
         channelDetailPage.getTabElement().clickTab("Configuration");
 
@@ -144,7 +144,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNEL, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTcp_PanelTitleCorrect() {
         String expectedPanelText = "Comm Channel Information";
         
@@ -153,7 +153,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         assertThat(actualPanelText).isEqualTo(expectedPanelText);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNEL, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsEditOpensCorrectModal() {
         String expectedModalTitle = "Edit " + commChannelName;
         
@@ -164,7 +164,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNEL, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTCP_CreateOpensCorrectModal() {
         String expectedModalTitle = "Create Comm Channel";
         

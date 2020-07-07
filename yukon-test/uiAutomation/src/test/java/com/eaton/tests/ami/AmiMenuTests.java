@@ -27,14 +27,14 @@ public class AmiMenuTests extends SeleniumTestSetup {
         page = new HomePage(driverExt);
     }
     
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI, TestConstants.Ami.DASHBOARD })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI })
     public void dashboardUrlCorrect() {        
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 0);
 
         assertThat(url).contains(Urls.Ami.DASHBOARD);
     }
     
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI, TestConstants.Ami.BILLING})
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI})
     public void billingUrlCorrect() {
         
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 1);
@@ -42,7 +42,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
         assertThat(url).contains(Urls.Ami.BILLING);
     }
     
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI, TestConstants.Ami.BULK_IMPORT})
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI})
     public void bulkImportUrlCorrect() {
         
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 2);
@@ -50,7 +50,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
         assertThat(url).contains(Urls.Ami.BULK_IMPORT);
     }
     
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI, TestConstants.Ami.BULK_UPDATE})
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI})
     public void bulkUpdateUrlCorrect() {
         
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 3);
@@ -58,7 +58,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
         assertThat(url).contains(Urls.Ami.BULK_UPDATE);
     }
     
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI, TestConstants.Ami.LEGACY_IMPORTER})
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI})
     public void legacyImporterUrlCorrect() {
         
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 4);
@@ -66,7 +66,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
         assertThat(url).contains(Urls.Ami.LEGACY_IMPORTER);
     }
     
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI, TestConstants.Ami.POINT_IMPORT})
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI})
     public void pointImportUrlCorrect() {
         
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 5);
@@ -74,7 +74,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
         assertThat(url).contains(Urls.Ami.POINT_IMPORT);
     }
     
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI, TestConstants.Ami.REPORTS})
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI})
     public void reportsUrlCorrect() {
         
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 6);

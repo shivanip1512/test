@@ -32,7 +32,7 @@ public class ControlAreaListTests extends SeleniumTestSetup {
         listPage = new ControlAreaListPage(driverExt);
     }
     
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Control Areas";
         
@@ -41,7 +41,7 @@ public class ControlAreaListTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
 
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void columnHeadersCorrect() {
         final int EXPECTED_COUNT = 8;
         

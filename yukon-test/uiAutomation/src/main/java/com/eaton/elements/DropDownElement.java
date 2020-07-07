@@ -76,4 +76,8 @@ public class DropDownElement {
     public WebElement getSelectElement() {
         return selectElement;
     }
+    
+    public String getValidationError() {
+        return this.driverExt.findElement(By.cssSelector("span[id='" + this.elementName + ".errors']"), Optional.empty()).getText();
+     }
 }

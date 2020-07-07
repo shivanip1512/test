@@ -8,6 +8,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.ProgramListPage;
 
@@ -25,7 +26,7 @@ public class CiProgramListTests extends SeleniumTestSetup {
         programPage = new ProgramListPage(driverExt);
     }
 
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Programs";
 

@@ -9,6 +9,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.CbcListPage;
 
@@ -28,7 +29,7 @@ public class CbcListTests extends SeleniumTestSetup {
         this.listPage = new CbcListPage(driverExt);
     }
 
-    @Test
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void columnHeadersCorrect() {
         final int EXPECTED_COUNT = 3;
 

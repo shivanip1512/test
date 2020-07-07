@@ -27,7 +27,7 @@ public class CapControlDashboardTests extends SeleniumTestSetup {
         dashboardPage = new CapControlDashboardPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Volt/Var Dashboard";
         

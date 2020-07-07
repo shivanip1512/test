@@ -33,7 +33,7 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
         createPage = new SubstationBusCreatePage(driverExt);
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Bus";
         
@@ -42,7 +42,7 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void createSubstationBusRequiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "Bus was saved successfully.";
         

@@ -35,7 +35,7 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
         createPage = new LoadProgramCreatePage(driverExt);                
     }  
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_05_CreateLoadPgm()"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Load Program";
         
@@ -44,7 +44,7 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_05_CreateLoadPgm()"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void createLoadProgramSuccess() {
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());                 

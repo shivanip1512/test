@@ -24,7 +24,7 @@ public class ScenarioDetailsTests extends SeleniumTestSetup {
         driverExt = getDriverExt();                
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_14_DeleteScenario" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Scenario: AT Scenario";
         
@@ -37,7 +37,7 @@ public class ScenarioDetailsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }    
     
-    @Test(enabled = true, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_14_DeleteScenario"})
+    @Test(enabled = true, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void deleteScenarioSuccess() {
         final String EXPECTED_MSG = "AT Delete Scenario deleted successfully.";
         

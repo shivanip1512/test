@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -21,7 +20,6 @@ import com.eaton.pages.capcontrol.CapControlDashboardPage;
 public class AreaEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
-    private static final String FOUND = "' but found: ";
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {

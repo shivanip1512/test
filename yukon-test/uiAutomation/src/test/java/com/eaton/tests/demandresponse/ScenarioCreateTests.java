@@ -33,7 +33,7 @@ public class ScenarioCreateTests extends SeleniumTestSetup {
         createPage = new ScenarioCreatePage(driverExt);                
     }  
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_12_CreateScenario"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Scenario";
         
@@ -42,7 +42,7 @@ public class ScenarioCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_12_CreateScenario"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void createScenarioRequiredFieldsOnlySuccess() {        
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());                 
         String name = "AT Scenario " + timeStamp;         

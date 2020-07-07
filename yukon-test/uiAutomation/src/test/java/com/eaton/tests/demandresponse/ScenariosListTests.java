@@ -10,6 +10,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.ScenariosListPage;
 
@@ -31,7 +32,7 @@ public class ScenariosListTests extends SeleniumTestSetup {
         this.listPage = new ScenariosListPage(driverExt);
     }
 
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void titleCorrect() {
         final String EXPECTED_TITLE = "Scenarios";
         
@@ -40,7 +41,7 @@ public class ScenariosListTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
 
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void columnHeadersCorrect() {
         final int EXPECTED_COUNT = 2;
         

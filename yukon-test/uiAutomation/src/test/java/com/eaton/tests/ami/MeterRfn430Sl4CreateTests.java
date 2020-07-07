@@ -19,7 +19,7 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.ami.AmiDashboardPage;
 import com.eaton.pages.ami.MeterDetailsPage;
 
-public class MeterCreateTests extends SeleniumTestSetup {
+public class MeterRfn430Sl4CreateTests extends SeleniumTestSetup {
 
     private AmiDashboardPage amiDashboardPage;
     private DriverExtensions driverExt;
@@ -39,37 +39,9 @@ public class MeterCreateTests extends SeleniumTestSetup {
 
         amiDashboardPage = new AmiDashboardPage(driverExt);
         randomNum = getRandomNum();
-    }
+    }    
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI, TestConstants.Ami.METER })
-    public void createMeterRfn420flSuccess() {
-        CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
-
-        int meterNumber = randomNum.nextInt(999999);
-        int serialNumber = randomNum.nextInt(99999999);
-        String manufacturer = randomString(12);
-        String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
-
-        String name = "AT RFN-420fL Meter " + timeStamp;
-        createModal.getType().selectItemByTextSearch("RFN-420fL");
-        createModal.getdeviceName().setInputValue(name);
-        createModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
-        createModal.getSerialNumber().setInputValue(String.valueOf(serialNumber));
-        createModal.getManufacturer().setInputValue(manufacturer);
-        createModal.getModel().setInputValue("A3K");
-
-        createModal.clickOkAndWait();
-
-        waitForUrlToLoad(Urls.Ami.METER_DETAIL, Optional.of(10));
-
-        MeterDetailsPage detailPage = new MeterDetailsPage(driverExt);
-
-        String userMsg = detailPage.getUserMessage();
-
-        assertThat(userMsg).isEqualTo(METER + name + CREATED);
-    }
-
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI, TestConstants.Ami.METER})
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI })
     public void createMeterRfn430Sl4Success() {
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
@@ -95,36 +67,7 @@ public class MeterCreateTests extends SeleniumTestSetup {
         String userMsg = detailPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(METER + name + CREATED);
-    }
-    
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI, TestConstants.Ami.METER})
-    public void createMeterRfn530S4xSuccess() {
-
-        CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
-
-        int meterNumber = randomNum.nextInt(999999);
-        int serialNumber = randomNum.nextInt(99999999);
-        String manufacturer = randomString(12);
-        String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
-
-        String name = "AT RFN-430SL4 Meter " + timeStamp;
-        createModal.getType().selectItemByTextSearch("RFN-530S4x");
-        createModal.getdeviceName().setInputValue(name);
-        createModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
-        createModal.getSerialNumber().setInputValue(String.valueOf(serialNumber));
-        createModal.getManufacturer().setInputValue(manufacturer);
-        createModal.getModel().setInputValue("A3K");
-
-        createModal.clickOkAndWait();
-
-        waitForUrlToLoad(Urls.Ami.METER_DETAIL, Optional.of(10));
-
-        MeterDetailsPage detailPage = new MeterDetailsPage(driverExt);
-
-        String userMsg = detailPage.getUserMessage();
-
-        assertThat(userMsg).isEqualTo(METER + name + CREATED);
-    }
+    }       
 
     private String randomString(int length) {
         final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -141,3 +84,4 @@ public class MeterCreateTests extends SeleniumTestSetup {
         refreshPage(amiDashboardPage);
     }
 }
+

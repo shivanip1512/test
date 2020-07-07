@@ -28,7 +28,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
         page = new HomePage(driverExt);
     }
     
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_02_NavigateToLinks" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void dashboardUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 0);
@@ -36,7 +36,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
         assertThat(url).contains(Urls.DemandResponse.DASHBOARD);
     }
 
-    @Test
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void scenariosUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 1);
@@ -44,7 +44,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
         assertThat(url).contains(Urls.DemandResponse.SCENARIOS);
     }
     
-    @Test
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void controlAreasUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 2);
@@ -52,7 +52,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
         assertThat(url).contains(Urls.DemandResponse.CONTROL_AREA);
     }
     
-    @Test
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void programsUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 3);
@@ -60,7 +60,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
         assertThat(url).contains(Urls.DemandResponse.PROGRAMS);
     }
     
-    @Test
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void loadGroupsUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 4);
@@ -68,7 +68,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
         assertThat(url).contains(Urls.DemandResponse.LOAD_GROUPS);
     }    
     
-    @Test
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void setupUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 5);
@@ -76,7 +76,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
         assertThat(url).contains(Urls.DemandResponse.SETUP);
     }
     
-    @Test
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ciCurtailmentUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 6);
@@ -84,7 +84,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
         assertThat(url).contains(Urls.DemandResponse.CI_CURTAILMENT);
     }    
     
-    @Test
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void bulkUpdateUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 7);
@@ -92,7 +92,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
         assertThat(url).contains(Urls.DemandResponse.BULK_UPDATE);
     }
     
-    @Test
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void reportsUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 8);

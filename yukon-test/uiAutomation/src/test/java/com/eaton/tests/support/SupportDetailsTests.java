@@ -26,7 +26,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         supportPage = new SupportPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_02_NavigateToLinks" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.Admin.ADMIN })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Support";
 

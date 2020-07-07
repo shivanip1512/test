@@ -29,7 +29,7 @@ public class DemandResponseSetupTests extends SeleniumTestSetup {
         
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_02_EditLoadGrp"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Setup";
         

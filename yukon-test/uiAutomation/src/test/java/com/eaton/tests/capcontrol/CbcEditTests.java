@@ -26,7 +26,7 @@ public class CbcEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit CBC: AT CBC";
         
@@ -39,7 +39,7 @@ public class CbcEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void editCbcRequiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "CBC was successfully saved.";
         
@@ -63,7 +63,7 @@ public class CbcEditTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void deleteCbcSuccess() {
         final String EXPECTED_MSG = "Deleted CBC";
         

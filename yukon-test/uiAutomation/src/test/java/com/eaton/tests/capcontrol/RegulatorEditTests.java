@@ -26,7 +26,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();        
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Regulator: AT Regulator";
         
@@ -39,7 +39,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void editRegulatorUpdateNameOnlySuccess() {
         
         navigate(Urls.CapControl.REGULATOR_EDIT + "490" + Urls.EDIT);
@@ -66,7 +66,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo("Regulator: " + name);
     }   
     
-    @Test(enabled = false, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
+    @Test(enabled = false, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void deleteRegulatorSuccess() {
         
         navigate(Urls.CapControl.REGULATOR_EDIT + "578" + Urls.EDIT);

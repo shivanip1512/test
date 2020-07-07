@@ -11,6 +11,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.ProgramListPage;
 
@@ -31,7 +32,7 @@ public class ProgramListTests extends SeleniumTestSetup {
         listPage = new ProgramListPage(driverExt);
     }
 
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Programs";
         
@@ -40,7 +41,7 @@ public class ProgramListTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void columnHeadersCorrect() {
         final int EXPECTED_COUNT = 8;
 

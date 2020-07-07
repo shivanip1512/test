@@ -33,7 +33,7 @@ public class RegulatorCreateTests extends SeleniumTestSetup {
         createPage = new RegulatorCreatePage(driverExt);
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Regulator";
         
@@ -42,7 +42,7 @@ public class RegulatorCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void createRegulatorRequiredFieldsOnlySuccess() {
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

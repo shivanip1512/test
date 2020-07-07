@@ -17,6 +17,7 @@
     	<package name="com.eaton.tests.admin.energycompany"/>
     	<package name="com.eaton.tests.ami"/>
     	<package name="com.eaton.tests.assets"/>
+    	<package name="com.eaton.tests.assets.commchannels"/>
     	<package name="com.eaton.tests.capcontrol"/>
     	<package name="com.eaton.tests.capcontrol.orphans"/>
     	<package name="com.eaton.tests.capcontrol.pointimport"/>
@@ -24,6 +25,7 @@
     	<package name="com.eaton.tests.reports"/>
     	<package name="com.eaton.tests.demandresponse"/>
     	<package name="com.eaton.tests.demandresponse.cicurtailment"/>
+    	<package name="com.eaton.tests.demandresponse.loadgroup"/>
     	<package name="com.eaton.tests.support"/>
     	<package name="com.eaton.tests.tools"/>
     </packages>

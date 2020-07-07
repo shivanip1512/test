@@ -33,7 +33,7 @@ public class FeederCreateTests extends SeleniumTestSetup {
         createPage = new FeederCreatePage(driverExt);
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Feeder";
         
@@ -42,7 +42,7 @@ public class FeederCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void createFeederRequiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "Feeder was saved successfully.";
         

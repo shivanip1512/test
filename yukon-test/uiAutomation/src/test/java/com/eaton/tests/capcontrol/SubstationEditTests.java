@@ -26,7 +26,7 @@ public class SubstationEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();        
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Substation: AT Substation";
         
@@ -39,7 +39,7 @@ public class SubstationEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void editSubstationRequiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "Substation was saved successfully.";
         
@@ -63,7 +63,7 @@ public class SubstationEditTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }     
     
-    @Test(enabled = true, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
+    @Test(enabled = true, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void deleteSubstationSuccess() {
         final String EXPECTED_MSG = "Substation AT Delete Substation deleted successfully.";
         

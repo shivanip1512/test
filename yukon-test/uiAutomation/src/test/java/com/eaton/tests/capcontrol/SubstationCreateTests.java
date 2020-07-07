@@ -33,7 +33,7 @@ public class SubstationCreateTests extends SeleniumTestSetup {
         createPage = new SubstationCreatePage(driverExt);
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Substation";
         
@@ -42,7 +42,7 @@ public class SubstationCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void createSubstationRequiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "Substation was saved successfully.";
         

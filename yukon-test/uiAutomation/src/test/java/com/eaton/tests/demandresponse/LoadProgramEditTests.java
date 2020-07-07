@@ -25,7 +25,7 @@ public class LoadProgramEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();                
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_06_EditLoadPgm()"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void pageTitleCorrect() {
         final String PROGRAM_NAME = "AT Load Program";
         final String EXPECTED_TITLE = "Edit Load Program: " + PROGRAM_NAME;
@@ -39,7 +39,7 @@ public class LoadProgramEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_06_EditLoadPgm()"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void editLoadProgramNameOnlySuccess() {        
         navigate(Urls.DemandResponse.LOAD_PROGRAM_EDIT + "599" + Urls.EDIT);
         

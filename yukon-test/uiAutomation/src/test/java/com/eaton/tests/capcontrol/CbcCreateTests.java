@@ -37,7 +37,7 @@ public class CbcCreateTests extends SeleniumTestSetup {
         randomNum = getRandomNum();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create CBC";
         
@@ -46,7 +46,7 @@ public class CbcCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void createCbcRequiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "CBC was successfully saved.";
         

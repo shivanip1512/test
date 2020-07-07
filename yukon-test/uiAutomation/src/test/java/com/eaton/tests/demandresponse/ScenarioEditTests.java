@@ -24,7 +24,7 @@ public class ScenarioEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();        
     }  
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_13_EditScenario"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Scenario: AT Scenario";
         
@@ -37,7 +37,7 @@ public class ScenarioEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_13_EditScenario"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void editScenarioNameOnlySuccess() {
         navigate(Urls.DemandResponse.SCENARIO_EDIT + "590" + Urls.EDIT);
         

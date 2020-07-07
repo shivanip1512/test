@@ -24,7 +24,7 @@ public class ControlAreaEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();        
     }  
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_10_EditControlArea"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Control Area: AT Control Area";
         
@@ -37,7 +37,7 @@ public class ControlAreaEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_10_EditControlArea"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void editControlAreaNameOnlySuccess() {
         navigate(Urls.DemandResponse.CONTROL_AREA_EDIT + "514" + Urls.EDIT);
         

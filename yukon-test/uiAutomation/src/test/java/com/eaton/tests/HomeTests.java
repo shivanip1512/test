@@ -26,7 +26,6 @@ public class HomeTests extends SeleniumTestSetup {
         page = new HomePage(driverExt);
     }
     
-    //"SM03_02_NavigateToLinks"
     @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS })
     public void supportUrlCorrect() {
         String url = page.getUtilityUrl("Support");
@@ -34,7 +33,7 @@ public class HomeTests extends SeleniumTestSetup {
         assertThat(url).contains(Urls.SUPPORT);
     }
     
-    @Test
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS })
     public void siteMapUrlCorrect() {
         String url = page.getUtilityUrl("Site Map");
 
