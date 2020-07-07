@@ -41,12 +41,4 @@ public class ResetPeakPopupModel extends ResetPeakModel {
     public void setResetPeakDuration(ResetPeakDuration resetPeakDuration) {
         this.resetPeakDuration = resetPeakDuration;
     }
-
-    public DateTime getStartDate() {
-        return super.getStartDate();
-    }
-
-    public void setStartDate(DateTime startDate) {
-        super.setStartDate(startDate);
-    }
 }
