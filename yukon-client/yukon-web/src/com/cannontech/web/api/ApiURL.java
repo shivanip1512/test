@@ -58,5 +58,7 @@ public class ApiURL {
     public static final String virtualDeviceUrl = "/device/virtualDevices/";
 
     public static final String trendUrl = "/trends";
+    
+    public static final String attributeUrl = "/attributes/";
 
 }

@@ -1,4 +1,4 @@
-package com.eaton.tests.demandresponse;
+package com.eaton.tests.demandresponse.loadgroup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,7 +18,7 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.LoadGroupCreatePage;
 import com.eaton.pages.demandresponse.LoadGroupDetailPage;
 
-public class LoadGroupCreateTests extends SeleniumTestSetup {
+public class LoadGroupEcobeeCreateTests extends SeleniumTestSetup {
 
     private LoadGroupCreatePage createPage;
     private DriverExtensions driverExt;
@@ -36,18 +36,9 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         
         randomNum = getRandomNum();
     }
-
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_01_CreateLoadGrp()"})
-    public void pageTitleCorrect() {
-        final String EXPECTED_TITLE = "Create Load Group";
-        
-        String actualPageTitle = createPage.getPageTitle();
-        
-        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
-    }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_01_CreateLoadGrp()"})
-    public void createEcobeeLoadGroupSuccess() {
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE})
+    public void ldGrpCreateEcobee_AllFieldsDisableFalseSuccessfully() {
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT ecobee " + timeStamp;

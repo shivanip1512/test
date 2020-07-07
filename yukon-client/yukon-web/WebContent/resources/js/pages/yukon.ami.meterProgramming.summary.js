@@ -123,6 +123,12 @@ yukon.ami.meterProgramming.summary = (function () {
                         url: yukon.url('/amr/meterProgramming/' + id + '/acceptProgramming')
                     }).done(function(data) {
                         if (data.successMsg) {
+                            //refresh row
+                            $.ajax(yukon.url('/amr/meterProgramming/' + id + '/refreshDeviceRow'))
+                            .done(function (rowData) {
+                                var deviceRow = $('#summary-table').find('tr[data-device-id=' + id + ']');
+                                deviceRow.html(rowData);
+                            });
                             yukon.ui.alertSuccess(data.successMsg);
                         } else {
                             yukon.ui.alertError(data.errorMsg);
@@ -136,19 +142,25 @@ yukon.ami.meterProgramming.summary = (function () {
             
             refreshCheck: function (deviceId) {
                 return function (data) {
-                    if (data.isInProgress === 'false' || data.isConfirming === 'false') {
+                    var isUploadFinished = data.isInProgress === 'false',
+                        isConfirmFinished = data.isConfirming === 'false';
+                    if (isUploadFinished || isConfirmFinished) {
                         //refresh row
                         $.ajax(yukon.url('/amr/meterProgramming/' + deviceId + '/refreshDeviceRow'))
                         .done(function (rowData) {
                             var deviceRow = $('#summary-table').find('tr[data-device-id=' + deviceId + ']');
                             deviceRow.html(rowData);
                             //stop data updaters
-                            var idMap = {isInProgress : "METER_PROGRAMMING/" + deviceId + "/IS_IN_PROGRESS"};
-                            yukon.dataUpdater.unRegisterCallback(idMap);
-                            var idMap = {completedCount : "METER_PROGRAMMING/" + deviceId + "/PROGRESS"};
-                            yukon.dataUpdater.unRegisterCallback(idMap);
-                            var idMap = {isConfirming : "METER_PROGRAMMING/" + deviceId + "/IS_CONFIRMING"};
-                            yukon.dataUpdater.unRegisterCallback(idMap);
+                            if (isUploadFinished) {
+                                var idMap = {isInProgress : "METER_PROGRAMMING/" + deviceId + "/IS_IN_PROGRESS"};
+                                yukon.dataUpdater.unRegisterCallback(idMap);
+                                var idMap = {completedCount : "METER_PROGRAMMING/" + deviceId + "/PROGRESS"};
+                                yukon.dataUpdater.unRegisterCallback(idMap);
+                            }
+                            if (isConfirmFinished) {
+                                var idMap = {isConfirming : "METER_PROGRAMMING/" + deviceId + "/IS_CONFIRMING"};
+                                yukon.dataUpdater.unRegisterCallback(idMap);
+                            }
                         });
                     }
                 }

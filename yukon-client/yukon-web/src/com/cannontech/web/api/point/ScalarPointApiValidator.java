@@ -7,7 +7,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.database.data.point.PointArchiveType;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.web.tools.points.model.PointLimitModel;
 import com.cannontech.web.tools.points.model.PointUnit;
@@ -122,5 +125,21 @@ public class ScalarPointApiValidator<T extends ScalarPointModel<?>> extends Poin
             }
         }
 
+    }
+
+    @Override
+    protected void validateArchiveSettings(T target, PointType pointType, Errors errors) {
+        super.validateArchiveSettings(target, pointType, errors);
+
+        if (target.getArchiveType() != null && (target.getArchiveType() == PointArchiveType.ON_TIMER || target.getArchiveType() == PointArchiveType.ON_TIMER_OR_UPDATE)) {
+            if (target.getArchiveInterval() != null) {
+                TimeIntervals archiveInterval = TimeIntervals.fromSeconds(target.getArchiveInterval());
+                if (!TimeIntervals.getArchiveIntervals().contains(archiveInterval)) {
+                    errors.rejectValue("archiveInterval", baseKey + ".invalid", new Object[] { "Archive Interval" }, "");
+                }
+            } else {
+                errors.rejectValue("archiveInterval", baseKey + ".invalid.archiveTimeInterval", new Object[] { "Archive Interval" }, "");
+            }
+        }
     }
 }

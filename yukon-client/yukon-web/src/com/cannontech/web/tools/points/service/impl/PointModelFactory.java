@@ -1,16 +1,19 @@
 package com.cannontech.web.tools.points.service.impl;
 
+import com.cannontech.database.data.point.ControlStateType;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.web.tools.points.model.AccumulatorPointModel;
 import com.cannontech.web.tools.points.model.AnalogPointModel;
 import com.cannontech.web.tools.points.model.PointBaseModel;
 import com.cannontech.web.tools.points.model.ScalarPointModel;
+import com.cannontech.web.tools.points.model.StatusPointModel;
 
 /**
  * The purpose of this class is to create PointBaseModel and Populating default PointBase object based on mandatory
@@ -37,6 +40,7 @@ public class PointModelFactory {
                 pointModel = new AccumulatorPointModel();
                 break;
             case Status:
+                pointModel = new StatusPointModel<>();
                 break;
             case System:
                 break;
@@ -98,8 +102,18 @@ public class PointModelFactory {
                                                                PointArchiveInterval.ZERO);
                 break;
             case Status:
-                break;
-            case System:
+                pointBase = PointFactory.createStatusPoint(baseModel.getPointName(),
+                                                           baseModel.getPaoId(),
+                                                           baseModel.getPointId(),
+                                                           baseModel.getPointOffset(),
+                                                           baseModel.getStateGroupId(),
+                                                           0,
+                                                           0,
+                                                           StatusControlType.NONE,
+                                                           ControlStateType.OPEN.getControlCommand(),
+                                                           ControlStateType.CLOSE.getControlCommand(),
+                                                           PointArchiveType.NONE,
+                                                           PointArchiveInterval.ZERO);
                 break;
             default:
                 break;
