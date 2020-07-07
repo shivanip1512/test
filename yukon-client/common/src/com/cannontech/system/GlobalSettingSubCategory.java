@@ -23,7 +23,8 @@ public enum GlobalSettingSubCategory implements DisplayableEnum {
     YUKON_SERVICES(GlobalSettingCategory.SYSTEM_SETUP),
     THEMES(GlobalSettingCategory.SYSTEM_SETUP),
     WEB_SERVER(GlobalSettingCategory.SYSTEM_SETUP),
-    DASHBOARD_ADMIN(GlobalSettingCategory.SYSTEM_SETUP, YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS);
+    DASHBOARD_ADMIN(GlobalSettingCategory.SYSTEM_SETUP, YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS),
+    ATTRIBUTES(GlobalSettingCategory.SYSTEM_SETUP);
     
     private GlobalSettingCategory category;
     private YukonRoleProperty roleProperty;
