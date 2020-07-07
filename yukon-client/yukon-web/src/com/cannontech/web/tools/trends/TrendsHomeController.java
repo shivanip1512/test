@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.trend.model.TrendModel;
 import com.cannontech.core.dao.GraphDao;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
@@ -55,7 +57,7 @@ public class TrendsHomeController {
         model.addAttribute("labels", TrendUtils.getLabels(userContext, messageResolver));
         
         model.addAttribute("autoUpdate", userPreferenceService.getDefaultTrendAutoUpdateSelection(userContext.getYukonUser()));
-        
+        setupModel(model);
         return "trends/trends.jsp";
     }
     
@@ -65,7 +67,7 @@ public class TrendsHomeController {
 
         List<LiteGraphDefinition> trends = graphDao.getGraphDefinitions();
         model.addAttribute("trends", trends);
-
+        
         LiteGraphDefinition trend = graphDao.getLiteGraphDefinition(id);
         if (null == trend) {
             return "redirect:/tools/trends";
@@ -77,7 +79,7 @@ public class TrendsHomeController {
             
             model.addAttribute("autoUpdate", userPreferenceService.getDefaultTrendAutoUpdateSelection(userContext.getYukonUser()));
             addTrendModelToModelMap(model, trend);
-
+            setupModel(model);
             return "trends/trends.jsp";
         }
     }
@@ -113,5 +115,12 @@ public class TrendsHomeController {
         TrendModel trendModel = new TrendModel();
         trendModel.setName(liteGraphDefinition.getName());
         model.addAttribute("trendModel", trendModel);
+    }
+    
+    private void setupModel(ModelMap model) {
+        model.addAttribute("manageTrendsRolePrptEnumVal", YukonRoleProperty.MANAGE_TRENDS);
+        model.addAttribute("createPermissionEnumVal", HierarchyPermissionLevel.CREATE);
+        model.addAttribute("updatePermissionEnumVal", HierarchyPermissionLevel.UPDATE);
+        model.addAttribute("ownerPermissionEnumVal", HierarchyPermissionLevel.OWNER);
     }
 }
