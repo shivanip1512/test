@@ -14,14 +14,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cannontech.common.device.dao.DeviceBaseModelDao;
 import com.cannontech.common.device.virtualDevice.VirtualDeviceModel;
 import com.cannontech.common.device.virtualDevice.service.VirtualDeviceService;
+import com.cannontech.common.model.Direction;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.web.api.virtualDevice.VirtualDeviceApiValidator;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
@@ -54,6 +56,14 @@ public class VirtualDeviceApiController {
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     public ResponseEntity<Object> delete(@PathVariable int id) {
         return new ResponseEntity<>(virtualDeviceService.delete(id), HttpStatus.OK);
+    }
+
+    @GetMapping("")
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.VIEW)
+    public ResponseEntity<Object> getAll(@RequestParam(defaultValue = "PAO_NAME") DeviceBaseModelDao.SortBy sort_by,
+            @RequestParam(defaultValue = "asc") Direction direction, @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "250") Integer items_per_page) {
+        return new ResponseEntity<>(virtualDeviceService.list(sort_by, direction, page, items_per_page), HttpStatus.OK);
     }
 
     @InitBinder("virtualDeviceBase")

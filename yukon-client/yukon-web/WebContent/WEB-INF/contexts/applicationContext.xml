@@ -1492,6 +1492,7 @@
     <bean class="com.cannontech.web.stars.commChannel.CommChannelValidator"/>
 
     <bean class="com.cannontech.common.device.virtualDevice.service.impl.VirtualDeviceServiceImpl"/>
+    <bean class="com.cannontech.common.device.dao.impl.VirtualDeviceModelDaoImpl"/>
 
     <bean class="com.cannontech.web.stars.commChannel.CommChannelSetupHelper"/>
     

@@ -1,6 +1,10 @@
 package com.cannontech.common.device.virtualDevice.service;
 
+import com.cannontech.common.device.dao.DeviceBaseModelDao;
+import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.virtualDevice.VirtualDeviceModel;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PaginatedResponse;
 
 public interface VirtualDeviceService {
 
@@ -23,4 +27,10 @@ public interface VirtualDeviceService {
      * Delete a virtual device
      */
     int delete(int id);
+
+    /*
+     * Get a list of LiteYukonPAObjects
+     */
+    PaginatedResponse<DeviceBaseModel> list(DeviceBaseModelDao.SortBy sort_by, Direction direction, Integer page,
+            Integer items_per_page);
 }
