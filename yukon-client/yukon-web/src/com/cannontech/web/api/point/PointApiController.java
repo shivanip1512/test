@@ -1,6 +1,7 @@
 
 package com.cannontech.web.api.point;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,16 +26,20 @@ import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.device.dao.DevicePointDao;
 import com.cannontech.common.device.dao.DevicePointDao.SortBy;
 import com.cannontech.common.device.model.DevicePointsFilter;
+import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.pao.service.YukonPointHelper;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
+import com.cannontech.web.tools.points.model.CopyPoint;
 import com.cannontech.web.tools.points.model.PointBaseModel;
 import com.cannontech.web.tools.points.service.PointEditorService;
 import com.cannontech.web.tools.points.service.PointEditorService.AttachedException;
@@ -73,6 +78,13 @@ public class PointApiController <T extends PointBaseModel<?>> {
         return new ResponseEntity<>(pointEditorService.delete(id, getYukonUserContext(request)), HttpStatus.OK);
     }
 
+    @PostMapping("/points/copy/{id}")
+    public ResponseEntity<Object> copy(@Valid @RequestBody CopyPoint copyPoint, @PathVariable("id") int id, HttpServletRequest request) {
+        pointHelper.verifyRoles(getYukonUserContext(request).getYukonUser(), HierarchyPermissionLevel.CREATE);
+        return new ResponseEntity<>(pointEditorService.copy(id, copyPoint, getYukonUserContext(request)), HttpStatus.OK);
+      
+    }
+    
     @GetMapping("/devices/{paoId}/points")
     public ResponseEntity<Object> getPoints(@PathVariable int paoId, @ModelAttribute("filter") DevicePointsFilter filter,
             @DefaultSort(dir = Direction.asc, sort = "pointName") SortingParameters sorting,
@@ -83,7 +95,8 @@ public class PointApiController <T extends PointBaseModel<?>> {
         Direction direction = sorting.getDirection();
         return new ResponseEntity<>(pointEditorService.getDevicePointDetail(paoId, filter, direction, sortBy, paging), HttpStatus.OK);
     }
-
+    
+   
     @InitBinder("pointBaseModel")
     public void setupBinder(WebDataBinder binder) {
 
@@ -112,4 +125,7 @@ public class PointApiController <T extends PointBaseModel<?>> {
     void setValidators(List<PointApiValidator<T>> validators) {
         this.pointApiValidators = validators;
     }
+    
+   
+
 }

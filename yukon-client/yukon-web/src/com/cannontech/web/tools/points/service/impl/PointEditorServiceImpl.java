@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -20,6 +21,7 @@ import com.cannontech.common.device.dao.DevicePointDao;
 import com.cannontech.common.device.dao.DevicePointDao.SortBy;
 import com.cannontech.common.device.model.DevicePointDetail;
 import com.cannontech.common.device.model.DevicePointsFilter;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.PointEventLogService;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceOption;
@@ -28,6 +30,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
@@ -42,6 +45,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.TransactionType;
+import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -59,6 +63,7 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
+import com.cannontech.web.tools.points.model.CopyPoint;
 import com.cannontech.web.tools.points.model.LitePointModel;
 import com.cannontech.web.tools.points.model.PaoPointModel;
 import com.cannontech.web.tools.points.model.PointBaseModel;
@@ -548,7 +553,27 @@ public class PointEditorServiceImpl implements PointEditorService {
         }
         return pointBaseModel;
     }
+    
+    @Override
+    public PointBaseModel<? extends PointBase> copy(int pointId, CopyPoint copyPoint, YukonUserContext userContext) {
+        PointBase pointBase = pointDao.get(pointId);
 
+        PointBase newPoint = (PointBase) dBPersistentDao.retrieveDBPersistent(pointBase);
+        newPoint.setPointID(null);
+
+        copyPoint.buildDBPersistent(newPoint);
+        PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
+        PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType); 
+        
+        dBPersistentDao.performDBChange(pointBase, TransactionType.INSERT);
+       // copyPoint.buildModel(pointBase);
+        StaleData staleData = getStaleData(pointId);
+        buildPointBaseModel(pointBase, pointBaseModel, staleData);
+         //pointBaseModel.buildModel(pointBase);
+        return pointBaseModel;
+    }
+
+    
     @Override
     public PaoPointModel getDevicePointDetail(int paoId, DevicePointsFilter devicePointsFilter, Direction direction,
             SortBy sortBy, PagingParameters paging) {
