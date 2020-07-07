@@ -4755,19 +4755,19 @@ Network Manager :
     jira : none
     notes : 
 
-  - filename : libthrift-0.9.0.jar
+  - filename : libthrift-0.13.0.jar
     yukon group : Thrift
     project : Thrift
-    version : 0.9.0
+    version : 0.13.0
     project URL : "http://thrift.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.thrift/libthrift/0.9.0"
-    md5 : d662808928b60a04a58960221d03eddd
-    sha1 : d3cd7c9a4261d4fb7e31aee70e4f568bc5973c96
-    updated : 2013-09-19
-    jira : none
-    notes : 
+    maven URL : "https://mvnrepository.com/artifact/org.apache.thrift/libthrift/0.13.0"
+    md5 : 31132a57eacc3e7cd2b7af626b5f1ff9
+    sha1 : 0e5af3b6dc164eb2c699b70bf67a0babef507faf
+    updated : 2020-07-02
+    jira : NM-705
+    notes : Used for communication between Yukon and NM through E2E channel
 
   - filename : liquidlnf.jar
     yukon group : IzPack
@@ -5774,13 +5774,13 @@ C++ :
     project URL : "http://activemq.apache.org/cms/"
     license : Apache 2.0
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.html"
-    md5 : f6024ae820400f1bcef26dc1bdc24134
-    sha1 : 3311d2e2d098953e48c56087ff37c532babcea09
+    md5 : 01c2e51bfced38625795d1a006f5a9bd
+    sha1 : 14c729fe48a88ca797fedb7a4327bc8f1078af65
     fileCount : 691
-    totalSize : 37532260
-    updated : 2019-12-08  
-    jira : YUK-20694
-    notes : 
+    totalSize : 36792387
+    updated : 2020-06-25  
+    jira : YUK-21544
+    notes : Updated internal zlib to 1.2.11
 
   - project : Apache Portable Runtime
     path : APR

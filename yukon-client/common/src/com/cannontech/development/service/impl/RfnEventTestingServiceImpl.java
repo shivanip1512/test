@@ -1,14 +1,17 @@
 package com.cannontech.development.service.impl;
 
 import static com.cannontech.common.stream.StreamUtils.not;
+import static java.util.stream.Collectors.toList;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -35,6 +38,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.FileCopyUtils;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.alarm.RfnAlarm;
 import com.cannontech.amr.rfn.message.alarm.RfnAlarmArchiveRequest;
 import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveRequest;
@@ -49,11 +53,15 @@ import com.cannontech.amr.rfn.message.read.RfnMeterReadingData;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.amr.rfn.model.RfnInvalidValues;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.message.location.LocationResponse;
 import com.cannontech.common.rfn.message.location.Origin;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.util.ByteUtil;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
@@ -61,6 +69,7 @@ import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterReading;
+import com.cannontech.development.model.RfnTestOutageRestoreEvent;
 import com.cannontech.development.service.RfnEventTestingService;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReading;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
@@ -86,6 +95,8 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     private YukonJmsTemplate rfnMeterReadArchiveJmsTemplate;
     private YukonJmsTemplate rfnLcrReadArchiveJmsTemplate;
     private YukonJmsTemplate locationJmsTemplate;
+    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
 
     private static final String dataIndicationQueueName = "com.eaton.eas.yukon.networkmanager.e2e.rfn.E2eDataIndication";
     
@@ -93,6 +104,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
 
     private static final Map<String, String> modifierPaths;
     private static final Map<String, List<RfnManufacturerModel>> groupedMeterTypes;
+    private static final Logger rfnLogger = YukonLogManager.getRfnLogger();
     
     static {
         modifierPaths = ImmutableMap.<String, String>builder()
@@ -239,6 +251,66 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             IntStream.range(0, event.getNumAlarmPerMeter()).forEach(unused -> buildAndSendAlarm(event, serial));
         }
         return serials.length * (event.getNumEventPerMeter() + event.getNumAlarmPerMeter());
+    }
+    
+    @Override
+    public int sendOutageAndRestoreEvents(RfnTestOutageRestoreEvent event) {
+        Set<? extends DeviceGroup> deviceGroups = null;
+        try {
+            deviceGroups = deviceGroupService.resolveGroupNames(List.of(event.getDeviceGroup()));
+        } catch (Exception e) {
+            log.error(e);
+            return 0;
+        }
+        Set<SimpleDevice> devices = deviceGroupService.getDevices(deviceGroups);
+        Random random = new Random();
+        List<RfnDevice> rfnDevices = rfnDeviceDao.getDevicesByPaoIds(devices.stream()
+                .map(SimpleDevice::getDeviceId)
+                .collect(toList()));
+        DateTime firstEventTime = DateTime.now().minusMinutes(2);
+        DateTime secondEventTime = DateTime.now().minusMinutes(1);
+        rfnDevices.forEach(device -> {
+            RfnConditionType first = event.getFirstEvent();
+            if (event.getFirstEventRandom() != null && event.getFirstEventRandom().booleanValue()) {
+                first = random.nextBoolean() ? RfnConditionType.OUTAGE : RfnConditionType.RESTORE;
+            }
+            RfnConditionType second = first == RfnConditionType.RESTORE ? RfnConditionType.OUTAGE : RfnConditionType.RESTORE;
+            sendOutageOrRestoreEvents(device, first, second, firstEventTime, secondEventTime, event.getMilliseconds());
+        });
+        return rfnDevices.size() * 2;
+    }
+
+    private void sendOutageOrRestoreEvents(RfnDevice device, RfnConditionType first, RfnConditionType second,
+            DateTime firstEventTime, DateTime secondEventTime, int sleep) {
+        sendOutageOrRestoreEvent(device, 1, first, firstEventTime.getMillis());
+        try {
+            Thread.sleep(sleep);
+        } catch (InterruptedException e) {
+            log.error(e);
+        }
+        sendOutageOrRestoreEvent(device, 2, second, secondEventTime.getMillis());
+    }
+
+    private void sendOutageOrRestoreEvent(RfnDevice device, int dataPointId,
+            RfnConditionType type, long timeStamp) {
+        RfnEvent rfnEvent = new RfnEvent();
+        rfnEvent.setRfnIdentifier(device.getRfnIdentifier());
+        rfnEvent.setType(type);
+        rfnEvent.setTimeStamp(timeStamp);
+        Map<RfnConditionDataType, Object> rfnEventMap = new HashMap<>();
+        rfnEventMap.put(RfnConditionDataType.CLEARED, false);
+        rfnEventMap.put(RfnConditionDataType.COUNT, (long) 1);
+        /*
+         * EVENT_START_TIME on RESTORE is OUTAGE start time
+         * OUTAGE doesn't have this value
+         */
+        //rfnEventMap.put(RfnConditionDataType.EVENT_START_TIME, timeStamp);
+        rfnEvent.setEventData(rfnEventMap);
+        RfnEventArchiveRequest archiveRequest = new RfnEventArchiveRequest();
+        archiveRequest.setEvent(rfnEvent);
+        archiveRequest.setDataPointId(dataPointId);
+        log.info("Sending {} {} {}", device.getPaoIdentifier().getPaoId(), device.getRfnIdentifier(), type);
+        sendArchiveRequest(rfEventArchiveJmsTemplate, archiveRequest);
     }
     
     @Override
@@ -496,10 +568,11 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             rfnEventMap.put(RfnConditionDataType.UOM_MODIFIERS, rfnUomModifierSet);
         }
     }
-    
+
     private <R extends RfnIdentifyingMessage> void sendArchiveRequest(YukonJmsTemplate jmsTemplate, R archiveRequest) {
         log.debug("Sending archive request: " + archiveRequest.getRfnIdentifier().getCombinedIdentifier() + " on queue "
                 + jmsTemplate.getDefaultDestinationName());
+        rfnLogger.info("<<< Sent" + archiveRequest);
         jmsTemplate.convertAndSend(archiveRequest);
     }
 
@@ -606,5 +679,4 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
 
         return messagesSent;
     }
-
 }

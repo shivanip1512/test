@@ -1,5 +1,6 @@
 package com.cannontech.common.trend.service;
 
+import com.cannontech.common.trend.model.ResetPeakModel;
 import com.cannontech.common.trend.model.TrendModel;
 
 public interface TrendService {
@@ -23,5 +24,10 @@ public interface TrendService {
      * Retrieve a Trend
      */
     TrendModel retrieve(int id);
+
+    /**
+     * Reset Peak for a Trend
+     */
+    int resetPeak(int id, ResetPeakModel resetPeakModel);
 
 }

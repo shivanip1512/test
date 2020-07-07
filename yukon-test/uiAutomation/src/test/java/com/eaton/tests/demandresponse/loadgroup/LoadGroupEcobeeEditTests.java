@@ -1,4 +1,4 @@
-package com.eaton.tests.demandresponse;
+package com.eaton.tests.demandresponse.loadgroup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,7 +15,7 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.LoadGroupEditPage;
 
-public class LoadGroupEditTests extends SeleniumTestSetup {
+public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
 
@@ -24,7 +24,7 @@ public class LoadGroupEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();                
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_02_EditLoadGrp"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE})
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Load Group: AT Load Group";
         
@@ -37,7 +37,7 @@ public class LoadGroupEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_02_EditLoadGrp"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE})
     public void editLoadGroupNameOnlySuccess() {              
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + "596" + Urls.EDIT);
         

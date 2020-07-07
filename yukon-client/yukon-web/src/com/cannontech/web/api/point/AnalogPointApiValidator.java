@@ -64,18 +64,19 @@ public class AnalogPointApiValidator extends ScalarPointApiValidator<AnalogPoint
                                                     99999999,
                                                     false);
                 }
+            }
+            // if for accepting non-default values, need to specify control type in request otherwise it would accept only default values.
+            if (pointAnalogControl.getControlType() == null || pointAnalogControl.getControlType() == AnalogControlType.NONE) {
+                if (pointAnalogControl.getControlOffset() != null && pointAnalogControl.getControlOffset() != 0) {
+                    errors.rejectValue("pointAnalogControl.controlOffset", baseKey + ".invalid.controlOffset");
+                }
 
-                if (pointAnalogControl.getControlType() == AnalogControlType.NONE) {
-                    if (pointAnalogControl.getControlOffset() != null && pointAnalogControl.getControlOffset() != 0) {
-                        errors.rejectValue("pointAnalogControl.controlOffset", baseKey + ".invalid.controlOffset");
-                    }
-
-                    if (pointAnalogControl.getControlInhibited() != null && pointAnalogControl.getControlInhibited().equals(true)) {
-                        errors.rejectValue("pointAnalogControl.controlInhibited", baseKey + ".invalid.controlInhibited");
-                    }
+                if (pointAnalogControl.getControlInhibited() != null && pointAnalogControl.getControlInhibited().equals(true)) {
+                    errors.rejectValue("pointAnalogControl.controlInhibited", baseKey + ".invalid.controlInhibited");
                 }
             }
         }
+
     }
 
 }
