@@ -3,18 +3,13 @@ package com.eaton.tests.assets.commchannels;
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
 import org.assertj.core.api.SoftAssertions;
 import org.json.simple.JSONObject;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import com.eaton.elements.WebTableColumn;
 import com.eaton.elements.modals.ConfirmModal;
-import com.eaton.elements.modals.CreateCommChannelModel;
-import com.eaton.elements.ActionBtnDropDownElement;
 import com.eaton.elements.SortWebColumn;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
@@ -22,7 +17,7 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.assets.commChannels.CommChannelsListPage;
 import com.eaton.rest.api.assets.AssetsCreateRequestAPI;
-import com.eaton.rest.api.dr.JsonFileHelper;
+import com.eaton.rest.api.dbetoweb.JsonFileHelper;
 import io.restassured.response.ExtractableResponse;
 
 public class CommChannelsListTests extends SeleniumTestSetup{
@@ -31,8 +26,6 @@ public class CommChannelsListTests extends SeleniumTestSetup{
     private DriverExtensions driverExt;
     private SoftAssertions softly;
     private WebTableColumn webTableColumn;
-    private ActionBtnDropDownElement actionBtn;
-    private CreateCommChannelModel cm;
 
    	@BeforeClass(alwaysRun = true)
     public void beforeClass() {
@@ -52,7 +45,7 @@ public class CommChannelsListTests extends SeleniumTestSetup{
         JSONObject joTcp = (JSONObject) bodyTcp;       
         String tcpChannelName = tcpChannel[i];	
         joTcp.put("name", tcpChannelName);    	
-        ExtractableResponse<?> createResponseTcp = AssetsCreateRequestAPI.createCommChannelTCP(bodyTcp);           
+        ExtractableResponse<?> createResponseTcp = AssetsCreateRequestAPI.createCommChannel(bodyTcp);           
     	}   	
     	for (int j=0;j<udpChannel.length;j++) {
             String payloadFileUdp = System.getProperty("user.dir")	
@@ -64,7 +57,7 @@ public class CommChannelsListTests extends SeleniumTestSetup{
             int udpPortNum = udpPortNumber[j];
             joUdp.put("name", udpChannelName);
             joUdp.put("portNumber", udpPortNum);	
-            ExtractableResponse<?> createResponseUdp = AssetsCreateRequestAPI.createCommChannelUDP(bodyUdp);   
+            ExtractableResponse<?> createResponseUdp = AssetsCreateRequestAPI.createCommChannel(bodyUdp);   
             String commChannelId = createResponseUdp.path("id").toString();
     	}           
 }      
@@ -115,7 +108,7 @@ public class CommChannelsListTests extends SeleniumTestSetup{
         JSONObject joUdp = (JSONObject) bodyUdp;             
         joUdp.put("name", "UdpNameLink");
         joUdp.put("portNumber", 25991);	
-        ExtractableResponse<?> createResponseUdp = AssetsCreateRequestAPI.createCommChannelUDP(bodyUdp);   
+        ExtractableResponse<?> createResponseUdp = AssetsCreateRequestAPI.createCommChannel(bodyUdp);   
         String commChannelId = createResponseUdp.path("id").toString();    	
     	String EXPECTED_HREF = SeleniumTestSetup.getBaseUrl() + Urls.Assets.COMM_CHANNEL_DETAIL.concat(commChannelId);
     	navigate(Urls.Assets.COMM_CHANNELS_LIST);
