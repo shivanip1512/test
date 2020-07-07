@@ -70,6 +70,7 @@ public class TrendApiController {
     }
     
     @PatchMapping("{id}/resetPeak")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.UPDATE)
     public ResponseEntity<HashMap<String, Integer>> resetPeak(@PathVariable int id, @Valid @RequestBody ResetPeakModel resetPeakModel){
         Integer trendId = trendService.resetPeak(id, resetPeakModel);
         HashMap<String, Integer> trendIdMap = new HashMap<>();

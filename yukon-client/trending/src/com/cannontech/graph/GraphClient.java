@@ -1610,6 +1610,9 @@ public class GraphClient extends JPanel implements DBChangeListener, GraphDefine
                     session.getUser())) {
                 getTrendMenu().getEditMenuItem().setEnabled(false);
             }
+            if (!rolePropertyDao.checkLevel(YukonRoleProperty.MANAGE_TRENDS, HierarchyPermissionLevel.OWNER, session.getUser())) {
+                getTrendMenu().getDeleteMenuItem().setEnabled(false);
+            }
 
             histDate = com.cannontech.util.ServletUtil.getToday();
             com.cannontech.util.ServletUtil.getToday();
