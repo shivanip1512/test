@@ -18,6 +18,9 @@ rem version.external.filenameSafe
     if "%%p" == "version.internal" (
         set my_version_details=%%q
     )
+    if "%%p" == "git.commit.init.count" (
+        set git_commit_init_count=%%q
+    )
 )
 
 rem parse the version into nodes.
@@ -28,7 +31,7 @@ for /f "tokens=1,2,3 delims=." %%p in ("%my_version_details%") do (
 )
 
 rem parse the build number out of the external version
-for /f "tokens=4 delims=_" %%p in ("%my_version%") do (
+for /f "tokens=3 delims=_" %%p in ("%my_version%") do (
         set my_version_build=%%p
 )
 
@@ -37,11 +40,10 @@ FOR /F "tokens=* USEBACKQ" %%F IN (`git rev-parse --short HEAD`) DO (
 SET my_version_git=%%F
 )
 
-rem YUKON_BUILD_RELEASE_NUMBER
-
-SET my_build_release_number=0
-if not "%YUKON_BUILD_RELEASE_NUMBER%"=="" (
-SET my_build_release_number=%YUKON_BUILD_RELEASE_NUMBER%
+rem Build Release Number
+FOR /F "tokens=* USEBACKQ" %%F IN (`git rev-list HEAD --count`) DO (
+SET git_commit_current_count=%%F
+SET /a my_build_release_number=git_commit_current_count-git_commit_init_count
 )
 
 rem Use this file for communicating revision stuff to the .cpp and .rc build
