@@ -1,11 +1,15 @@
 package com.cannontech.common.trend.model;
 
 import org.joda.time.DateTime;
+import org.springframework.validation.BindingResult;
 
 import com.cannontech.common.trend.model.TrendType.GraphType;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+@JsonInclude(Include.NON_NULL)
 public class TrendSeries {
     private TrendType.GraphType type;
     private Integer pointId;
@@ -92,12 +96,20 @@ public class TrendSeries {
      * Update the TrendSeries with default values when null.
      */
     public void applyDefaults() {
-        if (getMultiplier() == null) {
-            setMultiplier(1d);
-        }
         if (getDate() == null) {
             setDate(DateTime.now());
         }
+        setDefaultValues();
+    }
+    
+    public void applyDefaultsIfNoErrors(BindingResult results) {
+        if (!results.hasFieldErrors("date")) {
+            setDate(DateTime.now());
+        }
+        setDefaultValues();
+    }
+    
+    private void setDefaultValues() {
         if (getColor() == null) {
             setColor(Color.BLUE);
         }
@@ -110,5 +122,13 @@ public class TrendSeries {
         if (getType() == null) {
             setType(GraphType.BASIC_TYPE);
         }
+        if (getMultiplier() == null) {
+            setMultiplier(1d);
+        }
+    }
+    
+    public void setMarkerDefaults() {
+        setType(GraphType.MARKER_TYPE);
+        setPointId(-100);
     }
 }

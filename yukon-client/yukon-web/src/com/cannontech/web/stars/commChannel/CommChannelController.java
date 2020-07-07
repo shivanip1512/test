@@ -64,7 +64,7 @@ import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 public class CommChannelController {
 
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
-    private static final String baseKey = "yukon.web.modules.operator.commChannel.";
+    private static final String baseKey = "yukon.common.";
     private static final Logger log = YukonLogManager.getLogger(CommChannelController.class);
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
@@ -80,7 +80,7 @@ public class CommChannelController {
     public String list(ModelMap model, YukonUserContext userContext, HttpServletRequest request, FlashScope flash,
             @DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelListUrl);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/");
             List<DeviceBaseModel> commChannelList = getDeviceBaseModelResponse(userContext, request, url);
 
             CommChannelSortBy sortBy = CommChannelSortBy.valueOf(sorting.getSort());
@@ -113,6 +113,11 @@ public class CommChannelController {
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
+        } catch (RestClientException e) {
+            log.error(e.getMessage());
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            String commChannelDeviceLabel = accessor.getMessage("yukon.web.modules.operator.commChannel.pageName");
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.retrieve.error", commChannelDeviceLabel, e.getMessage()));
         }
         return "/commChannel/list.jsp";
     }
@@ -120,8 +125,9 @@ public class CommChannelController {
     @GetMapping("/{id}")
     public String view(@PathVariable int id, ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
         model.addAttribute("id", id);
-        model.addAttribute("name", dbCache.getAllPaosMap().get(id).getPaoName());
-        model.addAttribute("deviceNames", getDevicesNamesForPort(userContext, request, id));
+        String name = dbCache.getAllPaosMap().get(id).getPaoName();
+        model.addAttribute("name", name);
+        model.addAttribute("deviceNames", getDevicesNamesForPort(userContext, request, id, name));
         return "/commChannel/view.jsp";
     }
 
@@ -129,7 +135,7 @@ public class CommChannelController {
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
     public String delete(@PathVariable int id, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
         try {
-            String deleteUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelDeleteUrl + id);
+            String deleteUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/" + id);
             String portName = dbCache.getAllPaosMap().get(id).getPaoName();
 
             ResponseEntity<? extends Object> deleteResponse = deleteCommChannel(userContext, request, deleteUrl);
@@ -196,7 +202,7 @@ public class CommChannelController {
                 setupErrorFields(resp, commChannel, model, userContext, result);
                 return "/commChannel/create.jsp";
             }
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelCreateUrl);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl);
             ResponseEntity<? extends Object> response =
                     apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class, commChannel);
 
@@ -257,17 +263,22 @@ public class CommChannelController {
     /**
      * Returns comma separated device names for that port 
      */
-    private String getDevicesNamesForPort(YukonUserContext userContext, HttpServletRequest request, int portId) {
-        String assignedDevicesUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelDevicesAssignedUrl + portId);
-        List<DeviceBaseModel> devicesList = getDeviceBaseModelResponse(userContext, request, assignedDevicesUrl);
+    private String getDevicesNamesForPort(YukonUserContext userContext, HttpServletRequest request, int portId, String commChannelName) {
+        try {
+            String assignedDevicesUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/" + portId + "/devicesAssigned");
+            List<DeviceBaseModel> devicesList = getDeviceBaseModelResponse(userContext, request, assignedDevicesUrl);
 
-        if (!devicesList.isEmpty()) {
-            return devicesList.stream()
-                              .map(device -> device.getName())
-                              .collect(Collectors.joining(", "));
-        } else {
-            return null;
+            if (!devicesList.isEmpty()) {
+                return devicesList.stream()
+                                  .map(device -> device.getName())
+                                  .collect(Collectors.joining(", "));
+            }
+        } catch (ApiCommunicationException ex) {
+            log.error(ex.getMessage());
+        } catch (RestClientException ex) {
+            log.error("Error while retrieving assigned devices for comm Channel: {}. Error: {}", commChannelName, ex.getMessage());
         }
+        return null;
     }
 
     /**

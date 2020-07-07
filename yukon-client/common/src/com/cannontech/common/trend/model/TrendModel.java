@@ -48,13 +48,18 @@ public class TrendModel {
      */
     public void buildDBPersistent(GraphDefinition graph) {
         if (getName() != null) {
-            graph.getGraphDefinition().setName(getName());
+            graph.getGraphDefinition().setName(getName().trim());
         }
         ArrayList<GraphDataSeries> graphDataSeries = new ArrayList<>();
+        graph.getGraphDataSeries().clear();
         if (CollectionUtils.isNotEmpty(getTrendSeries())) {
             for (TrendSeries series : getTrendSeries()) {
                 GraphDataSeries graphSeries = new GraphDataSeries();
-                graphSeries.setPointID(series.getPointId());
+                if (series.getType().isMarkerType()) {
+                    graphSeries.setPointID(-100);
+                } else {
+                    graphSeries.setPointID(series.getPointId());
+                }
                 graphSeries.setLabel(series.getLabel());
                 graphSeries.setAxis(
                         series.getAxis() == null ? TrendAxis.LEFT.getAbbreviation() : series.getAxis().getAbbreviation());
@@ -78,6 +83,10 @@ public class TrendModel {
                     }
                 } else {
                     graphSeries.setMoreData(CtiUtilities.STRING_NONE);
+                }
+                // Set GraphDefinationId in case of Update flow.
+                if (graph.getGraphDefinition().getGraphDefinitionID() != null) {
+                    graphSeries.setGraphDefinitionID(graph.getGraphDefinition().getGraphDefinitionID());
                 }
                 graphDataSeries.add(graphSeries);
             }

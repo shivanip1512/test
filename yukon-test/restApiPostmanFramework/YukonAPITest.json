@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "2ba786f6-58b6-4956-bdaa-0f699435bc6c",
+		"_postman_id": "7d437393-da2a-4130-a581-3834c9a78dfe",
 		"name": "YukonAPITest",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -686,7 +686,7 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "639630e6-1abb-439f-a9eb-b60c8fcc32a6",
+												"id": "13c81ad4-2c45-4c1d-84bf-196ffe245e35",
 												"exec": [
 													"console.log('I am from ');"
 												],
@@ -1876,7 +1876,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "9a9eee45-a3e7-47fe-adff-b0f4d9061f82",
+								"id": "878c6dfa-254a-4081-a472-e1dc952f863d",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -1886,7 +1886,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "341848e9-9765-4dbb-b651-ab0b4dfee26a",
+								"id": "82ff1eba-984c-4bd8-bb40-0c99c977f881",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -2494,15 +2494,15 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/create",
+									"raw": "{{api-url}}/api/devices/commChannels/",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"create"
+										"devices",
+										"commChannels",
+										""
 									]
 								}
 							},
@@ -2514,14 +2514,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2543,15 +2543,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/delete/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"delete",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2573,15 +2572,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/update/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"update",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2610,15 +2608,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/create",
+									"raw": "{{api-url}}/api/devices/commChannels",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"create"
+										"devices",
+										"commChannels"
 									]
 								}
 							},
@@ -2642,14 +2639,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2671,15 +2668,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/delete/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"delete",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2701,15 +2697,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/update/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"update",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2738,15 +2733,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/create",
+									"raw": "{{api-url}}/api/devices/commChannels",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"create"
+										"devices",
+										"commChannels"
 									]
 								}
 							},
@@ -2767,15 +2761,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/update/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"update",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2788,14 +2781,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2817,15 +2810,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/delete/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"delete",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2854,15 +2846,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/create",
+									"raw": "{{api-url}}/api/devices/commChannels",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"create"
+										"devices",
+										"commChannels"
 									]
 								}
 							},
@@ -2883,15 +2874,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/update/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"update",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2916,14 +2906,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2936,15 +2926,14 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/delete/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"delete",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2968,15 +2957,15 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{api-url}}/api/device/commChannel/list",
+							"raw": "{{api-url}}/api/devices/commChannels/",
 							"host": [
 								"{{api-url}}"
 							],
 							"path": [
 								"api",
-								"device",
-								"commChannel",
-								"list"
+								"devices",
+								"commChannels",
+								""
 							]
 						}
 					},
@@ -2995,7 +2984,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\"name\":\"Trend Test\",\r\n\t\"trendSeries\": [\r\n\t\t{\r\n\t\t\"type\": \"DATE_TYPE\",\r\n\t\t\"pointId\":-110,\r\n\t\t\"label\" : \"System Device / System Point\",\r\n\t\t\"color\" : \"BLACK\",\r\n\t\t\"TrendAxis\" :\"LEFT\",\r\n\t\t\"multiplier\" : 1.2,\r\n\t\t\"style\" : \"LINE\",\r\n\t\t\"date\":\"10/10/2020\"\r\n\t\t}\r\n\t]\r\n}",
+							"raw": "{\r\n\t\"name\":\"Trend Test\",\r\n\t\"trendSeries\": [\r\n\t\t{\r\n\t\t\"type\": \"DATE_TYPE\",\r\n\t\t\"pointId\":-110,\r\n\t\t\"label\" : \"System Device / System Point\",\r\n\t\t\"color\" : \"BLACK\",\r\n\t\t\"TrendAxis\" :\"LEFT\",\r\n\t\t\"multiplier\" : 1.2,\r\n\t\t\"style\" : \"LINE\",\r\n\t\t\"date\":\"06/06/2020\"\r\n\t\t}\r\n\t]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3010,6 +2999,53 @@
 							"path": [
 								"api",
 								"trends"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-url}}/api/trends/{id}",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"trends",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"name\":\"Trend Test Update\",\r\n\t\"trendSeries\": [\r\n\t\t{\r\n\t\t\"type\": \"DATE_TYPE\",\r\n\t\t\"pointId\":-110,\r\n\t\t\"label\" : \"System Device / System Point\",\r\n\t\t\"color\" : \"BLACK\",\r\n\t\t\"TrendAxis\" :\"LEFT\",\r\n\t\t\"multiplier\" : 1.2,\r\n\t\t\"style\" : \"LINE\",\r\n\t\t\"date\":\"06/10/2020\"\r\n\t\t}\r\n\t]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-url}}/api/trends/{id)",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"trends",
+								"{id)"
 							]
 						}
 					},
@@ -3159,7 +3195,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "f17b903f-bafc-4107-ab8c-ff255fe31ad5",
+				"id": "dfdfbbbe-b549-40c6-bbd4-4429cf09beba",
 				"type": "text/javascript",
 				"exec": [
 					"",
@@ -3208,7 +3244,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "eb93ecce-8a94-4a6e-931b-1f7808588b1e",
+				"id": "98d38167-3ab2-4c09-92c2-421266887de7",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -3218,31 +3254,31 @@
 	],
 	"variable": [
 		{
-			"id": "6a8edef5-2db2-44ad-bcfe-92d7989ea496",
+			"id": "1e095ccf-fd79-4c14-b42b-db62413971cb",
 			"key": "api-url",
 			"value": "http://pspl-sw-night.eatoneaseng.net:8080",
 			"type": "string"
 		},
 		{
-			"id": "b2e28bba-d09b-4569-9b94-28939ec2b6a8",
+			"id": "ee3ad4ef-1040-446e-bee8-6e390b042d31",
 			"key": "username",
 			"value": "yukon",
 			"type": "string"
 		},
 		{
-			"id": "cd7e17b9-ccee-4757-943a-563fe9d7f1c3",
+			"id": "1371f0ed-decb-4c47-9caf-a019dbd45936",
 			"key": "password",
 			"value": "yukon",
 			"type": "string"
 		},
 		{
-			"id": "7fea1a86-ca0a-4ce1-9181-5f2e760e8bac",
+			"id": "bc08df03-6f72-457d-b27e-edf78c88da77",
 			"key": "currentAccessToken",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "54e561b4-6bad-47d1-9076-6c56ebfa8ed3",
+			"id": "b6e84b20-a8d3-47fa-bd26-778d66f7549c",
 			"key": "accessTokenExpiry",
 			"value": "",
 			"type": "string"

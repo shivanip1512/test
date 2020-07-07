@@ -1,6 +1,7 @@
 package com.eaton.elements.tabs;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,25 +26,72 @@ public class TabElement {
         return getTabContainer().findElements(By.cssSelector(".ui-tabs-tab"));
     }
     
-    public WebElement getTabPanel() {
+    public List<String> getTitles() {
+        List<WebElement> elements = getTabs();
+        
+        List<String> titles = new ArrayList<String>();
+        for (WebElement element : elements) {
+            titles.add(element.findElement(By.cssSelector("a")).getText());
+        }
+        
+        return titles;
+    }
+    
+    public WebElement getTabPanelByName(String tabName) {
+        WebElement tab = getTabByName(tabName);
+        
+        String attribute = tab.getAttribute("aria-labelledby");
+        
+        return getTabPanelByAriaLabel(attribute);
+    }
+    
+    public WebElement getTabPanelByAriaLabel(String label) {
        WebElement tabContainer = getTabContainer();
        
-       return tabContainer.findElement(By.cssSelector(".ui-tabs-panel[aria-hidden='false']"));
+       return tabContainer.findElement(By.cssSelector(".ui-tabs-panel[aria-labelledby='" + label + "']"));
     }
     
     public void clickTab(String tabName) {
-        List<WebElement> list = getTabs();
-        
-        for (WebElement element : list) {
-            String tab = element.findElement(By.cssSelector("a")).getText();
-            if(tab.equals(tabName)) {
-                element.click();
-                return;
-            }
-        }
+        getTabByName(tabName).click();
     }
     
-    public void waitForTabToLoad() {
-        //TODO add code
-    }    
+    public List<String> getTabLabels(String tabName) {
+        WebElement tab = getTabByName(tabName);
+        
+        String attribute = tab.getAttribute("aria-labelledby");
+        
+        WebElement panel = getTabPanelByAriaLabel(attribute);
+        
+        List<WebElement> nameElements = panel.findElements(By.cssSelector("table tr .name"));
+        
+        List<String> names = new ArrayList<String>();
+        for (WebElement element : nameElements) {
+            names.add(element.getText());
+        }
+        
+        return names;
+    }
+    
+    public List<String> getTabValues(String tabName) {
+        WebElement tab = getTabByName(tabName);
+        
+        String attribute = tab.getAttribute("aria-labelledby");
+        
+        WebElement panel = getTabPanelByAriaLabel(attribute);
+        
+        List<WebElement> valueElements = panel.findElements(By.cssSelector("table tr .value"));
+        
+        List<String> values = new ArrayList<String>();
+        for (WebElement element : valueElements) {
+            values.add(element.getText());
+        }
+        
+        return values;
+    }
+    
+    private WebElement getTabByName(String tabName) {
+        List<WebElement> list = getTabs();
+        
+        return list.stream().filter(e -> e.findElement(By.cssSelector("a")).getText().contains(tabName)).findFirst().orElseThrow();        
+    }
 }

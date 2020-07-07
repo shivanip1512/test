@@ -5,7 +5,7 @@
 <cti:url value="gearAssignmentsPage" var="baseUrl"/>
 <cti:msgScope paths="modules.dr.estimatedLoad">
 <tags:pickerDialog
-    id="gearFormulaPicker_${gearAssignment.gear.yukonID}"
+    id="gearFormulaPicker_${gearAssignment.gear.gearId}"
     type="gearFormulaPicker"
     linkType="selection"
     selectionProperty="name"

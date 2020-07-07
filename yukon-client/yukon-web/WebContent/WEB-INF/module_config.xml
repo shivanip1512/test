@@ -191,11 +191,15 @@
       </page>
       <page name="commander" type="BASIC"/>
       <page name="trends" type="BASIC">
+        <link>/tools/trends</link>
         <pages>
             <page name="trend" type="DETAIL">
                 <labelArgument>${trendName}</labelArgument>
              </page>
              <page name="trend.CREATE" type="BASIC"/>
+             <page name="trend.EDIT" type="BASIC" hideFavorite="true">
+                 <labelArgument>${trendModel.name}</labelArgument>
+             </page>
         </pages>
       </page>
       <page name="tdc.home" type="BASIC">
@@ -968,6 +972,7 @@
                     <page name="config.weather" type="BLANK"/>
                     <page name="config.dashboards" type="BLANK"/>
                     <page name="security" type="BLANK" />
+                    <page name="config.attributes" type="BLANK"/>
                 </pages>
             </page>
             

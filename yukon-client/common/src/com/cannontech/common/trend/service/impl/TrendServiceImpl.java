@@ -3,6 +3,7 @@ package com.cannontech.common.trend.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.trend.model.ResetPeakModel;
 import com.cannontech.common.trend.model.TrendModel;
 import com.cannontech.common.trend.service.TrendService;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -11,6 +12,8 @@ import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
+import com.cannontech.database.db.graph.GDSTypesFuncs;
+import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class TrendServiceImpl implements TrendService {
@@ -47,4 +50,50 @@ public class TrendServiceImpl implements TrendService {
         return trend.getGraphDefinition().getGraphDefinitionID();
     }
 
+    @Override
+    public TrendModel update(int id, TrendModel trendModel) {
+        LiteGraphDefinition liteTrend = dbCache.getAllGraphDefinitions()
+                                               .stream()
+                                               .filter(group -> group.getLiteID() == id)
+                                               .findFirst()
+                                               .orElseThrow(() -> new NotFoundException("Trend Id not found"));
+        GraphDefinition trend = (GraphDefinition) LiteFactory.createDBPersistent(liteTrend);
+        trendModel.buildDBPersistent(trend);
+        dbPersistentDao.performDBChange(trend, TransactionType.UPDATE);
+        trendModel.buildModel(trend);
+        return trendModel;
+    }
+
+    @Override
+    public TrendModel retrieve(int id) {
+        LiteGraphDefinition liteTrend = dbCache.getAllGraphDefinitions()
+                                               .stream()
+                                               .filter(group -> group.getLiteID() == id)
+                                               .findFirst()
+                                               .orElseThrow(() -> new NotFoundException("Trend Id not found"));
+        GraphDefinition trend = (GraphDefinition) LiteFactory.createDBPersistent(liteTrend);
+        GraphDefinition graphDefinition = (GraphDefinition) dbPersistentDao.retrieveDBPersistent(trend);
+        TrendModel trendModel = new TrendModel();
+        trendModel.buildModel(graphDefinition);
+        return trendModel;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public int resetPeak(int id, ResetPeakModel resetPeakModel) {
+        // only need graphDefinitionId for retrieve
+        GraphDefinition graphDefinition = new GraphDefinition();
+        graphDefinition.getGraphDefinition().setGraphDefinitionID(id);
+        graphDefinition = (GraphDefinition) dbPersistentDao.retrieveDBPersistent(graphDefinition);
+
+        graphDefinition.getGraphDataSeries()
+                       .stream()
+                       .filter(series -> GDSTypesFuncs.isPeakType(((GraphDataSeries) series).getType().intValue()))
+                       .forEach(series -> {
+                           GraphDataSeries dataSeries = (GraphDataSeries) series;
+                           dataSeries.setMoreData(String.valueOf(resetPeakModel.getStartDate().getMillis()));
+                           dbPersistentDao.performDBChange(dataSeries, TransactionType.UPDATE);
+                       });
+        return id;
+    }
 }

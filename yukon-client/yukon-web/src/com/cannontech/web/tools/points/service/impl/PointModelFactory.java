@@ -1,11 +1,19 @@
 package com.cannontech.web.tools.points.service.impl;
 
+import com.cannontech.database.data.point.ControlStateType;
+import com.cannontech.database.data.point.PointArchiveInterval;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.data.point.StatusControlType;
+import com.cannontech.database.db.point.PointUnit;
+import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.web.tools.points.model.AccumulatorPointModel;
 import com.cannontech.web.tools.points.model.AnalogPointModel;
 import com.cannontech.web.tools.points.model.PointBaseModel;
 import com.cannontech.web.tools.points.model.ScalarPointModel;
+import com.cannontech.web.tools.points.model.StatusPointModel;
 
 /**
  * The purpose of this class is to create PointBaseModel and Populating default PointBase object based on mandatory
@@ -28,10 +36,11 @@ public class PointModelFactory {
             case CalcStatus:
                 break;
             case DemandAccumulator:
-                break;
             case PulseAccumulator:
+                pointModel = new AccumulatorPointModel();
                 break;
             case Status:
+                pointModel = new StatusPointModel<>();
                 break;
             case System:
                 break;
@@ -50,14 +59,18 @@ public class PointModelFactory {
     public final static PointBase createPoint(PointBaseModel baseModel) {
 
         PointBase pointBase = null;
+        ScalarPointModel<?> scalarPointModel = null;
+        if (baseModel instanceof ScalarPointModel) {
+            scalarPointModel = (ScalarPointModel<?>) baseModel;
+        }
+
         switch (baseModel.getPointType()) {
             case Analog:
-                ScalarPointModel<?> analogPointModel = (ScalarPointModel<?>) baseModel;
                 pointBase = PointFactory.createAnalogPoint(baseModel.getPointName(),
                                                            baseModel.getPaoId(),
                                                            baseModel.getPointId(),
                                                            baseModel.getPointOffset(),
-                                                           analogPointModel.getPointUnit().getUomId(),
+                                                           scalarPointModel.getPointUnit().getUomId(),
                                                            -1);
                 break;
             case CalcAnalog:
@@ -65,12 +78,42 @@ public class PointModelFactory {
             case CalcStatus:
                 break;
             case DemandAccumulator:
+                pointBase =  PointFactory.createDmdAccumPoint(baseModel.getPointName(),
+                                                              baseModel.getPaoId(),
+                                                              baseModel.getPointId(),
+                                                              baseModel.getPointOffset(),
+                                                              scalarPointModel.getPointUnit().getUomId(),
+                                                              0.1,
+                                                              StateGroupUtils.STATEGROUP_ANALOG,
+                                                              PointUnit.DEFAULT_DECIMAL_PLACES,
+                                                              PointArchiveType.NONE,
+                                                              PointArchiveInterval.ZERO);
                 break;
             case PulseAccumulator:
+                pointBase = PointFactory.createPulseAccumPoint(baseModel.getPointName(),
+                                                               baseModel.getPaoId(),
+                                                               baseModel.getPointId(),
+                                                               baseModel.getPointOffset(),
+                                                               scalarPointModel.getPointUnit().getUomId(),
+                                                               1.0,
+                                                               StateGroupUtils.STATEGROUP_ANALOG,
+                                                               PointUnit.DEFAULT_DECIMAL_PLACES,
+                                                               PointArchiveType.NONE,
+                                                               PointArchiveInterval.ZERO);
                 break;
             case Status:
-                break;
-            case System:
+                pointBase = PointFactory.createStatusPoint(baseModel.getPointName(),
+                                                           baseModel.getPaoId(),
+                                                           baseModel.getPointId(),
+                                                           baseModel.getPointOffset(),
+                                                           baseModel.getStateGroupId(),
+                                                           0,
+                                                           0,
+                                                           StatusControlType.NONE,
+                                                           ControlStateType.OPEN.getControlCommand(),
+                                                           ControlStateType.CLOSE.getControlCommand(),
+                                                           PointArchiveType.NONE,
+                                                           PointArchiveInterval.ZERO);
                 break;
             default:
                 break;

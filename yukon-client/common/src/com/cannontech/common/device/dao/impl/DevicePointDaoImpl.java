@@ -1,17 +1,17 @@
-package com.cannontech.common.rtu.dao.impl;
+package com.cannontech.common.device.dao.impl;
 
 import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.device.dao.DevicePointDao;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
-import com.cannontech.common.rtu.dao.RtuDnpDao;
-import com.cannontech.common.rtu.model.RtuPointDetail;
+import com.cannontech.common.device.model.DevicePointDetail;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PagingResultSetExtractor;
@@ -20,30 +20,31 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.point.PointType;
 
-public class RtuDnpDaoImpl implements RtuDnpDao {
+public class DevicePointDaoImpl implements DevicePointDao {
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
 
-    private final static YukonRowMapper<RtuPointDetail> rtuPointDetailMapper = new YukonRowMapper<RtuPointDetail>() {
+    private final static YukonRowMapper<DevicePointDetail> devicePointDetailMapper = new YukonRowMapper<DevicePointDetail>() {
         @Override
-        public RtuPointDetail mapRow(YukonResultSet rs) throws SQLException {
-            RtuPointDetail rtuPointDetail = new RtuPointDetail();
-            rtuPointDetail.setPointId(rs.getInt("PointId"));
+        public DevicePointDetail mapRow(YukonResultSet rs) throws SQLException {
+            DevicePointDetail devicePointDetail = new DevicePointDetail();
+            devicePointDetail.setPointId(rs.getInt("PointId"));
 
-            rtuPointDetail.setPointName(rs.getString("PointName"));
-            rtuPointDetail.setDeviceName(rs.getString("PAOName"));
+            devicePointDetail.setPointName(rs.getString("PointName"));
+            devicePointDetail.setDeviceName(rs.getString("PAOName"));
+            devicePointDetail.setStateGroupId(rs.getInt("StateGroupId"));
 
             PaoIdentifier paoIdentifier = rs.getPaoIdentifier("PAObjectId", "Type");
             PointIdentifier pointIdentifier = rs.getPointIdentifier("PointType", "PointOffset");
             PaoPointIdentifier paoPointIdentifier = new PaoPointIdentifier(paoIdentifier, pointIdentifier);
-            rtuPointDetail.setPaoPointIdentifier(paoPointIdentifier);
+            devicePointDetail.setPaoPointIdentifier(paoPointIdentifier);
 
-            return rtuPointDetail;
+            return devicePointDetail;
         }
     };
 
     @Override
-    public SearchResults<RtuPointDetail> getRtuPointDetail(List<Integer> paoIds, List<String> pointNames,
+    public SearchResults<DevicePointDetail> getDevicePointDetail(List<Integer> paoIds, List<String> pointNames,
             List<PointType> types, Direction direction, SortBy sortBy,
             PagingParameters paging) {
 
@@ -53,10 +54,10 @@ public class RtuDnpDaoImpl implements RtuDnpDao {
         SqlStatementBuilder allRowsSql = buildSelectQuery(paoIds, pointNames, types, direction, sortBy);
         SqlStatementBuilder countSql = buildSelectQuery(paoIds, pointNames, types, null, null);
 
-        PagingResultSetExtractor<RtuPointDetail> rse = new PagingResultSetExtractor<>(start, count, rtuPointDetailMapper);
+        PagingResultSetExtractor<DevicePointDetail> rse = new PagingResultSetExtractor<>(start, count, devicePointDetailMapper);
         jdbcTemplate.query(allRowsSql, rse);
 
-        SearchResults<RtuPointDetail> retVal = new SearchResults<>();
+        SearchResults<DevicePointDetail> retVal = new SearchResults<>();
 
         int totalCount = jdbcTemplate.queryForInt(countSql);
         retVal.setBounds(start, count, totalCount);
@@ -71,7 +72,7 @@ public class RtuDnpDaoImpl implements RtuDnpDao {
         if (sortBy == null) {
             sql.append("SELECT COUNT(*)");
         } else {
-            sql.append("SELECT PointId, PointType, PointName, PointOffset, P.PAObjectID, pao.Type, pao.PAOName");
+            sql.append("SELECT PointId, PointType, PointName, PointOffset, StateGroupId, P.PAObjectID, pao.Type, pao.PAOName");
         }
         sql.append("FROM Point P");
         sql.append("  JOIN YukonPaobject pao ON pao.PaobjectId = p.PaobjectId");
