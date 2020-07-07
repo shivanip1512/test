@@ -69,22 +69,6 @@ public class CommChannelsListTests extends SeleniumTestSetup{
         String actualPageTitle = listPage.getPageTitle();
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }   
-     
-    
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL }, priority=9)
-    public void commChannelListCreateOpensPopupCorrect() throws Exception {
-        String EXPECTED_TITLE = "Comm Channels";
-        navigate(Urls.Assets.COMM_CHANNELS_LIST);
-        String actualPageTitle = listPage.getPageTitle();
-        String EXPECTED_CREATE_MODEL_TITLE = "Create Comm Channel";      
-        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
-        listPage.actionsButtonClick();
-        listPage.createButtonClick(); 
-        ConfirmModal createModel = listPage.showCreateCommChannelModal();
-        String actualCreateModelTitle = createModel.getModalTitle();
-        assertThat(actualCreateModelTitle).isEqualTo(EXPECTED_CREATE_MODEL_TITLE);
-
-    }  
     
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL }, priority=1)
     public void commChannelListHeadersCorrect() {
@@ -125,8 +109,22 @@ public class CommChannelsListTests extends SeleniumTestSetup{
 				assertThat(false);
 			}
     }		
-  
+      
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL }, priority=3)
+    public void commChannelListNameSortAscCorrectly() {   	  	
+    		navigate(Urls.Assets.COMM_CHANNELS_LIST);
+    		List<WebElement> columnName = webTableColumn.getColumnValues(1);
+    		List<String> sortedListName = SortWebColumn.getSortAsc(columnName);  		
+			navigate(Urls.Assets.COMM_CHANNEL_NAME_ASC);
+			ArrayList<String> obtainedListAsc = new ArrayList<>();
+    		List<WebElement> columnNameAsc = webTableColumn.getColumnValues(1);
+    		for(WebElement webelement:columnNameAsc){
+        			obtainedListAsc.add(webelement.getText());
+ 	    	} 
+        	assertThat(sortedListName.equals(obtainedListAsc)).isTrue();       	
+    	}
+    
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL }, priority=4)
     public void commChannelListNameSortDescCorrectly() {   	  	
     		navigate(Urls.Assets.COMM_CHANNELS_LIST);
     		List<WebElement> columnName = webTableColumn.getColumnValues(1);
@@ -140,19 +138,6 @@ public class CommChannelsListTests extends SeleniumTestSetup{
         	assertThat(sortedListName.equals(obtainedListDesc)).isTrue();		
     	}
     
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL }, priority=4)
-    public void commChannelListNameSortAscCorrectly() {   	  	
-    		navigate(Urls.Assets.COMM_CHANNELS_LIST);
-    		List<WebElement> columnName = webTableColumn.getColumnValues(1);
-    		List<String> sortedListName = SortWebColumn.getSortAsc(columnName);  		
-			navigate(Urls.Assets.COMM_CHANNEL_NAME_ASC);
-			ArrayList<String> obtainedListAsc = new ArrayList<>();
-    		List<WebElement> columnNameAsc = webTableColumn.getColumnValues(1);
-    		for(WebElement webelement:columnNameAsc){
-        			obtainedListAsc.add(webelement.getText());
- 	    	} 
-        	assertThat(sortedListName.equals(obtainedListAsc)).isTrue();       	
-    	}
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL }, priority=5)
     public void commChannelListTypeSortAscCorrectly() {   	  	
     		navigate(Urls.Assets.COMM_CHANNELS_LIST);
@@ -207,5 +192,20 @@ public class CommChannelsListTests extends SeleniumTestSetup{
  	    		} 
         	assertThat(sortedListName.equals(obtainedListDesc)).isTrue();		
     	}
+    
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL }, priority=9)
+    public void commChannelListCreateOpensPopupCorrect() throws Exception {
+        String EXPECTED_TITLE = "Comm Channels";
+        navigate(Urls.Assets.COMM_CHANNELS_LIST);
+        String actualPageTitle = listPage.getPageTitle();
+        String EXPECTED_CREATE_MODEL_TITLE = "Create Comm Channel";      
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
+        listPage.actionsButtonClick();
+        listPage.createButtonClick(); 
+        ConfirmModal createModel = listPage.showCreateCommChannelModal();
+        String actualCreateModelTitle = createModel.getModalTitle();
+        assertThat(actualCreateModelTitle).isEqualTo(EXPECTED_CREATE_MODEL_TITLE);
+
+    }  
    }
 
