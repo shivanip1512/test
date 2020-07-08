@@ -2,14 +2,9 @@ package com.eaton.tests.demandresponse.loadgroup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.assertj.core.api.SoftAssertions;
-import org.json.simple.JSONObject;
-import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.WebDriver;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -20,8 +15,6 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.LoadGroupCreatePage;
-import com.eaton.rest.api.dbetoweb.DBEToWebCreateRequest;
-import com.eaton.rest.api.dbetoweb.JsonFileHelper;
 
 public class LoadGroupCreateTests extends SeleniumTestSetup {
 
