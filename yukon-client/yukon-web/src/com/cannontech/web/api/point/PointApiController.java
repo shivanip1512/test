@@ -47,7 +47,7 @@ public class PointApiController <T extends PointBaseModel<?>> {
     @Autowired private PointEditorService pointEditorService;
     @Autowired private PointApiCreationValidator<T> pointApiCreationValidator;
     @Autowired private List<PointApiValidator<T>> pointApiValidators;
-    @Autowired private CopyPointValidator copyPointValidator;
+    @Autowired private CopyPointApiValidator copyPointValidator;
     @Autowired private YukonUserContextResolver contextResolver;
     @Autowired private YukonPointHelper pointHelper;
 
@@ -75,7 +75,7 @@ public class PointApiController <T extends PointBaseModel<?>> {
         return new ResponseEntity<>(pointEditorService.delete(id, getYukonUserContext(request)), HttpStatus.OK);
     }
 
-    @PostMapping("/points/copy/{id}")
+    @PostMapping("/points/{id}/copy")
     public ResponseEntity<Object> copy(@Valid @RequestBody CopyPoint copyPoint, @PathVariable("id") int id, HttpServletRequest request) {
         pointHelper.verifyRoles(getYukonUserContext(request).getYukonUser(), HierarchyPermissionLevel.CREATE);
         return new ResponseEntity<>(pointEditorService.copy(id, copyPoint, getYukonUserContext(request)), HttpStatus.OK);

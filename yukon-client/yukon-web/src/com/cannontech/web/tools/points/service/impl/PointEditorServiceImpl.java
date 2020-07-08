@@ -554,9 +554,9 @@ public class PointEditorServiceImpl implements PointEditorService {
     public PointBaseModel<? extends PointBase> copy(int pointId, CopyPoint copyPoint, YukonUserContext userContext) {
         PointBase pointBase = pointDao.get(pointId);
 
-        PointBase oldPoint = (PointBase) dBPersistentDao.retrieveDBPersistent(pointBase);
-        oldPoint.setPointID(null);
-        copyPoint.buildDBPersistent(oldPoint);
+       // PointBase oldPoint = (PointBase) dBPersistentDao.retrieveDBPersistent(pointBase);
+        pointBase.setPointID(null);
+        copyPoint.buildDBPersistent(pointBase);
         dBPersistentDao.performDBChange(pointBase, TransactionType.INSERT);
 
         PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());

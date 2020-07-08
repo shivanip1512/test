@@ -1,12 +1,13 @@
 package com.cannontech.web.tools.points.model;
 
+import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.point.Point;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
-public class CopyPoint {
+public class CopyPoint implements DBPersistentConverter<PointBase> {
     private String pointName;
     private Integer pointOffset;
     private Integer paoId;
@@ -35,19 +36,12 @@ public class CopyPoint {
         this.pointName = pointName;
     }
 
-    public void buildModel(PointBase point) {
-        Point pt = point.getPoint();
-        setPointName(pt.getPointName());
-        setPaoId(pt.getPaoID());
-        setPointOffset(pt.getPointOffset());
-    }
-
     public void buildDBPersistent(PointBase point) {
         Point pt = point.getPoint();
         if (getPointName() != null) {
             pt.setPointName(getPointName());
         }
-       
+
         if (getPaoId() != null) {
             pt.setPaoID(getPaoId());
         }
@@ -57,4 +51,7 @@ public class CopyPoint {
         }
     }
 
+    @Override
+    public void buildModel(PointBase object) {
+    }
 }
