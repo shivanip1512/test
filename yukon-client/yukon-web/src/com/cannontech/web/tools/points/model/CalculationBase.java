@@ -8,8 +8,8 @@ public class CalculationBase implements DBPersistentConverter<com.cannontech.dat
     private CalcUpdateType updateType;
     private Integer periodicRate;
 
-    public String getUpdateType() {
-        return updateType.getCalcUpdateType();
+    public CalcUpdateType getUpdateType() {
+        return updateType;
     }
 
     public void setUpdateType(CalcUpdateType updateType) {
@@ -27,7 +27,7 @@ public class CalculationBase implements DBPersistentConverter<com.cannontech.dat
     @Override
     public void buildDBPersistent(CalcBase calcBase) {
         if (getUpdateType() != null) {
-            calcBase.setUpdateType(getUpdateType());
+            calcBase.setUpdateType(getUpdateType().getCalcUpdateType());
         }
         if (getPeriodicRate() != null) {
             calcBase.setPeriodicRate(getPeriodicRate());

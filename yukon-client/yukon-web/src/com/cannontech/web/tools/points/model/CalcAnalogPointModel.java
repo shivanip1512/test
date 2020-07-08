@@ -53,8 +53,8 @@ public class CalcAnalogPointModel extends ScalarPointModel<CalculatedPoint> {
         int order = 1;
         if (CollectionUtils.isNotEmpty(getCalcComponents())) {
             boolean isBaselineAssigned = getCalcComponents().stream()
-                                                            .anyMatch(component -> component.getComponentType() == CalcCompType.FUNCTION
-                                                            && component.getOperation().equals(CalcComponentTypes.BASELINE_FUNCTION));
+                    .anyMatch(component -> component.getComponentType() == CalcCompType.FUNCTION
+                            && component.getOperation().getCalcOperation().equals(CalcComponentTypes.BASELINE_FUNCTION));
             if (isBaselineAssigned) {
                 calculatedPoint.setBaselineAssigned(true);
                 if (getBaselineId() != null) {

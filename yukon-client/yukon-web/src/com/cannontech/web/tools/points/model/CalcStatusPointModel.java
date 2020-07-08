@@ -16,17 +16,17 @@ public class CalcStatusPointModel extends StatusPointModel<CalcStatusPoint> {
     private List<CalculationComponent> calcComponents;
     private Integer baselineId;
 
-    public CalculationBase getCalcBase() {
+    public CalculationBase getCalculationBase() {
         if (calculationBase == null) {
             calculationBase = new CalculationBase();
         }
         return calculationBase;
     }
 
-    public void setCalcBase(CalculationBase calculationBase) {
+    public void setCalculationBase(CalculationBase calculationBase) {
         this.calculationBase = calculationBase;
     }
-
+    
     public List<CalculationComponent> getCalcComponents() {
         if (calcComponents == null) {
             calcComponents = Lists.newArrayList();
@@ -49,12 +49,12 @@ public class CalcStatusPointModel extends StatusPointModel<CalcStatusPoint> {
     @Override
     public void buildDBPersistent(CalcStatusPoint calcStatusPoint) {
         super.buildDBPersistent(calcStatusPoint);
-        getCalcBase().buildDBPersistent(calcStatusPoint.getCalcBase());
+        getCalculationBase().buildDBPersistent(calcStatusPoint.getCalcBase());
         int order = 1;
         if (CollectionUtils.isNotEmpty(getCalcComponents())) {
             boolean isBaselineAssigned = getCalcComponents().stream()
                                                             .anyMatch(component -> component.getComponentType() == CalcCompType.FUNCTION
-                                                            && component.getOperation().equals(CalcComponentTypes.BASELINE_FUNCTION));
+                                                            && component.getOperation().getCalcOperation().equals(CalcComponentTypes.BASELINE_FUNCTION));
             if (isBaselineAssigned) {
                 calcStatusPoint.setBaselineAssigned(true);
                 if (getBaselineId() != null) {
@@ -75,7 +75,7 @@ public class CalcStatusPointModel extends StatusPointModel<CalcStatusPoint> {
     @Override
     public void buildModel(CalcStatusPoint calcStatusPoint) {
         super.buildModel(calcStatusPoint);
-        getCalcBase().buildModel(calcStatusPoint.getCalcBase());
+        getCalculationBase().buildModel(calcStatusPoint.getCalcBase());
 
         if (calcStatusPoint.getBaselineAssigned()) {
             setBaselineId(calcStatusPoint.getCalcBaselinePoint().getBaselineID());

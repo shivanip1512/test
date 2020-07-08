@@ -1,0 +1,63 @@
+package com.cannontech.web.api.point;
+
+import org.springframework.validation.Errors;
+
+import com.cannontech.common.util.TimeIntervals;
+import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.web.tools.points.model.CalcStatusPointModel;
+import com.cannontech.web.tools.points.model.CalcUpdateType;
+import com.cannontech.web.tools.points.model.CalculationBase;
+
+public class CalcStatusPointApiValidator extends StatusPointApiValidator<CalcStatusPointModel> {
+
+    public CalcStatusPointApiValidator() {
+        super();
+    }
+
+    @Override
+    public boolean supports(Class clazz) {
+        return CalcStatusPointModel.class.isAssignableFrom(clazz);
+    }
+
+    @Override
+    protected void doValidation(CalcStatusPointModel calcStatusPointModel, Errors errors) {
+        super.doValidation(calcStatusPointModel, errors);
+        validateCalcBase(calcStatusPointModel.getCalculationBase(), errors);
+        validateCalcComponent(calcStatusPointModel, errors);
+        validateCalcBaseline(calcStatusPointModel, errors);
+    }
+
+    /**
+     * Validate Calc Base Fields.
+     */
+    private void validateCalcBase(CalculationBase calculationBase, Errors errors) {
+        if (calculationBase != null) {
+            if (calculationBase.getUpdateType() != null) {
+                if (calculationBase.getUpdateType().getCalcUpdateType().equals(CalcUpdateType.ON_TIMER.getCalcUpdateType()) || calculationBase.getUpdateType().getCalcUpdateType().equals(CalcUpdateType.ON_TIMER_AND_CHANGE.getCalcUpdateType())) {
+                    YukonValidationUtils.checkIfFieldRequired("calculationBase.periodicRate", errors, calculationBase, "calculationBase.periodicRate");
+                    if (!errors.hasFieldErrors("calculationBase.periodicRate")) {
+                        TimeIntervals periodicRate = TimeIntervals.fromSeconds(calculationBase.getPeriodicRate());
+                        if (!TimeIntervals.getUpdateAndScanRate().contains(periodicRate)) {
+                            errors.rejectValue("calculationBase.periodicRate", baseKey + ".invalid", new Object[] { calculationBase.getPeriodicRate() }, "");
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Validate Calc Components Fields.
+     */
+    private void validateCalcComponent(CalcStatusPointModel calcStatusPointModel, Errors errors) {
+        CalcPointHelper.ValidateCalcComponent(calcStatusPointModel.getCalcComponents(), calcStatusPointModel.getPointType(), errors);
+    }
+
+
+    /**
+     * Validate Calc Basline Field.
+     */
+    private void validateCalcBaseline(CalcStatusPointModel calcStatusPointModel, Errors errors) {
+        CalcPointHelper.validateCalcBaseline(calcStatusPointModel.getCalcComponents(), calcStatusPointModel.getBaselineId(), errors);
+    }
+}

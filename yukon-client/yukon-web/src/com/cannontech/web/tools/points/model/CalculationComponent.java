@@ -7,7 +7,7 @@ import com.cannontech.database.db.point.calculation.CalcComponent;
 public class CalculationComponent implements DBPersistentConverter<com.cannontech.database.db.point.calculation.CalcComponent> {
 
     private CalcCompType componentType;
-    private String operation;
+    private CalcOperation operation;
     private Double operand;
 
     public CalcCompType getComponentType() {
@@ -18,11 +18,11 @@ public class CalculationComponent implements DBPersistentConverter<com.cannontec
         this.componentType = componentType;
     }
 
-    public String getOperation() {
+    public CalcOperation getOperation() {
         return operation;
     }
 
-    public void setOperation(String operation) {
+    public void setOperation(CalcOperation operation) {
         this.operation = operation;
     }
 
@@ -44,7 +44,7 @@ public class CalculationComponent implements DBPersistentConverter<com.cannontec
                     calcComponent.setComponentPointID(getOperand().intValue());
                 }
                 if (getOperation() != null) {
-                    calcComponent.setOperation(getOperation());
+                    calcComponent.setOperation(getOperation().getCalcOperation());
                 }
 
                 calcComponent.setConstant(0.0);
@@ -53,7 +53,7 @@ public class CalculationComponent implements DBPersistentConverter<com.cannontec
             } else if (getComponentType() == CalcCompType.CONSTANT) {
 
                 if (getOperation() != null) {
-                    calcComponent.setOperation(getOperation());
+                    calcComponent.setOperation(getOperation().getCalcOperation());
                 }
 
                 if (getOperand() != null) {
@@ -65,7 +65,7 @@ public class CalculationComponent implements DBPersistentConverter<com.cannontec
 
             } else if (getComponentType() == CalcCompType.FUNCTION) {
                 if (getOperation() != null) {
-                    calcComponent.setFunctionName(getOperation());
+                    calcComponent.setFunctionName(getOperation().getCalcOperation());
                 }
 
                 if (getOperand() != null) {
@@ -82,18 +82,18 @@ public class CalculationComponent implements DBPersistentConverter<com.cannontec
         setComponentType(CalcCompType.getCalcCompType(calcComponent.getComponentType()));
 
         if (getComponentType() == CalcCompType.CONSTANT) {
-            setOperation(calcComponent.getOperation());
+            setOperation(CalcOperation.getCalcOperation(calcComponent.getOperation()));
             setOperand(calcComponent.getConstant());
         }
 
         if (getComponentType() == CalcCompType.FUNCTION) {
             setOperand(calcComponent.getComponentPointID().doubleValue());
-            setOperation(calcComponent.getFunctionName());
+            setOperation(CalcOperation.getCalcOperation(calcComponent.getFunctionName()));
         }
 
         if (getComponentType() == CalcCompType.OPERATION) {
             setOperand(calcComponent.getComponentPointID().doubleValue());
-            setOperation(calcComponent.getOperation());
+            setOperation(CalcOperation.getCalcOperation(calcComponent.getOperation()));
         }
 
     }
