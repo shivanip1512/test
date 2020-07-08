@@ -118,31 +118,31 @@ public class MeterProgramStatusArchiveRequestListenerTest {
                 null,
                 INSUFFICIENT_FIRMWARE_CONFIG_ID,
                 ProgrammingStatus.FAILED),
-        YUKON_CANCELED(
+        ASSIGNED_CANCELED(
                 YUKON_GUID,
                 UNKNOWN_CONFIG_ID,
                 ProgrammingStatus.CANCELED),
-        YUKON_CONFIRMING(
+        ASSIGNED_CONFIRMING(
                 YUKON_GUID,
                 UNKNOWN_CONFIG_ID,
                 ProgrammingStatus.CONFIRMING),
-        YUKON_FAILED(
+        ASSIGNED_FAILED(
                 YUKON_GUID,
                 UNKNOWN_CONFIG_ID,
                 ProgrammingStatus.FAILED),
-        YUKON_INITIATING(
+        ASSIGNED_INITIATING(
                 YUKON_GUID,
                 UNKNOWN_CONFIG_ID,
                 ProgrammingStatus.INITIATING),
-        YUKON_MISMATCHED(
+        ASSIGNED_MISMATCHED(
                 YUKON_GUID,
                 UNKNOWN_CONFIG_ID,
                 ProgrammingStatus.MISMATCHED),
-        YUKON_UPLOADING(
+        ASSIGNED_UPLOADING(
                 YUKON_GUID,
                 UNKNOWN_CONFIG_ID,
                 ProgrammingStatus.UPLOADING),
-        YUKON_IDLE(
+        ASSIGNED_IDLE(
                 YUKON_GUID,
                 YUKON_CONFIG_ID,
                 ProgrammingStatus.IDLE);
@@ -235,12 +235,16 @@ public class MeterProgramStatusArchiveRequestListenerTest {
         var __ = Optional.<MeterProgramStatus>empty();
         var unknownCanceled = Optional.of(
                 createMeterProgramStatus(UNKNOWN_CONFIG_ID, ProgrammingStatus.CANCELED, NEW_TIMESTAMP));
+        var unknownConfirming = Optional.of(
+                createMeterProgramStatus(UNKNOWN_CONFIG_ID, ProgrammingStatus.CONFIRMING, NEW_TIMESTAMP));
         var unknownIdle = Optional.of(
                 createMeterProgramStatus(UNKNOWN_CONFIG_ID, ProgrammingStatus.IDLE, NEW_TIMESTAMP));
         var unknownMismatch = Optional.of(
                 createMeterProgramStatus(UNKNOWN_CONFIG_ID, ProgrammingStatus.MISMATCHED, NEW_TIMESTAMP));
         var unknownFailed = Optional.of(
                 createMeterProgramStatus(UNKNOWN_CONFIG_ID, ProgrammingStatus.FAILED, NEW_TIMESTAMP, DeviceError.CATASTROPHIC_FAILURE));
+        var unknownUploading = Optional.of(
+                createMeterProgramStatus(UNKNOWN_CONFIG_ID, ProgrammingStatus.UPLOADING, NEW_TIMESTAMP));
         
         var yukonCanceled = Optional.of(
                 createMeterProgramStatus(YUKON_CONFIG_ID, ProgrammingStatus.CANCELED, NEW_TIMESTAMP));
@@ -279,61 +283,61 @@ public class MeterProgramStatusArchiveRequestListenerTest {
         builder.put(States.UNASSIGNED_IDLE, Messages.YUKON_IDLE, yukonIdle);
         builder.put(States.UNASSIGNED_IDLE, Messages.YUKON_UPLOADING, __);
 
-        builder.put(States.YUKON_CANCELED, Messages.UNKNOWN_IDLE, unknownMismatch);
-        builder.put(States.YUKON_CANCELED, Messages.INSUFFICIENT_IDLE, insufficientFirmware);
-        builder.put(States.YUKON_CANCELED, Messages.YUKON_CANCELED, unknownCanceled);
-        builder.put(States.YUKON_CANCELED, Messages.YUKON_CONFIRMING, yukonConfirming);
-        builder.put(States.YUKON_CANCELED, Messages.YUKON_FAILED, unknownFailed);
-        builder.put(States.YUKON_CANCELED, Messages.YUKON_IDLE, yukonIdle);
-        builder.put(States.YUKON_CANCELED, Messages.YUKON_UPLOADING, yukonUploading);
+        builder.put(States.ASSIGNED_CANCELED, Messages.UNKNOWN_IDLE, unknownMismatch);
+        builder.put(States.ASSIGNED_CANCELED, Messages.INSUFFICIENT_IDLE, insufficientFirmware);
+        builder.put(States.ASSIGNED_CANCELED, Messages.YUKON_CANCELED, unknownCanceled);
+        builder.put(States.ASSIGNED_CANCELED, Messages.YUKON_CONFIRMING, unknownConfirming);
+        builder.put(States.ASSIGNED_CANCELED, Messages.YUKON_FAILED, unknownFailed);
+        builder.put(States.ASSIGNED_CANCELED, Messages.YUKON_IDLE, yukonIdle);
+        builder.put(States.ASSIGNED_CANCELED, Messages.YUKON_UPLOADING, unknownUploading);
 
-        builder.put(States.YUKON_CONFIRMING, Messages.UNKNOWN_IDLE, unknownMismatch);
-        builder.put(States.YUKON_CONFIRMING, Messages.INSUFFICIENT_IDLE, insufficientFirmware);
-        builder.put(States.YUKON_CONFIRMING, Messages.YUKON_CANCELED, unknownCanceled);
-        builder.put(States.YUKON_CONFIRMING, Messages.YUKON_CONFIRMING, yukonConfirming);
-        builder.put(States.YUKON_CONFIRMING, Messages.YUKON_FAILED, unknownFailed);
-        builder.put(States.YUKON_CONFIRMING, Messages.YUKON_IDLE, yukonIdle);
-        builder.put(States.YUKON_CONFIRMING, Messages.YUKON_UPLOADING, yukonUploading);
+        builder.put(States.ASSIGNED_CONFIRMING, Messages.UNKNOWN_IDLE, unknownMismatch);
+        builder.put(States.ASSIGNED_CONFIRMING, Messages.INSUFFICIENT_IDLE, insufficientFirmware);
+        builder.put(States.ASSIGNED_CONFIRMING, Messages.YUKON_CANCELED, unknownCanceled);
+        builder.put(States.ASSIGNED_CONFIRMING, Messages.YUKON_CONFIRMING, unknownConfirming);
+        builder.put(States.ASSIGNED_CONFIRMING, Messages.YUKON_FAILED, unknownFailed);
+        builder.put(States.ASSIGNED_CONFIRMING, Messages.YUKON_IDLE, yukonIdle);
+        builder.put(States.ASSIGNED_CONFIRMING, Messages.YUKON_UPLOADING, unknownUploading);
 
-        builder.put(States.YUKON_FAILED, Messages.UNKNOWN_IDLE, unknownMismatch);
-        builder.put(States.YUKON_FAILED, Messages.INSUFFICIENT_IDLE, insufficientFirmware);
-        builder.put(States.YUKON_FAILED, Messages.YUKON_CANCELED, unknownCanceled);
-        builder.put(States.YUKON_FAILED, Messages.YUKON_CONFIRMING, yukonConfirming);
-        builder.put(States.YUKON_FAILED, Messages.YUKON_FAILED, unknownFailed);
-        builder.put(States.YUKON_FAILED, Messages.YUKON_IDLE, yukonIdle);
-        builder.put(States.YUKON_FAILED, Messages.YUKON_UPLOADING, yukonUploading);
+        builder.put(States.ASSIGNED_FAILED, Messages.UNKNOWN_IDLE, unknownMismatch);
+        builder.put(States.ASSIGNED_FAILED, Messages.INSUFFICIENT_IDLE, insufficientFirmware);
+        builder.put(States.ASSIGNED_FAILED, Messages.YUKON_CANCELED, unknownCanceled);
+        builder.put(States.ASSIGNED_FAILED, Messages.YUKON_CONFIRMING, unknownConfirming);
+        builder.put(States.ASSIGNED_FAILED, Messages.YUKON_FAILED, unknownFailed);
+        builder.put(States.ASSIGNED_FAILED, Messages.YUKON_IDLE, yukonIdle);
+        builder.put(States.ASSIGNED_FAILED, Messages.YUKON_UPLOADING, unknownUploading);
 
-        builder.put(States.YUKON_INITIATING, Messages.UNKNOWN_IDLE, unknownMismatch);
-        builder.put(States.YUKON_INITIATING, Messages.INSUFFICIENT_IDLE, insufficientFirmware);
-        builder.put(States.YUKON_INITIATING, Messages.YUKON_CANCELED, unknownCanceled);
-        builder.put(States.YUKON_INITIATING, Messages.YUKON_CONFIRMING, yukonConfirming);
-        builder.put(States.YUKON_INITIATING, Messages.YUKON_FAILED, unknownFailed);
-        builder.put(States.YUKON_INITIATING, Messages.YUKON_IDLE, yukonIdle);
-        builder.put(States.YUKON_INITIATING, Messages.YUKON_UPLOADING, yukonUploading);
+        builder.put(States.ASSIGNED_INITIATING, Messages.UNKNOWN_IDLE, unknownMismatch);
+        builder.put(States.ASSIGNED_INITIATING, Messages.INSUFFICIENT_IDLE, insufficientFirmware);
+        builder.put(States.ASSIGNED_INITIATING, Messages.YUKON_CANCELED, unknownCanceled);
+        builder.put(States.ASSIGNED_INITIATING, Messages.YUKON_CONFIRMING, unknownConfirming);
+        builder.put(States.ASSIGNED_INITIATING, Messages.YUKON_FAILED, unknownFailed);
+        builder.put(States.ASSIGNED_INITIATING, Messages.YUKON_IDLE, yukonIdle);
+        builder.put(States.ASSIGNED_INITIATING, Messages.YUKON_UPLOADING, unknownUploading);
 
-        builder.put(States.YUKON_MISMATCHED, Messages.UNKNOWN_IDLE, unknownMismatch);
-        builder.put(States.YUKON_MISMATCHED, Messages.INSUFFICIENT_IDLE, insufficientFirmware);
-        builder.put(States.YUKON_MISMATCHED, Messages.YUKON_CANCELED, unknownCanceled);
-        builder.put(States.YUKON_MISMATCHED, Messages.YUKON_CONFIRMING, yukonConfirming);
-        builder.put(States.YUKON_MISMATCHED, Messages.YUKON_FAILED, unknownFailed);
-        builder.put(States.YUKON_MISMATCHED, Messages.YUKON_IDLE, yukonIdle);
-        builder.put(States.YUKON_MISMATCHED, Messages.YUKON_UPLOADING, yukonUploading);
+        builder.put(States.ASSIGNED_MISMATCHED, Messages.UNKNOWN_IDLE, unknownMismatch);
+        builder.put(States.ASSIGNED_MISMATCHED, Messages.INSUFFICIENT_IDLE, insufficientFirmware);
+        builder.put(States.ASSIGNED_MISMATCHED, Messages.YUKON_CANCELED, unknownCanceled);
+        builder.put(States.ASSIGNED_MISMATCHED, Messages.YUKON_CONFIRMING, unknownConfirming);
+        builder.put(States.ASSIGNED_MISMATCHED, Messages.YUKON_FAILED, unknownFailed);
+        builder.put(States.ASSIGNED_MISMATCHED, Messages.YUKON_IDLE, yukonIdle);
+        builder.put(States.ASSIGNED_MISMATCHED, Messages.YUKON_UPLOADING, unknownUploading);
 
-        builder.put(States.YUKON_UPLOADING, Messages.UNKNOWN_IDLE, unknownMismatch);
-        builder.put(States.YUKON_UPLOADING, Messages.INSUFFICIENT_IDLE, insufficientFirmware);
-        builder.put(States.YUKON_UPLOADING, Messages.YUKON_CANCELED, unknownCanceled);
-        builder.put(States.YUKON_UPLOADING, Messages.YUKON_CONFIRMING, yukonConfirming);
-        builder.put(States.YUKON_UPLOADING, Messages.YUKON_FAILED, __);
-        builder.put(States.YUKON_UPLOADING, Messages.YUKON_IDLE, yukonIdle);
-        builder.put(States.YUKON_UPLOADING, Messages.YUKON_UPLOADING, yukonUploading);
+        builder.put(States.ASSIGNED_UPLOADING, Messages.UNKNOWN_IDLE, unknownMismatch);
+        builder.put(States.ASSIGNED_UPLOADING, Messages.INSUFFICIENT_IDLE, insufficientFirmware);
+        builder.put(States.ASSIGNED_UPLOADING, Messages.YUKON_CANCELED, unknownCanceled);
+        builder.put(States.ASSIGNED_UPLOADING, Messages.YUKON_CONFIRMING, unknownConfirming);
+        builder.put(States.ASSIGNED_UPLOADING, Messages.YUKON_FAILED, __);
+        builder.put(States.ASSIGNED_UPLOADING, Messages.YUKON_IDLE, yukonIdle);
+        builder.put(States.ASSIGNED_UPLOADING, Messages.YUKON_UPLOADING, unknownUploading);
 
-        builder.put(States.YUKON_IDLE, Messages.UNKNOWN_IDLE, unknownMismatch);
-        builder.put(States.YUKON_IDLE, Messages.INSUFFICIENT_IDLE, insufficientFirmware);
-        builder.put(States.YUKON_IDLE, Messages.YUKON_CANCELED, yukonCanceled);
-        builder.put(States.YUKON_IDLE, Messages.YUKON_CONFIRMING, yukonConfirming);
-        builder.put(States.YUKON_IDLE, Messages.YUKON_FAILED, yukonFailed);
-        builder.put(States.YUKON_IDLE, Messages.YUKON_IDLE, yukonIdle);
-        builder.put(States.YUKON_IDLE, Messages.YUKON_UPLOADING, yukonUploading);
+        builder.put(States.ASSIGNED_IDLE, Messages.UNKNOWN_IDLE, unknownMismatch);
+        builder.put(States.ASSIGNED_IDLE, Messages.INSUFFICIENT_IDLE, insufficientFirmware);
+        builder.put(States.ASSIGNED_IDLE, Messages.YUKON_CANCELED, yukonCanceled);
+        builder.put(States.ASSIGNED_IDLE, Messages.YUKON_CONFIRMING, yukonConfirming);
+        builder.put(States.ASSIGNED_IDLE, Messages.YUKON_FAILED, yukonFailed);
+        builder.put(States.ASSIGNED_IDLE, Messages.YUKON_IDLE, yukonIdle);
+        builder.put(States.ASSIGNED_IDLE, Messages.YUKON_UPLOADING, yukonUploading);
 
         var table = builder.build();
 
