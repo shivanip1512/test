@@ -46,7 +46,7 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
     /**
      * Attempts to update Meter Program Status with a new status
      */
-    private void processRequest(MeterProgramStatusArchiveRequest request, String processor) {
+    private void processRequest(MeterProgramStatusArchiveRequest request, @SuppressWarnings("unused") String processor) {
        
         int deviceId = rfnDeviceDao.getDeviceIdForRfnIdentifier(request.getRfnIdentifier());
         StringBuilder configId = new StringBuilder(request.getConfigurationId());
@@ -135,9 +135,8 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
                 return;
             }
         }
-        if (newStatus.getStatus() == ProgrammingStatus.FAILED ||
-            newStatus.getStatus() == ProgrammingStatus.CANCELED ||
-            newStatus.getStatus() == ProgrammingStatus.INITIATING) {
+        if (newStatus.getStatus() != ProgrammingStatus.IDLE &&
+            newStatus.getStatus() != ProgrammingStatus.MISMATCHED) {
             newStatus.setReportedGuid(oldStatus.getReportedGuid());
             newStatus.setSource(oldStatus.getSource());
         }
