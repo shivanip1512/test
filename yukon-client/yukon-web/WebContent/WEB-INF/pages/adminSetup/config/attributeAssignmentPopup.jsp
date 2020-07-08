@@ -20,13 +20,13 @@
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".pointType">
-                <tags:selectWithItems path="pointType" items="${pointTypes}"/>
+                <tags:selectWithItems inputClass="js-point-type MR0" path="pointType" items="${pointTypes}"/>
                 <tags:pickerDialog id="displayPointPicker" type="pointPicker" linkType="button" icon="icon-magnifier" 
-                    buttonRenderMode="image" buttonStyleClass="fn vam"/>
+                    buttonRenderMode="image" buttonStyleClass="fn vam" endEvent="yukon:assignment:pointSelected" immediateSelectMode="true"/>
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".pointOffset">
-                <tags:input path="pointOffset"/>
+                <tags:input path="pointOffset" inputClass="js-point-offset"/>
             </tags:nameValue2>
         
         </tags:nameValueContainer2>

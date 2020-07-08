@@ -25,20 +25,25 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.virtualDevice.VirtualDeviceModel;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultSort;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.ApiRequestHelper;
 import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -50,6 +55,7 @@ public class AttributesController {
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private AttributeValidator attributeValidator;
     @Autowired private IDatabaseCache dbCache;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     private static final String redirectLink = "redirect:/admin/config/attributes";
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
@@ -57,7 +63,8 @@ public class AttributesController {
     private static final Logger log = YukonLogManager.getLogger(AttributesController.class);
 
     @GetMapping("/config/attributes")
-    public String attributes(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
+    public String attributes(@DefaultSort(dir=Direction.desc, sort="attributeName") SortingParameters sorting, 
+                             ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
         retrieveCustomAttributes(model, userContext, request);
         CustomAttribute createAttribute = new CustomAttribute();
         if (model.containsKey("createAttribute")) {
@@ -72,7 +79,7 @@ public class AttributesController {
         List<PaoType> deviceTypes = dbCache.getAllPaoTypes().stream()
                 .sorted().collect(Collectors.toList());
         model.addAttribute("deviceTypes", deviceTypes);
-        retrieveAssignments(model, userContext, request);
+        retrieveAssignments(sorting, null, null, model, userContext, request);
         return "config/attributes.jsp";
     }
     
@@ -169,10 +176,9 @@ public class AttributesController {
     }
     
     @GetMapping("/config/attributeAssignments/filter")
-    public String filterAssignments(Integer[] selectedAttributes, PaoType[] selectedDeviceTypes, ModelMap model, 
-                                    YukonUserContext userContext, HttpServletRequest request) {
-
-        retrieveAssignments(model, userContext, request);
+    public String filterAssignments(@DefaultSort(dir=Direction.desc, sort="attributeName") SortingParameters sorting, Integer[] selectedAttributes, 
+                                    PaoType[] selectedDeviceTypes, ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
+        retrieveAssignments(sorting, selectedAttributes, selectedDeviceTypes, model, userContext, request);
         return "config/attributeAssignmentsTable.jsp";
     }
     
@@ -287,7 +293,8 @@ public class AttributesController {
         return redirectLink;
     }
     
-    private void retrieveAssignments(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
+    private void retrieveAssignments(SortingParameters sorting, Integer[] selectedAttributes, PaoType[] selectedDeviceTypes, 
+                                     ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
         
 /*      String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeAssignmentsUrl);
         List<AttributeAssignment> assignmentList = new ArrayList<>();
@@ -298,6 +305,19 @@ public class AttributesController {
             assignmentList = (List<AttributeAssignment>) response.getBody();
         }
         model.addAttribute("assignments", assignmentList);*/
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+
+        AssignmentSortBy sortBy = AssignmentSortBy.valueOf(sorting.getSort());
+        Direction dir = sorting.getDirection();
+        
+        List<SortableColumn> columns = new ArrayList<>();
+        for (AssignmentSortBy column : AssignmentSortBy.values()) {
+            String text = accessor.getMessage(column);
+            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+            columns.add(col);
+            model.addAttribute(column.name(), col);
+        }
         
         //mock up data for now
         CustomAttribute att1 = new CustomAttribute();
@@ -355,46 +375,23 @@ public class AttributesController {
         att3.setId(123);
         att3.setName("CustomAttribute-003");
         atts.add(att3);
-        
-/*        att1 = new CustomAttribute();
-        att1.setId(121);
-        att1.setName("CustomAttribute-001");
-        atts.add(att1);
-        att2 = new CustomAttribute();
-        att2.setId(122);
-        att2.setName("CustomAttribute-002");
-        atts.add(att2);
-        att3 = new CustomAttribute();
-        att3.setId(123);
-        att3.setName("CustomAttribute-003");
-        atts.add(att3);
-        
-        att1 = new CustomAttribute();
-        att1.setId(121);
-        att1.setName("CustomAttribute-001");
-        atts.add(att1);
-        att2 = new CustomAttribute();
-        att2.setId(122);
-        att2.setName("CustomAttribute-002");
-        atts.add(att2);
-        att3 = new CustomAttribute();
-        att3.setId(123);
-        att3.setName("CustomAttribute-003");
-        atts.add(att3);
-        
-        att1 = new CustomAttribute();
-        att1.setId(121);
-        att1.setName("CustomAttribute-001");
-        atts.add(att1);
-        att2 = new CustomAttribute();
-        att2.setId(122);
-        att2.setName("CustomAttribute-002");
-        atts.add(att2);
-        att3 = new CustomAttribute();
-        att3.setId(123);
-        att3.setName("CustomAttribute-003");
-        atts.add(att3);*/
         model.addAttribute("attributes", atts);
+    }
+    
+    public enum AssignmentSortBy implements DisplayableEnum {
+
+        attributeName,
+        deviceType,
+        pointType,
+        offset;
+
+        @Override
+        public String getFormatKey() {
+            if (this == attributeName) {
+                return "yukon.web.modules.adminSetup.config.attributes." + name();
+            }
+            return "yukon.common." + name();
+        }
     }
     
 }

@@ -67,6 +67,15 @@ yukon.adminSetup.attributes = (function () {
                 });   
             });
             
+            $(document).on('yukon:assignment:pointSelected', function (ev, items, picker) {
+                var pointType = items[0].pointType,
+                    pointOffset = items[0].pointOffset,
+                    dialog = $(ev.target);
+                dialog.find('.js-point-type').val(pointType);
+                dialog.find('.js-point-offset').val(pointOffset);
+                
+            }); 
+            
             $(document).on("yukon:assignment:save", function (event) {
                 var popup = $(event.target);
                 $('#assignment-form').ajaxSubmit({
