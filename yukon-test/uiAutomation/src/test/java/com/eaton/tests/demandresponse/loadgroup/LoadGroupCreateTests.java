@@ -25,13 +25,8 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
-        //WebDriver driver = getDriver();
         driverExt = getDriverExt();
         softAssert = new SoftAssertions();
-        
-        //driver.get(getBaseUrl() + Urls.DemandResponse.LOAD_GROUP_CREATE);
-
-        //createPage = new LoadGroupCreatePage(driverExt);        
     }
     
     @BeforeMethod(alwaysRun=true)
@@ -56,14 +51,14 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getName().getValidationError()).isEqualTo("Name is required.");
     }
     
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE})
     public void ldGrpCreate_TypeRequiredValidation() {
         createPage.getSaveBtn().click();
         
         assertThat(createPage.getType().getValidationError()).isEqualTo("Type is required.");
     }
     
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE})
     public void ldGrpCreate_NameInvalidCharValidation() {
         
         createPage.getName().setInputValue("test/,");
@@ -72,7 +67,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getName().getValidationError()).isEqualTo("Cannot be blank or include any of the following characters: / \\ , ' \" |");
     }
     
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE})
     public void ldGrpCreate_CancelButtonNavigatesToCorrectUrl() {
         String expectedURL = getBaseUrl() + Urls.DemandResponse.SETUP_FILTER + "LOAD_GROUP";
         
@@ -82,7 +77,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(actualURL).isEqualTo(expectedURL);
     }
     
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE})
     public void ldGrpCreate_kWCapacityRequired() {
 
         createPage.getType().selectItemByIndex(2);
@@ -92,7 +87,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getkWCapacity().getValidationError()).isEqualTo("kW Capacity is required.");
     }
     
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE})
     public void ldGrpCreate_kWCapacityMaxRangeValidation() {
         createPage.getType().selectItemByIndex(2);
         createPage.getkWCapacity().setInputValue("1000000");
@@ -101,7 +96,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getkWCapacity().getValidationError()).isEqualTo("Must be between 0 and 99,999.999.");
     }
     
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE})
     public void ldGrpCreate_kWCapacityMinRangeValidation() {
 
         createPage.getType().selectItemByIndex(2);
@@ -111,35 +106,30 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getkWCapacity().getValidationError()).isEqualTo("Must be between 0 and 99,999.999.");
     }
     
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE})
     public void ldGrpCreate_GeneralSectionTitleCorrect() {
 
-        Section timing = createPage.getGeneralSection();
-        assertThat(timing.getSection()).isNotNull();
+        Section general = createPage.getGeneralSection();
+        assertThat(general.getSection()).isNotNull();
     }
     
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE})
     public void ldGrpCreate_OptionalAttributeSectionTitleCorrect() {
         
         createPage.getType().selectItemByIndex(2);
         createPage.getkWCapacity().clearInputValue();;
-        Section timing = createPage.getOptionalAttributesSection();
-        assertThat(timing.getSection()).isNotNull();
+        Section optAttr = createPage.getOptionalAttributesSection();
+        assertThat(optAttr.getSection()).isNotNull();
     }
     
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE})
     public void ldGrpCreate_TypeDropDownContainsAllExpectedValues() {
-        String expectedValues[] = {"Digi SEP Group", "ecobee Group", "asdf", "Emetcon Group", "Expresscom Group", "Honeywell Group", "Itron Group", "MCT Group", "Meter Disconnect Group", "Point Group", "RFN Expresscom Group", "Ripple Group", "Versacom Group"};
-        List<String> actualValues = createPage.getType().getOptionValues();
+        String expDropDownValues[] = {"Digi SEP Group", "ecobee Group", "Emetcon Group", "Expresscom Group", "Honeywell Group", "Itron Group", "MCT Group", "Meter Disconnect Group", "Point Group", "RFN Expresscom Group", "Ripple Group", "Versacom Group"};
+        List<String> actualDropDownValues = createPage.getType().getOptionValues();
         
-        for(String exp : expectedValues) {
-            softAssert.assertThat(actualValues.contains(exp)).isTrue();
+        for(String expdropDwonValue : expDropDownValues) {
+            softAssert.assertThat(actualDropDownValues.contains(expdropDwonValue)).isTrue();
         }
         softAssert.assertAll();
     }
-
-/*    @AfterMethod(alwaysRun=true)
-    public void afterTest() {        
-        refreshPage(createPage);
-    }*/
 }
