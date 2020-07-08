@@ -116,17 +116,17 @@ public class ApiControllerHelper {
 
         String webServerApiUrl = webServerUrl;
         if (StringUtils.isEmpty(webServerApiUrl)) {
-            webServerApiUrl = apiConnection(request, userContext);
-            if (StringUtils.isEmpty(webServerApiUrl)) {
+            HttpStatus httpStatus = apiConnection(request, userContext);
+            if (httpStatus != HttpStatus.OK) {
                 apiRequestHelper.setProxy();
-                webServerApiUrl = apiConnection(request, userContext);
+                httpStatus = apiConnection(request, userContext);
             }
-            if (StringUtils.isEmpty(webServerApiUrl)) {
+            if (httpStatus != HttpStatus.OK) {
                 throw new ApiCommunicationException("Error while communicating with Api.");
             }
-            log.info("Connection with Api successful with URL: " + webServerApiUrl);
+            log.info("Connection with Api successful with URL: " + webServerUrl);
         }
-        return webServerApiUrl;
+        return webServerUrl;
     }
 
     /**
@@ -145,7 +145,7 @@ public class ApiControllerHelper {
         return HttpStatus.NOT_FOUND;
     }
     
-    private String apiConnection(HttpServletRequest request, YukonUserContext userContext) {
+    private HttpStatus apiConnection(HttpServletRequest request, YukonUserContext userContext) {
         HttpStatus responseCode = null;
         String webUrl = null;
         try {
@@ -207,7 +207,7 @@ public class ApiControllerHelper {
         if (responseCode == HttpStatus.OK) {
             setWebServerUrl(webUrl);
         }
-        return webUrl;
+        return responseCode;
     }
 
     /**
