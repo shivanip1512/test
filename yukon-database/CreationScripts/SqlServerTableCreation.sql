@@ -523,6 +523,27 @@ create table ArchiveValuesExportFormat (
 go
 
 /*==============================================================*/
+/* Table: AttributeAssignment                                   */
+/*==============================================================*/
+create table AttributeAssignment (
+   AttributeAssignmentId numeric              not null,
+   AttributeId          numeric              not null,
+   PaoType              varchar(30)          not null,
+   PointType            varchar(30)          not null,
+   PointOffset          numeric              not null,
+   constraint PK_ATTRIBUTEASSIGNMENTID primary key (AttributeAssignmentId)
+)
+go
+
+alter table AttributeAssignment
+   add constraint AK_ASSIGNMENT unique (AttributeId, PaoType, PointType, PointOffset)
+go
+
+alter table AttributeAssignment
+   add constraint AK_ATTRIBUTE_DEVICE unique (AttributeId, PaoType)
+go
+
+/*==============================================================*/
 /* Table: BaseLine                                              */
 /*==============================================================*/
 create table BaseLine (
@@ -12203,6 +12224,12 @@ go
 alter table ArchiveDataAnalysisSlotValue
    add constraint FK_ArchDataAnalSlotVal_Device foreign key (DeviceId)
       references DEVICE (DEVICEID)
+         on delete cascade
+go
+
+alter table AttributeAssignment
+   add constraint FK_ATTRASSIGN_CUSTATTR foreign key (AttributeId)
+      references CustomAttribute (AttributeId)
          on delete cascade
 go
 
