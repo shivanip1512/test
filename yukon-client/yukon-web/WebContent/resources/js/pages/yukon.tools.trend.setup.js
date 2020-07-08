@@ -37,6 +37,7 @@ yukon.tools.trend.setup = (function() {
     },
     
     _updateSetupTable = function (dialog, isMarkerRow, rowUpdated) {
+        yukon.ui.busy(dialog.closest(".ui-dialog").find(".js-primary-action"));
         var form = dialog.find("form"),
                displayTable = $("#js-point-setup-table"),
                templateTable = $(".js-point-setup-template-table");
@@ -84,6 +85,7 @@ yukon.tools.trend.setup = (function() {
                 } else {
                     _initPointSetupPopup(dialog);
                 }
+                yukon.ui.unbusy(dialog.closest(".ui-dialog").find(".js-primary-action"));
             }
         });
     },
