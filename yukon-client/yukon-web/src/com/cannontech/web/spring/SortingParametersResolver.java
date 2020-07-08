@@ -31,9 +31,14 @@ public class SortingParametersResolver implements HandlerMethodArgumentResolver 
         HttpServletRequest nativeRequest = (HttpServletRequest) webRequest.getNativeRequest();
 
         String sort = ServletRequestUtils.getStringParameter(nativeRequest, "sort");
+        Direction direction = null;
         if (StringUtils.isNotBlank(sort)) {
-            Direction dir = Direction.valueOf(ServletRequestUtils.getStringParameter(nativeRequest, "dir", "desc"));
-            return SortingParameters.of(sort, dir);
+            try {
+                direction = Direction.valueOf(ServletRequestUtils.getStringParameter(nativeRequest, "dir", "desc"));
+            } catch (IllegalArgumentException e) {
+                direction = methodParameter.getParameterAnnotation(DefaultSort.class).dir();
+            }
+            return SortingParameters.of(sort, direction);
         } else if (methodParameter.hasParameterAnnotation(DefaultSort.class)) {
             sort = methodParameter.getParameterAnnotation(DefaultSort.class).sort();
             Direction dir = methodParameter.getParameterAnnotation(DefaultSort.class).dir();

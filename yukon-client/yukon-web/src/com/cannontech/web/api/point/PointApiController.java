@@ -14,7 +14,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -74,14 +73,19 @@ public class PointApiController <T extends PointBaseModel<?>> {
     }
 
     @GetMapping("/devices/{paoId}/points")
-    public ResponseEntity<Object> getPoints(@PathVariable int paoId, @ModelAttribute("filter") DevicePointsFilter filter,
+    public ResponseEntity<Object> getPoints(@PathVariable int paoId, DevicePointsFilter types,
             @DefaultSort(dir = Direction.asc, sort = "pointName") SortingParameters sorting,
             @DefaultItemsPerPage(value = 250) PagingParameters paging,
             HttpServletRequest request) {
         pointHelper.verifyRoles(getYukonUserContext(request).getYukonUser(), HierarchyPermissionLevel.VIEW);
-        SortBy sortBy = DevicePointDao.SortBy.valueOf(sorting.getSort());
+        SortBy sortBy=null;
+        try {
+            sortBy = DevicePointDao.SortBy.valueOf(sorting.getSort());
+        } catch (IllegalArgumentException e) {
+            sortBy = DevicePointDao.SortBy.pointName;
+        }
         Direction direction = sorting.getDirection();
-        return new ResponseEntity<>(pointEditorService.getDevicePointDetail(paoId, filter, direction, sortBy, paging), HttpStatus.OK);
+        return new ResponseEntity<>(pointEditorService.getDevicePointDetail(paoId, types, direction, sortBy, paging), HttpStatus.OK);
     }
 
     @InitBinder("pointBaseModel")
