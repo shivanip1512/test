@@ -7,7 +7,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
-import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LiteBaseline;
@@ -16,21 +15,19 @@ import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.web.tools.points.model.CalcCompType;
 import com.cannontech.web.tools.points.model.CalcOperation;
-import com.cannontech.web.tools.points.model.CalcUpdateType;
-import com.cannontech.web.tools.points.model.CalculationBase;
 import com.cannontech.web.tools.points.model.CalculationComponent;
 import com.cannontech.yukon.IDatabaseCache;
 
-public class CalcPointHelper {
+public class CalcPointValidationHelper {
 
     @Autowired private static IDatabaseCache cache;
     @Autowired private static PointDao pointDao;
     protected static final String baseKey = "yukon.web.api.error";
 
     @Autowired
-    public CalcPointHelper(IDatabaseCache cache, PointDao pointDao) {
-        CalcPointHelper.cache = cache;
-        CalcPointHelper.pointDao = pointDao;
+    public CalcPointValidationHelper(IDatabaseCache cache, PointDao pointDao) {
+        CalcPointValidationHelper.cache = cache;
+        CalcPointValidationHelper.pointDao = pointDao;
     }
 
     public static void ValidateCalcComponent(List<CalculationComponent> calcComponents, PointType pointType, Errors errors) {
@@ -72,29 +69,22 @@ public class CalcPointHelper {
     }
 
     public static void validateCalcBaseline(List<CalculationComponent> calcComponents, Integer baselineId, Errors errors) {
-        boolean isBaselineCheck = true;
-        for (int i = 0; i < calcComponents.size(); i++) {
-            CalculationComponent calcComponent = calcComponents.get(i);
-            if (calcComponent.getComponentType() == null || calcComponent.getOperation() == null) {
-                isBaselineCheck = false;
-            }
-        }
-        if (isBaselineCheck) {
-            boolean isBaselineAssigned = calcComponents.stream()
-                                                       .anyMatch(component -> component.getComponentType() == CalcCompType.FUNCTION
-                                                       && component.getOperation().getCalcOperation().equals(CalcComponentTypes.BASELINE_FUNCTION));
-            if (isBaselineAssigned) {
-                YukonValidationUtils.checkIfFieldRequired("baselineId", errors, baselineId, "baseLineId");
-                if (!errors.hasFieldErrors("baselineId")) {
-                    List<Integer> baseLineIds = cache.getAllBaselines().stream()
-                                                                       .map(LiteBaseline::getBaselineID)
-                                                                       .collect(Collectors.toList());
-                    if (!baseLineIds.contains(baselineId)) {
-                        errors.rejectValue("baselineId", baseKey + ".doesNotExist", new Object[] { "BaseLineId" }, "");
-                    }
+
+        boolean isBaselineAssigned = calcComponents.stream()
+                                                   .anyMatch(
+                                                   component -> component.getComponentType() != null && component.getComponentType() == CalcCompType.FUNCTION
+                                                   && 
+                                                   component.getOperation() != null && component.getOperation().getCalcOperation().equals(CalcComponentTypes.BASELINE_FUNCTION));
+        if (isBaselineAssigned) {
+            YukonValidationUtils.checkIfFieldRequired("baselineId", errors, baselineId, "baseLineId");
+            if (!errors.hasFieldErrors("baselineId")) {
+                List<Integer> baseLineIds = cache.getAllBaselines().stream()
+                                                                   .map(LiteBaseline::getBaselineID)
+                                                                   .collect(Collectors.toList());
+                if (!baseLineIds.contains(baselineId)) {
+                    errors.rejectValue("baselineId", baseKey + ".doesNotExist", new Object[] { "baseLineId" }, "");
                 }
             }
         }
     }
-
 }

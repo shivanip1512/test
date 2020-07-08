@@ -33,7 +33,7 @@ public class CalcAnalogPointApiValidator extends ScalarPointApiValidator<CalcAna
         private void validateCalcAnalogBase(CalcAnalogBase calcAnalogBase, Errors errors) {
             if (calcAnalogBase != null) {
                 if (calcAnalogBase.getUpdateType() != null) {
-                    if (calcAnalogBase.getUpdateType().getCalcUpdateType().equals(CalcUpdateType.ON_TIMER.getCalcUpdateType()) || calcAnalogBase.getUpdateType().getCalcUpdateType().equals(CalcUpdateType.ON_TIMER_AND_CHANGE.getCalcUpdateType())) {
+                    if (calcAnalogBase.getUpdateType() == CalcUpdateType.ON_TIMER || calcAnalogBase.getUpdateType() == CalcUpdateType.ON_TIMER_AND_CHANGE) {
                         YukonValidationUtils.checkIfFieldRequired("calcAnalogBase.periodicRate", errors, calcAnalogBase.getPeriodicRate(), "calcAnalogBase.periodicRate");
                         if (!errors.hasFieldErrors("calcAnalogBase.periodicRate")) {
                             TimeIntervals periodicRate = TimeIntervals.fromSeconds(calcAnalogBase.getPeriodicRate());
@@ -50,13 +50,13 @@ public class CalcAnalogPointApiValidator extends ScalarPointApiValidator<CalcAna
     * Validate Calc Components Fields.
     */
     private void validateCalcComponent(CalcAnalogPointModel calAnalogPointModel, Errors errors) {
-        CalcPointHelper.ValidateCalcComponent(calAnalogPointModel.getCalcComponents(), calAnalogPointModel.getPointType(), errors);
+        CalcPointValidationHelper.ValidateCalcComponent(calAnalogPointModel.getCalcComponents(), calAnalogPointModel.getPointType(), errors);
     }
 
     /**
      * Validate Baseline field for Function.
      */
     private void validateCalcBaseline(CalcAnalogPointModel calcAnalogPointModel, Errors errors) {
-        CalcPointHelper.validateCalcBaseline(calcAnalogPointModel.getCalcComponents(), calcAnalogPointModel.getBaselineId(), errors);
+        CalcPointValidationHelper.validateCalcBaseline(calcAnalogPointModel.getCalcComponents(), calcAnalogPointModel.getBaselineId(), errors);
     }
 }

@@ -33,7 +33,7 @@ public class CalcStatusPointApiValidator extends StatusPointApiValidator<CalcSta
     private void validateCalcBase(CalculationBase calculationBase, Errors errors) {
         if (calculationBase != null) {
             if (calculationBase.getUpdateType() != null) {
-                if (calculationBase.getUpdateType().getCalcUpdateType().equals(CalcUpdateType.ON_TIMER.getCalcUpdateType()) || calculationBase.getUpdateType().getCalcUpdateType().equals(CalcUpdateType.ON_TIMER_AND_CHANGE.getCalcUpdateType())) {
+                if (calculationBase.getUpdateType() == CalcUpdateType.ON_TIMER || calculationBase.getUpdateType() == CalcUpdateType.ON_TIMER_AND_CHANGE) {
                     YukonValidationUtils.checkIfFieldRequired("calculationBase.periodicRate", errors, calculationBase, "calculationBase.periodicRate");
                     if (!errors.hasFieldErrors("calculationBase.periodicRate")) {
                         TimeIntervals periodicRate = TimeIntervals.fromSeconds(calculationBase.getPeriodicRate());
@@ -50,7 +50,7 @@ public class CalcStatusPointApiValidator extends StatusPointApiValidator<CalcSta
      * Validate Calc Components Fields.
      */
     private void validateCalcComponent(CalcStatusPointModel calcStatusPointModel, Errors errors) {
-        CalcPointHelper.ValidateCalcComponent(calcStatusPointModel.getCalcComponents(), calcStatusPointModel.getPointType(), errors);
+        CalcPointValidationHelper.ValidateCalcComponent(calcStatusPointModel.getCalcComponents(), calcStatusPointModel.getPointType(), errors);
     }
 
 
@@ -58,6 +58,6 @@ public class CalcStatusPointApiValidator extends StatusPointApiValidator<CalcSta
      * Validate Calc Basline Field.
      */
     private void validateCalcBaseline(CalcStatusPointModel calcStatusPointModel, Errors errors) {
-        CalcPointHelper.validateCalcBaseline(calcStatusPointModel.getCalcComponents(), calcStatusPointModel.getBaselineId(), errors);
+        CalcPointValidationHelper.validateCalcBaseline(calcStatusPointModel.getCalcComponents(), calcStatusPointModel.getBaselineId(), errors);
     }
 }
