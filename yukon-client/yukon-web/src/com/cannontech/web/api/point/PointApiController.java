@@ -47,7 +47,7 @@ public class PointApiController <T extends PointBaseModel<?>> {
     @Autowired private PointEditorService pointEditorService;
     @Autowired private PointApiCreationValidator<T> pointApiCreationValidator;
     @Autowired private List<PointApiValidator<T>> pointApiValidators;
-    @Autowired private CopyPointApiValidator copyPointValidator;
+    @Autowired private CopyPointApiValidator copyPointApiValidator;
     @Autowired private YukonUserContextResolver contextResolver;
     @Autowired private YukonPointHelper pointHelper;
 
@@ -92,7 +92,6 @@ public class PointApiController <T extends PointBaseModel<?>> {
         Direction direction = sorting.getDirection();
         return new ResponseEntity<>(pointEditorService.getDevicePointDetail(paoId, filter, direction, sortBy, paging), HttpStatus.OK);
     }
-    
    
     @InitBinder("pointBaseModel")
     public void setupBinder(WebDataBinder binder) {
@@ -125,7 +124,7 @@ public class PointApiController <T extends PointBaseModel<?>> {
     
     @InitBinder("copyPoint")
     public void setupBinderCopy(WebDataBinder binder) {
-        binder.addValidators(copyPointValidator);
+        binder.addValidators(copyPointApiValidator);
     }
    
 
