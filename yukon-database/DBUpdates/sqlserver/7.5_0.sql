@@ -602,6 +602,20 @@ UPDATE DeviceGroup SET Permission = 'NOEDIT_NOMOD'
 INSERT INTO DBUpdates VALUES ('YUK-22443', '7.5.0', GETDATE());
 /* @end YUK-22443 */
 
+/* @start YUK-22371 */
+UPDATE YukonGroupRole SET Value = 'OWNER'
+    WHERE RolePropertyID = -10200 AND Value IN (' ', 'true');
+
+UPDATE YukonGroupRole SET Value = 'VIEW'
+    WHERE RolePropertyID = -10200 AND Value = 'false';
+
+UPDATE YukonRoleProperty
+    SET KeyName = 'Manage Trends', Description = 'Controls access to view, create, edit, or delete Trends.', DefaultValue = 'VIEW'
+    WHERE RolePropertyID = -10200;
+GO
+INSERT INTO DBUpdates VALUES ('YUK-22371', '7.5.0', GETDATE());
+/* @end YUK-22371 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
