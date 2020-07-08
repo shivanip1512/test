@@ -7,6 +7,7 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 public class CustomAttribute implements Attribute {
+    public static String i18Key = "yukon.common.attribute.customAttribute.";
     private int id;
     private String name;
 
@@ -27,7 +28,7 @@ public class CustomAttribute implements Attribute {
     }
 
     public String getI18Key() {
-        return "yukon.common.attribute.customAttribute." + id;
+        return i18Key + id;
     }
 
     @Override
@@ -37,7 +38,7 @@ public class CustomAttribute implements Attribute {
 
     @Override
     public MessageSourceResolvable getMessage() {
-        return YukonMessageSourceResolvable.createDefaultWithoutCode(name);
+        return YukonMessageSourceResolvable.createDefault(getI18Key(), name);
     }
 
     @Override

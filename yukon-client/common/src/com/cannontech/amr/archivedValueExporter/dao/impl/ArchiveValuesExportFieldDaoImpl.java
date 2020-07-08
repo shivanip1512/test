@@ -18,7 +18,6 @@ import com.cannontech.amr.archivedValueExporter.model.FieldType;
 import com.cannontech.amr.archivedValueExporter.model.MissingAttribute;
 import com.cannontech.amr.archivedValueExporter.model.PadSide;
 import com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlUtils;
@@ -138,7 +137,7 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
                     final ExportAttribute attribute = new ExportAttribute();
                     attribute.setFormatId(rs.getInt("FormatID"));
                     attribute.setAttributeId(rs.getInt("AttributeID"));
-                    attribute.setAttribute(rs.getEnum("AttributeName", BuiltInAttribute.class));
+                    attribute.setAttribute(rs.getString("AttributeName"));
                     attribute.setDataSelection(rs.getEnum("DataSelection", DataSelection.class));
                     attribute.setDaysPrevious(rs.getInt("DaysPrevious"));
                     field.setAttribute(attribute);

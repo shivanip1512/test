@@ -456,7 +456,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         case ATTRIBUTE:
             switch (exportField.getAttributeField()) {
             case UNIT_OF_MEASURE:
-                return getUOMValue(pao, exportField.getField().getAttribute().getAttribute(), userContext, unitMeasureLookupTable);
+                return getUOMValue(pao, BuiltInAttribute.valueOf(exportField.getField().getAttribute().getAttribute()), userContext, unitMeasureLookupTable);
             case VALUE:
                 return getPointValue(exportField, pointValueQualityHolder);
             case TIMESTAMP:
@@ -549,7 +549,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
 
         Set<PointQuality> excludeQualities = format.isExcludeAbnormal() ? excludedQualities : null;
         ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeDataValues =
-                rawPointHistoryDao.getLimitedAttributeData(paos, attribute.getAttribute(), dateRange, null, 1, false, order, orderBy, excludeQualities);
+                rawPointHistoryDao.getLimitedAttributeData(paos, BuiltInAttribute.valueOf(attribute.getAttribute()), dateRange, null, 1, false, order, orderBy, excludeQualities);
         return attributeDataValues;
     }
 

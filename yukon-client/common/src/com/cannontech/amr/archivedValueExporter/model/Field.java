@@ -1,14 +1,13 @@
 package com.cannontech.amr.archivedValueExporter.model;
 
-import org.springframework.context.MessageSourceResolvable;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
-import com.cannontech.common.i18n.Displayable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-public class Field implements Displayable {
+public class Field {
     
     private FieldType type = FieldType.DEVICE_NAME;
     private ExportAttribute attribute;
+    private String description;
     
     public Field() {}
     
@@ -33,10 +32,6 @@ public class Field implements Displayable {
         this.attribute = attribute;
     }
     
-    public String getDisplayName() {
-        return type == FieldType.ATTRIBUTE? attribute.getAttribute().getKey(): type.getKey();
-    }
-    
     public boolean isAttributeType() {
         return type == FieldType.ATTRIBUTE;
     }
@@ -49,22 +44,24 @@ public class Field implements Displayable {
         return type == FieldType.DEVICE_TYPE;
     }
     
-    public boolean isRuntimeType() {
-        return type == FieldType.RUNTIME;
+    public String getDescription() {
+        return description;
     }
 
-    @JsonIgnore
-    @Override
-    public MessageSourceResolvable getMessage() {
-        return type == FieldType.ATTRIBUTE? attribute.getAttribute().getMessage() : type.getMessage();
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isRuntimeType() {
+        return type == FieldType.RUNTIME;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result
-                + ((attribute == null) ? 0 : attribute.hashCode());
+        result = prime * result + ((attribute == null) ? 0 : attribute.hashCode());
+        result = prime * result + ((description == null) ? 0 : description.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         return result;
     }
@@ -83,6 +80,11 @@ public class Field implements Displayable {
                 return false;
         } else if (!attribute.equals(other.attribute))
             return false;
+        if (description == null) {
+            if (other.description != null)
+                return false;
+        } else if (!description.equals(other.description))
+            return false;
         if (type != other.type)
             return false;
         return true;
@@ -90,7 +92,7 @@ public class Field implements Displayable {
 
     @Override
     public String toString() {
-        return String.format("Field [type=%s, attribute=%s]", type, attribute);
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                + System.getProperty("line.separator");
     }
-    
 }

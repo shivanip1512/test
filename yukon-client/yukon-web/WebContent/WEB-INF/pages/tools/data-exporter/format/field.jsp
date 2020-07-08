@@ -20,10 +20,10 @@
                     <form:select id="field-select" path="field">
                         <c:forEach items="${fields}" var="field">
                             <form:option value="${field}">
-                                <c:if test="${!field.attributeType}"><cti:msg2 key="${field}"/></c:if>
+                                <c:if test="${!field.attributeType}"> ${field.description}</c:if>
                                 <c:if test="${field.attributeType}">
                                     <cti:list var="arguments">
-                                        <cti:item><cti:msg2 key="${field}"/></cti:item>
+                                        <cti:item>${field.description}</cti:item>
                                         <cti:item><cti:msg2 key="${field.attribute.dataSelection}"/></cti:item>
                                         <cti:item value="${field.attribute.daysPrevious}"/>
                                     </cti:list>

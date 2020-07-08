@@ -113,7 +113,7 @@ public class DataExporterScheduleController {
             ScheduledArchivedDataFileExportTask task = (ScheduledArchivedDataFileExportTask) jobManager.instantiateTask(job);
             
             deviceCollection = deviceCollectionService.loadCollection(task.getDeviceCollectionId());
-            format = archiveValuesExportFormatDao.getByFormatId(task.getFormatId());
+            format = archiveValuesExportFormatDao.getByFormatId(task.getFormatId(), userContext);
             attributes = task.getAttributes();
             dataRange = task.getDataRange();
             cronTagState = cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
@@ -152,7 +152,7 @@ public class DataExporterScheduleController {
                 
                 return "redirect:view";
             }
-            format = archiveValuesExportFormatDao.getByFormatId(archivedValuesExporter.getFormatId());
+            format = archiveValuesExportFormatDao.getByFormatId(archivedValuesExporter.getFormatId(), userContext);
             if(archivedValuesExporter.getArchivedValuesExportFormatType() == ArchivedValuesExportFormatType.DYNAMIC_ATTRIBUTE) {
                 attributes = archivedValuesExporter.getAttributes();
             }
@@ -209,7 +209,7 @@ public class DataExporterScheduleController {
 
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setError(messages);
-            model.addAttribute("exportFormat", archiveValuesExportFormatDao.getByFormatId(formatId));
+            model.addAttribute("exportFormat", archiveValuesExportFormatDao.getByFormatId(formatId, userContext));
             model.addAttribute("attributes", attributeSet);
             model.addAttribute("dataRange", dataRange);
             model.addAttribute("deviceCollection", deviceCollection);

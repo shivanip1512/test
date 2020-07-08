@@ -102,7 +102,7 @@ public class DataExporterHomeController {
     throws ServletRequestBindingException, DeviceCollectionCreationException, JsonProcessingException {
         
         List<ExportFormat> allFormats = archiveValuesExportFormatDao.getAllFormats();
-        ExportFormat format = getExportFormat(archivedValuesExporter.getFormatId(), allFormats);
+        ExportFormat format = getExportFormat(archivedValuesExporter.getFormatId(), allFormats, userContext);
         Preview preview = exportReportGeneratorService.generatePreview(format, userContext);
 
         archivedValuesExporter.setFormatId(format.getFormatId());
@@ -236,7 +236,7 @@ public class DataExporterHomeController {
 
         List<SimpleDevice> deviceList = archivedValuesExporter.getDeviceCollection().getDeviceList();
         DataRange dataRange = archivedValuesExporter.getRunDataRange();
-        ExportFormat format = archiveValuesExportFormatDao.getByFormatId(archivedValuesExporter.getFormatId());
+        ExportFormat format = archiveValuesExportFormatDao.getByFormatId(archivedValuesExporter.getFormatId(), userContext);
         
         String timestamp = dateFormattingService.format(new Instant(), DateFormatEnum.FILE_TIMESTAMP, userContext);
 
@@ -254,13 +254,13 @@ public class DataExporterHomeController {
         return null;
     }
     
-    private ExportFormat getExportFormat(int selectedFormatId, List<ExportFormat> allFormats) {
+    private ExportFormat getExportFormat(int selectedFormatId, List<ExportFormat> allFormats, YukonUserContext userContext) {
         if (selectedFormatId != 0) {
-            return archiveValuesExportFormatDao.getByFormatId(selectedFormatId);
+            return archiveValuesExportFormatDao.getByFormatId(selectedFormatId, userContext);
         } else {
             if (!allFormats.isEmpty()) {
                 int formatId = allFormats.get(0).getFormatId();
-                return archiveValuesExportFormatDao.getByFormatId(formatId);
+                return archiveValuesExportFormatDao.getByFormatId(formatId, userContext);
             } else {
                 return new ExportFormat();
             }

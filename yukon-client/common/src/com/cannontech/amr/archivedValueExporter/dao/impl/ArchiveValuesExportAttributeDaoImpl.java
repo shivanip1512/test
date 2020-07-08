@@ -9,7 +9,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportAttributeDao;
 import com.cannontech.amr.archivedValueExporter.model.DataSelection;
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
@@ -33,7 +32,7 @@ public class ArchiveValuesExportAttributeDaoImpl implements ArchiveValuesExportA
         SqlParameterSink sink = sql.insertInto(TABLE_NAME);
         sink.addValue("AttributeID", attribute.getAttributeId());
         sink.addValue("FormatID", attribute.getFormatId());
-        sink.addValue("AttributeName", attribute.getAttribute().getKey());
+        sink.addValue("AttributeName", attribute.getAttribute());
         sink.addValue("DataSelection", attribute.getDataSelection().name());
         sink.addValue("DaysPrevious",  attribute.getDaysPrevious());
         yukonJdbcTemplate.update(sql);
@@ -71,7 +70,7 @@ public class ArchiveValuesExportAttributeDaoImpl implements ArchiveValuesExportA
                 final ExportAttribute attribute = new ExportAttribute();
                 attribute.setFormatId(rs.getInt("FormatID"));
                 attribute.setAttributeId(rs.getInt("AttributeID"));
-                attribute.setAttribute(rs.getEnum("AttributeName", BuiltInAttribute.class));
+                attribute.setAttribute(rs.getString("AttributeName"));
                 attribute.setDataSelection(rs.getEnum("DataSelection", DataSelection.class));
                 attribute.setDaysPrevious(rs.getInt("DaysPrevious"));
                 return attribute;

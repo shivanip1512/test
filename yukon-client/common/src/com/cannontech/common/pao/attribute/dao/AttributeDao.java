@@ -43,4 +43,9 @@ public interface AttributeDao {
      * Returns attribute assignment
      */
     AttributeAssignment getAttributeAssignmentById(int attributeAssignmentId);
+
+    /**
+     * Returns custom attribute
+     */
+    CustomAttribute getCustomAttribute(int attributeId);
 }

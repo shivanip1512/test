@@ -99,7 +99,7 @@ public class AttributeServiceImpl implements AttributeService {
     public Map<AttributeGroup, List<Attribute>> getAllGroupedAttributes(YukonUserContext context){
         Map<AttributeGroup, Set<Attribute>> groupedAttributes = new HashMap<>();
         BuiltInAttribute.getAllGroupedAttributes().forEach((k,v) -> groupedAttributes.put(k, Sets.newHashSet(v)));
-        Set<Attribute> customAttributes =  Sets.newHashSet(attributeDao.getCustomAttributes());
+        Set<Attribute> customAttributes = Sets.newHashSet(attributeDao.getCustomAttributes());
         if(!customAttributes.isEmpty()) {
             groupedAttributes.put(AttributeGroup.CUSTOM, customAttributes);
         }

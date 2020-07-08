@@ -135,4 +135,12 @@ public class AttributeDaoImpl implements AttributeDao {
         sql.append("ORDER BY AttributeName");
         return jdbcTemplate.query(sql, customAttributeMapper);
     }
+    @Override
+    public CustomAttribute getCustomAttribute(int attributeId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT AttributeId, AttributeName");
+        sql.append("FROM CustomAttribute");
+        sql.append("WHERE AttributeId").eq(attributeId);
+        return jdbcTemplate.queryForObject(sql, customAttributeMapper);
+    }
 }

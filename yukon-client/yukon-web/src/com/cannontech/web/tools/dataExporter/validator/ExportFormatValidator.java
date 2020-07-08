@@ -7,6 +7,7 @@ import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFormatDao
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.dataExporter.DataExporterFormatController;
 
 public class ExportFormatValidator extends SimpleValidator<ExportFormat> {
@@ -26,7 +27,7 @@ public class ExportFormatValidator extends SimpleValidator<ExportFormat> {
         YukonValidationUtils.checkExceedsMaxLength(errors, "header", target.getHeader(), 255);
         YukonValidationUtils.checkExceedsMaxLength(errors, "footer", target.getFooter(), 255);
 
-        ExportFormat format = archiveValuesExportFormatDao.findByFormatName(target.getFormatName());
+        ExportFormat format = archiveValuesExportFormatDao.findByFormatName(target.getFormatName(), YukonUserContext.system);
         if (format != null && format.getFormatId() != target.getFormatId()) {
             errors.rejectValue("formatName", DataExporterFormatController.BASE_KEY + "formatError.duplicateName");
         }
