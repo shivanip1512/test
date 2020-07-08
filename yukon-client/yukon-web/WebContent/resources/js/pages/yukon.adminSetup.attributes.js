@@ -37,6 +37,8 @@ yukon.adminSetup.attributes = (function () {
             if (_initialized) return;
             
             $('.js-attributes-table').scrollTableBody();
+            $('.js-selected-attributes').chosen({'width': '350px'});
+            $('.js-selected-device-types').chosen({'width': '350px'});
             
             $(document).on('yukon:attribute:delete', function (ev) {
                 var attributeId = $(ev.target).data('attributeId'),
@@ -53,6 +55,36 @@ yukon.adminSetup.attributes = (function () {
                 var attributeId = $(this).data('attributeId');
                 _toggleEditViewAttribute(attributeId, false);
             });
+            
+            $(document).on('click', '.js-filter-assignments', function() {
+                var tableContainer = $('#assignments-container'),
+                    form = $('#filter-form');
+                form.ajaxSubmit({
+                    success: function(data) {
+                        tableContainer.html(data);
+                        tableContainer.data('url', yukon.url('/admin/config/attributeAssignments/filter?' + form.serialize()));
+                    }
+                });   
+            });
+            
+            $(document).on("yukon:assignment:save", function (event) {
+                var popup = $(event.target);
+                $('#assignment-form').ajaxSubmit({
+                    success: function () {
+                        popup.dialog('close');
+                        window.location.href = window.location.href;
+                    },
+                    error: function (xhr) {
+                        popup.html(xhr.responseText);
+                    }
+                });
+            });
+            
+            $(document).on('yukon:assignment:delete', function (ev) {
+                var assignmentId = $(ev.target).data('assignmentId'),
+                    form = $('#delete-assignment-form-' + assignmentId);
+                form.submit();
+            });   
             
             _initialized = true;
         }

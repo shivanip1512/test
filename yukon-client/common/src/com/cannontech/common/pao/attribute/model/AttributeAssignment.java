@@ -8,26 +8,26 @@ import com.cannontech.database.data.point.PointType;
 
 public class AttributeAssignment {
    
-    private int id;
-    private int attributeId;
+    private Integer id;
+    private CustomAttribute attribute;
     private PaoType deviceType;
     private int pointOffset;
     private PointType pointType;
      
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public int getAttributeId() {
-        return attributeId;
+    public CustomAttribute getAttribute() {
+        return attribute;
     }
 
-    public void setAttributeId(int attributeId) {
-        this.attributeId = attributeId;
+    public void setAttribute(CustomAttribute attribute) {
+        this.attribute = attribute;
     }
 
     public PaoType getDeviceType() {

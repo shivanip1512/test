@@ -32,7 +32,10 @@ public class AttributeDaoImpl implements AttributeDao {
     private YukonRowMapper<AttributeAssignment> attributeAssignmentMapper = rs -> {
         AttributeAssignment row = new AttributeAssignment();
         row.setId(rs.getInt("AttributeAssignmentId"));
-        row.setAttributeId(rs.getInt("AttributeId"));
+        CustomAttribute att = new CustomAttribute();
+        att.setId(rs.getInt("AttributeId"));
+        att.setName(rs.getStringSafe("AttributeName"));
+        row.setAttribute(att);
         row.setDeviceType(rs.getEnum("DeviceType", PaoType.class));
         row.setPointType(rs.getEnum("PointType", PointType.class));
         row.setPointOffset(rs.getInt("PointOffset"));
@@ -67,7 +70,7 @@ public class AttributeDaoImpl implements AttributeDao {
     }
 
     private void addAssignmentParameters(SqlParameterSink params, AttributeAssignment assignment) {
-        params.addValue("AttributeId", assignment.getAttributeId());
+        params.addValue("AttributeId", assignment.getAttribute().getId());
         params.addValue("DeviceType", assignment.getDeviceType());
         params.addValue("PointType", assignment.getPointType());
         params.addValue("PointOffset", assignment.getPointOffset());
@@ -86,8 +89,9 @@ public class AttributeDaoImpl implements AttributeDao {
     @Override
     public AttributeAssignment getAttributeAssignmentById(int attributeAssignmentId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT AttributeAssignmentId, AttributeId, DeviceType, PointType, PointOffset");
-        sql.append("FROM AttributeAssignment");
+        sql.append("SELECT AttributeAssignmentId, AttributeId, AttributeName, DeviceType, PointType, PointOffset");
+        sql.append("FROM AttributeAssignment aa");
+        sql.append("LEFT JOIN CustomAttribute ca on ca.AttributeId = aa.AttributeId");
         sql.append("WHERE AttributeAssignmentId").eq(attributeAssignmentId);
         return jdbcTemplate.queryForObject(sql, attributeAssignmentMapper);
     }

@@ -45,7 +45,7 @@
                 <table class="compact-results-table row-highlighting has-actions ${tableClass}">
                     <thead>
                         <tr>
-                            <th><i:inline key=".attributeName"></i:inline>
+                            <th><i:inline key=".attributeName"></i:inline></th>
                             <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
                         </tr>
                     </thead>
@@ -66,8 +66,8 @@
                                             <input type="hidden" name="id" value="${attr.id}"/>
                                             <input type="hidden" name="savedName" value="${attr.name}"/>
                                             <spring:bind path="name">
-                                                <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                                                <form:input path="name" maxlength="60" size="60" cssClass="${clazz}"/>
+                                                <c:set var="errorClass" value="${status.error ? 'error' : ''}"/>
+                                                <form:input path="name" maxlength="60" size="60" cssClass="${errorClass}"/>
                                             </spring:bind>
                                             <div class="button-group">
                                                 <cti:button renderMode="buttonImage" icon="icon-disk" type="submit"
@@ -106,7 +106,49 @@
      
         </tags:sectionContainer2>
         
+        <cti:button nameKey="add" classes="fr" icon="icon-add" data-popup=".js-assignment-popup"/>
+        <cti:url var="addAssignmentUrl" value="/admin/config/attributeAssignments/popup"/>
+        <cti:msg2 var="addAssignmentTitle" key=".addAssignmentTitle"/>
+        <cti:msg2 var="saveText" key=".save"/>
+        <div class="dn js-assignment-popup"
+                 data-popup
+                 data-dialog
+                 data-title="${addAssignmentTitle}"
+                 data-url="${addAssignmentUrl}"
+                 data-ok-text="${saveText}"
+                 data-event="yukon:assignment:save">
+        </div>
         <tags:sectionContainer2 nameKey="attributeAssignments">
+        
+            <div class="filter-section stacked-md">
+                <cti:url var="filterUrl" value="/admin/config/attributeAssignments/filter"/>
+                <form:form id="filter-form" action="${filterUrl}" method="get">
+                    <span class="fl">
+                        <span class="vat"><i:inline key="yukon.common.filterBy"/></span>
+                        
+                        <cti:msg2 var="allAttributes" key=".allAttributes"/>&nbsp;
+                        <select name="selectedAttributes" class="js-selected-attributes" multiple="multiple" data-placeholder="${allAttributes}">
+                            <c:forEach var="attribute" items="${attributes}">
+                                <option value="${attribute.id}">${fn:escapeXml(attribute.name)}</option>
+                            </c:forEach>
+                        </select>
+                        
+                        <cti:msg2 var="allDeviceTypes" key=".allDeviceTypes"/>&nbsp;
+                        <select name="selectedDeviceTypes" class="js-selected-device-types" multiple="multiple" data-placeholder="${allDeviceTypes}">
+                            <c:forEach var="type" items="${deviceTypes}">
+                                <option value="${type}"><i:inline key="${type.formatKey}"/></option>
+                            </c:forEach>
+                        </select>
+                    </span>
+                                        
+                    <cti:button nameKey="filter" classes="js-filter-assignments action primary fn"/>
+                </form:form>
+            </div>
+            <hr/>
+
+            <div id="assignments-container" data-url="${filterUrl}">
+                <%@ include file="attributeAssignmentsTable.jsp" %>
+            </div>
         
         </tags:sectionContainer2>
         
