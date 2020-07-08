@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -21,7 +20,6 @@ import com.cannontech.common.device.dao.DevicePointDao;
 import com.cannontech.common.device.dao.DevicePointDao.SortBy;
 import com.cannontech.common.device.model.DevicePointDetail;
 import com.cannontech.common.device.model.DevicePointsFilter;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.PointEventLogService;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceOption;
@@ -30,7 +28,6 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
@@ -45,7 +42,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.TransactionType;
-import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -558,9 +554,9 @@ public class PointEditorServiceImpl implements PointEditorService {
     public PointBaseModel<? extends PointBase> copy(int pointId, CopyPoint copyPoint, YukonUserContext userContext) {
         PointBase pointBase = pointDao.get(pointId);
 
-        PointBase newPoint = (PointBase) dBPersistentDao.retrieveDBPersistent(pointBase);
-        newPoint.setPointID(null);
-        copyPoint.buildDBPersistent(newPoint);
+        PointBase oldPoint = (PointBase) dBPersistentDao.retrieveDBPersistent(pointBase);
+        oldPoint.setPointID(null);
+        copyPoint.buildDBPersistent(oldPoint);
         dBPersistentDao.performDBChange(pointBase, TransactionType.INSERT);
 
         PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
