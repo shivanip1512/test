@@ -37,7 +37,7 @@ public class CopyPointApiValidator extends SimpleValidator<CopyPoint> {
             throw new NotFoundException("Invalid pointId value.");
         }
 
-        // Check that pointId which is used for copying any Point exist.If PointId doesn't exist then validation
+        // Check that pointId which is used for copying any Point exist.
         PaoPointIdentifier paoPointIdentifier = pointDao.findPaoPointIdentifier(Integer.valueOf(idStr));
         if (paoPointIdentifier == null) {
             throw new NotFoundException("A point with id " + idStr + " cannot be found.");
