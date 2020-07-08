@@ -28,7 +28,7 @@ public class CopyPointApiValidator extends SimpleValidator<CopyPoint> {
 
     protected void doValidation(CopyPoint copyPoint, Errors errors) {
 
-        // Check that valid pointId is passed for copy. If PointId doesn't exist it will give error
+        // Check that pointId which is used for copying any Point exist.
         String idStr = ServletUtils.getPathVariable("id");
         PointBase pointBase = pointDao.get(Integer.valueOf(idStr));
 
