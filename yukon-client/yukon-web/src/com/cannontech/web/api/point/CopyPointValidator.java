@@ -8,7 +8,6 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.PointType;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.tools.points.model.CopyPoint;
 import com.cannontech.web.tools.points.model.LitePointModel;
@@ -41,7 +40,7 @@ public class CopyPointValidator extends SimpleValidator<CopyPoint> {
         YukonValidationUtils.checkIfFieldRequired("pointName", errors, copyPoint.getPointName(), "pointName");
         
         if (copyPoint.getPointName() != null) {
-            YukonValidationUtils.checkIsBlank(errors, "pointName", copyPoint.getPointName(), "Name", false);
+            YukonValidationUtils.checkIsBlank(errors, "pointName", copyPoint.getPointName(), "Point Name", false);
         }
        
         // Check if pointOffset is NULL

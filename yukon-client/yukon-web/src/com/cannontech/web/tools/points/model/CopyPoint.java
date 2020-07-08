@@ -2,17 +2,13 @@ package com.cannontech.web.tools.points.model;
 
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.point.Point;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
-@JsonIgnoreProperties(value = { "pointId" }, allowGetters = true, ignoreUnknown = true)
-
 public class CopyPoint {
     private String pointName;
     private Integer pointOffset;
-    //private Integer pointId;
     private Integer paoId;
 
     public Integer getPaoId() {
@@ -23,14 +19,6 @@ public class CopyPoint {
         this.paoId = paoId;
     }
 
-    /*public Integer getPointId() {
-        return pointId;
-    }
-
-    public void setPointId(Integer pointId) {
-        this.pointId = pointId;
-    }
-    */
     public Integer getPointOffset() {
         return pointOffset;
     }
@@ -50,7 +38,6 @@ public class CopyPoint {
     public void buildModel(PointBase point) {
         Point pt = point.getPoint();
         setPointName(pt.getPointName());
-        //setPointId(pt.getPointID());
         setPaoId(pt.getPaoID());
         setPointOffset(pt.getPointOffset());
     }
@@ -60,10 +47,7 @@ public class CopyPoint {
         if (getPointName() != null) {
             pt.setPointName(getPointName());
         }
-        /*
-        if (getPointId() != null) {
-            pt.setPointID(getPointId());
-        }*/
+       
         if (getPaoId() != null) {
             pt.setPaoID(getPaoId());
         }
