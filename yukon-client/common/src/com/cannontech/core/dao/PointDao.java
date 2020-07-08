@@ -105,6 +105,8 @@ public interface PointDao {
     LitePoint getLitePoint(int pointId);
 
     PaoPointIdentifier getPaoPointIdentifier(int pointId);
+    
+    PaoPointIdentifier findPaoPointIdentifier(int pointId);
 
     List<LitePoint> getLitePoints(Iterable<Integer> pointIds);
 
