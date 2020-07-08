@@ -2,6 +2,8 @@ package com.eaton.elements.modals;
 
 import java.util.Optional;
 
+import org.openqa.selenium.By;
+
 import com.eaton.elements.DropDownElement;
 //import com.eaton.elements.Label;
 import com.eaton.elements.TextEditElement;
@@ -38,5 +40,9 @@ public class EditCommChannelModal extends BaseModal {
 
     public TrueFalseCheckboxElement getStatus() {
         return new TrueFalseCheckboxElement(this.driverExt, "disabled", getModal());
+    }
+    
+    public String getUserMessage() {
+    	return this.driverExt.findElements(By.cssSelector(".name-value-table.natural-width>tbody > tr:nth-child(1) > td:nth-child(2) > span"), Optional.empty()).get(2).getText();
     }
 }
