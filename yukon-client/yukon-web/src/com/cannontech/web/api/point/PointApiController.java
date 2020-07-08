@@ -1,7 +1,6 @@
 
 package com.cannontech.web.api.point;
 
-import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,19 +25,16 @@ import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.device.dao.DevicePointDao;
 import com.cannontech.common.device.dao.DevicePointDao.SortBy;
 import com.cannontech.common.device.model.DevicePointsFilter;
-import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.pao.service.YukonPointHelper;
-import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.tools.points.model.CopyPoint;
 import com.cannontech.web.tools.points.model.PointBaseModel;
 import com.cannontech.web.tools.points.service.PointEditorService;
@@ -51,6 +47,7 @@ public class PointApiController <T extends PointBaseModel<?>> {
     @Autowired private PointEditorService pointEditorService;
     @Autowired private PointApiCreationValidator<T> pointApiCreationValidator;
     @Autowired private List<PointApiValidator<T>> pointApiValidators;
+    @Autowired private CopyPointValidator copyPointValidator;
     @Autowired private YukonUserContextResolver contextResolver;
     @Autowired private YukonPointHelper pointHelper;
 
@@ -80,7 +77,7 @@ public class PointApiController <T extends PointBaseModel<?>> {
 
     @PostMapping("/points/copy/{id}")
     public ResponseEntity<Object> copy(@Valid @RequestBody CopyPoint copyPoint, @PathVariable("id") int id, HttpServletRequest request) {
-        pointHelper.verifyRoles(getYukonUserContext(request).getYukonUser(), HierarchyPermissionLevel.OWNER);
+        pointHelper.verifyRoles(getYukonUserContext(request).getYukonUser(), HierarchyPermissionLevel.CREATE);
         return new ResponseEntity<>(pointEditorService.copy(id, copyPoint, getYukonUserContext(request)), HttpStatus.OK);
       
     }
@@ -126,6 +123,10 @@ public class PointApiController <T extends PointBaseModel<?>> {
         this.pointApiValidators = validators;
     }
     
+    @InitBinder("copyPoint")
+    public void setupBinderCopy(WebDataBinder binder) {
+        binder.addValidators(copyPointValidator);
+    }
    
 
 }

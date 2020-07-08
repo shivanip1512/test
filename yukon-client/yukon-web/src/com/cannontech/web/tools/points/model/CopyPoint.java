@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class CopyPoint {
     private String pointName;
     private Integer pointOffset;
-    private Integer pointId;
+    //private Integer pointId;
     private Integer paoId;
 
     public Integer getPaoId() {
@@ -23,14 +23,14 @@ public class CopyPoint {
         this.paoId = paoId;
     }
 
-    public Integer getPointId() {
+    /*public Integer getPointId() {
         return pointId;
     }
 
     public void setPointId(Integer pointId) {
         this.pointId = pointId;
     }
-
+    */
     public Integer getPointOffset() {
         return pointOffset;
     }
@@ -48,27 +48,26 @@ public class CopyPoint {
     }
 
     public void buildModel(PointBase point) {
-       // Point pt = ((PointBase) point).getPoint();
-        Point pt =  point.getPoint();
+        Point pt = point.getPoint();
         setPointName(pt.getPointName());
-        setPointId(pt.getPointID());
+        //setPointId(pt.getPointID());
         setPaoId(pt.getPaoID());
         setPointOffset(pt.getPointOffset());
     }
 
     public void buildDBPersistent(PointBase point) {
-        //Point pt = ((PointBase) point).getPoint();
-        Point pt =  point.getPoint();
+        Point pt = point.getPoint();
         if (getPointName() != null) {
             pt.setPointName(getPointName());
         }
+        /*
         if (getPointId() != null) {
             pt.setPointID(getPointId());
-        }
+        }*/
         if (getPaoId() != null) {
             pt.setPaoID(getPaoId());
         }
-        
+
         if (getPointOffset() != null) {
             pt.setPointOffset(getPointOffset());
         }
