@@ -626,8 +626,8 @@ YukonError_t Ccu721Device::sendCommResult(INMESS &InMessage)
                 InMessage.Port   = _current_om->Port;
                 InMessage.Remote = _current_om->Remote;
 
-                InMessage.Time   = CtiTime::now().seconds();
-
+                InMessage.ErrorCode = translateKlondikeError(_klondike.errorCode());
+                InMessage.Time      = CtiTime::now().seconds();
                 InMessage.InLength  = dtran_result.size();
 
                 copy(dtran_result.begin(), dtran_result.end(), InMessage.Buffer.InMessage);
