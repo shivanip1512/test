@@ -15,10 +15,10 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
-import com.cannontech.web.tools.points.model.CopyPoint;
 import com.cannontech.web.tools.points.model.LitePointModel;
 import com.cannontech.web.tools.points.model.PaoPointModel;
 import com.cannontech.web.tools.points.model.PointBaseModel;
+import com.cannontech.web.tools.points.model.PointCopy;
 import com.cannontech.web.tools.points.model.PointModel;
 
 public interface PointEditorService {
@@ -168,8 +168,7 @@ public interface PointEditorService {
     /**
      * Copy Point.
      */
-    PointBaseModel<? extends PointBase> copy(int portId, CopyPoint copyPoint,YukonUserContext userContext);
-
+    PointBaseModel<? extends PointBase> copy(int portId, PointCopy pointCopy);
     
     /**
      * Retrieve Points info for passed paoId.

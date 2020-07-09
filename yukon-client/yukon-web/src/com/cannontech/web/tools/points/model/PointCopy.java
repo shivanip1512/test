@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
-public class CopyPoint implements DBPersistentConverter<PointBase> {
+public class PointCopy implements DBPersistentConverter<PointBase> {
     private String pointName;
     private Integer pointOffset;
     private Integer paoId;
@@ -35,7 +35,8 @@ public class CopyPoint implements DBPersistentConverter<PointBase> {
     public void setPointName(String pointName) {
         this.pointName = pointName;
     }
-
+    
+    @Override
     public void buildDBPersistent(PointBase point) {
         Point pt = point.getPoint();
         if (getPointName() != null) {

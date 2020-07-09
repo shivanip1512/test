@@ -9,25 +9,24 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.point.PointBase;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.web.tools.points.model.CopyPoint;
 import com.cannontech.web.tools.points.model.LitePointModel;
+import com.cannontech.web.tools.points.model.PointCopy;
 import com.cannontech.web.tools.points.validators.PointValidationUtil;
 import com.cannontech.yukon.IDatabaseCache;
 
-public class CopyPointApiValidator extends SimpleValidator<CopyPoint> {
+public class PointCopyApiValidator extends SimpleValidator<PointCopy> {
 
     @Autowired private PointValidationUtil pointValidationUtil;
     @Autowired private IDatabaseCache serverDatabaseCache;
     protected static final String baseKey = "yukon.web.api.error";
     @Autowired private PointDao pointDao;
 
-    public CopyPointApiValidator() {
-        super(CopyPoint.class);
+    public PointCopyApiValidator() {
+        super(PointCopy.class);
     }
 
-    protected void doValidation(CopyPoint copyPoint, Errors errors) {
+    protected void doValidation(PointCopy copyPoint, Errors errors) {
 
         String idStr = ServletUtils.getPathVariable("id");
         // Handled NumberFormatException

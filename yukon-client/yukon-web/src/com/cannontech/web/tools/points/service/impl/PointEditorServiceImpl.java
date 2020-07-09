@@ -59,10 +59,10 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
-import com.cannontech.web.tools.points.model.CopyPoint;
 import com.cannontech.web.tools.points.model.LitePointModel;
 import com.cannontech.web.tools.points.model.PaoPointModel;
 import com.cannontech.web.tools.points.model.PointBaseModel;
+import com.cannontech.web.tools.points.model.PointCopy;
 import com.cannontech.web.tools.points.model.PointInfoModel;
 import com.cannontech.web.tools.points.model.PointModel;
 import com.cannontech.web.tools.points.service.PointEditorService;
@@ -551,13 +551,13 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
     
     @Override
-    public PointBaseModel<? extends PointBase> copy(int pointId, CopyPoint copyPoint, YukonUserContext userContext) {
+    public PointBaseModel<? extends PointBase> copy(int pointId, PointCopy pointCopy) {
         PointBase pointBase = pointDao.get(pointId);
         pointBase.setPointID(null);
-        copyPoint.buildDBPersistent(pointBase);
+        pointCopy.buildDBPersistent(pointBase);
         dBPersistentDao.performDBChange(pointBase, TransactionType.INSERT);
-
-        PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
+        
+        PointType ptType = pointBase.getPoint().getPointTypeEnum();
         PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType);
         StaleData staleData = getStaleData(pointId);
         buildPointBaseModel(pointBase, pointBaseModel, staleData);

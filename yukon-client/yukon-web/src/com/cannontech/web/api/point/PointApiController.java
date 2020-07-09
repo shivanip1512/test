@@ -35,8 +35,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.pao.service.YukonPointHelper;
-import com.cannontech.web.tools.points.model.CopyPoint;
 import com.cannontech.web.tools.points.model.PointBaseModel;
+import com.cannontech.web.tools.points.model.PointCopy;
 import com.cannontech.web.tools.points.service.PointEditorService;
 import com.cannontech.web.tools.points.service.PointEditorService.AttachedException;
 import com.cannontech.web.util.YukonUserContextResolver;
@@ -45,9 +45,9 @@ import com.cannontech.web.util.YukonUserContextResolver;
 public class PointApiController <T extends PointBaseModel<?>> {
 
     @Autowired private PointEditorService pointEditorService;
-    @Autowired private PointApiCreationValidator<T> pointApiCreationValidator;
+    @Autowired private PointCreateApiValidator<T> pointCreateApiValidator;
     @Autowired private List<PointApiValidator<T>> pointApiValidators;
-    @Autowired private CopyPointApiValidator copyPointApiValidator;
+    @Autowired private PointCopyApiValidator pointCopyApiValidator;
     @Autowired private YukonUserContextResolver contextResolver;
     @Autowired private YukonPointHelper pointHelper;
 
@@ -76,9 +76,9 @@ public class PointApiController <T extends PointBaseModel<?>> {
     }
 
     @PostMapping("/points/{id}/copy")
-    public ResponseEntity<Object> copy(@Valid @RequestBody CopyPoint copyPoint, @PathVariable("id") int id, HttpServletRequest request) {
+    public ResponseEntity<Object> copy(@Valid @RequestBody PointCopy pointCopy, @PathVariable("id") int id, HttpServletRequest request) {
         pointHelper.verifyRoles(getYukonUserContext(request).getYukonUser(), HierarchyPermissionLevel.CREATE);
-        return new ResponseEntity<>(pointEditorService.copy(id, copyPoint, getYukonUserContext(request)), HttpStatus.OK);
+        return new ResponseEntity<>(pointEditorService.copy(id, pointCopy), HttpStatus.OK);
       
     }
     
@@ -104,7 +104,7 @@ public class PointApiController <T extends PointBaseModel<?>> {
 
         String pointId = ServletUtils.getPathVariable("id");
         if (pointId == null) {
-            binder.addValidators(pointApiCreationValidator);
+            binder.addValidators(pointCreateApiValidator);
         }
     }
 
@@ -122,9 +122,9 @@ public class PointApiController <T extends PointBaseModel<?>> {
         this.pointApiValidators = validators;
     }
     
-    @InitBinder("copyPoint")
+    @InitBinder("pointCopy")
     public void setupBinderCopy(WebDataBinder binder) {
-        binder.addValidators(copyPointApiValidator);
+        binder.addValidators(pointCopyApiValidator);
     }
    
 

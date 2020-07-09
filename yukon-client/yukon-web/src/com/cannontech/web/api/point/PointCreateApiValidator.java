@@ -7,14 +7,14 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.web.tools.points.model.PointBaseModel;
 import com.cannontech.web.tools.points.model.ScalarPointModel;
 
-public class PointApiCreationValidator<T extends PointBaseModel<?>> extends SimpleValidator<T> {
+public class PointCreateApiValidator<T extends PointBaseModel<?>> extends SimpleValidator<T> {
 
     @SuppressWarnings("unchecked")
-    public PointApiCreationValidator() {
+    public PointCreateApiValidator() {
         super((Class<T>) PointBaseModel.class);
     }
 
-    public PointApiCreationValidator(Class<T> objectType) {
+    public PointCreateApiValidator(Class<T> objectType) {
         super(objectType);
     }
 
