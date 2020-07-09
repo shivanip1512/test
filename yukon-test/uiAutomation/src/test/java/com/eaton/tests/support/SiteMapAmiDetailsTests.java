@@ -144,11 +144,11 @@ public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI})
     public void siteMapDetails_pageMeterProgrammingLinkCorrect() {
         final String EXPECTED_ANCHOR = "Meter Programming";
-        final String EXPECTED_LINK = Urls.Ami.METER_PROGRAMMING;
+        //final String EXPECTED_LINK = Urls.Ami.METER_PROGRAMMING;
         final int POSITION = 8;
         
         softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);        
+        //softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);        
         softly.assertAll();
     }
     

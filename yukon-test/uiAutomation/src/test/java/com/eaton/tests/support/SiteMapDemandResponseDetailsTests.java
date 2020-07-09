@@ -52,7 +52,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void siteMapDetails_pageDRSectionItemCountCorrect() {
-        final int EXPECTED_COUNT = 13;
+        final int EXPECTED_COUNT = 14;
 
         assertThat(siteMapPage.getDRSectionSimpleList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);
     }
@@ -135,10 +135,21 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void siteMapDetails_pageEstimatedLoadLinkCorrect() {
+        final String EXPECTED_ANCHOR = "Estimated Load";
+        final String EXPECTED_LINK = Urls.DemandResponse.ESTIMATE_LOAD;
+        final int POSITION = 7;
+        
+        softly.assertThat(siteMapPage.getDRSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getDRSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);        
+        softly.assertAll();
+    }
+    
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void siteMapDetails_pageLoadGroupsLinkCorrect() {
         final String EXPECTED_ANCHOR = "Load Groups";
         final String EXPECTED_LINK = Urls.DemandResponse.LOAD_GROUPS;
-        final int POSITION = 7;
+        final int POSITION = 8;
         
         softly.assertThat(siteMapPage.getDRSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getDRSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);        
@@ -149,7 +160,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     public void siteMapDetails_pageLoadManagementReportsLinkCorrect() {
         final String EXPECTED_ANCHOR = "Load Management Reports";
         final String EXPECTED_LINK = Urls.DemandResponse.REPORTS;
-        final int POSITION = 8;
+        final int POSITION = 9;
         
         softly.assertThat(siteMapPage.getDRSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getDRSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);        
@@ -160,7 +171,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     public void siteMapDetails_pageOddsForControlLinkCorrect() {
         final String EXPECTED_ANCHOR = "Odds for Control";
         final String EXPECTED_LINK = Urls.DemandResponse.ODDS_FOR_CONTROL;
-        final int POSITION = 9;
+        final int POSITION = 10;
         
         softly.assertThat(siteMapPage.getDRSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getDRSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);        
@@ -171,7 +182,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     public void siteMapDetails_pageProgramsLinkCorrect() {
         final String EXPECTED_ANCHOR = "Programs";
         final String EXPECTED_LINK = Urls.DemandResponse.PROGRAMS;
-        final int POSITION = 10;
+        final int POSITION = 11;
         
         softly.assertThat(siteMapPage.getDRSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getDRSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);        
@@ -182,7 +193,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     public void siteMapDetails_pageScenariosLinkCorrect() {
         final String EXPECTED_ANCHOR = "Scenarios";
         final String EXPECTED_LINK = Urls.DemandResponse.SCENARIOS;
-        final int POSITION = 11;
+        final int POSITION = 12;
         
         softly.assertThat(siteMapPage.getDRSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getDRSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);        
@@ -193,7 +204,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     public void siteMapDetails_pageSetupLinkCorrect() {
         final String EXPECTED_ANCHOR = "Setup";
         final String EXPECTED_LINK = Urls.DemandResponse.SETUP;
-        final int POSITION = 12;
+        final int POSITION = 13;
         
         softly.assertThat(siteMapPage.getDRSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getDRSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);        

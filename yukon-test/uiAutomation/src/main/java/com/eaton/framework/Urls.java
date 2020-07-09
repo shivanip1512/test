@@ -200,6 +200,8 @@ public final class Urls {
         public static final String DEVICE_CONFIGURATION_SUMMARY = "/deviceConfiguration/summary/view";
         public static final String DEVICE_GROUP_UPLOAD = "/group/updater/upload";
         public static final String NOTES = "/tools/paoNotes/search";
+        public static final String POWER_SUPPLIER_LOADS = "/multispeak/visualDisplays/loadManagement/home";
+        public static final String PROBABILITY_PEAK_LOAD = "/multispeak/visualDisplays/probabilityForPeak/home";
         public static final String RECENT_RESULTS = "/collectionActions/recentResults";
         public static final String DATA_STREAMING = "/tools/dataStreaming/configurations";
     }
@@ -240,6 +242,7 @@ public final class Urls {
         public static final String ACTIVE_JOBS = "/admin/jobsscheduler/active";
         public static final String ALL_JOBS = "/admin/jobsscheduler/all";
         public static final String JOB_STATUS = "/admin/jobsscheduler/status";
+        public static final String ATTRIBUTES = "/admin/config/attributes";
         public static final String CI_REPORTS = "/analysis/Reports.jsp?groupType=CCURT";
         public static final String DASHBOARD = "dashboards/admin";
         public static final String DATABASE_REPORTS = "/analysis/Reports.jsp?groupType=DATABASE";
@@ -250,6 +253,7 @@ public final class Urls {
     }
 
     public static final class Support {
+        public static final String BATTERY_NODE_ANALYSIS = "/support/batteryNodeAnalysis/view";
         public static final String DATABASE_MIGRATION = "/support/database/migration/home";
         public static final String DATABASE_VALIDATION = "/support/database/validate/home";
         public static final String DEVICE_DEFINITIONS = "/common/deviceDefinition.xml";

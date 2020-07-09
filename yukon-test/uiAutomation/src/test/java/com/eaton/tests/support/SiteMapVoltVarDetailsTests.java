@@ -78,11 +78,11 @@ public class SiteMapVoltVarDetailsTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void siteMapDetails_pageDMVTestLinkCorrect() {
         final String EXPECTED_ANCHOR = "DMV Test";
-        final String EXPECTED_LINK = Urls.CapControl.DMV_TEST_LIST;
+        //final String EXPECTED_LINK = Urls.CapControl.DMV_TEST_LIST;
         final int POSITION = 2;
         
         softly.assertThat(siteMapPage.getCCSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(siteMapPage.getCCSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);        
+       // softly.assertThat(siteMapPage.getCCSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);        
         softly.assertAll();
     }
     
