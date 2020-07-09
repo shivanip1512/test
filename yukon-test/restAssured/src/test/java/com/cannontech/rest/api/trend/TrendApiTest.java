@@ -10,9 +10,11 @@ import org.testng.asserts.SoftAssert;
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.trend.helper.TrendHelper;
 import com.cannontech.rest.api.trend.request.MockColor;
+import com.cannontech.rest.api.trend.request.MockResetPeakModel;
 import com.cannontech.rest.api.trend.request.MockTrendAxis;
 import com.cannontech.rest.api.trend.request.MockTrendModel;
 import com.cannontech.rest.api.trend.request.MockTrendSeries;
+import com.cannontech.rest.api.trend.request.MockTrendType.MockGraphType;
 import com.cannontech.rest.api.utilities.Log;
 
 import io.restassured.response.ExtractableResponse;
@@ -20,10 +22,12 @@ import io.restassured.response.ExtractableResponse;
 public class TrendApiTest {
 
     MockTrendModel trendModel = null;
+    MockResetPeakModel resetPeakModel = null;
 
     @BeforeClass
     public void setUp() {
         trendModel = TrendHelper.buildTrend();
+        resetPeakModel = TrendHelper.buildResetPeak();
     }
 
     @Test
@@ -88,6 +92,33 @@ public class TrendApiTest {
     }
 
     @Test(dependsOnMethods = "trend_01_Update")
+    public void trend_01_resetPeak(ITestContext context) {
+        Log.startTestCase("trend_01_resetPeak");
+        String resetPeakUri = context.getAttribute(TrendHelper.CONTEXT_TREND_ID).toString() + "/resetPeak";
+        ExtractableResponse<?> resetPeakResponse = ApiCallHelper.patch("resetPeak", resetPeakModel, resetPeakUri);
+        assertTrue("Status code should be 422", resetPeakResponse.statusCode() == 422);
+
+        MockTrendSeries series = trendModel.getTrendSeries().get(0);
+        series.setType(MockGraphType.PEAK_TYPE);
+
+        ApiCallHelper.put("updateTrend", trendModel, context.getAttribute(TrendHelper.CONTEXT_TREND_ID).toString());
+
+        resetPeakResponse = ApiCallHelper.patch("resetPeak", resetPeakModel, resetPeakUri);
+        String trendId = resetPeakResponse.path(TrendHelper.CONTEXT_TREND_ID).toString();
+        assertTrue("Status code should be 200", resetPeakResponse.statusCode() == 200);
+        assertTrue("Trend Id should not be Null", trendId != null);
+
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("getTrend", trendId);
+        MockTrendModel modelResponse = getResponse.as(MockTrendModel.class);
+        MockTrendSeries seriesResponse = modelResponse.getTrendSeries().get(0);
+        assertTrue("Start Date Should be : " + seriesResponse.getDate(),
+                resetPeakModel.getStartDate().compareTo(seriesResponse.getDate()) == 0);
+        assertTrue("Type Should be : " + seriesResponse.getType(), MockGraphType.PEAK_TYPE == seriesResponse.getType());
+
+        Log.endTestCase("trend_01_resetPeak");
+    }
+
+    @Test(dependsOnMethods = "trend_01_resetPeak")
     public void trend_01_Delete(ITestContext context) {
         SoftAssert softAssert = new SoftAssert();
         Log.startTestCase("trend_01_Delete");
