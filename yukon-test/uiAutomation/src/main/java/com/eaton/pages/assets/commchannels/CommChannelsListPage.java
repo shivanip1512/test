@@ -12,7 +12,6 @@ import com.eaton.elements.modals.ConfirmModal;
 
 public class CommChannelsListPage extends PageBase {
     
-    private WebTable table;
     private ActionBtnDropDownElement actionBtn;
     
     public CommChannelsListPage(DriverExtensions driverExt) {
@@ -21,15 +20,10 @@ public class CommChannelsListPage extends PageBase {
         requiresLogin = true;
         pageUrl = Urls.Assets.COMM_CHANNELS_LIST;
         actionBtn = new ActionBtnDropDownElement(this.driverExt);
-        setTable(new WebTable(driverExt, "compact-results-table"));
     }
 
     public WebTable getTable() {
-        return this.table;
-    }
-
-    private void setTable(WebTable table) {
-        this.table = table;
+        return new WebTable(driverExt, "compact-results-table");
     }
     
     public ActionBtnDropDownElement getActionBtn() {

@@ -15,7 +15,7 @@ public class WebTableRow{
 
     public WebElement getCell(int cellIndex) {
 
-        return this.row.findElement(By.cssSelector("tr:nth-child(" + cellIndex + ")"));
+        return this.row.findElement(By.cssSelector("tbody tr>td:nth-child(" + cellIndex + ")"));
     } 
     
     public void selectCellByLink() {
@@ -24,6 +24,6 @@ public class WebTableRow{
     
     public String getCellLinkByIndex(int index) {
         List<WebElement> cells = this.row.findElements(By.cssSelector("td"));
-        return cells.get(index).getAttribute("href");
+        return cells.get(index).findElement(By.cssSelector("a")).getAttribute("href");
     }
 }
