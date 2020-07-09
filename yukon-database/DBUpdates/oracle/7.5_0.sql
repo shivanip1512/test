@@ -610,6 +610,12 @@ ALTER TABLE AttributeAssignment
 INSERT INTO DBUpdates VALUES ('YUK-22330', '7.5.0', SYSDATE);
 /* @end YUK-22330 */
 
+/* @start YUK-22328 */
+INSERT INTO YukonRoleProperty VALUES(-20022,-200,'Manage Attributes','NO_ACCESS','Controls access to manage all user defined attributes.');
+
+INSERT INTO DBUpdates VALUES ('YUK-22328', '7.5.0', SYSDATE);
+/* @end YUK-22328 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
