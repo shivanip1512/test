@@ -210,12 +210,12 @@ yukon.tools.trend.setup = (function() {
                        numberOfPoints = $("#js-marker-setup-table tr").length - 1,
                        url =  yukon.url("/tools/trend/renderSetupPopup") + "?isMarker=" + isMarker + "&numberOfRows=" + numberOfPoints,
                        dialogDivJson = {
-                        "data-title": $(".js-add-marker-title").val(),
-                        "data-dialog": '',
-                        "id": "js-add-marker-dialog",
-                        "data-event": "yukon:trend:setup:addMarker",
-                        "data-load-event": "yukon:trend:setup:markerPopupLoaded",
-                        "data-url": url
+                            "data-title": $(".js-add-marker-title").val(),
+                            "data-dialog": '',
+                            "id": "js-add-marker-dialog",
+                            "data-event": "yukon:trend:setup:addMarker",
+                            "data-load-event": "yukon:trend:setup:markerPopupLoaded",
+                            "data-url": url
                     };
                 
                 yukon.ui.dialog($("<div/>").attr(dialogDivJson));
