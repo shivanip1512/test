@@ -68,11 +68,22 @@ public class WebTable {
     }
 
     public List<WebTableRow> getDataRows() {
-
         findDataRows();
 
         return this.dataRows;
-    }      
+    }  
+    
+    public List<String> getDataRowsTextByCellIndex(int index) {
+        findDataRows();
+        
+        List<String> cellRowsData = new ArrayList<String>();
+        
+        for (WebTableRow row : dataRows) {
+            cellRowsData.add(row.getCell(index).getText());
+        }
+        
+        return cellRowsData;
+    }
 
     private void waitForSearch() {
         WebElement table = null;
