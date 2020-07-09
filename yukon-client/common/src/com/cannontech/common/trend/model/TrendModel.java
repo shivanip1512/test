@@ -68,7 +68,12 @@ public class TrendModel {
                 graphSeries.setType(series.getType() == null ? GDSTypes.BASIC_GRAPH_TYPE
                         : GDSTypesFuncs.getTypeInt(series.getType().getStringType()));
                 graphSeries.setMultiplier(series.getMultiplier() == null ? 1 : series.getMultiplier());
-                graphSeries.setRenderer(series.getStyle() == null ? RenderType.LINE.getId() : series.getStyle().getId());
+
+                if (graphSeries.getType() == GDSTypes.MARKER_TYPE)
+                    graphSeries.setRenderer(RenderType.LINE.getId());
+                else
+                    graphSeries.setRenderer(series.getStyle() == null ? RenderType.LINE.getId() : series.getStyle().getId());
+
                 if (series.getType() != null
                         && (series.getType() == GraphType.PEAK_TYPE || series.getType() == GraphType.DATE_TYPE)) {
                     if (series.getType() == GraphType.PEAK_TYPE) {
