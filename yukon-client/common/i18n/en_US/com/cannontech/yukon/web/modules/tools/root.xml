@@ -6,10 +6,8 @@
     <!-- module wide key -->
     <entry key="yukon.web.modules.tools.options.title">Options</entry>
     <entry key="yukon.web.modules.tools.instructions.title">Instructions</entry>
-    <entry key="yukon.web.modules.tools.printChart">Print Chart</entry>
-    <entry key="yukon.web.modules.tools.downloadPng">Download PNG</entry>
-    <entry key="yukon.web.modules.tools.downloadJpg">Download JPG</entry>
-    <entry key="yukon.web.modules.tools.downloadPdf">Download PDF</entry>
+    <entry key="yukon.web.modules.tools.printTrend">Print</entry>
+    <entry key="yukon.web.modules.tools.downloadJpg">Download</entry>
     <entry key="yukon.web.modules.tools.downloadCsv">Download CSV</entry>
     
     <entry key="yukon.web.modules.tools.bulk.disconnect.result.pageName">Connect/Disconnect Results</entry>

@@ -51,10 +51,8 @@
                     <cm:dropdownOption icon="icon-trend-up" key="yukon.web.modules.tools.trends.resetPeaks" href="#"/>
                     <li class="divider">
                 </cti:checkRolesAndProperties>
-                <cm:dropdownOption key=".printChart" icon="icon-printer" classes="js-print"/>
-                <li class="divider">
+                <cm:dropdownOption key=".printTrend" icon="icon-printer" classes="js-print"/>
                 <cm:dropdownOption key=".downloadJpg" icon="icon-picture" classes="js-dl-jpg"/>
-                <li class="divider">
                 <cm:dropdownOption key=".downloadCsv" icon="icon-page-white-excel" classes="js-dl-csv" data-trend-id="${trendId}"/>
             </div>
         </c:if>
