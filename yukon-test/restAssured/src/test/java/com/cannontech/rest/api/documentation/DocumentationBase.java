@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.springframework.restdocs.ManualRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
@@ -94,36 +93,21 @@ public abstract class DocumentationBase {
     }
 
     /**
-     * Generic method to generate documents for APIs except Create, Retrieve, update, Copy and Delete. This method makes an API
-     * call for request and response fields to generate restDocumentation. Currently it Supports PATCH, POST, PUT and GET methods.
+     * Helper method to make a POST call having request and response fields with a body to generate restDocumentation for 
+     * Action APIs.
      * 
      * @return value in response having identifier of responseFieldPath
      */
-    protected String miscellaneousDoc(RequestMethod method, List<FieldDescriptor> requestFields,
-            List<FieldDescriptor> responseFields, String responseFieldPath, String responseFieldDesc, Object body, String url) {
-
-        Miscellaneous fields = new Miscellaneous(requestFields, responseFields, responseFieldPath, responseFieldDesc, body, url);
-        validateFields("miscellaneousDoc", fields);
-        switch (method) {
-        case PATCH:
-            return patch(fields);
-        case POST:
-            return post(fields);
-        case PUT:
-            return put(fields);
-        case GET:
-            RequestSpecification header = getHeader(requestFields, responseFields);
-            RestApiDocumentationUtility.get(header, body, url);
-        default:
-            throw new RuntimeException(method + " Not Supported");
-        }
+    protected String actionDoc(DocumentationFields.Fields fields, String methodName) {
+        validateFields(methodName, fields);
+        return post(fields);
     }
 
     /**
      * Helper method to make a POST call having request and response fields with a body to generate restDocumentation.
      * @return value in response having identifier of responseFieldPath
      */
-    private String post(DocumentationFields.Create fields) {
+    private String post(DocumentationFields.Fields fields) {
         RequestSpecification header = getHeader(fields.requestFields, fields.responseFields);
         return RestApiDocumentationUtility.post(header, fields.responseFieldPath, fields.responseFieldDesc, fields.body, fields.url);
     }
@@ -132,7 +116,7 @@ public abstract class DocumentationBase {
      * Helper method to make a PUT call having request and response fields with a body to generate restDocumentation.
      * @return value in response having identifier of responseFieldPath
      */
-    private String put(DocumentationFields.Create fields) {
+    private String put(DocumentationFields.Fields fields) {
         RequestSpecification header = getHeader(fields.requestFields, fields.responseFields);
         return RestApiDocumentationUtility.put(header, fields.responseFieldPath, fields.responseFieldDesc, fields.body,
                 fields.url);
@@ -143,7 +127,7 @@ public abstract class DocumentationBase {
      * Helper method to make a PATCH call having request and response fields with a body to generate restDocumentation.
      * @return value in response having identifier of responseFieldPath
      */
-    private String patch(DocumentationFields.Create fields) {
+    private String patch(DocumentationFields.Fields fields) {
         RequestSpecification header = getHeader(fields.requestFields, fields.responseFields);
         return RestApiDocumentationUtility.patch(header, fields.responseFieldPath, fields.responseFieldDesc, fields.body,
                 fields.url);

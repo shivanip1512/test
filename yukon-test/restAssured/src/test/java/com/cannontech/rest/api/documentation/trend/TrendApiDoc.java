@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
@@ -17,6 +16,7 @@ import com.cannontech.rest.api.documentation.DocumentationFields;
 import com.cannontech.rest.api.documentation.DocumentationFields.Copy;
 import com.cannontech.rest.api.documentation.DocumentationFields.Create;
 import com.cannontech.rest.api.documentation.DocumentationFields.Delete;
+import com.cannontech.rest.api.documentation.DocumentationFields.Fields;
 import com.cannontech.rest.api.documentation.DocumentationFields.Get;
 import com.cannontech.rest.api.documentation.DocumentationFields.Update;
 import com.cannontech.rest.api.trend.helper.TrendHelper;
@@ -118,7 +118,8 @@ public class TrendApiDoc extends DocumentationBase {
         series.setType(MockGraphType.PEAK_TYPE);
         ApiCallHelper.put("updateTrend", trendModel, trendId);
         String url = ApiCallHelper.getProperty("resetPeak") + trendId + "/resetPeak";
-        miscellaneousDoc(RequestMethod.PATCH, requestFields, responseFields, idStr, idDescStr, getMockResetPeakObject(), url);
+        Fields fields = new Fields(requestFields, responseFields, idStr, idDescStr, getMockResetPeakObject(), url);
+        actionDoc(fields, "resetPeak");
     }
 
     @Test(dependsOnMethods = "Test_Trend_01_ResetPeak")
