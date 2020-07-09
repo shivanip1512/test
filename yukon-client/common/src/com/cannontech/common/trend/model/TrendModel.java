@@ -73,7 +73,7 @@ public class TrendModel {
                         && (series.getType() == GraphType.PEAK_TYPE || series.getType() == GraphType.DATE_TYPE)) {
                     if (series.getType() == GraphType.PEAK_TYPE) {
                         // Set to this months start date.
-                        DateTime date = new DateTime(DateTimeZone.UTC);
+                        DateTime date = new DateTime();
                         DateTime startOfMonth = date.dayOfMonth().withMinimumValue().withTimeAtStartOfDay();
                         graphSeries.setMoreData(String.valueOf(startOfMonth.getMillis()));
                     } else {

@@ -37,7 +37,7 @@ public class TrendValidatorHelper {
     /**
      * Validate trend name.
      */
-    public void validateTrendName(Errors errors, String trendName, String trendId) {
+    public void validateTrendName(Errors errors, String trendName, Integer trendId) {
 
         String nameI18nText = accessor.getMessage(commonkey + "name");
         YukonValidationUtils.checkIsBlank(errors, "name", trendName, nameI18nText, false);
@@ -52,7 +52,7 @@ public class TrendValidatorHelper {
                    .filter(liteTrend -> liteTrend.getName().equalsIgnoreCase(trendName.trim()))
                    .findAny()
                    .ifPresent(liteGraphDefinition -> {
-                       if (trendId == null || liteGraphDefinition.getGraphDefinitionID() != Integer.valueOf(trendId)) {
+                       if (trendId == null || liteGraphDefinition.getGraphDefinitionID() != trendId) {
                            errors.rejectValue("name", basekey + "nameConflict");
                        }
                    });

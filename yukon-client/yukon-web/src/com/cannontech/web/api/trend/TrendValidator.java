@@ -19,7 +19,8 @@ public class TrendValidator extends SimpleValidator<TrendModel> {
     protected void doValidation(TrendModel trend, Errors errors) {
 
         if (trend.getName() != null) {
-            String trendId = ServletUtils.getPathVariable("id");
+            String strTrendId = ServletUtils.getPathVariable("id");
+            Integer trendId = strTrendId == null ? null : Integer.valueOf(strTrendId);
             trendValidatorHelper.validateTrendName(errors, trend.getName(), trendId);
         }
 

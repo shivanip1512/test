@@ -305,15 +305,11 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
                 //  Join with a UNION if there is more than one fragment
                 .collect(Collectors.reducing((sb1, sb2) -> sb1.append("UNION").appendFragment(sb2)))
                 .map(fragment -> {
-                    SqlStatementBuilder combinedSql = getSqlWithProgrammingCte(sources, context);
+                    SqlStatementBuilder combinedSql = getSqlWithProgrammingCte(sources, filter, context);
                     if(selectCount) {
                         combinedSql.append("SELECT SUM(total)").append("FROM").append("(");
                     }
                     combinedSql.append(fragment);
-                    if (!CollectionUtils.isEmpty(filter.getGroups())) {
-                        combinedSql.append("AND").appendFragment(deviceGroupService.getDeviceGroupSqlWhereClause(filter.getGroups(), "DeviceId"));
-                    }
-
                     if (sortBy != null) {
                         combinedSql.append("ORDER BY");
                         combinedSql.append(sortBy.getDbString());
@@ -357,8 +353,9 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
         return sqlFrom;
     }
 
-    private SqlStatementBuilder getSqlWithProgrammingCte(Set<MeterProgramSource> sources, YukonUserContext context) {
-        
+    private SqlStatementBuilder getSqlWithProgrammingCte(Set<MeterProgramSource> sources, MeterProgrammingSummaryFilter filter,
+            YukonUserContext context) {
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         Map<MeterProgramSource, String> translatedSources = Maps.asMap(sources, source -> accessor.getMessage(source.getFormatKey()));
@@ -384,6 +381,9 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
         sql.append("FULL JOIN MeterProgram mpAssigned ON mpAssigned.Guid = mpa.Guid");
         sql.append("JOIN YukonPAObject ypo ON mps.DeviceId = ypo.PAObjectID");
         sql.append("LEFT JOIN DeviceMeterGroup dmg ON mps.DeviceId = dmg.DeviceId");
+        if (!CollectionUtils.isEmpty(filter.getGroups())) {
+            sql.append("WHERE").appendFragment(deviceGroupService.getDeviceGroupSqlWhereClause(filter.getGroups(), "mps.DeviceId"));
+        }
         sql.append(")");
         return sql;
     }

@@ -157,7 +157,9 @@ public final class Urls {
         public static final String OPT_OUT_STATUS = "/stars/operator/optOut/admin";
         public static final String WORK_ORDERS = "/operator/WorkOrder/WorkOrder.jsp";
         public static final String IMPORT = "/stars/operator/account/accountImport";
-        public static final String REPORTS = "/analysis/Reports.jsp?groupType=STARS";       
+        public static final String REPORTS = "/analysis/Reports.jsp?groupType=STARS";
+        public static final String COMM_CHANNELS_LIST = "/stars/device/commChannel/list";
+        public static final String COMM_CHANNEL_DETAIL = "/stars/device/commChannel/";
     }
     
     public static final class Tools {
