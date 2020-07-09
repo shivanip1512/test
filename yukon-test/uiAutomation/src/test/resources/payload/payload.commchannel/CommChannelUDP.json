@@ -1,0 +1,7 @@
+{
+   "type": "UDPPORT",
+   "name": "TestUDP9",
+   "enable": true,
+   "baudRate": "BAUD_1200",
+   "portNumber" :23785
+}
