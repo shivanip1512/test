@@ -24,7 +24,6 @@ import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.Multimap;
@@ -284,4 +283,10 @@ public interface AttributeService {
      * Returns a list of grouped attributes, including custom attributes
      */
     Map<AttributeGroup, List<Attribute>> getAllGroupedAttributes(YukonUserContext context);
+    
+
+    /**
+     * Parses string into BuiltInAttribute or CustomAttribute
+     */
+    Attribute parseAttribute(String attribute);
 }

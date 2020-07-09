@@ -10,7 +10,7 @@ public class AttributeAssignment {
    
     private int id;
     private int attributeId;
-    private PaoType deviceType;
+    private PaoType paoType;
     private int pointOffset;
     private PointType pointType;
      
@@ -30,14 +30,6 @@ public class AttributeAssignment {
         this.attributeId = attributeId;
     }
 
-    public PaoType getDeviceType() {
-        return deviceType;
-    }
-
-    public void setDeviceType(PaoType deviceType) {
-        this.deviceType = deviceType;
-    }
-
     public int getPointOffset() {
         return pointOffset;
     }
@@ -52,6 +44,14 @@ public class AttributeAssignment {
 
     public void setPointType(PointType pointType) {
         this.pointType = pointType;
+    }
+    
+    public PaoType getPaoType() {
+        return paoType;
+    }
+
+    public void setPaoType(PaoType paoType) {
+        this.paoType = paoType;
     }
     
     @Override

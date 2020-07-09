@@ -2,8 +2,10 @@ package com.cannontech.common.pao.attribute.dao;
 
 import java.util.List;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 
 public interface AttributeDao {
 
@@ -42,10 +44,15 @@ public interface AttributeDao {
     /**
      * Returns attribute assignment
      */
-    AttributeAssignment getAttributeAssignmentById(int attributeAssignmentId);
+    AttributeAssignment getAssignmentById(int attributeAssignmentId);
 
     /**
      * Returns custom attribute
      */
     CustomAttribute getCustomAttribute(int attributeId);
+
+    /**
+     * Returns Point Identifier for attributeId and paoType
+     */
+    PointIdentifier getPointIdentifier(int attributeId, PaoType paoType);
 }

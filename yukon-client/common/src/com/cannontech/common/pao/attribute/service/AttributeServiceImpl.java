@@ -36,6 +36,7 @@ import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
@@ -134,10 +135,16 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute)
             throws IllegalUseOfAttribute {
-        BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
-        AttributeDefinition attributeDefinition =
-            paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
-        return attributeDefinition.getPaoPointIdentifier(pao);
+        if (attribute instanceof BuiltInAttribute) {
+            BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
+            AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(),
+                    builtInAttribute);
+            return attributeDefinition.getPaoPointIdentifier(pao);
+        } else {
+            CustomAttribute customAttribute = (CustomAttribute) attribute;
+            return new PaoPointIdentifier(pao.getPaoIdentifier(),
+                    attributeDao.getPointIdentifier(customAttribute.getId(), pao.getPaoIdentifier().getPaoType()));
+        }
     }
 
     @Override
@@ -695,5 +702,17 @@ public class AttributeServiceImpl implements AttributeService {
     public LitePoint createAndFindPointForAttribute(YukonPao pao, BuiltInAttribute attribute) {
         createPointForAttribute(pao, attribute);
         return findPointForAttribute(pao, attribute);
+    }
+    
+    @Override
+    public Attribute parseAttribute(String attribute) {
+        if(attribute == null) { 
+            return null;
+        }
+        try {
+            return BuiltInAttribute.valueOf(attribute);
+        } catch (IllegalArgumentException e) {
+            return attributeDao.getCustomAttribute(Integer.valueOf(attribute));
+        }
     }
 }
