@@ -18,13 +18,25 @@
     <property name="host_username" value="${env.VM_HOST_USERNAME}" />
     <property name="host_password" value="${env.VM_HOST_PASSWORD}" />
     <property name="vm_host_prefix" value="${env.VM_HOST_NAME_PREFIX}" />
+    <property name="git_branch_name" value="${env.GIT_BRANCH_NAME}" />
     <property name="guest_username" value="${env.VM_GUEST_USERNAME}" if:set="env.VM_GUEST_USERNAME"/>
     <property name="guest_username" value="Administrator"/> <!-- This is set if not done above -->
+    <if>
+        <equals arg1="${git_branch_name}" arg2="master"/>
+        <then>
+            <property name="guest_userid" value="${vm_host_prefix}${version.major}-${version.minor}+${guest_username}" if:set="env.VM_HOST_NAME_PREFIX"/>
+            <property name="guest_address" value="${vm_host_prefix}${version.major}-${version.minor}.${vmdomain}" if:set="env.VM_HOST_NAME_PREFIX"/>
+        </then>
+        <else>
+            <propertyregex property="branch_version" input="${git_branch_name}" regexp="([a-zA-Z/]+)" replace="" global="true" if:set="env.GIT_BRANCH_NAME"/>
+            <propertyregex property="modified_branch_version" input="${branch_version}" regexp="([.])" replace="-" global="true" if:set="env.GIT_BRANCH_NAME"/>
+            <property name="guest_userid" value="${vm_host_prefix}${modified_branch_version}+${guest_username}" if:set="env.VM_HOST_NAME_PREFIX"/>
+            <property name="guest_address" value="${vm_host_prefix}${modified_branch_version}.${vmdomain}" if:set="env.VM_HOST_NAME_PREFIX"/>
+        </else>
+    </if>
     <property name="guest_userid" value="${env.VM_GUEST_USERID}" if:set="env.VM_GUEST_USERID"/>
-    <property name="guest_userid" value="${vm_host_prefix}${version.major}${version.minor}+${guest_username}" if:set="env.VM_HOST_NAME_PREFIX"/>
     <property name="guest_password" value="${env.VM_GUEST_PASSWORD}" if:set="env.VM_GUEST_PASSWORD"/>
     <property name="guest_password" value="cti123" if:set="env.VM_GUEST_PASSWORD"/>
-    <property name="guest_address" value="${vm_host_prefix}${version.major}${version.minor}.${vmdomain}" if:set="env.VM_HOST_NAME_PREFIX"/>
     <property name="guest_address" value="${env.VM_GUEST_ADDRESS}" /> 
     <property name="config_file_path" value="${env.VM_CONFIG_FILE_PATH}" />
     
