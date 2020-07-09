@@ -8,6 +8,7 @@ import com.eaton.elements.DropDownElement;
 //import com.eaton.elements.Label;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
+import com.eaton.elements.tabs.TabElement;
 import com.eaton.framework.DriverExtensions;
 
 public class EditCommChannelModal extends BaseModal {
@@ -42,7 +43,16 @@ public class EditCommChannelModal extends BaseModal {
         return new TrueFalseCheckboxElement(this.driverExt, "disabled", getModal());
     }
     
+    public TabElement getTabElement() {
+        return new TabElement(this.driverExt);
+    }
+    
     public String getUserMessage() {
     	return this.driverExt.findElements(By.cssSelector(".name-value-table.natural-width>tbody > tr:nth-child(1) > td:nth-child(2) > span"), Optional.empty()).get(2).getText();
     }
+    
+    public String getUserMessagePX() {
+    	return this.driverExt.findElements(By.cssSelector(".name-value-table.natural-width>tbody > tr:nth-child(1) > td:nth-child(2) > span"), Optional.empty()).get(3).getText();
+    }
+    
 }

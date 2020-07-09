@@ -13,13 +13,53 @@ import com.eaton.framework.DriverExtensions;
 public class TabElement {
 
     private DriverExtensions driverExt;
+	private String elementName;
+	private WebElement parentElement;
 
     public TabElement(DriverExtensions driverExt) {
         this.driverExt = driverExt;        
     }    
     
+    public TabElement(DriverExtensions driverExt, WebElement parentElement) {
+        this.driverExt = driverExt;
+        //this.elementName = elementName;
+        this.parentElement = parentElement;
+    }
+    
     private WebElement getTabContainer() {
         return this.driverExt.findElement(By.cssSelector(".tabbed-container"), Optional.empty());
+    }
+    
+    //Ruchita added
+    private List<WebElement> getTabsContainer() {
+        return this.driverExt.findElements(By.cssSelector(".tabbed-container"), Optional.empty());
+    }
+  //Ruchita added
+    
+    public WebElement getTabPanelByAriaLabels() {
+        List<WebElement> tabContainer = getTabsContainer();
+        WebElement x= null;
+        for(WebElement element : tabContainer) {
+         element.findElement(By.cssSelector(".ui-tabs-tab"));
+         x=element;
+        }
+        return x;
+     }
+    //Ruchita added
+    
+    private List<WebElement> getTabsEdit() {
+        return getTabPanelByAriaLabels().findElements(By.cssSelector(".ui-tabs-tab"));
+    }
+    //Ruchita added
+    public List<String> getTitlesEdit() {
+        List<WebElement> elements = getTabsEdit();
+        
+        List<String> titles = new ArrayList<String>();
+        for (WebElement element : elements) {
+            titles.add(element.findElement(By.cssSelector("a")).getText());
+        }
+        
+        return titles;
     }
     
     private List<WebElement> getTabs() {
@@ -90,7 +130,7 @@ public class TabElement {
     }
     
     private WebElement getTabByName(String tabName) {
-        List<WebElement> list = getTabs();
+        List<WebElement> list = getTabss();
         
         return list.stream().filter(e -> e.findElement(By.cssSelector("a")).getText().contains(tabName)).findFirst().orElseThrow();        
     }
