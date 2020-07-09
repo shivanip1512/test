@@ -602,6 +602,40 @@ UPDATE DeviceGroup SET Permission = 'NOEDIT_NOMOD'
 INSERT INTO DBUpdates VALUES ('YUK-22443', '7.5.0', GETDATE());
 /* @end YUK-22443 */
 
+/* @start YUK-22330 */
+CREATE TABLE AttributeAssignment (
+   AttributeAssignmentId   NUMERIC              NOT NULL,
+   AttributeId             NUMERIC              NOT NULL,
+   PaoType                 VARCHAR(30)          NOT NULL,
+   PointType               VARCHAR(30)          NOT NULL,
+   PointOffset             NUMERIC              NOT NULL,
+   CONSTRAINT PK_AttributeAssignmentId PRIMARY KEY (AttributeAssignmentId)
+);
+GO
+
+ALTER TABLE AttributeAssignment
+   ADD CONSTRAINT AK_Assignment UNIQUE (AttributeId, PaoType, PointType, PointOffset);
+GO
+
+ALTER TABLE AttributeAssignment
+   ADD CONSTRAINT AK_Attribute_Device UNIQUE (AttributeId, PaoType);
+GO
+
+ALTER TABLE AttributeAssignment
+   ADD CONSTRAINT FK_AttrAssign_CustAttr FOREIGN KEY (AttributeId)
+      REFERENCES CustomAttribute (AttributeId)
+         ON DELETE CASCADE;
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-22330', '7.5.0', GETDATE());
+/* @end YUK-22330 */
+
+/* @start YUK-22328 */
+INSERT INTO YukonRoleProperty VALUES(-20022,-200,'Manage Attributes','NO_ACCESS','Controls access to manage all user defined attributes.');
+
+INSERT INTO DBUpdates VALUES ('YUK-22328', '7.5.0', GETDATE());
+/* @end YUK-22328 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

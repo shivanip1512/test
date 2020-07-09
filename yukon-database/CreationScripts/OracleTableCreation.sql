@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/30/2020 11:44:48 PM                        */
+/* Created on:     7/6/2020 2:34:37 PM                          */
 /*==============================================================*/
 
 
@@ -492,6 +492,24 @@ create table ArchiveValuesExportFormat  (
    ExcludeAbnormal      CHAR(1)                         not null,
    constraint PK_ArchiveValuesExpFormat primary key (FormatId)
 );
+
+/*==============================================================*/
+/* Table: AttributeAssignment                                   */
+/*==============================================================*/
+create table AttributeAssignment  (
+   AttributeAssignmentId NUMBER                          not null,
+   AttributeId          NUMBER                          not null,
+   PaoType              VARCHAR2(30)                    not null,
+   PointType            VARCHAR2(30)                    not null,
+   PointOffset          NUMBER                          not null,
+   constraint PK_ATTRIBUTEASSIGNMENTID primary key (AttributeAssignmentId)
+);
+
+alter table AttributeAssignment
+   add constraint AK_ASSIGNMENT unique (AttributeId, PaoType, PointType, PointOffset);
+
+alter table AttributeAssignment
+   add constraint AK_ATTRIBUTE_DEVICE unique (AttributeId, PaoType);
 
 /*==============================================================*/
 /* Table: BaseLine                                              */
@@ -10449,6 +10467,7 @@ INSERT INTO YukonRoleProperty VALUES(-20018,-200,'Event Logs','false','Controls 
 INSERT INTO YukonRoleProperty VALUES(-20019,-200,'Admin Super User','false','Allows full control of all energy companies and other administrator features.'); 
 INSERT INTO YukonRoleProperty VALUES(-20020,-200,'Network Manager Access','false','Controls access to Network Manager.');
 INSERT INTO YukonRoleProperty VALUES(-20021,-200,'Manage Dashboards','false','Controls access to manage all user defined dashboards.');
+INSERT INTO YukonRoleProperty VALUES(-20022,-200,'Manage Attributes','NO_ACCESS','Controls access to manage all user defined attributes.');
 
 /* Operator Metering Role Properties*/
 INSERT INTO YukonRoleProperty VALUES(-20203,-202,'Enable Bulk Importer','true','Allows access to the Bulk Importer');
@@ -11487,6 +11506,11 @@ alter table ArchiveDataAnalysisSlotValue
 alter table ArchiveDataAnalysisSlotValue
    add constraint FK_ArchDataAnalSlotVal_Device foreign key (DeviceId)
       references DEVICE (DEVICEID)
+      on delete cascade;
+
+alter table AttributeAssignment
+   add constraint FK_ATTRASSIGN_CUSTATTR foreign key (AttributeId)
+      references CustomAttribute (AttributeId)
       on delete cascade;
 
 alter table BaseLine
