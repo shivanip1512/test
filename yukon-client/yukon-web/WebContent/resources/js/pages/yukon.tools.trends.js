@@ -176,6 +176,7 @@ yukon.tools.trends = (function () {
                         $("#reset-peak-error-message").empty();
                         $("#reset-peak-success-message").toggleClass("dn", !data.hasOwnProperty("successMessage"));
                         $("#reset-peak-error-message").toggleClass("dn", !data.hasOwnProperty("errorMessage"));
+                        yukon.ui.removeAlerts();
                         if (data.hasOwnProperty("successMessage")) {
                             $("#reset-peak-success-message").addMessage({
                                 message: data.successMessage,

@@ -16,7 +16,7 @@ public class ResetPeakPopupValidator extends SimpleValidator<ResetPeakPopupModel
 
     @Override
     protected void doValidation(ResetPeakPopupModel resetPeakPopupModel, Errors errors) {
-        peakValidatorHelper.validateIfResetPeakIsApplication(resetPeakPopupModel.getTrendId(), errors);
+        peakValidatorHelper.validateIfResetPeakIsApplicable(resetPeakPopupModel.getTrendId(), errors);
         peakValidatorHelper.validateStartDate(resetPeakPopupModel.getStartDate(), errors);
     }
 

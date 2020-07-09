@@ -18,7 +18,6 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -198,14 +197,16 @@ public class TrendsHomeController {
         if (resetPeakPopupModel.isResetPeakForAllTrends()) {
             List<LiteGraphDefinition> graphDefinitions = cache.getAllGraphDefinitions();
             for (LiteGraphDefinition graphDefinition : graphDefinitions) {
-                ResetPeakModel resetPeakModel = new ResetPeakModel();
-                resetPeakModel.setStartDate(resetPeakPopupModel.getStartDate());
-                callResetPeakApi(userContext, request, resetPeakPopupModel, graphDefinition.getGraphDefinitionID(),resetPeakSuccess, resetPeakFailed);
+                if (resetPeakValidatorHelper.checkIfResetPeakApplicable(graphDefinition.getGraphDefinitionID())) {
+                    ResetPeakModel resetPeakModel = new ResetPeakModel();
+                    resetPeakModel.setStartDate(resetPeakPopupModel.getStartDate());
+                    callResetPeakApi(userContext, request, resetPeakPopupModel, graphDefinition.getGraphDefinitionID(), resetPeakSuccess, resetPeakFailed);
+                }
             }
         } else {
             ResetPeakModel resetPeakMdl = new ResetPeakModel();
             resetPeakMdl.setStartDate(resetPeakPopupModel.getStartDate());
-            callResetPeakApi(userContext, request, resetPeakMdl, resetPeakPopupModel.getTrendId(),resetPeakSuccess, resetPeakFailed);
+            callResetPeakApi(userContext, request, resetPeakMdl, resetPeakPopupModel.getTrendId(), resetPeakSuccess, resetPeakFailed);
         }
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
@@ -235,23 +236,15 @@ public class TrendsHomeController {
         model.addAttribute("trendModel", trendModel);
     }
 
-    private void callResetPeakApi(YukonUserContext userContext, HttpServletRequest request, ResetPeakModel resetPeakModel, Integer trendId ,List<String> resetPeakSuccess, List<String> resetPeakFailed) {
+    private void callResetPeakApi(YukonUserContext userContext, HttpServletRequest request, ResetPeakModel resetPeakModel,
+            Integer trendId, List<String> resetPeakSuccess, List<String> resetPeakFailed) {
         boolean result;
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.trendUrl + "/" + trendId + "/resetPeak");
-            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PATCH, Integer.class, (ResetPeakModel) resetPeakModel);
-            if (response.getStatusCode() == HttpStatus.OK) {
-                result = true;
-            } else {
-                result = false;
-            }
-        } catch (ApiCommunicationException e) {
-            e.printStackTrace();
-            log.error("Error is performing reset peak for trend with id {}. Error {}" , trendId, e.getMessage());
-            result = false;
-        } catch (RestClientException ex) {
-            ex.printStackTrace();
-            log.error("Error is performing reset peak for trend with id {}. Error {}" , trendId, ex.getMessage());
+            apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PATCH, Integer.class, (ResetPeakModel) resetPeakModel);
+            result = true;
+        } catch (ApiCommunicationException | RestClientException e) {
+            log.error("Error is performing reset peak for trend with id {}. Error {}" , trendId, e);
             result = false;
         }
         LiteGraphDefinition liteGraphDefinition = graphDao.getLiteGraphDefinition(trendId);

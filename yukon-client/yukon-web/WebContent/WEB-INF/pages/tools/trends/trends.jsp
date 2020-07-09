@@ -49,7 +49,14 @@
                     <cti:csrfToken/>
                 </form:form>
                 <li class="divider">
-                <cm:dropdownOption icon="icon-trend-up" data-popup=".js-reset-peak-popup" label="${resetPeakLbl}" disabled="${!isResetPeakApplicable}"/>
+                <c:choose>
+                    <c:when test="${isResetPeakApplicable}">
+                        <cm:dropdownOption icon="icon-trend-up" data-popup=".js-reset-peak-popup" label="${resetPeakLbl}"/>
+                    </c:when>
+                    <c:otherwise>
+                        <cm:dropdownOption icon="icon-trend-up" label="${resetPeakLbl}" disabled="true"/>
+                    </c:otherwise>
+                </c:choose>
                 <li class="divider">
                 <cm:dropdownOption key=".printChart" icon="icon-printer" classes="js-print"/>
                 <li class="divider">

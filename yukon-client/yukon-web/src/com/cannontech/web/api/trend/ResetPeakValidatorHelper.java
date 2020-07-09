@@ -67,7 +67,7 @@ public class ResetPeakValidatorHelper {
         }
     }
     
-    public void validateIfResetPeakIsApplication(Integer trendId, Errors errors) {
+    public void validateIfResetPeakIsApplicable(Integer trendId, Errors errors) {
         if (!checkIfResetPeakApplicable(Integer.valueOf(trendId))) {
             errors.reject("yukon.web.error.resetPeak.notApplicable");
         }
