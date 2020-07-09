@@ -1,6 +1,7 @@
 package com.cannontech.web.api.point;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -41,13 +42,13 @@ public class CalcPointValidationHelper {
                     YukonValidationUtils.checkIfFieldRequired("operation", errors, calcComponent.getOperation(), "operation");
                     if (!errors.hasFieldErrors("operation")) {
                         if (calcComponent.getComponentType() == CalcCompType.OPERATION || calcComponent.getComponentType() == CalcCompType.CONSTANT) {
-                            List<CalcOperation> calcComponentTypes = List.of(CalcOperation.CALC_OPERATIONS);
-                            if (!calcComponentTypes.contains(calcComponent.getOperation())) {
+                            Set<CalcOperation> calcOperations = CalcOperation.getCalcOperationsByCompType(CalcCompType.OPERATION);
+                            if (!calcOperations.contains(calcComponent.getOperation())) {
                                 errors.rejectValue("operation", baseKey + ".invalidOperation");
                             }
                         }
                         if (calcComponent.getComponentType() == CalcCompType.FUNCTION) {
-                            List<CalcOperation> calcFunctions = List.of(CalcOperation.CALC_FUNCTIONS);
+                            Set<CalcOperation> calcFunctions = CalcOperation.getCalcOperationsByCompType(CalcCompType.FUNCTION);
                             if (!calcFunctions.contains(calcComponent.getOperation())) {
                                 errors.rejectValue("operation", baseKey + ".invalidFunction");
                             }
@@ -76,13 +77,13 @@ public class CalcPointValidationHelper {
                                                    && 
                                                    component.getOperation() != null && component.getOperation().getCalcOperation().equals(CalcComponentTypes.BASELINE_FUNCTION));
         if (isBaselineAssigned) {
-            YukonValidationUtils.checkIfFieldRequired("baselineId", errors, baselineId, "baseLineId");
+            YukonValidationUtils.checkIfFieldRequired("baselineId", errors, baselineId, "baselineId");
             if (!errors.hasFieldErrors("baselineId")) {
                 List<Integer> baseLineIds = cache.getAllBaselines().stream()
                                                                    .map(LiteBaseline::getBaselineID)
                                                                    .collect(Collectors.toList());
                 if (!baseLineIds.contains(baselineId)) {
-                    errors.rejectValue("baselineId", baseKey + ".doesNotExist", new Object[] { "baseLineId" }, "");
+                    errors.rejectValue("baselineId", baseKey + ".doesNotExist", new Object[] { "baselineId" }, "");
                 }
             }
         }

@@ -92,8 +92,7 @@ public class PointModelFactory {
                 break;
             case CalcAnalog:
                 LiteYukonPAObject pao = cache.getAllPaosMap().get(baseModel.getPaoId());
-                pointBase = PointFactory.createCalculatedPoint(new PaoIdentifier(baseModel.getPaoId(),
-                                                              pao.getPaoType()),
+                pointBase = PointFactory.createCalculatedPoint(pao.getPaoIdentifier(),
                                                               baseModel.getPointName(),
                                                               StateGroupUtils.STATEGROUP_ANALOG,
                                                               baseModel.getPointOffset());
