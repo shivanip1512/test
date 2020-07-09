@@ -19,6 +19,16 @@ public class TrendSeries {
     private Double multiplier;
     private RenderType style;
     private DateTime date;
+    
+    public TrendSeries () {
+        this.color = Color.getNextDefaultColor(0);
+        applyDefaults();
+    }
+    
+    public TrendSeries (Color color) {
+        this.color = color;
+        applyDefaults();
+    }
 
     public TrendType.GraphType getType() {
         return type;
@@ -110,9 +120,6 @@ public class TrendSeries {
     }
     
     private void setDefaultValues() {
-        if (getColor() == null) {
-            setColor(Color.BLUE);
-        }
         if (getAxis() == null) {
             setAxis(TrendAxis.LEFT);
         }
