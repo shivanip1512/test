@@ -649,10 +649,10 @@
     <entry key="yukon.common.events.system.tools.scheduledDataImport.scheduleUpdated.3">Import Type</entry>
     <entry key="yukon.common.events.system.tools.scheduledDataImport.scheduleDeleted">Data import schedule {2} deleted by {1}.</entry>
     <entry key="yukon.common.events.system.tools.scheduledDataImport.scheduleImportError">Error occurred while processing files of Data import schedule {1} for type {2} due to I/O errors: {3}.</entry>
-    <entry key="yukon.common.events.system.tools.trends.trendCreated">Trend {1} created by {2}</entry>
-    <entry key="yukon.common.events.system.tools.trends.trendUpdated">Trend {1} updated by {2}</entry>
-    <entry key="yukon.common.events.system.tools.trends.trendDeleted">Trend {1} deleted by {2}</entry>
-    <entry key="yukon.common.events.system.tools.trends.resetPeak">Start date reset to {11} for {1} by {2}</entry>
+    <entry key="yukon.common.events.system.tools.trends.trendCreated">Trend {1} created by {2}.</entry>
+    <entry key="yukon.common.events.system.tools.trends.trendUpdated">Trend {1} updated by {2}.</entry>
+    <entry key="yukon.common.events.system.tools.trends.trendDeleted">Trend {1} deleted by {2}.</entry>
+    <entry key="yukon.common.events.system.tools.trends.resetPeak">Start date reset to {11} for {1} by {2}.</entry>
 
     <!--  System Administration -->
     <!-- Maintenance -->

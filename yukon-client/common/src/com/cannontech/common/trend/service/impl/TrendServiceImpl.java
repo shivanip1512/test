@@ -22,7 +22,7 @@ public class TrendServiceImpl implements TrendService {
 
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private IDatabaseCache dbCache;
-    @Autowired private ToolsEventLogService logService;
+    @Autowired private ToolsEventLogService toolsEventLogService;
 
     @Override
     public TrendModel create(TrendModel trend) {
@@ -30,7 +30,7 @@ public class TrendServiceImpl implements TrendService {
         trend.buildDBPersistent(graph);
         dbPersistentDao.performDBChange(graph, TransactionType.INSERT);
         trend.buildModel(graph);
-        logService.trendCreated(trend.getName(), ApiRequestContext.getContext().getLiteYukonUser());
+        toolsEventLogService.trendCreated(trend.getName(), ApiRequestContext.getContext().getLiteYukonUser());
         return trend;
     }
 
@@ -51,7 +51,7 @@ public class TrendServiceImpl implements TrendService {
                                                .orElseThrow(() -> new NotFoundException("Trend Id not found"));
         GraphDefinition trend = (GraphDefinition) LiteFactory.createDBPersistent(liteTrend);
         dbPersistentDao.performDBChange(trend, TransactionType.DELETE);
-        logService.trendDeleted(liteTrend.getName(), ApiRequestContext.getContext().getLiteYukonUser());
+        toolsEventLogService.trendDeleted(liteTrend.getName(), ApiRequestContext.getContext().getLiteYukonUser());
         return trend.getGraphDefinition().getGraphDefinitionID();
     }
 
@@ -66,7 +66,7 @@ public class TrendServiceImpl implements TrendService {
         trendModel.buildDBPersistent(trend);
         dbPersistentDao.performDBChange(trend, TransactionType.UPDATE);
         trendModel.buildModel(trend);
-        logService.trendUpdated(liteTrend.getName(), ApiRequestContext.getContext().getLiteYukonUser());
+        toolsEventLogService.trendUpdated(liteTrend.getName(), ApiRequestContext.getContext().getLiteYukonUser());
         return trendModel;
     }
 
@@ -100,7 +100,7 @@ public class TrendServiceImpl implements TrendService {
                            dataSeries.setMoreData(String.valueOf(resetPeakModel.getStartDate().getMillis()));
                            dbPersistentDao.performDBChange(dataSeries, TransactionType.UPDATE);
                        });
-        logService.resetPeak(graphDefinition.getGraphDefinition().getName(), ApiRequestContext.getContext().getLiteYukonUser(),
+        toolsEventLogService.resetPeak(graphDefinition.getGraphDefinition().getName(), ApiRequestContext.getContext().getLiteYukonUser(),
                 resetPeakModel.getStartDate());
         return id;
     }
