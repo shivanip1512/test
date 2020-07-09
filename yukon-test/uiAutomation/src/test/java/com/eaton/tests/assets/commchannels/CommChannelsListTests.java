@@ -63,7 +63,7 @@ public class CommChannelsListTests extends SeleniumTestSetup{
 }      
     
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL }, priority=0)
-    public void commChannelListTitleCorrect() {
+    public void commChannelList_TitleCorrect() {
         String EXPECTED_TITLE = "Comm Channels";
         navigate(Urls.Assets.COMM_CHANNELS_LIST);
         String actualPageTitle = listPage.getPageTitle();
@@ -71,7 +71,7 @@ public class CommChannelsListTests extends SeleniumTestSetup{
     }   
     
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL }, priority=1)
-    public void commChannelListHeadersCorrect() {
+    public void commChannelList_HeadersCorrect() {
         int EXPECTED_COUNT = 3;
         navigate(Urls.Assets.COMM_CHANNELS_LIST);
         List<String> headers = this.listPage.getTable().getListTableHeaders();
@@ -84,7 +84,7 @@ public class CommChannelsListTests extends SeleniumTestSetup{
     }   
     
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL }, priority=2)
-    public void commChannelListNameLinkCorrect() { 
+    public void commChannelList_NameLinkCorrect() { 
         String payloadFileUdp = System.getProperty("user.dir")	
                 + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelUDP.json";	
         Boolean flag = false;
@@ -111,7 +111,7 @@ public class CommChannelsListTests extends SeleniumTestSetup{
     }		
       
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL }, priority=3)
-    public void commChannelListNameSortAscCorrectly() {   	  	
+    public void commChannelList_NameSortAscCorrectly() {   	  	
     		navigate(Urls.Assets.COMM_CHANNELS_LIST);
     		List<WebElement> columnName = webTableColumn.getColumnValues(1);
     		List<String> sortedListName = SortWebColumn.getSortAsc(columnName);  		
@@ -125,7 +125,7 @@ public class CommChannelsListTests extends SeleniumTestSetup{
     	}
     
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL }, priority=4)
-    public void commChannelListNameSortDescCorrectly() {   	  	
+    public void commChannelList_NameSortDescCorrectly() {   	  	
     		navigate(Urls.Assets.COMM_CHANNELS_LIST);
     		List<WebElement> columnName = webTableColumn.getColumnValues(1);
     		List<String> sortedListName = SortWebColumn.getSortDesc(columnName);
@@ -139,7 +139,7 @@ public class CommChannelsListTests extends SeleniumTestSetup{
     	}
     
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL }, priority=5)
-    public void commChannelListTypeSortAscCorrectly() {   	  	
+    public void commChannelList_TypeSortAscCorrectly() {   	  	
     		navigate(Urls.Assets.COMM_CHANNELS_LIST);
     		List<WebElement> columnName = webTableColumn.getColumnValues(2);
     		List<String> sortedListName = SortWebColumn.getSortAsc(columnName);  		
@@ -153,7 +153,7 @@ public class CommChannelsListTests extends SeleniumTestSetup{
     	}
     
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL }, priority=6)
-    public void commChannelListTypeSortDescCorrectly() {   	  	
+    public void commChannelList_TypeSortDescCorrectly() {   	  	
     		navigate(Urls.Assets.COMM_CHANNELS_LIST);
     		List<WebElement> columnName = webTableColumn.getColumnValues(2);
     		List<String> sortedListName = SortWebColumn.getSortDesc(columnName);
@@ -166,7 +166,7 @@ public class CommChannelsListTests extends SeleniumTestSetup{
         	assertThat(sortedListName.equals(obtainedListDesc)).isTrue();		
     	}
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL }, priority=7)
-    public void commChannelListStatusSortAscCorrectly() {   	  	
+    public void commChannelList_StatusSortAscCorrectly() {   	  	
     		navigate(Urls.Assets.COMM_CHANNELS_LIST);
     		List<WebElement> columnName = webTableColumn.getColumnValues(3);
     		List<String> sortedListName = SortWebColumn.getSortAsc(columnName);  		
@@ -180,7 +180,7 @@ public class CommChannelsListTests extends SeleniumTestSetup{
     	}
     
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL }, priority=8)
-    public void commChannelListStatusSortDescCorrectly() {   	  	
+    public void commChannelList_StatusSortDescCorrectly() {   	  	
     		navigate(Urls.Assets.COMM_CHANNELS_LIST);
     		List<WebElement> columnName = webTableColumn.getColumnValues(3);
     		List<String> sortedListName = SortWebColumn.getSortDesc(columnName);
@@ -194,7 +194,7 @@ public class CommChannelsListTests extends SeleniumTestSetup{
     	}
     
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL }, priority=9)
-    public void commChannelListCreateOpensPopupCorrect() throws Exception {
+    public void commChannelList_CreateOpensPopupCorrect() throws Exception {
         String EXPECTED_TITLE = "Comm Channels";
         navigate(Urls.Assets.COMM_CHANNELS_LIST);
         String actualPageTitle = listPage.getPageTitle();
