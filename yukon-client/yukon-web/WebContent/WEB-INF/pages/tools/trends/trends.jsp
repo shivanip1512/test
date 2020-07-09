@@ -54,7 +54,8 @@
                         <cm:dropdownOption icon="icon-trend-up" data-popup=".js-reset-peak-popup" label="${resetPeakLbl}"/>
                     </c:when>
                     <c:otherwise>
-                        <cm:dropdownOption icon="icon-trend-up" label="${resetPeakLbl}" disabled="true"/>
+                        <cti:msg var="resetPeakTooltip" key="yukon.web.modules.tools.trend.resetPeak.tooltip"/>
+                        <cm:dropdownOption icon="icon-trend-up" label="${resetPeakLbl}" disabled="true" title="${resetPeakTooltip}"/>
                     </c:otherwise>
                 </c:choose>
                 <li class="divider">
