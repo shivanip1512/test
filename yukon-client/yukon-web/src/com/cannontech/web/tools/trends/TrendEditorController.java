@@ -178,7 +178,7 @@ public class TrendEditorController {
             HttpMethod httpMethod = HttpMethod.POST;
             String url = helper.findWebServerUrl(request, userContext, ApiURL.trendUrl);
             if (trendModel.getTrendId() != null) {
-                httpMethod = HttpMethod.PATCH;
+                httpMethod = HttpMethod.PUT;
                 url = url + "/"+ trendModel.getTrendId();
             }
 
