@@ -241,7 +241,7 @@ public class TrendsHomeController {
         boolean result;
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.trendUrl + "/" + trendId + "/resetPeak");
-            apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Integer.class, (ResetPeakModel) resetPeakModel);
+            apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Map.class, (ResetPeakModel) resetPeakModel);
             result = true;
         } catch (ApiCommunicationException | RestClientException e) {
             log.error("Error is performing reset peak for trend with id {}. Error {}" , trendId, e);
