@@ -263,6 +263,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
             MeterProgramStatusArchiveRequest request = new MeterProgramStatusArchiveRequest();
             request.setError(DeviceError.SUCCESS);
             request.setSource(Source.WS_COLLECTION_ACTION);
+            request.setConfigurationId(MeterProgramSource.YUKON.getPrefix() + guid);
             request.setRfnIdentifier(meterIdentifiersByPao.get(device));
             request.setStatus(ProgrammingStatus.INITIATING);
             request.setTimestamp(Instant.now());
