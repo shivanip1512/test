@@ -3054,7 +3054,7 @@
 				{
 					"name": "Reset Peak",
 					"request": {
-						"method": "PATCH",
+						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
