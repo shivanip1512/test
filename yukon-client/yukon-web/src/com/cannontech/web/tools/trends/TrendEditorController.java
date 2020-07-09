@@ -104,10 +104,9 @@ public class TrendEditorController {
     }
 
     @GetMapping("/renderSetupPopup")
-    public String renderSetupPopup(ModelMap model, @RequestParam("isMarker") boolean isMarker) {
+    public String renderSetupPopup(ModelMap model, @RequestParam("isMarker") boolean isMarker, @RequestParam("numberOfRows") Integer numberOfRows) {
         model.addAttribute("mode", PageEditMode.CREATE);
-        TrendSeries trendSeries = new TrendSeries();
-        trendSeries.applyDefaults();
+        TrendSeries trendSeries = new TrendSeries(Color.getNextDefaultColor(numberOfRows));
         model.addAttribute("trendSeries", trendSeries);
         if (isMarker) {
             trendSeries.setMarkerDefaults();
