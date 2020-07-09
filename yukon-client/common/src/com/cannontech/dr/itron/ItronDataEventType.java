@@ -197,7 +197,7 @@ public enum ItronDataEventType {
         switch (this) {
             case LOAD_ON:
             case LOAD_OFF:
-                return BuiltInAttribute.valueOf("RELAY_" + relayNumber + "_RELAY_STATE");
+                return BuiltInAttribute.valueOf("RELAY_" + relayNumber + "_LOAD_STATE");
             case SHED_START:
             case SHED_END:
                 return BuiltInAttribute.valueOf("RELAY_" + relayNumber + "_SHED_STATUS");
