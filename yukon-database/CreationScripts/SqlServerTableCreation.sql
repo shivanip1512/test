@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/1/2020 8:20:14 AM                          */
+/* Created on:     7/6/2020 9:15:32 AM                          */
 /*==============================================================*/
 
 
@@ -520,6 +520,27 @@ create table ArchiveValuesExportFormat (
    ExcludeAbnormal      char(1)              not null,
    constraint PK_ArchiveValuesExpFormat primary key (FormatId)
 )
+go
+
+/*==============================================================*/
+/* Table: AttributeAssignment                                   */
+/*==============================================================*/
+create table AttributeAssignment (
+   AttributeAssignmentId numeric              not null,
+   AttributeId          numeric              not null,
+   PaoType              varchar(30)          not null,
+   PointType            varchar(30)          not null,
+   PointOffset          numeric              not null,
+   constraint PK_ATTRIBUTEASSIGNMENTID primary key (AttributeAssignmentId)
+)
+go
+
+alter table AttributeAssignment
+   add constraint AK_ASSIGNMENT unique (AttributeId, PaoType, PointType, PointOffset)
+go
+
+alter table AttributeAssignment
+   add constraint AK_ATTRIBUTE_DEVICE unique (AttributeId, PaoType)
 go
 
 /*==============================================================*/
@@ -10954,7 +10975,7 @@ INSERT INTO YukonRoleProperty VALUES(-10108,-101,'decimal_places','2','How many 
 INSERT INTO YukonRoleProperty VALUES(-10111,-101,'lc_reduction_col','true','Tells TDC to show the LoadControl reduction column or not');
 
 /* Trending Role */
-insert into YukonRoleProperty values(-10200, -102, 'Manage Trends','VIEW','Controls access to view, create, edit, or delete Trends.');
+insert into YukonRoleProperty values(-10200,-102,'graph_edit_graphdefinition','true','<description>');
 insert into YukonRoleProperty values(-10202, -102, 'Trending Disclaimer',' ','The disclaimer that appears with trends.');
 insert into yukonroleproperty values(-10203, -102, 'Scan Now Enabled', 'false', 'Controls access to retrieve meter data on demand.');
 insert into yukonroleproperty values(-10205, -102, 'Minimum Scan Frequency', '15', 'Minimum duration (in minutes) between get data now events.');
@@ -12202,6 +12223,12 @@ go
 alter table ArchiveDataAnalysisSlotValue
    add constraint FK_ArchDataAnalSlotVal_Device foreign key (DeviceId)
       references DEVICE (DEVICEID)
+         on delete cascade
+go
+
+alter table AttributeAssignment
+   add constraint FK_ATTRASSIGN_CUSTATTR foreign key (AttributeId)
+      references CustomAttribute (AttributeId)
          on delete cascade
 go
 

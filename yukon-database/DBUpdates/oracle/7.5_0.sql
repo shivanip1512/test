@@ -568,8 +568,8 @@ INSERT INTO DBUpdates VALUES ('YUK-22234', '7.5.0', SYSDATE);
 
 /* @start YUK-21829 */
 CREATE TABLE CustomAttribute (
-   AttributeId          NUMERIC              NOT NULL,
-   AttributeName        VARCHAR(60)          NOT NULL,
+   AttributeId          NUMBER               NOT NULL,
+   AttributeName        VARCHAR2(60)         NOT NULL,
    CONSTRAINT PK_CustomAttribute PRIMARY KEY (AttributeId)
 );
 
@@ -586,19 +586,29 @@ UPDATE DeviceGroup SET Permission = 'NOEDIT_NOMOD'
 INSERT INTO DBUpdates VALUES ('YUK-22443', '7.5.0', SYSDATE);
 /* @end YUK-22443 */
 
-/* @start YUK-22371 */
-UPDATE YukonGroupRole SET Value = 'OWNER'
-    WHERE RolePropertyID = -10200 AND Value IN (' ', 'true');
+/* @start YUK-22330 */
+CREATE TABLE AttributeAssignment (
+   AttributeAssignmentId   NUMBER               NOT NULL,
+   AttributeId             NUMBER               NOT NULL,
+   PaoType                 VARCHAR2(30)         NOT NULL,
+   PointType               VARCHAR2(30)         NOT NULL,
+   PointOffset             NUMBER               NOT NULL,
+   CONSTRAINT PK_AttributeAssignmentId PRIMARY KEY (AttributeAssignmentId)
+);
 
-UPDATE YukonGroupRole SET Value = 'VIEW'
-    WHERE RolePropertyID = -10200 AND Value = 'false';
+ALTER TABLE AttributeAssignment
+   ADD CONSTRAINT AK_Assignment UNIQUE (AttributeId, PaoType, PointType, PointOffset);
 
-UPDATE YukonRoleProperty
-    SET KeyName = 'Manage Trends', Description = 'Controls access to view, create, edit, or delete Trends.', DefaultValue = 'VIEW'
-    WHERE RolePropertyID = -10200;
+ALTER TABLE AttributeAssignment
+   ADD CONSTRAINT AK_Attribute_Device UNIQUE (AttributeId, PaoType);
 
-INSERT INTO DBUpdates VALUES ('YUK-22371', '7.5.0', SYSDATE);
-/* @end YUK-22371 */
+ALTER TABLE AttributeAssignment
+   ADD CONSTRAINT FK_AttrAssign_CustAttr FOREIGN KEY (AttributeId)
+      REFERENCES CustomAttribute (AttributeId)
+         ON DELETE CASCADE;
+
+INSERT INTO DBUpdates VALUES ('YUK-22330', '7.5.0', SYSDATE);
+/* @end YUK-22330 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
