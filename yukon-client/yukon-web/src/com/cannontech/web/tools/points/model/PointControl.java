@@ -1,9 +1,8 @@
 package com.cannontech.web.tools.points.model;
 
 import com.cannontech.common.device.port.DBPersistentConverter;
-import com.cannontech.database.db.point.PointControl;
 
-public class PointControlModel<T extends PointControl> implements DBPersistentConverter<T> {
+public class PointControl<T extends com.cannontech.database.db.point.PointControl> implements DBPersistentConverter<T> {
     private Integer controlOffset;
     private Boolean controlInhibited;
 
@@ -24,13 +23,13 @@ public class PointControlModel<T extends PointControl> implements DBPersistentCo
     }
 
     @Override
-    public void buildModel(PointControl pointControl) {
+    public void buildModel(com.cannontech.database.db.point.PointControl pointControl) {
         setControlInhibited(pointControl.isControlInhibited());
         setControlOffset(pointControl.getControlOffset());
     }
 
     @Override
-    public void buildDBPersistent(PointControl pointControl) {
+    public void buildDBPersistent(com.cannontech.database.db.point.PointControl pointControl) {
         if (getControlInhibited() != null) {
             pointControl.setControlInhibited(getControlInhibited());
         }

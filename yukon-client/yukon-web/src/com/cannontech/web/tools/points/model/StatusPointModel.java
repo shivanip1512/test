@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 public class StatusPointModel<T extends StatusPoint> extends PointBaseModel<T> {
 
     private Integer initialState;
-    private PointStatusControlModel pointStatusControl;
+    private PointStatusControl pointStatusControl;
 
     public Integer getInitialState() {
         return initialState;
@@ -21,14 +21,14 @@ public class StatusPointModel<T extends StatusPoint> extends PointBaseModel<T> {
         this.initialState = initialState;
     }
 
-    public PointStatusControlModel getPointStatusControl() {
+    public PointStatusControl getPointStatusControl() {
         if (pointStatusControl == null) {
-            pointStatusControl = new PointStatusControlModel();
+            pointStatusControl = new PointStatusControl();
         }
         return pointStatusControl;
     }
 
-    public void setPointStatusControl(PointStatusControlModel pointStatusControl) {
+    public void setPointStatusControl(PointStatusControl pointStatusControl) {
         this.pointStatusControl = pointStatusControl;
     }
 

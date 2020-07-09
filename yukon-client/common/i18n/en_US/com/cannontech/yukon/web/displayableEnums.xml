@@ -189,6 +189,8 @@
     <entry key="yukon.common.setting.subcategory.DASHBOARD_ADMIN.description">Administration page for Dashboards</entry>
     <entry key="yukon.common.setting.subcategory.DASHBOARD_WIDGET">Dashboard Widgets</entry>
     <entry key="yukon.common.setting.subcategory.DASHBOARD_WIDGET.description">System-wide dashboard widget settings</entry>
+    <entry key="yukon.common.setting.subcategory.ATTRIBUTES">Attributes</entry>
+    <entry key="yukon.common.setting.subcategory.ATTRIBUTES.description">Assign custom attributes to devices</entry>
     
     <!-- VisibilityEnum -->
     <entry key="yukon.web.modules.dashboard.visibility.SYSTEM">System</entry>

@@ -2,9 +2,8 @@ package com.cannontech.web.tools.points.model;
 
 import com.cannontech.database.data.point.ControlStateType;
 import com.cannontech.database.data.point.StatusControlType;
-import com.cannontech.database.db.point.PointStatusControl;
 
-public class PointStatusControlModel extends PointControlModel<PointStatusControl> {
+public class PointStatusControl extends PointControl<com.cannontech.database.db.point.PointStatusControl> {
 
     private Integer closeTime1;
     private Integer closeTime2;
@@ -62,7 +61,8 @@ public class PointStatusControlModel extends PointControlModel<PointStatusContro
     }
 
     @Override
-    public void buildDBPersistent(PointStatusControl pointStatusControl) {
+    public void buildDBPersistent(com.cannontech.database.db.point.PointStatusControl pointStatusControl) {
+        super.buildDBPersistent(pointStatusControl);
 
      // This case will be handled when we can change the Control Type to None through Update
         if (getControlType() == StatusControlType.NONE) {
@@ -73,8 +73,6 @@ public class PointStatusControlModel extends PointControlModel<PointStatusContro
             pointStatusControl.setControlInhibited(false);
             pointStatusControl.setControlOffset(0);
         } else {
-            super.buildDBPersistent(pointStatusControl);
-
             if (getCloseTime1() != null) {
                 pointStatusControl.setCloseTime1(getCloseTime1());
             }
@@ -103,7 +101,7 @@ public class PointStatusControlModel extends PointControlModel<PointStatusContro
     }
 
     @Override
-    public void buildModel(PointStatusControl pointStatusControl) {
+    public void buildModel(com.cannontech.database.db.point.PointStatusControl pointStatusControl) {
         super.buildModel(pointStatusControl);
 
         setCloseTime1(pointStatusControl.getCloseTime1());

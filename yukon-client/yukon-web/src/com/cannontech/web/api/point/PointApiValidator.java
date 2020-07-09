@@ -3,9 +3,11 @@ package com.cannontech.web.api.point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -20,7 +22,6 @@ import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.fdr.FdrOptionType;
 import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.AlarmCatDao;
@@ -171,24 +172,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
      * Validate ArchiveSettings Fields.
      */
 
-    private void validateArchiveSettings(T target, PointType pointType, Errors errors) {
-
-        if (pointType == PointType.Status || pointType == PointType.CalcStatus) {
-            if (target.getArchiveType() != PointArchiveType.NONE && target.getArchiveType() != PointArchiveType.ON_CHANGE) {
-                errors.rejectValue("archiveType", baseKey + ".invalid.archiveType", new Object[] { target.getArchiveType(), pointType}, "");
-            }
-        } else {
-            if (target.getArchiveType() != null && (target.getArchiveType() == PointArchiveType.ON_TIMER || target.getArchiveType() == PointArchiveType.ON_TIMER_OR_UPDATE)) {
-                if (target.getArchiveInterval() != null) {
-                    TimeIntervals archiveInterval = TimeIntervals.fromSeconds(target.getArchiveInterval());
-                    if (!TimeIntervals.getArchiveIntervals().contains(archiveInterval)) {
-                        errors.rejectValue("archiveInterval", baseKey + ".invalid", new Object[] { "Archive Interval" }, "");
-                    }
-                } else {
-                    errors.rejectValue("archiveInterval", baseKey + ".invalid.archiveTimeInterval", new Object[] { "Archive Interval" }, "");
-                }
-            }
-        }
+    protected void validateArchiveSettings(T target, PointType pointType, Errors errors) {
 
         if (target.getArchiveType() != null && (target.getArchiveType() == PointArchiveType.NONE || target.getArchiveType() == PointArchiveType.ON_CHANGE || target.getArchiveType() == PointArchiveType.ON_UPDATE)) {
             if (target.getArchiveInterval() != null && target.getArchiveInterval() != 0) {
@@ -237,7 +221,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
     private void validateFdrTranslation(List<FdrTranslation> fdrList, Errors errors) {
 
         if (CollectionUtils.isNotEmpty(fdrList)) {
-
+            Set<FdrTranslation> usedTypes = new HashSet<>();
             for (int i = 0; i < fdrList.size(); i++) {
                 errors.pushNestedPath("fdrList[" + i + "]");
                 FdrTranslation fdrTranslation = fdrList.get(i);
@@ -268,6 +252,12 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                         if (parameterMap.size() > maxFdrInterfaceTranslations) {
                             errors.reject(baseKey + ".fdr.invalidTranslationPropertyCount", new Object[] { maxFdrInterfaceTranslations }, "");
                         }
+                        
+                        if (usedTypes.contains(fdrTranslation)) {
+                            errors.reject("yukon.web.modules.tools.point.error.fdr.unique", new Object[] { fdrInterfaceType },
+                                    "");
+                        }
+                        usedTypes.add(fdrTranslation);
 
                         for (String paramSet : parameters) {
                             int splitSpot = paramSet.indexOf(":");
