@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 
 import org.assertj.core.api.SoftAssertions;
+import org.json.simple.JSONObject;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -15,6 +16,8 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.LoadGroupCreatePage;
+import com.eaton.rest.api.dbetoweb.DBEToWebCreateRequest;
+import com.eaton.rest.api.dbetoweb.JsonFileHelper;
 
 public class LoadGroupCreateTests extends SeleniumTestSetup {
 
@@ -73,10 +76,11 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
     public void ldGrpCreate_CancelButtonNavigatesToCorrectUrl() {
         String expectedURL = getBaseUrl() + Urls.DemandResponse.SETUP_FILTER + "LOAD_GROUP";
+        String actualURL;
 
         createPage.getCancelBtn().click();
-        ;
-        String actualURL = getCurrentUrl();
+
+        actualURL = getCurrentUrl();
 
         assertThat(actualURL).isEqualTo(expectedURL);
     }
@@ -93,6 +97,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
     public void ldGrpCreate_kWCapacityMaxRangeValidation() {
+        
         createPage.getType().selectItemByIndex(2);
         createPage.getkWCapacity().setInputValue("1000000");
         createPage.getSaveBtn().click();
@@ -113,7 +118,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
     public void ldGrpCreate_GeneralSectionTitleCorrect() {
 
-        Section general = createPage.getGeneralSection();
+        Section general = createPage.getSection("General");
         assertThat(general.getSection()).isNotNull();
     }
 
@@ -122,8 +127,8 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
         createPage.getType().selectItemByIndex(2);
         createPage.getkWCapacity().clearInputValue();
-        ;
-        Section optAttr = createPage.getOptionalAttributesSection();
+        
+        Section optAttr = createPage.getSection("Optional Attributes");
         assertThat(optAttr.getSection()).isNotNull();
     }
 
@@ -134,8 +139,58 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
                 "Versacom Group" };
         List<String> actualDropDownValues = createPage.getType().getOptionValues();
 
-        for (String expdropDwonValue : expDropDownValues) {
-            softAssert.assertThat(actualDropDownValues.contains(expdropDwonValue)).isTrue();
+        for (String expecteddropDwonValue : expDropDownValues) {
+            softAssert.assertThat(actualDropDownValues.contains(expecteddropDwonValue))
+                    .withFailMessage("Assertion failed for following dropdown value : " + expecteddropDwonValue).isTrue();
+        }
+        softAssert.assertAll();
+    }
+
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
+    public void ldGrpCreate_NameUniqueValidation() {
+
+        // API test data. Creating Load group using hard coded json file, to be changed when builder pattern is implemented.
+        String payloadFile = System.getProperty("user.dir")
+                + "\\src\\test\\resources\\payload\\payload.loadgroup\\ecobee.json";
+        JSONObject jo;
+        String name;
+        JSONObject body = (JSONObject) JsonFileHelper.parseJSONFile(payloadFile);
+        jo = (JSONObject) body.get("LM_GROUP_ECOBEE");
+        name = (String) jo.get("name");
+        DBEToWebCreateRequest.createLoadGroup(body);
+
+        createPage.getName().setInputValue(name);
+        createPage.getType().selectItemByText("ecobee Group");
+        createPage.getkWCapacity().setInputValue("22");
+        createPage.getSaveBtn().click();
+
+        assertThat(createPage.getName().getValidationError()).isEqualTo("Name must be unique.");
+    }
+
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
+    public void ldGrpCreateCommon_GeneralSectionLabelsCorrect() {
+        String sectionName = "General";
+        String expectedLabels[] = { "Name:", "Type:" };
+
+        List<String> actualLabels = createPage.getSection(sectionName).getSectionLabels();
+
+        for (String label : expectedLabels) {
+            softAssert.assertThat(actualLabels.contains(label)).withFailMessage("Assertion failed for label : " + label).isTrue();
+        }
+        softAssert.assertAll();
+    }
+
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
+    public void ldGrpCreateCommon_OptionalAttrSectionLabelsCorrect() {
+        String sectionName = "Optional Attributes";
+        String expectedLabels[] = { "kW Capacity:", "Disable Group:", "Disable Control:" };
+
+        createPage.getType().selectItemByIndex(2);
+        createPage.getkWCapacity().setInputValue("2");
+        List<String> actualLabels = createPage.getSection(sectionName).getSectionLabels();
+
+        for (String label : expectedLabels) {
+            softAssert.assertThat(actualLabels.contains(label)).withFailMessage("Assertion failed for label : " + label).isTrue();
         }
         softAssert.assertAll();
     }

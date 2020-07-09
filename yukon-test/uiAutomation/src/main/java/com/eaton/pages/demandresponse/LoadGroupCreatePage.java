@@ -163,15 +163,7 @@ public class LoadGroupCreatePage extends PageBase {
         return new Button(this.driverExt, "Cancel");
     }
     
-    public void getSectionTitle() {
-        
-    }
-    
-    public Section getGeneralSection() {
-        return new Section(this.driverExt, "General");
-    }
-    
-    public Section getOptionalAttributesSection() {
-        return new Section(this.driverExt, "Optional Attributes");
+    public Section getSection(String sectionName) {
+        return new Section(this.driverExt, sectionName);
     }
 }
