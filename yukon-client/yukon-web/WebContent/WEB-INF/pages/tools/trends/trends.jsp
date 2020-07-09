@@ -27,16 +27,16 @@
             </div>
             
             <div id="page-actions" class="dn">
-                <cti:checkRolesAndProperties value="${manageTrendsRolePrptEnumVal}" level="${createPermissionEnumVal}">
+                <cti:checkRolesAndProperties value="MANAGE_TRENDS" level="CREATE">
                     <cti:url value="/tools/trend/create" var="createUrl"/>
                     <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" href="${createUrl}"/>
                 </cti:checkRolesAndProperties>
-                <cti:checkRolesAndProperties value="${manageTrendsRolePrptEnumVal}" level="${updatePermissionEnumVal}">
+                <cti:checkRolesAndProperties value="MANAGE_TRENDS" level="UPDATE">
                     <cti:url value="/tools/trend/${trendId}/edit" var="editUrl"/>
                     <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}"/>
                     <li class="divider">
                 </cti:checkRolesAndProperties>
-                <cti:checkRolesAndProperties value="${manageTrendsRolePrptEnumVal}" level="${ownerPermissionEnumVal}">
+                <cti:checkRolesAndProperties value="MANAGE_TRENDS" level="OWNER">
                     <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" id="js-delete-option" data-ok-event="yukon:tools:trend:delete"
                                                           classes="js-hide-dropdown"/>
                     <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${trendModel.name}" />
@@ -47,7 +47,7 @@
                     </form:form>
                     <li class="divider">
                 </cti:checkRolesAndProperties>
-                <cti:checkRolesAndProperties value="${manageTrendsRolePrptEnumVal}" level="${updatePermissionEnumVal}">
+                <cti:checkRolesAndProperties value="MANAGE_TRENDS" level="UPDATE">
                     <cm:dropdownOption icon="icon-trend-up" key="yukon.web.modules.tools.trends.resetPeaks" href="#"/>
                     <li class="divider">
                 </cti:checkRolesAndProperties>
