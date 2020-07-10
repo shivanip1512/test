@@ -11,7 +11,7 @@ public class StringToPointTypeConverter implements Converter<String, PointType> 
         try {
             return PointType.valueOf(pointTypeString);
         } catch (IllegalArgumentException e) {
-            return PointType.Analog;
+            return null;
         }
     }
 }

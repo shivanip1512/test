@@ -16,14 +16,6 @@ public final class PagingParameters {
      * @param page is 1-based (i.e. starts at 1, not 0)
      */
     private PagingParameters(int itemsPerPage, int page) {
-        //
-        if (itemsPerPage <= 0) {
-            itemsPerPage = 250;
-        }
-        //comment
-        if (page <= 0) {
-            page = 1;
-        }
 
         this.itemsPerPage = itemsPerPage;
         this.page = page;

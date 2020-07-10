@@ -55,6 +55,9 @@ import com.cannontech.web.api.errorHandler.model.ApiError;
 import com.cannontech.web.api.errorHandler.model.ApiFieldError;
 import com.cannontech.web.api.errorHandler.model.ApiGlobalError;
 import com.cannontech.web.api.token.AuthenticationException;
+import com.cannontech.web.spring.parameters.exceptions.InvalidFilteringParametersException;
+import com.cannontech.web.spring.parameters.exceptions.InvalidPagingParametersException;
+import com.cannontech.web.spring.parameters.exceptions.InvalidSortingParametersException;
 import com.cannontech.web.tools.points.service.PointEditorService.AttachedException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -146,6 +149,17 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             String.format("The parameter '%s' of value '%s' could not be converted to type '%s'", ex.getName(),
                 ex.getValue(), ex.getRequiredType().getSimpleName()), uniqueKey);
         return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({ InvalidFilteringParametersException.class, InvalidSortingParametersException.class,
+                        InvalidPagingParametersException.class })
+    protected ResponseEntity<Object> handleInvalidParametersException(Exception ex, WebRequest request) {
+
+        String uniqueKey = CtiUtilities.getYKUniqueKey();
+        logApiException(request, ex, uniqueKey);
+
+        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
+        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @Override

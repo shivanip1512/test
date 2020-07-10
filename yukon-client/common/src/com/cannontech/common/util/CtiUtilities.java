@@ -98,6 +98,7 @@ public final class CtiUtilities {
 
     public static final int DEFAULT_ITEMS_PER_PAGE = 25;
     public static final int MAX_ITEMS_PER_PAGE = 1000;
+    public static final int MIN_ITEMS_PER_PAGE = 1;
 
     // image names
     public static final URL GENERIC_APPLICATION_SPLASH = CtiUtilities.class
