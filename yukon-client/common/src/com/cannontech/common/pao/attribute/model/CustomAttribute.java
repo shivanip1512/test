@@ -5,7 +5,10 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(value = {"id"}, allowGetters = true, ignoreUnknown = true)
 public class CustomAttribute implements Attribute {
     public static String i18Key = "yukon.common.attribute.customAttribute.";
     private Integer id;
@@ -27,16 +30,19 @@ public class CustomAttribute implements Attribute {
         this.name = name;
     }
 
+    @JsonIgnore
     public String getI18Key() {
         return i18Key + id;
     }
 
     @Override
+    @JsonIgnore
     public String getKey() {
         return String.valueOf(id);
     }
 
     @Override
+    @JsonIgnore
     public MessageSourceResolvable getMessage() {
         return YukonMessageSourceResolvable.createDefault(getI18Key(), name);
     }

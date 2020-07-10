@@ -106,8 +106,9 @@ public class AttributeDaoImpl implements AttributeDao {
             params.addValue("AttributeName", attribute.getName());
             updateCreateSql.append("WHERE AttributeId").eq(attribute.getId());
         } catch (EmptyResultDataAccessException e) {
+            attribute.setId(nextValueHelper.getNextValue("CustomAttribute"));
             SqlParameterSink params = updateCreateSql.insertInto("CustomAttribute");
-            params.addValue("AttributeId", nextValueHelper.getNextValue("CustomAttribute"));
+            params.addValue("AttributeId", attribute.getId());
             params.addValue("AttributeName", attribute.getName());
         }
         try {
