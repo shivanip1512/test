@@ -18,6 +18,7 @@ import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.tools.points.model.LitePointModel;
 import com.cannontech.web.tools.points.model.PaoPointModel;
 import com.cannontech.web.tools.points.model.PointBaseModel;
+import com.cannontech.web.tools.points.model.PointCopy;
 import com.cannontech.web.tools.points.model.PointModel;
 
 public interface PointEditorService {
@@ -163,6 +164,11 @@ public interface PointEditorService {
      * Retrieve Point for passed pointId.
      */
     PointBaseModel<? extends PointBase> retrieve(int pointId);
+    
+    /**
+     * Copy Point.
+     */
+    PointBaseModel<? extends PointBase> copy(int portId, PointCopy pointCopy);
     
     /**
      * Retrieve Points info for passed paoId.

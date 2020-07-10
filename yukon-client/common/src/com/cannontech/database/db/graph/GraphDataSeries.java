@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.trend.model.RenderType;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -279,6 +280,10 @@ public class GraphDataSeries extends DBPersistent {
 
     public void setRenderer(Integer integer) {
         renderer = integer;
+    }
+
+    public void setRenderer(RenderType renderType) {
+        setRenderer(renderType.getId());
     }
 
 }

@@ -95,7 +95,7 @@ public class TrendApiTest {
     public void trend_01_resetPeak(ITestContext context) {
         Log.startTestCase("trend_01_resetPeak");
         String resetPeakUri = context.getAttribute(TrendHelper.CONTEXT_TREND_ID).toString() + "/resetPeak";
-        ExtractableResponse<?> resetPeakResponse = ApiCallHelper.patch("resetPeak", resetPeakModel, resetPeakUri);
+        ExtractableResponse<?> resetPeakResponse = ApiCallHelper.post("resetPeak", resetPeakModel, resetPeakUri);
         assertTrue("Status code should be 422", resetPeakResponse.statusCode() == 422);
 
         MockTrendSeries series = trendModel.getTrendSeries().get(0);
@@ -103,7 +103,7 @@ public class TrendApiTest {
 
         ApiCallHelper.put("updateTrend", trendModel, context.getAttribute(TrendHelper.CONTEXT_TREND_ID).toString());
 
-        resetPeakResponse = ApiCallHelper.patch("resetPeak", resetPeakModel, resetPeakUri);
+        resetPeakResponse = ApiCallHelper.post("resetPeak", resetPeakModel, resetPeakUri);
         String trendId = resetPeakResponse.path(TrendHelper.CONTEXT_TREND_ID).toString();
         assertTrue("Status code should be 200", resetPeakResponse.statusCode() == 200);
         assertTrue("Trend Id should not be Null", trendId != null);

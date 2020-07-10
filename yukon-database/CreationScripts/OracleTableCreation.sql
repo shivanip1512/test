@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/6/2020 2:34:37 PM                          */
+/* Created on:     7/9/2020 11:22:01 AM                         */
 /*==============================================================*/
 
 
@@ -10350,7 +10350,7 @@ INSERT INTO YukonRoleProperty VALUES(-10108,-101,'decimal_places','2','How many 
 INSERT INTO YukonRoleProperty VALUES(-10111,-101,'lc_reduction_col','true','Tells TDC to show the LoadControl reduction column or not');
 
 /* Trending Role */
-insert into YukonRoleProperty values(-10200,-102,'graph_edit_graphdefinition','true','<description>');
+insert into YukonRoleProperty values(-10200, -102, 'Manage Trends','VIEW','Controls access to view, create, edit, or delete Trends.');
 insert into YukonRoleProperty values(-10202, -102, 'Trending Disclaimer',' ','The disclaimer that appears with trends.');
 insert into yukonroleproperty values(-10203, -102, 'Scan Now Enabled', 'false', 'Controls access to retrieve meter data on demand.');
 insert into yukonroleproperty values(-10205, -102, 'Minimum Scan Frequency', '15', 'Minimum duration (in minutes) between get data now events.');
