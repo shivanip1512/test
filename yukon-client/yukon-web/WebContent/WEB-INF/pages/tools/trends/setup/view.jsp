@@ -133,7 +133,7 @@
                             </tbody>
                         </table>
                         <div class="action-area">
-                            <cti:button nameKey="add" icon="icon-add" data-popup="#js-add-point-dialog" />
+                            <cti:button nameKey="add" icon="icon-add" classes="js-add-point" />
                         </div>
                     </tags:sectionContainer2>
                 </cti:tab>
@@ -183,7 +183,7 @@
                             </tbody>
                         </table>
                         <div class="action-area">
-                            <cti:button nameKey="add" icon="icon-add" data-popup="#js-add-marker-dialog" />
+                            <cti:button nameKey="add" icon="icon-add" classes="js-add-marker" />
                         </div>
                     </tags:sectionContainer2>
                 </cti:tab>
@@ -194,22 +194,10 @@
                 <cti:button nameKey="cancel" href="${cancelUrl}" />
             </div>
         </form:form>
-        <cti:url value="/tools/trend/renderSetupPopup" var="addMarkerUrl">
-            <cti:param name="isMarker" value="true"/>
-        </cti:url>
-        <div class="dn" id="js-add-marker-dialog"
-                                    data-dialog data-title="<i:inline key=".addMarker" />"
-                                    data-url="${addMarkerUrl}"
-                                    data-event="yukon:trend:setup:addMarker"
-                                    data-load-event="yukon:trend:setup:markerPopupLoaded"></div>
-        <cti:url value="/tools/trend/renderSetupPopup" var="addPointUrl">
-            <cti:param name="isMarker" value="false"/>
-        </cti:url>
-        <div class="dn" id="js-add-point-dialog"
-                                 data-dialog data-title="<i:inline key=".addPoint" />"
-                                 data-url="${addPointUrl}"
-                                 data-event="yukon:trend:setup:addPoint"
-                                 data-load-event="yukon:trend:setup:pointPopupLoaded"></div>
+        <cti:msg2 var="addPointTitle" key=".addPoint"/>
+        <cti:msg2 var="addMarkerTitle" key=".addMarker"/>
+        <input type="hidden" class="js-add-point-title" value="${addPointTitle}"/>
+        <input type="hidden" class="js-add-marker-title" value="${addMarkerTitle}"/>
     </cti:msgScope>
     <cti:includeScript link="/resources/js/pages/yukon.tools.trend.setup.js" />
     <dt:pickerIncludes />

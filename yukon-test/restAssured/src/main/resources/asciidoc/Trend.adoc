@@ -29,6 +29,17 @@ include::{snippets}/TrendApiDoc/Test_Trend_01_Update/response-fields.adoc[]
 *Response JSON* 
 include::{snippets}/TrendApiDoc/Test_Trend_01_Update/http-response.adoc[]
 
+=== Reset Peak
+
+*Request Properties* 
+include::{snippets}/TrendApiDoc/Test_Trend_01_ResetPeak/request-fields.adoc[]
+*Request JSON* 
+include::{snippets}/TrendApiDoc/Test_Trend_01_ResetPeak/http-request.adoc[]
+*Response Properties* 
+include::{snippets}/TrendApiDoc/Test_Trend_01_ResetPeak/response-fields.adoc[]
+*Response JSON* 
+include::{snippets}/TrendApiDoc/Test_Trend_01_ResetPeak/http-response.adoc[]
+
 === Delete
 
 *Request* 

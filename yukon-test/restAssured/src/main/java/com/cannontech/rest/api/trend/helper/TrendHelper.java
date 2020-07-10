@@ -8,6 +8,7 @@ import org.joda.time.DateTimeZone;
 
 import com.cannontech.rest.api.trend.request.MockColor;
 import com.cannontech.rest.api.trend.request.MockRenderType;
+import com.cannontech.rest.api.trend.request.MockResetPeakModel;
 import com.cannontech.rest.api.trend.request.MockTrendAxis;
 import com.cannontech.rest.api.trend.request.MockTrendModel;
 import com.cannontech.rest.api.trend.request.MockTrendSeries;
@@ -35,5 +36,10 @@ public class TrendHelper {
                 .trendSeries(trendSeries)
                 .build();
         return trendModel;
+    }
+
+    public static MockResetPeakModel buildResetPeak() {
+        DateTime startDate = new DateTime(DateTimeZone.UTC).withTimeAtStartOfDay().minusDays(2);
+        return MockResetPeakModel.builder().startDate(startDate).build();
     }
 }
