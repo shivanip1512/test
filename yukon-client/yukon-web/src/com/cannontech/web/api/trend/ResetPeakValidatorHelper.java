@@ -59,10 +59,17 @@ public class ResetPeakValidatorHelper {
      */
     public void validateStartDate(DateTime startDate, Errors errors) {
         String dateI18nText = accessor.getMessage("yukon.common.date");
-        YukonValidationUtils.checkIsBlank(errors, "startDate", Objects.toString(startDate, null), dateI18nText,
-                false);
-        if (!errors.hasFieldErrors("startDate") && startDate.isAfterNow()) {
-            errors.rejectValue("startDate", "yukon.web.error.date.inThePast");
+        if (!errors.hasFieldErrors("startDate")) {
+            YukonValidationUtils.checkIsBlank(errors, "startDate", Objects.toString(startDate, null), dateI18nText, false);
+            if (!errors.hasFieldErrors("startDate") && startDate.isAfterNow()) {
+                errors.rejectValue("startDate", "yukon.web.error.date.inThePast");
+            }
+        }
+    }
+    
+    public void validateIfResetPeakIsApplicable(Integer trendId, Errors errors) {
+        if (!checkIfResetPeakApplicable(Integer.valueOf(trendId))) {
+            errors.reject("yukon.web.error.resetPeak.notApplicable");
         }
     }
 }
