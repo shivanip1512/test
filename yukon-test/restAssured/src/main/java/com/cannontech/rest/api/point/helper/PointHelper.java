@@ -13,6 +13,14 @@ import com.cannontech.rest.api.point.request.MockAccumulatorPoint;
 import com.cannontech.rest.api.point.request.MockAlarmNotificationTypes;
 import com.cannontech.rest.api.point.request.MockAlarmTableEntry;
 import com.cannontech.rest.api.point.request.MockAnalogPoint;
+import com.cannontech.rest.api.point.request.MockCalcAnalogBase;
+import com.cannontech.rest.api.point.request.MockCalcAnalogPointModel;
+import com.cannontech.rest.api.point.request.MockCalcCompType;
+import com.cannontech.rest.api.point.request.MockCalcOperation;
+import com.cannontech.rest.api.point.request.MockCalcStatusPointModel;
+import com.cannontech.rest.api.point.request.MockCalcUpdateType;
+import com.cannontech.rest.api.point.request.MockCalculationBase;
+import com.cannontech.rest.api.point.request.MockCalculationComponent;
 import com.cannontech.rest.api.point.request.MockFdrDirection;
 import com.cannontech.rest.api.point.request.MockFdrInterfaceType;
 import com.cannontech.rest.api.point.request.MockFdrTranslation;
@@ -35,11 +43,14 @@ public class PointHelper {
     public final static Integer uomId = Integer.valueOf(ApiCallHelper.getProperty("uomId"));
     public final static Integer stateGroupId = Integer.valueOf(ApiCallHelper.getProperty("stateGroupId"));
     public final static Integer notificationId = Integer.valueOf(ApiCallHelper.getProperty("notificationGrpID"));
+    public final static Integer baseLineId = Integer.valueOf(ApiCallHelper.getProperty("baselineId"));
+    public final static Double calcAnalogPointId = Double.valueOf(ApiCallHelper.getProperty("pointIdForCalcAnalogCalculation"));
+    public final static Double calcStatusPointId = Double.valueOf(ApiCallHelper.getProperty("pointIdForCalcStatusCalculation"));
 
     public final static MockPointBase buildPoint(MockPointType pointType) {
         MockPointBase point = null;
 
-        String name = ApiUtils.buildFriendlyName(pointType, "", "PointTest");
+        String name = ApiUtils.buildFriendlyName(pointType, "", "Point Test");
         List<MockPointLimit> pointLimit = new ArrayList<>();
         pointLimit.add(buildPointLimit());
         List<MockFdrTranslation> fdrTranslation = new ArrayList<>();
@@ -67,6 +78,49 @@ public class PointHelper {
                                        .alarming(buildPointAlarming())
                                        .fdrList(fdrTranslation)
                                        .build();
+                break;
+            case CalcAnalog:
+                point = MockCalcAnalogPointModel.builder()
+                                                .paoId(paoId)
+                                                .pointName(name)
+                                                .pointType(pointType)
+                                                .pointOffset(pointOffset)
+                                                .pointUnit(buildPointUnit())
+                                                .timingGroup(MockPointLogicalGroups.SOE)
+                                                .archiveType(MockPointArchiveType.ON_TIMER)
+                                                .alarmsDisabled(false)
+                                                .stateGroupId(stateGroupId)
+                                                .archiveInterval(60)
+                                                .enable(true)
+                                                .baselineId(baseLineId)
+                                                .calcComponents(buildAnalogCalculationComponent())
+                                                .calcAnalogBase(buildCalcAnalogBase())
+                                                .staleData(buildStaleData())
+                                                .limits(pointLimit)
+                                                .alarming(buildPointAlarming())
+                                                .fdrList(fdrTranslation)
+                                                .build();
+                break;
+            case CalcStatus :
+                point = MockCalcStatusPointModel.builder()
+                                                .paoId(paoId)
+                                                .pointName(name)
+                                                .pointType(pointType)
+                                                .pointOffset(pointOffset)
+                                                .timingGroup(MockPointLogicalGroups.SOE)
+                                                .archiveType(MockPointArchiveType.ON_TIMER)
+                                                .alarmsDisabled(false)
+                                                .stateGroupId(stateGroupId)
+                                                .archiveInterval(60)
+                                                .enable(true)
+                                                .baselineId(baseLineId)
+                                                .calculationBase(buildCalculculationBase())
+                                                .calcComponents(buildStatusCalculationComponent())
+                                                .pointStatusControl(buildPointStatusControl())
+                                                .staleData(buildStaleData())
+                                                .alarming(buildPointAlarming())
+                                                .fdrList(fdrTranslation)
+                                                .build();                
                 break;
             case DemandAccumulator:
             case PulseAccumulator:
@@ -112,6 +166,41 @@ public class PointHelper {
                 break;
         }
         return point;
+    }
+    
+    private static List<MockCalculationComponent> buildAnalogCalculationComponent() {
+        List<MockCalculationComponent> mockCalculationComponent = new ArrayList<>();
+        mockCalculationComponent.add(MockCalculationComponent.builder()
+                .componentType(MockCalcCompType.OPERATION)
+                .operation(MockCalcOperation.ADDITION_OPERATION)
+                .operand(calcAnalogPointId)
+                .build());
+        return mockCalculationComponent;
+    }
+
+    private static MockCalcAnalogBase buildCalcAnalogBase() {
+        return MockCalcAnalogBase.builder()
+                .updateType(MockCalcUpdateType.ON_TIMER)
+                .periodicRate(15)
+                .calculateQuality(true)
+                .build();
+    }
+    
+    private static List<MockCalculationComponent> buildStatusCalculationComponent() {
+        List<MockCalculationComponent> mockCalculationComponent = new ArrayList<>();
+        mockCalculationComponent.add(MockCalculationComponent.builder()
+                .componentType(MockCalcCompType.OPERATION)
+                .operation(MockCalcOperation.DIVISION_OPERATION)
+                .operand(calcStatusPointId)
+                .build());
+        return mockCalculationComponent;
+    }
+
+    private static MockCalculationBase buildCalculculationBase() {
+        return MockCalculationBase.builder()
+                .updateType(MockCalcUpdateType.ON_TIMER)
+                .periodicRate(15)
+                .build();
     }
     
     private static MockPointAnalog buildPointAnalog() {

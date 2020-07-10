@@ -10,6 +10,7 @@
 <%@ attribute name="linkId" description="Id attribute applied to the 'a' element." %>
 <%@ attribute name="disabled" %>
 <%@ attribute name="href" description="Href attribute applied to the 'a' element." %>
+<%@ attribute name="title" description="Title attribute applied to the 'a' element." %>
 <%@ attribute name="key" description="Required when 'label' attribute is not used." %>
 <%@ attribute name="label" description="Text for the option. Text is html escaped internally." %>
 <%@ attribute name="newTab" type="java.lang.Boolean" description="If true, the link will open in a new browser tab. Default: false." %>
@@ -26,9 +27,9 @@
 
     <a <c:if test="${not empty pageScope.linkId}">id="${linkId}"</c:if> 
        <c:if test="${not empty pageScope.href}">href="${href}"</c:if>
+       <c:if test="${not empty pageScope.title}">title="${title}"</c:if>
        <c:if test="${newTab}">target="_blank"</c:if> 
        class="clearfix">
-
         <c:if test="${showIcon}">
             <cti:icon icon="${icon}" classes="${disabled}"/>
         </c:if>
