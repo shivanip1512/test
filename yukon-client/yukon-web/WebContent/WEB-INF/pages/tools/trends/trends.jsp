@@ -27,28 +27,32 @@
             </div>
             
             <div id="page-actions" class="dn">
-                <cti:url value="/tools/trend/create" var="createUrl"/>
-                <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" href="${createUrl}"/>
-                <cti:url value="/tools/trend/${trendId}/edit" var="editUrl"/>
-                <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}"/>
-                <li class="divider">
-                <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" id="js-delete-option" data-ok-event="yukon:tools:trend:delete"
-                                                      classes="js-hide-dropdown"/>
-                <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${trendModel.name}" />
-                <cti:url var="deleteUrl" value="/tools/trend/${trendId}/delete"/>
-                <form:form id="js-delete-trend-form" action="${deleteUrl}" method="delete" modelAttribute="trendModel">
-                    <tags:hidden path="name"/>
-                    <cti:csrfToken/>
-                </form:form>
-                <li class="divider">
-                <cm:dropdownOption icon="icon-trend-up" key="yukon.web.modules.tools.trends.resetPeaks" href="#"/>
-                <li class="divider">
-                <cm:dropdownOption key=".printChart" icon="icon-printer" classes="js-print"/>
-                <li class="divider">
-                <cm:dropdownOption key=".downloadPng" icon="icon-picture" classes="js-dl-png"/>
+                <cti:checkRolesAndProperties value="MANAGE_TRENDS" level="CREATE">
+                    <cti:url value="/tools/trend/create" var="createUrl"/>
+                    <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" href="${createUrl}"/>
+                </cti:checkRolesAndProperties>
+                <cti:checkRolesAndProperties value="MANAGE_TRENDS" level="UPDATE">
+                    <cti:url value="/tools/trend/${trendId}/edit" var="editUrl"/>
+                    <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}"/>
+                    <li class="divider">
+                </cti:checkRolesAndProperties>
+                <cti:checkRolesAndProperties value="MANAGE_TRENDS" level="OWNER">
+                    <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" id="js-delete-option" data-ok-event="yukon:tools:trend:delete"
+                                                          classes="js-hide-dropdown"/>
+                    <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${trendModel.name}" />
+                    <cti:url var="deleteUrl" value="/tools/trend/${trendId}/delete"/>
+                    <form:form id="js-delete-trend-form" action="${deleteUrl}" method="delete" modelAttribute="trendModel">
+                        <tags:hidden path="name"/>
+                        <cti:csrfToken/>
+                    </form:form>
+                    <li class="divider">
+                </cti:checkRolesAndProperties>
+                <cti:checkRolesAndProperties value="MANAGE_TRENDS" level="UPDATE">
+                    <cm:dropdownOption icon="icon-trend-up" key="yukon.web.modules.tools.trends.resetPeaks" href="#"/>
+                    <li class="divider">
+                </cti:checkRolesAndProperties>
+                <cm:dropdownOption key=".printTrend" icon="icon-printer" classes="js-print"/>
                 <cm:dropdownOption key=".downloadJpg" icon="icon-picture" classes="js-dl-jpg"/>
-                <cm:dropdownOption key=".downloadPdf" icon="icon-page-white-acrobat" classes="js-dl-pdf"/>
-                <li class="divider">
                 <cm:dropdownOption key=".downloadCsv" icon="icon-page-white-excel" classes="js-dl-csv" data-trend-id="${trendId}"/>
             </div>
         </c:if>

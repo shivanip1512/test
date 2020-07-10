@@ -119,8 +119,8 @@
 <entry key="yukon.common.roleProperty.LC_REDUCTION_COL.description">Controls access to display Reduction in All Control Areas display.</entry>
 
 <!-- Trending RoleProperties -->
-<entry key="yukon.common.roleProperty.GRAPH_EDIT_GRAPHDEFINITION">Graph Definition Access</entry>
-<entry key="yukon.common.roleProperty.GRAPH_EDIT_GRAPHDEFINITION.description">Controls access to Create or Edit graph definitions.</entry>
+<entry key="yukon.common.roleProperty.MANAGE_TRENDS">Manage Trends</entry>
+<entry key="yukon.common.roleProperty.MANAGE_TRENDS.description">Controls access to view, create, edit, or delete Trends.</entry>
 <entry key="yukon.common.roleProperty.TRENDING_DISCLAIMER">Trending Disclaimer</entry>
 <entry key="yukon.common.roleProperty.TRENDING_DISCLAIMER.description">The disclaimer displayed for operator metering pages.</entry>
 <entry key="yukon.common.roleProperty.SCAN_NOW_ENABLED">Scan Now Enabled</entry>
