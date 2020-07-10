@@ -1056,6 +1056,13 @@ public class DevEventLogCreationService {
                 toolsEventLogService.scheduleDeleted(user, scheduleName);
                 toolsEventLogService.scheduleImportError(scheduleName, type, error);
 
+                String trendName = devEventLog.getIndicatorString() + "TrendName";
+                DateTime resetPeakStartDate = new DateTime();
+                toolsEventLogService.trendCreated(trendName, user);
+                toolsEventLogService.trendUpdated(trendName, user);
+                toolsEventLogService.trendDeleted(trendName, user);
+                toolsEventLogService.resetPeak(trendName, user, resetPeakStartDate);
+
             }
         });
         executables.put(LogType.USERS, new DevEventLogExecutable() {
@@ -1291,7 +1298,7 @@ public class DevEventLogCreationService {
         RFN_DEVICE(RfnDeviceEventLogService.class, 3),
         STARS(StarsEventLogService.class, 26),
         SYSTEM(SystemEventLogService.class, 35),
-        TOOLS(ToolsEventLogService.class, 28),
+        TOOLS(ToolsEventLogService.class, 32),
         USERS(UsersEventLogService.class, 23),
         VALIDATION(ValidationEventLogService.class, 10),
         ZIGBEE(ZigbeeEventLogService.class, 12),
