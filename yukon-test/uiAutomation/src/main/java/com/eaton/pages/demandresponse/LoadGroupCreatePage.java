@@ -1,10 +1,16 @@
 package com.eaton.pages.demandresponse;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 import com.eaton.elements.Button;
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.RadioButtonElement;
+import com.eaton.elements.Section;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
 import com.eaton.framework.DriverExtensions;
@@ -161,4 +167,19 @@ public class LoadGroupCreatePage extends PageBase {
     public Button getCancelBtn() {
         return new Button(this.driverExt, "Cancel");
     }
+    
+    public void getSectionTitle() {
+        
+    }
+    
+    public Section getGeneralSection() {
+        return new Section(this.driverExt, "General");
+    }
+    
+    public Section getOptionalAttributesSection() {
+        return new Section(this.driverExt, "Optional Attributes");
+    }
+    
+   
+    
 }

@@ -1,5 +1,6 @@
 package com.eaton.elements;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,5 +30,16 @@ public class Section {
 
     public WebElement getSection() {        
         return section;
-    }    
+    }
+
+    public List<String> getSectionLabels() {
+
+        List<WebElement> nameElements = section.findElements(By.cssSelector("table tr .name"));
+        List<String> names = new ArrayList<String>();
+
+        for (WebElement element : nameElements) {
+            names.add(element.getText());
+        }
+        return names;
+    }
 }
