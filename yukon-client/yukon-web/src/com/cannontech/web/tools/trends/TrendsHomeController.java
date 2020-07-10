@@ -237,15 +237,16 @@ public class TrendsHomeController {
     private void callResetPeakApi(YukonUserContext userContext, HttpServletRequest request, ResetPeakModel resetPeakModel,
             Integer trendId, List<String> resetPeakSuccess, List<String> resetPeakFailed) {
         boolean result;
+        LiteGraphDefinition liteGraphDefinition = graphDao.getLiteGraphDefinition(trendId);
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.trendUrl + "/" + trendId + "/resetPeak");
             apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Map.class, (ResetPeakModel) resetPeakModel);
             result = true;
         } catch (ApiCommunicationException | RestClientException e) {
-            log.error("Error is performing reset peak for trend with id {}. Error {}" , trendId, e);
+            log.error("Error while performing reset peak for trend {}.", liteGraphDefinition.getName(), e);
             result = false;
         }
-        LiteGraphDefinition liteGraphDefinition = graphDao.getLiteGraphDefinition(trendId);
+        
         if (result) {
             resetPeakSuccess.add(liteGraphDefinition.getName());
         } else {
