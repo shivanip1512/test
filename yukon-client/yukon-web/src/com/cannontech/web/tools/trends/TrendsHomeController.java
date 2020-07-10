@@ -40,7 +40,9 @@ import com.cannontech.common.trend.model.ResetPeakPopupModel;
 import com.cannontech.common.trend.model.TrendModel;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.GraphDao;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
@@ -59,6 +61,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.EnumPropertyEditor;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.tools.trends.validator.ResetPeakPopupValidator;
 import com.cannontech.web.user.service.UserPreferenceService;
@@ -158,6 +161,7 @@ public class TrendsHomeController {
     }
     
     @GetMapping("/trend/renderResetPeakPopup")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.UPDATE)
     public String renderResetPeakPopup(ModelMap model, @RequestParam("trendId") Integer trendId, YukonUserContext userContext) {
         ResetPeakPopupModel resetPeakPopupModel = null;
         if (model.containsKey("resetPeakPopupModel")) {
@@ -171,6 +175,7 @@ public class TrendsHomeController {
     }
     
     @PostMapping("/trend/resetPeak")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.UPDATE)
     public String resetPeak(ModelMap model, YukonUserContext userContext, HttpServletRequest request, HttpServletResponse response,
             @ModelAttribute("resetPeakPopupModel") ResetPeakPopupModel resetPeakPopupModel, BindingResult bindingResult, FlashScope flashScope) throws JsonGenerationException, JsonMappingException, IOException {
         
