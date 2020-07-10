@@ -8,6 +8,8 @@
 plugins {
     // Apply the java-library plugin to add support for Java Library
     id 'java-library'
+    // Apply base plugin for support gradel clean for jenkins
+    id 'base'
 }
 
 repositories {
