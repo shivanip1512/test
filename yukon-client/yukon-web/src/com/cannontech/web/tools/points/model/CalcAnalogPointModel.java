@@ -8,8 +8,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.google.common.collect.Lists;
 
+@JsonInclude(Include.NON_NULL)
 public class CalcAnalogPointModel extends ScalarPointModel<CalculatedPoint> {
 
     private CalcAnalogBase calcAnalogBase;
@@ -60,7 +63,10 @@ public class CalcAnalogPointModel extends ScalarPointModel<CalculatedPoint> {
                 if (getBaselineId() != null) {
                     calculatedPoint.getCalcBaselinePoint().setBaselineID(getBaselineId());
                 }
+            }else {
+                calculatedPoint.setBaselineAssigned(false);
             }
+
             calculatedPoint.getCalcComponents().clear();
             List<CalcComponent> calcComponents = calculatedPoint.getCalcComponents();
             for (CalculationComponent calculationComponent : getCalcComponents()) {

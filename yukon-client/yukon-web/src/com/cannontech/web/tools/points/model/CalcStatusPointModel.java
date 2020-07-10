@@ -60,6 +60,8 @@ public class CalcStatusPointModel extends StatusPointModel<CalcStatusPoint> {
                 if (getBaselineId() != null) {
                     calcStatusPoint.getCalcBaselinePoint().setBaselineID(getBaselineId());
                 }
+            }else {
+                calcStatusPoint.setBaselineAssigned(false);
             }
             calcStatusPoint.getCalcComponents().clear();
             List<CalcComponent> calcComponents = calcStatusPoint.getCalcComponents();
