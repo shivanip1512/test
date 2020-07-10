@@ -33,7 +33,6 @@ package com.eaton.tests.assets.commchannels;
 	        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 	        commChannelName = "TCP Comm Channel " + timeStamp;
 
-	        // Creating one UDP port comm channel using hard coded json file.
 	        String payloadFile = System.getProperty("user.dir")
 	                + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelTCP.json";
 
@@ -48,6 +47,16 @@ package com.eaton.tests.assets.commchannels;
 	    public void beforeMethod() {
 	        navigate(Urls.Assets.COMM_CHANNEL_DETAIL + commChannelId);
 	        channelDetailPage = new CommChannelDetailPage(driverExt);
+	    }
+	    
+	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL },priority=0)										
+	    public void commChannelTcpEdit_ModalTitleCorrect() {										
+	        String expectedModalTitle = "Edit " + commChannelName;
+	        
+	        EditCommChannelModal editModal = channelDetailPage.showCommChannelEditModal(expectedModalTitle);									
+	        String actualModalTitle = editModal.getModalTitle();								
+	        										
+	        assertThat(actualModalTitle).isEqualTo(expectedModalTitle);										
 	    }
 	    
 	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL },priority=0)										
@@ -102,9 +111,8 @@ package com.eaton.tests.assets.commchannels;
 	        Object body = JsonFileHelper.parseJSONFile(payloadFile);											
 	        jo = (JSONObject) body;											
 	        jo.put("name", commChannelNameTcp);											
-	        ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);											
-	        commChannelId = createResponse.path("id");											
-	        											
+	        ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);																						
+	        
 	        String expectedModalTitle = "Edit " + commChannelName;											
 	        EditCommChannelModal editModal = channelDetailPage.showCommChannelEditModal(expectedModalTitle);											
 										
@@ -113,6 +121,5 @@ package com.eaton.tests.assets.commchannels;
 	        											
 	        String userMsg = editModal.getUserMessage();											
 	        assertThat(userMsg).isEqualTo(EXPECTED_MSG);											
-	    }																		
-	    
-	}
+	    }			
+}
