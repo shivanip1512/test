@@ -44,8 +44,8 @@ public class PointHelper {
     public final static Integer stateGroupId = Integer.valueOf(ApiCallHelper.getProperty("stateGroupId"));
     public final static Integer notificationId = Integer.valueOf(ApiCallHelper.getProperty("notificationGrpID"));
     public final static Integer baseLineId = Integer.valueOf(ApiCallHelper.getProperty("baselineId"));
-    public final static Double calcAnalogPointId = Double.valueOf(ApiCallHelper.getProperty("calcAnalogPointId"));
-    public final static Double calcStatusPointId = Double.valueOf(ApiCallHelper.getProperty("calcStatusPointId"));
+    public final static Double calcAnalogPointId = Double.valueOf(ApiCallHelper.getProperty("pointIdForCalcAnalogCalculation"));
+    public final static Double calcStatusPointId = Double.valueOf(ApiCallHelper.getProperty("pointIdForCalcStatusCalculation"));
 
     public final static MockPointBase buildPoint(MockPointType pointType) {
         MockPointBase point = null;

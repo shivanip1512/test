@@ -53,19 +53,19 @@ public class CalcStatusPointModel extends StatusPointModel<CalcStatusPoint> {
         super.buildDBPersistent(calcStatusPoint);
         getCalculationBase().buildDBPersistent(calcStatusPoint.getCalcBase());
         int order = 1;
+        calcStatusPoint.getCalcComponents().clear();
         if (CollectionUtils.isNotEmpty(getCalcComponents())) {
             boolean isBaselineAssigned = getCalcComponents().stream()
                                                             .anyMatch(component -> component.getComponentType() == CalcCompType.FUNCTION
-                                                            && component.getOperation().getCalcOperation().equals(CalcComponentTypes.BASELINE_FUNCTION));
+                                                            && component.getOperation() == CalcOperation.BASELINE_FUNCTION);
             if (isBaselineAssigned) {
                 calcStatusPoint.setBaselineAssigned(true);
                 if (getBaselineId() != null) {
                     calcStatusPoint.getCalcBaselinePoint().setBaselineID(getBaselineId());
                 }
-            }else {
+            } else {
                 calcStatusPoint.setBaselineAssigned(false);
             }
-            calcStatusPoint.getCalcComponents().clear();
             List<CalcComponent> calcComponents = calcStatusPoint.getCalcComponents();
             for (CalculationComponent calcComponentModel : getCalcComponents()) {
                 CalcComponent calcComponent = new CalcComponent();
@@ -96,9 +96,6 @@ public class CalcStatusPointModel extends StatusPointModel<CalcStatusPoint> {
 
         if (CollectionUtils.isNotEmpty(calcComponentList)) {
             setCalcComponents(calcComponentList);
-        } else {
-            // In the case of empty list, Json message should not have calComponents fields.
-            setCalcComponents(null);
         }
     }
 }

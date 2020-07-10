@@ -7,7 +7,6 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.db.point.calculation.CalcComponent;
-import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.google.common.collect.Lists;
@@ -54,20 +53,20 @@ public class CalcAnalogPointModel extends ScalarPointModel<CalculatedPoint> {
         super.buildDBPersistent(calculatedPoint);
         getCalcAnalogBase().buildDBPersistent(calculatedPoint.getCalcBase());
         int order = 1;
+        calculatedPoint.getCalcComponents().clear();
         if (CollectionUtils.isNotEmpty(getCalcComponents())) {
             boolean isBaselineAssigned = getCalcComponents().stream()
                                                             .anyMatch(component -> component.getComponentType() == CalcCompType.FUNCTION
-                                                            && component.getOperation().getCalcOperation().equals(CalcComponentTypes.BASELINE_FUNCTION));
+                                                            && component.getOperation() == CalcOperation.BASELINE_FUNCTION);
             if (isBaselineAssigned) {
                 calculatedPoint.setBaselineAssigned(true);
                 if (getBaselineId() != null) {
                     calculatedPoint.getCalcBaselinePoint().setBaselineID(getBaselineId());
                 }
-            }else {
+            } else {
                 calculatedPoint.setBaselineAssigned(false);
             }
 
-            calculatedPoint.getCalcComponents().clear();
             List<CalcComponent> calcComponents = calculatedPoint.getCalcComponents();
             for (CalculationComponent calculationComponent : getCalcComponents()) {
                 CalcComponent calcComponent = new CalcComponent();
@@ -97,9 +96,6 @@ public class CalcAnalogPointModel extends ScalarPointModel<CalculatedPoint> {
 
         if (CollectionUtils.isNotEmpty(calculationComponentList)) {
             setCalcComponents(calculationComponentList);
-        } else {
-            // In the case of empty list, Json message should not have calComponents fields.
-            setCalcComponents(null);
         }
     }
 }

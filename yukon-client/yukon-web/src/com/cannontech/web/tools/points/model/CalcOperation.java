@@ -127,10 +127,6 @@ public enum CalcOperation implements DatabaseRepresentationSource, DisplayableEn
         return types;
     }
 
-    public void setTypes(ImmutableSet<CalcCompType> types) {
-        this.types = types;
-    }
-
     @Override
     public String getFormatKey() {
         return baseKey + name();
