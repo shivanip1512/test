@@ -14,6 +14,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,13 +32,11 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.point.PointType;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.pao.service.YukonPointHelper;
-import com.cannontech.web.spring.parameters.exceptions.InvalidFilteringParametersException;
-import com.cannontech.web.spring.parameters.exceptions.InvalidSortingParametersException;
 import com.cannontech.web.tools.points.model.PointBaseModel;
+import com.cannontech.web.tools.points.model.PointCopy;
 import com.cannontech.web.tools.points.service.PointEditorService;
 import com.cannontech.web.tools.points.service.PointEditorService.AttachedException;
 import com.cannontech.web.util.YukonUserContextResolver;
@@ -46,8 +45,9 @@ import com.cannontech.web.util.YukonUserContextResolver;
 public class PointApiController <T extends PointBaseModel<?>> {
 
     @Autowired private PointEditorService pointEditorService;
-    @Autowired private PointApiCreationValidator<T> pointApiCreationValidator;
+    @Autowired private PointCreateApiValidator<T> pointCreateApiValidator;
     @Autowired private List<PointApiValidator<T>> pointApiValidators;
+    @Autowired private PointCopyApiValidator pointCopyApiValidator;
     @Autowired private YukonUserContextResolver contextResolver;
     @Autowired private YukonPointHelper pointHelper;
 
@@ -75,24 +75,24 @@ public class PointApiController <T extends PointBaseModel<?>> {
         return new ResponseEntity<>(pointEditorService.delete(id, getYukonUserContext(request)), HttpStatus.OK);
     }
 
+    @PostMapping("/points/{id}/copy")
+    public ResponseEntity<Object> copy(@Valid @RequestBody PointCopy pointCopy, @PathVariable("id") int id, HttpServletRequest request) {
+        pointHelper.verifyRoles(getYukonUserContext(request).getYukonUser(), HierarchyPermissionLevel.CREATE);
+        return new ResponseEntity<>(pointEditorService.copy(id, pointCopy), HttpStatus.OK);
+      
+    }
+    
     @GetMapping("/devices/{paoId}/points")
-    public ResponseEntity<Object> getPoints(@PathVariable int paoId, DevicePointsFilter filter,
+    public ResponseEntity<Object> getPoints(@PathVariable int paoId, @ModelAttribute("filter") DevicePointsFilter filter,
             @DefaultSort(dir = Direction.asc, sort = "pointName") SortingParameters sorting,
             @DefaultItemsPerPage(value = 250) PagingParameters paging,
             HttpServletRequest request) {
         pointHelper.verifyRoles(getYukonUserContext(request).getYukonUser(), HierarchyPermissionLevel.VIEW);
-
-        // Fetch valid sort by
-        SortBy sortBy = getValidSortBy(sorting.getSort());
-
-        // check for valid point type
-        checkValidPointTypes(filter.getTypes());
-
+        SortBy sortBy = DevicePointDao.SortBy.valueOf(sorting.getSort());
         Direction direction = sorting.getDirection();
-        return new ResponseEntity<>(pointEditorService.getDevicePointDetail(paoId, filter, direction, sortBy, paging),
-                HttpStatus.OK);
+        return new ResponseEntity<>(pointEditorService.getDevicePointDetail(paoId, filter, direction, sortBy, paging), HttpStatus.OK);
     }
-
+   
     @InitBinder("pointBaseModel")
     public void setupBinder(WebDataBinder binder) {
 
@@ -104,7 +104,7 @@ public class PointApiController <T extends PointBaseModel<?>> {
 
         String pointId = ServletUtils.getPathVariable("id");
         if (pointId == null) {
-            binder.addValidators(pointApiCreationValidator);
+            binder.addValidators(pointCreateApiValidator);
         }
     }
 
@@ -121,28 +121,11 @@ public class PointApiController <T extends PointBaseModel<?>> {
     void setValidators(List<PointApiValidator<T>> validators) {
         this.pointApiValidators = validators;
     }
-
-    /**
-     * Get valid Sort By from request parameters
-     * @throws InvalidSortingParametersException when sorting parameters is in valid
-     */
-    private SortBy getValidSortBy(String sortByString) {
-        try {
-            return DevicePointDao.SortBy.valueOf(sortByString);
-        } catch (IllegalArgumentException e) {
-            throw new InvalidSortingParametersException(sortByString + " could not be interpreted as sorting parameter");
-        }
+    
+    @InitBinder("pointCopy")
+    public void setupBinderCopy(WebDataBinder binder) {
+        binder.addValidators(pointCopyApiValidator);
     }
+   
 
-    /**
-     * Check Point Types in request is valid or not
-     * @throws InvalidFilteringParametersException when point types in filtering parameters in invalid
-     */
-    private void checkValidPointTypes(List<PointType> pointTypes) {
-        for (PointType type : pointTypes) {
-            if (type == null) {
-                throw new InvalidFilteringParametersException("types is invalid");
-            }
-        }
-    }
 }
