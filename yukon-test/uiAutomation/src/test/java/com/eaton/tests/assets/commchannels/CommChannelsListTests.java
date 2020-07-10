@@ -80,9 +80,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
     public void commChannelList_TitleCorrect() {
         String EXPECTED_TITLE = "Comm Channels";
-
         String actualPageTitle = listPage.getPageTitle();
-
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
@@ -92,17 +90,15 @@ public class CommChannelsListTests extends SeleniumTestSetup {
         List<String> headers = this.listPage.getTable().getListTableHeaders();
 
         softly.assertThat(headers.size()).isEqualTo(EXPECTED_COUNT);
-
         softly.assertThat(headers.get(0)).isEqualTo("Name");
-        softly.assertThat(headers).contains("Type");
-        softly.assertThat(headers).contains("Status");
+        softly.assertThat(headers.get(1)).contains("Type");
+        softly.assertThat(headers.get(2)).contains("Status");
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
     public void commChannelList_NameLinkCorrect() { 
-        WebTableRow row = listPage.getTable().getDataRowByName(udpCommChannelName);
-        
+        WebTableRow row = listPage.getTable().getDataRowByName(udpCommChannelName); 
         String link = row.getCellLinkByIndex(0);
         
         assertThat(link).contains(Urls.Assets.COMM_CHANNEL_DETAIL.concat(udpCommChannelId));
@@ -111,12 +107,11 @@ public class CommChannelsListTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
     public void commChannelList_SortNamesAscCorrectly() {
         Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
-
+        
         navigate(Urls.Assets.COMM_CHANNEL_NAME_ASC);
         listPage = new CommChannelsListPage(driverExt);
-
+        
         List<String> namesList = listPage.getTable().getDataRowsTextByCellIndex(1);
-
         assertThat(names).isEqualTo(namesList);
     }
 
@@ -124,25 +119,22 @@ public class CommChannelsListTests extends SeleniumTestSetup {
     public void commChannelList_SortNamesDescCorrectly() {
         Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
         Collections.reverse(names);
-
+        
         navigate(Urls.Assets.COMM_CHANNEL_NAME_DESC);
         listPage = new CommChannelsListPage(driverExt);
-
+        
         List<String> namesList = listPage.getTable().getDataRowsTextByCellIndex(1);
-
         assertThat(names).isEqualTo(namesList);
-
     }
 
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
     public void commChannelList_SortTypesAscCorrectly() {
         Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
-
+        
         navigate(Urls.Assets.COMM_CHANNEL_TYPE_ASC);
         listPage = new CommChannelsListPage(driverExt);
-
+        
         List<String> typesList = listPage.getTable().getDataRowsTextByCellIndex(2);
-
         assertThat(types).isEqualTo(typesList);
     }
 
@@ -150,12 +142,9 @@ public class CommChannelsListTests extends SeleniumTestSetup {
     public void commChannelList_SortTypesDescCorrectly() {
         Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
         Collections.reverse(types);
-
         navigate(Urls.Assets.COMM_CHANNEL_TYPE_DESC);
         listPage = new CommChannelsListPage(driverExt);
-
         List<String> typesList = listPage.getTable().getDataRowsTextByCellIndex(2);
-
         assertThat(types).isEqualTo(typesList);
     }
 
@@ -187,11 +176,8 @@ public class CommChannelsListTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
     public void commChannelList_CreateOpensPopupCorrect() {
         String EXPECTED_CREATE_MODEL_TITLE = "Create Comm Channel";
-
         ConfirmModal createModel = listPage.showAndWaitCreateCommChannelModal();
-
         String actualCreateModelTitle = createModel.getModalTitle();
-
         assertThat(actualCreateModelTitle).isEqualTo(EXPECTED_CREATE_MODEL_TITLE);
     }
 }
