@@ -16,10 +16,14 @@ import com.cannontech.rest.api.documentation.DocumentationFields;
 import com.cannontech.rest.api.documentation.DocumentationFields.Copy;
 import com.cannontech.rest.api.documentation.DocumentationFields.Create;
 import com.cannontech.rest.api.documentation.DocumentationFields.Delete;
+import com.cannontech.rest.api.documentation.DocumentationFields.Fields;
 import com.cannontech.rest.api.documentation.DocumentationFields.Get;
 import com.cannontech.rest.api.documentation.DocumentationFields.Update;
 import com.cannontech.rest.api.trend.helper.TrendHelper;
+import com.cannontech.rest.api.trend.request.MockResetPeakModel;
 import com.cannontech.rest.api.trend.request.MockTrendModel;
+import com.cannontech.rest.api.trend.request.MockTrendSeries;
+import com.cannontech.rest.api.trend.request.MockTrendType.MockGraphType;
 
 public class TrendApiDoc extends DocumentationBase {
 
@@ -30,7 +34,11 @@ public class TrendApiDoc extends DocumentationBase {
     private MockTrendModel getMockObject() {
         return TrendHelper.buildTrend();
     }
-    
+
+    private MockResetPeakModel getMockResetPeakObject() {
+        return TrendHelper.buildResetPeak();
+    }
+
     private static List<FieldDescriptor> getFieldDescriptors() {
         FieldDescriptor[] trendFieldDescriptor = new FieldDescriptor[] {
                 fieldWithPath("name")
@@ -70,6 +78,22 @@ public class TrendApiDoc extends DocumentationBase {
         return new ArrayList<>(Arrays.asList(trendFieldDescriptor));
     }
 
+    private static List<FieldDescriptor> getResetPeakReqFieldDescriptors() {
+        FieldDescriptor[] resetPeakFieldDescriptor = new FieldDescriptor[] {
+                fieldWithPath("startDate")
+                        .type(JsonFieldType.STRING)
+                        .description("Start Date") };
+        return new ArrayList<>(Arrays.asList(resetPeakFieldDescriptor));
+    }
+
+    private static List<FieldDescriptor> getResetPeakResFieldDescriptors() {
+        FieldDescriptor[] resetPeakFieldDescriptor = new FieldDescriptor[] {
+                fieldWithPath(idStr)
+                        .type(JsonFieldType.NUMBER)
+                        .description(idDescStr) };
+        return new ArrayList<>(Arrays.asList(resetPeakFieldDescriptor));
+    }
+
     @Test
     public void Test_Trend_01_Create() {
         trendId = createDoc();
@@ -86,6 +110,19 @@ public class TrendApiDoc extends DocumentationBase {
     }
 
     @Test(dependsOnMethods = "Test_Trend_01_Update")
+    public void Test_Trend_01_ResetPeak() {
+        List<FieldDescriptor> requestFields = getResetPeakReqFieldDescriptors();
+        List<FieldDescriptor> responseFields = getResetPeakResFieldDescriptors();
+        MockTrendModel trendModel = getMockObject();
+        MockTrendSeries series = trendModel.getTrendSeries().get(0);
+        series.setType(MockGraphType.PEAK_TYPE);
+        ApiCallHelper.put("updateTrend", trendModel, trendId);
+        String url = ApiCallHelper.getProperty("resetPeak") + trendId + "/resetPeak";
+        Fields fields = new Fields(requestFields, responseFields, idStr, idDescStr, getMockResetPeakObject(), url);
+        actionDoc(fields, "resetPeak");
+    }
+
+    @Test(dependsOnMethods = "Test_Trend_01_ResetPeak")
     public void Test_Trend_01_Delete() {
         deleteDoc();
     }

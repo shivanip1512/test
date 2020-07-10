@@ -62,6 +62,7 @@ import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.tools.points.model.LitePointModel;
 import com.cannontech.web.tools.points.model.PaoPointModel;
 import com.cannontech.web.tools.points.model.PointBaseModel;
+import com.cannontech.web.tools.points.model.PointCopy;
 import com.cannontech.web.tools.points.model.PointInfoModel;
 import com.cannontech.web.tools.points.model.PointModel;
 import com.cannontech.web.tools.points.service.PointEditorService;
@@ -548,7 +549,22 @@ public class PointEditorServiceImpl implements PointEditorService {
         }
         return pointBaseModel;
     }
+    
+    @Override
+    public PointBaseModel<? extends PointBase> copy(int pointId, PointCopy pointCopy) {
+        PointBase pointBase = pointDao.get(pointId);
+        pointBase.setPointID(null);
+        pointCopy.buildDBPersistent(pointBase);
+        dBPersistentDao.performDBChange(pointBase, TransactionType.INSERT);
+        
+        PointType ptType = pointBase.getPoint().getPointTypeEnum();
+        PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType);
+        StaleData staleData = getStaleData(pointId);
+        buildPointBaseModel(pointBase, pointBaseModel, staleData);
+        return pointBaseModel;
+    }
 
+    
     @Override
     public PaoPointModel getDevicePointDetail(int paoId, DevicePointsFilter devicePointsFilter, Direction direction,
             SortBy sortBy, PagingParameters paging) {
