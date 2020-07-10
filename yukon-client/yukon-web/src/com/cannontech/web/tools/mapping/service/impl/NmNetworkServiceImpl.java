@@ -243,21 +243,22 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     @Override
     public NodeComm getNodeCommStatusFromMultiQueryResult(RfnDevice rfnDevice, RfnMetadataMultiQueryResult metadata) {
         if (metadata.isValidResultForMulti(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM)) {
-            DynamicRfnDeviceData deviceData =  rfnDeviceDao.findDynamicRfnDeviceData(rfnDevice.getPaoIdentifier().getPaoId());
-            RfnIdentifier primaryForwardGateway =  deviceData != null ?  deviceData.getGateway().getRfnIdentifier() : null;
             NodeComm comm = (NodeComm) metadata.getMetadatas().get(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM);
             RfnIdentifier reverseGateway = comm.getGatewayRfnIdentifier();
-            if (reverseGateway != null && primaryForwardGateway != null && reverseGateway.equals(primaryForwardGateway)) {
+            DynamicRfnDeviceData deviceData = rfnDeviceDao.findDynamicRfnDeviceData(rfnDevice.getPaoIdentifier().getPaoId());
+            if (deviceData == null) {
+                log.info("Device:{} Primary Gateway:None Reverse Gateway:{} using Reverse Gateway", rfnDevice, reverseGateway);
+                return comm;
+            }
+            RfnIdentifier primaryForwardGateway = deviceData.getGateway().getRfnIdentifier();
+            if (reverseGateway.equals(primaryForwardGateway)) {
                 return comm;
             } else {
-                log.debug("reverse gateway {} primary forward gateway {} for {}", reverseGateway, primaryForwardGateway, rfnDevice);
-                log.info(
-                        "Comm reverse gateway from DynamicRfnDeviceData {} doesn't match primary forward gateway {} for {}, unable to determine comm status",
-                        reverseGateway, primaryForwardGateway, rfnDevice);
+                log.info("Device:{} Primary Gateway:{} Reverse Gateway:{} do not match, unable to determine comm status",
+                        rfnDevice, primaryForwardGateway, reverseGateway);
             }
         } else {
-            log.error(
-                    "NM didn't return REVERSE_LOOKUP_NODE_COMM for {}, unable to determine comm status",
+            log.error("NM didn't return REVERSE_LOOKUP_NODE_COMM for {}, unable to determine comm status",
                     rfnDevice);
         }
         return null;
