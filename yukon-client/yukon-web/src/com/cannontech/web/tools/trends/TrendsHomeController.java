@@ -160,8 +160,8 @@ public class TrendsHomeController {
         out.flush();
     }
     
-    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.UPDATE)
     @GetMapping("/trend/renderResetPeakPopup")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.UPDATE)
     public String renderResetPeakPopup(ModelMap model, @RequestParam("trendId") Integer trendId, YukonUserContext userContext) {
         ResetPeakPopupModel resetPeakPopupModel = null;
         if (model.containsKey("resetPeakPopupModel")) {
@@ -174,8 +174,8 @@ public class TrendsHomeController {
         return "trends/resetPeakPopup.jsp";
     }
     
-    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.UPDATE)
     @PostMapping("/trend/resetPeak")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.UPDATE)
     public String resetPeak(ModelMap model, YukonUserContext userContext, HttpServletRequest request, HttpServletResponse response,
             @ModelAttribute("resetPeakPopupModel") ResetPeakPopupModel resetPeakPopupModel, BindingResult bindingResult, FlashScope flashScope) throws JsonGenerationException, JsonMappingException, IOException {
         
