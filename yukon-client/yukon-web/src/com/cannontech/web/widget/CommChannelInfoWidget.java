@@ -125,7 +125,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
             }
             String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/" + commChannel.getId());
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url,
-                    HttpMethod.POST, Object.class, commChannel);
+                    HttpMethod.PATCH, Object.class, commChannel);
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(commChannel, "commChannel");
                 result = helper.populateBindingError(result, error, response);
