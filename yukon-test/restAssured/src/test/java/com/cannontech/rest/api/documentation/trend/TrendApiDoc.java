@@ -61,7 +61,7 @@ public class TrendApiDoc extends DocumentationBase {
                 fieldWithPath("trendSeries[].style")
                     .type(JsonFieldType.STRING)
                     .optional()
-                    .description("Render Style. Expected:LINE, BAR, STEP. Default Style: LINE"),
+                    .description("Render Style. Expected:LINE, BAR, STEP. Default Style: LINE. Render Style for MARKER_TYPE is LINE"),
                 fieldWithPath("trendSeries[].date")
                     .type(JsonFieldType.STRING)
                     .optional()
