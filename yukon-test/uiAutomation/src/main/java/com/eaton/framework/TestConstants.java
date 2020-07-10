@@ -1,11 +1,6 @@
 package com.eaton.framework;
 
-public final class TestConstants {
-    
-//    public static final class TestNgGroups {
-//        public static final String SMOKE_TESTS = "Smoke_Tests";
-//        public static final String REGRESSION_TESTS = "Regression_Test";
-//    }
+public final class TestConstants {    
     
     public static final class Priority {
         public static final String CRITICAL = "Critical";
