@@ -44,7 +44,7 @@ public class EditCommChannelModal extends BaseModal {
     }
     
     public TabElement getTabElement() {
-        return new TabElement(this.driverExt);
+        return new TabElement(this.driverExt, getModal());
     }
     
     public String getUserMessage() {
