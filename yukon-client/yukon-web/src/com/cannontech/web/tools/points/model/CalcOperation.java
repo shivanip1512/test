@@ -119,10 +119,6 @@ public enum CalcOperation implements DatabaseRepresentationSource, DisplayableEn
         return calcOperation;
     }
 
-    public void setCalcOperation(String calcOperation) {
-        this.calcOperation = calcOperation;
-    }
-
     public ImmutableSet<CalcCompType> getTypes() {
         return types;
     }
