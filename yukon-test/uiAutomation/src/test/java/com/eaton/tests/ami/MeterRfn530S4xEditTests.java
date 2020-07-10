@@ -20,13 +20,13 @@ public class MeterRfn530S4xEditTests extends SeleniumTestSetup {
     private static final String METER = "Meter ";
     private static final String UPDATED = " updated successfully.";
     private static final String DATE_FORMAT = "ddMMyyyyHHmmss";
-    
-    @BeforeClass(alwaysRun=true)
-    public void beforeClass() {
-        driverExt = getDriverExt();                
-    }  
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI })
+    @BeforeClass(alwaysRun = true)
+    public void beforeClass() {
+        driverExt = getDriverExt();
+    }
+
+    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
     public void editMeterRfn530S4xSuccess() {
         navigate(Urls.Ami.METER_DETAIL + "587");
         String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
@@ -45,6 +45,7 @@ public class MeterRfn530S4xEditTests extends SeleniumTestSetup {
 
         String userMsg = detailPage.getUserMessage();
 
-        Assert.assertEquals(userMsg, METER + name + UPDATED, "Expected User Msg: '" + METER + name + UPDATED + "' but found " + userMsg);
-    }    
+        Assert.assertEquals(userMsg, METER + name + UPDATED,
+                "Expected User Msg: '" + METER + name + UPDATED + "' but found " + userMsg);
+    }
 }

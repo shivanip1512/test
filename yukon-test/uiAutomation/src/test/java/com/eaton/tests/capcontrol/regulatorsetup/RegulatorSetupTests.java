@@ -16,7 +16,7 @@ public class RegulatorSetupTests extends SeleniumTestSetup {
 
     private RegulatorSetupPage regulatorSetupPage;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
@@ -27,12 +27,12 @@ public class RegulatorSetupTests extends SeleniumTestSetup {
         regulatorSetupPage = new RegulatorSetupPage(driverExt);
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.VoltVar.VOLT_VAR })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Regulator Setup";
-        
+
         String actualPageTitle = regulatorSetupPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 }

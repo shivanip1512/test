@@ -21,68 +21,69 @@ public class RegulatorEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        driverExt = getDriverExt();        
+        driverExt = getDriverExt();
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Regulator: AT Regulator";
-        
+
         navigate(Urls.CapControl.REGULATOR_EDIT + "671" + Urls.EDIT);
 
         RegulatorEditPage editPage = new RegulatorEditPage(driverExt, 671);
 
         String actualPageTitle = editPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
-    
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void editRegulatorUpdateNameOnlySuccess() {
-        
+
         navigate(Urls.CapControl.REGULATOR_EDIT + "490" + Urls.EDIT);
 
         RegulatorEditPage editPage = new RegulatorEditPage(driverExt, 490);
-        
+
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
-        
-        String name = "AT Edited Regulator " + timeStamp; 
+
+        String name = "AT Edited Regulator " + timeStamp;
         editPage.getName().setInputValue(name);
-        
+
         editPage.getSaveBtn().click();
-        
+
         waitForPageToLoad("Regulator: " + name, Optional.empty());
-        
+
         RegulatorDetailPage detailsPage = new RegulatorDetailPage(driverExt, 490);
-        
-        //The saved successfully message is missing why?
+
+        // The saved successfully message is missing why?
 //        String userMsg = detailsPage.getUserMessageSuccess();
 //        
 //        Assert.assertEquals(userMsg, "Regulator was saved successfully.");
         String actualPageTitle = detailsPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo("Regulator: " + name);
-    }   
-    
-    @Test(enabled = false, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
+    }
+
+    @Test(enabled = false, groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void deleteRegulatorSuccess() {
-        
+
         navigate(Urls.CapControl.REGULATOR_EDIT + "578" + Urls.EDIT);
 
         RegulatorEditPage editPage = new RegulatorEditPage(driverExt, 578);
-        
+
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
-        
+
         modal.clickOkAndWait();
-        
+
         waitForPageToLoad("Orphans", Optional.empty());
-        
+
         OrphansPage detailsPage = new OrphansPage(driverExt);
-        
-        //TODO need to figure out what to assert since there is no message like the other volt/var objects that it has been deleted
-        
+
+        // TODO need to figure out what to assert since there is no message like the other volt/var objects that it has been
+        // deleted
+
 //        String userMsg = detailsPage.getUserMessageSuccess();
 //        
 //        assertThat(userMsg).isEqualTo("Feeder AT Delete Feeder deleted successfully.");

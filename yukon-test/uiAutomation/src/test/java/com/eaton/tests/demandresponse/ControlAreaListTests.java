@@ -20,7 +20,7 @@ public class ControlAreaListTests extends SeleniumTestSetup {
     private ControlAreaListPage listPage;
     private SoftAssertions softly;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
@@ -31,22 +31,23 @@ public class ControlAreaListTests extends SeleniumTestSetup {
 
         listPage = new ControlAreaListPage(driverExt);
     }
-    
-    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Control Areas";
-        
+
         String actualPageTitle = listPage.getPageTitle();
-        
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
+
+        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE,
+                "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void columnHeadersCorrect() {
         final int EXPECTED_COUNT = 8;
-        
+
         List<String> headers = this.listPage.getTable().getListTableHeaders();
-        
+
         softly.assertThat(headers.size()).isEqualTo(EXPECTED_COUNT);
         softly.assertThat(headers).contains("Name");
         softly.assertThat(headers).contains("State");
@@ -55,7 +56,7 @@ public class ControlAreaListTests extends SeleniumTestSetup {
         softly.assertThat(headers).contains("ATKU");
         softly.assertThat(headers).contains("Priority");
         softly.assertThat(headers).contains("Time Window");
-        
+
         softly.assertAll();
     }
 }

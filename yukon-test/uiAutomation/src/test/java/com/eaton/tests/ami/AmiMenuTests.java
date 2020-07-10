@@ -12,11 +12,11 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.HomePage;
 
 public class AmiMenuTests extends SeleniumTestSetup {
-    
-    private HomePage page;
-    private static final int AMI_INDEX =  0;
 
-    @BeforeClass(alwaysRun=true)
+    private HomePage page;
+    private static final int AMI_INDEX = 0;
+
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
@@ -26,57 +26,57 @@ public class AmiMenuTests extends SeleniumTestSetup {
 
         page = new HomePage(driverExt);
     }
-    
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI })
-    public void dashboardUrlCorrect() {        
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
+    public void dashboardUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 0);
 
         assertThat(url).contains(Urls.Ami.DASHBOARD);
     }
-    
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI})
+
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
     public void billingUrlCorrect() {
-        
+
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 1);
 
         assertThat(url).contains(Urls.Ami.BILLING);
     }
-    
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI})
+
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
     public void bulkImportUrlCorrect() {
-        
+
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 2);
 
         assertThat(url).contains(Urls.Ami.BULK_IMPORT);
     }
-    
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI})
+
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
     public void bulkUpdateUrlCorrect() {
-        
+
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 3);
 
         assertThat(url).contains(Urls.Ami.BULK_UPDATE);
     }
-    
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI})
+
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
     public void legacyImporterUrlCorrect() {
-        
+
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 4);
 
         assertThat(url).contains(Urls.Ami.LEGACY_IMPORTER);
     }
-    
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI})
+
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
     public void pointImportUrlCorrect() {
-        
+
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 5);
 
         assertThat(url).contains(Urls.Ami.POINT_IMPORT);
     }
-    
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI})
+
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
     public void reportsUrlCorrect() {
-        
+
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 6);
 
         assertThat(url).contains(Urls.Ami.REPORTS);

@@ -16,7 +16,7 @@ public class GroupCreateTests extends SeleniumTestSetup {
 
     private GroupCreatePage createPage;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
@@ -26,8 +26,8 @@ public class GroupCreateTests extends SeleniumTestSetup {
         createPage = new GroupCreatePage(driverExt);
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void pageTitleCorrect() {        
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Group";
 
         String actualPageTitle = createPage.getPageTitle();

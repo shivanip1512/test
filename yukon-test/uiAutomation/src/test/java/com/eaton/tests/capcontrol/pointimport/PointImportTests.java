@@ -16,23 +16,23 @@ public class PointImportTests extends SeleniumTestSetup {
 
     private PointImportPage importPage;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
-        DriverExtensions driverExt = getDriverExt();        
+        DriverExtensions driverExt = getDriverExt();
 
         driver.get(getBaseUrl() + Urls.CapControl.POINT_IMPORT);
 
         importPage = new PointImportPage(driverExt);
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.VoltVar.VOLT_VAR })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Point Import";
-        
+
         String actualPageTitle = importPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 }

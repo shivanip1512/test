@@ -16,7 +16,7 @@ public class CustomerListTests extends SeleniumTestSetup {
 
     private CustomerListPage listPage;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
@@ -27,7 +27,7 @@ public class CustomerListTests extends SeleniumTestSetup {
         listPage = new CustomerListPage(driverExt);
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Customers";
 

@@ -24,7 +24,7 @@ public class CbcCreateTests extends SeleniumTestSetup {
     private DriverExtensions driverExt;
     private Random randomNum;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
@@ -37,23 +37,23 @@ public class CbcCreateTests extends SeleniumTestSetup {
         randomNum = getRandomNum();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create CBC";
-        
+
         String actualPageTitle = createPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void createCbcRequiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "CBC was successfully saved.";
-        
+
         int masterAddress = randomNum.nextInt(65000);
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        
+
         String name = "AT CBC " + timeStamp;
         this.createPage.getType().selectItemByText("CBC 8020");
         this.createPage.getMasterAddress().setInputValue(String.valueOf(masterAddress));
@@ -70,7 +70,7 @@ public class CbcCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @AfterMethod(alwaysRun=true)
+    @AfterMethod(alwaysRun = true)
     public void afterTest() {
         refreshPage(createPage);
     }

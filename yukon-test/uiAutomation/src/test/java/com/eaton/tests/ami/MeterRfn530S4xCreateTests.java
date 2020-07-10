@@ -26,10 +26,10 @@ public class MeterRfn530S4xCreateTests extends SeleniumTestSetup {
     private Random randomNum;
     private static final String CREATED = " created successfully.";
     private static final String METER = "Meter ";
-    
+
     private static final String DATE_FORMAT = "ddMMyyyyHHmmss";
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
@@ -39,9 +39,9 @@ public class MeterRfn530S4xCreateTests extends SeleniumTestSetup {
 
         amiDashboardPage = new AmiDashboardPage(driverExt);
         randomNum = getRandomNum();
-    }       
-    
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI })
+    }
+
+    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
     public void createMeterRfn530S4xSuccess() {
 
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
@@ -80,7 +80,7 @@ public class MeterRfn530S4xCreateTests extends SeleniumTestSetup {
         return sb.toString();
     }
 
-    @AfterMethod(alwaysRun=true)
+    @AfterMethod(alwaysRun = true)
     public void afterTest() {
         refreshPage(amiDashboardPage);
     }

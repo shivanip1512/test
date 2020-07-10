@@ -41,7 +41,7 @@ public class MeterRfn430Sl4CreateTests extends SeleniumTestSetup {
         randomNum = getRandomNum();
     }    
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI })
+    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
     public void createMeterRfn430Sl4Success() {
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 

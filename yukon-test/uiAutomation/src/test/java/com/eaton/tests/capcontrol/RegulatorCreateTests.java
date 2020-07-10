@@ -22,51 +22,51 @@ public class RegulatorCreateTests extends SeleniumTestSetup {
     private RegulatorCreatePage createPage;
     private DriverExtensions driverExt;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
         driverExt = getDriverExt();
-        
+
         driver.get(getBaseUrl() + Urls.CapControl.REGULATOR_CREATE);
 
         createPage = new RegulatorCreatePage(driverExt);
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Regulator";
-        
+
         String actualPageTitle = createPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
-    
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void createRegulatorRequiredFieldsOnlySuccess() {
-        
+
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        
-        String name = "AT Regulator " + timeStamp; 
+
+        String name = "AT Regulator " + timeStamp;
         createPage.getName().setInputValue(name);
-        
+
         createPage.getSaveBtn().click();
-        
+
         waitForPageToLoad("Regulator: " + name, Optional.empty());
-        
+
         RegulatorDetailPage detailsPage = new RegulatorDetailPage(driverExt);
-        
-        //The saved successfully message is missing why?
+
+        // The saved successfully message is missing why?
 //        String userMsg = detailsPage.getUserMessageSuccess();
 //        
 //        Assert.assertEquals(userMsg, "Regulator was saved successfully.");
         String actualPageTitle = detailsPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo("Regulator: " + name);
-    }    
-    
-    @AfterMethod(alwaysRun=true)
-    public void afterTest() {        
+    }
+
+    @AfterMethod(alwaysRun = true)
+    public void afterTest() {
         refreshPage(createPage);
     }
 }

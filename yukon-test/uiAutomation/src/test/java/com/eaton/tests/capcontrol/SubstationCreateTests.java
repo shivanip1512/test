@@ -22,48 +22,48 @@ public class SubstationCreateTests extends SeleniumTestSetup {
     private SubstationCreatePage createPage;
     private DriverExtensions driverExt;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
         driverExt = getDriverExt();
-        
+
         driver.get(getBaseUrl() + Urls.CapControl.SUBSTATION_CREATE);
 
         createPage = new SubstationCreatePage(driverExt);
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Substation";
-        
+
         String actualPageTitle = createPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
-    
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void createSubstationRequiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "Substation was saved successfully.";
-        
+
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        
-        String name = "AT Substation " + timeStamp; 
+
+        String name = "AT Substation " + timeStamp;
         createPage.getName().setInputValue(name);
-        
+
         createPage.getSaveBtn().click();
-        
+
         waitForPageToLoad("Substation: " + name, Optional.empty());
-        
+
         SubstationDetailPage detailsPage = new SubstationDetailPage(driverExt);
-        
+
         String userMsg = detailsPage.getUserMessage();
-        
+
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }    
-    
-    @AfterMethod(alwaysRun=true)
-    public void afterTest() {        
+    }
+
+    @AfterMethod(alwaysRun = true)
+    public void afterTest() {
         refreshPage(createPage);
     }
 }

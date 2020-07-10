@@ -16,7 +16,7 @@ public class CiProgramListTests extends SeleniumTestSetup {
 
     private ProgramListPage programPage;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
@@ -26,7 +26,7 @@ public class CiProgramListTests extends SeleniumTestSetup {
         programPage = new ProgramListPage(driverExt);
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Programs";
 

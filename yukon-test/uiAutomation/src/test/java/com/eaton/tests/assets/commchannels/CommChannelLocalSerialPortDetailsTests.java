@@ -56,14 +56,14 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         channelDetailPage = new CommChannelDetailPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsLocalSerialPort_PageTitleCorrect() {
         String EXPECTED_TITLE = commChannelName;
         String actualPageTitle = channelDetailPage.getPageTitle();
         assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsLocalSerialPort_TabTitlesCorrect() {
         List<String> titles = channelDetailPage.getTabElement().getTitles();
 
@@ -73,7 +73,7 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsLocalSerialPort_InfoTabLabelsCorrect() {
         String infoTitle = "Info";
         channelDetailPage.getTabElement().clickTab(infoTitle);
@@ -88,10 +88,10 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsLocalSerialPort_InfoTabValuesCorrect() {        
-        List<String> values = channelDetailPage.getTabElement().getTabValues("Info");        
-        
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    public void commChannelDetailsLocalSerialPort_InfoTabValuesCorrect() {
+        List<String> values = channelDetailPage.getTabElement().getTabValues("Info");
+
         softly.assertThat(values.size()).isEqualTo(5);
         softly.assertThat(values.get(0)).isEqualTo(commChannelName);
         softly.assertThat(values.get(1)).isEqualTo("Local Serial Port");
@@ -101,23 +101,23 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsLocalSerialPort_ConfigTabTimingSectionDisplayed() {
         String infoTitle = "Configuration";
         channelDetailPage.getTabElement().clickTab(infoTitle);
         Section timing = channelDetailPage.getTimingSection();
         assertThat(timing.getSection()).isNotNull();
     }
-    
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsLocalSerialPort_ConfigTabGeneralSectionDisplayed() {
         String infoTitle = "Configuration";
         channelDetailPage.getTabElement().clickTab(infoTitle);
         Section timing = channelDetailPage.getGeneralSection();
         assertThat(timing.getSection()).isNotNull();
     }
-    
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsLocalSerialPort_ConfigTabSharedSectionDisplayed() {
         String infoTitle = "Configuration";
         channelDetailPage.getTabElement().clickTab(infoTitle);
@@ -125,15 +125,15 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         assertThat(timing.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsLocalSerialPort_ConfigTabLabelsCorrect() {
         String infoTitle = "Configuration";
-        
+
         channelDetailPage.getTabElement().clickTab(infoTitle);
         List<String> labels = channelDetailPage.getTabElement().getTabLabels(infoTitle);
-       
+
         softly.assertThat(labels.size()).isEqualTo(9);
-        
+
         softly.assertThat(labels.get(0)).isEqualTo("Protocol Wrap:");
         softly.assertThat(labels.get(1)).isEqualTo("Carrier Detect Wait:");
         softly.assertThat(labels.get(2)).isEqualTo("Pre Tx Wait:");
@@ -145,13 +145,13 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         softly.assertThat(labels.get(8)).isEqualTo("Socket Number:");
         softly.assertAll();
     }
-    
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
+
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsLocalSerialPort_ConfigTabValuesCorrect() {
         channelDetailPage.getTabElement().clickTab("Configuration");
-        
-        List<String> values = channelDetailPage.getTabElement().getTabValues("Configuration");        
-        
+
+        List<String> values = channelDetailPage.getTabElement().getTabValues("Configuration");
+
         softly.assertThat(values.size()).isEqualTo(9);
         softly.assertThat(values.get(0)).isEqualTo("IDLC");
         softly.assertThat(values.get(1)).isEqualTo("123 ms");
@@ -166,7 +166,7 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsLocalSerialPort_PanelTitleCorrect() {
         String expectedPanelText = "Comm Channel Information";
         String actualPanelText = channelDetailPage.getCommChannelInfoPanel().getPanelName();

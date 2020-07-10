@@ -18,7 +18,7 @@ public class CbcListTests extends SeleniumTestSetup {
     private CbcListPage listPage;
     private SoftAssertions softly;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
@@ -29,19 +29,19 @@ public class CbcListTests extends SeleniumTestSetup {
         this.listPage = new CbcListPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void columnHeadersCorrect() {
         final int EXPECTED_COUNT = 3;
 
         List<String> headers = this.listPage.getTable().getListTableHeaders();
-        
+
         int actualCount = headers.size();
-        
+
         softly.assertThat(actualCount).isEqualTo(EXPECTED_COUNT);
         softly.assertThat(headers).contains("Name");
         softly.assertThat(headers).contains("Item Type");
         softly.assertThat(headers).contains("Description");
-        
+
         softly.assertAll();
     }
 }

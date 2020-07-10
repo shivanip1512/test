@@ -21,68 +21,68 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        driverExt = getDriverExt();                
+        driverExt = getDriverExt();
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void pageTitleCorrect() {        
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Load Program: AT Load Program";
-        
+
         navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "665");
-        
+
         LoadProgramDetailPage detailPage = new LoadProgramDetailPage(driverExt, 665);
 
         String actualPageTitle = detailPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
-    
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void copyLoadProgramSuccess() {
-        
+
         navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "604");
 
         LoadProgramDetailPage detailPage = new LoadProgramDetailPage(driverExt, 604);
-        
+
         CopyLoadProgramModal modal = detailPage.showCopyLoadProgramModal();
-        
+
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
         String name = "AT Copied Program " + timeStamp;
-        final String EXPECTED_MSG = name +" copied successfully.";
-        
+        final String EXPECTED_MSG = name + " copied successfully.";
+
         modal.getName().setInputValue(name);
-        
+
         modal.clickOkAndWait();
-        
+
         waitForPageToLoad("Load Program: " + name, Optional.of(8));
-        
+
         LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt, 604);
-        
+
         String userMsg = detailsPage.getUserMessage();
-        
+
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
-    
-    @Test(enabled = true, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
+
+    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void deleteLoadProgramSuccess() {
         final String EXPECTED_MSG = "AT Delete Direct Program deleted successfully.";
-        
+
         navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "605");
 
         LoadProgramDetailPage detailPage = new LoadProgramDetailPage(driverExt, 605);
-        
+
         ConfirmModal modal = detailPage.showDeleteLoadProgramModal();
-        
+
         modal.clickOkAndWait();
-        
+
         waitForPageToLoad("Setup", Optional.empty());
-        
+
         DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_PROGRAM);
-        
+
         String userMsg = setupPage.getUserMessage();
-        
+
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }   
+    }
 }

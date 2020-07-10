@@ -23,7 +23,7 @@ public class CapBankCreateTests extends SeleniumTestSetup {
     private CapBankCreatePage createPage;
     private DriverExtensions driverExt;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         WebDriver driver = getDriver();
         driverExt = getDriverExt();
@@ -33,20 +33,20 @@ public class CapBankCreateTests extends SeleniumTestSetup {
         this.createPage = new CapBankCreatePage(driverExt);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.VoltVar.VOLT_VAR })
-    public void pageTitleCorrect() {   
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create CapBank";
-        
+
         String actualPageTitle = createPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
 
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void createCapBankRequiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "CapBank was saved successfully.";
-        
+
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 
         String name = "AT CapBank " + timeStamp;
@@ -63,7 +63,7 @@ public class CapBankCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @AfterMethod(alwaysRun=true)
+    @AfterMethod(alwaysRun = true)
     public void afterTest() {
         refreshPage(createPage);
     }

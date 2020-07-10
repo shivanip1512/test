@@ -20,13 +20,13 @@ public class MeterRfn420flEditTests extends SeleniumTestSetup {
     private static final String METER = "Meter ";
     private static final String UPDATED = " updated successfully.";
     private static final String DATE_FORMAT = "ddMMyyyyHHmmss";
-    
-    @BeforeClass(alwaysRun=true)
+
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        driverExt = getDriverExt();                
+        driverExt = getDriverExt();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI })
+    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
     public void editMeterRfn420flSuccess() {
         navigate(Urls.Ami.METER_DETAIL + "492");
         String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
@@ -35,7 +35,7 @@ public class MeterRfn420flEditTests extends SeleniumTestSetup {
         MeterDetailsPage meterDetailsPage = new MeterDetailsPage(driverExt, 492);
 
         EditMeterModal editModal = meterDetailsPage.showMeterEditModal();
-        
+
         editModal.getdeviceName().setInputValue(name);
         editModal.clickOkAndWait();
 
@@ -45,7 +45,7 @@ public class MeterRfn420flEditTests extends SeleniumTestSetup {
 
         String userMsg = detailPage.getUserMessage();
 
-        Assert.assertEquals(userMsg, METER + name + UPDATED, "Expected User Msg: '" + METER + name + UPDATED + "' but found " + userMsg);
+        Assert.assertEquals(userMsg, METER + name + UPDATED,
+                "Expected User Msg: '" + METER + name + UPDATED + "' but found " + userMsg);
     }
 }
-

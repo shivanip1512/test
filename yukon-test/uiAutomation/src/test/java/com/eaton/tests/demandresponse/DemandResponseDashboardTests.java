@@ -18,7 +18,7 @@ public class DemandResponseDashboardTests extends SeleniumTestSetup {
     private DemandResponseDashboardPage demandPage;
     private SoftAssertions softly;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
@@ -30,41 +30,41 @@ public class DemandResponseDashboardTests extends SeleniumTestSetup {
         demandPage = new DemandResponseDashboardPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "DR Dashboard";
-        
+
         String actualPageTitle = demandPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void quickSearchLinkActiveControlAreasUrlCorrect() {
         String url = demandPage.getQuickSearchesUrl("Active Control Areas");
 
         assertThat(url).contains(Urls.DemandResponse.ACTIVE_CONTROL_AREAS);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void quickSearchLinkActiveProgramsUrlCorrect() {
         String url = demandPage.getQuickSearchesUrl("Active Programs");
 
         assertThat(url).contains(Urls.DemandResponse.ACTIVE_PROGRAMS);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void quickSearchLinkActiveLoadGroupsUrlCorrect() {
         String url = demandPage.getQuickSearchesUrl("Active Load Groups");
 
         assertThat(url).contains(Urls.DemandResponse.ACTIVE_LOAD_GROUPS);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void actionsBtnDisplayedAndEnabled() {
         softly.assertThat(demandPage.getActionBtn().isEnabled()).isTrue();
         softly.assertThat(demandPage.getActionBtn().isDisplayed()).isTrue();
-        
+
         softly.assertAll();
     }
 }

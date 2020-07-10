@@ -16,7 +16,7 @@ public class CapControlDashboardTests extends SeleniumTestSetup {
 
     private CapControlDashboardPage dashboardPage;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
@@ -27,12 +27,12 @@ public class CapControlDashboardTests extends SeleniumTestSetup {
         dashboardPage = new CapControlDashboardPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Volt/Var Dashboard";
-        
+
         String actualPageTitle = dashboardPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 }

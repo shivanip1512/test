@@ -16,7 +16,7 @@ public class GroupListTests extends SeleniumTestSetup {
 
     private CiGroupListPage listPage;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
@@ -27,12 +27,12 @@ public class GroupListTests extends SeleniumTestSetup {
         listPage = new CiGroupListPage(driverExt);
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Groups";
 
         String actualPageTitle = listPage.getPageTitle();
 
-        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);  
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 }

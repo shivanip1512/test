@@ -16,7 +16,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
 
     private SupportPage supportPage;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
@@ -26,7 +26,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         supportPage = new SupportPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.Admin.ADMIN })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Support";
 

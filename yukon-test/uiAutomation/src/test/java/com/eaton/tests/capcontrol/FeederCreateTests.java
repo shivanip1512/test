@@ -22,48 +22,48 @@ public class FeederCreateTests extends SeleniumTestSetup {
     private FeederCreatePage createPage;
     private DriverExtensions driverExt;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
         driverExt = getDriverExt();
-        
+
         driver.get(getBaseUrl() + Urls.CapControl.FEEDER_CREATE);
 
         createPage = new FeederCreatePage(driverExt);
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Feeder";
-        
+
         String actualPageTitle = createPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
-    
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.VoltVar.VOLT_VAR })
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void createFeederRequiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "Feeder was saved successfully.";
-        
+
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        
+
         String name = "AT Feeder " + timeStamp;
         createPage.getName().setInputValue(name);
-        
+
         createPage.getSaveBtn().click();
-        
+
         waitForPageToLoad("Feeder: " + name, Optional.empty());
-        
+
         FeederDetailPage detailsPage = new FeederDetailPage(driverExt);
-        
+
         String userMsg = detailsPage.getUserMessage();
-        
+
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }    
-    
-    @AfterMethod(alwaysRun=true)
-    public void afterTest() {        
+    }
+
+    @AfterMethod(alwaysRun = true)
+    public void afterTest() {
         refreshPage(createPage);
     }
 }

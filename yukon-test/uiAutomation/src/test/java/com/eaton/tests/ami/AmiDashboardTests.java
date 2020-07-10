@@ -26,7 +26,7 @@ public class AmiDashboardTests extends SeleniumTestSetup {
         amiPage = new AmiDashboardPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI})
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI})
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Dashboard: Default AMI Dashboard";
         

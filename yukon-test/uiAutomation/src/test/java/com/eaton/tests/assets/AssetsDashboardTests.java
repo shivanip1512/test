@@ -27,7 +27,7 @@ public class AssetsDashboardTests extends SeleniumTestSetup {
         assetsPage = new AssetDashboardPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Assets Dashboard";
         

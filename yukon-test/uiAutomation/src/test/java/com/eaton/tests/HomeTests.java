@@ -26,21 +26,21 @@ public class HomeTests extends SeleniumTestSetup {
         page = new HomePage(driverExt);
     }
     
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS })
+    @Test(groups = { TestConstants.Priority.CRITICAL})
     public void supportUrlCorrect() {
         String url = page.getUtilityUrl("Support");
 
         assertThat(url).contains(Urls.SUPPORT);
     }
     
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS })
+    @Test(groups = { TestConstants.Priority.HIGH })
     public void siteMapUrlCorrect() {
         String url = page.getUtilityUrl("Site Map");
 
         assertThat(url).contains(Urls.SITE_MAP);
     }
     
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS })
+    @Test(groups = { TestConstants.Priority.CRITICAL })
     public void versionDisplayed() {        
         assertThat(page.versionDisplayed()).isTrue();
     }
