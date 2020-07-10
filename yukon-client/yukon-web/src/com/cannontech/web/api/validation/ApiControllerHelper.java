@@ -118,7 +118,7 @@ public class ApiControllerHelper {
         if (StringUtils.isEmpty(webServerApiUrl)) {
             HttpStatus httpStatus = apiConnection(request, userContext);
             if (httpStatus != HttpStatus.OK) {
-                apiRequestHelper.setProxy();
+                apiRequestHelper.setProxyAndSslConfig();
                 httpStatus = apiConnection(request, userContext);
             }
             if (httpStatus != HttpStatus.OK) {

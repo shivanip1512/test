@@ -57,7 +57,7 @@ public class ApiRequestHelper {
     @Autowired private GlobalSettingDao settingDao;
     private static final Logger log = YukonLogManager.getLogger(ApiRequestHelper.class);
 
-    public synchronized void setProxy() {
+    public synchronized void setProxyAndSslConfig() {
         try {
             TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
     
