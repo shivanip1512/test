@@ -4951,7 +4951,7 @@ Network Manager :
     jira : NM-885
     notes : 
 
-  - filename : quartz-2.3.0.jar
+  - filename : quartz-2.3.0-SNAPSHOT.jar
     yukon group : Scheduling
     project : Quartz
     version : 2.3.0
