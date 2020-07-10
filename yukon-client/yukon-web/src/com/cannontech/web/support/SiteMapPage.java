@@ -165,7 +165,7 @@ public enum SiteMapPage implements DisplayableEnum {
     DASHBOARDS(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.config.dashboards.pageName", "dashboards/admin",
                MatchStyle.all, OtherPermission.HIDEABLE, YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS),
     ATTRIBUTES(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.config.attributes.pageName", "/admin/config/attributes",
-               MatchStyle.all, OtherPermission.HIDEABLE),
+               MatchStyle.all, YukonRoleProperty.ADMIN_MANAGE_ATTRIBUTES),
     
     COMMANDER(SiteMapCategory.TOOLS, "yukon.web.modules.tools.commander.pageHeading", "/tools/commander",
             MatchStyle.all, YukonRoleProperty.ENABLE_WEB_COMMANDER),
