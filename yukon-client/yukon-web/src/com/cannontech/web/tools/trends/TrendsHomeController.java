@@ -55,7 +55,6 @@ public class TrendsHomeController {
         model.addAttribute("labels", TrendUtils.getLabels(userContext, messageResolver));
         
         model.addAttribute("autoUpdate", userPreferenceService.getDefaultTrendAutoUpdateSelection(userContext.getYukonUser()));
-        
         return "trends/trends.jsp";
     }
     
@@ -65,7 +64,7 @@ public class TrendsHomeController {
 
         List<LiteGraphDefinition> trends = graphDao.getGraphDefinitions();
         model.addAttribute("trends", trends);
-
+        
         LiteGraphDefinition trend = graphDao.getLiteGraphDefinition(id);
         if (null == trend) {
             return "redirect:/tools/trends";
@@ -77,7 +76,6 @@ public class TrendsHomeController {
             
             model.addAttribute("autoUpdate", userPreferenceService.getDefaultTrendAutoUpdateSelection(userContext.getYukonUser()));
             addTrendModelToModelMap(model, trend);
-
             return "trends/trends.jsp";
         }
     }
