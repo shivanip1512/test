@@ -530,6 +530,8 @@ INIT_ATTRIBUTE( PowerFailure,                                       "POWER_FAILU
 INIT_ATTRIBUTE( RadioFailure,                                       "RADIO_FAILURE" );
 INIT_ATTRIBUTE( DoorOpen,                                           "DOOR_OPEN" );
 INIT_ATTRIBUTE( NodeCountExceeded,                                  "NODE_COUNT_EXCEEDED" );
+INIT_ATTRIBUTE( UpsBatteryVoltageLow,                               "UPS_BATTERY_VOLTAGE_LOW" );
+INIT_ATTRIBUTE( CertificateExpiration,                              "CERTIFICATE_EXPIRATION" );
 
 INIT_ATTRIBUTE( StreamingCapableDeviceCount,                        "STREAMING_CAPABLE_DEVICE_COUNT" );
 INIT_ATTRIBUTE( StreamingActiveDeviceCount,                         "STREAMING_ACTIVE_DEVICE_COUNT" );

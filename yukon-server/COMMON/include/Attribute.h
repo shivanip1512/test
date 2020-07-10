@@ -521,6 +521,8 @@ public:
     static const Attribute  RadioFailure;
     static const Attribute  DoorOpen;
     static const Attribute  NodeCountExceeded;
+    static const Attribute  UpsBatteryVoltageLow;
+    static const Attribute  CertificateExpiration;
 
     static const Attribute  StreamingCapableDeviceCount;
     static const Attribute  StreamingActiveDeviceCount;

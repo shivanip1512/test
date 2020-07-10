@@ -7,12 +7,14 @@ import java.util.Optional;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 
 public enum AlarmType {
-    SECURITY_ALARM(1L, AlarmCategory.GW_ALARM, BuiltInAttribute.SECURITY_ALARM),
-    POWER_ALARM(2L, AlarmCategory.GW_ALARM, BuiltInAttribute.POWER_FAILURE),
-    RADIO_ALARM(3L, AlarmCategory.GW_ALARM, BuiltInAttribute.RADIO_FAILURE),
-    TIME_SYNCHRONIZATION_ALARM(4L, AlarmCategory.GW_ALARM, BuiltInAttribute.TIME_SYNC_FAILED),
-    EXTERNAL_ALARM(5L, AlarmCategory.GW_ALARM, BuiltInAttribute.DOOR_OPEN),
-    NODE_COUNT_ALARM(6L, AlarmCategory.GW_ALARM, BuiltInAttribute.NODE_COUNT_EXCEEDED),
+    SECURITY_ALARM(0L, AlarmCategory.GW_ALARM, BuiltInAttribute.SECURITY_ALARM),
+    POWER_ALARM(1L, AlarmCategory.GW_ALARM, BuiltInAttribute.POWER_FAILURE),
+    RADIO_ALARM(2L, AlarmCategory.GW_ALARM, BuiltInAttribute.RADIO_FAILURE),
+    TIME_SYNCHRONIZATION_ALARM(3L, AlarmCategory.GW_ALARM, BuiltInAttribute.TIME_SYNC_FAILED),
+    EXTERNAL_ALARM(4L, AlarmCategory.GW_ALARM, BuiltInAttribute.DOOR_OPEN),
+    NODE_COUNT_ALARM(5L, AlarmCategory.GW_ALARM, BuiltInAttribute.NODE_COUNT_EXCEEDED),
+    EXTERNAL2_ALARM(6L, AlarmCategory.GW_ALARM, BuiltInAttribute.UPS_BATTERY_VOLTAGE_LOW),
+    CERTIFICATE_EXPIRATION_ALARM(7L, AlarmCategory.GW_ALARM, BuiltInAttribute.CERTIFICATE_EXPIRATION),
     ;
     
     private static Map<Long, AlarmType> GwAlarmMap = new HashMap<>();

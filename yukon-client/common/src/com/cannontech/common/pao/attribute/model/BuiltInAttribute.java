@@ -532,6 +532,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RADIO_FAILURE("Radio Failure", AttributeGroup.RFN_OTHER_EVENT, false),
     DOOR_OPEN("Door Open", AttributeGroup.RFN_OTHER_EVENT, false),
     NODE_COUNT_EXCEEDED("Node Count Exceeded", AttributeGroup.RFN_OTHER_EVENT, false),
+    UPS_BATTERY_VOLTAGE_LOW("UPS Battery Voltage Low", AttributeGroup.RFN_OTHER_EVENT, false),
+    CERTIFICATE_EXPIRATION("Certificate Expiration", AttributeGroup.RFN_OTHER_EVENT, false),
     
     // Gateway Statistics
     STREAMING_CAPABLE_DEVICE_COUNT("Connected Device Count", AttributeGroup.GATEWAY_STATISTICS, false),
