@@ -8,17 +8,18 @@ import com.google.common.collect.ImmutableMap.Builder;
 
 public enum Color implements DatabaseRepresentationSource, DisplayableEnum {
 
-    BLACK(Colors.BLACK_ID),
     BLUE(Colors.BLUE_ID),
-    CYAN(Colors.CYAN_ID),
-    // Color picker require it to be "GREY" instead of "GRAY".
-    GREY(Colors.GRAY_ID),
+    RED(Colors.RED_ID),
     GREEN(Colors.GREEN_ID),
+    BLACK(Colors.BLACK_ID),
     MAGENTA(Colors.MAGENTA_ID),
     ORANGE(Colors.ORANGE_ID),
+    YELLOW(Colors.YELLOW_ID),
     PINK(Colors.PINK_ID),
-    RED(Colors.RED_ID),
-    YELLOW(Colors.YELLOW_ID);
+ // Color picker require it to be "GREY" instead of "GRAY".
+    GREY(Colors.GRAY_ID);
+    
+    private static Color[] values = values();
 
     private int colorId;
     private String baseKey = "yukon.web.modules.tools.trend.color.";
@@ -52,6 +53,10 @@ public enum Color implements DatabaseRepresentationSource, DisplayableEnum {
     @Override
     public Object getDatabaseRepresentation() {
         return colorId;
+    }
+    
+    public static Color getNextDefaultColor(int index) {
+        return values[index % values.length];
     }
 
 }
