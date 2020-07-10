@@ -32,9 +32,12 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.pao.service.YukonPointHelper;
+import com.cannontech.web.spring.parameters.exceptions.InvalidFilteringParametersException;
+import com.cannontech.web.spring.parameters.exceptions.InvalidSortingParametersException;
 import com.cannontech.web.tools.points.model.PointBaseModel;
 import com.cannontech.web.tools.points.model.PointCopy;
 import com.cannontech.web.tools.points.service.PointEditorService;
@@ -81,18 +84,24 @@ public class PointApiController <T extends PointBaseModel<?>> {
         return new ResponseEntity<>(pointEditorService.copy(id, pointCopy), HttpStatus.OK);
       
     }
-    
+
     @GetMapping("/devices/{paoId}/points")
-    public ResponseEntity<Object> getPoints(@PathVariable int paoId, @ModelAttribute("filter") DevicePointsFilter filter,
+    public ResponseEntity<Object> getPoints(@PathVariable int paoId, DevicePointsFilter filter,
             @DefaultSort(dir = Direction.asc, sort = "pointName") SortingParameters sorting,
             @DefaultItemsPerPage(value = 250) PagingParameters paging,
             HttpServletRequest request) {
         pointHelper.verifyRoles(getYukonUserContext(request).getYukonUser(), HierarchyPermissionLevel.VIEW);
-        SortBy sortBy = DevicePointDao.SortBy.valueOf(sorting.getSort());
+
+        // Fetch valid sort by
+        SortBy sortBy = getValidSortBy(sorting.getSort());
+
+        // check for valid point type
+        checkValidPointTypes(filter.getTypes());
+
         Direction direction = sorting.getDirection();
         return new ResponseEntity<>(pointEditorService.getDevicePointDetail(paoId, filter, direction, sortBy, paging), HttpStatus.OK);
     }
-   
+
     @InitBinder("pointBaseModel")
     public void setupBinder(WebDataBinder binder) {
 
@@ -126,6 +135,28 @@ public class PointApiController <T extends PointBaseModel<?>> {
     public void setupBinderCopy(WebDataBinder binder) {
         binder.addValidators(pointCopyApiValidator);
     }
-   
 
+    /**
+     * Get valid Sort By from request parameters
+     * @throws InvalidSortingParametersException when sorting parameters is in valid
+     */
+    private SortBy getValidSortBy(String sortByString) {
+        try {
+            return DevicePointDao.SortBy.valueOf(sortByString);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidSortingParametersException(sortByString + " could not be interpreted as sorting parameter");
+        }
+    }
+
+    /**
+     * Check Point Types in request is valid or not
+     * @throws InvalidFilteringParametersException when point types in filtering parameters in invalid
+     */
+    private void checkValidPointTypes(List<PointType> pointTypes) {
+        for (PointType type : pointTypes) {
+            if (type == null) {
+                throw new InvalidFilteringParametersException("types is invalid");
+            }
+        }
+    }
 }
