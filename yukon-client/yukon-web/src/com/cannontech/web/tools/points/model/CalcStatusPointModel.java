@@ -8,8 +8,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import com.cannontech.database.data.point.CalcStatusPoint;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.google.common.collect.Lists;
-
+@JsonInclude(Include.NON_NULL)
 public class CalcStatusPointModel extends StatusPointModel<CalcStatusPoint> {
 
     private CalculationBase calculationBase;
