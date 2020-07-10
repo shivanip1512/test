@@ -4951,19 +4951,19 @@ Network Manager :
     jira : NM-885
     notes : 
 
-  - filename : quartz-1.6.4.jar
+  - filename : quartz-2.3.0.jar
     yukon group : Scheduling
     project : Quartz
-    version : 1.6.4
+    version : 2.3.0
     project URL : "http://www.quartz-scheduler.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.quartz-scheduler/quartz"
-    md5 : 69f2b06f0f8d4d8bf78ad0ac418dc623
-    sha1 : 333dc5c5b65d89d5cf64759f5f8b939d6e3279c6
-    updated : 2009-02-10
-    jira : none
-    notes : 
+    md5 : a9c2bcf5ed6b2c8b6ca315a545d01261
+    sha1 : a090397102a12f6241177c5d501835334bb7662a
+    updated : 2020-07-10
+    jira : NM-1559
+    notes : Quartz is used for scheduling the jobs.
 
   - filename : reactive-streams-1.0.2.jar
     yukon group : Spring
