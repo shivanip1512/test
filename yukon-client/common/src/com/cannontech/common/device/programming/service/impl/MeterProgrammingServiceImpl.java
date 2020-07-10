@@ -44,6 +44,7 @@ import com.cannontech.common.device.programming.message.MeterProgramStatusArchiv
 import com.cannontech.common.device.programming.message.MeterProgramStatusArchiveRequest.Source;
 import com.cannontech.common.device.programming.model.MeterProgram;
 import com.cannontech.common.device.programming.model.MeterProgramCommandResult;
+import com.cannontech.common.device.programming.model.MeterProgramSource;
 import com.cannontech.common.device.programming.model.MeterProgramStatus;
 import com.cannontech.common.device.programming.model.ProgrammingStatus;
 import com.cannontech.common.device.programming.service.MeterProgramValidationService;
@@ -252,20 +253,22 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 
         CommandCompletionCallback<CommandRequestDevice> execCallback = getExecutionCallback(context, result);
         meterProgrammingDao.assignDevicesToProgram(guid, supportedDevices);
-        setProgramStatusToInitiating(supportedDevices);
+        setProgramStatusToInitiating(guid, supportedDevices);
         execute(context, command, result, supportedDevices, execCallback);
         return result.getCacheKey();
     }
 
     /**
      * Sends status update message to SM to update MeterProgramStatus table
+     * @param guid 
      */
-    private void setProgramStatusToInitiating(List<SimpleDevice> supportedDevices) {
+    private void setProgramStatusToInitiating(UUID guid, List<SimpleDevice> supportedDevices) {
         Map<? extends YukonPao, RfnIdentifier> meterIdentifiersByPao = rfnDeviceDao.getRfnIdentifiersByPao(supportedDevices);
         supportedDevices.forEach(device -> {
             MeterProgramStatusArchiveRequest request = new MeterProgramStatusArchiveRequest();
             request.setError(DeviceError.SUCCESS);
             request.setSource(Source.WS_COLLECTION_ACTION);
+            request.setConfigurationId(MeterProgramSource.YUKON.getPrefix() + guid);
             request.setRfnIdentifier(meterIdentifiersByPao.get(device));
             request.setStatus(ProgrammingStatus.INITIATING);
             request.setTimestamp(Instant.now());

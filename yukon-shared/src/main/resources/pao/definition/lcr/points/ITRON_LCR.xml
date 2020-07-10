@@ -260,7 +260,7 @@
     
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="3" type="Status">
-        <name>Relay 1 Relay State</name>
+        <name>Relay 1 Load State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
         <stategroup value="RelayState"/>
     </point>
@@ -270,7 +270,7 @@
         <stategroup value="TwoStateActive"/>
     </point>
     <point offset="5" type="Status">
-        <name>Relay 2 Relay State</name>
+        <name>Relay 2 Load State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
         <stategroup value="RelayState"/>
     </point>
@@ -280,7 +280,7 @@
         <stategroup value="TwoStateActive"/>
     </point>
     <point offset="7" type="Status">
-        <name>Relay 3 Relay State</name>
+        <name>Relay 3 Load State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
         <stategroup value="RelayState"/>
     </point>
@@ -290,7 +290,7 @@
         <stategroup value="TwoStateActive"/>
     </point>
     <point offset="9" type="Status">
-        <name>Relay 4 Relay State</name>
+        <name>Relay 4 Load State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
         <stategroup value="RelayState"/>
     </point>
