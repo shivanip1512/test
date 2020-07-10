@@ -251,7 +251,10 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 return comm;
             }
             RfnIdentifier primaryForwardGateway = deviceData.getGateway().getRfnIdentifier();
-            if (reverseGateway.equals(primaryForwardGateway)) {
+            if (reverseGateway == null) {
+                log.info("Device:{} Primary Gateway:{} Reverse Gateway:None Status is unknown", rfnDevice,
+                        primaryForwardGateway);
+            } else if (reverseGateway.equals(primaryForwardGateway)) {
                 return comm;
             } else {
                 log.info("Device:{} Primary Gateway:{} Reverse Gateway:{} do not match, unable to determine comm status",
