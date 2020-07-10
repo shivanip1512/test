@@ -495,6 +495,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     TIME_SYNC_FAILED("Time Sync Failed", AttributeGroup.RFN_OTHER_EVENT, false),
     TOU_SCHEDULE_CHANGE("TOU Schedule Change", AttributeGroup.RFN_SOFTWARE_EVENT, false),
     TOU_SCHEDULE_ERROR("TOU Schedule Error", AttributeGroup.RFN_SOFTWARE_EVENT, false),
+    ULTRA_CAPACITOR_BAD("Ultra Capacitor Bad", AttributeGroup.RFN_SOFTWARE_EVENT, false),
     UNCONFIGURED("Unconfigured", AttributeGroup.RFN_SOFTWARE_EVENT, false),
     UNPROGRAMMED("Unprogrammed", AttributeGroup.RFN_SOFTWARE_EVENT, false),
     USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED("User Programmable Temperature Threshold Exceeded", AttributeGroup.RFN_METERING_EVENT, false),
