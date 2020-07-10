@@ -74,7 +74,30 @@ yukon.adminSetup.attributes = (function () {
                 dialog.find('.js-point-type').val(pointType);
                 dialog.find('.js-point-offset').val(pointOffset);
                 
-            }); 
+            });
+            
+            $(document).on('click', '.js-edit-assignment', function () {
+                var assignmentId = $(this).data('assignmentId'),
+                    url = yukon.url('/admin/config/attributeAssignments/popup?id=' + assignmentId),
+                    popup = $('.js-edit-assignment-popup'),
+                    popupTitle = popup.data('title');
+
+                popup.load(url, function () {
+                    popup.dialog({
+                        title : popupTitle,
+                        width: 'auto',
+                        modal: true,
+                        buttons: yukon.ui.buttons({
+                            okText: yg.text.save,
+                            event: 'yukon:assignment:save'
+                        })
+                    });
+                    if (popup.find('.user-message').is(':visible')) {
+                        $('.ui-dialog-buttonset').find('.js-primary-action').prop('disabled', true);
+                    }
+                });
+
+            });
             
             $(document).on("yukon:assignment:save", function (event) {
                 var popup = $(event.target);

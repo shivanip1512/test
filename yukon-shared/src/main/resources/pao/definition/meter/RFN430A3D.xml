@@ -15,6 +15,7 @@
         <tag name="RFN_DEMAND_RESET"/>
         <tag name="RFN_EVENTS"/>
         <tag name="RFN_POINT_CALCULATION"/>
+        <tag name="SUPPORTS_ATTRIBUTE_ASSIGNMENT"/>
         <tag name="THREE_PHASE_VOLTAGE"/>
         <tag name="USES_METER_NUMBER_FOR_MSP"/>
         <tag name="METER_PROGRAMMING"/>

@@ -33,6 +33,8 @@ import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -56,9 +58,11 @@ public class AttributesController {
     @Autowired private AttributeValidator attributeValidator;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     
     private static final String redirectLink = "redirect:/admin/config/attributes";
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
+    private static final String baseKey = "yukon.web.modules.adminSetup.config.attributes.";
     
     private static final Logger log = YukonLogManager.getLogger(AttributesController.class);
 
@@ -76,9 +80,7 @@ public class AttributesController {
             editAttribute = (CustomAttribute) model.get("editAttribute");
         }
         model.addAttribute("editAttribute", editAttribute);
-        List<PaoType> deviceTypes = dbCache.getAllPaoTypes().stream()
-                .sorted().collect(Collectors.toList());
-        model.addAttribute("deviceTypes", deviceTypes);
+        model.addAttribute("deviceTypes", getDeviceTypesThatSupportAssignment());
         retrieveAssignments(sorting, null, null, model, userContext, request);
         return "config/attributes.jsp";
     }
@@ -149,6 +151,14 @@ public class AttributesController {
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.createAttribute", result);
         }
     }
+    
+    private List<PaoType> getDeviceTypesThatSupportAssignment() {
+        List<PaoType> deviceTypes = dbCache.getAllPaoTypes().stream()
+                .filter(type -> paoDefinitionDao.isTagSupported(type, PaoTag.SUPPORTS_ATTRIBUTE_ASSIGNMENT))
+                .sorted((p1, p2) -> p1.getDbString().compareTo(p2.getDbString()))
+                .collect(Collectors.toList());
+        return deviceTypes;
+    }
         
     @DeleteMapping("/config/attribute/{id}/delete")
     public String deleteAttribute(ModelMap model, @PathVariable int id, String name, HttpServletRequest request, 
@@ -183,7 +193,8 @@ public class AttributesController {
     }
     
     @GetMapping("/config/attributeAssignments/popup")
-    public String assignmentPopup(Integer id, ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
+    public String assignmentPopup(Integer id, ModelMap model, YukonUserContext userContext, HttpServletRequest request, 
+                                  FlashScope flashScope) {
         AttributeAssignment assignment = new AttributeAssignment();
         if (id != null) {
             try {
@@ -196,13 +207,14 @@ public class AttributesController {
                 }
             } catch (ApiCommunicationException e) {
                 log.error(e);
-                //flashScope.setError(new YukonMessageSourceResolvable(communicationKey));
-                //return redirectLink;
+                flashScope.setError(new YukonMessageSourceResolvable(communicationKey));
+                return "config/attributeAssignmentPopup.jsp";
             } catch (RestClientException ex) {
                 log.error("Error retrieving custom attribute assignment. Error: {}", ex.getMessage());
-                //MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-                //flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.retrieve.error", accessor.getMessage("yukon.web.modules.tools.trend"), ex.getMessage()));
-                //return redirectLink;
+                MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+                String attributeAssignmentLabel = accessor.getMessage(baseKey + "attributeAssignment");
+                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.retrieve.error", attributeAssignmentLabel, ex.getMessage()));
+                return "config/attributeAssignmentPopup.jsp";
             }
         }
         
@@ -214,16 +226,15 @@ public class AttributesController {
     
     private void retrievePopupModel(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
         retrieveCustomAttributes(model, userContext, request);
-        List<PaoType> deviceTypes = dbCache.getAllPaoTypes().stream()
-                .sorted().collect(Collectors.toList());
-        model.addAttribute("deviceTypes", deviceTypes);
+        model.addAttribute("deviceTypes", getDeviceTypesThatSupportAssignment());
         model.addAttribute("pointTypes", PointType.values());
     }
     
     @PostMapping("/config/attributeAssignments/save")
     public String saveAssignment(@ModelAttribute("assignment") AttributeAssignment assignment, BindingResult result, ModelMap model, 
                                     YukonUserContext userContext, HttpServletRequest request, HttpServletResponse resp, FlashScope flashScope) {
-
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        String attributeAssignmentLabel = accessor.getMessage(baseKey + "attributeAssignment");
         //validate
         
         //call REST API
@@ -249,7 +260,7 @@ public class AttributesController {
             }
             
             if (response.getStatusCode() == HttpStatus.OK) {
-                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", assignment.getAttribute().getName()));
+                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", attributeAssignmentLabel));
             }
         } catch (ApiCommunicationException ex) {
             log.error(ex.getMessage());
@@ -258,9 +269,9 @@ public class AttributesController {
             retrievePopupModel(model, userContext, request);
             return "config/attributeAssignmentPopup.jsp";
         } catch (RestClientException e) {
-            log.error("Error saving custom attribute assignment: {}. Error: {}", assignment.getAttribute().getName(), e.getMessage());
+            log.error("Error saving custom attribute assignment: {}. Error: {}", attributeAssignmentLabel, e.getMessage());
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", assignment.getAttribute().getName(), e.getMessage()));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", attributeAssignmentLabel, e.getMessage()));
             retrievePopupModel(model, userContext, request);
             return "config/attributeAssignmentPopup.jsp";
         }
@@ -286,8 +297,10 @@ public class AttributesController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return redirectLink;
         } catch (RestClientException ex) {
-            log.error("Error deleting custom attribute assignment: {}. Error: {}", name, ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", name, ex.getMessage()));
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            String attributeAssignmentLabel = accessor.getMessage(baseKey + "attributeAssignment");
+            log.error("Error deleting assignment for custom attribute: {}. Error: {}", name, ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", attributeAssignmentLabel, ex.getMessage()));
             return redirectLink;
         }
         return redirectLink;
@@ -383,7 +396,7 @@ public class AttributesController {
         attributeName,
         deviceType,
         pointType,
-        offset;
+        pointOffset;
 
         @Override
         public String getFormatKey() {

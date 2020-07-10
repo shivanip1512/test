@@ -9,6 +9,7 @@
         <tag name="IPC_METER"/>
         <tag name="METER_DETAIL_DISPLAYABLE"/>
         <tag name="PORTER_COMMAND_REQUESTS"/>
+        <tag name="SUPPORTS_ATTRIBUTE_ASSIGNMENT"/>
     </tags>
     <pointInfos>
         <pointInfo name="Comm Status" attributes="COMM_STATUS"/>

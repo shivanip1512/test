@@ -3,17 +3,18 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="modules.adminSetup.config.attributes,yukon.common">
 
     <table class="compact-results-table row-highlighting has-actions">
-        <thead>
-            <th><i:inline key=".attributeName"/></th>
-            <th><i:inline key=".deviceType"/></th>
-            <th><i:inline key=".pointType"/></th>
-            <th><i:inline key=".pointOffset"/></th>
+        <tr>
+            <tags:sort column="${attributeName}"/>
+            <tags:sort column="${deviceType}"/>
+            <tags:sort column="${pointType}"/>
+            <tags:sort column="${pointOffset}"/>
             <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
-        </thead>
+        </tr>
         <tbody>
             <c:forEach var="assignment" items="${assignments}">
                 <tr>
@@ -38,5 +39,12 @@
             </c:forEach>
         </tbody>
     </table>
+    
+    <cti:msg2 var="editAssignmentTitle" key=".editAssignmentTitle"/>
+    <div class="dn js-edit-assignment-popup"
+             data-popup
+             data-dialog
+             data-title="${editAssignmentTitle}">
+    </div>
 
 </cti:msgScope>
