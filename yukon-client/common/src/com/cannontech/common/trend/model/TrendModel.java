@@ -68,12 +68,6 @@ public class TrendModel {
                 graphSeries.setType(series.getType() == null ? GDSTypes.BASIC_GRAPH_TYPE
                         : GDSTypesFuncs.getTypeInt(series.getType().getStringType()));
                 graphSeries.setMultiplier(series.getMultiplier() == null ? 1 : series.getMultiplier());
-
-                if (graphSeries.getType() == GDSTypes.MARKER_TYPE)
-                    graphSeries.setRenderer(RenderType.LINE.getId());
-                else
-                    graphSeries.setRenderer(series.getStyle() == null ? RenderType.LINE.getId() : series.getStyle().getId());
-
                 if (series.getType() != null
                         && (series.getType() == GraphType.PEAK_TYPE || series.getType() == GraphType.DATE_TYPE)) {
                     if (series.getType() == GraphType.PEAK_TYPE) {
@@ -88,6 +82,12 @@ public class TrendModel {
                     }
                 } else {
                     graphSeries.setMoreData(CtiUtilities.STRING_NONE);
+                }
+                // Setting LINE as default for Marker type.
+                if (series.getType().isMarkerType()) {
+                    graphSeries.setRenderer(RenderType.LINE);
+                } else {
+                    graphSeries.setRenderer(series.getStyle() == null ? RenderType.LINE : series.getStyle());
                 }
                 // Set GraphDefinationId in case of Update flow.
                 if (graph.getGraphDefinition().getGraphDefinitionID() != null) {
