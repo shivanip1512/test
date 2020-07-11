@@ -14,7 +14,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -144,7 +143,7 @@ public class PointApiController <T extends PointBaseModel<?>> {
         try {
             return DevicePointDao.SortBy.valueOf(sortByString);
         } catch (IllegalArgumentException e) {
-            throw new InvalidSortingParametersException(sortByString + " could not be interpreted as sorting parameter");
+            throw new InvalidSortingParametersException(sortByString + " could not be interpreted as sorting by parameter");
         }
     }
 
@@ -153,9 +152,11 @@ public class PointApiController <T extends PointBaseModel<?>> {
      * @throws InvalidFilteringParametersException when point types in filtering parameters in invalid
      */
     private void checkValidPointTypes(List<PointType> pointTypes) {
-        for (PointType type : pointTypes) {
-            if (type == null) {
-                throw new InvalidFilteringParametersException("types is invalid");
+        if (pointTypes != null) {
+            for (PointType type : pointTypes) {
+                if (type == null) {
+                    throw new InvalidFilteringParametersException("types is invalid");
+                }
             }
         }
     }

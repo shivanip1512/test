@@ -46,7 +46,7 @@ public class PagingParametersHandlerMethodArgumentResolver implements HandlerMet
      * Get valid Items per page
      * @throws InvalidPagingParametersException for Invalid Items per page
      */
-    private Integer getValidItemsPerPage(String itemsPerPageString) {
+    private static Integer getValidItemsPerPage(String itemsPerPageString) {
 
         Integer itemsPerPage = null;
         try {
@@ -55,7 +55,7 @@ public class PagingParametersHandlerMethodArgumentResolver implements HandlerMet
             throw new InvalidPagingParametersException(itemsPerPageString + " is not a valid Integer for Items per page");
         }
 
-        // Items per page should be less than 0 and less than 1000
+        // Items per page should be less than 0 and more than 1000
         if (itemsPerPage > CtiUtilities.MAX_ITEMS_PER_PAGE || itemsPerPage < CtiUtilities.MIN_ITEMS_PER_PAGE) {
             throw new InvalidPagingParametersException("Items per page should be greater than 0 and less than 1000");
         }
@@ -67,7 +67,7 @@ public class PagingParametersHandlerMethodArgumentResolver implements HandlerMet
      * Get valid page number
      * @throws InvalidPagingParametersException for Invalid page number
      */
-    private Integer getValidPageNumber(String pageString) {
+    private static Integer getValidPageNumber(String pageString) {
 
         Integer pageNumber = null;
         try {
