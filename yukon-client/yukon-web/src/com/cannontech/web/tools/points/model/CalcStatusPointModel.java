@@ -62,6 +62,7 @@ public class CalcStatusPointModel extends StatusPointModel<CalcStatusPoint> {
                 calcStatusPoint.setBaselineAssigned(true);
                 if (getBaselineId() != null) {
                     calcStatusPoint.getCalcBaselinePoint().setBaselineID(getBaselineId());
+                    calcStatusPoint.setPointID(getPointId());
                 }
             } else {
                 calcStatusPoint.setBaselineAssigned(false);
@@ -69,6 +70,7 @@ public class CalcStatusPointModel extends StatusPointModel<CalcStatusPoint> {
             List<CalcComponent> calcComponents = calcStatusPoint.getCalcComponents();
             for (CalculationComponent calcComponentModel : getCalcComponents()) {
                 CalcComponent calcComponent = new CalcComponent();
+                calcComponent.setPointID(getPointId());
                 calcComponent.setComponentOrder(order++);
                 calcComponentModel.buildDBPersistent(calcComponent);
                 calcComponents.add(calcComponent);
