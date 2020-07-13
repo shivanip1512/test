@@ -36,8 +36,8 @@
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_NODE_COUNT_EXCEEDED.CLEAR">Gateway node count is now below limit.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_UPS_BATTERY_VOLTAGE_LOW.LOW">Gateway detecting low voltage on UPS battery.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_UPS_BATTERY_VOLTAGE_LOW.CLEAR">Gateway no longer detecting low voltage on UPS battery.</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CERT_EXPIRATION.LOW">Gateway certificate will soon expire.</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CERT_EXPIRATION.CLEAR">Gateway no longer detecting open door.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CERT_EXPIRATION.LOW">Gateway detecting upcoming certificate expiration.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CERT_EXPIRATION.CLEAR">Gateway no longer detecting upcoming certificate expiration.</entry>
     
     <entry key="yukon.web.widgets.infrastructureWarnings.gateways">Gateways</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.relays">Relays</entry>
