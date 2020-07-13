@@ -63,7 +63,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
         boolean isCreationOperation = target.getPointId() == null ? true : false;
 
         if (target.getPointName() != null) {
-            YukonValidationUtils.checkIsBlank(errors, "pointName", target.getPointName(), "Name", false);
+            YukonValidationUtils.checkIsBlank(errors, "pointName", target.getPointName(), "Point Name", false);
         }
         if (target.getPaoId() != null) {
             LiteYukonPAObject liteYukonPAObject = serverDatabaseCache.getAllPaosMap().get(target.getPaoId());

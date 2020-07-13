@@ -1,5 +1,10 @@
 package com.cannontech.web.tools.points.service.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.ControlStateType;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
@@ -11,15 +16,25 @@ import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.web.tools.points.model.AccumulatorPointModel;
 import com.cannontech.web.tools.points.model.AnalogPointModel;
+import com.cannontech.web.tools.points.model.CalcAnalogPointModel;
+import com.cannontech.web.tools.points.model.CalcStatusPointModel;
 import com.cannontech.web.tools.points.model.PointBaseModel;
 import com.cannontech.web.tools.points.model.ScalarPointModel;
 import com.cannontech.web.tools.points.model.StatusPointModel;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * The purpose of this class is to create PointBaseModel and Populating default PointBase object based on mandatory
  * fields for different point type.
  */
 public class PointModelFactory {
+    
+    private static IDatabaseCache cache;
+
+    @Autowired
+        public PointModelFactory(IDatabaseCache cache){
+            PointModelFactory.cache = cache;
+        }
 
     /**
      * Create PointBaseModel based on point Type.
@@ -32,8 +47,10 @@ public class PointModelFactory {
                 pointModel = new AnalogPointModel();
                 break;
             case CalcAnalog:
+                pointModel = new CalcAnalogPointModel();
                 break;
             case CalcStatus:
+                pointModel = new CalcStatusPointModel();
                 break;
             case DemandAccumulator:
             case PulseAccumulator:
@@ -74,8 +91,17 @@ public class PointModelFactory {
                                                            -1);
                 break;
             case CalcAnalog:
+                LiteYukonPAObject pao = cache.getAllPaosMap().get(baseModel.getPaoId());
+                pointBase = PointFactory.createCalculatedPoint(pao.getPaoIdentifier(),
+                                                              baseModel.getPointName(),
+                                                              StateGroupUtils.STATEGROUP_ANALOG,
+                                                              baseModel.getPointOffset());
                 break;
             case CalcStatus:
+                pointBase = PointFactory.createCalcStatusPoint(baseModel.getPaoId(),
+                                                               baseModel.getPointName(),
+                                                               StateGroupUtils.STATEGROUP_ANALOG,
+                                                               baseModel.getPointOffset());
                 break;
             case DemandAccumulator:
                 pointBase =  PointFactory.createDmdAccumPoint(baseModel.getPointName(),

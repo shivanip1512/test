@@ -1,0 +1,21 @@
+{
+  "name" : "Local Serial Port",
+  "enable" : true,
+  "baudRate" : "BAUD_2400",
+  "type" : "LOCAL_SHARED",
+  "carrierDetectWaitInMilliseconds" : 123,
+  "protocolWrap" : "IDLC",
+  "timing" : {
+    "preTxWait" : 87,
+    "rtsToTxWait" : 82,
+    "postTxWait" : 89,
+    "receiveDataWait" : 76,
+    "extraTimeOut" : 98
+  },
+  "sharing" : {
+    "sharedPortType" : "ACS",
+    "sharedSocketNumber" : 100
+  },
+    "physicalPort" : "com1"
+  
+}
