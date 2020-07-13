@@ -26,9 +26,26 @@ public class EditCommChannelModal extends BaseModal {
     public TextEditElement getChannelName() {
         return new TextEditElement(this.driverExt, "name", getModal());
     }
-    public TextEditElement getChannelPreTx() {
+    public TextEditElement getChannelPreTxWait() {
         return new TextEditElement(this.driverExt, "timing.preTxWait", getModal());
     }
+    
+    public TextEditElement getChannelRTSTxWait() {
+        return new TextEditElement(this.driverExt, "timing.rtsToTxWait", getModal());
+    }
+    
+    public TextEditElement getChannelPostTxWait() {
+        return new TextEditElement(this.driverExt, "timing.postTxWait", getModal());
+    }
+    
+    public TextEditElement getChannelRecDataWait() {
+        return new TextEditElement(this.driverExt, "timing.receiveDataWait", getModal());
+    }
+    
+    public TextEditElement getChannelAdditionalTimeOut() {
+        return new TextEditElement(this.driverExt, "timing.extraTimeOut", getModal());
+    }
+    
     public TextEditElement getIPAddress() {
         return new TextEditElement(this.driverExt, "meterNumber", getModal());
     }
@@ -48,13 +65,5 @@ public class EditCommChannelModal extends BaseModal {
     public TabElement getTabElement() {
         return new TabElement(this.driverExt, getModal());
     }
-    
-    public String getUserMessage() {
-    	return this.driverExt.findElements(By.cssSelector(".name-value-table.natural-width>tbody > tr:nth-child(1) > td:nth-child(2) > span"), Optional.empty()).get(2).getText();
-    }
-    
-    public String getUserMessagePX() {
-    	return this.driverExt.findElements(By.cssSelector(".name-value-table.natural-width>tbody > tr:nth-child(1) > td:nth-child(2) > span"), Optional.empty()).get(3).getText();
-    }
-    
+        
 }
