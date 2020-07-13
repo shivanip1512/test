@@ -26,7 +26,9 @@ public class EditCommChannelModal extends BaseModal {
     public TextEditElement getChannelName() {
         return new TextEditElement(this.driverExt, "name", getModal());
     }
-
+    public TextEditElement getChannelPreTx() {
+        return new TextEditElement(this.driverExt, "timing.preTxWait", getModal());
+    }
     public TextEditElement getIPAddress() {
         return new TextEditElement(this.driverExt, "meterNumber", getModal());
     }

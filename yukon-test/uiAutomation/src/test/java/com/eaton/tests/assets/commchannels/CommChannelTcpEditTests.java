@@ -2,7 +2,9 @@ package com.eaton.tests.assets.commchannels;
 	import static org.assertj.core.api.Assertions.assertThat;
 
 	import java.text.SimpleDateFormat;
-	import org.assertj.core.api.SoftAssertions;
+import java.util.List;
+
+import org.assertj.core.api.SoftAssertions;
 	import org.json.simple.JSONObject;
 	import org.testng.annotations.BeforeClass;
 	import org.testng.annotations.BeforeMethod;
@@ -49,77 +51,38 @@ package com.eaton.tests.assets.commchannels;
 	        channelDetailPage = new CommChannelDetailPage(driverExt);
 	    }
 	    
-	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL },priority=0)										
-	    public void commChannelTcpEdit_ModalTitleCorrect() {										
-	        String expectedModalTitle = "Edit " + commChannelName;
-	        
-	        EditCommChannelModal editModal = channelDetailPage.showCommChannelEditModal(expectedModalTitle);									
-	        String actualModalTitle = editModal.getModalTitle();								
-	        										
-	        assertThat(actualModalTitle).isEqualTo(expectedModalTitle);										
-	    }
-	    
-	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL },priority=0)										
-	    public void commChannelTcpEdit_NameRequired() {										
-	        String expectedModalTitle = "Edit " + commChannelName;	
-	        String EXPECTED_MSG = "Name is required.";
-	        
-	        EditCommChannelModal editModal = channelDetailPage.showCommChannelEditModal(expectedModalTitle);										
-									
-	        editModal.getChannelName().setInputValue(" ");										
-	        editModal.clickOkAndWait();										
-	        									
-	        String userMsg = editModal.getUserMessage();										
-	        assertThat(userMsg).isEqualTo(EXPECTED_MSG);										
-	    }										
-	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL }, priority=1)											
-	    public void commChannelDetailsTcp_NameInvalidChars() {											
-	        String expectedModalTitle = "Edit " + commChannelName;
-	        String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
-	        
-	        EditCommChannelModal editModal = channelDetailPage.showCommChannelEditModal(expectedModalTitle);											
-										
-	        editModal.getChannelName().setInputValue("/,tcp|$%Channel&!");											
-	        editModal.clickOkAndWait();											
-	        											
-	        String userMsg = editModal.getUserMessage();											
-	        assertThat(userMsg).isEqualTo(EXPECTED_MSG);											
-	    }	
-	    
-	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL }, priority=-2)											
-	    public void commChannelTcpEdit_CancelNavigatesCorrectly() {											
+	    		
+/*	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL }, priority=-2)											
+	    public void commChannelTcpEdit_TabLabelsCorrectly() {											
 	        String expectedModalTitle = "Edit " + commChannelName;
 	        String EXPECTED_TITLE = commChannelName;
-	        
 	        EditCommChannelModal editModal = channelDetailPage.showCommChannelEditModal(expectedModalTitle);											
-									
-	        editModal.clickCancelAndWait();											
-	        											
-	        String actualPageTitle = channelDetailPage.getPageTitle();											
-	        assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);											
-	    }	
-	    											
-	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL }, priority=-1)											
-	    public void commChannelDetailsTcp_NameAlreadyExists() {											
-	    	String EXPECTED_MSG = "Name already exists";									
-	        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());											
-	        String commChannelNameTcp = "TCP Comm Channel " + timeStamp;											
-												
-	        String payloadFile = System.getProperty("user.dir")											
-	                + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelTCP.json";											
-												
-	        Object body = JsonFileHelper.parseJSONFile(payloadFile);											
-	        jo = (JSONObject) body;											
-	        jo.put("name", commChannelNameTcp);											
-	        ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);																						
-	        
-	        String expectedModalTitle = "Edit " + commChannelName;											
-	        EditCommChannelModal editModal = channelDetailPage.showCommChannelEditModal(expectedModalTitle);											
+			editModal.getTabElement().clickTab("Configuration");
+			List<String> labels = editModal.getTabElement().getTabLabels("Configuration");
+			System.out.println(labels);
+			System.out.println("dadad");
 										
-	        editModal.getChannelName().setInputValue(commChannelNameTcp);											
-	        editModal.clickOkAndWait();											
-	        											
-	        String userMsg = editModal.getUserMessage();											
-	        assertThat(userMsg).isEqualTo(EXPECTED_MSG);											
-	    }			
+	    }*/
+	    
+	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL }, priority=-2)											
+	    public void commChannelTcpEdit_ConfigurationLabelsCorrect() {											
+	        String expectedModalTitle = "Edit " + commChannelName;
+	        EditCommChannelModal editModal = channelDetailPage.showCommChannelEditModal(expectedModalTitle);
+	        
+	        String tabName = "Configuration";
+			editModal.getTabElement().clickTab(tabName);
+			
+			List<String> configTabValues = editModal.getTabElement().getTabValues(tabName);
+			editModal.getChannelPreTx().setInputValue("ds56");
+			List<String> labels = editModal.getTabElement().getTabLabels("Configuration");
+	        softly.assertThat(labels.size()).isEqualTo(5);
+	        softly.assertThat(labels.get(0)).isEqualTo("Pre Tx Wait:");
+	        softly.assertThat(labels.get(1)).isEqualTo("RTS To Tx Wait:");
+	        softly.assertThat(labels.get(2)).isEqualTo("Post Tx Wait:");
+	        softly.assertThat(labels.get(3)).isEqualTo("Receive Data Wait:");
+	        softly.assertThat(labels.get(4)).isEqualTo("Additional Time Out:");
+	        softly.assertAll();							
+	    }
+		
+			
 }
