@@ -35,12 +35,13 @@ public class RfnRemoteMeterConfigurationEventProcessorTest {
     private static final Instant EVENT_TIMESTAMP = new Instant(1594066865000L);  // 2020-Jul-06 20:21:05 GMT
     private static final Instant ARBITRARY_TIMESTAMP = new Instant(1594105200000L);  //  2020-Jul-07 07:00 GMT 
 
+    private static final YukonPao YUKON_PAO = () -> PaoIdentifier.of(314159, PaoType.RFN430A3K);
+    private static final RfnIdentifier RFN_ID = new RfnIdentifier("Apple", "Banana", "Carrot");
+    private static final RfnDevice RFN_DEVICE = new RfnDevice("Test device", YUKON_PAO, RFN_ID);
+
     private RfnRemoteMeterConfigurationFailureEventArchiveRequestProcessor processor;
     private ThriftRequestTemplate<MeterProgramStatusArchiveRequest> mockThriftMessenger;
     private Capture<MeterProgramStatusArchiveRequest> requestPayload;
-    private final YukonPao yp = () -> PaoIdentifier.of(314159, PaoType.RFN430A3K);
-    private final RfnIdentifier rfnId = new RfnIdentifier("Apple", "Banana", "Carrot");
-    private final RfnDevice d = new RfnDevice("Test device", yp, rfnId);
     
     @Before
     @SuppressWarnings("unchecked")
@@ -76,7 +77,7 @@ public class RfnRemoteMeterConfigurationEventProcessorTest {
                 RfnConditionDataType.METER_CONFIGURATION_STATUS, meterConfigurationStatus));
         var l = new ArrayList<PointData>();
         
-        processor.process(d, e, l, ARBITRARY_TIMESTAMP);
+        processor.process(RFN_DEVICE, e, l, ARBITRARY_TIMESTAMP);
         
         assertTrue("Captured MeterProgramStatusArchiveRequest", 
                 requestPayload.hasCaptured());
@@ -98,7 +99,7 @@ public class RfnRemoteMeterConfigurationEventProcessorTest {
                 RfnConditionDataType.METER_CONFIGURATION_STATUS, meterConfigurationStatus));
         var l = new ArrayList<PointData>();
         
-        processor.process(d, e, l, ARBITRARY_TIMESTAMP);
+        processor.process(RFN_DEVICE, e, l, ARBITRARY_TIMESTAMP);
         
         assertTrue("Captured MeterProgramStatusArchiveRequest", 
                 requestPayload.hasCaptured());
