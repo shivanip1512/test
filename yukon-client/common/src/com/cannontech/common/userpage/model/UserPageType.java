@@ -153,6 +153,8 @@ public enum UserPageType {
                 paoUrls.add(compileUrlParam("/stars/relay/home", "deviceId"));
                 paoUrls.add(Pattern.compile("/stars/gateways/(\\d+)"));
                 paoUrls.add(Pattern.compile("/stars/rtu/(\\d+)"));
+                paoUrls.add(Pattern.compile("/stars/device/commChannel/(\\d+)"));
+                paoUrls.add(Pattern.compile("/stars/virtualDevice/(\\d+)"));
 
                 // Demand Reponse Setup pages (Move into DEMAND_RESPONSE if we decide these should be in the DR Favorites as well. Currently, DR favorites are the "operations" pages.
                 paoUrls.add(Pattern.compile("/dr/setup/loadGroup/(\\d+)"));
