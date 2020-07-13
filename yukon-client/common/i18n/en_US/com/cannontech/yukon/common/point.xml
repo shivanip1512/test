@@ -391,6 +391,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.TOTAL_LUV_COUNT">Total LUV Event Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TOU_SCHEDULE_CHANGE">TOU Schedule Change</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TOU_SCHEDULE_ERROR">TOU Schedule Error</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.ULTRA_CAPACITOR_BAD">Ultra Capacitor Bad</entry>
     <entry key="yukon.common.attribute.builtInAttribute.UNCONFIGURED">Unconfigured</entry>
     <entry key="yukon.common.attribute.builtInAttribute.UNPROGRAMMED">Unprogrammed</entry>
     <entry key="yukon.common.attribute.builtInAttribute.USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED">Temperature Threshold Exceeded</entry>

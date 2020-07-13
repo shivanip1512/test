@@ -487,6 +487,7 @@ public:
     static const Attribute  TimeSyncFailed;
     static const Attribute  TOUScheduleChange;
     static const Attribute  TOUScheduleError;
+    static const Attribute  UltraCapacitorBad;
     static const Attribute  Unconfigured;
     static const Attribute  Unprogrammed;
     static const Attribute  UserProgrammableTemperatureThresholdExceeded;

@@ -496,6 +496,7 @@ INIT_ATTRIBUTE( TimeAdjustment,                                     "TIME_ADJUST
 INIT_ATTRIBUTE( TimeSyncFailed,                                     "TIME_SYNC_FAILED" );
 INIT_ATTRIBUTE( TOUScheduleChange,                                  "TOU_SCHEDULE_CHANGE" );
 INIT_ATTRIBUTE( TOUScheduleError,                                   "TOU_SCHEDULE_ERROR" );
+INIT_ATTRIBUTE( UltraCapacitorBad,                                  "ULTRA_CAPACITOR_BAD" );
 INIT_ATTRIBUTE( Unconfigured,                                       "UNCONFIGURED" );
 INIT_ATTRIBUTE( Unprogrammed,                                       "UNPROGRAMMED" );
 INIT_ATTRIBUTE( UserProgrammableTemperatureThresholdExceeded,       "USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED" );
