@@ -15,7 +15,6 @@ public class WebTable {
     private DriverExtensions driverExt;
     private String tableClassName;
     private List<WebTableColumnHeader> columnHeaders = null;
-    private List<WebTableRow> dataRows;
     private WebElement parentElement; 
     private String parent;
 
@@ -66,13 +65,19 @@ public class WebTable {
         
         return headerList;
     }
-
-    public List<WebTableRow> getDataRows() {
-
-        findDataRows();
-
-        return this.dataRows;
-    }      
+    
+    public List<String> getDataRowsTextByCellIndex(int index) {
+        List<WebTableRow> rows = getDataRows();
+        
+        List<String> cellRowsData = new ArrayList<String>();
+        
+        for (WebTableRow row : rows) {
+            WebElement cell = row.getCell(index);
+            cellRowsData.add(cell.getText());
+        }
+        
+        return cellRowsData;
+    }
 
     private void waitForSearch() {
         WebElement table = null;
@@ -127,7 +132,7 @@ public class WebTable {
         search.clearInputValue();
     }    
 
-    private void findDataRows() {
+    private List<WebTableRow> getDataRows() {
         List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody tr"));
 
         List<WebTableRow> newList = new ArrayList<>();
@@ -135,6 +140,8 @@ public class WebTable {
 
             newList.add(new WebTableRow(element));
         }
+        
+        return newList;
     }
     
     public WebTableRow getDataRowByName(String name) {

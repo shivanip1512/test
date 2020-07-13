@@ -16,7 +16,7 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.assets.commChannels.CommChannelDetailPage;
+import com.eaton.pages.assets.commchannels.CommChannelDetailPage;
 import com.eaton.rest.api.assets.AssetsCreateRequestAPI;
 import com.eaton.rest.api.dbetoweb.JsonFileHelper;
 
