@@ -12,6 +12,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DuplicateException;
@@ -110,14 +111,18 @@ public class AttributeDaoImpl implements AttributeDao {
     public PointIdentifier getPointIdentifier(int attributeId, PaoType paoType) {
         Pair<Integer, PaoType> pair = Pair.of(attributeId, paoType);
         PointIdentifier point = attributeToPoint.getIfPresent(pair);
-        if(point == null) {
+        if (point == null) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT AttributeAssignmentId, AttributeId, PaoType, PointType, PointOffset");
             sql.append("FROM AttributeAssignment");
             sql.append("WHERE AttributeId").eq(attributeId);
             sql.append("AND PaoType").eq_k(paoType);
-            AttributeAssignment assignment = jdbcTemplate.queryForObject(sql, attributeAssignmentMapper);
-            attributeToPoint.put(Pair.of(attributeId, paoType), new PointIdentifier(assignment.getPointType(), assignment.getPointOffset()));
+            try {
+                AttributeAssignment assignment = jdbcTemplate.queryForObject(sql, attributeAssignmentMapper);
+                attributeToPoint.put(pair, new PointIdentifier(assignment.getPointType(), assignment.getPointOffset()));
+            } catch (EmptyResultDataAccessException e) {
+                throw new IllegalUseOfAttribute("No Custom Attribute exists for attributeId " + attributeId + " and " + paoType);
+            }
         }
         return attributeToPoint.getIfPresent(pair);
     }
