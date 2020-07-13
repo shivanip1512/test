@@ -1,4 +1,4 @@
-package com.eaton.tests.assets.commchannels;
+package com.eaton.tests.assets.commChannels;
 
     import static org.assertj.core.api.Assertions.assertThat;
 

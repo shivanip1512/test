@@ -170,8 +170,15 @@ public final class Urls {
         public static final String WORK_ORDERS = "/operator/WorkOrder/WorkOrder.jsp";
         public static final String IMPORT = "/stars/operator/account/accountImport";
         public static final String REPORTS = "/analysis/Reports.jsp?groupType=STARS";
+
         public static final String COMM_CHANNELS_LIST = "/stars/device/commChannel/list";
         public static final String COMM_CHANNEL_DETAIL = "/stars/device/commChannel/";
+        public static final String COMM_CHANNEL_NAME_DESC = "/stars/device/commChannel/list?sort=name&dir=desc";
+        public static final String COMM_CHANNEL_NAME_ASC = "/stars/device/commChannel/list?sort=name&dir=asc";
+        public static final String COMM_CHANNEL_TYPE_DESC = "/stars/device/commChannel/list?sort=type&dir=desc";
+        public static final String COMM_CHANNEL_TYPE_ASC = "/stars/device/commChannel/list?sort=type&dir=asc";
+        public static final String COMM_CHANNEL_STATUS_DESC = "/stars/device/commChannel/list?sort=status&dir=desc";
+        public static final String COMM_CHANNEL_STATUS_ASC = "/stars/device/commChannel/list?sort=status&dir=asc";
 
         public static final String COMPREHENSIVE_MAP = "/stars/comprehensiveMap/home";
         public static final String CREATE_ACCOUNT = "/stars/operator/account/accountCreate";
@@ -182,6 +189,7 @@ public final class Urls {
         public static final String WORK_ORDER_REPORTS = "/operator/WorkOrder/Report.jsp";
         public static final String ZIGBEE_PROBLEM_DEVICES = "/stars/operator/inventory/zbProblemDevices/view";
         public static final String VIRTUAL_DEVICES = "/stars/virtualDevices";
+
     }
 
     public static final class Tools {
@@ -249,7 +257,6 @@ public final class Urls {
         public static final String STATISTICAL_REPORTS = "/analysis/Reports.jsp?groupType=STATISTICAL";
         public static final String SURVEYS = "/stars/survey/list";
         public static final String THEMES = "/admin/config/themes";
-
     }
 
     public static final class Support {
