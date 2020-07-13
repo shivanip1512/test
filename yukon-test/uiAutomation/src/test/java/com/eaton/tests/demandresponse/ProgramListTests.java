@@ -33,7 +33,7 @@ public class ProgramListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void pageTitleCorrect() {
+    public void programList_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Programs";
 
         String actualPageTitle = listPage.getPageTitle();
@@ -42,7 +42,7 @@ public class ProgramListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void columnHeadersCorrect() {
+    public void programList_columnHeadersCorrect() {
         final int EXPECTED_COUNT = 8;
 
         List<String> headers = this.listPage.getTable().getListTableHeaders();

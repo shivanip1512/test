@@ -20,7 +20,7 @@ public class EnergyCompanyGeneralInfoTests extends SeleniumTestSetup {
     }
 
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void pageTitleCorrect() {
+    public void energyCompanyGeneralInfo_pageTitleCorrect() {
         final String EXPECTED_TITLE = "QA_Test";
         
         navigate(Urls.Admin.ENERGY_COMPANY_GENERAL_INFO + "64");

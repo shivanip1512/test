@@ -27,7 +27,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN })
-    public void pageTitleCorrect() {
+    public void supportDetails_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Support";
 
         String actualPageTitle = supportPage.getPageTitle();

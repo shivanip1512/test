@@ -27,7 +27,7 @@ public class CapBankEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void pageTitleCorrect() {
+    public void capBankEdit_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit CapBank: AT Cap Bank";
 
         navigate(Urls.CapControl.CAP_BANK_EDIT + "669" + Urls.EDIT);
@@ -40,7 +40,7 @@ public class CapBankEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void editCapBankUpdateNameOnlySuccess() {
+    public void capBankEdit_requiredFieldsOnlyOnlySuccess() {
         final String EXPECTED_MSG = "CapBank was saved successfully.";
 
         navigate(Urls.CapControl.CAP_BANK_EDIT + "459" + Urls.EDIT);
@@ -64,7 +64,7 @@ public class CapBankEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void deleteCapBankSuccess() {
+    public void capBankEdit_deleteSuccess() {
         final String EXPECTED_MSG = "CapBank AT Delete CapBank deleted successfully.";
 
         navigate(Urls.CapControl.CAP_BANK_EDIT + "576" + Urls.EDIT);

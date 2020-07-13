@@ -28,7 +28,7 @@ public class RegulatorSetupTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.VoltVar.VOLT_VAR })
-    public void pageTitleCorrect() {
+    public void regulatorSetup_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Regulator Setup";
 
         String actualPageTitle = regulatorSetupPage.getPageTitle();

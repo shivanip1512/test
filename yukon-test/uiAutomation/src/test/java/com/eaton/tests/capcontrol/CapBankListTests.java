@@ -30,8 +30,8 @@ public class CapBankListTests extends SeleniumTestSetup {
         listPage = new CapBankListPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.VoltVar.VOLT_VAR })
-    public void columnHeadersCorrect() {
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.VoltVar.VOLT_VAR })
+    public void capBankList_columnHeadersCorrect() {
         final int EXPECTED_COUNT = 3;
 
         List<String> headers = this.listPage.getTable().getListTableHeaders();

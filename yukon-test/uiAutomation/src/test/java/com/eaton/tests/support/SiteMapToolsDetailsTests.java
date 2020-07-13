@@ -31,7 +31,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
-    public void pageTitleCorrect() {
+    public void siteMapToolsDetails_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Site Map";
 
         String actualPageTitle = siteMapPage.getPageTitle();
@@ -40,21 +40,21 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
-    public void siteMapDetails_pageHasToolsSection() {
+    public void siteMapToolsDetails_pageHasToolsSection() {
         Section toolsSection = siteMapPage.getToolsSection();
 
         assertThat(toolsSection).isNotNull();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
-    public void siteMapDetails_pageToolsSectionItemCountCorrect() {
+    public void siteMapToolsDetails_pageToolsSectionItemCountCorrect() {
         final int EXPECTED_COUNT = 15;
 
         assertThat(siteMapPage.getToolsSectionSimpleList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
-    public void siteMapDetails_pageCollectionActionsLinkCorrect() {
+    public void siteMapToolsDetails_pageCollectionActionsLinkCorrect() {
         final String EXPECTED_ANCHOR = "Collection Actions";
         final String EXPECTED_LINK = Urls.Tools.COLLECTION_ACTIONS;
         final int POSITION = 0;
@@ -66,7 +66,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
-    public void siteMapDetails_pageCommanderLinkCorrect() {
+    public void siteMapToolsDetails_pageCommanderLinkCorrect() {
         final String EXPECTED_ANCHOR = "Commander";
         final String EXPECTED_LINK = Urls.Tools.COMMANDER;
         final int POSITION = 1;
@@ -78,7 +78,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
-    public void siteMapDetails_pageCreateScheduleLinkCorrect() {
+    public void siteMapToolsDetails_pageCreateScheduleLinkCorrect() {
         final String EXPECTED_ANCHOR = "Create Schedule";
         final String EXPECTED_LINK = Urls.Tools.CREATE_SCHEDULE;
         final int POSITION = 2;
@@ -90,7 +90,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
-    public void siteMapDetails_pageDataExportLinkCorrect() {
+    public void siteMapToolsDetails_pageDataExportLinkCorrect() {
         final String EXPECTED_ANCHOR = "Data Export";
         final String EXPECTED_LINK = Urls.Tools.DATA_EXPORTER;
         final int POSITION = 3;
@@ -102,7 +102,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
     }
 
 //    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Tools.TOOLS })
-//    public void siteMapDetails_pageDataStreamingLinkCorrect() {
+//    public void siteMapToolsDetails_pageDataStreamingLinkCorrect() {
 //        final String EXPECTED_ANCHOR = "Data Streaming";
 //        final String EXPECTED_LINK = Urls.Tools.DATA_STREAMING;
 //        final int POSITION = 4;
@@ -113,7 +113,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
 //    }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
-    public void siteMapDetails_pageDataViewerLinkCorrect() {
+    public void siteMapToolsDetails_pageDataViewerLinkCorrect() {
         final String EXPECTED_ANCHOR = "Data Viewer";
         final String EXPECTED_LINK = Urls.Tools.DATA_VIEWER;
         final int POSITION = 4;
@@ -125,7 +125,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
-    public void siteMapDetails_pageDeviceConfigurationLinkCorrect() {
+    public void siteMapToolsDetails_pageDeviceConfigurationLinkCorrect() {
         final String EXPECTED_ANCHOR = "Device Configuration";
         final String EXPECTED_LINK = Urls.Tools.DEVICE_CONFIGURATION;
         final int POSITION = 5;
@@ -137,7 +137,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
-    public void siteMapDetails_pageDeviceConfigurationSummaryLinkCorrect() {
+    public void siteMapToolsDetails_pageDeviceConfigurationSummaryLinkCorrect() {
         final String EXPECTED_ANCHOR = "Device Configuration Summary";
         final String EXPECTED_LINK = Urls.Tools.DEVICE_CONFIGURATION_SUMMARY;
         final int POSITION = 6;
@@ -149,7 +149,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
-    public void siteMapDetails_pageDeviceGroupUploadLinkCorrect() {
+    public void siteMapToolsDetails_pageDeviceGroupUploadLinkCorrect() {
         final String EXPECTED_ANCHOR = "Device Group Upload";
         final String EXPECTED_LINK = Urls.Tools.DEVICE_GROUP_UPLOAD;
         final int POSITION = 7;
@@ -161,7 +161,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
-    public void siteMapDetails_pageDeviceGroupsLinkCorrect() {
+    public void siteMapToolsDetails_pageDeviceGroupsLinkCorrect() {
         final String EXPECTED_ANCHOR = "Device Groups";
         final String EXPECTED_LINK = Urls.Tools.DEVICE_GROUP;
         final int POSITION = 8;
@@ -173,7 +173,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
-    public void siteMapDetails_pageNotesLinkCorrect() {
+    public void siteMapToolsDetails_pageNotesLinkCorrect() {
         final String EXPECTED_ANCHOR = "Notes";
         final String EXPECTED_LINK = Urls.Tools.NOTES;
         final int POSITION = 9;
@@ -185,7 +185,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
-    public void siteMapDetails_pagePowerSupplierLoadsLinkCorrect() {
+    public void siteMapToolsDetails_pagePowerSupplierLoadsLinkCorrect() {
         final String EXPECTED_ANCHOR = "Power Supplier Loads";
         final String EXPECTED_LINK = Urls.Tools.POWER_SUPPLIER_LOADS;
         final int POSITION = 10;
@@ -197,7 +197,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
-    public void siteMapDetails_pageProbabilityForPeakLoadLinkCorrect() {
+    public void siteMapToolsDetails_pageProbabilityForPeakLoadLinkCorrect() {
         final String EXPECTED_ANCHOR = "Probability For Peak Load";
         final String EXPECTED_LINK = Urls.Tools.PROBABILITY_PEAK_LOAD;
         final int POSITION = 11;
@@ -209,7 +209,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
-    public void siteMapDetails_pageRecentResultsLinkCorrect() {
+    public void siteMapToolsDetails_pageRecentResultsLinkCorrect() {
         final String EXPECTED_ANCHOR = "Recent Results";
         final String EXPECTED_LINK = Urls.Tools.RECENT_RESULTS;
         final int POSITION = 12;
@@ -221,7 +221,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
-    public void siteMapDetails_pageSchedulesLinkCorrect() {
+    public void siteMapToolsDetails_pageSchedulesLinkCorrect() {
         final String EXPECTED_ANCHOR = "Schedules";
         final String EXPECTED_LINK = Urls.Tools.SCHEDULES;
         final int POSITION = 13;
@@ -233,7 +233,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
-    public void siteMapDetails_pageScriptsLinkCorrect() {
+    public void siteMapToolsDetails_pageScriptsLinkCorrect() {
         final String EXPECTED_ANCHOR = "Scripts";
         final String EXPECTED_LINK = Urls.Tools.SCRIPTS;
         final int POSITION = 14;

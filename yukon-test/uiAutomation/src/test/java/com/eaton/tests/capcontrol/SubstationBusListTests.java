@@ -31,7 +31,7 @@ public class SubstationBusListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = {TestConstants.Priority.MEDIUM, TestConstants.VoltVar.VOLT_VAR })
-    public void columnHeadersCorrect() {
+    public void substationBusList_columnHeadersCorrect() {
         final int EXPECTED_COUNT = 3;
 
         List<String> headers = this.listPage.getTable().getListTableHeaders();

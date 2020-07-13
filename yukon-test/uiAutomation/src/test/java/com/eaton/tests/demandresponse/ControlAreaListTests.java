@@ -33,7 +33,7 @@ public class ControlAreaListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void pageTitleCorrect() {
+    public void controlAreaList_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Control Areas";
 
         String actualPageTitle = listPage.getPageTitle();
@@ -43,7 +43,7 @@ public class ControlAreaListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void columnHeadersCorrect() {
+    public void controlAreaList_columnHeadersCorrect() {
         final int EXPECTED_COUNT = 8;
 
         List<String> headers = this.listPage.getTable().getListTableHeaders();

@@ -34,7 +34,7 @@ public class ScenarioCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void pageTitleCorrect() {
+    public void scenarioCreate_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Scenario";
 
         String actualPageTitle = createPage.getPageTitle();
@@ -43,7 +43,7 @@ public class ScenarioCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void createScenarioRequiredFieldsOnlySuccess() {
+    public void scenarioCreate_requiredFieldsOnlySuccess() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Scenario " + timeStamp;
         final String EXPECTED_MSG = name + " saved successfully.";

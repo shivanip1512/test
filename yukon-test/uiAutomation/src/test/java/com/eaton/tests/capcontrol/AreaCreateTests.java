@@ -33,7 +33,7 @@ public class AreaCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void pageTitleCorrect() {
+    public void areaCreate_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Area";
 
         String actualPageTitle = createPage.getPageTitle();
@@ -42,7 +42,7 @@ public class AreaCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void createAreaRequiredFieldsOnlySuccess() {
+    public void areaCreate_RequiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "Area was saved successfully.";
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

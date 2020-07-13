@@ -31,7 +31,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageTitleCorrect() {
+    public void siteMapAdminDetails_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Site Map";
 
         String actualPageTitle = siteMapPage.getPageTitle();
@@ -40,21 +40,21 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void siteMapDetails_pageHasAdminSection() {
+    public void siteMapAdminDetails_pageHasAdminSection() {
         Section adminSection = siteMapPage.getAdminSection();
 
         assertThat(adminSection).isNotNull();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void siteMapDetails_pageAdminSectionItemCountCorrect() {
+    public void siteMapAdminDetails_pageAdminSectionItemCountCorrect() {
         final int EXPECTED_COUNT = 17;
 
         assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void siteMapDetails_pageActiveJobsLinkCorrect() {
+    public void siteMapAdminDetails_pageActiveJobsLinkCorrect() {
         final String EXPECTED_ANCHOR = "Active Jobs";
         final String EXPECTED_LINK = Urls.Admin.ACTIVE_JOBS;
         final int POSITION = 0;
@@ -66,7 +66,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void siteMapDetails_pageAdministratorReportsLinkCorrect() {
+    public void siteMapAdminDetails_pageAdministratorReportsLinkCorrect() {
         final String EXPECTED_ANCHOR = "Administrator Reports";
         final String EXPECTED_LINK = Urls.Admin.REPORTS;
         final int POSITION = 1;
@@ -78,7 +78,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void siteMapDetails_pageAllJobsLinkCorrect() {
+    public void siteMapAdminDetails_pageAllJobsLinkCorrect() {
         final String EXPECTED_ANCHOR = "All Jobs";
         final String EXPECTED_LINK = Urls.Admin.ALL_JOBS;
         final int POSITION = 2;
@@ -90,7 +90,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void siteMapDetails_pageCIReportsLinkCorrect() {
+    public void siteMapAdminDetails_pageCIReportsLinkCorrect() {
         final String EXPECTED_ANCHOR = "Attributes";
         final String EXPECTED_LINK = Urls.Admin.ATTRIBUTES;
         final int POSITION = 3;
@@ -102,7 +102,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void siteMapDetails_pageAttributesLinkCorrect() {
+    public void siteMapAdminDetails_pageAttributesLinkCorrect() {
         final String EXPECTED_ANCHOR = "C&I Reports";
         final String EXPECTED_LINK = Urls.Admin.CI_REPORTS;
         final int POSITION = 4;
@@ -114,7 +114,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void siteMapDetails_pageDashboardAdministrationLinkCorrect() {
+    public void siteMapAdminDetails_pageDashboardAdministrationLinkCorrect() {
         final String EXPECTED_ANCHOR = "Dashboard Administration";
         final String EXPECTED_LINK = Urls.Admin.DASHBOARD;
         final int POSITION = 5;
@@ -126,7 +126,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void siteMapDetails_pageDatabaseReportsLinkCorrect() {
+    public void siteMapAdminDetails_pageDatabaseReportsLinkCorrect() {
         final String EXPECTED_ANCHOR = "Database Reports";
         final String EXPECTED_LINK = Urls.Admin.DATABASE_REPORTS;
         final int POSITION = 6;
@@ -138,7 +138,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void siteMapDetails_pageEnergyCompanyAdministrationLinkCorrect() {
+    public void siteMapAdminDetails_pageEnergyCompanyAdministrationLinkCorrect() {
         final String EXPECTED_ANCHOR = "Energy Company Administration";
         final String EXPECTED_LINK = Urls.Admin.ENERGY_COMPANY_LIST;
         final int POSITION = 7;
@@ -150,7 +150,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void siteMapDetails_pageJobStatusLinkCorrect() {
+    public void siteMapAdminDetails_pageJobStatusLinkCorrect() {
         final String EXPECTED_ANCHOR = "Job Status";
         final String EXPECTED_LINK = Urls.Admin.JOB_STATUS;
         final int POSITION = 8;
@@ -162,7 +162,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void siteMapDetails_pageMaintenanceLinkCorrect() {
+    public void siteMapAdminDetails_pageMaintenanceLinkCorrect() {
         final String EXPECTED_ANCHOR = "Maintenance";
         final String EXPECTED_LINK = Urls.Admin.MAINTENANCE;
         final int POSITION = 9;
@@ -174,7 +174,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void siteMapDetails_pageMultiSpeakSetupLinkCorrect() {
+    public void siteMapAdminDetails_pageMultiSpeakSetupLinkCorrect() {
         final String EXPECTED_ANCHOR = "MultiSpeak Setup";
         final String EXPECTED_LINK = Urls.Admin.MULTI_SPEAK;
         final int POSITION = 10;
@@ -186,7 +186,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void siteMapDetails_pageStatisticalReportsLinkCorrect() {
+    public void siteMapAdminDetails_pageStatisticalReportsLinkCorrect() {
         final String EXPECTED_ANCHOR = "Statistical Reports";
         final String EXPECTED_LINK = Urls.Admin.STATISTICAL_REPORTS;
         final int POSITION = 11;
@@ -198,7 +198,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void siteMapDetails_pageSubstationsReportsLinkCorrect() {
+    public void siteMapAdminDetails_pageSubstationsReportsLinkCorrect() {
         final String EXPECTED_ANCHOR = "Substations";
         final String EXPECTED_LINK = Urls.Admin.SUBSTATIONS;
         final int POSITION = 12;
@@ -210,7 +210,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void siteMapDetails_pageSurveysLinkCorrect() {
+    public void siteMapAdminDetails_pageSurveysLinkCorrect() {
         final String EXPECTED_ANCHOR = "Surveys";
         final String EXPECTED_LINK = Urls.Admin.SURVEYS;
         final int POSITION = 13;
@@ -222,7 +222,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void siteMapDetails_pageThemesLinkCorrect() {
+    public void siteMapAdminDetails_pageThemesLinkCorrect() {
         final String EXPECTED_ANCHOR = "Themes";
         final String EXPECTED_LINK = Urls.Admin.THEMES;
         final int POSITION = 14;
@@ -234,7 +234,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void siteMapDetails_pageUsersAndGroupsLinkCorrect() {
+    public void siteMapAdminDetails_pageUsersAndGroupsLinkCorrect() {
         final String EXPECTED_ANCHOR = "Users and Groups";
         final String EXPECTED_LINK = Urls.Admin.USERS_AND_GROUPS;
         final int POSITION = 15;
@@ -246,7 +246,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void siteMapDetails_pageYukonConfigSettingsLinkCorrect() {
+    public void siteMapAdminDetails_pageYukonConfigSettingsLinkCorrect() {
         final String EXPECTED_ANCHOR = "Yukon Configuration Settings";
         final String EXPECTED_LINK = Urls.Admin.CONFIGURATION;
         final int POSITION = 16;

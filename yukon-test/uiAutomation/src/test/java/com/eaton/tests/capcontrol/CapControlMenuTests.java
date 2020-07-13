@@ -29,63 +29,63 @@ public class CapControlMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void dashboardUrlCorrect() {
+    public void capControlMenu_dashboardUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 0);
 
         assertThat(url).contains(Urls.CapControl.DASHBOARD);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.VoltVar.VOLT_VAR })
-    public void schedulesUrlCorrect() {
+    public void capControlMenu_schedulesUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 1);
 
         assertThat(url).contains(Urls.CapControl.SCHEDULES);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.VoltVar.VOLT_VAR })
-    public void strategiesUrlCorrect() {
+    public void capControlMenu_strategiesUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 2);
 
         assertThat(url).contains(Urls.CapControl.STRATEGIES);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.VoltVar.VOLT_VAR })
-    public void recentTempMovesUrlCorrect() {
+    public void capControlMenu_recentTempMovesUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 3);
 
         assertThat(url).contains(Urls.CapControl.RECENT_TEMP_MOVES);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.VoltVar.VOLT_VAR })
-    public void orphansUrlCorrect() {
+    public void capControlMenu_orphansUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 4);
 
         assertThat(url).contains(Urls.CapControl.ORPHANS);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.VoltVar.VOLT_VAR })
-    public void regulatroSetupUrlCorrect() {
+    public void capControlMenu_regulatroSetupUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 5);
 
         assertThat(url).contains(Urls.CapControl.REGULATOR_SETUP);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.VoltVar.VOLT_VAR })
-    public void importUrlCorrect() {
+    public void capControlMenu_importUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 6);
 
         assertThat(url).contains(Urls.CapControl.IMPORT);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.VoltVar.VOLT_VAR })
-    public void pointImportUrlCorrect() {
+    public void capControlMenu_pointImportUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 7);
 
         assertThat(url).contains(Urls.CapControl.POINT_IMPORT);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.VoltVar.VOLT_VAR })
-    public void reportsUrlCorrect() {
+    public void capControlMenu_reportsUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 8);
 
         assertThat(url).contains(Urls.CapControl.REPORTS);

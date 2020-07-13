@@ -33,7 +33,7 @@ public class EnergyCompanyCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void pageTitleCorrect() {
+    public void energyCompanyCreate_PageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Energy Company";
         
         String actualPageTitle = createPage.getPageTitle();
@@ -42,7 +42,7 @@ public class EnergyCompanyCreateTests extends SeleniumTestSetup {
     }
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void createEnergyCompanyRequiredFieldsOnlySuccess() {
+    public void energyCompanyCreate_CreateEnergyCompanyRequiredFieldsOnlySuccess() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String companyName = "AT Energy Company " + timeStamp;
         

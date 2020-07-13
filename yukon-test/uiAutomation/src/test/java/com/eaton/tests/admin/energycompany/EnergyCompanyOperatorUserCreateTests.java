@@ -32,7 +32,7 @@ public class EnergyCompanyOperatorUserCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void pageTitleCorrect() {
+    public void energyCompanyOperatorUserCreate_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Operator User";
         
         String actualPageTitle = createPage.getPageTitle();
@@ -41,7 +41,7 @@ public class EnergyCompanyOperatorUserCreateTests extends SeleniumTestSetup {
     }
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void createEnergyCompanyOperatorUserAllFieldsSuccess() {
+    public void energyCompanyOperatorUserCreate_createOperatorUserAllFieldsSuccess() {
         final String EXPECTED_USER_MSG = "Successfully created the user.";
         final String PASSWORD = "Atoperator1";
         

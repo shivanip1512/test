@@ -34,7 +34,7 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void pageTitleCorrect() {
+    public void substationBusCreate_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Bus";
 
         String actualPageTitle = createPage.getPageTitle();
@@ -43,7 +43,7 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void createSubstationBusRequiredFieldsOnlySuccess() {
+    public void substationBusCreate_requiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "Bus was saved successfully.";
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

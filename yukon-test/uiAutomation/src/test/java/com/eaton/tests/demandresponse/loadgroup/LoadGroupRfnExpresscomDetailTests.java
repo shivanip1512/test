@@ -27,7 +27,7 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
     }
 
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void pageTitleCorrect() {
+    public void ldGrpRfnExpresscom_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Load Group: AT Load Group";
         
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + "664");
@@ -40,7 +40,7 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
     }
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void copyLoadGroupSuccess() {
+    public void ldGrpRfnExpresscom_copySuccess() {
         
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + "592");
 
@@ -67,7 +67,7 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
     }
     
     @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void deleteLoadGroupSuccess() {
+    public void ldGrpRfnExpresscom_deleteSuccess() {
         final String EXPECTED_MSG = "AT Delete RFN Expresscom Ldgrp deleted successfully.";
         
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + "593");

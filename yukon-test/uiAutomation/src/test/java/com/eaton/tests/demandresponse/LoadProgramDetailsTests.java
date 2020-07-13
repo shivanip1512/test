@@ -27,7 +27,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void pageTitleCorrect() {
+    public void loadPrgoramDetails_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Load Program: AT Load Program";
 
         navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "665");
@@ -40,7 +40,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void copyLoadProgramSuccess() {
+    public void loadPrgoramDetails_copySuccess() {
 
         navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "604");
 
@@ -66,7 +66,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void deleteLoadProgramSuccess() {
+    public void loadPrgoramDetails_deleteSuccess() {
         final String EXPECTED_MSG = "AT Delete Direct Program deleted successfully.";
 
         navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "605");

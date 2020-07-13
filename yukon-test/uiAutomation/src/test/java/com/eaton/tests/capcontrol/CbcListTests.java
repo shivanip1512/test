@@ -30,7 +30,7 @@ public class CbcListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void columnHeadersCorrect() {
+    public void cbcList_columnHeadersCorrect() {
         final int EXPECTED_COUNT = 3;
 
         List<String> headers = this.listPage.getTable().getListTableHeaders();

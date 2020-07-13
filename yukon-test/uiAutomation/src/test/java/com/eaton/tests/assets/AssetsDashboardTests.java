@@ -28,7 +28,7 @@ public class AssetsDashboardTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
-    public void pageTitleCorrect() {
+    public void assetsDashboard_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Assets Dashboard";
         
         String actualPageTitle = assetsPage.getPageTitle();

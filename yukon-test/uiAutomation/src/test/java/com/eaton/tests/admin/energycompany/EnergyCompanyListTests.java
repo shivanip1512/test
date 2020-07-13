@@ -27,7 +27,7 @@ public class EnergyCompanyListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void pageTitleCorrect() {
+    public void energyCompanyList_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Energy Companies";
         
         String actualPageTitle = page.getPageTitle();

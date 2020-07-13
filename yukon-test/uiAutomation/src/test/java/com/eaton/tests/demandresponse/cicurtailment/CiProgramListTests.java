@@ -27,7 +27,7 @@ public class CiProgramListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void pageTitleCorrect() {
+    public void ciProgramList_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Programs";
 
         String actualPageTitle = programPage.getPageTitle();

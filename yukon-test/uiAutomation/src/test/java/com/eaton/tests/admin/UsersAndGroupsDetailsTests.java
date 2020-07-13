@@ -21,7 +21,7 @@ import com.eaton.pages.admin.UserDetailPage;
 import com.eaton.pages.admin.UserGroupDetailPage;
 import com.eaton.pages.admin.UsersAndGroupsPage;
 
-public class UsersAndGroupsTests extends SeleniumTestSetup {
+public class UsersAndGroupsDetailsTests extends SeleniumTestSetup {
     
     private UsersAndGroupsPage page;
     private DriverExtensions driverExt;
@@ -37,7 +37,7 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
     }
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void pageTitleCorrect() {
+    public void userAndGroupsDetails_pageTitleCorrect() {
         final String EXPECTED_TITLE = "User and Groups";
         
         String actualPageTitle = page.getPageTitle();
@@ -46,7 +46,7 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
     }
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void createUserSuccess() {
+    public void userAndGroupsDetails_CreateUserSuccess() {
         CreateUserModal createModal = page.showAndWaitCreateUserModal();
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -70,7 +70,7 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
     }  
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void createRoleGroupSuccess() {
+    public void userAndGroupsDetails_CreateRoleGroupSuccess() {
         CreateRoleGroupModal createModal = page.showAndWaitCreateRoleGroupModal();
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -91,7 +91,7 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
     } 
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void createUserGroupSuccess() {
+    public void userAndGroupsDetails_CreateUserGroupSuccess() {
         CreateUserGroupModal createModal = page.showAndWaitCreateUserGroupModal();
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

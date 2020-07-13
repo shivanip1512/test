@@ -26,7 +26,7 @@ public class LoadProgramEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void pageTitleCorrect() {
+    public void loadProgramEdit_pageTitleCorrect() {
         final String PROGRAM_NAME = "AT Load Program";
         final String EXPECTED_TITLE = "Edit Load Program: " + PROGRAM_NAME;
         
@@ -40,7 +40,7 @@ public class LoadProgramEditTests extends SeleniumTestSetup {
     }
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void editLoadProgramNameOnlySuccess() {        
+    public void loadProgramEdit_requiredFieldsOnlySuccess() {        
         navigate(Urls.DemandResponse.LOAD_PROGRAM_EDIT + "599" + Urls.EDIT);
         
         LoadGroupEditPage editPage = new LoadGroupEditPage(driverExt, 599);

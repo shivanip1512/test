@@ -34,7 +34,7 @@ public class RegulatorCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void pageTitleCorrect() {
+    public void regulatorCreate_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Regulator";
 
         String actualPageTitle = createPage.getPageTitle();
@@ -43,7 +43,7 @@ public class RegulatorCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void createRegulatorRequiredFieldsOnlySuccess() {
+    public void regulatorCreate_requiredFieldsOnlySuccess() {
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 

@@ -32,7 +32,7 @@ public class EnergyCompanyWarehouseCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void pageTitleCorrect() {
+    public void energyCompanyWarehouseCreate_pageTitleCorrect() {
         final String EXPECTED_TITLE = "QA_Test";
         
         String actualPageTitle = createPage.getPageTitle();
@@ -41,7 +41,7 @@ public class EnergyCompanyWarehouseCreateTests extends SeleniumTestSetup {
     }
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void createEnergyCompanyWarehouseAllFieldsSuccess() {
+    public void energyCompanyWarehouseCreate_createWarehouseAllFieldsSuccess() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String wareHouseName = "AT EC Warehouse " + timeStamp;
         

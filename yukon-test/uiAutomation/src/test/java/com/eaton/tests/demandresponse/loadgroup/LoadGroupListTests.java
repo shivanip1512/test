@@ -33,7 +33,7 @@ public class LoadGroupListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void pageTitleCorrect() {
+    public void ldGrpList_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Load Groups";
 
         String actualPageTitle = listPage.getPageTitle();
@@ -42,7 +42,7 @@ public class LoadGroupListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void columnHeadersCorrect() {
+    public void ldGrpList_columnHeadersCorrect() {
         final int EXPECTED_COUNT = 6;
 
         List<String> headers = this.listPage.getTable().getListTableHeaders();

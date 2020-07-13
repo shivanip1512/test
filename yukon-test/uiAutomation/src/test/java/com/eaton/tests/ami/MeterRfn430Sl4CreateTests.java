@@ -42,7 +42,7 @@ public class MeterRfn430Sl4CreateTests extends SeleniumTestSetup {
     }    
 
     @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
-    public void createMeterRfn430Sl4Success() {
+    public void meterRfn430Sl4Create_allFieldsSuccess() {
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
         int meterNumber = randomNum.nextInt(999999);

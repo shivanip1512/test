@@ -27,7 +27,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void pageTitleCorrect() {
+    public void regulatorEdit_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Regulator: AT Regulator";
 
         navigate(Urls.CapControl.REGULATOR_EDIT + "671" + Urls.EDIT);
@@ -40,7 +40,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void editRegulatorUpdateNameOnlySuccess() {
+    public void regulatorEdit_requiredFieldsOnlySuccess() {
 
         navigate(Urls.CapControl.REGULATOR_EDIT + "490" + Urls.EDIT);
 
@@ -67,7 +67,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
     }
 
     @Test(enabled = false, groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void deleteRegulatorSuccess() {
+    public void regulatorEdit_deleteSuccess() {
 
         navigate(Urls.CapControl.REGULATOR_EDIT + "578" + Urls.EDIT);
 

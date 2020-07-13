@@ -28,14 +28,14 @@ public class AmiMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
-    public void dashboardUrlCorrect() {
+    public void amiMenu_dashboardUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 0);
 
         assertThat(url).contains(Urls.Ami.DASHBOARD);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
-    public void billingUrlCorrect() {
+    public void amiMenu_billingUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 1);
 
@@ -43,7 +43,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
-    public void bulkImportUrlCorrect() {
+    public void amiMenu_bulkImportUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 2);
 
@@ -51,7 +51,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
-    public void bulkUpdateUrlCorrect() {
+    public void amiMenu_bulkUpdateUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 3);
 
@@ -59,7 +59,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
-    public void legacyImporterUrlCorrect() {
+    public void amiMenu_legacyImporterUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 4);
 
@@ -67,7 +67,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
-    public void pointImportUrlCorrect() {
+    public void amiMenu_pointImportUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 5);
 
@@ -75,7 +75,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
-    public void reportsUrlCorrect() {
+    public void amiMenu_reportsUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 6);
 

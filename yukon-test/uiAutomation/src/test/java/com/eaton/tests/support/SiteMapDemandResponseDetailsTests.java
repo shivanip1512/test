@@ -31,7 +31,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL })
-    public void pageTitleCorrect() {
+    public void siteMapDemandResponseDetails_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Site Map";
 
         String actualPageTitle = siteMapPage.getPageTitle();
@@ -44,21 +44,21 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     // ================================================================================
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void siteMapDetails_pageHasDRSection() {
+    public void siteMapDemandResponseDetails_pageHasDRSection() {
         Section drSection = siteMapPage.getDRSection();
 
         assertThat(drSection).isNotNull();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void siteMapDetails_pageDRSectionItemCountCorrect() {
+    public void siteMapDemandResponseDetails_pageDRSectionItemCountCorrect() {
         final int EXPECTED_COUNT = 14;
 
         assertThat(siteMapPage.getDRSectionSimpleList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void siteMapDetails_pageActiveControlAreasLinkCorrect() {
+    public void siteMapDemandResponseDetails_pageActiveControlAreasLinkCorrect() {
         final String EXPECTED_ANCHOR = "Active Control Areas";
         final String EXPECTED_LINK = Urls.DemandResponse.ACTIVE_CONTROL_AREAS;
         final int POSITION = 0;
@@ -70,7 +70,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void siteMapDetails_pageActiveLoadGroupsLinkCorrect() {
+    public void siteMapDemandResponseDetails_pageActiveLoadGroupsLinkCorrect() {
         final String EXPECTED_ANCHOR = "Active Load Groups";
         final String EXPECTED_LINK = Urls.DemandResponse.ACTIVE_LOAD_GROUPS;
         final int POSITION = 1;
@@ -82,7 +82,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void siteMapDetails_pageActiveProgramsLinkCorrect() {
+    public void siteMapDemandResponseDetails_pageActiveProgramsLinkCorrect() {
         final String EXPECTED_ANCHOR = "Active Programs";
         final String EXPECTED_LINK = Urls.DemandResponse.ACTIVE_PROGRAMS;
         final int POSITION = 2;
@@ -94,7 +94,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void siteMapDetails_pageDRBulkUpdateLinkCorrect() {
+    public void siteMapDemandResponseDetails_pageDRBulkUpdateLinkCorrect() {
         final String EXPECTED_ANCHOR = "Bulk Update";
         final String EXPECTED_LINK = Urls.DemandResponse.BULK_UPDATE;
         final int POSITION = 3;
@@ -106,7 +106,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void siteMapDetails_pageCICurtailmentLinkCorrect() {
+    public void siteMapDemandResponseDetails_pageCICurtailmentLinkCorrect() {
         final String EXPECTED_ANCHOR = "C&I Curtailment";
         final String EXPECTED_LINK = Urls.DemandResponse.CI_CURTAILMENT;
         final int POSITION = 4;
@@ -118,7 +118,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void siteMapDetails_pageControlAreasLinkCorrect() {
+    public void siteMapDemandResponseDetails_pageControlAreasLinkCorrect() {
         final String EXPECTED_ANCHOR = "Control Areas";
         final String EXPECTED_LINK = Urls.DemandResponse.CONTROL_AREA;
         final int POSITION = 5;
@@ -130,7 +130,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void siteMapDetails_pageDRDashboardLinkCorrect() {
+    public void siteMapDemandResponseDetails_pageDRDashboardLinkCorrect() {
         final String EXPECTED_ANCHOR = "DR Dashboard";
         final String EXPECTED_LINK = Urls.DemandResponse.DASHBOARD;
         final int POSITION = 6;
@@ -142,7 +142,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void siteMapDetails_pageEstimatedLoadLinkCorrect() {
+    public void siteMapDemandResponseDetails_pageEstimatedLoadLinkCorrect() {
         final String EXPECTED_ANCHOR = "Estimated Load";
         final String EXPECTED_LINK = Urls.DemandResponse.ESTIMATE_LOAD;
         final int POSITION = 7;
@@ -154,7 +154,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void siteMapDetails_pageLoadGroupsLinkCorrect() {
+    public void siteMapDemandResponseDetails_pageLoadGroupsLinkCorrect() {
         final String EXPECTED_ANCHOR = "Load Groups";
         final String EXPECTED_LINK = Urls.DemandResponse.LOAD_GROUPS;
         final int POSITION = 8;
@@ -166,7 +166,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void siteMapDetails_pageLoadManagementReportsLinkCorrect() {
+    public void siteMapDemandResponseDetails_pageLoadManagementReportsLinkCorrect() {
         final String EXPECTED_ANCHOR = "Load Management Reports";
         final String EXPECTED_LINK = Urls.DemandResponse.REPORTS;
         final int POSITION = 9;
@@ -178,7 +178,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void siteMapDetails_pageOddsForControlLinkCorrect() {
+    public void siteMapDemandResponseDetails_pageOddsForControlLinkCorrect() {
         final String EXPECTED_ANCHOR = "Odds for Control";
         final String EXPECTED_LINK = Urls.DemandResponse.ODDS_FOR_CONTROL;
         final int POSITION = 10;
@@ -190,7 +190,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void siteMapDetails_pageProgramsLinkCorrect() {
+    public void siteMapDemandResponseDetails_pageProgramsLinkCorrect() {
         final String EXPECTED_ANCHOR = "Programs";
         final String EXPECTED_LINK = Urls.DemandResponse.PROGRAMS;
         final int POSITION = 11;
@@ -202,7 +202,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void siteMapDetails_pageScenariosLinkCorrect() {
+    public void siteMapDemandResponseDetails_pageScenariosLinkCorrect() {
         final String EXPECTED_ANCHOR = "Scenarios";
         final String EXPECTED_LINK = Urls.DemandResponse.SCENARIOS;
         final int POSITION = 12;
@@ -214,7 +214,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void siteMapDetails_pageSetupLinkCorrect() {
+    public void siteMapDemandResponseDetails_pageSetupLinkCorrect() {
         final String EXPECTED_ANCHOR = "Setup";
         final String EXPECTED_LINK = Urls.DemandResponse.SETUP;
         final int POSITION = 13;
