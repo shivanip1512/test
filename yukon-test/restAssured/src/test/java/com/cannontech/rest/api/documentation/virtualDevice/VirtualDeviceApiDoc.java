@@ -65,7 +65,7 @@ public class VirtualDeviceApiDoc extends DocumentationBase {
     
     @Test(dependsOnMethods = { "Test_VirtualDevice_01_Update" })
     public void Test_VirtualDevice_01_Delete() {
-        virtualDeviceId = deleteDoc();
+        deleteDoc();
     }
 
     @Override
@@ -81,6 +81,7 @@ public class VirtualDeviceApiDoc extends DocumentationBase {
         List<FieldDescriptor> requestFields = getFieldDescriptors();
         List<FieldDescriptor> responseFields = getFieldDescriptors();
         responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
+        requestFields.remove(2);
         String url = ApiCallHelper.getProperty("createVirtualDevice");
         return new DocumentationFields.Create(requestFields, responseFields, idStr, idDescStr, getMockObject(), url);
     }
@@ -101,6 +102,7 @@ public class VirtualDeviceApiDoc extends DocumentationBase {
 
     @Override
     protected Delete buildDeleteFields() {
-        return null;
+        String url = ApiCallHelper.getProperty("deleteVirtualDevice") + virtualDeviceId;
+        return new DocumentationFields.Delete(url);
     }
 }

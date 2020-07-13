@@ -28,3 +28,10 @@ include::{snippets}/VirtualDeviceApiDoc/Test_VirtualDevice_01_Update/http-reques
 include::{snippets}/VirtualDeviceApiDoc/Test_VirtualDevice_01_Update/response-fields.adoc[]
 *Response JSON* 
 include::{snippets}/VirtualDeviceApiDoc/Test_VirtualDevice_01_Update/http-response.adoc[]
+
+=== Delete
+
+*Request Properties*
+include::{snippets}/VirtualDeviceApiDoc/Test_VirtualDevice_01_Delete/http-request.adoc[]
+*Response Body*
+include::{snippets}/VirtualDeviceApiDoc/Test_VirtualDevice_01_Delete/http-response.adoc[]

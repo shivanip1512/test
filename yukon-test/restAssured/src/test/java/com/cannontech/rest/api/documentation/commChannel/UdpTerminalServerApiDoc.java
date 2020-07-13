@@ -31,7 +31,7 @@ public class UdpTerminalServerApiDoc extends CommChannelApiDocBase {
 
     @Test(dependsOnMethods = { "Test_UDPTerminalServer_01_Create" })
     public void Test_UDPTerminalServer_02_Update() {
-        portId = updateDoc();
+        portId = updatePartialDoc();
     }
 
     @Test(dependsOnMethods = { "Test_UDPTerminalServer_01_Create" })
