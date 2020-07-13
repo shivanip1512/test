@@ -603,6 +603,8 @@
     <entry key="yukon.common.attribute.builtInAttribute.RADIO_FAILURE">Radio Failure</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DOOR_OPEN">Door Open</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NODE_COUNT_EXCEEDED">Node Count Exceeded</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.UPS_BATTERY_VOLTAGE_LOW">UPS Battery Voltage Low</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.CERTIFICATE_EXPIRATION">Certificate Expiration</entry>
     
     <entry key="yukon.common.attribute.builtInAttribute.THERMOSTAT_RELAY_STATE">Thermostat Relay State</entry>
     
