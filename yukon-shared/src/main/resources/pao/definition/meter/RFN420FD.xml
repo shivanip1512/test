@@ -106,6 +106,7 @@
         <pointInfo name="Tamper - Large Decrease After Outage" attributes="TAMPER_LARGE_DECREASE_AFTER_OUTAGE"/>
         <pointInfo name="Total Outage Count" init="true" attributes="BLINK_COUNT"/>
         <pointInfo name="TOU Schedule Change" attributes="TOU_SCHEDULE_CHANGE"/>
+        <pointInfo name="Ultra Capacitor Bad" attributes="ULTRA_CAPACITOR_BAD"/>
         <pointInfo name="Under Voltage" attributes="UNDER_VOLTAGE"/>
         <pointInfo name="Volt Degrees Phase A" init="true"/>
         <pointInfo name="Voltage" init="true" attributes="VOLTAGE,VOLTAGE_PROFILE"/>
