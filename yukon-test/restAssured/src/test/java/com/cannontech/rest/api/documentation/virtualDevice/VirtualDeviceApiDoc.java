@@ -60,7 +60,12 @@ public class VirtualDeviceApiDoc extends DocumentationBase {
     
     @Test(dependsOnMethods = { "Test_VirtualDevice_01_Get" })
     public void Test_VirtualDevice_01_Update() {
-        virtualDeviceId = updateDoc();
+        virtualDeviceId = updatePartialDoc();
+    }
+    
+    @Test(dependsOnMethods = { "Test_VirtualDevice_01_Update" })
+    public void Test_VirtualDevice_01_Delete() {
+        virtualDeviceId = deleteDoc();
     }
 
     @Override
