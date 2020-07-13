@@ -21,6 +21,8 @@ public enum InfrastructureWarningType implements DisplayableEnum {
     GATEWAY_TIME_SYNC_FAILED,
     GATEWAY_DOOR_OPEN,
     GATEWAY_NODE_COUNT_EXCEEDED,
+    GATEWAY_UPS_BATTERY_VOLTAGE_LOW,
+    GATEWAY_CERT_EXPIRATION,
     ;
     
     private static final String keyBase = "yukon.web.widgets.infrastructureWarnings.warningType.";
