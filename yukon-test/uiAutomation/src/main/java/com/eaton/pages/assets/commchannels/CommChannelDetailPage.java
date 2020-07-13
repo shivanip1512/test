@@ -1,4 +1,4 @@
-package com.eaton.pages.assets.commChannels;
+package com.eaton.pages.assets.commchannels;
 
 import java.util.Optional;
 

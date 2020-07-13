@@ -1,4 +1,4 @@
-package com.eaton.tests.assets.commChannels;
+package com.eaton.tests.assets.commchannels;
 
     import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,8 +17,8 @@ package com.eaton.tests.assets.commChannels;
     import com.eaton.framework.SeleniumTestSetup;
     import com.eaton.framework.TestConstants;
     import com.eaton.framework.Urls;
-    import com.eaton.pages.assets.commChannels.CommChannelDetailPage;
-    import com.eaton.rest.api.assets.AssetsCreateRequestAPI;
+import com.eaton.pages.assets.commchannels.CommChannelDetailPage;
+import com.eaton.rest.api.assets.AssetsCreateRequestAPI;
     import com.eaton.rest.api.dbetoweb.JsonFileHelper;
 
     import io.restassured.response.ExtractableResponse;
