@@ -42,6 +42,7 @@ public abstract class RfnRemoteMeterConfigurationEventProcessorHelper extends Rf
     private Map<Status, DeviceError> statusCodesToErrors = ImmutableMap.<Status, DeviceError>builder()
 
             // .put(Status.SUCCESS, DeviceError.UNKNOWN)
+            .put(Status.OTHER, DeviceError.REASON_UNKNOWN)
             .put(Status.REASON_UNKNOWN, DeviceError.REASON_UNKNOWN)
             .put(Status.SERVICE_NOT_SUPPORTED, DeviceError.SERVICE_UNSUPPORTED)
             .put(Status.INSUFFICIENT_SECURITY_CLEARANCE, DeviceError.INSUFFICIENT_SECURITY_CLEARANCE)
