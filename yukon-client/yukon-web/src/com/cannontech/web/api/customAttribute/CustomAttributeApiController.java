@@ -3,12 +3,16 @@ package com.cannontech.web.api.customAttribute;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,16 +23,21 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cannontech.common.exception.ResourceNotFoundException;
 import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.web.admin.AttributeValidator;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
 @RequestMapping("/attributes")
+@CheckPermissionLevel(property = YukonRoleProperty.ADMIN_MANAGE_ATTRIBUTES, level = HierarchyPermissionLevel.OWNER)
 public class CustomAttributeApiController {
 
     @Autowired private AttributeDao attributeDao;
+    @Autowired private AttributeValidator customAttributeValidator;
 
     @PostMapping("")
-    // TODO -- Add validation and permissions
-    public ResponseEntity<Object> create(@RequestBody CustomAttribute customAttribute) {
+    public ResponseEntity<Object> create(@Valid @RequestBody CustomAttribute customAttribute) {
         attributeDao.saveCustomAttribute(customAttribute);
         return new ResponseEntity<>(customAttribute, HttpStatus.CREATED);
     }
@@ -45,7 +54,7 @@ public class CustomAttributeApiController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable int id, @RequestBody CustomAttribute customAttribute)
+    public ResponseEntity<Object> update(@PathVariable int id, @Valid @RequestBody CustomAttribute customAttribute)
             throws ResourceNotFoundException {
         CustomAttribute attribute = attributeDao.getCustomAttribute(id);
         if (attribute == null) {
@@ -72,5 +81,10 @@ public class CustomAttributeApiController {
     @GetMapping("")
     public ResponseEntity<Object> list() {
         return new ResponseEntity<>(attributeDao.getCustomAttributes(), HttpStatus.OK);
+    }
+
+    @InitBinder("customAttribute")
+    public void setBinder(WebDataBinder binder) {
+        binder.addValidators(customAttributeValidator);
     }
 }
