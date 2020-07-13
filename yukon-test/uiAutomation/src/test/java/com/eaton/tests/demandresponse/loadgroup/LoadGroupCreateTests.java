@@ -2,9 +2,9 @@ package com.eaton.tests.demandresponse.loadgroup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.assertj.core.api.SoftAssertions;
 import org.json.simple.JSONObject;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -23,13 +23,11 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
     private LoadGroupCreatePage createPage;
     private DriverExtensions driverExt;
-    private SoftAssertions softAssert;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
 
         driverExt = getDriverExt();
-        softAssert = new SoftAssertions();
     }
 
     @BeforeMethod(alwaysRun = true)
@@ -70,7 +68,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         createPage.getSaveBtn().click();
 
         assertThat(createPage.getName().getValidationError())
-                .isEqualTo("Cannot be blank or include any of the following characters: / \\ , ' \" |");
+                .isEqualTo("Name must not contain any of the following characters: / \\ , ' \" |.");
     }
 
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
@@ -134,16 +132,12 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
     public void ldGrpCreate_TypeDropDownContainsAllExpectedValues() {
-        String expDropDownValues[] = { "Digi SEP Group", "ecobee Group", "Emetcon Group", "Expresscom Group", "Honeywell Group",
+        List<String> expectedDropDownValues = new ArrayList<>(List.of("Select", "Digi SEP Group", "ecobee Group", "Emetcon Group", "Expresscom Group", "Honeywell Group",
                 "Itron Group", "MCT Group", "Meter Disconnect Group", "Point Group", "RFN Expresscom Group", "Ripple Group",
-                "Versacom Group" };
+                "Versacom Group"));
         List<String> actualDropDownValues = createPage.getType().getOptionValues();
-
-        for (String expecteddropDwonValue : expDropDownValues) {
-            softAssert.assertThat(actualDropDownValues.contains(expecteddropDwonValue))
-                    .withFailMessage("Assertion failed for following dropdown value : " + expecteddropDwonValue).isTrue();
-        }
-        softAssert.assertAll();
+        
+        assertThat(actualDropDownValues).containsExactlyElementsOf(expectedDropDownValues);
     }
 
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
@@ -170,28 +164,22 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
     public void ldGrpCreateCommon_GeneralSectionLabelsCorrect() {
         String sectionName = "General";
-        String expectedLabels[] = { "Name:", "Type:" };
+        List<String> expectedLabels = new ArrayList<>(List.of("Name:", "Type:" ));
 
         List<String> actualLabels = createPage.getSection(sectionName).getSectionLabels();
 
-        for (String label : expectedLabels) {
-            softAssert.assertThat(actualLabels.contains(label)).withFailMessage("Assertion failed for label : " + label).isTrue();
-        }
-        softAssert.assertAll();
+        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
 
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
     public void ldGrpCreateCommon_OptionalAttrSectionLabelsCorrect() {
         String sectionName = "Optional Attributes";
-        String expectedLabels[] = { "kW Capacity:", "Disable Group:", "Disable Control:" };
+        List<String> expectedLabels = new ArrayList<>(List.of("kW Capacity:", "Disable Group:", "Disable Control:"));
 
         createPage.getType().selectItemByIndex(2);
         createPage.getkWCapacity().setInputValue("2");
         List<String> actualLabels = createPage.getSection(sectionName).getSectionLabels();
-
-        for (String label : expectedLabels) {
-            softAssert.assertThat(actualLabels.contains(label)).withFailMessage("Assertion failed for label : " + label).isTrue();
-        }
-        softAssert.assertAll();
+        
+        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
 }
