@@ -55,11 +55,6 @@ public class TrendModel {
         if (CollectionUtils.isNotEmpty(getTrendSeries())) {
             for (TrendSeries series : getTrendSeries()) {
                 GraphDataSeries graphSeries = new GraphDataSeries();
-                if (series.getType().isMarkerType()) {
-                    graphSeries.setPointID(-100);
-                } else {
-                    graphSeries.setPointID(series.getPointId());
-                }
                 graphSeries.setLabel(series.getLabel());
                 graphSeries.setAxis(
                         series.getAxis() == null ? TrendAxis.LEFT.getAbbreviation() : series.getAxis().getAbbreviation());
@@ -82,6 +77,12 @@ public class TrendModel {
                     }
                 } else {
                     graphSeries.setMoreData(CtiUtilities.STRING_NONE);
+                }
+                // Setting pointid -100 as default for Marker type.
+                if (series.getType().isMarkerType()) {
+                    graphSeries.setPointID(-100);
+                } else {
+                    graphSeries.setPointID(series.getPointId());
                 }
                 // Setting LINE as default for Marker type.
                 if (series.getType().isMarkerType()) {
