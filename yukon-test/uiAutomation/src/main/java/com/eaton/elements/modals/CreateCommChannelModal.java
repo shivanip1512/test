@@ -61,13 +61,5 @@ public class CreateCommChannelModal extends BaseModal{
         modal.findElement(By.cssSelector(".ui-dialog-buttonset .js-secondary-action")).click();
     }
     
-    public List<String> getTabLabels() {
-    	List<WebElement> nameElements = getModal().findElements(By.cssSelector("table tr .name"));
-		List<String> names = new ArrayList<String>();
-        for (WebElement element : nameElements) {
-        	names.add(element.getText());
-        }
-    	
-        return names;	
-    }
+   
 }

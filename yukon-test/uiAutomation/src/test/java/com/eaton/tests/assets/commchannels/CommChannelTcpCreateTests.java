@@ -8,16 +8,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.assertj.core.api.SoftAssertions;
-import org.json.simple.JSONObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.CreateCommChannelModal;
-import com.eaton.elements.modals.CreateMeterModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
@@ -80,7 +77,7 @@ public class CommChannelTcpCreateTests extends SeleniumTestSetup{
 	
 		createModal.getType().selectItemByText(type);
 		
-		List<String> labels = createModal.getTabLabels();
+		List<String> labels = createModal.getFieldLabels();
 		
 		softly.assertThat(labels.size()).isEqualTo(4);
 	    softly.assertThat(labels.get(0)).isEqualTo("Name:");
