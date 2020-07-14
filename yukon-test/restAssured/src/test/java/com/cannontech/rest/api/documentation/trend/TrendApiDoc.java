@@ -53,7 +53,7 @@ public class TrendApiDoc extends DocumentationBase {
                     .description("Point ID. Point Id for MARKER_TYPE is -100."),
                 fieldWithPath("trendSeries[].label")
                     .type(JsonFieldType.STRING)
-                    .description("Device Name / Point Name. Max length 40 Character"),
+                    .description("Label for the selected point. Label can be any text, default value for non marker type : Device name / Point Name. Max length 40 character."),
                 fieldWithPath("trendSeries[].color")
                     .type(JsonFieldType.STRING)
                     .optional()
@@ -73,7 +73,7 @@ public class TrendApiDoc extends DocumentationBase {
                 fieldWithPath("trendSeries[].date")
                     .type(JsonFieldType.STRING)
                     .optional()
-                    .description("Date in mm/dd/yyyy format. Applicable only when type is DATE_TYPE")
+                    .description("Date in mm/dd/yyyy format. Applicable only when type is DATE_TYPE and PEAK_TYPE")
         };
         return new ArrayList<>(Arrays.asList(trendFieldDescriptor));
     }
@@ -82,16 +82,16 @@ public class TrendApiDoc extends DocumentationBase {
         FieldDescriptor[] resetPeakFieldDescriptor = new FieldDescriptor[] {
                 fieldWithPath("startDate")
                         .type(JsonFieldType.STRING)
-                        .description("Start Date") };
+                        .description("Start Date. in mm/dd/yyyy format") };
         return new ArrayList<>(Arrays.asList(resetPeakFieldDescriptor));
     }
 
-    private static List<FieldDescriptor> getResetPeakResFieldDescriptors() {
-        FieldDescriptor[] resetPeakFieldDescriptor = new FieldDescriptor[] {
+    private static List<FieldDescriptor> getTrendIdFieldDescriptors() {
+        FieldDescriptor[] TrendIdFieldDescriptor = new FieldDescriptor[] {
                 fieldWithPath(idStr)
                         .type(JsonFieldType.NUMBER)
                         .description(idDescStr) };
-        return new ArrayList<>(Arrays.asList(resetPeakFieldDescriptor));
+        return new ArrayList<>(Arrays.asList(TrendIdFieldDescriptor));
     }
 
     @Test
@@ -112,7 +112,7 @@ public class TrendApiDoc extends DocumentationBase {
     @Test(dependsOnMethods = "Test_Trend_01_Update")
     public void Test_Trend_01_ResetPeak() {
         List<FieldDescriptor> requestFields = getResetPeakReqFieldDescriptors();
-        List<FieldDescriptor> responseFields = getResetPeakResFieldDescriptors();
+        List<FieldDescriptor> responseFields = getTrendIdFieldDescriptors();
         MockTrendModel trendModel = getMockObject();
         MockTrendSeries series = trendModel.getTrendSeries().get(0);
         series.setType(MockGraphType.PEAK_TYPE);
@@ -160,8 +160,9 @@ public class TrendApiDoc extends DocumentationBase {
 
     @Override
     protected Delete buildDeleteFields() {
+        List<FieldDescriptor> responseFields = getTrendIdFieldDescriptors();
         String url = ApiCallHelper.getProperty("deleteTrend") + trendId;
-        return new DocumentationFields.Delete(url);
+        return new DocumentationFields.DeleteWithBody(null,responseFields,null, url);
     }
 }
 
