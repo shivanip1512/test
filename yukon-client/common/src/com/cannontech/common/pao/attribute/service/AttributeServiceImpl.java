@@ -223,8 +223,11 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public Attribute resolveAttributeName(String name) {
-        // some day this should also "lookup" user defined attributes
-        return BuiltInAttribute.valueOf(StringEscapeUtils.escapeXml11(name));
+        try {
+            return BuiltInAttribute.valueOf(name);
+        } catch (IllegalArgumentException e) {
+            return attributeDao.getCustomAttribute(Integer.valueOf(name));
+        }
     }
 
     @Override

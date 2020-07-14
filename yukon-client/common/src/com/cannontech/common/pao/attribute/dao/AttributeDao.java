@@ -2,6 +2,7 @@ package com.cannontech.common.pao.attribute.dao;
 
 import java.util.List;
 
+import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
@@ -19,9 +20,9 @@ public interface AttributeDao {
     /**
      * Deletes custom attribute
      * 
-     * @return number of rows deleted. If 0 is returned row was not deleted.
+     * @throws DataDependencyException
      */
-    int deleteCustomAttribute(int attributeId);
+    void deleteCustomAttribute(int attributeId) throws DataDependencyException;
 
     /**
      * Returns the list of attributes

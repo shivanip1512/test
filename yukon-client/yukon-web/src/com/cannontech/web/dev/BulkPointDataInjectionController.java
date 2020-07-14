@@ -427,8 +427,7 @@ public class BulkPointDataInjectionController {
         model.addAttribute("bulkInjection", bulkInjection);
 
         // attributes
-        Map<AttributeGroup, List<BuiltInAttribute>> groupedAttributes =
-            objectFormattingService.sortDisplayableValues(BuiltInAttribute.getAllGroupedAttributes(), userContext);
+        Map<AttributeGroup, List<Attribute>> groupedAttributes = attributeService.getAllGroupedAttributes(userContext);
         model.addAttribute("groupedAttributes", groupedAttributes);
         model.addAttribute("qualities", PointQuality.values());
     }
