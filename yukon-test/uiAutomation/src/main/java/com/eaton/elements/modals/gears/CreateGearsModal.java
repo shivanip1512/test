@@ -11,13 +11,11 @@ import com.eaton.framework.DriverExtensions;
 
 public class CreateGearsModal extends BaseModal {
 
-    DriverExtensions driverExt;
     private WebElement modal;
 
     public CreateGearsModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
         super(driverExt, modalTitle, describedBy);
 
-        this.driverExt = driverExt;
         modal = getModal();
     }
 

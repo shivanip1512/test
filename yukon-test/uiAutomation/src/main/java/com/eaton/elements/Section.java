@@ -13,7 +13,7 @@ public class Section {
 
     private DriverExtensions driverExt;
     private String sectionName;
-    private WebElement section;
+    private WebElement sectionElement;
 
     public Section(DriverExtensions driverExt, String sectionName) {
         this.driverExt = driverExt;
@@ -25,17 +25,17 @@ public class Section {
     private void setSection() {
         List<WebElement> list = this.driverExt.findElements(By.cssSelector(".section-container"), Optional.empty());
         
-        section =  list.stream().filter(element -> element.findElement(By.cssSelector(".title-bar .title")).getText().contains(this.sectionName)).findFirst().orElseThrow();  
+        sectionElement =  list.stream().filter(element -> element.findElement(By.cssSelector(".title-bar .title")).getText().contains(this.sectionName)).findFirst().orElseThrow();  
     }
 
     public WebElement getSection() {        
-        return section;
+        return sectionElement;
     }    
 
     public List<String> getSectionLabels() {
 
-        List<WebElement> nameElements = section.findElements(By.cssSelector("table tr .name"));
-        List<String> names = new ArrayList<String>();
+        List<WebElement> nameElements = sectionElement.findElements(By.cssSelector("table tr .name"));
+        List<String> names = new ArrayList<>();
 
         for (WebElement element : nameElements) {
             names.add(element.getText());

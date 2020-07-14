@@ -99,7 +99,7 @@ public class BaseModal {
     
     public List<String> getFieldLabels() {
     	List<WebElement> nameElements = getModal().findElements(By.cssSelector("table tr .name"));
-		List<String> names = new ArrayList<String>();
+		List<String> names = new ArrayList<>();
         for (WebElement element : nameElements) {
         	names.add(element.getText());
         }

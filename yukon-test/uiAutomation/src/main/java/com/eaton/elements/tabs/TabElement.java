@@ -13,6 +13,7 @@ import com.eaton.framework.DriverExtensions;
 public class TabElement {
 
     private DriverExtensions driverExt;
+    private static final String ARIA_LABELBY = "aria-labelledby";
 
     public TabElement(DriverExtensions driverExt) {
         this.driverExt = driverExt;        
@@ -29,7 +30,7 @@ public class TabElement {
     public List<String> getTitles() {
         List<WebElement> elements = getTabs();
         
-        List<String> titles = new ArrayList<String>();
+        List<String> titles = new ArrayList<>();
         for (WebElement element : elements) {
             titles.add(element.findElement(By.cssSelector("a")).getText());
         }
@@ -40,7 +41,7 @@ public class TabElement {
     public WebElement getTabPanelByName(String tabName) {
         WebElement tab = getTabByName(tabName);
         
-        String attribute = tab.getAttribute("aria-labelledby");
+        String attribute = tab.getAttribute(ARIA_LABELBY);
         
         return getTabPanelByAriaLabel(attribute);
     }
@@ -58,13 +59,13 @@ public class TabElement {
     public List<String> getTabLabels(String tabName) {
         WebElement tab = getTabByName(tabName);
         
-        String attribute = tab.getAttribute("aria-labelledby");
+        String attribute = tab.getAttribute(ARIA_LABELBY);
         
         WebElement panel = getTabPanelByAriaLabel(attribute);
         
         List<WebElement> nameElements = panel.findElements(By.cssSelector("table tr .name"));
         
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         for (WebElement element : nameElements) {
             names.add(element.getText());
         }
@@ -75,13 +76,13 @@ public class TabElement {
     public List<String> getTabValues(String tabName) {
         WebElement tab = getTabByName(tabName);
         
-        String attribute = tab.getAttribute("aria-labelledby");
+        String attribute = tab.getAttribute(ARIA_LABELBY);
         
         WebElement panel = getTabPanelByAriaLabel(attribute);
         
         List<WebElement> valueElements = panel.findElements(By.cssSelector("table tr .value"));
         
-        List<String> values = new ArrayList<String>();
+        List<String> values = new ArrayList<>();
         for (WebElement element : valueElements) {
             values.add(element.getText());
         }

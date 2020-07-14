@@ -12,14 +12,11 @@ import com.eaton.framework.SeleniumTestSetup;
 
 public class CreateCommChannelModal extends BaseModal {
 
-    private DriverExtensions driverExt;
     private String modalName;
     private WebElement modal;
 
     public CreateCommChannelModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
         super(driverExt, modalTitle, describedBy);
-
-        this.driverExt = driverExt;
     }
 
     private static final String PARENT_NAME = "js-create-comm-channel-popup";
@@ -38,10 +35,6 @@ public class CreateCommChannelModal extends BaseModal {
 
     public DropDownElement getBaudRate() {
         return new DropDownElement(this.driverExt, "baudRate", PARENT_NAME);
-    }
-
-    public String getModalTitle() {
-        return modal.findElement(By.cssSelector(".ui-dialog-titlebar .ui-dialog-title")).getText();
     }
 
     public void clickClose() {

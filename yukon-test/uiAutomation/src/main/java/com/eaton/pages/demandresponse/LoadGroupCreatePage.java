@@ -16,6 +16,7 @@ public class LoadGroupCreatePage extends PageBase {
 
     private TextEditElement name;
     private DropDownElement type;
+    private static final String ADDRESS_USAGE = "addressUsage";
 
     public LoadGroupCreatePage(DriverExtensions driverExt) {
         super(driverExt);
@@ -62,7 +63,7 @@ public class LoadGroupCreatePage extends PageBase {
     // Geographical Address
     public RadioButtonElement getAddressUsage() {
         // addressUsage is used for 2 different radio buttons on this page
-        return new RadioButtonElement(this.driverExt, "addressUsage");
+        return new RadioButtonElement(this.driverExt, ADDRESS_USAGE);
     }
 
     // Geographical Addressing
@@ -104,7 +105,7 @@ public class LoadGroupCreatePage extends PageBase {
     }
 
     public RadioButtonElement getAddressToUse() {
-        return new RadioButtonElement(this.driverExt, "addressUsage");
+        return new RadioButtonElement(this.driverExt, ADDRESS_USAGE);
     }
 
     public RadioButtonElement getRelayToUse() {
@@ -122,7 +123,7 @@ public class LoadGroupCreatePage extends PageBase {
     // LoadAddress
     public RadioButtonElement getUsage() {
         // addressUsage is used for 2 different radio buttons on this page
-        return new RadioButtonElement(this.driverExt, "addressUsage");
+        return new RadioButtonElement(this.driverExt, ADDRESS_USAGE);
     }
 
     // LoadAddressing
