@@ -12,8 +12,6 @@ import com.eaton.framework.DriverExtensions;
 public class CreateGearsModal extends BaseModal {
 
     DriverExtensions driverExt;
-    private TextEditElement gearName;
-    private DropDownElement gearType;
     private WebElement modal;
 
     public CreateGearsModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
@@ -21,15 +19,13 @@ public class CreateGearsModal extends BaseModal {
 
         this.driverExt = driverExt;
         modal = getModal();
-        gearName = new TextEditElement(this.driverExt, "gearName", modal);
-        gearType = new DropDownElement(this.driverExt, "controlMethod", modal);
     }
 
     public TextEditElement getGearName() {
-        return gearName;
+        return new TextEditElement(this.driverExt, "gearName", modal);
     }
 
     public DropDownElement getGearType() {
-        return gearType;
+        return new DropDownElement(this.driverExt, "controlMethod", modal);
     }
 }
