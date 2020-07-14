@@ -5,6 +5,9 @@
 	<property file="../build/build.properties" />
 	<property name="yukon.web.src_build" value="build_src"/>
 
+	<taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+		        <classpath path="./lib/jacocoant.jar"/>
+    </taskdef>
     <path id="jspc.class.path">
         <fileset dir="${yukon.build}/lib">
             <include name="*.jar"/>
@@ -197,24 +200,25 @@
         <!-- Clear out any old results -->
         <delete dir="${test.results.dir}" />
         <mkdir dir="${test.results.dir}" />
-
+        <jacoco:coverage destfile="${yukon.lib}/coverage/yukon-web-jacoco.exec" xmlns:jacoco="antlib:org.jacoco.ant" exclclassloader="sun.reflect.DelegatingClassLoader:javassist.Loader" >
         <!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
-        <junit printsummary="on" haltonerror="${halt}" haltonfailure="${halt}" fork="yes" forkmode="perBatch">
-            <classpath id="junit.class.path">
-                <pathelement location="${srcdir}"/>
-                <pathelement location="${destdir}"/>
-                <fileset dir="${yukon.lib}">
-                    <include name="**/*.jar" />
-                    <exclude name="**/WebContent/**" />
-                </fileset>
-            </classpath>
-            <formatter type="xml" />
-            <batchtest todir="${test.results.dir}">
-                <fileset dir="${destdir}">
-                    <include name="**/*Test.class" />
-                </fileset>
-            </batchtest>
-        </junit>
+            <junit printsummary="on" haltonerror="${halt}" haltonfailure="${halt}" fork="yes" forkmode="perBatch">
+                <classpath id="junit.class.path">
+                    <pathelement location="${srcdir}"/>
+                    <pathelement location="${destdir}"/>
+                    <fileset dir="${yukon.lib}">
+                        <include name="**/*.jar" />
+                        <exclude name="**/WebContent/**" />
+                    </fileset>
+                </classpath>
+                <formatter type="xml" />
+                <batchtest todir="${test.results.dir}">
+                    <fileset dir="${destdir}">
+                        <include name="**/*Test.class" />
+                    </fileset>
+                </batchtest>
+            </junit>
+        </jacoco:coverage>
 
         <!-- Create the html reports for test results -->
         <property name="test.results.dir" value="test/unitTestResults" />

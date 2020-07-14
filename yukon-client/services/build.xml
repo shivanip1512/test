@@ -89,7 +89,7 @@
             <!-- Clear out any old results -->
                     <delete dir="${test.results.dir}" />
                     <mkdir dir="${test.results.dir}" />
-
+        <jacoco:coverage destfile="${yukon.lib}/coverage/services-jacoco.exec" xmlns:jacoco="antlib:org.jacoco.ant" exclclassloader="sun.reflect.DelegatingClassLoader:javassist.Loader" >
             <!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
             <junit printsummary="on" haltonerror="${halt}" haltonfailure="${halt}" fork="yes" forkmode="perBatch">
                 <classpath id="junit.class.path">
@@ -107,7 +107,7 @@
                     </fileset>
                 </batchtest>
             </junit>
-
+        </jacoco:coverage>
             <!-- Create the html reports for test results -->
             <property name="test.results.dir" value="test/unitTestResults" />
             <junitreport todir="${test.results.dir}">
