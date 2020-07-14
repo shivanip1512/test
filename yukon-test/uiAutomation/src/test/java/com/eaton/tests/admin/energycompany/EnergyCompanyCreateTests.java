@@ -42,7 +42,7 @@ public class EnergyCompanyCreateTests extends SeleniumTestSetup {
     }
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void energyCompanyCreate_CreateEnergyCompanyRequiredFieldsOnlySuccess() {
+    public void energyCompanyCreate_requiredFieldsOnlySuccess() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String companyName = "AT Energy Company " + timeStamp;
         

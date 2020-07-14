@@ -1,5 +1,7 @@
 package com.eaton.tests.ami;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Optional;
 
 import org.testng.Assert;
@@ -41,6 +43,8 @@ public class MeterRfn430Sl4DetailTests extends SeleniumTestSetup {
 
         String userMsg = dashboardPage.getUserMessage();
 
-        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg '" + EXPECTED_MSG + "' but found " + userMsg);
+//        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg '" + EXPECTED_MSG + "' but found " + userMsg);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+        
     }
 }
