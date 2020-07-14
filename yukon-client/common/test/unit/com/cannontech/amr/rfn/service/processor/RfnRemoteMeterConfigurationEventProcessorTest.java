@@ -9,9 +9,11 @@ import java.util.Map;
 import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.joda.time.Instant;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.rfn.message.event.DetailedConfigurationStatusCode;
 import com.cannontech.amr.rfn.message.event.MeterConfigurationStatus;
 import com.cannontech.amr.rfn.message.event.MeterStatusCode;
@@ -32,18 +34,25 @@ public class RfnRemoteMeterConfigurationEventProcessorTest {
 
     private static final Instant EVENT_TIMESTAMP = new Instant(1594066865000L);  // 2020-Jul-06 20:21:05 GMT
     private static final Instant ARBITRARY_TIMESTAMP = new Instant(1594105200000L);  //  2020-Jul-07 07:00 GMT 
-    
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testProgramStatusTimestamp() {
-        var processor = new RfnRemoteMeterConfigurationFailureEventArchiveRequestProcessor();
 
-        var mockThriftMessenger = EasyMock.createStrictMock(ThriftRequestTemplate.class);
-        
+    private static final YukonPao YUKON_PAO = () -> PaoIdentifier.of(314159, PaoType.RFN430A3K);
+    private static final RfnIdentifier RFN_ID = new RfnIdentifier("Apple", "Banana", "Carrot");
+    private static final RfnDevice RFN_DEVICE = new RfnDevice("Test device", YUKON_PAO, RFN_ID);
+
+    private RfnRemoteMeterConfigurationFailureEventArchiveRequestProcessor processor;
+    private ThriftRequestTemplate<MeterProgramStatusArchiveRequest> mockThriftMessenger;
+    private Capture<MeterProgramStatusArchiveRequest> requestPayload;
+    
+    @Before
+    @SuppressWarnings("unchecked")
+    public void init() {
+        processor = new RfnRemoteMeterConfigurationFailureEventArchiveRequestProcessor();
+
+        mockThriftMessenger = EasyMock.createStrictMock(ThriftRequestTemplate.class);
         EasyMock.expect(mockThriftMessenger.getRequestQueueName())
             .andReturn("Fake queue");
         
-        Capture<MeterProgramStatusArchiveRequest> requestPayload = new Capture<>();
+        requestPayload = new Capture<>();
         
         mockThriftMessenger.send(EasyMock.capture(requestPayload));
         
@@ -53,10 +62,10 @@ public class RfnRemoteMeterConfigurationEventProcessorTest {
 
         ReflectionTestUtils.setField(processor, "thriftMessenger", mockThriftMessenger);
         ReflectionTestUtils.setField(processor,  "rfnMeterEventService", mockRfnMeterEventService);
-        
-        YukonPao yp = () -> PaoIdentifier.of(314159, PaoType.RFN430A3K);
-        var rfnId = new RfnIdentifier("Apple", "Banana", "Carrot");
-        RfnDevice d = new RfnDevice("Test device", yp, rfnId);
+    }
+    
+    @Test
+    public void testProgramStatusTimestamp() {
         RfnEvent e = new RfnEvent();
         e.setTimeStamp(EVENT_TIMESTAMP.getMillis());
         var configurationId = "N00000000-0000-0000-0000-000000000000";
@@ -68,12 +77,34 @@ public class RfnRemoteMeterConfigurationEventProcessorTest {
                 RfnConditionDataType.METER_CONFIGURATION_STATUS, meterConfigurationStatus));
         var l = new ArrayList<PointData>();
         
-        processor.process(d, e, l, ARBITRARY_TIMESTAMP);
+        processor.process(RFN_DEVICE, e, l, ARBITRARY_TIMESTAMP);
         
         assertTrue("Captured MeterProgramStatusArchiveRequest", 
                 requestPayload.hasCaptured());
         assertEquals("MeterProgramStatusArchiveRequest timestamp equals event timestamp",
                 requestPayload.getValue().getTimestamp(), EVENT_TIMESTAMP);
+        assertEquals(requestPayload.getValue().getError(), DeviceError.CATASTROPHIC_FAILURE);
     }
     
+    @Test
+    public void testUnknownStatus() {
+        RfnEvent e = new RfnEvent();
+        e.setTimeStamp(EVENT_TIMESTAMP.getMillis());
+        var configurationId = "N00000000-0000-0000-0000-000000000000";
+        var meterConfigurationStatus = new MeterConfigurationStatus();
+        meterConfigurationStatus.setMeterStatusCode(new MeterStatusCode((short) 1));
+        meterConfigurationStatus.setDetailedConfigurationStatusCode(new DetailedConfigurationStatusCode((short) 99));
+        e.setEventData(Map.of(
+                RfnConditionDataType.METER_CONFIGURATION_ID, configurationId,
+                RfnConditionDataType.METER_CONFIGURATION_STATUS, meterConfigurationStatus));
+        var l = new ArrayList<PointData>();
+        
+        processor.process(RFN_DEVICE, e, l, ARBITRARY_TIMESTAMP);
+        
+        assertTrue("Captured MeterProgramStatusArchiveRequest", 
+                requestPayload.hasCaptured());
+        assertEquals("MeterProgramStatusArchiveRequest timestamp equals event timestamp",
+                requestPayload.getValue().getTimestamp(), EVENT_TIMESTAMP);
+       assertEquals(requestPayload.getValue().getError(), DeviceError.REASON_UNKNOWN);
+    }
 }
