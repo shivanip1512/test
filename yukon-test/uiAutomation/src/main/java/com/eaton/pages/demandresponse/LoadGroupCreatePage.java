@@ -1,8 +1,6 @@
 package com.eaton.pages.demandresponse;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -24,13 +22,13 @@ public class LoadGroupCreatePage extends PageBase {
 
     public LoadGroupCreatePage(DriverExtensions driverExt) {
         super(driverExt);
-        
+
         requiresLogin = true;
         pageUrl = Urls.DemandResponse.LOAD_GROUP_CREATE;
 
         name = new TextEditElement(this.driverExt, "name");
         type = new DropDownElement(this.driverExt, "type");
-    }    
+    }
 
     // General
     public TextEditElement getName() {
@@ -44,22 +42,22 @@ public class LoadGroupCreatePage extends PageBase {
     public DropDownElement getCommunicationRoute() {
         return new DropDownElement(this.driverExt, "routeId");
     }
-    
-    //Device Class
+
+    // Device Class
     public DropDownElement getDeviceClass() {
         return new DropDownElement(this.driverExt, "deviceClassSet");
     }
-    
-    //Enrollment
+
+    // Enrollment
     public TextEditElement getUtilityEnrollmentGroup() {
         return new TextEditElement(this.driverExt, "utilityEnrollmentGroup");
     }
-    
-    //Timing
+
+    // Timing
     public TextEditElement getRampInTime() {
         return new TextEditElement(this.driverExt, "rampInMinutes");
     }
-    
+
     public TextEditElement getRampOutTime() {
         return new TextEditElement(this.driverExt, "rampOutMinutes");
     }
@@ -106,6 +104,26 @@ public class LoadGroupCreatePage extends PageBase {
 
     public TextEditElement getSilverAddress() {
         return new TextEditElement(this.driverExt, "silverAddress");
+    }
+
+    public TextEditElement getUtilityAddress() {
+        return new TextEditElement(this.driverExt, "utilityAddress");
+    }
+
+    public TextEditElement getSectionAddress() {
+        return new TextEditElement(this.driverExt, "sectionAddress");
+    }
+
+    public TextEditElement getClassAddress() {
+        return new TextEditElement(this.driverExt, "classAddress");
+    }
+
+    public TextEditElement getDivisionAddress() {
+        return new TextEditElement(this.driverExt, "divisionAddress");
+    }
+
+    public TextEditElement getSerialAddress() {
+        return new TextEditElement(this.driverExt, "serialAddress");
     }
 
     public RadioButtonElement getAddressToUse() {
@@ -167,19 +185,44 @@ public class LoadGroupCreatePage extends PageBase {
     public Button getCancelBtn() {
         return new Button(this.driverExt, "Cancel");
     }
-    
-    public void getSectionTitle() {
-        
+
+    public Section getSection(String sectionName) {
+        return new Section(this.driverExt, sectionName);
     }
-    
-    public Section getGeneralSection() {
-        return new Section(this.driverExt, "General");
+
+    public void clickSectionSwitchButtonsByName(String sectionName, String buttonName, String sectionLabel) {
+        List<WebElement> nameElements;
+        if (sectionName.contentEquals("Optional Attributes")) {
+            nameElements = getSection(sectionName).getSection()
+                    .findElements(By.cssSelector("td.value input[name='" + sectionLabel + "']~label>span"));
+        } else if (sectionName.contentEquals("Addressing")) {
+            nameElements = getSection(sectionName).getSection()
+                    .findElements(By.cssSelector("table input[name='" + sectionLabel + "']+div span>span"));
+        } else {
+            nameElements = getSection(sectionName).getSection().findElements(By.cssSelector(".button-group span>span"));
+        }
+
+        for (WebElement element : nameElements) {
+            if (element.getText().contentEquals(buttonName)) {
+                element.click();
+                break;
+            }
+        }
     }
-    
-    public Section getOptionalAttributesSection() {
-        return new Section(this.driverExt, "Optional Attributes");
+
+    public String getAddressingSectionSwitchButtonStatusByLabelName(String sectionLabel) {
+        WebElement nameElement;
+        if (sectionLabel != "sectionAddress" && sectionLabel != "serialAddress") {
+            nameElement = getSection("Addressing").getSection()
+                    .findElement(By.cssSelector("table input[name='" + sectionLabel + "']~div label>input"));
+        } else {
+            nameElement = getSection("Addressing").getSection()
+                    .findElement(By.cssSelector("table input[name='" + sectionLabel + "']"));
+        }
+        if (nameElement.getAttribute("disabled") == null) {
+            return "false";
+        } else {
+            return "true";
+        }
     }
-    
-   
-    
 }
