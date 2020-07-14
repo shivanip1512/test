@@ -52,12 +52,21 @@ public class AttributeDaoImpl implements AttributeDao {
         cacheAttributes();
     }
     
+    /**
+     * Caches custom attributes
+     */
     private void cacheAttributes() {
         attributeToPoint.invalidateAll();
         idToAttribute.invalidateAll();
-        List<CustomAttribute> attributes = getCustomAttributes();
-        attributes.forEach(attribute -> idToAttribute.put(attribute.getId(), attribute));
         SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT AttributeId, AttributeName");
+        sql.append("FROM CustomAttribute");
+        List<CustomAttribute> attributes = jdbcTemplate.query(sql, customAttributeMapper);
+        if(attributes.isEmpty()) {
+            return;
+        }
+        attributes.forEach(attribute -> idToAttribute.put(attribute.getId(), attribute));
+        sql = new SqlStatementBuilder();
         sql.append("SELECT AttributeAssignmentId, AttributeId, PaoType, PointType, PointOffset");
         sql.append("FROM AttributeAssignment");
         List<AttributeAssignment> assignments = jdbcTemplate.query(sql, attributeAssignmentMapper);
@@ -179,25 +188,14 @@ public class AttributeDaoImpl implements AttributeDao {
 
     @Override
     public List<CustomAttribute> getCustomAttributes() {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT AttributeId, AttributeName");
-        sql.append("FROM CustomAttribute");
-        sql.append("ORDER BY AttributeName");
-        return jdbcTemplate.query(sql, customAttributeMapper);
+        return idToAttribute.asMap().values().stream()
+                .sorted((e1, e2) -> e1.getName().compareTo(e2.getName()))
+                .collect(Collectors.toList()); 
     }
     
     @Override
     public CustomAttribute getCustomAttribute(int attributeId) {
-        CustomAttribute attribute = idToAttribute.getIfPresent(attributeId);
-        if (attribute == null) {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT AttributeId, AttributeName");
-            sql.append("FROM CustomAttribute");
-            sql.append("WHERE AttributeId").eq(attributeId);
-            attribute = jdbcTemplate.queryForObject(sql, customAttributeMapper);
-            idToAttribute.put(attributeId, attribute);
-        }
-        return attribute;
+        return idToAttribute.getIfPresent(attributeId);
     }
     
     @Override
