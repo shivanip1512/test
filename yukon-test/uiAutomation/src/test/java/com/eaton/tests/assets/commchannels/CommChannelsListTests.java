@@ -10,6 +10,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.eaton.elements.WebTableRow;
 import com.eaton.elements.modals.ConfirmModal;
+import com.eaton.elements.modals.CreateCommChannelModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
@@ -176,7 +177,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelList_CreateOpensPopupCorrect() {
         String EXPECTED_CREATE_MODEL_TITLE = "Create Comm Channel";
-        ConfirmModal createModel = listPage.showAndWaitCreateCommChannelModal();
+        CreateCommChannelModal createModel = listPage.showAndWaitCreateCommChannelModal();
         String actualCreateModelTitle = createModel.getModalTitle();
         assertThat(actualCreateModelTitle).isEqualTo(EXPECTED_CREATE_MODEL_TITLE);
     }
