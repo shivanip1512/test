@@ -57,6 +57,13 @@ unsigned long _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY;
 
 bool    _DMV_TEST_ENABLED;
 
+namespace Cti::CapControl::MessagePriorities {
+    uint8_t Operate;
+    uint8_t Heartbeat;
+    uint8_t DnpTimesync;
+    uint8_t Scan;
+    uint8_t Other;
+}
 
 void refreshGlobalCParms()
 {
@@ -337,11 +344,21 @@ void refreshGlobalCParms()
         CTILOG_DEBUG(dout, "CAP_CONTROL_REFUSAL_TIMEOUT: " << _REFUSAL_TIMEOUT);
     }
 
-    _MSG_PRIORITY = gConfigParms.getValueAsULong("CAP_CONTROL_MSG_PRIORITY", 13);
-    if ( _CC_DEBUG & CC_DEBUG_STANDARD )
-    {
-        CTILOG_DEBUG(dout, "CAP_CONTROL_MSG_PRIORITY: " << _MSG_PRIORITY);
-    }
+    const auto readMessagingCparm = [](const std::string& parm, uint8_t defaultValue) {
+        const auto value = static_cast<uint8_t>(std::clamp(gConfigParms.getValueAsULong(parm, defaultValue), 1UL, 15UL));
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CTILOG_DEBUG(dout, parm << ": " << value);
+        }
+        return value;
+    };
+
+    _MSG_PRIORITY = readMessagingCparm("CAP_CONTROL_MSG_PRIORITY", 13);
+
+    Cti::CapControl::MessagePriorities::DnpTimesync = readMessagingCparm("CAP_CONTROL_MSG_PRIORITY_DNP_TIMESYNC", 12);
+    Cti::CapControl::MessagePriorities::Heartbeat   = readMessagingCparm("CAP_CONTROL_MSG_PRIORITY_HEARTBEAT", 13);
+    Cti::CapControl::MessagePriorities::Operate     = readMessagingCparm("CAP_CONTROL_MSG_PRIORITY_OPERATE", 14);
+    Cti::CapControl::MessagePriorities::Scan        = readMessagingCparm("CAP_CONTROL_MSG_PRIORITY_SCAN", 11);
 
     //DO NOT PRINT THIS OUT TO DEBUG unless true
     CC_TERMINATE_THREAD_TEST = gConfigParms.isTrue("CC_TERMINATE_THREAD_TEST", false);
