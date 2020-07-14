@@ -19,8 +19,6 @@ import com.eaton.pages.PageBase;
 
 public class LoadProgramCreatePage extends PageBase {
 
-    private TextEditElement name;
-    private DropDownElement type;
     private static final String PARENT_NAME = "gear-create-popup-LM_DIRECT_PROGRAM";
 
     public LoadProgramCreatePage(DriverExtensions driverExt) {
@@ -28,18 +26,15 @@ public class LoadProgramCreatePage extends PageBase {
         
         requiresLogin = true;
         pageUrl = Urls.DemandResponse.LOAD_PROGRAM_CREATE;
-
-        name = new TextEditElement(this.driverExt, "name");
-        type = new DropDownElement(this.driverExt, "type");
     }
 
     // General
     public TextEditElement getName() {
-        return name;
+        return new TextEditElement(this.driverExt, "name");
     }
 
     public DropDownElement getType() {
-        return type;
+        return new DropDownElement(this.driverExt, "type");
     }
 
     public DropDownElement getOperationalState() {
