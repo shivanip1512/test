@@ -20,11 +20,6 @@
     </macrodef>
     <target name="all" depends="clean,build">
     </target>
-
-    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
-        <classpath path="C:/dev/FinalRahul/yukon/yukon-client/lib/jacocoant.jar"/>
-    </taskdef>
-
     <target name="build">
         <mkdir dir="build"/>
 
