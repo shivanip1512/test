@@ -53,29 +53,29 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
         assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-    public void siteMapSupportDetails_pageBatteryNodeAnalysisLinkCorrect() {
-        final String EXPECTED_ANCHOR = "Battery Node Analysis";
-        final String EXPECTED_LINK = Urls.Support.BATTERY_NODE_ANALYSIS;
-        final int POSITION = 0;
-
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION))
-                .isEqualTo(EXPECTED_LINK);
-        softly.assertAll();
-    }
-
-//    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Support.SUPPORT })
-//    public void siteMapSupportDetails_pageDataStreamingDeviceAttributesLinkCorrect() {
-//    	final String EXPECTED_ANCHOR = "Data Streaming Device Attributes";
-//        final String EXPECTED_LINK = Urls.Support.DATA_STREAMING_DEVICE_ATTRIBUTES;
+//    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
+//    public void siteMapSupportDetails_pageBatteryNodeAnalysisLinkCorrect() {
+//        final String EXPECTED_ANCHOR = "Battery Node Analysis";
+//        final String EXPECTED_LINK = Urls.Support.BATTERY_NODE_ANALYSIS;
 //        final int POSITION = 0;
-//    	
-//        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-//        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+//
+//        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
+//                .isEqualTo(EXPECTED_ANCHOR);
+//        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION))
+//                .isEqualTo(EXPECTED_LINK);
 //        softly.assertAll();
 //    }
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
+    public void siteMapSupportDetails_pageDataStreamingDeviceAttributesLinkCorrect() {
+    	final String EXPECTED_ANCHOR = "Data Streaming Device Attributes";
+        final String EXPECTED_LINK = Urls.Support.DATA_STREAMING_DEVICE_ATTRIBUTES;
+        final int POSITION = 0;
+    	
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
+    }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
     public void siteMapSupportDetails_pageDatabaseMigrationLinkCorrect() {

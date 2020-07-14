@@ -80,24 +80,24 @@ public class SiteMapVoltVarDetailsTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.VoltVar.VOLT_VAR })
     public void siteMapVoltVarDetails_pageDMVTestLinkCorrect() {
         final String EXPECTED_ANCHOR = "DMV Test";
-        // final String EXPECTED_LINK = Urls.CapControl.DMV_TEST_LIST;
+        final String EXPECTED_LINK = Urls.CapControl.DMV_TEST_LIST;
         final int POSITION = 2;
 
         softly.assertThat(siteMapPage.getCCSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
                 .isEqualTo(EXPECTED_ANCHOR);
-        // softly.assertThat(siteMapPage.getCCSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(siteMapPage.getCCSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.VoltVar.VOLT_VAR })
     public void siteMapVoltVarDetails_pageFDRTranslationManagementLinkCorrect() {
         final String EXPECTED_ANCHOR = "FDR Translation Management";
-        final String EXPECTED_LINK = Urls.CapControl.FDR_TRANSLATION_MANAGER;
+        //final String EXPECTED_LINK = Urls.CapControl.FDR_TRANSLATION_MANAGER;
         final int POSITION = 3;
 
         softly.assertThat(siteMapPage.getCCSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
                 .isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(siteMapPage.getCCSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        //softly.assertThat(siteMapPage.getCCSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 

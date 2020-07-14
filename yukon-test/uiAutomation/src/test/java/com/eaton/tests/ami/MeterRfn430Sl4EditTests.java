@@ -1,9 +1,10 @@
 package com.eaton.tests.ami;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -45,7 +46,6 @@ public class MeterRfn430Sl4EditTests extends SeleniumTestSetup {
 
         String userMsg = detailPage.getUserMessage();
 
-        Assert.assertEquals(userMsg, METER + name + UPDATED,
-                "Expected User Msg: '" + METER + name + UPDATED + "' but found " + userMsg);
+        assertThat(userMsg).isEqualTo(METER + name + UPDATED);
     }
 }

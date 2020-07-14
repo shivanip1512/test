@@ -59,13 +59,13 @@ public class AssetsMenuTests extends SeleniumTestSetup {
 
         assertThat(url).contains(Urls.Assets.RTUS);
     }
-    
+        
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
     public void assetsMenu_virtualDevicesUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 4);
 
-        assertThat(url).contains(Urls.Assets.OPT_OUT_STATUS);
+        assertThat(url).contains(Urls.Assets.VIRTUAL_DEVICES);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })

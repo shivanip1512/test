@@ -160,13 +160,13 @@ public class SiteMapAssetsDetailsTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
     public void siteMatpAssetsDetails_pagePurchasingLinkCorrect() {
         final String EXPECTED_ANCHOR = "Purchasing";
-        final String EXPECTED_LINK = Urls.Assets.PURCHASING;
+        //final String EXPECTED_LINK = Urls.Assets.PURCHASING;
         final int POSITION = 8;
 
         softly.assertThat(siteMapPage.getAssetsSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
                 .isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(siteMapPage.getAssetsSectionSimpleList().getSimpleListItemLinkTextAt(POSITION))
-                .isEqualTo(EXPECTED_LINK);
+        //softly.assertThat(siteMapPage.getAssetsSectionSimpleList().getSimpleListItemLinkTextAt(POSITION))
+                //.isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 

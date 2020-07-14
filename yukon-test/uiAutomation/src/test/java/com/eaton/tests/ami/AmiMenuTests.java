@@ -41,11 +41,19 @@ public class AmiMenuTests extends SeleniumTestSetup {
 
         assertThat(url).contains(Urls.Ami.BILLING);
     }
+    
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
+    public void amiMenu_meterProgrammingUrlCorrect() {
+
+        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 2);
+
+        assertThat(url).contains(Urls.Ami.METER_PROGRAMMING);
+    }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
     public void amiMenu_bulkImportUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 2);
+        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 3);
 
         assertThat(url).contains(Urls.Ami.BULK_IMPORT);
     }
@@ -53,7 +61,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
     public void amiMenu_bulkUpdateUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 3);
+        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 4);
 
         assertThat(url).contains(Urls.Ami.BULK_UPDATE);
     }
@@ -61,7 +69,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
     public void amiMenu_legacyImporterUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 4);
+        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 5);
 
         assertThat(url).contains(Urls.Ami.LEGACY_IMPORTER);
     }
@@ -69,7 +77,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
     public void amiMenu_pointImportUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 5);
+        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 6);
 
         assertThat(url).contains(Urls.Ami.POINT_IMPORT);
     }
@@ -77,7 +85,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
     public void amiMenu_reportsUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 6);
+        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 7);
 
         assertThat(url).contains(Urls.Ami.REPORTS);
     }

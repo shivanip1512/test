@@ -69,24 +69,31 @@ public class CapControlMenuTests extends SeleniumTestSetup {
 
         assertThat(url).contains(Urls.CapControl.REGULATOR_SETUP);
     }
+    
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.VoltVar.VOLT_VAR })
+    public void capControlMenu_dmvTestUrlCorrect() {
+        String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 6);
+
+        assertThat(url).contains(Urls.CapControl.DMV_TEST_LIST);
+    }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.VoltVar.VOLT_VAR })
     public void capControlMenu_importUrlCorrect() {
-        String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 6);
+        String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 7);
 
         assertThat(url).contains(Urls.CapControl.IMPORT);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.VoltVar.VOLT_VAR })
     public void capControlMenu_pointImportUrlCorrect() {
-        String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 7);
+        String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 8);
 
         assertThat(url).contains(Urls.CapControl.POINT_IMPORT);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.VoltVar.VOLT_VAR })
     public void capControlMenu_reportsUrlCorrect() {
-        String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 8);
+        String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 9);
 
         assertThat(url).contains(Urls.CapControl.REPORTS);
     }
