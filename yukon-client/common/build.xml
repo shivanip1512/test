@@ -41,7 +41,7 @@
         <path id="classpathId">
             <pathelement location="${yukon-shared}\src\main\resources"/>
             <pathelement path="build"/>
-            <fileset dir="C:\dev\FinalRahul\yukon\yukon-client\lib">
+            <fileset dir="${yukon.lib}">
                 <include name="**/*.jar" />
             </fileset>
         </path>
