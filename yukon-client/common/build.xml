@@ -199,12 +199,12 @@
 
     <!-- Run tests. This target must be supplied a halt and destdir property -->
     <target name="executeTests">
-
         <property name="test.results.dir" value="test/testResults"/>
         <!-- Clear out any old results -->
         <delete dir="${test.results.dir}" />
         <mkdir dir="${test.results.dir}" />
         <!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
+    	    <jacoco:coverage destfile="${yukon.lib}/coverage/common-jacoco.exec" xmlns:jacoco="antlib:org.jacoco.ant" exclclassloader="sun.reflect.DelegatingClassLoader:javassist.Loader" >
             <junit printsummary="on" haltonerror="${halt}" haltonfailure="${halt}" fork="yes">
                 <sysproperty key="java.locale.providers" value="COMPAT,SPI"/>
                 <classpath id="junit.class.path">
@@ -222,6 +222,7 @@
                     </fileset>
                 </batchtest>
             </junit>
+    	    </jacoco:coverage>
 
         <!-- Create the html reports for test results -->
         <property name="test.results.dir" value="test/unitTestResults" />
