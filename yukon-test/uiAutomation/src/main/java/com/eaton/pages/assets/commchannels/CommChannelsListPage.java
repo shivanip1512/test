@@ -9,6 +9,7 @@ import java.util.Optional;
 import com.eaton.elements.ActionBtnDropDownElement;
 import com.eaton.elements.WebTable;
 import com.eaton.elements.modals.ConfirmModal;
+import com.eaton.elements.modals.CreateCommChannelModal;
 
 public class CommChannelsListPage extends PageBase {
     
@@ -30,11 +31,11 @@ public class CommChannelsListPage extends PageBase {
         return actionBtn;
     }    
     
-    public ConfirmModal showAndWaitCreateCommChannelModal() {        
-        actionBtn.clickAndSelectOptionByText("Create");        
-                      
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-create-comm-channel-popup");
-        
-        return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of("js-create-comm-channel-popup"));
+    public CreateCommChannelModal showAndWaitCreateCommChannelModal() {        
+    	actionBtn.clickAndSelectOptionByText("Create");
+    	
+    	SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-create-comm-channel-popup");
+    	
+    	return new CreateCommChannelModal(this.driverExt, Optional.empty(), Optional.of("js-create-comm-channel-popup"));
     }      
 }
