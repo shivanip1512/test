@@ -1,7 +1,8 @@
 <?xml version="1.0" ?>
-<project name="Yukon Ant Build Script" default="targets" basedir="..">
-    <taskdef resource="net/sf/antcontrib/antlib.xml"/>
-	
+<project name="Yukon Ant Build Script" default="targets" basedir=".." xmlns:jacoco="antlib:org.jacoco.ant">
+	<taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+	        <classpath path="./lib/jacocoant.jar"/>
+	</taskdef>
     <property environment="env" />
     <tstamp/>
     <tstamp>
@@ -404,7 +405,7 @@
         <mkdir dir="${temp.dir}" />
         <gitlogcount result="yukon-build-number"/>
         <zip destfile="${temp.dir}/YukonInstall/yukon-server.zip" update="true">
-          <fileset dir="${basedir}/yukon-server" />
+          <fileset dir="${basedir}/yukon-server"/>
         </zip>
         <zip destfile="${dist.dir}/yukon_${DSTAMP}_${TSTAMP}_${version.external.filenameSafe}_${yukon-build-number}.zip" update="true">
             <fileset dir="${temp.dir}" />
@@ -426,6 +427,10 @@
         <exec failonerror="true" dir="${basedir}/yukon-client/build" executable="cmd.exe">
             <arg line="/c antExit.bat -Dyukon.build.version='${yukon.build.label}' runUnitTests"/>
         </exec>
+    	<!-- Merge two exe files yukon-web-jacoco.exec & services-jacoco.exec-->
+    	<jacoco:merge destfile="${basedir}/yukon-client/merged.exec">
+    		    <fileset dir="${basedir}/yukon-client/lib/coverage" includes="*.exec"/>
+    	</jacoco:merge>
     </target>
 
     <target name="signclient">
