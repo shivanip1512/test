@@ -2,8 +2,11 @@ package com.cannontech.common.pao.attribute.dao;
 
 import java.util.List;
 
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
@@ -56,4 +59,10 @@ public interface AttributeDao {
      * Returns Point Identifier for attributeId and paoType
      */
     PointIdentifier getPointIdentifier(int attributeId, PaoType paoType);
+
+    /**
+     * Returns a list of all the devices in a given DeviceGroup that support the given Attribute.
+     * This method works recursively on each child group of the requested group.
+     */
+    List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute);
 }

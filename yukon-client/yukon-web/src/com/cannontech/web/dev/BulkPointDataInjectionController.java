@@ -43,6 +43,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -85,6 +86,7 @@ public class BulkPointDataInjectionController {
     private final Logger log = YukonLogManager.getLogger(BulkPointDataInjectionController.class);
 
     @Autowired private AttributeService attributeService;
+    @Autowired private AttributeDao attributeDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private BulkPointDataInjectionService bulkPointDataInjectionService;
     @Autowired private ObjectFormattingService objectFormattingService;
@@ -232,8 +234,7 @@ public class BulkPointDataInjectionController {
                     injectionStatus.setAttribute(attribute);
                     injectionStatus.setDeviceGroupName(deviceGroupName);
                     DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(deviceGroupName);
-                    List<SimpleDevice> supportedDevices =
-                        attributeService.getDevicesInGroupThatSupportAttribute(deviceGroup, attribute);
+                    List<SimpleDevice> supportedDevices = attributeDao.getDevicesInGroupThatSupportAttribute(deviceGroup, attribute);
                     TimeRangeSplitter timeSplitter = new TimeRangeSplitter(start, stop, standardDuration);
                     RateLimiter throttle = RateLimiter.create(throttlePerSecond);
                     injectionStatus.setNumTotal((long) timeSplitter.getTotal() * supportedDevices.size());

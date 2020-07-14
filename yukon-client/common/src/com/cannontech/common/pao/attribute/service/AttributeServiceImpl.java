@@ -250,28 +250,6 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute) {
-        Multimap<PaoType, Attribute> allDefinedAttributes = paoDefinitionDao.getPaoTypeAttributesMultiMap();
-        Multimap<Attribute, PaoType> dest = HashMultimap.create();
-        Multimaps.invertFrom(allDefinedAttributes, dest);
-        Collection<PaoType> collection = dest.get(attribute);
-
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT YPO.paobjectid, YPO.type");
-        sql.append("FROM Device d");
-        sql.append("JOIN YukonPaObject YPO ON (d.deviceid = YPO.paobjectid)");
-        sql.append("WHERE YPO.type").in(collection);
-        SqlFragmentSource groupSqlWhereClause =
-            deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "YPO.paObjectId");
-        sql.append("AND").appendFragment(groupSqlWhereClause);
-
-        YukonDeviceRowMapper mapper = new YukonDeviceRowMapper();
-        List<SimpleDevice> devices = jdbcTemplate.query(sql, mapper);
-
-        return devices;
-    }
-
-    @Override
     public boolean createPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
         boolean pointExists = this.pointExistsForAttribute(pao, attribute);
         if (!pointExists) {

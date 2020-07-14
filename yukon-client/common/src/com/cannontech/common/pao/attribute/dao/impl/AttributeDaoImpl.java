@@ -1,18 +1,31 @@
 package com.cannontech.common.pao.attribute.dao.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.dao.AttributeDao;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -21,13 +34,40 @@ import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 
 public class AttributeDaoImpl implements AttributeDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private DeviceGroupService deviceGroupService;
+
     private final Cache<Pair<Integer, PaoType>, PointIdentifier> attributeToPoint = CacheBuilder.newBuilder().build();
     private final Cache<Integer, CustomAttribute> idToAttribute = CacheBuilder.newBuilder().build();
 
+    @PostConstruct
+    public void init() {
+        cacheAttributes();
+    }
+    
+    private void cacheAttributes() {
+        attributeToPoint.invalidateAll();
+        idToAttribute.invalidateAll();
+        List<CustomAttribute> attributes = getCustomAttributes();
+        attributes.forEach(attribute -> idToAttribute.put(attribute.getId(), attribute));
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT AttributeAssignmentId, AttributeId, PaoType, PointType, PointOffset");
+        sql.append("FROM AttributeAssignment");
+        List<AttributeAssignment> assignments = jdbcTemplate.query(sql, attributeAssignmentMapper);
+        assignments.forEach(assignment -> {
+            Pair<Integer, PaoType> pair = Pair.of(assignment.getAttributeId(), assignment.getPaoType());
+            PointIdentifier point = new PointIdentifier(assignment.getPointType(), assignment.getPointOffset());
+            attributeToPoint.put(pair, point);
+        });
+    }
+    
     private YukonRowMapper<CustomAttribute> customAttributeMapper = rs -> {
         CustomAttribute row = new CustomAttribute();
         row.setId(rs.getInt("AttributeId"));
@@ -44,7 +84,7 @@ public class AttributeDaoImpl implements AttributeDao {
         row.setPointOffset(rs.getInt("PointOffset"));
         return row;
     };
-
+    
     @Override
     public void saveAttributeAssignment(AttributeAssignment assignment) {        
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -55,9 +95,6 @@ public class AttributeDaoImpl implements AttributeDao {
         SqlStatementBuilder updateCreateSql = new SqlStatementBuilder();
         try {
             jdbcTemplate.queryForInt(sql);
-            
-            clearCache(assignment);
-            
             SqlParameterSink params = updateCreateSql.update("AttributeAssignment");
             addAssignmentParameters(params, assignment);
             updateCreateSql.append("WHERE AttributeAssignmentId").eq(assignment.getId());
@@ -67,15 +104,7 @@ public class AttributeDaoImpl implements AttributeDao {
             addAssignmentParameters(params, assignment);
         }
         jdbcTemplate.update(updateCreateSql);
-    }
-
-    private void clearCache(AttributeAssignment assignment) {
-        Pair<Integer, PaoType> pair = Pair.of(assignment.getAttributeId(), assignment.getPaoType());
-        attributeToPoint.invalidate(pair);
-    }
-    
-    private void clearCache(Integer attributeId) {
-        idToAttribute.invalidate(attributeId);
+        cacheAttributes();
     }
 
     private void addAssignmentParameters(SqlParameterSink params, AttributeAssignment assignment) {
@@ -87,11 +116,11 @@ public class AttributeDaoImpl implements AttributeDao {
 
     @Override
     public void deleteAttributeAssignment(int attributeAssignmentId) {
-        clearCache(getAssignmentById(attributeAssignmentId));
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM AttributeAssignment");
         sql.append("WHERE AttributeAssignmentId").eq(attributeAssignmentId);
         jdbcTemplate.update(sql);
+        cacheAttributes();
     }
 
     @Override
@@ -103,31 +132,12 @@ public class AttributeDaoImpl implements AttributeDao {
         return jdbcTemplate.queryForObject(sql, attributeAssignmentMapper);
     }
     
-    private List<AttributeAssignment> getAssignmentsByAttributeId(int attributId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT AttributeAssignmentId, AttributeId, PaoType, PointType, PointOffset");
-        sql.append("FROM AttributeAssignment");
-        sql.append("WHERE AttributeId").eq(attributId);
-        return jdbcTemplate.query(sql, attributeAssignmentMapper);
-    }
-    
     @Override
     public PointIdentifier getPointIdentifier(int attributeId, PaoType paoType) {
         Pair<Integer, PaoType> pair = Pair.of(attributeId, paoType);
         PointIdentifier point = attributeToPoint.getIfPresent(pair);
-        if (point == null) {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT AttributeAssignmentId, AttributeId, PaoType, PointType, PointOffset");
-            sql.append("FROM AttributeAssignment");
-            sql.append("WHERE AttributeId").eq(attributeId);
-            sql.append("AND PaoType").eq_k(paoType);
-            try {
-                AttributeAssignment assignment = jdbcTemplate.queryForObject(sql, attributeAssignmentMapper);
-                point = new PointIdentifier(assignment.getPointType(), assignment.getPointOffset());
-                attributeToPoint.put(pair, point);
-            } catch (EmptyResultDataAccessException e) {
-                throw new IllegalUseOfAttribute("No Custom Attribute exists for attributeId " + attributeId + " and " + paoType);
-            }
+        if(point == null) {
+            throw new IllegalUseOfAttribute("No Custom Attribute exists for attributeId " + attributeId + " and " + paoType);
         }
         return point;
     }
@@ -142,9 +152,6 @@ public class AttributeDaoImpl implements AttributeDao {
         SqlStatementBuilder updateCreateSql = new SqlStatementBuilder();
         try {
             jdbcTemplate.queryForInt(sql);
-            
-            clearCache(attribute.getId());
-            
             SqlParameterSink params = updateCreateSql.update("CustomAttribute");
             params.addValue("AttributeName", attribute.getName());
             updateCreateSql.append("WHERE AttributeId").eq(attribute.getId());
@@ -154,6 +161,7 @@ public class AttributeDaoImpl implements AttributeDao {
             params.addValue("AttributeName", attribute.getName());
         }
         jdbcTemplate.update(updateCreateSql);
+        cacheAttributes();
     }
 
     @Override
@@ -166,8 +174,7 @@ public class AttributeDaoImpl implements AttributeDao {
          * }
          */
         jdbcTemplate.update(sql);
-        getAssignmentsByAttributeId(attributeId).forEach(assignment -> clearCache(assignment));
-        clearCache(attributeId);
+        cacheAttributes();
     }
 
     @Override
@@ -191,5 +198,34 @@ public class AttributeDaoImpl implements AttributeDao {
             idToAttribute.put(attributeId, attribute);
         }
         return attribute;
+    }
+    
+    @Override
+    public List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute) {
+        List<PaoType> paoTypes = new ArrayList<>();
+        if (attribute instanceof BuiltInAttribute) {
+            Multimap<PaoType, Attribute> allDefinedAttributes = paoDefinitionDao.getPaoTypeAttributesMultiMap();
+            Multimap<Attribute, PaoType> dest = HashMultimap.create();
+            Multimaps.invertFrom(allDefinedAttributes, dest);
+            paoTypes.addAll(dest.get(attribute));
+        } else if (attribute instanceof CustomAttribute) {
+            paoTypes.addAll(attributeToPoint.asMap().keySet()
+                    .stream()
+                    .map(pair -> pair.getValue())
+                    .collect(Collectors.toList()));
+        }
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT YPO.paobjectid, YPO.type");
+        sql.append("FROM Device d");
+        sql.append("JOIN YukonPaObject YPO ON (d.deviceid = YPO.paobjectid)");
+        sql.append("WHERE YPO.type").in_k(paoTypes);
+        SqlFragmentSource groupSqlWhereClause = deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group),
+                "YPO.paObjectId");
+        sql.append("AND").appendFragment(groupSqlWhereClause);
+
+        YukonDeviceRowMapper mapper = new YukonDeviceRowMapper();
+        List<SimpleDevice> devices = jdbcTemplate.query(sql, mapper);
+
+        return devices;
     }
 }

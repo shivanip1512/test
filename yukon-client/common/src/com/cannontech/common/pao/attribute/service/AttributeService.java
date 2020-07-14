@@ -158,16 +158,6 @@ public interface AttributeService {
     Set<Attribute> getAdvancedReadableAttributes();
 
     /**
-     * Returns a list of all the devices in a given DeviceGroup that support the given Attribute.
-     * This method works recursively on each child group of the requested group.
-     * 
-     * @param group
-     * @param attribute
-     * @return
-     */
-    List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute);
-
-    /**
      * Reverse lookup of BuiltInAttribute based on Pao and Point Identifier from set of possible attributes.
      * Will return empty set if no attributes in possible set matches the pao point identifier definition.
      * Used primarily by MultispeakMeterService to retrieve readable attributes.
