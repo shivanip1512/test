@@ -52,7 +52,7 @@
         <gitlogcount result="yukon-build-number"/>
 
         <parallel>
-            <jar jarfile="C:\dev\FinalRahul\yukon\yukon-client\lib\common.jar" basedir="build/" manifest="resource/manifest.mf">
+            <jar jarfile="${yukon.lib}\common.jar" basedir="build/" manifest="resource/manifest.mf">
                 <manifest>
                     <attribute name="Yukon-Version" value="${yukon.build.version}"/>
                     <attribute name="Yukon-Details" value="${yukon.build.details}"/>
@@ -68,7 +68,7 @@
                     <exclude name="**/*.java"/>
                 </fileset>
             </jar>
-            <jar destfile="C:\dev\FinalRahul\yukon\yukon-client\lib\i18n-en_US.jar" basedir="i18n/en_us" includes="**/*.xml">
+            <jar destfile="${yukon.lib}\i18n-en_US.jar" basedir="i18n/en_us" includes="**/*.xml">
                 <manifest>
                     <attribute name="Yukon-Version" value="${yukon.build.version}"/>
                     <attribute name="Yukon-Details" value="${yukon.build.details}"/>
