@@ -9,7 +9,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.eaton.elements.WebTableRow;
-import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.CreateCommChannelModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
