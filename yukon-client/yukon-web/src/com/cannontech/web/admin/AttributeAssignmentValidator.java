@@ -2,15 +2,12 @@ package com.cannontech.web.admin;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
-import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -33,6 +30,7 @@ public class AttributeAssignmentValidator extends SimpleValidator<AttributeAssig
 
     @Override
     protected void doValidation(AttributeAssignment assignment, Errors errors) {
-        //any additional checks here?
+        String pointOffsetLabel = accessor.getMessage("yukon.common.pointOffset");
+        YukonValidationUtils.checkIfFieldRequired("pointOffset", errors, assignment.getPointOffset(), pointOffsetLabel);
     }
 }

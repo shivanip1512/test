@@ -110,11 +110,12 @@
         <cti:url var="addAssignmentUrl" value="/admin/config/attributeAssignments/popup"/>
         <cti:msg2 var="addAssignmentTitle" key=".addAssignmentTitle"/>
         <cti:msg2 var="saveText" key=".save"/>
-        <div class="dn js-assignment-popup"
+        <div class="dn js-assignment-popup ov"
                  data-popup
                  data-dialog
                  data-title="${addAssignmentTitle}"
                  data-url="${addAssignmentUrl}"
+                 data-load-event="yukon:assignment:add"
                  data-ok-text="${saveText}"
                  data-event="yukon:assignment:save">
         </div>

@@ -332,6 +332,7 @@
     <entry key="yukon.web.modules.adminSetup.config.attributes.allDeviceTypes">All Device Types</entry>
     <entry key="yukon.web.modules.adminSetup.config.attributes.deviceTypes">Device Type(s)</entry>
     <entry key="yukon.web.modules.adminSetup.config.attributes.attributeAssignment">Attribute Assignment</entry>
+    <entry key="yukon.web.modules.adminSetup.config.attributes.customAttributes">Custom Attributes</entry>
     
     <entry key="yukon.web.modules.adminSetup.config.attributes.addAssignmentTitle">Add Attribute Assignment</entry>
     <entry key="yukon.web.modules.adminSetup.config.attributes.editAssignmentTitle">Edit Attribute Assignment</entry>
@@ -339,6 +340,9 @@
     <entry key="yukon.web.modules.adminSetup.config.attributes.assignmentConfirmDelete.title">Confirm Delete</entry>
     <entry key="yukon.web.modules.adminSetup.config.attributes.assignmentConfirmDelete.message">Are you sure you want to delete this assignment for attribute: {0}?</entry>
     <entry key="yukon.web.modules.adminSetup.config.attributes.assignmentConfirmDelete.ok">Delete</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.config.attributes.attributeAssignmentSuccess">Attribute: {0} has been successfully assigned to the following device types: {1}.</entry>
+    <entry key="yukon.web.modules.adminSetup.config.attributes.attributeAssignmentFailed">There was an error assigning Attribute: {0} to the following device types: {1}. Please see logs for more detail.</entry>
     
     
 </properties>

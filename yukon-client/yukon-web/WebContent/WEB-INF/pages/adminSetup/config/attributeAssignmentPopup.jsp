@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:flashScopeMessages/>
@@ -15,19 +16,31 @@
     
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".attributeName">
-                    <tags:selectWithItems path="attribute.id" items="${attributes}" itemValue="id" itemLabel="name"/>
+                    <tags:selectWithItems id="attributeId" path="attribute.id" items="${attributes}" itemValue="id" itemLabel="name"/>
+                    <input id="attributeName" type="hidden" name="attribute.name"/>
                 </tags:nameValue2>
                 
                 <c:choose>
-                    <c:when test="${not empty assignment.attribute.id}">
+                    <c:when test="${isEditMode}">
                         <tags:nameValue2 nameKey=".deviceType">
                             <tags:selectWithItems path="deviceType" items="${deviceTypes}"/>
                         </tags:nameValue2>
                     </c:when>
                     <c:otherwise>
                         <!-- Allow multiple device type selection when adding an assignment -->
-                        <tags:nameValue2 nameKey=".deviceTypes">
-                            <tags:selectWithItems path="deviceType" items="${deviceTypes}"/>
+                        <tags:nameValue2 nameKey=".deviceTypes">           
+                            <cti:msg2 var="allDeviceTypes" key=".allDeviceTypes"/>
+                            <select name="deviceTypes" class="js-device-types" multiple="multiple" data-placeholder="${allDeviceTypes}">
+                                <c:forEach var="type" items="${deviceTypes}">
+                                    <c:set var="selectedText" value=""/>
+                                    <c:forEach var="selectedType" items="${selectedDeviceTypes}">
+                                        <c:if test="${selectedType == type}">
+                                            <c:set var="selectedText" value="selected=selected"/>
+                                        </c:if>
+                                    </c:forEach>
+                                    <option value="${type}" ${selectedText}><i:inline key="${type.formatKey}"/></option>
+                                </c:forEach>
+                            </select>
                         </tags:nameValue2>
                     </c:otherwise>
                 </c:choose>
@@ -47,6 +60,7 @@
         </form:form>
     
     </c:if>
-
+    
+    <cti:includeScript link="/resources/js/pages/yukon.adminSetup.attributes.js" />
 
 </cti:msgScope>

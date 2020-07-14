@@ -63,9 +63,20 @@ yukon.adminSetup.attributes = (function () {
                     success: function(data) {
                         tableContainer.html(data);
                         tableContainer.data('url', yukon.url('/admin/config/attributeAssignments/filter?' + form.serialize()));
-                    }
+                    },
+                    error: function (xhr, status, error, $form) {
+                        tableContainer.html(xhr.responseText);
+                    },
                 });   
             });
+            
+            $(document).on('yukon:assignment:add', function (ev) {
+                var popup = $(ev.target);
+                popup.find('.js-device-types').chosen({'width': '350px'});
+                if (popup.find('.user-message').is(':visible')) {
+                    $('.ui-dialog-buttonset').find('.js-primary-action').prop('disabled', true);
+                }
+            });  
             
             $(document).on('yukon:assignment:pointSelected', function (ev, items, picker) {
                 var pointType = items[0].pointType,
@@ -100,7 +111,9 @@ yukon.adminSetup.attributes = (function () {
             });
             
             $(document).on("yukon:assignment:save", function (event) {
-                var popup = $(event.target);
+                var popup = $(event.target),
+                    attributeName = $('#attributeId option:selected').text();
+                $('#attributeName').val(attributeName);
                 $('#assignment-form').ajaxSubmit({
                     success: function () {
                         popup.dialog('close');
@@ -108,6 +121,7 @@ yukon.adminSetup.attributes = (function () {
                     },
                     error: function (xhr) {
                         popup.html(xhr.responseText);
+                        popup.find('.js-device-types').chosen({'width': '350px'});
                     }
                 });
             });

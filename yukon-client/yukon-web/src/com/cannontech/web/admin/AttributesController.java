@@ -1,5 +1,6 @@
 package com.cannontech.web.admin;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -7,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -57,6 +59,7 @@ public class AttributesController {
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private AttributeValidator attributeValidator;
+    @Autowired private AttributeAssignmentValidator attributeAssignmentValidator;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
@@ -69,8 +72,9 @@ public class AttributesController {
 
     @GetMapping("/config/attributes")
     public String attributes(@DefaultSort(dir=Direction.desc, sort="attributeName") SortingParameters sorting, 
-                             ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
-        retrieveCustomAttributes(model, userContext, request);
+                             ModelMap model, YukonUserContext userContext, HttpServletRequest request, 
+                             HttpServletResponse resp, FlashScope flashScope) {
+        retrieveCustomAttributes(model, userContext, request, flashScope);
         CustomAttribute createAttribute = new CustomAttribute();
         if (model.containsKey("createAttribute")) {
             createAttribute = (CustomAttribute) model.get("createAttribute");
@@ -82,7 +86,7 @@ public class AttributesController {
         }
         model.addAttribute("editAttribute", editAttribute);
         model.addAttribute("deviceTypes", getDeviceTypesThatSupportAssignment());
-        retrieveAssignments(sorting, null, null, model, userContext, request);
+        retrieveAssignments(sorting, null, null, model, userContext, request, resp);
         return "config/attributes.jsp";
     }
     
@@ -101,7 +105,7 @@ public class AttributesController {
     }
     
     private String saveAttribute(CustomAttribute attribute, BindingResult result, ModelMap model, YukonUserContext userContext, HttpServletRequest request, 
-                                 HttpServletResponse resp, FlashScope flash, RedirectAttributes redirectAttributes, Boolean isEditMode) {
+                                 HttpServletResponse resp, FlashScope flashScope, RedirectAttributes redirectAttributes, Boolean isEditMode) {
         attributeValidator.validate(attribute, result);
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -130,14 +134,14 @@ public class AttributesController {
             }
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", attribute.getName()));
+                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", attribute.getName()));
             }
 
         } catch (ApiCommunicationException ex) {
             log.error(ex.getMessage());
         } catch (RestClientException e) {
             log.error("Error saving custom attribute: {}. Error: {}", attribute.getName(), e.getMessage());
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", attribute.getName(), e.getMessage()));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", attribute.getName(), e.getMessage()));
         }
         return redirectLink;
     }
@@ -163,24 +167,24 @@ public class AttributesController {
         
     @DeleteMapping("/config/attribute/{id}/delete")
     public String deleteAttribute(ModelMap model, @PathVariable int id, String name, HttpServletRequest request, 
-                                  YukonUserContext userContext, FlashScope flash) {
+                                  YukonUserContext userContext, FlashScope flashScope) {
         try {
             String deleteUrl = helper.findWebServerUrl(request, userContext, ApiURL.attributeUrl + id);
             ResponseEntity<? extends Object> deleteResponse = 
                     apiRequestHelper.callAPIForObject(userContext, request, deleteUrl, HttpMethod.DELETE, Object.class, Integer.class);
 
             if (deleteResponse.getStatusCode() == HttpStatus.OK) {
-                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", name));
+                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", name));
                 return redirectLink;
             }
 
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(communicationKey));
+            flashScope.setError(new YukonMessageSourceResolvable(communicationKey));
             return redirectLink;
         } catch (RestClientException ex) {
             log.error("Error deleting custom attribute: {}. Error: {}", name, ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", name, ex.getMessage()));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", name, ex.getMessage()));
             return redirectLink;
         }
         return redirectLink;
@@ -188,16 +192,16 @@ public class AttributesController {
     
     @GetMapping("/config/attributeAssignments/filter")
     public String filterAssignments(@DefaultSort(dir=Direction.desc, sort="attributeName") SortingParameters sorting, Integer[] selectedAttributes, 
-                                    PaoType[] selectedDeviceTypes, ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
-        retrieveAssignments(sorting, selectedAttributes, selectedDeviceTypes, model, userContext, request);
+                                    PaoType[] selectedDeviceTypes, ModelMap model, YukonUserContext userContext, HttpServletRequest request, HttpServletResponse resp) {
+        retrieveAssignments(sorting, selectedAttributes, selectedDeviceTypes, model, userContext, request, resp);
         return "config/attributeAssignmentsTable.jsp";
     }
     
     @GetMapping("/config/attributeAssignments/popup")
-    public String assignmentPopup(Integer id, ModelMap model, YukonUserContext userContext, HttpServletRequest request, 
-                                  FlashScope flashScope) {
+    public String assignmentPopup(Integer id, ModelMap model, YukonUserContext userContext, HttpServletRequest request, FlashScope flashScope) {
         AttributeAssignment assignment = new AttributeAssignment();
         if (id != null) {
+            model.addAttribute("isEditMode", true);
             try {
                 String retrieveUrl = helper.findWebServerUrl(request, userContext, ApiURL.attributeAssignmentsUrl + id);
                 ResponseEntity<? extends Object> retrieveResponse = 
@@ -220,106 +224,113 @@ public class AttributesController {
         }
         
         model.addAttribute("assignment", assignment);
-        retrievePopupModel(model, userContext, request);
+        retrievePopupModel(model, userContext, request, flashScope);
 
         return "config/attributeAssignmentPopup.jsp";
     }
     
-    private void retrievePopupModel(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
-        retrieveCustomAttributes(model, userContext, request);
+    private void retrievePopupModel(ModelMap model, YukonUserContext userContext, HttpServletRequest request, FlashScope flash) {
+        retrieveCustomAttributes(model, userContext, request, flash);
         model.addAttribute("deviceTypes", getDeviceTypesThatSupportAssignment());
         model.addAttribute("pointTypes", PointType.values());
     }
     
     @PostMapping("/config/attributeAssignments/save")
     public String saveAssignment(@ModelAttribute("assignment") AttributeAssignment assignment, BindingResult result, ModelMap model, 
-                                    YukonUserContext userContext, HttpServletRequest request, HttpServletResponse resp, FlashScope flashScope) {
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        String attributeAssignmentLabel = accessor.getMessage(baseKey + "attributeAssignment");
-        //validate
-        
-        //call REST API
-        //call this multiple times if multiple device types are selected
-        try {
-            ResponseEntity<? extends Object> response = null;
-            if (assignment.getId() != null) {
-                String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeAssignmentsUrl + assignment.getId());
-                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PATCH, AttributeAssignment.class, assignment);
-            } else {
-                String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeAssignmentsUrl + "create");
-                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, AttributeAssignment.class, assignment);
-            }
-            
-            if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
-                BindException error = new BindException(assignment, "assignment");
-                result = helper.populateBindingError(result, error, response);
-                if (result.hasErrors()) {
-                    resp.setStatus(HttpStatus.BAD_REQUEST.value());
-                    retrievePopupModel(model, userContext, request);
-                    return "config/attributeAssignmentPopup.jsp";
-                }
-            }
-            
-            if (response.getStatusCode() == HttpStatus.OK) {
-                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", attributeAssignmentLabel));
-            }
-        } catch (ApiCommunicationException ex) {
-            log.error(ex.getMessage());
+                                    PaoType[] deviceTypes, YukonUserContext userContext, HttpServletRequest request, HttpServletResponse resp, 
+                                    FlashScope flashScope) {
+        attributeAssignmentValidator.validate(assignment, result);
+        if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            flashScope.setError(new YukonMessageSourceResolvable(communicationKey));
-            retrievePopupModel(model, userContext, request);
-            return "config/attributeAssignmentPopup.jsp";
-        } catch (RestClientException e) {
-            log.error("Error saving custom attribute assignment: {}. Error: {}", attributeAssignmentLabel, e.getMessage());
-            resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", attributeAssignmentLabel, e.getMessage()));
-            retrievePopupModel(model, userContext, request);
+            retrievePopupModel(model, userContext, request, flashScope);
             return "config/attributeAssignmentPopup.jsp";
         }
         
+        List<String> successDeviceTypes = new ArrayList<>();
+        List<String> failedDeviceTypes = new ArrayList<>();
+        if (assignment.getId() != null) {
+            model.addAttribute("isEditMode", true);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeAssignmentsUrl + assignment.getId());
+            callCreateAssignment(assignment, successDeviceTypes, failedDeviceTypes, userContext, request, url, result);
+        } else {
+            model.addAttribute("selectedDeviceTypes", deviceTypes);
+            if (deviceTypes == null) {
+                //All Device Types was selected
+                deviceTypes = (PaoType[]) getDeviceTypesThatSupportAssignment().toArray(PaoType[]::new);
+            }
+
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeAssignmentsUrl + "create");
+            for (PaoType type : deviceTypes) {
+                assignment.setDeviceType(type);
+                callCreateAssignment(assignment, successDeviceTypes, failedDeviceTypes, userContext, request, url, result);
+            }
+        }
+        if (!failedDeviceTypes.isEmpty()) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + "attributeAssignmentFailed", 
+                                                                 assignment.getAttribute().getName(), String.join(", ", failedDeviceTypes)));
+        }
+        if (!successDeviceTypes.isEmpty()) {
+            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "attributeAssignmentSuccess", 
+                                                                 assignment.getAttribute().getName(), String.join(", ", successDeviceTypes)));
+        }
+        
+        if (result.hasErrors()) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+        }
+        
+        retrievePopupModel(model, userContext, request, flashScope);
         return "config/attributeAssignmentPopup.jsp";
+    }
+    
+    private void callCreateAssignment(AttributeAssignment assignment, List<String> successDeviceTypes, List<String> failedDeviceTypes, 
+                                      YukonUserContext userContext, HttpServletRequest request, String url, BindingResult result) {
+        try {
+            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, 
+                                                                                          HttpMethod.POST, AttributeAssignment.class, assignment);
+            if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
+                BindException error = new BindException(assignment, "assignment");
+                helper.populateBindingError(result, error, response);
+            }
+            if (response.getStatusCode() == HttpStatus.OK) {
+                successDeviceTypes.add(assignment.getDeviceType().getDbString());
+            }
+        } catch (ApiCommunicationException | RestClientException e) {
+            log.error("Error saving custom attribute assignment for attribute: {} and device type: {}.", 
+                      assignment.getAttribute().getName(), assignment.getDeviceType().getDbString(), e);
+            failedDeviceTypes.add(assignment.getDeviceType().getDbString());
+        }
     }
     
     @DeleteMapping("/config/attributeAssignments/{id}/delete")
     public String deleteAssignment(ModelMap model, @PathVariable int id, String name, HttpServletRequest request, 
-                                  YukonUserContext userContext, FlashScope flash) {
+                                  YukonUserContext userContext, FlashScope flashScope) {
         try {
             String deleteUrl = helper.findWebServerUrl(request, userContext, ApiURL.attributeAssignmentsUrl + id);
             ResponseEntity<? extends Object> deleteResponse = 
                     apiRequestHelper.callAPIForObject(userContext, request, deleteUrl, HttpMethod.DELETE, Object.class, Integer.class);
 
             if (deleteResponse.getStatusCode() == HttpStatus.OK) {
-                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", name));
+                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", name));
                 return redirectLink;
             }
 
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(communicationKey));
+            flashScope.setError(new YukonMessageSourceResolvable(communicationKey));
             return redirectLink;
         } catch (RestClientException ex) {
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
             String attributeAssignmentLabel = accessor.getMessage(baseKey + "attributeAssignment");
             log.error("Error deleting assignment for custom attribute: {}. Error: {}", name, ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", attributeAssignmentLabel, ex.getMessage()));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", attributeAssignmentLabel, ex.getMessage()));
             return redirectLink;
         }
         return redirectLink;
     }
     
     private void retrieveAssignments(SortingParameters sorting, Integer[] selectedAttributes, PaoType[] selectedDeviceTypes, 
-                                     ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
-        
-/*      String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeAssignmentsUrl);
-        List<AttributeAssignment> assignmentList = new ArrayList<>();
-
-        ResponseEntity<? extends Object> response = 
-                apiRequestHelper.callAPIForList(userContext, request, url, AttributeAssignment.class, HttpMethod.GET, AttributeAssignment.class);
-        if (response.getStatusCode() == HttpStatus.OK) {
-            assignmentList = (List<AttributeAssignment>) response.getBody();
-        }
-        model.addAttribute("assignments", assignmentList);*/
-        
+                                     ModelMap model, YukonUserContext userContext, HttpServletRequest request, HttpServletResponse resp) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
 
         AssignmentSortBy sortBy = AssignmentSortBy.valueOf(sorting.getSort());
@@ -332,6 +343,45 @@ public class AttributesController {
             columns.add(col);
             model.addAttribute(column.name(), col);
         }
+
+        List<AttributeAssignment> assignmentList = new ArrayList<>();
+
+/*        try {
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeAssignmentsUrl);
+            URIBuilder ub = new URIBuilder(url);
+            if (selectedAttributes != null) {
+                for (Integer attr : selectedAttributes) {
+                    ub.addParameter("attributeId", Integer.toString(attr));
+                }
+            }
+            if (selectedDeviceTypes != null) {
+                for (PaoType type : selectedDeviceTypes) {
+                    ub.addParameter("deviceType", type.name());
+                }
+            }
+            ub.addParameter("sort", dir == Direction.desc ? "-" + sortBy.name() : sortBy.name());
+            ResponseEntity<? extends Object> response = 
+                    apiRequestHelper.callAPIForList(userContext, request, ub.toString(), AttributeAssignment.class, HttpMethod.GET, AttributeAssignment.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                assignmentList = (List<AttributeAssignment>) response.getBody();
+            }
+            model.addAttribute("assignments", assignmentList);
+            
+        } catch (ApiCommunicationException e) {
+            log.error(e);
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("errorMessage", accessor.getMessage(communicationKey));
+        } catch (RestClientException ex) {
+            log.error("Error retrieving custom attribute assignments. Error: {}", ex.getMessage());
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            String attributeAssignmentLabel = accessor.getMessage(baseKey + "attributeAssignment");
+            model.addAttribute("errorMessage", accessor.getMessage("yukon.web.api.retrieve.error", attributeAssignmentLabel, ex.getMessage()));
+        } catch (URISyntaxException e) {
+            log.error("URI syntax error while creating builder for retrieving custom attributes", e);
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            String attributeAssignmentLabel = accessor.getMessage(baseKey + "attributeAssignment");
+            model.addAttribute("errorMessage", accessor.getMessage("yukon.web.api.retrieve.error", attributeAssignmentLabel, e.getMessage()));
+        }*/
         
         //mock up data for now
         CustomAttribute att1 = new CustomAttribute();
@@ -363,17 +413,27 @@ public class AttributesController {
     }
     
     
-    private void retrieveCustomAttributes(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
-        
-/*      String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeUrl);
+    private void retrieveCustomAttributes(ModelMap model, YukonUserContext userContext, HttpServletRequest request, FlashScope flashScope) {
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeUrl);
         List<CustomAttribute> attributeList = new ArrayList<>();
 
-        ResponseEntity<? extends Object> response = 
-                apiRequestHelper.callAPIForList(userContext, request, url, CustomAttribute.class, HttpMethod.GET, CustomAttribute.class);
-        if (response.getStatusCode() == HttpStatus.OK) {
-            attributeList = (List<CustomAttribute>) response.getBody();
-        }
-        model.addAttribute("attributes", attributeList);*/
+/*        try {
+            ResponseEntity<? extends Object> response = 
+                    apiRequestHelper.callAPIForList(userContext, request, url, CustomAttribute.class, HttpMethod.GET, CustomAttribute.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                attributeList = (List<CustomAttribute>) response.getBody();
+            }
+            model.addAttribute("attributes", attributeList);
+        } catch (ApiCommunicationException e) {
+            log.error(e);
+            flashScope.setError(new YukonMessageSourceResolvable(communicationKey));
+        } catch (RestClientException ex) {
+            log.error("Error retrieving custom attributes. Error: {}", ex.getMessage());
+            String customAttributesLabel = accessor.getMessage(baseKey + "customAttributes");
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.retrieve.error", customAttributesLabel, ex.getMessage()));
+        }*/
         
         //mock up data for now
         List<CustomAttribute> atts = new ArrayList<>();
