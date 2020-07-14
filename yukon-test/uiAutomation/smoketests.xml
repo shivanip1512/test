@@ -8,7 +8,7 @@
   <test name="Group Test">
     <groups>
       <run>
-        <include name="Smoke_Tests" />
+        <include name="Critical" />
       </run>
     </groups>
     <packages>
