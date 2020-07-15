@@ -72,7 +72,7 @@ public class VirtualDeviceApiDoc extends DocumentationBase {
     protected Get buildGetFields() {
         List<FieldDescriptor> responseFields = getFieldDescriptors();
         responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
-        String url = ApiCallHelper.getProperty("getVirtualDevice") + virtualDeviceId;
+        String url = ApiCallHelper.getProperty("virtualDeviceBaseURL") + "/" + virtualDeviceId;
         return new DocumentationFields.Get(responseFields, url);
     }
 
@@ -81,8 +81,9 @@ public class VirtualDeviceApiDoc extends DocumentationBase {
         List<FieldDescriptor> requestFields = getFieldDescriptors();
         List<FieldDescriptor> responseFields = getFieldDescriptors();
         responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
+        // This removes the type field, as it is not used in making this request
         requestFields.remove(2);
-        String url = ApiCallHelper.getProperty("createVirtualDevice");
+        String url = ApiCallHelper.getProperty("virtualDeviceBaseURL");
         return new DocumentationFields.Create(requestFields, responseFields, idStr, idDescStr, getMockObject(), url);
     }
 
@@ -91,7 +92,7 @@ public class VirtualDeviceApiDoc extends DocumentationBase {
         List<FieldDescriptor> requestFields = getFieldDescriptors();
         List<FieldDescriptor> responseFields = getFieldDescriptors();
         responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
-        String url = ApiCallHelper.getProperty("updateVirtualDevice") + virtualDeviceId;
+        String url = ApiCallHelper.getProperty("virtualDeviceBaseURL") + "/" + virtualDeviceId;
         return new DocumentationFields.Update(requestFields, responseFields, idStr, idDescStr, getMockObject(), url);
     }
 
@@ -102,7 +103,7 @@ public class VirtualDeviceApiDoc extends DocumentationBase {
 
     @Override
     protected Delete buildDeleteFields() {
-        String url = ApiCallHelper.getProperty("deleteVirtualDevice") + virtualDeviceId;
+        String url = ApiCallHelper.getProperty("virtualDeviceBaseURL") + "/" + virtualDeviceId;
         return new DocumentationFields.Delete(url);
     }
 }
