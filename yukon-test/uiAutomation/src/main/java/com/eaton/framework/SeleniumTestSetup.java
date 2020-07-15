@@ -48,8 +48,8 @@ public class SeleniumTestSetup {
             setRandomNum(new Random());
             logger = setupLogger();
             initialSetup();
-/*            navigateToLoginPage();
-            login();*/
+            navigateToLoginPage();
+            login();
         } catch (Exception ex) {
             logger.fine(EXCEPTION_MSG + ex);
         }
