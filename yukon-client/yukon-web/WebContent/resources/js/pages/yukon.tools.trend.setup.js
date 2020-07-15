@@ -130,7 +130,13 @@ yukon.tools.trend.setup = (function() {
             });
             
             $(document).on("change", ".js-graph-type", function () {
-                $(".js-date-picker-row").toggleClass("dn", !($(this).val() === $(".js-date-type-enum-value").val()));
+                var isDateTypeGraphSelected = $(this).val() === $(".js-date-type-enum-value").val();
+                var uniqueIdentifier = $(".js-unique-identifier").val();
+                $(".js-date-picker-row").toggleClass("dn", !isDateTypeGraphSelected);
+                if (isDateTypeGraphSelected) {
+                    var date = moment().tz(yg.timezone).format(yg.formats.date.date_only);
+                    $(this).closest("form").find("#js-date-picker_" + uniqueIdentifier).val(date);
+                }
             });
 
             $(document).on("click", ".js-remove", function (event) {
