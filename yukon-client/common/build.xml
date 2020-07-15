@@ -196,9 +196,12 @@
         <copy file="${srcdir}//com/cannontech/common/config/configuration.properties"
                     todir="${destdir}/com/cannontech/common/config"/>
     </target>
+	
+	<target name="executeTests">
+	</target>
 
     <!-- Run tests. This target must be supplied a halt and destdir property -->
-    <target name="executeTests">
+    <target name="executeTests1">
         <property name="test.results.dir" value="test/testResults"/>
         <!-- Clear out any old results -->
         <delete dir="${test.results.dir}" />

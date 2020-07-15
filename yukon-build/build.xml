@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <project name="Yukon Ant Build Script" default="targets" basedir=".." xmlns:jacoco="antlib:org.jacoco.ant">
-	<taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
-	        <classpath path="./lib/jacocoant.jar"/>
-	</taskdef>
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+        <classpath path="./lib/jacocoant.jar"/>
+    </taskdef>
     <property environment="env" />
     <tstamp/>
     <tstamp>
@@ -427,10 +427,38 @@
         <exec failonerror="true" dir="${basedir}/yukon-client/build" executable="cmd.exe">
             <arg line="/c antExit.bat -Dyukon.build.version='${yukon.build.label}' runUnitTests"/>
         </exec>
-    	<!-- Merge two exe files yukon-web-jacoco.exec & services-jacoco.exec-->
-    	<jacoco:merge destfile="${basedir}/yukon-client/merged.exec">
-    		    <fileset dir="${basedir}/yukon-client/lib/coverage" includes="*.exec"/>
-    	</jacoco:merge>
+        <!-- Merge all jococo exe files from lib/coverage to yukon-client-->
+        <jacoco:merge destfile="${basedir}/yukon-client/merged.exec">
+            <fileset dir="${basedir}/yukon-client/lib/coverage" includes="*.exec"/>
+        </jacoco:merge>
+        <antcall target="generateReport"/>
+    </target>
+
+    <target name="generateReport">
+        <jacoco:report xmlns:jacoco="antlib:org.jacoco.ant">
+            <executiondata>
+                <file file="${basedir}/yukon-client/merged.exec"/>
+            </executiondata>
+            <structure name="Coverage Structure">
+                <group name="yukon-web">
+                     <classfiles>
+                          <fileset dir="${basedir}/yukon-client/yukon-web/build_src"/>
+                     </classfiles>
+                     <sourcefiles>
+                          <fileset dir="${basedir}/yukon-client/yukon-web/src"/>
+                     </sourcefiles>
+                          </group>
+                <group name="services">
+                     <classfiles>
+                          <fileset dir="${basedir}/yukon-client/services/build"/>
+                     </classfiles>
+                     <sourcefiles>
+                          <fileset dir="${basedir}/yukon-client/services/src"/>
+                     </sourcefiles>
+                </group>
+            </structure>
+            <html destdir="${basedir}/yukon-client/report"/>
+        </jacoco:report>
     </target>
 
     <target name="signclient">
