@@ -241,7 +241,7 @@
 
         <!-- Tomcat Component -->
         <verifyShutdownPortDisabled serverXmlFilename="${basedir}/yukon-install/ApacheTomcat/conf/server.xml"/>
-    	
+        
         <copy todir="${install.bag}/Tomcat" preservelastmodified="true">
             <fileset dir="${basedir}/yukon-install/ApacheTomcat" />
         </copy>
@@ -440,6 +440,14 @@
                 <file file="${basedir}/yukon-client/merged.exec"/>
             </executiondata>
             <structure name="Coverage Structure">
+                <group name="common">
+                    <classfiles>
+                       <fileset dir="${basedir}/yukon-client/common/build/com/cannontech/common"/>
+                    </classfiles>
+                    <sourcefiles>
+                        <fileset dir="${basedir}/yukon-client/common/src"/>
+                    </sourcefiles>
+                </group>
                 <group name="yukon-web">
                      <classfiles>
                           <fileset dir="${basedir}/yukon-client/yukon-web/build_src"/>
@@ -457,7 +465,8 @@
                      </sourcefiles>
                 </group>
             </structure>
-            <html destdir="${basedir}/yukon-client/report"/>
+            <mkdir dir="${basedir}/yukon-client/jacocoReport" />
+            <html destdir="${basedir}/yukon-client/jacocoReport"/>
         </jacoco:report>
     </target>
 
