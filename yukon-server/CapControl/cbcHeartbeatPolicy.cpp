@@ -3,6 +3,7 @@
 #include "ccid.h"
 #include "cctwowaycbcpoints.h"
 #include "cbcHeartbeatPolicy.h"
+#include "Requests.h"
 #include "desolvers.h"
 
 extern unsigned long _CC_DEBUG;

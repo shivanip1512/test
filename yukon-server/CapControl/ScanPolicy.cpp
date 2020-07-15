@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "ScanPolicy.h"
+#include "Requests.h"
 
 #include "std_helper.h"
 

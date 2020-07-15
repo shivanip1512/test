@@ -4,6 +4,7 @@
 #include "std_helper.h"
 #include "msg_pdata.h"
 #include "ccutil.h"
+#include "Requests.h"
 
 
 extern unsigned long _MSG_PRIORITY;

@@ -47,6 +47,7 @@
 #include "database_reader.h"
 #include "CapControlPredicates.h"
 #include "desolvers.h"
+#include "Requests.h"
 
 #include <boost/range/adaptor/filtered.hpp>
 #include <boost/range/algorithm/for_each.hpp>

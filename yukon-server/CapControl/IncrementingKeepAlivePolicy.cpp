@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "IncrementingKeepAlivePolicy.h"
+#include "Requests.h"
 
 extern unsigned long _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY;
 

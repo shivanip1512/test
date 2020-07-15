@@ -22,6 +22,7 @@
 #include "IVVCState.h"
 #include "IVVCStrategy.h"
 #include "CapControlPredicates.h"
+#include "Requests.h"
 
 #include <boost/range/adaptor/filtered.hpp>
 

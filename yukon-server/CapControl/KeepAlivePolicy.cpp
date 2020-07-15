@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "KeepAlivePolicy.h"
+#include "Requests.h"
 
 
 namespace Cti           {

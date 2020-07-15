@@ -9,6 +9,7 @@
 #include "msg_lmcontrolhistory.h"
 #include "tbl_pt_alarm.h"
 #include "Exceptions.h"
+#include "Requests.h"
 
 using Cti::CapControl::PointResponse;
 using Cti::CapControl::createPorterRequestMsg;
