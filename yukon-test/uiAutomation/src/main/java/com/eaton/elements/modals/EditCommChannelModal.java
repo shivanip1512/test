@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.openqa.selenium.By;
 
 import com.eaton.elements.DropDownElement;
+import com.eaton.elements.Section;
 //import com.eaton.elements.Label;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
@@ -28,6 +29,9 @@ public class EditCommChannelModal extends BaseModal {
     }
     public TextEditElement getChannelPreTxWait() {
         return new TextEditElement(this.driverExt, "timing.preTxWait", getModal());
+    }
+    public Section getTimingSection() {
+        return new Section(this.driverExt, "Timing", getModal());
     }
     
     public TextEditElement getChannelRTSTxWait() {
@@ -55,7 +59,7 @@ public class EditCommChannelModal extends BaseModal {
     }
 
     public DropDownElement getBaudRate() {
-        return new DropDownElement(this.driverExt, "routeId", getModal());
+        return new DropDownElement(this.driverExt, "baudRate", getModal());
     }
 
     public TrueFalseCheckboxElement getStatus() {

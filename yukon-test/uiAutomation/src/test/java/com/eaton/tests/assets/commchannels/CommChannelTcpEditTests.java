@@ -1,23 +1,24 @@
 package com.eaton.tests.assets.commchannels;	
 	import static org.assertj.core.api.Assertions.assertThat;
-
 	import java.text.SimpleDateFormat;
-import java.util.List;
+	import java.util.List;
 
-import org.assertj.core.api.SoftAssertions;
+	import org.assertj.core.api.SoftAssertions;
 	import org.json.simple.JSONObject;
 	import org.testng.annotations.BeforeClass;
 	import org.testng.annotations.BeforeMethod;
 	import org.testng.annotations.Test;
 
-import com.eaton.elements.modals.CreateCommChannelModal;
-import com.eaton.elements.modals.EditCommChannelModal;
+	import com.eaton.elements.Section;
+	import com.eaton.elements.modals.CreateCommChannelModal;
+	import com.eaton.elements.modals.EditCommChannelModal;
 	import com.eaton.framework.DriverExtensions;
 	import com.eaton.framework.SeleniumTestSetup;
 	import com.eaton.framework.TestConstants;
 	import com.eaton.framework.Urls;
 	import com.eaton.pages.assets.commChannels.CommChannelDetailPage;
 	import com.eaton.rest.api.assets.AssetsCreateRequestAPI;
+	import com.eaton.rest.api.assets.AssetsGetRequestAPI;
 	import com.eaton.rest.api.dbetoweb.JsonFileHelper;
 	import io.restassured.response.ExtractableResponse;
 	
@@ -44,7 +45,7 @@ import com.eaton.elements.modals.EditCommChannelModal;
 	        jo = (JSONObject) body;
 	        jo.put("name", commChannelName);
 	        ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
-	        commChannelId = createResponse.path("id").toString();
+	        commChannelId = createResponse.path("id").toString();	        
 	    }
 	  
 	    @BeforeMethod(alwaysRun = true)
@@ -80,7 +81,7 @@ import com.eaton.elements.modals.EditCommChannelModal;
 	    
 		
 		@Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })												
-		public void commChannelDetailsTcp_NameAlreadyExists() {												
+		public void commChannelTcpEdit_NameAlreadyExists() {												
 				
 			String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());												
 			String commChannelNameTcp = "TCP Comm Channel " + timeStamp;												
@@ -322,4 +323,89 @@ import com.eaton.elements.modals.EditCommChannelModal;
 			
 			assertThat(editModal.getChannelAdditionalTimeOut().getValidationError()).isEqualTo(EXPECTED_MSG);					
 	    }
-}
+	    
+	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })											
+	    public void commChannelTcpEdit_TcpEditInfoFieldsValuesCorrect() {											
+	        String expectedModalTitle = "Edit " + commChannelName;
+	        String tabName = "Info";
+	        EditCommChannelModal editModal = channelDetailPage.showCommChannelEditModal(expectedModalTitle);
+
+			editModal.getTabElement().clickTab(tabName);									
+			
+			List<String> values = editModal.getTabElement().getTabValues(tabName);	
+			
+	        softly.assertThat(values.size()).isEqualTo(4);
+	        softly.assertThat(values).contains(commChannelName);
+	        softly.assertThat(values).contains("TCP");
+	        softly.assertThat(values).contains("1200");
+	        softly.assertThat(values).contains("Enabled");
+	        softly.assertAll();
+	    }
+	    
+	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+	    public void commChannelTcpEdit_ConfigTabTimingSectionDisplayed() {
+	    	String expectedModalTitle = "Edit " + commChannelName;
+	    	String tabName = "Configuration";
+	    	
+	    	EditCommChannelModal editModal = channelDetailPage.showCommChannelEditModal(expectedModalTitle);
+	    	editModal.getTabElement().clickTab(tabName);
+	    	
+	        Section timing = editModal.getTimingSection();        		
+	        assertThat(timing.getSection()).isNotNull();
+	    }
+	        
+	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })											
+	    public void commChannelTcpEdit_TcpEditAllFieldsCorrect() {	
+			String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());												
+			String commChannelNameTcp = "TCP Comm Channel " + timeStamp;												
+			String payloadFile = System.getProperty("user.dir")												
+			+ "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelTCP.json";												
+				
+			Object body = JsonFileHelper.parseJSONFile(payloadFile);												
+			jo = (JSONObject) body;												
+			jo.put("name", commChannelNameTcp);
+			
+	        String expectedModalTitle = "Edit " + commChannelName;
+	        String commChannelName = "CommChannel_Tcp_Update";
+	        String baudRate = "4800";
+	        String configFieldsValues[] = {"55", "10", "20", "15", "500"};
+	        String tabName = "Configuration";	
+	        
+	        EditCommChannelModal editModal = channelDetailPage.showCommChannelEditModal(expectedModalTitle);
+	        editModal.getChannelName().setInputValue(commChannelName);
+	        editModal.getBaudRate().selectItemByText(baudRate);
+	        
+	        
+	        editModal.getTabElement().clickTab(tabName);
+	        editModal.getChannelPreTxWait().setInputValue(configFieldsValues[0]);
+	        editModal.getChannelRTSTxWait().setInputValue(configFieldsValues[1]);
+	        editModal.getChannelPostTxWait().setInputValue(configFieldsValues[2]);
+	        editModal.getChannelRecDataWait().setInputValue(configFieldsValues[3]);
+	        editModal.getChannelAdditionalTimeOut().setInputValue(configFieldsValues[4]);
+	        editModal.clickOkAndWait();
+
+	        ExtractableResponse<?> response = AssetsGetRequestAPI.getCommChannel(commChannelId);
+	        softly.assertThat(response.path("name").toString()).isEqualTo(commChannelName);
+	        
+	        assertThat(response.path("name").toString()).isEqualTo(commChannelName);
+	        assertThat(response.path("baudRate").toString()).isEqualTo(baudRate);
+	        assertThat(response.path("timing.preTxWait").toString()).isEqualTo((configFieldsValues[0]));
+	        assertThat(response.path("timing.rtsToTxWait").toString()).isEqualTo((configFieldsValues[1]));
+	        assertThat(response.path("timing.postTxWait").toString()).isEqualTo((configFieldsValues[2]));
+	        assertThat(response.path("timing.receiveDataWait").toString()).isEqualTo((configFieldsValues[3]));
+	        assertThat(response.path("timing.extraTimeOut").toString()).isEqualTo((configFieldsValues[4]));
+	        
+	    }
+	    
+
+}	  
+	
+	
+	
+	    
+	    
+	    
+	    
+	    
+	    
+	    

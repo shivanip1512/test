@@ -20,6 +20,12 @@ public class Section {
         
         setSection();
     }
+    public Section(DriverExtensions driverExt, String sectionName, WebElement parentElement) {
+        this.driverExt = driverExt;
+        this.sectionName = sectionName;
+        
+        setSection();
+    }
     
     private void setSection() {
         List<WebElement> list = this.driverExt.findElements(By.cssSelector(".section-container"), Optional.empty());
@@ -27,6 +33,7 @@ public class Section {
         section =  list.stream().filter(element -> element.findElement(By.cssSelector(".title-bar .title")).getText().contains(this.sectionName)).findFirst().orElseThrow();  
     }
 
+    
     public WebElement getSection() {        
         return section;
     }    
