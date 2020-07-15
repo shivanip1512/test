@@ -3,13 +3,9 @@ package com.eaton.tests.assets.commchannels;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.assertj.core.api.SoftAssertions;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -19,19 +15,14 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.assets.commchannels.CommChannelsListPage;
-import com.eaton.pages.ami.MeterDetailsPage;
 import com.eaton.pages.assets.commchannels.CommChannelDetailPage;
-import com.eaton.rest.api.assets.AssetsCreateRequestAPI;
-import com.eaton.rest.api.dbetoweb.JsonFileHelper;
+import com.eaton.pages.assets.commchannels.CommChannelsListPage;
 
-import io.restassured.response.ExtractableResponse;
-public class CommChannelTcpCreateTests extends SeleniumTestSetup{
-	private CommChannelsListPage listPage;
+public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup{
+	private CommChannelsListPage channelCreatePage;
 	private DriverExtensions driverExt;
 	private SoftAssertions softly;
-	String modalTitle = "Create Comm Channel";
-	String type = "TCP";
+	String type = "Local Serial Port";
 	
 	@BeforeClass(alwaysRun = true)
     public void beforeClass() {
@@ -42,22 +33,25 @@ public class CommChannelTcpCreateTests extends SeleniumTestSetup{
 	@BeforeMethod(alwaysRun = true)
     public void beforeMethod() {
         navigate(Urls.Assets.COMM_CHANNELS_LIST);
-        listPage = new CommChannelsListPage(driverExt);
+        channelCreatePage = new CommChannelsListPage(driverExt);
     }
-	
+
 	@Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
-	public void createCommChannelTcp_AllFieldsSuccess() {
-		CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
+	public void createCommChannelLocalSerialPort_AllFieldsSuccess() {
+		CreateCommChannelModal createModal = channelCreatePage.showAndWaitCreateCommChannelModal();
 		
 		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         
-        String name = "AT Comm Channel TCP " + timeStamp;
-        String baudRate = "2400";
+        String name = "AT Comm Channel Local Serial Port " + timeStamp;
+        String physicalPort = "com3";
+        String baudRate = "9600";
+       
         
         final String EXPECTED_MSG = name + " saved successfully.";
         
         createModal.getName().setInputValue(name);
 		createModal.getType().selectItemByText(type);
+		createModal.getPhysicalPort().selectItemByText(physicalPort);
 		createModal.getBaudRate().selectItemByText(baudRate);
 		
 		createModal.clickOkAndWait();
@@ -71,19 +65,38 @@ public class CommChannelTcpCreateTests extends SeleniumTestSetup{
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
 	}
 	
-	@Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })	
-	public void createCommChannelTcp_LabelsCorrect() {
-		CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
+	@Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL})	
+	public void createCommChannelLocalSerialPort_LabelsCorrect() {
+		CreateCommChannelModal createModal = channelCreatePage.showAndWaitCreateCommChannelModal();
 	
 		createModal.getType().selectItemByText(type);
 		
 		List<String> labels = createModal.getFieldLabels();
 		
-		softly.assertThat(labels.size()).isEqualTo(4);
+		softly.assertThat(labels.size()).isEqualTo(5);
 	    softly.assertThat(labels.get(0)).isEqualTo("Name:");
 		softly.assertThat(labels.get(1)).contains("Type:");
-		softly.assertThat(labels.get(2)).contains("Baud Rate:");
-		softly.assertThat(labels.get(3)).contains("Status:");
+		softly.assertThat(labels.get(2)).contains("Physical Port:");
+		softly.assertThat(labels.get(3)).contains("Baud Rate:");
+		softly.assertThat(labels.get(4)).contains("Status:");
 		softly.assertAll();
+	}
+	
+	@Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL})			
+	public void createCommChannelLocalSerialPort_PhysicalPortOtherRequiredValidation() {
+		CreateCommChannelModal createModal = channelCreatePage.showAndWaitCreateCommChannelModal();
+		
+		String physicalPort = "Other";
+        
+		final String EXPECTED_MSG ="Physical Port is required.";
+
+		createModal.getType().selectItemByText(type);
+		createModal.getPhysicalPort().selectItemByText(physicalPort);
+		  
+		createModal.clickOkAndWait();
+		
+        String errorMsg = createModal.getPhysicalPortOther().getValidationError();
+        
+        assertThat(errorMsg).isEqualTo(EXPECTED_MSG); 
 	}
 }

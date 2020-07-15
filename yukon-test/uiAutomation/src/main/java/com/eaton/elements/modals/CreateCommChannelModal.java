@@ -1,7 +1,5 @@
 package com.eaton.elements.modals;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import org.openqa.selenium.By;
@@ -41,8 +39,21 @@ public class CreateCommChannelModal extends BaseModal{
     public DropDownElement getBaudRate() {
     	return new DropDownElement(this.driverExt, "baudRate", PARENT_NAME);
     }
+    
+    public DropDownElement getPhysicalPort() {
+    	return new DropDownElement(this.driverExt, "physicalPort", PARENT_NAME);
+    }
+    
+    public TextEditElement getPhysicalPortOther() {
+    	return new TextEditElement(this.driverExt, "physicalPort", PARENT_NAME);
+    }
+    
+    public TextEditElement getIPAddress() {
+    	return new TextEditElement(this.driverExt, "ipAddress", PARENT_NAME);
+    }
+    
     public String getModalTitle() {
-        return modal.findElement(By.cssSelector(".ui-dialog-titlebar .ui-dialog-title")).getText();
+    	return getModal().findElement(By.cssSelector(".ui-dialog-titlebar .ui-dialog-title")).getText();
     }
 
     public void clickClose() {

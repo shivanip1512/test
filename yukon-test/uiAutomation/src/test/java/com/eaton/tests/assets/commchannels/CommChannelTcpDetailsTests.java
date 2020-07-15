@@ -149,7 +149,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
-    public void commChannelDetailsEditOpensCorrectModal() {
+    public void commChannelDetails_EditOpensCorrectModal() {
         String expectedModalTitle = "Edit " + commChannelName;
         EditCommChannelModal editModal = channelDetailPage.showCommChannelEditModal(expectedModalTitle);
         String actualModalTitle = editModal.getModalTitle();
@@ -158,9 +158,9 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
     public void commChannelDetailsTCP_CreateOpensCorrectModal() {
-        String expectedModalTitle = "Create Comm Channel";
-        CreateCommChannelModal createModal = channelDetailPage.showCreateCommChannelModal(expectedModalTitle);
-        String actualModalTitle = createModal.getModalTitle();
-        assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
+    	String expectedModalTitle = "Create Comm Channel";
+    	CreateCommChannelModal createModal = channelDetailPage.showCreateCommChannelModal();
+    	String actualModalTitle = createModal.getModalTitle();
+    	assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
     }
 }

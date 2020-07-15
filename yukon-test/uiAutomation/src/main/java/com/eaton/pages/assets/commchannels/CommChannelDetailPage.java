@@ -67,11 +67,11 @@ public class CommChannelDetailPage extends PageBase {
         return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of("yukon_dialog_confirm"));        
     }
     
-    public CreateCommChannelModal showCreateCommChannelModal(String modalName) {
-        getActionBtn().clickAndSelectOptionByText("Create"); 
-        
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("yukon_dialog_confirm");
-        
-        return new CreateCommChannelModal(this.driverExt, modalName);
+    public CreateCommChannelModal showCreateCommChannelModal() {
+    	getActionBtn().clickAndSelectOptionByText("Create");
+    	 
+    	SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-create-comm-channel-popup");
+
+    	return new CreateCommChannelModal(this.driverExt, Optional.empty(), Optional.of("js-create-comm-channel-popup"));
     }
 }
