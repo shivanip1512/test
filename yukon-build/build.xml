@@ -435,6 +435,7 @@
     </target>
 
     <target name="generateReport">
+        <mkdir dir="${basedir}/yukon-client/jacocoReport"/>
         <jacoco:report xmlns:jacoco="antlib:org.jacoco.ant">
             <executiondata>
                 <file file="${basedir}/yukon-client/merged.exec"/>
@@ -465,7 +466,6 @@
                      </sourcefiles>
                 </group>
             </structure>
-            <mkdir dir="${basedir}/yukon-client/jacocoReport" />
             <html destdir="${basedir}/yukon-client/jacocoReport"/>
         </jacoco:report>
     </target>
