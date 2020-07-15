@@ -78,16 +78,12 @@ public class TrendModel {
                 } else {
                     graphSeries.setMoreData(CtiUtilities.STRING_NONE);
                 }
-                // Setting pointid -100 as default for Marker type.
+                // use defaults when MarkerType
                 if (series.getType().isMarkerType()) {
                     graphSeries.setPointID(-100);
-                } else {
-                    graphSeries.setPointID(series.getPointId());
-                }
-                // Setting LINE as default for Marker type.
-                if (series.getType().isMarkerType()) {
                     graphSeries.setRenderer(RenderType.LINE);
                 } else {
+                    graphSeries.setPointID(series.getPointId());
                     graphSeries.setRenderer(series.getStyle() == null ? RenderType.LINE : series.getStyle());
                 }
                 // Set GraphDefinationId in case of Update flow.
