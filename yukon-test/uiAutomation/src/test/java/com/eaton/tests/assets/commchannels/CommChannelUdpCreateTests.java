@@ -93,19 +93,16 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
 	public void createCommChannelUdp_PortNumberMinValidation() {
 		CreateCommChannelModal createModal = channelCreatePage.showAndWaitCreateCommChannelModal();
 	
-        String name = "AT Comm Channel UDP";
-                
         String portNumber = "0";
         
         final String EXPECTED_MSG ="Port Number must be between 1 and 65,535.";
         
-		createModal.getName().setInputValue(name);
 		createModal.getType().selectItemByText(type);
 		createModal.getPortNumber().setInputValue(portNumber);
 		  
 		createModal.clickOkAndWait();
 		
-        String errorMsg = createModal.getPortNumber().getValidationError("id");
+        String errorMsg = createModal.getPortNumber().getValidationError();
         
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);               
 	}
@@ -114,19 +111,16 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
 	public void createCommChannelUdp_PortNumberMaxValidation() {
 		CreateCommChannelModal createModal = channelCreatePage.showAndWaitCreateCommChannelModal();
 		
-        String name = "AT Comm Channel UDP";
-                
         String portNumber = "65536";
         
         final String EXPECTED_MSG ="Port Number must be between 1 and 65,535.";
         
-		createModal.getName().setInputValue(name);
 		createModal.getType().selectItemByText(type);
 		createModal.getPortNumber().setInputValue(portNumber);
 		  
 		createModal.clickOkAndWait();
 		
-        String errorMsg = createModal.getPortNumber().getValidationError("id");
+        String errorMsg = createModal.getPortNumber().getValidationError();
         
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG); 
 	}
@@ -134,20 +128,14 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
 	@Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL})			
 	public void createCommChannelUdp_PortNumberEmptyValidation() {
 		CreateCommChannelModal createModal = channelCreatePage.showAndWaitCreateCommChannelModal();
-		
-        String name = "AT Comm Channel UDP ";
-                
-        String portNumber = "";
         
         final String EXPECTED_MSG ="Port Number must be between 1 and 65,535.";
-        
-		createModal.getName().setInputValue(name);
+
 		createModal.getType().selectItemByText(type);
-		createModal.getPortNumber().setInputValue(portNumber);
 		  
 		createModal.clickOkAndWait();
 		
-        String errorMsg = createModal.getPortNumber().getValidationError("id");
+        String errorMsg = createModal.getPortNumber().getValidationError();
         
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG); 
 	}

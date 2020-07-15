@@ -45,8 +45,4 @@ public class TextEditElement extends EditElement {
     	return this.driverExt.findElement(By.cssSelector("span[id='" + this.elementName + ".errors']"), Optional.empty()).getText();
     }
     
-    public String getValidationError(String attribute) {
-    	return this.driverExt.findElement(By.cssSelector("["+ attribute + "='" + this.elementName + ".errors']"), Optional.empty()).getText();
-        
-     }
 }
