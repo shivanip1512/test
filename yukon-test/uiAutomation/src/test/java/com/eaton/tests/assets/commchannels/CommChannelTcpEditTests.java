@@ -55,6 +55,16 @@ package com.eaton.tests.assets.commchannels;
 	    }
 	    
 	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })												
+	    public void commChannelTcpEdit_ModalTitleCorrect() {	
+	    	
+	        String expectedModalTitle = "Edit " + commChannelName;										
+	        EditCommChannelModal editModal = channelDetailPage.showCommChannelEditModal(expectedModalTitle);										
+	        String actualModalTitle = editModal.getModalTitle();										
+	        assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
+	        												
+	    }	
+	    
+	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })												
 	    public void commChannelTcpEdit_NameRequired() {												
 	        String expectedModalTitle = "Edit " + commChannelName;
 	        String EXPECTED_MSG = "Name is required.";
