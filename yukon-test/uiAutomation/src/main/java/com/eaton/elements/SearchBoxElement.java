@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -14,13 +18,15 @@ import com.eaton.framework.DriverExtensions;
 
 public class SearchBoxElement {
     private DriverExtensions driverExt;
+    private WebDriver driver;
     private String childElementName;
     private String parentElement;
 
-    public SearchBoxElement(DriverExtensions driverExt, String elementName, String parentElement) {
+    public SearchBoxElement(DriverExtensions driverExt, String parentElement, String childElementName) {
         this.driverExt = driverExt;
-        this.childElementName = elementName;
-        this.parentElement = parentElement;        
+        this.parentElement = parentElement;    
+        this.childElementName = childElementName;
+           
     }  
     
     public SearchBoxElement(DriverExtensions driverExt, String elementName) {
@@ -29,10 +35,10 @@ public class SearchBoxElement {
     }
     
     private WebElement getSearchBoxElement() {
-        if (this.parentElement != null) {
-            return this.driverExt.findElement(By.cssSelector("." + parentElement + " input[name='" + childElementName + "']"), Optional.empty());    
+    	if (this.parentElement != null) {
+            return this.driverExt.findElement(By.cssSelector("." + this.parentElement + " input[name='" + this.childElementName + "']"), Optional.empty());    
         } else {
-            return this.driverExt.findElement(By.cssSelector(" input[name='" + childElementName + "']"), Optional.empty());
+            return this.driverExt.findElement(By.cssSelector(" input[name='" + this.childElementName + "']"), Optional.empty());
         }         
     }
     
@@ -57,21 +63,22 @@ public class SearchBoxElement {
         action.sendKeys(Keys.ENTER).build().perform();
     }    
 
-    public List<String> getSearchResults() {
+    public List<String> getSearchResults(String searchText) {
+    	setSearchValue(searchText);
         List<WebElement> list = this.driverExt.findElements(By.cssSelector(".ui-menu .ui-menu-item"), Optional.empty());
         
         List<String> results = new ArrayList<String>();
         for (WebElement webElement : list) {
-            results.add(webElement.findElement(By.cssSelector("ui-menu-item-wrapper")).getText());
+            results.add(webElement.findElement(By.cssSelector(".ui-menu-item-wrapper")).getText());
         }
         
         return results;
     }    
     
-    public List<String> validateSearchTextPresentInSugestionList(String search) {
-    	List<String> list=getSearchResults();
+    public List<String> validateSearchTextPresentInSugestionList(String searchText) {
+    	List<String> list=getSearchResults(searchText);
         List<String> matchingElements = list.stream()
-          .filter(str -> str.trim().contains(search))
+          .filter(str -> str.trim().contains(searchText))
           .collect(Collectors.toList());
      
         return matchingElements;

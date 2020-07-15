@@ -10,6 +10,7 @@ import com.eaton.pages.PageBase;
 public class CommChannelGlobalSearch extends PageBase {
 	private String searchText="Comm Channels";
 	private String parentElement = "toolbar";
+	private String childElementName= "q";
 		
 	public CommChannelGlobalSearch(DriverExtensions driverExt, String searchText) {
 	        super(driverExt);
@@ -25,12 +26,12 @@ public class CommChannelGlobalSearch extends PageBase {
 		
 		//Object creation for Search box element class.
 		public SearchBoxElement getSearchBoxElement() {	
-				return new SearchBoxElement(this.driverExt, this.parentElement, this.searchText);	
+				return new SearchBoxElement(this.driverExt, this.parentElement, this.childElementName);	
 			}
 		
 		//Function to set search text in global search box and hit enter button.
-		public void searchDirectlyWithText(){
-			getSearchBoxElement().setSearchValueWithEnter(this.searchText);
+		public void searchDirectlyWithText(String searchText){
+			getSearchBoxElement().setSearchValueWithEnter(searchText);
 		}
 		
 		//To validate if searched text is present in global search box suggestion list.
@@ -40,7 +41,7 @@ public class CommChannelGlobalSearch extends PageBase {
 			return results;
 			}
 		
-		public void clickOnSearchedText_InGlobalSearchResult() {
+		public void clickOnSearchedText_InGlobalSearchResult(String searchText) {
 			getSearchBoxElement().setSearchValueAndClickResult(searchText);
 		}
 		
