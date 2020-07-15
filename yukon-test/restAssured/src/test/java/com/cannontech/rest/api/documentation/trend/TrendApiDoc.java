@@ -78,7 +78,7 @@ public class TrendApiDoc extends DocumentationBase {
         FieldDescriptor[] resetPeakFieldDescriptor = new FieldDescriptor[] {
                 fieldWithPath("startDate")
                         .type(JsonFieldType.STRING)
-                        .description("Start Date. in MM/dd/yyyy format") };
+                        .description("Start Date. In MM/dd/yyyy format") };
         return new ArrayList<>(Arrays.asList(resetPeakFieldDescriptor));
     }
 
@@ -94,14 +94,14 @@ public class TrendApiDoc extends DocumentationBase {
         return fieldWithPath("trendSeries[].date")
                 .type(JsonFieldType.STRING)
                 .optional()
-                .description("Date in mm/dd/yyyy format. Applicable only when type is DATE_TYPE");
+                .description("Date in MM/dd/yyyy format. Applicable only when type is DATE_TYPE");
     }
 
     private static FieldDescriptor getResponseDateFieldDescriptor() {
         return fieldWithPath("trendSeries[].date")
                 .type(JsonFieldType.STRING)
                 .optional()
-                .description(" Date in mm/dd/yyyy format. Applicable only when type is DATE_TYPE and PEAK_TYPE. Default value for PEAK_TYPE is First date of current month.");
+                .description(" Date in MM/dd/yyyy format. Applicable only when type is DATE_TYPE and PEAK_TYPE. Default value for PEAK_TYPE is First date of current month.");
     }
  
     @Test
