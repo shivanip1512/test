@@ -44,7 +44,5 @@ include::{snippets}/TrendApiDoc/Test_Trend_01_ResetPeak/http-response.adoc[]
 
 *Request* 
 include::{snippets}/TrendApiDoc/Test_Trend_01_Delete/http-request.adoc[]
-*Response Properties* 
-include::{snippets}/TrendApiDoc/Test_Trend_01_Delete/response-fields.adoc[]
 *Response* 
 include::{snippets}/TrendApiDoc/Test_Trend_01_Delete/http-response.adoc[]

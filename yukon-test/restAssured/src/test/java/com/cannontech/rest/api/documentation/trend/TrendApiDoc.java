@@ -69,11 +69,7 @@ public class TrendApiDoc extends DocumentationBase {
                 fieldWithPath("trendSeries[].style")
                     .type(JsonFieldType.STRING)
                     .optional()
-                    .description("Render Style. Expected:LINE, BAR, STEP. Default Style: LINE. Render Style for MARKER_TYPE is LINE"),
-                fieldWithPath("trendSeries[].date")
-                    .type(JsonFieldType.STRING)
-                    .optional()
-                    .description("Date in mm/dd/yyyy format. Applicable only when type is DATE_TYPE and PEAK_TYPE")
+                    .description("Render Style. Expected:LINE, BAR, STEP. Default Style: LINE. Render Style for MARKER_TYPE is LINE")
         };
         return new ArrayList<>(Arrays.asList(trendFieldDescriptor));
     }
@@ -82,18 +78,32 @@ public class TrendApiDoc extends DocumentationBase {
         FieldDescriptor[] resetPeakFieldDescriptor = new FieldDescriptor[] {
                 fieldWithPath("startDate")
                         .type(JsonFieldType.STRING)
-                        .description("Start Date. in mm/dd/yyyy format") };
+                        .description("Start Date. in MM/dd/yyyy format") };
         return new ArrayList<>(Arrays.asList(resetPeakFieldDescriptor));
     }
 
-    private static List<FieldDescriptor> getTrendIdFieldDescriptors() {
-        FieldDescriptor[] TrendIdFieldDescriptor = new FieldDescriptor[] {
+    private static List<FieldDescriptor> getResetPeakResFieldDescriptors() {
+        FieldDescriptor[] resetPeakFieldDescriptor = new FieldDescriptor[] {
                 fieldWithPath(idStr)
                         .type(JsonFieldType.NUMBER)
                         .description(idDescStr) };
-        return new ArrayList<>(Arrays.asList(TrendIdFieldDescriptor));
+        return new ArrayList<>(Arrays.asList(resetPeakFieldDescriptor));
     }
 
+    private static FieldDescriptor getRequestDateFieldDescriptor() {
+        return fieldWithPath("trendSeries[].date")
+                .type(JsonFieldType.STRING)
+                .optional()
+                .description("Date in mm/dd/yyyy format. Applicable only when type is DATE_TYPE");
+    }
+
+    private static FieldDescriptor getResponseDateFieldDescriptor() {
+        return fieldWithPath("trendSeries[].date")
+                .type(JsonFieldType.STRING)
+                .optional()
+                .description(" Date in mm/dd/yyyy format. Applicable only when type is DATE_TYPE and PEAK_TYPE. Default value for PEAK_TYPE is First date of current month.");
+    }
+ 
     @Test
     public void Test_Trend_01_Create() {
         trendId = createDoc();
@@ -112,7 +122,7 @@ public class TrendApiDoc extends DocumentationBase {
     @Test(dependsOnMethods = "Test_Trend_01_Update")
     public void Test_Trend_01_ResetPeak() {
         List<FieldDescriptor> requestFields = getResetPeakReqFieldDescriptors();
-        List<FieldDescriptor> responseFields = getTrendIdFieldDescriptors();
+        List<FieldDescriptor> responseFields = getResetPeakResFieldDescriptors();
         MockTrendModel trendModel = getMockObject();
         MockTrendSeries series = trendModel.getTrendSeries().get(0);
         series.setType(MockGraphType.PEAK_TYPE);
@@ -131,6 +141,7 @@ public class TrendApiDoc extends DocumentationBase {
     protected Get buildGetFields() {
         List<FieldDescriptor> responseFields = getFieldDescriptors();
         responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
+        responseFields.add(getResponseDateFieldDescriptor());
         String url = ApiCallHelper.getProperty("getTrend") + trendId;
         return new DocumentationFields.Get(responseFields, url);
     }
@@ -138,8 +149,10 @@ public class TrendApiDoc extends DocumentationBase {
     @Override
     protected Create buildCreateFields() {
         List<FieldDescriptor> requestFields = getFieldDescriptors();
+        requestFields.add(getRequestDateFieldDescriptor());
         List<FieldDescriptor> responseFields = getFieldDescriptors();
         responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
+        responseFields.add(getResponseDateFieldDescriptor());
         String url = ApiCallHelper.getProperty("createTrend");
         return new DocumentationFields.Create(requestFields, responseFields, idStr, idDescStr, getMockObject(), url);
     }
@@ -147,8 +160,10 @@ public class TrendApiDoc extends DocumentationBase {
     @Override
     protected Update buildUpdateFields() {
         List<FieldDescriptor> requestFields = getFieldDescriptors();
+        requestFields.add(getRequestDateFieldDescriptor());
         List<FieldDescriptor> responseFields = getFieldDescriptors();
         responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
+        responseFields.add(getResponseDateFieldDescriptor());
         String url = ApiCallHelper.getProperty("updateTrend") + trendId;
         return new DocumentationFields.Update(requestFields, responseFields, idStr, idDescStr, getMockObject(), url);
     }
@@ -160,9 +175,8 @@ public class TrendApiDoc extends DocumentationBase {
 
     @Override
     protected Delete buildDeleteFields() {
-        List<FieldDescriptor> responseFields = getTrendIdFieldDescriptors();
         String url = ApiCallHelper.getProperty("deleteTrend") + trendId;
-        return new DocumentationFields.DeleteWithBody(null,responseFields,null, url);
+        return new DocumentationFields.Delete(url);
     }
 }
 
