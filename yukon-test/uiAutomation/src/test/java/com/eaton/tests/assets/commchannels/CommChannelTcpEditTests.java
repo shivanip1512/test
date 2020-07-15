@@ -173,7 +173,26 @@ package com.eaton.tests.assets.commchannels;
 	        softly.assertAll();											
 	    }
 	    
-	    
+	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })											
+	    public void commChannelTcpEdit_ConfigurationsValuesCorrect() {											
+	        String expectedModalTitle = "Edit " + commChannelName;											
+	        EditCommChannelModal editModal = channelDetailPage.showCommChannelEditModal(expectedModalTitle);											
+	        											
+	        String tabName = "Configuration";											
+			editModal.getTabElement().clickTab(tabName);	
+			editModal.getTabElement().clickTab(tabName);
+
+	        List<String> values = editModal.getTabElement().getTabValues(tabName);
+
+	        softly.assertThat(values.size()).isEqualTo(5);
+	        softly.assertThat(values.get(0)).isEqualTo("25  ms");
+	        softly.assertThat(values.get(1)).isEqualTo("0  ms");
+	        softly.assertThat(values.get(2)).isEqualTo("10  ms");
+	        softly.assertThat(values.get(3)).isEqualTo("0  ms");
+	        softly.assertThat(values.get(4)).isEqualTo("0  sec");
+	        softly.assertAll();
+	    }
+		
 	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })											
 	    public void commChannelTcpEdit_PreTxWaitMinValueValidation() {											
 	        String expectedModalTitle = "Edit " + commChannelName;
@@ -325,7 +344,7 @@ package com.eaton.tests.assets.commchannels;
 	    }
 	    
 	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })											
-	    public void commChannelTcpEdit_TcpEditInfoFieldsValuesCorrect() {											
+	    public void commChannelTcpEdit_InfoFieldsValuesCorrect() {											
 	        String expectedModalTitle = "Edit " + commChannelName;
 	        String tabName = "Info";
 	        EditCommChannelModal editModal = channelDetailPage.showCommChannelEditModal(expectedModalTitle);
@@ -355,15 +374,7 @@ package com.eaton.tests.assets.commchannels;
 	    }
 	        
 	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })											
-	    public void commChannelTcpEdit_TcpEditAllFieldsCorrect() {	
-			String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());												
-			String commChannelNameTcp = "TCP Comm Channel " + timeStamp;												
-			String payloadFile = System.getProperty("user.dir")												
-			+ "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelTCP.json";												
-				
-			Object body = JsonFileHelper.parseJSONFile(payloadFile);												
-			jo = (JSONObject) body;												
-			jo.put("name", commChannelNameTcp);
+	    public void commChannelTcpEdit_UpdatedFieldsCorrect() {	
 			
 	        String expectedModalTitle = "Edit " + commChannelName;
 	        String commChannelName = "CommChannel_Tcp_Update";
@@ -387,13 +398,12 @@ package com.eaton.tests.assets.commchannels;
 	        ExtractableResponse<?> response = AssetsGetRequestAPI.getCommChannel(commChannelId);
 	        softly.assertThat(response.path("name").toString()).isEqualTo(commChannelName);
 	        
-	        assertThat(response.path("name").toString()).isEqualTo(commChannelName);
-	        assertThat(response.path("baudRate").toString()).isEqualTo(baudRate);
-	        assertThat(response.path("timing.preTxWait").toString()).isEqualTo((configFieldsValues[0]));
-	        assertThat(response.path("timing.rtsToTxWait").toString()).isEqualTo((configFieldsValues[1]));
-	        assertThat(response.path("timing.postTxWait").toString()).isEqualTo((configFieldsValues[2]));
-	        assertThat(response.path("timing.receiveDataWait").toString()).isEqualTo((configFieldsValues[3]));
-	        assertThat(response.path("timing.extraTimeOut").toString()).isEqualTo((configFieldsValues[4]));
+	        softly.assertThat(response.path("baudRate").toString()).isEqualTo(baudRate);
+	        softly.assertThat(response.path("timing.preTxWait").toString()).isEqualTo((configFieldsValues[0]));
+	        softly.assertThat(response.path("timing.rtsToTxWait").toString()).isEqualTo((configFieldsValues[1]));
+	        softly.assertThat(response.path("timing.postTxWait").toString()).isEqualTo((configFieldsValues[2]));
+	        softly.assertThat(response.path("timing.receiveDataWait").toString()).isEqualTo((configFieldsValues[3]));
+	        softly.assertThat(response.path("timing.extraTimeOut").toString()).isEqualTo((configFieldsValues[4]));
 	        
 	    }
 	    
