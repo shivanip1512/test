@@ -63,7 +63,7 @@ package com.eaton.tests.assets.commchannels;
 	        editModal.getChannelName().setInputValue(" ");												
 	        editModal.clickOkAndWait();												
 	        																								
-	        softly.assertThat(editModal.getChannelName().getValidationError()).isEqualTo(EXPECTED_MSG);												
+	        assertThat(editModal.getChannelName().getValidationError()).isEqualTo(EXPECTED_MSG);												
 	    }	
 	    		
 	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })												
@@ -76,7 +76,7 @@ package com.eaton.tests.assets.commchannels;
 	        editModal.getChannelName().setInputValue("/,tcp|");												
 	        editModal.clickOkAndWait();												
 												
-	        softly.assertThat(editModal.getChannelName().getValidationError()).isEqualTo(EXPECTED_MSG);												
+	        assertThat(editModal.getChannelName().getValidationError()).isEqualTo(EXPECTED_MSG);												
 	    }	
 	    
 		
@@ -100,7 +100,7 @@ package com.eaton.tests.assets.commchannels;
 			editModal.getChannelName().setInputValue(commChannelNameTcp);												
 			editModal.clickOkAndWait();												
 																							
-			softly.assertThat(editModal.getChannelName().getValidationError()).isEqualTo(EXPECTED_MSG);												
+			assertThat(editModal.getChannelName().getValidationError()).isEqualTo(EXPECTED_MSG);												
 		}	
 
 	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })												
@@ -112,16 +112,16 @@ package com.eaton.tests.assets.commchannels;
 	        editModal.clickCancelAndWait();												
 	        												
 	        String actualPageTitle = channelDetailPage.getPageTitle();												
-	        softly.assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);												
+	        assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);												
 	    }
 		
 	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })											
 	    public void commChannelTcpEdit_CreateOpensPopupCorrect() {											
-        String EXPECTED_CREATE_MODEL_TITLE = "Create Comm Channel";												
-        CreateCommChannelModal createModel = channelDetailPage.showCreateCommChannelModal(EXPECTED_CREATE_MODEL_TITLE);												
-        String actualCreateModelTitle = createModel.getModalTitle();
-        
-        softly.assertThat(actualCreateModelTitle).isEqualTo(EXPECTED_CREATE_MODEL_TITLE);												
+	        String EXPECTED_CREATE_MODEL_TITLE = "Create Comm Channel";												
+	        CreateCommChannelModal createModel = channelDetailPage.showCreateCommChannelModal(EXPECTED_CREATE_MODEL_TITLE);												
+	        String actualCreateModelTitle = createModel.getModalTitle();
+	        
+	        assertThat(actualCreateModelTitle).isEqualTo(EXPECTED_CREATE_MODEL_TITLE);												
 	}
 	    
 	    
@@ -205,7 +205,7 @@ package com.eaton.tests.assets.commchannels;
 			editModal.getChannelPreTxWait().setInputValue("-1");
 			editModal.clickOkAndWait();
 			
-			softly.assertThat(editModal.getChannelPreTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);					
+			assertThat(editModal.getChannelPreTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);					
 	    }
 	    
 	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })											
@@ -220,7 +220,7 @@ package com.eaton.tests.assets.commchannels;
 			editModal.getChannelPreTxWait().setInputValue("10000001");
 			editModal.clickOkAndWait();
 			
-			softly.assertThat(editModal.getChannelPreTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);					
+			assertThat(editModal.getChannelPreTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);					
 	    }
 			
 	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })											
@@ -235,7 +235,7 @@ package com.eaton.tests.assets.commchannels;
 			editModal.getChannelRTSTxWait().setInputValue("-1");
 			editModal.clickOkAndWait();
 			
-			softly.assertThat(editModal.getChannelRTSTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);					
+			assertThat(editModal.getChannelRTSTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);					
 	    }
 	    
 	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })									
@@ -250,7 +250,7 @@ package com.eaton.tests.assets.commchannels;
 			editModal.getChannelRTSTxWait().setInputValue("10000001");
 			editModal.clickOkAndWait();
 			
-			softly.assertThat(editModal.getChannelRTSTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);					
+			assertThat(editModal.getChannelRTSTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);					
 	    }
 			
 	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })											
@@ -265,7 +265,7 @@ package com.eaton.tests.assets.commchannels;
 			editModal.getChannelPostTxWait().setInputValue("-1");
 			editModal.clickOkAndWait();
 			
-			softly.assertThat(editModal.getChannelPostTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);					
+			assertThat(editModal.getChannelPostTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);					
 	    }
 	    
 	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })											
@@ -280,7 +280,7 @@ package com.eaton.tests.assets.commchannels;
 			editModal.getChannelPostTxWait().setInputValue("10000001");
 			editModal.clickOkAndWait();
 			
-			softly.assertThat(editModal.getChannelPostTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);					
+			assertThat(editModal.getChannelPostTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);					
 	    }
 	    
 	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })											
@@ -295,7 +295,7 @@ package com.eaton.tests.assets.commchannels;
 			editModal.getChannelRecDataWait().setInputValue("-1");
 			editModal.clickOkAndWait();
 			
-			softly.assertThat(editModal.getChannelRecDataWait().getValidationError()).isEqualTo(EXPECTED_MSG);					
+			assertThat(editModal.getChannelRecDataWait().getValidationError()).isEqualTo(EXPECTED_MSG);					
 	    }
 	    
 	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })											
@@ -310,7 +310,7 @@ package com.eaton.tests.assets.commchannels;
 			editModal.getChannelRecDataWait().setInputValue("1001");
 			editModal.clickOkAndWait();
 			
-			softly.assertThat(editModal.getChannelRecDataWait().getValidationError()).isEqualTo(EXPECTED_MSG);					
+			assertThat(editModal.getChannelRecDataWait().getValidationError()).isEqualTo(EXPECTED_MSG);					
 	    }
 	    
 	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })											
@@ -325,7 +325,7 @@ package com.eaton.tests.assets.commchannels;
 			editModal.getChannelAdditionalTimeOut().setInputValue("-1");
 			editModal.clickOkAndWait();
 			
-			softly.assertThat(editModal.getChannelAdditionalTimeOut().getValidationError()).isEqualTo(EXPECTED_MSG);					
+			assertThat(editModal.getChannelAdditionalTimeOut().getValidationError()).isEqualTo(EXPECTED_MSG);					
 	    }
 	    
 	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })											
@@ -340,7 +340,7 @@ package com.eaton.tests.assets.commchannels;
 			editModal.getChannelAdditionalTimeOut().setInputValue("1000");
 			editModal.clickOkAndWait();
 			
-			softly.assertThat(editModal.getChannelAdditionalTimeOut().getValidationError()).isEqualTo(EXPECTED_MSG);					
+			assertThat(editModal.getChannelAdditionalTimeOut().getValidationError()).isEqualTo(EXPECTED_MSG);					
 	    }
 	    
 	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })											
@@ -370,7 +370,7 @@ package com.eaton.tests.assets.commchannels;
 	    	editModal.getTabElement().clickTab(tabName);
 	    	
 	        Section timing = editModal.getTimingSection();        		
-	        softly.assertThat(timing.getSection()).isNotNull();
+	        assertThat(timing.getSection()).isNotNull();
 	    }
 	        
 	    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })											
@@ -404,6 +404,7 @@ package com.eaton.tests.assets.commchannels;
 	        softly.assertThat(response.path("timing.postTxWait").toString()).isEqualTo((configFieldsValues[2]));
 	        softly.assertThat(response.path("timing.receiveDataWait").toString()).isEqualTo((configFieldsValues[3]));
 	        softly.assertThat(response.path("timing.extraTimeOut").toString()).isEqualTo((configFieldsValues[4]));
+	        softly.assertAll();	
 	        
 	    }
 	    
