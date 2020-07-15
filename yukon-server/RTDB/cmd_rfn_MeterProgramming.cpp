@@ -125,19 +125,14 @@ namespace Cti::Devices::Commands {
 
         // the detailed configuration status code
 
-        auto detailedStatus = Cti::mapFind( detailedConfigurationStatusCodes, response[2] );
+        auto detailedStatus = Cti::mapFindOrDefault( detailedConfigurationStatusCodes, response[2], { ClientErrors::ReasonUnknown, "Other"} );
 
-        // detailed configuration status code not found in map
-
-        validate( Condition( !! detailedStatus, ClientErrors::InvalidData )
-                  << "Invalid Detailed Configuration Status (" << response[2] << ")" );
-
-        description += "\nDetailed Configuration Status: " + detailedStatus->text + " (" + std::to_string(response[2]) + ")";
+        description += "\nDetailed Configuration Status: " + detailedStatus.text + " (" + std::to_string(response[2]) + ")";
 
         _returnCode =
             meterStatus->returnCode != ClientErrors::None 
                 ? meterStatus->returnCode
-                : detailedStatus->returnCode;
+                : detailedStatus.returnCode;
 
         // convert the rest of the data (if any) into the meter configuration ID
 
