@@ -99,7 +99,7 @@ public abstract class PointApiTestBase {
         ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockPointBase);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be - Validation error");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "pointName", "Point Name is required."), "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "pointName", "Name is required."), "Expected code in response is not correct");
     }
 
     /**

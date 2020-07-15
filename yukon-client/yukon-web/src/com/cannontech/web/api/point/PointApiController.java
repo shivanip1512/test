@@ -32,9 +32,11 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.pao.service.YukonPointHelper;
+import com.cannontech.web.tools.points.model.LitePointModel;
 import com.cannontech.web.tools.points.model.PointBaseModel;
 import com.cannontech.web.tools.points.model.PointCopy;
 import com.cannontech.web.tools.points.service.PointEditorService;
@@ -95,10 +97,15 @@ public class PointApiController <T extends PointBaseModel<?>> {
    
     @InitBinder("pointBaseModel")
     public void setupBinder(WebDataBinder binder) {
-
         pointApiValidators.stream().forEach(e -> {
             if (e.supports(binder.getTarget().getClass())) {
-                binder.addValidators(e);
+                if (((LitePointModel) binder.getTarget()).getPointType() == PointType.CalcStatus) {
+                    if (!(e.getClass().equals(StatusPointApiValidator.class))) {
+                        binder.addValidators(e);
+                    }
+                } else {
+                    binder.addValidators(e);
+                }
             }
         });
 

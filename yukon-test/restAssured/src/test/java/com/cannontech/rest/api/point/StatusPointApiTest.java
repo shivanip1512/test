@@ -55,7 +55,7 @@ public class StatusPointApiTest extends PointApiTestBase {
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be - Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse,
                                                        "archiveType",
-                                                       "ArchiveType ON_TIMER is not valid for Point Type Status."),
+                                                       "ArchiveType ON_TIMER is not valid for Point Type " +pointType+"."),
                    "Expected code in response is not correct");
     }
     
