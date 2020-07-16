@@ -27,6 +27,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonRowMapper;
@@ -207,10 +208,14 @@ public class AttributeDaoImpl implements AttributeDao {
             Multimaps.invertFrom(allDefinedAttributes, dest);
             paoTypes.addAll(dest.get(attribute));
         } else if (attribute instanceof CustomAttribute) {
-            paoTypes.addAll(attributeToPoint.asMap().keySet()
+            CustomAttribute customAttribute  = (CustomAttribute) attribute;
+            PaoType type = attributeToPoint.asMap().keySet()
                     .stream()
+                    .filter(cachedAttribute -> customAttribute.getId() == cachedAttribute.getKey())
                     .map(pair -> pair.getValue())
-                    .collect(Collectors.toList()));
+                    .findFirst()
+                    .orElseThrow(() -> new NotFoundException("Attribute:"+ attribute +"is not in cache"));
+            paoTypes.add(type);
         }
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT YPO.paobjectid, YPO.type");
