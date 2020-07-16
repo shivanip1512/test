@@ -5,6 +5,7 @@ import java.util.List;
 import com.eaton.elements.Button;
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.RadioButtonElement;
+import com.eaton.elements.Section;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
 import com.eaton.framework.DriverExtensions;
@@ -160,5 +161,9 @@ public class LoadGroupCreatePage extends PageBase {
 
     public Button getCancelBtn() {
         return new Button(this.driverExt, "Cancel");
+    }
+    
+    public Section getSection(String sectionName) {
+        return new Section(this.driverExt, sectionName);
     }
 }

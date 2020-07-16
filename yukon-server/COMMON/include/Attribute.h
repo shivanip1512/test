@@ -224,7 +224,7 @@ public:
     static const Attribute  Relay1ShedTime5Min;
     static const Attribute  Relay1ShedTime15Min;
     static const Attribute  Relay1ShedTime30Min;
-    static const Attribute  Relay1RelayState;
+    static const Attribute  Relay1LoadState;
     static const Attribute  Relay2CallForCool;
     static const Attribute  Relay2kWLoadSize;
     static const Attribute  Relay2RemainingControlTime;
@@ -237,7 +237,7 @@ public:
     static const Attribute  Relay2ShedTime5Min;
     static const Attribute  Relay2ShedTime15Min;
     static const Attribute  Relay2ShedTime30Min;
-    static const Attribute  Relay2RelayState;
+    static const Attribute  Relay2LoadState;
     static const Attribute  Relay3CallForCool;
     static const Attribute  Relay3kWLoadSize;
     static const Attribute  Relay3RemainingControlTime;
@@ -250,7 +250,7 @@ public:
     static const Attribute  Relay3ShedTime5Min;
     static const Attribute  Relay3ShedTime15Min;
     static const Attribute  Relay3ShedTime30Min;
-    static const Attribute  Relay3RelayState;
+    static const Attribute  Relay3LoadState;
     static const Attribute  Relay4CallForCool;
     static const Attribute  Relay4kWLoadSize;
     static const Attribute  Relay4RemainingControlTime;
@@ -263,7 +263,7 @@ public:
     static const Attribute  Relay4ShedTime5Min;
     static const Attribute  Relay4ShedTime15Min;
     static const Attribute  Relay4ShedTime30Min;
-    static const Attribute  Relay4RelayState;
+    static const Attribute  Relay4LoadState;
     static const Attribute  ReportingInterval;
     static const Attribute  ReverseInductivekVArh;
     static const Attribute  ReversePowerFlag;
@@ -487,6 +487,7 @@ public:
     static const Attribute  TimeSyncFailed;
     static const Attribute  TOUScheduleChange;
     static const Attribute  TOUScheduleError;
+    static const Attribute  UltraCapacitorBad;
     static const Attribute  Unconfigured;
     static const Attribute  Unprogrammed;
     static const Attribute  UserProgrammableTemperatureThresholdExceeded;
@@ -521,6 +522,8 @@ public:
     static const Attribute  RadioFailure;
     static const Attribute  DoorOpen;
     static const Attribute  NodeCountExceeded;
+    static const Attribute  UpsBatteryVoltageLow;
+    static const Attribute  CertificateExpiration;
 
     static const Attribute  StreamingCapableDeviceCount;
     static const Attribute  StreamingActiveDeviceCount;

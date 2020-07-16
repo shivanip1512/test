@@ -1,5 +1,6 @@
 package com.eaton.elements.modals;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -94,5 +95,15 @@ public class BaseModal {
         } else if(this.modalTitle.isEmpty()) {
             SeleniumTestSetup.waitUntilModalClosedByTitle(modalTitle);
         }
+    }
+    
+    public List<String> getFieldLabels() {
+    	List<WebElement> nameElements = getModal().findElements(By.cssSelector("table tr .name"));
+		List<String> names = new ArrayList<String>();
+        for (WebElement element : nameElements) {
+        	names.add(element.getText());
+        }
+    	
+        return names;	
     }
 }

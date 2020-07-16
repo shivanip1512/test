@@ -206,7 +206,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_RUN_TIME_DATA_LOG_5_MIN">Relay 1 Run Time Data Log 5 Minutes</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_RUN_TIME_DATA_LOG_15_MIN">Relay 1 Run Time Data Log 15 Minutes</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_RUN_TIME_DATA_LOG_30_MIN">Relay 1 Run Time Data Log 30 Minutes</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_RELAY_STATE">Relay 1 Relay State</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_LOAD_STATE">Relay 1 Load State</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_SHED_STATUS">Relay 1 Shed Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_SHED_TIME_DATA_LOG">Relay 1 Shed Time Data Log</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_SHED_TIME_DATA_LOG_5_MIN">Relay 1 Shed Time Data Log 5 Minutes</entry>
@@ -219,7 +219,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_RUN_TIME_DATA_LOG_5_MIN">Relay 2 Run Time Data Log 5 Minutes</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_RUN_TIME_DATA_LOG_15_MIN">Relay 2 Run Time Data Log 15 Minutes</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_RUN_TIME_DATA_LOG_30_MIN">Relay 2 Run Time Data Log 30 Minutes</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_RELAY_STATE">Relay 2 Relay State</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_LOAD_STATE">Relay 2 Load State</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_SHED_STATUS">Relay 2 Shed Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_SHED_TIME_DATA_LOG">Relay 2 Shed Time Data Log</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_2_SHED_TIME_DATA_LOG_5_MIN">Relay 2 Shed Time Data Log 5 Minutes</entry>
@@ -232,7 +232,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_RUN_TIME_DATA_LOG_5_MIN">Relay 3 Run Time Data Log 5 Minutes</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_RUN_TIME_DATA_LOG_15_MIN">Relay 3 Run Time Data Log 15 Minutes</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_RUN_TIME_DATA_LOG_30_MIN">Relay 3 Run Time Data Log 30 Minutes</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_RELAY_STATE">Relay 3 Relay State</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_LOAD_STATE">Relay 3 Load State</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_SHED_STATUS">Relay 3 Shed Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_SHED_TIME_DATA_LOG">Relay 3 Shed Time Data Log</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_3_SHED_TIME_DATA_LOG_5_MIN">Relay 3 Shed Time Data Log 5 Minutes</entry>
@@ -245,7 +245,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_RUN_TIME_DATA_LOG_5_MIN">Relay 4 Run Time Data Log 5 Minutes</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_RUN_TIME_DATA_LOG_15_MIN">Relay 4 Run Time Data Log 15 Minutes</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_RUN_TIME_DATA_LOG_30_MIN">Relay 4 Run Time Data Log 30 Minutes</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_RELAY_STATE">Relay 4 Relay State</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_LOAD_STATE">Relay 4 Load State</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_SHED_STATUS">Relay 4 Shed Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_SHED_TIME_DATA_LOG">Relay 4 Shed Time Data Log</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_SHED_TIME_DATA_LOG_5_MIN">Relay 4 Shed Time Data Log 5 Minutes</entry>
@@ -391,6 +391,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.TOTAL_LUV_COUNT">Total LUV Event Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TOU_SCHEDULE_CHANGE">TOU Schedule Change</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TOU_SCHEDULE_ERROR">TOU Schedule Error</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.ULTRA_CAPACITOR_BAD">Ultra Capacitor Bad</entry>
     <entry key="yukon.common.attribute.builtInAttribute.UNCONFIGURED">Unconfigured</entry>
     <entry key="yukon.common.attribute.builtInAttribute.UNPROGRAMMED">Unprogrammed</entry>
     <entry key="yukon.common.attribute.builtInAttribute.USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED">Temperature Threshold Exceeded</entry>
@@ -602,6 +603,8 @@
     <entry key="yukon.common.attribute.builtInAttribute.RADIO_FAILURE">Radio Failure</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DOOR_OPEN">Door Open</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NODE_COUNT_EXCEEDED">Node Count Exceeded</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.UPS_BATTERY_VOLTAGE_LOW">UPS Battery Voltage Low</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.CERTIFICATE_EXPIRATION">Certificate Expiration</entry>
     
     <entry key="yukon.common.attribute.builtInAttribute.THERMOSTAT_RELAY_STATE">Thermostat Relay State</entry>
     

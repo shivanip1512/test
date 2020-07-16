@@ -37,3 +37,6 @@ include::CommChannel.adoc[]
 == Trend
 include::Trend.adoc[]
 
+== Virtual Device
+include::VirtualDevice.adoc[]
+

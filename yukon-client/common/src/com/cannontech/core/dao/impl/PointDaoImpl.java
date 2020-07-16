@@ -153,6 +153,15 @@ public class PointDaoImpl implements PointDao {
 
         return result;
     }
+    
+    @Override
+    public PaoPointIdentifier findPaoPointIdentifier(int pointId) {
+        try {
+            return getPaoPointIdentifier(pointId);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
     @Override
     public List<LitePoint> getLitePoints(Iterable<Integer> pointIds) {
