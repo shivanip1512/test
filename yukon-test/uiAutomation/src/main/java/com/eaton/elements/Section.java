@@ -30,10 +30,9 @@ public class Section {
 
     public WebElement getSection() {        
         return section;
-    }    
-
+    }
+    
     public List<String> getSectionLabels() {
-
         List<WebElement> nameElements = section.findElements(By.cssSelector("table tr .name"));
         List<String> names = new ArrayList<String>();
 

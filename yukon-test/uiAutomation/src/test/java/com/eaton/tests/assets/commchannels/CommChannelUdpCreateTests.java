@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
+
 import org.assertj.core.api.SoftAssertions;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -18,11 +20,13 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.assets.commchannels.CommChannelDetailPage;
 import com.eaton.pages.assets.commchannels.CommChannelsListPage;
 
-public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
+public class CommChannelUdpCreateTests extends SeleniumTestSetup {
     private CommChannelsListPage channelCreatePage;
     private DriverExtensions driverExt;
     private SoftAssertions softly;
-    String type = "Local Serial Port";
+    private Random randomNum;
+    String modalTitle = "Create Comm Channel";
+    String type = "UDP";
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
@@ -37,20 +41,24 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
-    public void createCommChannelLocalSerialPort_AllFieldsSuccess() {
+    public void createCommChannel_UdpAllFieldsSuccess() {
         CreateCommChannelModal createModal = channelCreatePage.showAndWaitCreateCommChannelModal();
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 
-        String name = "AT Comm Channel Local Serial Port " + timeStamp;
-        String physicalPort = "com3";
-        String baudRate = "9600";
+        String name = "AT Comm Channel UDP " + timeStamp;
+
+        String baudRate = "4800";
+
+        String portNumber;
+        randomNum = getRandomNum();
+        portNumber = Integer.toString(randomNum.nextInt(65536));
 
         final String EXPECTED_MSG = name + " saved successfully.";
 
         createModal.getName().setInputValue(name);
         createModal.getType().selectItemByText(type);
-        createModal.getPhysicalPort().selectItemByText(physicalPort);
+        createModal.getPortNumber().setInputValue(portNumber);
         createModal.getBaudRate().selectItemByText(baudRate);
 
         createModal.clickOkAndWait();
@@ -65,7 +73,7 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
-    public void createCommChannelLocalSerialPort_LabelsCorrect() {
+    public void createCommChannelUdp_LabelsCorrect() {
         CreateCommChannelModal createModal = channelCreatePage.showAndWaitCreateCommChannelModal();
 
         createModal.getType().selectItemByText(type);
@@ -75,26 +83,59 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
         softly.assertThat(labels.size()).isEqualTo(5);
         softly.assertThat(labels.get(0)).isEqualTo("Name:");
         softly.assertThat(labels.get(1)).contains("Type:");
-        softly.assertThat(labels.get(2)).contains("Physical Port:");
+        softly.assertThat(labels.get(2)).contains("Port Number:");
         softly.assertThat(labels.get(3)).contains("Baud Rate:");
         softly.assertThat(labels.get(4)).contains("Status:");
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
-    public void createCommChannelLocalSerialPort_PhysicalPortOtherRequiredValidation() {
+    public void createCommChannelUdp_PortNumberMinValidation() {
         CreateCommChannelModal createModal = channelCreatePage.showAndWaitCreateCommChannelModal();
 
-        String physicalPort = "Other";
+        String portNumber = "0";
 
-        final String EXPECTED_MSG = "Physical Port is required.";
+        final String EXPECTED_MSG = "Port Number must be between 1 and 65,535.";
 
         createModal.getType().selectItemByText(type);
-        createModal.getPhysicalPort().selectItemByText(physicalPort);
+        createModal.getPortNumber().setInputValue(portNumber);
 
         createModal.clickOkAndWait();
 
-        String errorMsg = createModal.getPhysicalPortOther().getValidationError();
+        String errorMsg = createModal.getPortNumber().getValidationError();
+
+        assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
+    }
+
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    public void createCommChannelUdp_PortNumberMaxValidation() {
+        CreateCommChannelModal createModal = channelCreatePage.showAndWaitCreateCommChannelModal();
+
+        String portNumber = "65536";
+
+        final String EXPECTED_MSG = "Port Number must be between 1 and 65,535.";
+
+        createModal.getType().selectItemByText(type);
+        createModal.getPortNumber().setInputValue(portNumber);
+
+        createModal.clickOkAndWait();
+
+        String errorMsg = createModal.getPortNumber().getValidationError();
+
+        assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
+    }
+
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    public void createCommChannelUdp_PortNumberEmptyValidation() {
+        CreateCommChannelModal createModal = channelCreatePage.showAndWaitCreateCommChannelModal();
+
+        final String EXPECTED_MSG = "Port Number must be between 1 and 65,535.";
+
+        createModal.getType().selectItemByText(type);
+
+        createModal.clickOkAndWait();
+
+        String errorMsg = createModal.getPortNumber().getValidationError();
 
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }

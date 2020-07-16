@@ -158,9 +158,9 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
     public void commChannelDetailsTCP_CreateOpensCorrectModal() {
-    	String expectedModalTitle = "Create Comm Channel";
-    	CreateCommChannelModal createModal = channelDetailPage.showCreateCommChannelModal();
-    	String actualModalTitle = createModal.getModalTitle();
-    	assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
+        String expectedModalTitle = "Create Comm Channel";
+        CreateCommChannelModal createModal = channelDetailPage.showCreateCommChannelModal();
+        String actualModalTitle = createModal.getModalTitle();
+        assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
     }
 }
