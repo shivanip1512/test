@@ -1,5 +1,7 @@
 package com.cannontech.common.gui.util;
 
+import com.cannontech.common.YukonColorPallet;
+
 /**
  * Insert the type's description here.
  * Creation date: (1/19/00 1:38:38 PM)
@@ -23,33 +25,50 @@ public ColorComboBoxCellRenderer() {
  * @return java.awt.Color
  * @param colorString java.lang.String
  */
-private java.awt.Color getColorFromString(String colorString) {
-	java.awt.Color stringColor = null;
-	if( colorString.equalsIgnoreCase("Green") )
-		stringColor = java.awt.Color.green;
-	else if( colorString.equalsIgnoreCase("Red") )
-		stringColor = java.awt.Color.red;
-	else if( colorString.equalsIgnoreCase("White") )
-		stringColor = java.awt.Color.white;
-	else if( colorString.equalsIgnoreCase("Yellow") )
-		stringColor = java.awt.Color.yellow;
-	else if( colorString.equalsIgnoreCase("Blue") )
-		stringColor = java.awt.Color.blue;
-	else if( colorString.equalsIgnoreCase("Cyan") )
-		stringColor = java.awt.Color.cyan;
-	else if( colorString.equalsIgnoreCase("Black") )
-		stringColor = java.awt.Color.black;
-	else if( colorString.equalsIgnoreCase("Orange") )
-		stringColor = java.awt.Color.orange;
-	else if( colorString.equalsIgnoreCase("Magenta") )
-		stringColor = java.awt.Color.magenta;
-	else if( colorString.equalsIgnoreCase("Gray") )
-		stringColor = java.awt.Color.gray;
-	else if( colorString.equalsIgnoreCase("Pink") )
-		stringColor = java.awt.Color.pink;
-
-	return stringColor;
-}
+    private java.awt.Color getColorFromString(String colorString) {
+        java.awt.Color stringColor = null;
+        switch (colorString) {
+        case Colors.GREEN_STR_ID:
+            stringColor = YukonColorPallet.GREEN.getAwtColor();
+            break;
+        case Colors.RED_STR_ID:
+            stringColor = YukonColorPallet.RED.getAwtColor();
+            break;
+        case Colors.WHITE_STR_ID:
+            stringColor = YukonColorPallet.WHITE.getAwtColor();
+            break;
+        case Colors.YELLOW_STR_ID:
+            stringColor = YukonColorPallet.YELLOW.getAwtColor();
+            break;
+        case Colors.BLUE_STR_ID:
+            stringColor = YukonColorPallet.BLUE.getAwtColor();
+            break;
+        case Colors.TEAL_STR_ID:
+            stringColor = YukonColorPallet.TEAL.getAwtColor();
+            break;
+        case Colors.BLACK_STR_ID:
+            stringColor = YukonColorPallet.BLACK.getAwtColor();
+            break;
+        case Colors.ORANGE_STR_ID:
+            stringColor = YukonColorPallet.ORANGE.getAwtColor();
+            break;
+        case Colors.LIGHT_GREEN_STR_ID:
+            stringColor = YukonColorPallet.LIGHT_GREEN.getAwtColor();
+            break;
+        case Colors.GRAY_STR_ID:
+            stringColor = YukonColorPallet.GRAY.getAwtColor();
+            break;
+        case Colors.PURPLE_STR_ID:
+            stringColor = YukonColorPallet.PURPLE.getAwtColor();
+            break;
+        case Colors.SKY_STR_ID:
+            stringColor = YukonColorPallet.SKY.getAwtColor();
+            break;
+        default:
+            break;
+        }
+        return stringColor;
+    }
 /**
  * getListCellRendererComponent method comment.
  */

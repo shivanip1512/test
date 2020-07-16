@@ -98,7 +98,7 @@
                                                     <span>${fn:escapeXml(trendSeries.label)}</span>
                                                 </td>
                                                 <td class="js-color">
-                                                    <div class="small-rectangle dib" style="background-color: ${trendSeries.color}"></div>
+                                                    <div class="small-rectangle dib" style="background-color: ${trendSeries.color.hexValue}"></div>
                                                     <span><i:inline key="${trendSeries.color}" /></span>
                                                 </td>
                                                 <td class="js-axis">
@@ -161,7 +161,7 @@
                                                     <span>${fn:escapeXml(trendSeries.label)}</span>
                                                 </td>
                                                 <td class="js-color">
-                                                    <div class="small-rectangle dib" style="background-color: ${trendSeries.color}"></div>
+                                                    <div class="small-rectangle dib" style="background-color: ${trendSeries.color.hexValue}"></div>
                                                     <span><i:inline key="${trendSeries.color}" /></span>
                                                 </td>
                                                 <td class="js-axis">

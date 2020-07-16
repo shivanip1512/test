@@ -44,8 +44,8 @@
                 <tags:input path="label" maxlength="40" inputClass="js-point-label-input w300" />
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".color" nameClass="vam">
-                <input type="hidden" class="js-color-input" name="color" value="${trendSeries.color}"/>
-                <input type="text" class="js-color-picker" value="${trendSeries.color}" />
+                <input type="hidden" class="js-color-input" name="color" value="${trendSeries.color.hexValue}"/>
+                <input type="text" class="js-color-picker" value="${trendSeries.color.hexValue}" />
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".style" nameClass="vam">
                 <tags:selectWithItems items="${styles}" path="style" />
