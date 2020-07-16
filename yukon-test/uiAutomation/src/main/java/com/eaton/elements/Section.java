@@ -39,7 +39,7 @@ public class Section {
     public List<String> getSectionLabels() {
 
         List<WebElement> nameElements = getSection().findElements(By.cssSelector("table tr .name"));
-        List<String> names = new ArrayList<>();
+        List<String> names = new ArrayList<>();    
 
         for (WebElement element : nameElements) {
             names.add(element.getText());
