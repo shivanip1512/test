@@ -1,7 +1,5 @@
 package com.eaton.elements.modals;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import org.openqa.selenium.By;
@@ -34,16 +32,17 @@ public class CreateCommChannelModal extends BaseModal{
     	return new DropDownElement(this.driverExt, "type", PARENT_NAME);
     }
     
+    public TextEditElement getIpAddress() {
+        return new TextEditElement(this.driverExt, "ipAddress", PARENT_NAME);
+    }
+    
     public TextEditElement getPortNumber() {
     	return new TextEditElement(this.driverExt, "portNumber", PARENT_NAME);
     } 
     
     public DropDownElement getBaudRate() {
     	return new DropDownElement(this.driverExt, "baudRate", PARENT_NAME);
-    }
-    public String getModalTitle() {
-        return modal.findElement(By.cssSelector(".ui-dialog-titlebar .ui-dialog-title")).getText();
-    }
+    }    
 
     public void clickClose() {
         modal.findElement(By.cssSelector(".ui-dialog-titlebar-close")).click();
