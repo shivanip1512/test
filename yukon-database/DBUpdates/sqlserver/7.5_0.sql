@@ -602,6 +602,89 @@ UPDATE DeviceGroup SET Permission = 'NOEDIT_NOMOD'
 INSERT INTO DBUpdates VALUES ('YUK-22443', '7.5.0', GETDATE());
 /* @end YUK-22443 */
 
+/* @start YUK-22330 */
+CREATE TABLE AttributeAssignment (
+   AttributeAssignmentId   NUMERIC              NOT NULL,
+   AttributeId             NUMERIC              NOT NULL,
+   PaoType                 VARCHAR(30)          NOT NULL,
+   PointType               VARCHAR(30)          NOT NULL,
+   PointOffset             NUMERIC              NOT NULL,
+   CONSTRAINT PK_AttributeAssignmentId PRIMARY KEY (AttributeAssignmentId)
+);
+GO
+
+ALTER TABLE AttributeAssignment
+   ADD CONSTRAINT AK_Assignment UNIQUE (AttributeId, PaoType, PointType, PointOffset);
+GO
+
+ALTER TABLE AttributeAssignment
+   ADD CONSTRAINT AK_Attribute_Device UNIQUE (AttributeId, PaoType);
+GO
+
+ALTER TABLE AttributeAssignment
+   ADD CONSTRAINT FK_AttrAssign_CustAttr FOREIGN KEY (AttributeId)
+      REFERENCES CustomAttribute (AttributeId)
+         ON DELETE CASCADE;
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-22330', '7.5.0', GETDATE());
+/* @end YUK-22330 */
+
+/* @start YUK-22328 */
+INSERT INTO YukonRoleProperty VALUES(-20022,-200,'Manage Attributes','NO_ACCESS','Controls access to manage all user defined attributes.');
+
+INSERT INTO DBUpdates VALUES ('YUK-22328', '7.5.0', GETDATE());
+/* @end YUK-22328 */
+
+/* @start YUK-22371 */
+UPDATE YukonGroupRole SET Value = 'OWNER'
+    WHERE RolePropertyID = -10200 AND Value IN (' ', 'true');
+
+UPDATE YukonGroupRole SET Value = 'VIEW'
+    WHERE RolePropertyID = -10200 AND Value = 'false';
+
+UPDATE YukonRoleProperty
+    SET KeyName = 'Manage Trends', Description = 'Controls access to view, create, edit, or delete Trends.', DefaultValue = 'VIEW'
+    WHERE RolePropertyID = -10200;
+GO
+INSERT INTO DBUpdates VALUES ('YUK-22371', '7.5.0', GETDATE());
+/* @end YUK-22371 */
+
+/* @start YUK-22412 */
+UPDATE Point 
+SET PointName = 'Relay 1 Load State'
+WHERE PointType = 'Status' AND PointOffset = 3
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId FROM YukonPaobject 
+    WHERE Type IN ('LCR-6600S', 'LCR-6601S')
+);
+
+UPDATE Point 
+SET PointName = 'Relay 2 Load State'
+WHERE PointType = 'Status' AND PointOffset = 5
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId FROM YukonPaobject 
+    WHERE Type IN ('LCR-6600S', 'LCR-6601S')
+);
+
+UPDATE Point 
+SET PointName = 'Relay 3 Load State'
+WHERE PointType = 'Status' AND PointOffset = 7
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId FROM YukonPaobject 
+    WHERE Type IN ('LCR-6600S')
+);
+
+UPDATE Point 
+SET PointName = 'Relay 4 Load State'
+WHERE PointType = 'Status' AND PointOffset = 9
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId FROM YukonPaobject 
+    WHERE Type IN ('LCR-6600S')
+);
+
+INSERT INTO DBUpdates VALUES ('YUK-22412', '7.5.0', GETDATE());
+/* @end YUK-22412 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

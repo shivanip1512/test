@@ -1,5 +1,6 @@
 package com.eaton.elements;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,8 +60,18 @@ public class DropDownElement {
     
     public int getOptionCount() {
         List<WebElement> options = getSelectElement().findElements(By.tagName("option"));
-        
+
         return options.size();
+    }
+    
+    public List<String> getOptionValues() {
+        List<String> optionValues = new ArrayList<String>();
+        List<WebElement> options = getSelectElement().findElements(By.tagName("option"));
+        for(WebElement option : options) {
+            optionValues.add(option.getText());
+        }
+        
+        return optionValues;
     }
     
     private void setSelectElement() {
@@ -76,4 +87,8 @@ public class DropDownElement {
     public WebElement getSelectElement() {
         return selectElement;
     }
+    
+    public String getValidationError() {
+        return this.driverExt.findElement(By.cssSelector("span[id='" + this.elementName + ".errors']"), Optional.empty()).getText();
+     }
 }

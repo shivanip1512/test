@@ -119,8 +119,8 @@
 <entry key="yukon.common.roleProperty.LC_REDUCTION_COL.description">Controls access to display Reduction in All Control Areas display.</entry>
 
 <!-- Trending RoleProperties -->
-<entry key="yukon.common.roleProperty.GRAPH_EDIT_GRAPHDEFINITION">Graph Definition Access</entry>
-<entry key="yukon.common.roleProperty.GRAPH_EDIT_GRAPHDEFINITION.description">Controls access to Create or Edit graph definitions.</entry>
+<entry key="yukon.common.roleProperty.MANAGE_TRENDS">Manage Trends</entry>
+<entry key="yukon.common.roleProperty.MANAGE_TRENDS.description">Controls access to view, create, edit, or delete Trends.</entry>
 <entry key="yukon.common.roleProperty.TRENDING_DISCLAIMER">Trending Disclaimer</entry>
 <entry key="yukon.common.roleProperty.TRENDING_DISCLAIMER.description">The disclaimer displayed for operator metering pages.</entry>
 <entry key="yukon.common.roleProperty.SCAN_NOW_ENABLED">Scan Now Enabled</entry>
@@ -350,6 +350,8 @@
 <entry key="yukon.common.roleProperty.ADMIN_EVENT_LOGS.description">Controls access to event logs.</entry>
 <entry key="yukon.common.roleProperty.ADMIN_MANAGE_DASHBOARDS">Manage Dashboards</entry>
 <entry key="yukon.common.roleProperty.ADMIN_MANAGE_DASHBOARDS.description">Controls access to manage all user defined dashboards.</entry>
+<entry key="yukon.common.roleProperty.ADMIN_MANAGE_ATTRIBUTES">Manage Attributes</entry>
+<entry key="yukon.common.roleProperty.ADMIN_MANAGE_ATTRIBUTES.description">Controls access to manage all user defined attributes.</entry>
 
 <!-- CI Curtailment RoleProperties -->
 <entry key="yukon.common.roleProperty.CURTAILMENT_IS_OPERATOR">C&amp;I Curtailment Operator</entry>

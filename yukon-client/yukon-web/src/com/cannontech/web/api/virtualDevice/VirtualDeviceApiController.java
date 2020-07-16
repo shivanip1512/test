@@ -35,7 +35,7 @@ public class VirtualDeviceApiController {
     @Autowired private VirtualDeviceCreateApiValidator virtualDeviceCreateApiValidator;
     @Autowired private VirtualDeviceApiValidator virtualDeviceApiValidator;
 
-    @PostMapping("/create")
+    @PostMapping("")
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> create(@Valid @RequestBody VirtualDeviceModel virtualDevice) {
         return new ResponseEntity<>(virtualDeviceService.create(virtualDevice), HttpStatus.OK);
