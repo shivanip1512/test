@@ -278,7 +278,7 @@ public enum ItronDataEventType {
             pointData = new PointData();
             
             // Put either the time or the value into the pointdata
-            insertValueOrTime(pointData, isValue, byteArray);
+            insertValueOrTime(pointData, isValue, byteArray, 0.1);
             
             String key = keyPrefix + name();
             log.debug("Caching incomplete data. Key: {}", key);
@@ -290,7 +290,7 @@ public enum ItronDataEventType {
         log.debug("Invalidating cache key: {}", cacheKey);
         voltageCache.invalidate(cacheKey);
         // Put the second part (time or value) into the pointdata
-        insertValueOrTime(pointData, isValue, byteArray);
+        insertValueOrTime(pointData, isValue, byteArray, 0.1);
         log.debug("Completed point data - date: " + pointData.getPointDataTimeStamp() + ", value: " + pointData.getValue());
         return Optional.of(pointData);
     }
@@ -298,11 +298,12 @@ public enum ItronDataEventType {
     /**
      * Insert a value or time into the pointData.
      */
-    private void insertValueOrTime(PointData pointData, boolean isValue, byte[] byteArray) {
+    private void insertValueOrTime(PointData pointData, boolean isValue, byte[] byteArray, double multiplier) {
         long decodedData = decode(byteArray);
         if (isValue) {
-            log.debug("Setting point data value: {}", decodedData);
-            pointData.setValue(decodedData);
+            double pointDataValue = decodedData * multiplier;
+            log.debug("Setting point data value: {}", pointDataValue);
+            pointData.setValue(pointDataValue);
         } else {
             // Date comes in as seconds since epoch
             Date date = getLcrTimestamp(decodedData);
