@@ -425,6 +425,8 @@ struct ClientErrors
         InvalidMeterProgram,
         MeterProgramNotFound,
         MeterProgramPasswordInvalid,
+        MeterProgramResponseTimeout,
+        MeterProgramErrorResponse,
     };
 };
 
