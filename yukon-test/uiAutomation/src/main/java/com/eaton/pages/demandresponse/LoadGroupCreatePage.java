@@ -197,40 +197,4 @@ public class LoadGroupCreatePage extends PageBase {
     public Section getPageSection(String sectionName) {
         return new Section(this.driverExt, sectionName);
     }
-
-//    public void clickSectionSwitchButtonsByName(String sectionName, String buttonName, String sectionLabel) {
-//        List<WebElement> nameElements;
-//        if (sectionName.contentEquals("Optional Attributes")) {
-//            nameElements = getSection(sectionName).getSection()
-//                    .findElements(By.cssSelector("td.value input[name='" + sectionLabel + "']~label>span"));
-//        } else if (sectionName.contentEquals("Addressing")) {
-//            nameElements = getSection(sectionName).getSection()
-//                    .findElements(By.cssSelector("table input[name='" + sectionLabel + "']+div span>span"));
-//        } else {
-//            nameElements = getSection(sectionName).getSection().findElements(By.cssSelector(".button-group span>span"));
-//        }
-//
-//        for (WebElement element : nameElements) {
-//            if (element.getText().contentEquals(buttonName)) {
-//                element.click();
-//                break;
-//            }
-//        }
-//    }
-//
-//    public String getAddressingSectionSwitchButtonStatusByLabelName(String sectionLabel) {
-//        WebElement nameElement;
-//        if (sectionLabel != "sectionAddress" && sectionLabel != "serialAddress") {
-//            nameElement = getSection("Addressing").getSection()
-//                    .findElement(By.cssSelector("table input[name='" + sectionLabel + "']~div label>input"));
-//        } else {
-//            nameElement = getSection("Addressing").getSection()
-//                    .findElement(By.cssSelector("table input[name='" + sectionLabel + "']"));
-//        }
-//        if (nameElement.getAttribute("disabled") == null) {
-//            return "false";
-//        } else {
-//            return "true";
-//        }
-//    }
 }
