@@ -21,7 +21,6 @@ import com.cannontech.common.device.virtualDevice.service.VirtualDeviceService;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.web.api.virtualDevice.VirtualDeviceApiValidator;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
@@ -33,7 +32,7 @@ public class VirtualDeviceApiController {
     @Autowired private VirtualDeviceCreateApiValidator virtualDeviceCreateApiValidator;
     @Autowired private VirtualDeviceApiValidator virtualDeviceApiValidator;
 
-    @PostMapping("/create")
+    @PostMapping("")
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> create(@Valid @RequestBody VirtualDeviceModel virtualDevice) {
         return new ResponseEntity<>(virtualDeviceService.create(virtualDevice), HttpStatus.OK);
