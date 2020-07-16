@@ -16,7 +16,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -641,6 +640,38 @@ public class AttributeServiceImpl implements AttributeService {
     }
     
     @Override
+    public List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute) {
+        List<PaoType> paoTypes = new ArrayList<>();
+        //TODO move to a different method
+        if (attribute instanceof BuiltInAttribute) {
+            Multimap<PaoType, Attribute> allDefinedAttributes = paoDefinitionDao.getPaoTypeAttributesMultiMap();
+            Multimap<Attribute, PaoType> dest = HashMultimap.create();
+            Multimaps.invertFrom(allDefinedAttributes, dest);
+            paoTypes.addAll(dest.get(attribute));
+        } else if (attribute instanceof CustomAttribute) {
+            CustomAttribute customAttribute  = (CustomAttribute) attribute;
+            PaoType type = attributeDao.getPaoTypeByAttributeId(customAttribute.getId());
+            paoTypes.add(type);
+        }
+        
+        //TODO remove sql
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT YPO.paobjectid, YPO.type");
+        sql.append("FROM Device d");
+        sql.append("JOIN YukonPaObject YPO ON (d.deviceid = YPO.paobjectid)");
+        sql.append("WHERE YPO.type").in_k(paoTypes);
+        SqlFragmentSource groupSqlWhereClause = deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group),
+                "YPO.paObjectId");
+        sql.append("AND").appendFragment(groupSqlWhereClause);
+
+        YukonDeviceRowMapper mapper = new YukonDeviceRowMapper();
+        List<SimpleDevice> devices = jdbcTemplate.query(sql, mapper);
+
+        return devices;
+    }
+    
+    //TODO remove sql
+    @Override
     public Multimap<BuiltInAttribute, SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group,
             List<BuiltInAttribute> attributes, List<Integer> deviceIds) {
 
@@ -650,7 +681,7 @@ public class AttributeServiceImpl implements AttributeService {
                 attributeToPaoType.put((BuiltInAttribute) entry.getValue(), entry.getKey());
             }
         }
-
+        //TODO remove sql
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT YPO.paobjectid, YPO.type");
         sql.append("FROM Device d");
@@ -696,4 +727,5 @@ public class AttributeServiceImpl implements AttributeService {
             return attributeDao.getCustomAttribute(Integer.valueOf(attribute));
         }
     }
+    
 }

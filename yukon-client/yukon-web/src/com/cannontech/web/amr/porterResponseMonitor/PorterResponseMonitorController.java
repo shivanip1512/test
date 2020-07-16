@@ -37,7 +37,6 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -73,7 +72,6 @@ public class PorterResponseMonitorController {
     @Autowired private PorterResponseMonitorService porterResponseMonitorService;
     @Autowired private OutageEventLogService outageEventLogService;
     @Autowired private AttributeService attributeService;
-    @Autowired private AttributeDao attributeDao;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private PointService pointService;
@@ -231,7 +229,7 @@ public class PorterResponseMonitorController {
         DeviceGroup group = deviceGroupService.findGroupName(monitor.getGroupName());
         if (group != null) {    // check if group no longer exists.
             totalGroupCount = deviceGroupService.getDeviceCount(Collections.singleton(group));
-            List<SimpleDevice> supportedDevices = attributeDao.getDevicesInGroupThatSupportAttribute(group, BuiltInAttribute.OUTAGE_STATUS);
+            List<SimpleDevice> supportedDevices = attributeService.getDevicesInGroupThatSupportAttribute(group, BuiltInAttribute.OUTAGE_STATUS);
             int existingPointCount = pointService.getCountOfGroupAttributeStateGroup(group,
                                                                 monitor.getAttribute(),
                                                                 monitor.getStateGroup());

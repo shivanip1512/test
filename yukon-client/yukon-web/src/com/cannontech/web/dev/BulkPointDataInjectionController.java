@@ -86,7 +86,6 @@ public class BulkPointDataInjectionController {
     private final Logger log = YukonLogManager.getLogger(BulkPointDataInjectionController.class);
 
     @Autowired private AttributeService attributeService;
-    @Autowired private AttributeDao attributeDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private BulkPointDataInjectionService bulkPointDataInjectionService;
     @Autowired private ObjectFormattingService objectFormattingService;
@@ -234,7 +233,7 @@ public class BulkPointDataInjectionController {
                     injectionStatus.setAttribute(attribute);
                     injectionStatus.setDeviceGroupName(deviceGroupName);
                     DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(deviceGroupName);
-                    List<SimpleDevice> supportedDevices = attributeDao.getDevicesInGroupThatSupportAttribute(deviceGroup, attribute);
+                    List<SimpleDevice> supportedDevices = attributeService.getDevicesInGroupThatSupportAttribute(deviceGroup, attribute);
                     TimeRangeSplitter timeSplitter = new TimeRangeSplitter(start, stop, standardDuration);
                     RateLimiter throttle = RateLimiter.create(throttlePerSecond);
                     injectionStatus.setNumTotal((long) timeSplitter.getTotal() * supportedDevices.size());

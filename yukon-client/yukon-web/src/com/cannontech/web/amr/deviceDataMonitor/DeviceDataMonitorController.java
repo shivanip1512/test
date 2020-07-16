@@ -50,7 +50,6 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.AttributeStateGroup;
@@ -84,7 +83,6 @@ import com.google.common.collect.Maps;
 public class DeviceDataMonitorController {
     
     @Autowired private AttributeService attributeService;
-    @Autowired private AttributeDao attributeDao;
     @Autowired private DeviceDataMonitorDao deviceDataMonitorDao;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private DeviceDataMonitorService monitorService;
@@ -529,7 +527,7 @@ public class DeviceDataMonitorController {
         List<Object> processorMissingList = new ArrayList<>();
 
         // Check vs the Attribute
-        List<SimpleDevice> attrSupportedDevices = attributeDao.getDevicesInGroupThatSupportAttribute(monitoringGroup, asg.getAttribute());
+        List<SimpleDevice> attrSupportedDevices = attributeService.getDevicesInGroupThatSupportAttribute(monitoringGroup, asg.getAttribute());
         long numSupportAttribute = attrSupportedDevices.size();
         
         long numMissingAttribute = numTotal - numSupportAttribute;
@@ -647,7 +645,7 @@ public class DeviceDataMonitorController {
             DeviceViolationEnum violationType) {
         
         // Check vs the Attribute
-        List<SimpleDevice> attrSupportedDevices = attributeDao
+        List<SimpleDevice> attrSupportedDevices = attributeService
                 .getDevicesInGroupThatSupportAttribute(monitoringGroup, attribute);
         
         // Will not allow casting, so must create a new collection.

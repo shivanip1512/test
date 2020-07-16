@@ -1,7 +1,5 @@
 package com.cannontech.common.pao.attribute.dao.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,21 +9,13 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
-import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.dao.AttributeDao;
-import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
-import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
@@ -35,15 +25,10 @@ import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 
 public class AttributeDaoImpl implements AttributeDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
-    @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private DeviceGroupService deviceGroupService;
 
     private final Cache<Pair<Integer, PaoType>, PointIdentifier> attributeToPoint = CacheBuilder.newBuilder().build();
     private final Cache<Integer, CustomAttribute> idToAttribute = CacheBuilder.newBuilder().build();
@@ -200,35 +185,12 @@ public class AttributeDaoImpl implements AttributeDao {
     }
     
     @Override
-    public List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute) {
-        List<PaoType> paoTypes = new ArrayList<>();
-        if (attribute instanceof BuiltInAttribute) {
-            Multimap<PaoType, Attribute> allDefinedAttributes = paoDefinitionDao.getPaoTypeAttributesMultiMap();
-            Multimap<Attribute, PaoType> dest = HashMultimap.create();
-            Multimaps.invertFrom(allDefinedAttributes, dest);
-            paoTypes.addAll(dest.get(attribute));
-        } else if (attribute instanceof CustomAttribute) {
-            CustomAttribute customAttribute  = (CustomAttribute) attribute;
-            PaoType type = attributeToPoint.asMap().keySet()
-                    .stream()
-                    .filter(cachedAttribute -> customAttribute.getId() == cachedAttribute.getKey())
-                    .map(pair -> pair.getValue())
-                    .findFirst()
-                    .orElseThrow(() -> new NotFoundException("Attribute:"+ attribute +"is not in cache"));
-            paoTypes.add(type);
-        }
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT YPO.paobjectid, YPO.type");
-        sql.append("FROM Device d");
-        sql.append("JOIN YukonPaObject YPO ON (d.deviceid = YPO.paobjectid)");
-        sql.append("WHERE YPO.type").in_k(paoTypes);
-        SqlFragmentSource groupSqlWhereClause = deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group),
-                "YPO.paObjectId");
-        sql.append("AND").appendFragment(groupSqlWhereClause);
-
-        YukonDeviceRowMapper mapper = new YukonDeviceRowMapper();
-        List<SimpleDevice> devices = jdbcTemplate.query(sql, mapper);
-
-        return devices;
+    public PaoType getPaoTypeByAttributeId(int attributeId) {
+        return attributeToPoint.asMap().keySet()
+            .stream()
+            .filter(cachedAttribute -> attributeId == cachedAttribute.getKey())
+            .map(pair -> pair.getValue())
+            .findFirst()
+            .orElseThrow(() -> new NotFoundException("Attribute id:"+ attributeId +"is not in cache"));
     }
 }

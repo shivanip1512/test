@@ -61,8 +61,7 @@ public interface AttributeDao {
     PointIdentifier getPointIdentifier(int attributeId, PaoType paoType);
 
     /**
-     * Returns a list of all the devices in a given DeviceGroup that support the given Attribute.
-     * This method works recursively on each child group of the requested group.
+     * Returns PaoType by Attribute Id
      */
-    List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute);
+    PaoType getPaoTypeByAttributeId(int attributeId);
 }
