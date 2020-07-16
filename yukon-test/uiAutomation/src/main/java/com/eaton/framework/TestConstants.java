@@ -8,7 +8,7 @@ public final class TestConstants {
         public static final String MEDIUM = "Medium";
         public static final String LOW = "Low";
     }
-    
+
     public static final String DATE_FORMAT = "MMddyyyyHHmmss";    
     
     public static final class Ami {

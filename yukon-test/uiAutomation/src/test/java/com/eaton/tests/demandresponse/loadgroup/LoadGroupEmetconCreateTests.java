@@ -172,7 +172,7 @@ public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
 
         createPage.getType().selectItemByText("Emetcon Group");
         createPage.getkWCapacity().setInputValue("2");
-        Section general = createPage.getSection("Addressing");
+        Section general = createPage.getPageSection("Addressing");
         assertThat(general.getSection()).isNotNull();
     }
     
@@ -183,7 +183,7 @@ public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
 
         createPage.getType().selectItemByText("Emetcon Group");
         createPage.getkWCapacity().setInputValue("22");
-        List<String> actualLabels = createPage.getSection(sectionName).getSectionLabels();
+        List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
         assertThat(actualLabels.contains(expectedLabel)).isTrue();
     }
@@ -195,7 +195,7 @@ public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
 
         createPage.getType().selectItemByText("Emetcon Group");
         createPage.getkWCapacity().setInputValue("2");
-        List<String> actualLabels = createPage.getSection(sectionName).getSectionLabels();
+        List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
         
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }

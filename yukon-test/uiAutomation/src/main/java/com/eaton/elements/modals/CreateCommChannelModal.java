@@ -36,6 +36,10 @@ public class CreateCommChannelModal extends BaseModal {
     public DropDownElement getBaudRate() {
         return new DropDownElement(this.driverExt, "baudRate", PARENT_NAME);
     }
+    
+    public TextEditElement getIpAddress() {
+        return new TextEditElement(this.driverExt, "ipAddress", PARENT_NAME);
+    }
 
     public void clickClose() {
         modal.findElement(By.cssSelector(".ui-dialog-titlebar-close")).click();

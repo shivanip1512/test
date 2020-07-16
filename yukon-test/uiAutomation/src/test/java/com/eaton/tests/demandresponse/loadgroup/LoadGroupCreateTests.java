@@ -114,7 +114,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_GeneralSectionTitleCorrect() {
 
-        Section general = createPage.getSection("General");
+        Section general = createPage.getPageSection("General");
         assertThat(general.getSection()).isNotNull();
     }
 
@@ -124,7 +124,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByIndex(2);
         createPage.getkWCapacity().clearInputValue();
         
-        Section optAttr = createPage.getSection("Optional Attributes");
+        Section optAttr = createPage.getPageSection("Optional Attributes");
         assertThat(optAttr.getSection()).isNotNull();
     }
 
@@ -164,7 +164,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         String sectionName = "General";
         List<String> expectedLabels = new ArrayList<>(List.of("Name:", "Type:" ));
 
-        List<String> actualLabels = createPage.getSection(sectionName).getSectionLabels();
+        List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
@@ -176,7 +176,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
         createPage.getType().selectItemByIndex(2);
         createPage.getkWCapacity().setInputValue("2");
-        List<String> actualLabels = createPage.getSection(sectionName).getSectionLabels();
+        List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
         
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
