@@ -131,12 +131,7 @@ yukon.tools.trend.setup = (function() {
             });
             
             $(document).on("change", ".js-graph-type", function () {
-                var isDateTypeGraphSelected = $(this).val() === $(".js-date-type-enum-value").val();
-                $(".js-date-picker-row").toggleClass("dn", !isDateTypeGraphSelected);
-                if (isDateTypeGraphSelected) {
-                    var date = moment().tz(yg.timezone).format(yg.formats.date.date_only);
-                    $(this).closest("form").find(".js-date-input").val(date);
-                }
+                $(".js-date-picker-row").toggleClass("dn", !($(this).val() === $(".js-date-type-enum-value").val()));
             });
 
             $(document).on("click", ".js-remove", function (event) {

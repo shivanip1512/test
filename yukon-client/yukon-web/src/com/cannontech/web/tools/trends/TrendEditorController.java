@@ -219,7 +219,7 @@ public class TrendEditorController {
 
     @PostMapping("/addPointOrMarker")
     public String addPointOrMarker(ModelMap model, YukonUserContext userContext, HttpServletResponse response,
-            @ModelAttribute("trendSeries") TrendSeries trendSeries, BindingResult result, FlashScope flashScope, @RequestParam("color") String colorHexValue)
+            @ModelAttribute("trendSeries") TrendSeries trendSeries, BindingResult result, FlashScope flashScope)
             throws JsonGenerationException, JsonMappingException, IOException {
         trendSeriesValidator.validate(trendSeries, result);
         LitePoint litePoint = null;
@@ -308,7 +308,7 @@ public class TrendEditorController {
     }
 
     @InitBinder
-    public void initBinder(WebDataBinder binder, YukonUserContext userContext, HttpServletRequest request) {
+    public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         binder.registerCustomEditor(TrendType.GraphType.class, new EnumPropertyEditor<>(TrendType.GraphType.class));
         binder.registerCustomEditor(TrendAxis.class, new EnumPropertyEditor<>(TrendAxis.class));
         binder.registerCustomEditor(RenderType.class, new EnumPropertyEditor<>(RenderType.class));

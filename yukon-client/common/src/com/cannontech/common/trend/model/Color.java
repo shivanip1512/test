@@ -19,7 +19,7 @@ public enum Color implements DatabaseRepresentationSource, DisplayableEnum {
     PURPLE(Colors.PURPLE_ID, YukonColorPallet.PURPLE),
     GRAY(Colors.GRAY_ID, YukonColorPallet.GRAY),
     TEAL(Colors.TEAL_ID, YukonColorPallet.TEAL),
-    SKY(Colors.SKY_ID, YukonColorPallet.TEAL);
+    SKY(Colors.SKY_ID, YukonColorPallet.SKY);
     
     private YukonColorPallet color;
 

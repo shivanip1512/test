@@ -2,12 +2,12 @@ package com.cannontech.common;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 
-public enum YukonColorPallet implements DisplayableEnum{
-    
+public enum YukonColorPallet implements DisplayableEnum {
+
     BLACK("#000000"),
     BLUE("#4d90fe"),
     GREEN("#009933"),
-    GRAY("#808080"), //changed this from #888
+    GRAY("#7b8387"),
     LIGHT_GREEN("#b2c98d"),
     ORANGE("#ec971f"),
     PURPLE("#b779f4"),
@@ -22,7 +22,7 @@ public enum YukonColorPallet implements DisplayableEnum{
     }
 
     private final String hexValue;
-    
+
     public String getHexValue() {
         return hexValue;
     }
@@ -31,9 +31,9 @@ public enum YukonColorPallet implements DisplayableEnum{
     public String getFormatKey() {
         return "yukon.common.color." + name();
     }
-    
+
     public java.awt.Color getAwtColor() {
         return java.awt.Color.decode(this.hexValue);
     }
-    
+
 }
