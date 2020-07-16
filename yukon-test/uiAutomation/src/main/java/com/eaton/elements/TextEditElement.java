@@ -45,6 +45,12 @@ public class TextEditElement extends EditElement {
         return getEditElement().getAttribute("value");
     }
     
+    public boolean isDisabled() {
+        WebElement input = getEditElement();
+        
+        return input.isEnabled();
+    }
+    
     public String getValidationError() {
        return this.driverExt.findElement(By.cssSelector("span[id='" + this.elementName + ".errors']"), Optional.empty()).getText();
     }

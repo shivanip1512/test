@@ -8,49 +8,46 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.eaton.elements.MultiSelectCheckboxElement;
 import com.eaton.elements.Section;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.LoadGroupCreatePage;
 import com.eaton.pages.demandresponse.LoadGroupDetailPage;
+import com.eaton.pages.demandresponse.LoadGroupVersacomCreatePage;
 
 public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
 
-    private LoadGroupCreatePage createPage;
+    private LoadGroupVersacomCreatePage createPage;
     WebDriver driver;
     private DriverExtensions driverExt;
     private Random randomNum;
+    private SoftAssertions softly;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
-        driver = getDriver();
         driverExt = getDriverExt();
         randomNum = getRandomNum();
+        softly = new SoftAssertions();
     }
 
     @BeforeMethod(alwaysRun = true)
     public void beforeTest() {
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
-        createPage = new LoadGroupCreatePage(driverExt);
+        createPage = new LoadGroupVersacomCreatePage(driverExt);
     }
 
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
-    public void ldGrpCreateVersacom_MandatoryFieldsSuccessfully() {
+    public void ldGrpCreateVersacom_RequiredFieldsOnlySuccessfully() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Versacom " + timeStamp;
-        double randomDouble = randomNum.nextDouble();
-        int randomInt = randomNum.nextInt(9999);
-        double capacity = randomDouble + randomInt;
 
         final String EXPECTED_MSG = name + " saved successfully.";
 
@@ -58,51 +55,38 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Versacom Group");
 
         waitForLoadingSpinner();
-        createPage.getCommunicationRoute().selectItemByText("a_CCU-711");
-        createPage.getAddressToUse().getValues().get(0);
-        createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
         createPage.getSaveBtn().click();
 
         waitForPageToLoad("Load Group: " + name, Optional.empty());
 
         LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
         String userMsg = detailsPage.getUserMessage();
+        
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-
     }
 
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
-    public void ldGrpCreateVersacom_AllFieldsSuccessfullyWithSerialAddress() {
-        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+    public void ldGrpCreateVersacom_AllFieldsSuccessfullyWithSerialAddress() {        
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());        
         String name = "AT Versacom " + timeStamp;
         double randomDouble = randomNum.nextDouble();
         int randomInt = randomNum.nextInt(9999);
-        double capacity = randomDouble + randomInt;
+        double capacity = randomDouble + randomInt;       
 
         final String EXPECTED_MSG = name + " saved successfully.";
-
-        createPage.getName().setInputValue(name);
+        
         createPage.getType().selectItemByText("Versacom Group");
 
         waitForLoadingSpinner();
-        createPage.getCommunicationRoute().selectItemByText("a_CCU-711");
-
-        String[] addressUsage = { "Section", "Class", "Division", "Serial" };
-        for (String switchButton : addressUsage) {
-            createPage.clickSectionSwitchButtonsByName("Address Usage", switchButton, "");
-        }
-
+        createPage.getCommunicationRoute().selectItemByText("a_CCU-711"); 
+        createPage.getAddressUsage().setTrueFalseByValue("Serial", true);
+        createPage.getName().setInputValue(name);      
         createPage.getSerialAddress().setInputValue(String.valueOf("40"));
-
-        String[] relayUsage = { "Relay 2", "Relay 3", "Relay 4" };
-        for (String switchButton : relayUsage) {
-            createPage.clickSectionSwitchButtonsByName("Relay Usage", switchButton, "");
-        }
-
+        createPage.getRelayUsage().setTrueFalseByValue("Relay_2", true);
         createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
 
-        createPage.clickSectionSwitchButtonsByName("Optional Attributes", "Yes", "disableGroup");
-        createPage.clickSectionSwitchButtonsByName("Optional Attributes", "Yes", "disableControl");
+        createPage.getDisableGroup().setValue(true);
+        createPage.getDisableControl().setValue(true);
 
         createPage.getSaveBtn().click();
 
@@ -110,6 +94,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
 
         LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
         String userMsg = detailsPage.getUserMessage();
+        
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
@@ -129,28 +114,17 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
         createPage.getCommunicationRoute().selectItemByText("a_CCU-711");
 
-        String[] addressUsage = { "Section", "Class", "Division" };
-        for (String switchButton : addressUsage) {
-            createPage.clickSectionSwitchButtonsByName("Address Usage", switchButton, "");
-        }
-        // MultiSelectCheckboxElement check = new MultiSelectCheckboxElement(driverExt, "addressUsage");
+        createPage.getAddressUsage().setTrueFalseByValue("Section", true);
+        createPage.getAddressUsage().setTrueFalseByValue("Class", true);
+        createPage.getAddressUsage().setTrueFalseByValue("Division", true);
+        
+        createPage.getUtilityAddress().setInputValue(String.valueOf(randomNum.nextInt(254)));
+        createPage.getSectionAddress().setInputValue(String.valueOf(randomNum.nextInt(255)));
 
-        createPage.getUtilityAddress().setInputValue(String.valueOf("254"));
-        createPage.getSectionAddress().setInputValue(String.valueOf("256"));
-
-        String[] classAddress = { "1", "2", "3", "15", "8", "9", "16" };
-        for (String switchButton : classAddress) {
-            createPage.clickSectionSwitchButtonsByName("Addressing", switchButton, "classAddress");
-        }
-
-        String[] divisionAddress = { "11", "2", "3", "15", "16", "9", "1" };
-        for (String switchButton : divisionAddress) {
-            createPage.clickSectionSwitchButtonsByName("Addressing", switchButton, "divisionAddress");
-        }
-        String[] relayUsage = { "Relay 2", "Relay 3", "Relay 4" };
-        for (String switchButton : relayUsage) {
-            createPage.clickSectionSwitchButtonsByName("Relay Usage", switchButton, "");
-        }
+        createPage.getClassAddress().setTrueFalseByValue("1", true);
+        createPage.getDivisionAddress().setTrueFalseByValue("11", true);
+        
+        createPage.getRelayUsage().setTrueFalseByValue("Relay_3", true);
 
         createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
 
@@ -160,6 +134,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
 
         LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
         String userMsg = detailsPage.getUserMessage();
+        
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
@@ -167,7 +142,8 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
     public void ldGrpCreateVersacom_GeneralSectionTitleCorrect() {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
-        Section generalSection = createPage.getSection("General");
+        Section generalSection = createPage.getPageSection("General");
+        
         assertThat(generalSection.getSection()).isNotNull();
     }
 
@@ -177,7 +153,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
         List<String> expectedLabels = new ArrayList<>(List.of("Name:", "Type:", "Communication Route:"));
-        List<String> actualLabels = createPage.getSection(sectionName).getSectionLabels();
+        List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
 
@@ -187,7 +163,8 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
     public void ldGrpCreateVersacom_AddressUsageSectionTitleCorrect() {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
-        Section generalSection = createPage.getSection("Address Usage");
+        Section generalSection = createPage.getPageSection("Address Usage");
+        
         assertThat(generalSection.getSection()).isNotNull();
     }
 
@@ -198,7 +175,8 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
-        String actualLabels = createPage.getSection(sectionName).getSectionLabels().get(0);
+        String actualLabels = createPage.getPageSection(sectionName).getSectionLabels().get(0);
+        
         assertThat(actualLabels.contains(expectedLabels)).withFailMessage("Assertion failed for label : " + expectedLabels)
                 .isTrue();
     }
@@ -208,7 +186,8 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
-        Section generalSection = createPage.getSection("Addressing");
+        Section generalSection = createPage.getPageSection("Addressing");
+        
         assertThat(generalSection.getSection()).isNotNull();
     }
 
@@ -217,14 +196,14 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         String sectionName = "Addressing";
         createPage.getType().selectItemByText("Versacom Group");
 
-        String[] addressUsage = { "Section", "Class", "Division", "Serial" };
-        for (String switchButton : addressUsage) {
-            createPage.clickSectionSwitchButtonsByName("Address Usage", switchButton, "");
-        }
+        createPage.getAddressUsage().setTrueFalseByValue("Section", true);
+        createPage.getAddressUsage().setTrueFalseByValue("Class", true);
+        createPage.getAddressUsage().setTrueFalseByValue("Division", true);
+        createPage.getAddressUsage().setTrueFalseByValue("Serial", true);
 
         List<String> expectedLabels = new ArrayList<>(
                 List.of("Utility Address:", "Section Address:", "Class Address:", "Division Address:", "Serial Address:"));
-        List<String> actualLabels = createPage.getSection(sectionName).getSectionLabels();
+        List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
@@ -234,7 +213,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
-        Section generalSection = createPage.getSection("Relay Usage");
+        Section generalSection = createPage.getPageSection("Relay Usage");
         assertThat(generalSection.getSection()).isNotNull();
     }
 
@@ -245,7 +224,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         String expectedLabels = "Relay Usage:";
-        String actualLabels = createPage.getSection(sectionName).getSectionLabels().get(0);
+        String actualLabels = createPage.getPageSection(sectionName).getSectionLabels().get(0);
         assertThat(actualLabels.contains(expectedLabels)).withFailMessage("Assertion failed for label : " + expectedLabels)
                 .isTrue();
     }
@@ -255,7 +234,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
-        Section generalSection = createPage.getSection("Optional Attributes");
+        Section generalSection = createPage.getPageSection("Optional Attributes");
         assertThat(generalSection.getSection()).isNotNull();
     }
 
@@ -266,7 +245,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         List<String> expectedLabels = new ArrayList<>(List.of("kW Capacity:", "Disable Group:", "Disable Control:"));
-        List<String> actualLabels = createPage.getSection(sectionName).getSectionLabels();
+        List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
@@ -317,10 +296,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
-        String[] addressUsage = { "Section", "Class", "Division", "Serial" };
-        for (String switchButton : addressUsage) {
-            createPage.clickSectionSwitchButtonsByName("Address Usage", switchButton, "");
-        }
+        createPage.getAddressUsage().setTrueFalseByValue("Serial", true);
         createPage.getSerialAddress().setInputValue("");
         createPage.getSaveBtn().click();
 
@@ -332,10 +308,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
-        String[] addressUsage = { "Section", "Class", "Division", "Serial" };
-        for (String switchButton : addressUsage) {
-            createPage.clickSectionSwitchButtonsByName("Address Usage", switchButton, "");
-        }
+        createPage.getAddressUsage().setTrueFalseByValue("Serial", true);
         createPage.getSerialAddress().setInputValue("100000");
         createPage.getSaveBtn().click();
 
@@ -347,10 +320,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
-        String[] addressUsage = { "Section", "Class", "Division", "Serial" };
-        for (String switchButton : addressUsage) {
-            createPage.clickSectionSwitchButtonsByName("Address Usage", switchButton, "");
-        }
+        createPage.getAddressUsage().setTrueFalseByValue("Serial", true);
         createPage.getSerialAddress().setInputValue("-1");
         createPage.getSaveBtn().click();
 
@@ -362,7 +332,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
-        createPage.clickSectionSwitchButtonsByName("Address Usage", "Section", "");
+        createPage.getAddressUsage().setTrueFalseByValue("Section", true);
         createPage.getSectionAddress().setInputValue("");
         createPage.getSaveBtn().click();
 
@@ -374,7 +344,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
-        createPage.clickSectionSwitchButtonsByName("Address Usage", "Section", "");
+        createPage.getAddressUsage().setTrueFalseByValue("Section", true);
         createPage.getSectionAddress().setInputValue("257");
         createPage.getSaveBtn().click();
 
@@ -386,7 +356,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
-        createPage.clickSectionSwitchButtonsByName("Address Usage", "Section", "");
+        createPage.getAddressUsage().setTrueFalseByValue("Section", true);
         createPage.getSectionAddress().setInputValue("-1");
         createPage.getSaveBtn().click();
 
@@ -398,41 +368,30 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
-        String[] addressUsage = { "Section", "Class", "Division", "Serial" };
-        for (String switchButton : addressUsage) {
-            createPage.clickSectionSwitchButtonsByName("Address Usage", switchButton, "");
-        }
-
-        MultiSelectCheckboxElement check = new MultiSelectCheckboxElement(driverExt, "addressUsage");
-        List<String> expectedCheckboxDisabled =new ArrayList<>(List.of("true", "true", "true", "false"));
-        List<String> actualCheckboxDisabled = check.isDisabled();
-        assertThat(actualCheckboxDisabled).containsExactlyElementsOf(expectedCheckboxDisabled);
+        createPage.getAddressUsage().setTrueFalseByValue("Serial", true);
+              
+        softly.assertThat(createPage.getAddressUsage().isValueDisabled("Section")).isTrue();
+        softly.assertThat(createPage.getAddressUsage().isValueDisabled("Class")).isTrue();
+        softly.assertThat(createPage.getAddressUsage().isValueDisabled("Division")).isTrue();        
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
-    public void ldGrpCreateVersacom_WhenUsageSectionDivisionClassSerialThenAddressingSectionClassDivisionDisabled() {
+    public void ldGrpCreateVersacom_WhenUsageSectionDivisionClassAndSerialSelectedThenAddressingSectionClassDivisionDisabled() {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
-        String[] addressUsage = { "Section", "Class", "Division", "Serial" };
-        for (String switchButton : addressUsage) {
-            createPage.clickSectionSwitchButtonsByName("Address Usage", switchButton, "");
-        }
+        createPage.getAddressUsage().setTrueFalseByValue("Section", true);
+        createPage.getAddressUsage().setTrueFalseByValue("Class", true);
+        createPage.getAddressUsage().setTrueFalseByValue("Division", true);
+        createPage.getAddressUsage().setTrueFalseByValue("Serial", true);
 
-        List<String> expectedCheckboxDisabledStatus =new ArrayList<>(List.of("true", "true", "true", "false"));
-        String[] sectionLabels = { "sectionAddress", "classAddress", "divisionAddress", "serialAddress"};
-        
-        String actualTextboxDisabled = "";
-        List<String> actualCheckboxDisabledStatus= new ArrayList<>();
-        for(String label: sectionLabels) {
-            actualTextboxDisabled = createPage.getAddressingSectionSwitchButtonStatusByLabelName(label);
-            actualCheckboxDisabledStatus.add(actualTextboxDisabled);
-        }
-        assertThat(actualCheckboxDisabledStatus).containsExactlyElementsOf(expectedCheckboxDisabledStatus);
+        assertThat(createPage.getClassAddress().allValuesDisabled()).isTrue();
     }
 
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
         refreshPage(createPage);
+        createPage = new LoadGroupVersacomCreatePage(driverExt);
     }
 }

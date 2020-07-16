@@ -72,6 +72,6 @@ public class CommChannelDetailPage extends PageBase {
         
         SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("yukon_dialog_confirm");
         
-        return new CreateCommChannelModal(this.driverExt, modalName);
+        return new CreateCommChannelModal(this.driverExt, Optional.of(modalName), Optional.empty());
     }
 }
