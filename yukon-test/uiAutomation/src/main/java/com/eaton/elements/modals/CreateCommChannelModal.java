@@ -32,6 +32,10 @@ public class CreateCommChannelModal extends BaseModal{
     	return new DropDownElement(this.driverExt, "type", PARENT_NAME);
     }
     
+    public TextEditElement getIpAddress() {
+        return new TextEditElement(this.driverExt, "ipAddress", PARENT_NAME);
+    }
+    
     public TextEditElement getPortNumber() {
     	return new TextEditElement(this.driverExt, "portNumber", PARENT_NAME);
     } 

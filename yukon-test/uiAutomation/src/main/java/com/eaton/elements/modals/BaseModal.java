@@ -26,7 +26,6 @@ public class BaseModal {
     }
 
     public WebElement getModal() {
-
         if (describedBy != null) {
             return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.describedBy + "']"), Optional.empty());
         }
@@ -39,9 +38,7 @@ public class BaseModal {
 
             List<WebElement> elements = this.driverExt.findElements(By.cssSelector(".ui-dialog"), Optional.of(0));
 
-            found = elements.stream()
-                    .filter(element -> element.findElement(By.cssSelector(".ui-dialog-title")).getText().equals(this.modalTitle))
-                    .findFirst();
+            found = elements.stream().filter(element -> element.findElement(By.cssSelector(".ui-dialog-title")).getText().equals(this.modalTitle)).findFirst();
         }
 
         return found.get();
@@ -99,7 +96,9 @@ public class BaseModal {
     
     public List<String> getFieldLabels() {
     	List<WebElement> nameElements = getModal().findElements(By.cssSelector("table tr .name"));
-		List<String> names = new ArrayList<String>();
+    	
+	List<String> names = new ArrayList<>();
+		
         for (WebElement element : nameElements) {
         	names.add(element.getText());
         }
