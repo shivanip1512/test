@@ -51,7 +51,7 @@ public final class APIs {
 
         //Comm Channel
         public static final String createCommChannel = "/api/device/commChannel/create";
-        public static final String getCommChannel = "/api/device/commChannel";
+        public static final String getCommChannel = "/api/device/commChannel/";
         public static final String updateCommChannel = "/api/device/commChannel/update/";
         public static final String deleteCommChannel = "/api/device/commChannel/delete/";
     }
