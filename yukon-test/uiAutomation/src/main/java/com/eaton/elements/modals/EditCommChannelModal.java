@@ -2,11 +2,8 @@ package com.eaton.elements.modals;
 
 import java.util.Optional;
 
-import org.openqa.selenium.By;
-
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.Section;
-//import com.eaton.elements.Label;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
 import com.eaton.elements.tabs.TabElement;
