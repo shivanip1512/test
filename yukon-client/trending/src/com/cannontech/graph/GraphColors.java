@@ -12,25 +12,32 @@ import com.cannontech.common.YukonColorPallet;
  */
 public class GraphColors {
     
-    private static final java.awt.Color lineColors[] = { YukonColorPallet.RED.getAwtColor(),
-            YukonColorPallet.BLUE.getAwtColor(),
-            YukonColorPallet.GREEN.getAwtColor(),
-            YukonColorPallet.BLACK.getAwtColor(),
-            YukonColorPallet.LIGHT_GREEN.getAwtColor(),
-            YukonColorPallet.ORANGE.getAwtColor(),
-            YukonColorPallet.SKY.getAwtColor(),
-            YukonColorPallet.YELLOW.getAwtColor(),
-            YukonColorPallet.PURPLE.getAwtColor(),
-            YukonColorPallet.GRAY.getAwtColor(),
-            YukonColorPallet.TEAL.getAwtColor(),
-            };
+    private static final java.awt.Color lineColors[] = {
+        YukonColorPallet.RED.getAwtColor(),
+        YukonColorPallet.BLUE.getAwtColor(),
+        YukonColorPallet.GREEN.getAwtColor(),
+        YukonColorPallet.BLACK.getAwtColor(),
+        YukonColorPallet.LIGHT_GREEN.getAwtColor(),
+        YukonColorPallet.ORANGE.getAwtColor(),
+        YukonColorPallet.SKY.getAwtColor(),
+        YukonColorPallet.YELLOW.getAwtColor(),
+        YukonColorPallet.PURPLE.getAwtColor(),
+        YukonColorPallet.GRAY.getAwtColor(),
+        YukonColorPallet.TEAL.getAwtColor(),
+    };
 
-    private static final int lineColorEnumeration[] = { com.cannontech.common.gui.util.Colors.RED_ID,
-            com.cannontech.common.gui.util.Colors.BLUE_ID, com.cannontech.common.gui.util.Colors.GREEN_ID,
-            com.cannontech.common.gui.util.Colors.BLACK_ID, com.cannontech.common.gui.util.Colors.LIGHT_GREEN_ID,
-            com.cannontech.common.gui.util.Colors.ORANGE_ID, com.cannontech.common.gui.util.Colors.SKY_ID,
-            com.cannontech.common.gui.util.Colors.YELLOW_ID, com.cannontech.common.gui.util.Colors.PURPLE_ID,
-            com.cannontech.common.gui.util.Colors.GRAY_ID, com.cannontech.common.gui.util.Colors.TEAL_ID,
+    private static final int lineColorEnumeration[] = { 
+        com.cannontech.common.gui.util.Colors.RED_ID,
+        com.cannontech.common.gui.util.Colors.BLUE_ID,
+        com.cannontech.common.gui.util.Colors.GREEN_ID,
+        com.cannontech.common.gui.util.Colors.BLACK_ID,
+        com.cannontech.common.gui.util.Colors.LIGHT_GREEN_ID,
+        com.cannontech.common.gui.util.Colors.ORANGE_ID,
+        com.cannontech.common.gui.util.Colors.SKY_ID,
+        com.cannontech.common.gui.util.Colors.YELLOW_ID,
+        com.cannontech.common.gui.util.Colors.PURPLE_ID,
+        com.cannontech.common.gui.util.Colors.GRAY_ID,
+        com.cannontech.common.gui.util.Colors.TEAL_ID,
     };
 
     // index into line colors array to determine line colors
