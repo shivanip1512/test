@@ -768,7 +768,7 @@ void VoltageRegulator::submitControlCommands( Policy::Action                  & 
                                                              getTapPosition(),
                                                              user ) );
 
-    CtiCapController::getInstance()->manualCapBankControl( request.release() );
+    CtiCapController::getInstance()->manualCapBankControl( std::move( request ) );
 }
 
 
@@ -780,7 +780,7 @@ try
 {
     bool scanSent = false;
 
-    std::map<long, std::unique_ptr<CtiRequestMsg>> requests;
+    std::map<long, CategorizedRequest> requests;
 
     for ( auto & action : _scanPolicy->IntegrityScan() )
     {
@@ -801,7 +801,7 @@ try
     {
         const long pointPaoID = request->DeviceId();
 
-        CtiCapController::getInstance()->manualCapBankControl( request.release() );
+        CtiCapController::getInstance()->manualCapBankControl( std::move( request ) );
 
         sendCapControlOperationMessage( 
             Messaging::CapControl::CapControlOperationMessage::createScanDeviceMessage(
@@ -957,7 +957,7 @@ long VoltageRegulator::submitKeepAliveCommands( Policy::Actions & actions )
 
         CtiCapController::getInstance()->sendMessageToDispatch( signal.release(), CALLSITE );
 
-        CtiCapController::getInstance()->manualCapBankControl( request.release() );
+        CtiCapController::getInstance()->manualCapBankControl( std::move( request ) );
     }
 
     return delay;

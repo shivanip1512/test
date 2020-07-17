@@ -25,6 +25,8 @@
 #include "database_reader.h"
 #include "tbl_pt_alarm.h"
 
+using Cti::CapControl::CategorizedRequest;
+using Cti::CapControl::CategorizedRequests;
 using Cti::CapControl::PaoIdVector;
 using Cti::CapControl::PointIdVector;
 using Cti::CapControl::PointResponse;
@@ -2080,7 +2082,7 @@ bool IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
                     varValueC  = feeder->getPhaseCValue();
                 }
 
-                CtiRequestMsg* request = NULL;
+                CategorizedRequest request;
 
                 if (isCapBankOpen)
                 {
@@ -2100,10 +2102,13 @@ bool IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
 
                 CtiTime timestamp;
 
-                if (request != NULL)
+                if (request.has_value())
                 {
                     CtiTime time = request->getMessageTime();
-                    CtiCapController::getInstance()->getPorterConnection()->WriteConnQue(request, CALLSITE);
+                    sendPorterRequest(
+                        *CtiCapController::getInstance()->getPorterConnection(),
+                        std::move( request ),
+                        CALLSITE );
 
                     performedOperation = true;
 
@@ -4860,8 +4865,8 @@ bool IVVCAlgorithm::executeBusVerification( IVVCStatePtr state, CtiCCSubstationB
     CtiTime now;
 
     CtiMultiMsg_vec pointChanges,
-                    pilMessages,
                     capMessages;
+    CategorizedRequests pilMessages;
 
     EventLogEntries events;
 
@@ -4878,11 +4883,10 @@ bool IVVCAlgorithm::executeBusVerification( IVVCStatePtr state, CtiCCSubstationB
 
     if ( ! pilMessages.empty() )
     {
-        auto multiPilMsg = std::make_unique<CtiMultiMsg>();
-
-        multiPilMsg->setData( pilMessages );
-
-        CtiCapController::getInstance()->getPorterConnection()->WriteConnQue( multiPilMsg.release(), CALLSITE );
+        sendPorterRequests(
+            *CtiCapController::getInstance()->getPorterConnection(),
+            std::move( pilMessages ),
+            CALLSITE);
     }
 
     if ( ! capMessages.empty() )

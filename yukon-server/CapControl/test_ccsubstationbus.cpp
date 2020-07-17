@@ -352,10 +352,9 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
 
     CtiTime currentDateTime;
     auto multiDispatchMsg = std::make_unique<CtiMultiMsg>();
-    auto multiPilMsg      = std::make_unique<CtiMultiMsg>();
     auto multiCapMsg      = std::make_unique<CtiMultiMsg>();
     CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
-    CtiMultiMsg_vec& pilMessages = multiPilMsg->getData();
+    Cti::CapControl::CategorizedRequests pilMessages;
     CtiMultiMsg_vec& capMessages = multiCapMsg->getData();
     Cti::CapControl::EventLogEntries ccEvents;
 
