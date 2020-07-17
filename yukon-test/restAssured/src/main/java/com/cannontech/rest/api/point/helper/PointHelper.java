@@ -1,5 +1,6 @@
 package com.cannontech.rest.api.point.helper;
 
+import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,7 @@ import com.cannontech.rest.api.point.request.MockPointUnit;
 import com.cannontech.rest.api.point.request.MockStaleData;
 import com.cannontech.rest.api.point.request.MockStatusControlType;
 import com.cannontech.rest.api.point.request.MockStatusPoint;
+import io.restassured.response.ExtractableResponse;
 
 public class PointHelper {
     public final static String CONTEXT_POINT_ID = "pointId";
@@ -137,7 +139,7 @@ public class PointHelper {
                                             .stateGroupId(stateGroupId)
                                             .archiveInterval(60)
                                             .enable(true)
-                                            .pointAccumulator(buildPointAccumulator())
+                                            .accumulatorPoint(buildPointAccumulator())
                                             .staleData(buildStaleData())
                                             .limits(pointLimit)
                                             .alarming(buildPointAlarming())
@@ -167,7 +169,7 @@ public class PointHelper {
         }
         return point;
     }
-    
+
     private static List<MockCalculationComponent> buildAnalogCalculationComponent() {
         List<MockCalculationComponent> mockCalculationComponent = new ArrayList<>();
         mockCalculationComponent.add(MockCalculationComponent.builder()
@@ -185,7 +187,7 @@ public class PointHelper {
                 .calculateQuality(true)
                 .build();
     }
-    
+
     private static List<MockCalculationComponent> buildStatusCalculationComponent() {
         List<MockCalculationComponent> mockCalculationComponent = new ArrayList<>();
         mockCalculationComponent.add(MockCalculationComponent.builder()
@@ -202,7 +204,7 @@ public class PointHelper {
                 .periodicRate(15)
                 .build();
     }
-    
+
     private static MockPointAnalog buildPointAnalog() {
         return MockPointAnalog.builder()
                 .dataOffset(0.0)
@@ -244,7 +246,7 @@ public class PointHelper {
                 .limitDuration(2)
                 .build();
     }
-  
+
     private static MockPointAlarming buildPointAlarming() {
         List<MockAlarmTableEntry> alarmTableEntry = new ArrayList<>();
         alarmTableEntry.add(buildAlarmTableEntry());
@@ -255,7 +257,7 @@ public class PointHelper {
                 .alarmTableList(alarmTableEntry)
                 .build();
     }
-    
+
     private static MockAlarmTableEntry buildAlarmTableEntry() {
         return MockAlarmTableEntry.builder()
                 .category("(none)")
@@ -263,7 +265,7 @@ public class PointHelper {
                 .notify(MockAlarmNotificationTypes.EXCLUDE_NOTIFY)
                 .build();
     }
-    
+
     private static MockFdrTranslation buildFdrTranslation() {
         return MockFdrTranslation.builder()
                 .direction(MockFdrDirection.RECEIVE)
@@ -271,14 +273,14 @@ public class PointHelper {
                 .translation("Category:PSEUDO;Remote:;Point:;")
                 .build();
     }
-    
+
     private static MockPointAccumulator buildPointAccumulator() {
         return MockPointAccumulator.builder()
                 .dataOffset(0.0)
                 .multiplier(1.0)
                 .build();
     }
-    
+
     private static MockPointStatusControl buildPointStatusControl() {
         return MockPointStatusControl.builder()
                 .closeTime1(0)
@@ -289,5 +291,14 @@ public class PointHelper {
                 .controlOffset(0)
                 .build();
     }
-    
+
+    public static String getCopiedPointName(MockPointType pointType) {
+        return ApiUtils.buildFriendlyName(pointType, "", "Point Test Copy");
+    }
+
+    public static void deletePoint(String pointId) {
+        ExtractableResponse<?> response = ApiCallHelper.delete("deletePoint", pointId);
+        assertTrue("Status code should be 200", response.statusCode() == 200);
+    }
+
 }

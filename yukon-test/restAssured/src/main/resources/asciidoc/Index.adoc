@@ -37,3 +37,6 @@ include::CommChannel.adoc[]
 == Trend
 include::Trend.adoc[]
 
+== Point
+include::Point.adoc[]
+
