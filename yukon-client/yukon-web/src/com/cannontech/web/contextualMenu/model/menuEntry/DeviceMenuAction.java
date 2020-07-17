@@ -57,10 +57,9 @@ public abstract class DeviceMenuAction implements DeviceAction {
         this.requiredRoleProperties = builder.build();
     }
 
-    public DeviceMenuAction(String baseUrl, Boolean changeBaseUrl, String inputParamName, String outputParamName,
-            YukonRole requiredRole,
-            YukonRoleProperty... requiredRoleProperties) {
-        this(baseUrl, changeBaseUrl, requiredRole, requiredRoleProperties);
+    public DeviceMenuAction(String baseUrl, Boolean appendParamName, String inputParamName, String outputParamName,
+            YukonRole requiredRole, YukonRoleProperty... requiredRoleProperties) {
+        this(baseUrl, appendParamName, requiredRole, requiredRoleProperties);
         this.inputParamName = inputParamName;
         this.outputParamName = outputParamName;
     }
