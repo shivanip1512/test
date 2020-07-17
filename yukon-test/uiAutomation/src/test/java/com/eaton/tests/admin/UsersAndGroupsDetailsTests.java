@@ -21,7 +21,7 @@ import com.eaton.pages.admin.UserDetailPage;
 import com.eaton.pages.admin.UserGroupDetailPage;
 import com.eaton.pages.admin.UsersAndGroupsPage;
 
-public class UsersAndGroupsTests extends SeleniumTestSetup {
+public class UsersAndGroupsDetailsTests extends SeleniumTestSetup {
     
     private UsersAndGroupsPage page;
     private DriverExtensions driverExt;
@@ -36,8 +36,8 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
         page = new UsersAndGroupsPage(driverExt);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_06_CreateUser"})
-    public void pageTitleCorrect() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    public void userAndGroupsDetails_pageTitleCorrect() {
         final String EXPECTED_TITLE = "User and Groups";
         
         String actualPageTitle = page.getPageTitle();
@@ -45,8 +45,8 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_06_CreateUser"})
-    public void createUserSuccess() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    public void userAndGroupsDetails_CreateUserSuccess() {
         CreateUserModal createModal = page.showAndWaitCreateUserModal();
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -69,8 +69,8 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo("User (" + name + ")");
     }  
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_05_CreateRoleGroup"})
-    public void createRoleGroupSuccess() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    public void userAndGroupsDetails_CreateRoleGroupSuccess() {
         CreateRoleGroupModal createModal = page.showAndWaitCreateRoleGroupModal();
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -90,8 +90,8 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo("Role Group (" + name + ")");
     } 
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_04_CreateUserGroup"})
-    public void createUserGroupSuccess() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    public void userAndGroupsDetails_CreateUserGroupSuccess() {
         CreateUserGroupModal createModal = page.showAndWaitCreateUserGroupModal();
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

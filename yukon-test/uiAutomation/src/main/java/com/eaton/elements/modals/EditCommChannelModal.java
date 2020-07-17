@@ -11,12 +11,8 @@ import com.eaton.framework.DriverExtensions;
 
 public class EditCommChannelModal extends BaseModal {
 
-    private DriverExtensions driverExt;
-
     public EditCommChannelModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
         super(driverExt, modalTitle, describedBy);
-
-        this.driverExt = driverExt;
     }
 
     // TODO need to add all fields as there are more based on the device you select

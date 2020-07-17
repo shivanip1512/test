@@ -3,13 +3,10 @@ package com.eaton.tests.assets.commchannels;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.assertj.core.api.SoftAssertions;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -20,12 +17,7 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.assets.commchannels.CommChannelsListPage;
-import com.eaton.pages.ami.MeterDetailsPage;
 import com.eaton.pages.assets.commchannels.CommChannelDetailPage;
-import com.eaton.rest.api.assets.AssetsCreateRequestAPI;
-import com.eaton.rest.api.dbetoweb.JsonFileHelper;
-
-import io.restassured.response.ExtractableResponse;
 
 public class CommChannelTcpCreateTests extends SeleniumTestSetup {
     private CommChannelsListPage listPage;
@@ -46,7 +38,7 @@ public class CommChannelTcpCreateTests extends SeleniumTestSetup {
         listPage = new CommChannelsListPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
     public void createCommChannelTcp_AllFieldsSuccess() {
         CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
 
@@ -72,7 +64,7 @@ public class CommChannelTcpCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void createCommChannelTcp_LabelsCorrect() {
         CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
 

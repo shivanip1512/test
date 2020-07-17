@@ -16,6 +16,8 @@ import com.eaton.pages.PageBase;
 
 public class CommChannelDetailPage extends PageBase {
 
+    private static final String CONFIRM_DIALOG = "yukon_dialog_confirm";
+
     public CommChannelDetailPage(DriverExtensions driverExt, int id) {
         super(driverExt);
 
@@ -62,9 +64,9 @@ public class CommChannelDetailPage extends PageBase {
     public ConfirmModal showDeleteLoadGroupModal() {
         getActionBtn().clickAndSelectOptionByText("Delete");
 
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("yukon_dialog_confirm");
+        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy(CONFIRM_DIALOG);
 
-        return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of("yukon_dialog_confirm"));
+        return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of(CONFIRM_DIALOG));
     }
 
     public CreateCommChannelModal showCreateCommChannelModal() {

@@ -1,24 +1,15 @@
 package com.eaton.framework;
 
-public final class TestConstants {
+public final class TestConstants {    
     
-    public static final class TestNgGroups {
-        public static final String SMOKE_TESTS = "Smoke_Tests";
-        public static final String REGRESSION_TESTS = "Regression_Test";
-    }
-        
     public static final class Priority {
         public static final String CRITICAL = "Critical";
         public static final String HIGH = "High";
         public static final String MEDIUM = "Medium";
         public static final String LOW = "Low";
     }
-    
-    public static final String DEMAND_RESPONSE = "Demand_Response";
-    public static final String AMI = "AMI";
-    public static final String COMM_CHANNEL = "Comm_Channel";
-    
-    public static final String DATE_FORMAT = "MMddyyyyHHmmss";
+
+    public static final String DATE_FORMAT = "MMddyyyyHHmmss";    
     
     public static final class Ami {
         public static final String AMI = "AMI";
@@ -47,6 +38,5 @@ public final class TestConstants {
     
     public static final class Support {
         public static final String SUPPORT = "Support";
-    }  
-
+    }    
 }

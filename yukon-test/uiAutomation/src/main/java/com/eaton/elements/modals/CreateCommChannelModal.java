@@ -50,11 +50,7 @@ public class CreateCommChannelModal extends BaseModal{
     
     public TextEditElement getPhysicalPortOther() {
     	return new TextEditElement(this.driverExt, "physicalPort", PARENT_NAME);
-    }
-    
-    public TextEditElement getIPAddress() {
-    	return new TextEditElement(this.driverExt, "ipAddress", PARENT_NAME);
-    }
+    }    
     
     public String getModalTitle() {
     	return getModal().findElement(By.cssSelector(".ui-dialog-titlebar .ui-dialog-title")).getText();

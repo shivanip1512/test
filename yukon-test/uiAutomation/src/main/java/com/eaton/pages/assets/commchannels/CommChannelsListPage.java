@@ -8,7 +8,6 @@ import java.util.Optional;
 
 import com.eaton.elements.ActionBtnDropDownElement;
 import com.eaton.elements.WebTable;
-import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.CreateCommChannelModal;
 
 public class CommChannelsListPage extends PageBase {

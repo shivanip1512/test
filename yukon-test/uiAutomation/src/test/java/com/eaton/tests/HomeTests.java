@@ -12,10 +12,10 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.HomePage;
 
 public class HomeTests extends SeleniumTestSetup {
-    
+
     private HomePage page;
-    
-    @BeforeClass(alwaysRun=true)
+
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
@@ -25,24 +25,23 @@ public class HomeTests extends SeleniumTestSetup {
 
         page = new HomePage(driverExt);
     }
-    
-    //"SM03_02_NavigateToLinks"
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS })
-    public void supportUrlCorrect() {
+
+    @Test(groups = { TestConstants.Priority.CRITICAL })
+    public void support_UrlCorrect() {
         String url = page.getUtilityUrl("Support");
 
         assertThat(url).contains(Urls.SUPPORT);
     }
-    
-    @Test
-    public void siteMapUrlCorrect() {
+
+    @Test(groups = { TestConstants.Priority.CRITICAL })
+    public void siteMap_UrlCorrect() {
         String url = page.getUtilityUrl("Site Map");
 
         assertThat(url).contains(Urls.SITE_MAP);
     }
-    
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS })
-    public void versionDisplayed() {        
+
+    @Test(groups = { TestConstants.Priority.LOW })
+    public void versionDisplayed() {
         assertThat(page.versionDisplayed()).isTrue();
     }
 }

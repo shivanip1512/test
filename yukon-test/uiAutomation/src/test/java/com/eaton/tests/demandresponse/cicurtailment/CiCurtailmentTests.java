@@ -8,6 +8,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.cicurtailment.CiCurtailmentPage;
 
@@ -15,7 +16,7 @@ public class CiCurtailmentTests extends SeleniumTestSetup {
 
     private CiCurtailmentPage curtailmentPage;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
@@ -26,8 +27,8 @@ public class CiCurtailmentTests extends SeleniumTestSetup {
         curtailmentPage = new CiCurtailmentPage(driverExt, null);
     }
 
-    @Test
-    public void pageTitleCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ciCurtailment_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Commercial Curtailment";
 
         String actualPageTitle = curtailmentPage.getPageTitle();

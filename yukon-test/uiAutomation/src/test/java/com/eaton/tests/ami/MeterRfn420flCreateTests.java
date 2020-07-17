@@ -19,7 +19,7 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.ami.AmiDashboardPage;
 import com.eaton.pages.ami.MeterDetailsPage;
 
-public class MeterCreateTests extends SeleniumTestSetup {
+public class MeterRfn420flCreateTests extends SeleniumTestSetup {
 
     private AmiDashboardPage amiDashboardPage;
     private DriverExtensions driverExt;
@@ -41,8 +41,8 @@ public class MeterCreateTests extends SeleniumTestSetup {
         randomNum = getRandomNum();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_06_createRFNOjects" })
-    public void createMeterRfn420flSuccess() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
+    public void meterRfn420flCreate_allFieldsSuccess() {
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
         int meterNumber = randomNum.nextInt(999999);
@@ -52,63 +52,6 @@ public class MeterCreateTests extends SeleniumTestSetup {
 
         String name = "AT RFN-420fL Meter " + timeStamp;
         createModal.getType().selectItemByTextSearch("RFN-420fL");
-        createModal.getdeviceName().setInputValue(name);
-        createModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
-        createModal.getSerialNumber().setInputValue(String.valueOf(serialNumber));
-        createModal.getManufacturer().setInputValue(manufacturer);
-        createModal.getModel().setInputValue("A3K");
-
-        createModal.clickOkAndWait();
-
-        waitForUrlToLoad(Urls.Ami.METER_DETAIL, Optional.of(10));
-
-        MeterDetailsPage detailPage = new MeterDetailsPage(driverExt);
-
-        String userMsg = detailPage.getUserMessage();
-
-        assertThat(userMsg).isEqualTo(METER + name + CREATED);
-    }
-
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_06_createRFNOjects" })
-    public void createMeterRfn430Sl4Success() {
-        CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
-
-        int meterNumber = randomNum.nextInt(999999);
-        int serialNumber = randomNum.nextInt(99999999);
-        String manufacturer = randomString(12);
-        String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
-
-        String name = "AT RFN-430SL4 Meter " + timeStamp;
-        createModal.getType().selectItemByTextSearch("RFN-430SL4");
-        createModal.getdeviceName().setInputValue(name);
-        createModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
-        createModal.getSerialNumber().setInputValue(String.valueOf(serialNumber));
-        createModal.getManufacturer().setInputValue(manufacturer);
-        createModal.getModel().setInputValue("A3K");
-
-        createModal.clickOkAndWait();
-
-        waitForUrlToLoad(Urls.Ami.METER_DETAIL, Optional.of(10));
-
-        MeterDetailsPage detailPage = new MeterDetailsPage(driverExt);
-
-        String userMsg = detailPage.getUserMessage();
-
-        assertThat(userMsg).isEqualTo(METER + name + CREATED);
-    }
-    
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_06_createRFNOjects" })
-    public void createMeterRfn530S4xSuccess() {
-
-        CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
-
-        int meterNumber = randomNum.nextInt(999999);
-        int serialNumber = randomNum.nextInt(99999999);
-        String manufacturer = randomString(12);
-        String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
-
-        String name = "AT RFN-430SL4 Meter " + timeStamp;
-        createModal.getType().selectItemByTextSearch("RFN-530S4x");
         createModal.getdeviceName().setInputValue(name);
         createModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
         createModal.getSerialNumber().setInputValue(String.valueOf(serialNumber));
