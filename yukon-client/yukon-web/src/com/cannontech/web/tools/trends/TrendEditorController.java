@@ -114,6 +114,7 @@ public class TrendEditorController {
     public String renderSetupPopup(ModelMap model, @RequestParam("isMarker") boolean isMarker, @RequestParam("numberOfRows") Integer numberOfRows) {
         model.addAttribute("mode", PageEditMode.CREATE);
         TrendSeries trendSeries = new TrendSeries(Color.getNextDefaultColor(numberOfRows));
+        trendSeries.applyDefaults();
         model.addAttribute("trendSeries", trendSeries);
         if (isMarker) {
             trendSeries.setMarkerDefaults();
@@ -127,7 +128,6 @@ public class TrendEditorController {
     @GetMapping("/renderEditSetupPopup")
     public String renderEditSetupPopup(ModelMap model, @RequestParam("trendSeries") TrendSeries trendSeries) {
         boolean isMarker = trendSeries.getType().isMarkerType();
-        trendSeries.applyDefaults();
         model.addAttribute("trendSeries", trendSeries);
         if (!isMarker) {
             LiteYukonPAObject yukonPao = paoDao.getLiteYukonPaoByPointId(trendSeries.getPointId());
@@ -233,7 +233,6 @@ public class TrendEditorController {
         
         if (result.hasErrors()) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
-            trendSeries.applyDefaultsIfNoErrors(result);
             setModel(model, isMarker);
             if (!isMarker) {
                 model.addAttribute("deviceName", yukonPao != null ? yukonPao.getPaoName() : "");
@@ -243,7 +242,6 @@ public class TrendEditorController {
         }
 
         model.clear();
-        trendSeries.applyDefaults();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
         json.put("trendSeries", trendSeries);
