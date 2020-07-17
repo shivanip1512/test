@@ -47,21 +47,21 @@ public class TrendApiDoc extends DocumentationBase {
                 fieldWithPath("trendSeries[].type")
                     .type(JsonFieldType.STRING)
                     .optional()
-                    .description("Graph Type. Expected: BASIC_TYPE, USAGE_TYPE, PEAK_TYPE, YESTERDAY_TYPE, MARKER_TYPE, DATE_TYPE. Default Type: BASIC_TYPE"),
+                    .description("Graph Type. Expected: BASIC_TYPE, USAGE_TYPE, PEAK_TYPE, YESTERDAY_TYPE, MARKER_TYPE, DATE_TYPE. Default Type: BASIC_TYPE."),
                 fieldWithPath("trendSeries[].pointId")
                     .type(JsonFieldType.NUMBER)
                     .description("Point ID. Point Id for MARKER_TYPE is -100."),
                 fieldWithPath("trendSeries[].label")
                     .type(JsonFieldType.STRING)
-                    .description("Label for the selected point. Label can be any text, default value for non marker type : Device name / Point Name. Max length 40 character."),
+                    .description("Label for the selected point. If not provided, a default label will be generated as 'Device name / Point name'. Max length 40 characters."),
                 fieldWithPath("trendSeries[].color")
                     .type(JsonFieldType.STRING)
                     .optional()
-                    .description("Color. Expected: BLACK, BLUE, CYAN, GREY, GREEN, MAGENTA, ORANGE, PINK, RED, YELLOW. Default Color: BLUE"),
+                    .description("Color. Expected: BLACK, BLUE, CYAN, GREY, GREEN, MAGENTA, ORANGE, PINK, RED, YELLOW. Default Color: BLUE."),
                 fieldWithPath("trendSeries[].axis")
                     .type(JsonFieldType.STRING)
                     .optional()
-                    .description("Axis. Expected: LEFT, RIGHT. Default Axis: LEFT"),
+                    .description("Axis. Expected: LEFT, RIGHT. Default Axis: LEFT."),
                 fieldWithPath("trendSeries[].multiplier")
                     .type(JsonFieldType.NUMBER)
                     .optional()
@@ -69,7 +69,7 @@ public class TrendApiDoc extends DocumentationBase {
                 fieldWithPath("trendSeries[].style")
                     .type(JsonFieldType.STRING)
                     .optional()
-                    .description("Render Style. Expected:LINE, BAR, STEP. Default Style: LINE. Render Style for MARKER_TYPE is LINE")
+                    .description("Render Style. Expected: LINE, BAR, STEP. Default Style: LINE. Render Style for MARKER_TYPE is LINE.")
         };
         return new ArrayList<>(Arrays.asList(trendFieldDescriptor));
     }
@@ -78,7 +78,7 @@ public class TrendApiDoc extends DocumentationBase {
         FieldDescriptor[] resetPeakFieldDescriptor = new FieldDescriptor[] {
                 fieldWithPath("startDate")
                         .type(JsonFieldType.STRING)
-                        .description("Start Date. In MM/dd/yyyy format") };
+                        .description("Start Date in MM/dd/yyyy format.") };
         return new ArrayList<>(Arrays.asList(resetPeakFieldDescriptor));
     }
 
@@ -94,14 +94,14 @@ public class TrendApiDoc extends DocumentationBase {
         return fieldWithPath("trendSeries[].date")
                 .type(JsonFieldType.STRING)
                 .optional()
-                .description("Date in MM/dd/yyyy format. Applicable only when type is DATE_TYPE");
+                .description("Date in MM/dd/yyyy format. Applicable only when type is DATE_TYPE.");
     }
 
     private static FieldDescriptor getResponseDateFieldDescriptor() {
         return fieldWithPath("trendSeries[].date")
                 .type(JsonFieldType.STRING)
                 .optional()
-                .description(" Date in MM/dd/yyyy format. Applicable only when type is DATE_TYPE and PEAK_TYPE. Default value for PEAK_TYPE is First date of current month.");
+                .description(" Date in MM/dd/yyyy format. Applicable only when type is DATE_TYPE or PEAK_TYPE. Default for PEAK_TYPE is the first date of current month.");
     }
  
     @Test
