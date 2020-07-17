@@ -15,10 +15,11 @@ import com.cannontech.common.pao.PaoIdentifier;
  *        <constructor-arg value="ARCHIVED_DATA_EXPORT"/>
  *    </bean>
  */
-public class MeterAndRelayMenuDecider implements MenuTypeApplicabilityDecider {
+public class MeterEventsDevicesMenuDecider implements MenuTypeApplicabilityDecider {
 
     @Override
     public boolean isApplicable(PaoIdentifier paoIdentifier) {
-        return paoIdentifier.getPaoType().isMeter() || paoIdentifier.getPaoType().isRfRelay();
+        return paoIdentifier.getPaoType().isMeter() || paoIdentifier.getPaoType().isRfRelay()
+                || paoIdentifier.getPaoType().isRfGateway();
     }
 }

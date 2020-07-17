@@ -96,6 +96,7 @@ public class GatewayDetailController {
         model.addAttribute("gatewayPaoTypes", PaoType.getRfGatewayTypes());
         model.addAttribute("relayPaoTypes", PaoType.getRfRelayTypes());
         model.addAttribute("wifiPaoTypes", PaoType.getWifiTypes());
+        model.addAttribute("showEvents", gateway.getPaoIdentifier().getPaoType() != PaoType.RFN_GATEWAY);
         
         model.addAttribute("mileValues", NearbyMiles.values());
         

@@ -80,6 +80,7 @@
     <entry key="yukon.web.modules.operator.gateways.detail.tooltip.nodesWithInfo">Nodes with Info: {0}; Nodes Without Info: {1}</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.tooltip.nodesWithSNs">Nodes with Serial Numbers: {0}; Total Nodes: {1}</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.infraStructureWarnings.title">Infrastructure Warnings</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.gatewayEvents.title">Gateway Events</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.wifiCapableCount">Wi-Fi Capable Count</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.viewWiFiMeters">View Wi-Fi Meters</entry>
 

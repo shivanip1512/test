@@ -1,0 +1,24 @@
+package com.cannontech.web.search.lucene.criteria;
+
+import org.apache.lucene.search.BooleanClause;
+
+import com.cannontech.common.pao.PaoType;
+
+/**
+ * Criteria used to filter devices and return only devices that are meters or relays or gateways
+ * 
+ */
+public class MeterEventsDevicesCriteria extends YukonObjectCriteriaHelper {
+
+    public MeterEventsDevicesCriteria() {
+        addCriteria("isMeter", "true", BooleanClause.Occur.SHOULD);
+        for (PaoType relay : PaoType.getRfRelayTypes()) {
+            addCriteria("type", relay.getDbString(), BooleanClause.Occur.SHOULD);
+        }
+        for (PaoType gatewayType : PaoType.getRfGatewayTypes()) {
+            if (gatewayType != PaoType.RFN_GATEWAY) {
+                addCriteria("type", gatewayType.getDbString(), BooleanClause.Occur.SHOULD);
+            }
+        }
+    }
+}
