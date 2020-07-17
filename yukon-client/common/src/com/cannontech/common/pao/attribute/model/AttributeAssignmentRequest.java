@@ -3,16 +3,16 @@ package com.cannontech.common.pao.attribute.model;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class AttributeAssignment extends Assignment {
+public class AttributeAssignmentRequest extends Assignment {
 
-    private CustomAttribute customAttribute;
+    private Integer attributeId;
 
-    public CustomAttribute getCustomAttribute() {
-        return customAttribute;
+    public Integer getAttributeId() {
+        return attributeId;
     }
 
-    public void setCustomAttribute(CustomAttribute customAttribute) {
-        this.customAttribute = customAttribute;
+    public void setAttributeId(Integer attributeId) {
+        this.attributeId = attributeId;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class AttributeAssignment extends Assignment {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((customAttribute == null) ? 0 : customAttribute.hashCode());
+        result = prime * result + ((attributeId == null) ? 0 : attributeId.hashCode());
         return result;
     }
 
@@ -37,12 +37,13 @@ public class AttributeAssignment extends Assignment {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        AttributeAssignment other = (AttributeAssignment) obj;
-        if (customAttribute == null) {
-            if (other.customAttribute != null)
+        AttributeAssignmentRequest other = (AttributeAssignmentRequest) obj;
+        if (attributeId == null) {
+            if (other.attributeId != null)
                 return false;
-        } else if (!customAttribute.equals(other.customAttribute))
+        } else if (!attributeId.equals(other.attributeId))
             return false;
         return true;
     }
+
 }

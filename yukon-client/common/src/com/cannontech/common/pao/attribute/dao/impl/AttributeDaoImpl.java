@@ -13,6 +13,7 @@ import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
+import com.cannontech.common.pao.attribute.model.AttributeAssignmentRequest;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
@@ -53,27 +54,25 @@ public class AttributeDaoImpl implements AttributeDao {
         }
         attributes.forEach(attribute -> idToAttribute.put(attribute.getId(), attribute));
         sql = new SqlStatementBuilder();
-        sql.append("SELECT AttributeAssignmentId, AttributeId, PaoType, PointType, PointOffset");
-        sql.append("FROM AttributeAssignment");
+        sql.append("SELECT AttributeAssignmentId, aa.AttributeId, AttributeName, PaoType, PointType, PointOffset");
+        sql.append("FROM AttributeAssignment aa");
+        sql.append("JOIN CustomAttribute ca ON aa.AttributeId = ca.AttributeId");
         List<AttributeAssignment> assignments = jdbcTemplate.query(sql, attributeAssignmentMapper);
         assignments.forEach(assignment -> {
-            Pair<Integer, PaoType> pair = Pair.of(assignment.getAttributeId(), assignment.getPaoType());
+            Pair<Integer, PaoType> pair = Pair.of(assignment.getCustomAttribute().getId(), assignment.getPaoType());
             PointIdentifier point = new PointIdentifier(assignment.getPointType(), assignment.getPointOffset());
             attributeToPoint.put(pair, point);
         });
     }
     
     private YukonRowMapper<CustomAttribute> customAttributeMapper = rs -> {
-        CustomAttribute row = new CustomAttribute();
-        row.setId(rs.getInt("AttributeId"));
-        row.setName(rs.getStringSafe("AttributeName"));
-        return row;
+        return new CustomAttribute(rs.getInt("AttributeId"), rs.getStringSafe("AttributeName"));
     };
-
-    private YukonRowMapper<AttributeAssignment> attributeAssignmentMapper = rs -> {
+    
+    public static YukonRowMapper<AttributeAssignment> attributeAssignmentMapper = rs -> {
         AttributeAssignment row = new AttributeAssignment();
         row.setId(rs.getInt("AttributeAssignmentId"));
-        row.setAttributeId(rs.getInt("AttributeId"));
+        row.setCustomAttribute(new CustomAttribute(rs.getInt("AttributeId"), rs.getStringSafe("AttributeName")));
         row.setPaoType(rs.getEnum("PaoType", PaoType.class));
         row.setPointType(rs.getEnum("PointType", PointType.class));
         row.setPointOffset(rs.getInt("PointOffset"));
@@ -81,7 +80,7 @@ public class AttributeDaoImpl implements AttributeDao {
     };
     
     @Override
-    public void saveAttributeAssignment(AttributeAssignment assignment) {        
+    public void saveAttributeAssignment(AttributeAssignmentRequest assignment) {        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT AttributeAssignmentId");
         sql.append("FROM AttributeAssignment");
@@ -102,7 +101,7 @@ public class AttributeDaoImpl implements AttributeDao {
         cacheAttributes();
     }
 
-    private void addAssignmentParameters(SqlParameterSink params, AttributeAssignment assignment) {
+    private void addAssignmentParameters(SqlParameterSink params, AttributeAssignmentRequest assignment) {
         params.addValue("AttributeId", assignment.getAttributeId());
         params.addValue("PaoType", assignment.getPaoType());
         params.addValue("PointType", assignment.getPointType());
@@ -121,8 +120,9 @@ public class AttributeDaoImpl implements AttributeDao {
     @Override
     public AttributeAssignment getAssignmentById(int attributeAssignmentId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT AttributeAssignmentId, AttributeId, PaoType, PointType, PointOffset");
-        sql.append("FROM AttributeAssignment");
+        sql.append("SELECT AttributeAssignmentId, aa.AttributeId, AttributeName, PaoType, PointType, PointOffset");
+        sql.append("FROM AttributeAssignment aa");
+        sql.append("JOIN CustomAttribute ca ON aa.AttributeId = ca.AttributeId");
         sql.append("WHERE AttributeAssignmentId").eq(attributeAssignmentId);
         return jdbcTemplate.queryForObject(sql, attributeAssignmentMapper);
     }

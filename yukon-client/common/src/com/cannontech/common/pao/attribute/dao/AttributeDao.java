@@ -2,14 +2,13 @@ package com.cannontech.common.pao.attribute.dao;
 
 import java.util.List;
 
-import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
+import com.cannontech.common.pao.attribute.model.AttributeAssignmentRequest;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.core.dao.DuplicateException;
 
 public interface AttributeDao {
 
@@ -18,7 +17,7 @@ public interface AttributeDao {
      * 
      * @throws DuplicateException - if attribute name already exists
      */
-    void saveCustomAttribute(CustomAttribute attribute);
+    public void saveCustomAttribute(CustomAttribute attribute);
 
     /**
      * Deletes custom attribute
@@ -38,7 +37,7 @@ public interface AttributeDao {
      * @throws DuplicateException - if assignment has either same attribute assigned to multiple points on the same device or
      *                            multiple entries with the exact same mapping
      */
-    void saveAttributeAssignment(AttributeAssignment assignment);
+    void saveAttributeAssignment(AttributeAssignmentRequest assignment);
 
     /**
      * Deletes attribute assignment

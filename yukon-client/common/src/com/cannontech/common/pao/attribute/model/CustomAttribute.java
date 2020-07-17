@@ -11,6 +11,15 @@ public class CustomAttribute implements Attribute {
     private Integer id;
     private String name;
 
+    public CustomAttribute() {
+
+    }
+
+    public CustomAttribute(Integer id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Integer getId() {
         return id;
     }
