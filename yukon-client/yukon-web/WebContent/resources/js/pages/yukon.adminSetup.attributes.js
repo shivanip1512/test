@@ -70,7 +70,7 @@ yukon.adminSetup.attributes = (function () {
                 });   
             });
             
-            $(document).on('yukon:assignment:add', function (ev) {
+            $(document).on('yukon:assignment:load', function (ev) {
                 var popup = $(ev.target);
                 popup.find('.js-device-types').chosen({'width': '350px'});
                 if (popup.find('.user-message').is(':visible')) {
@@ -91,29 +91,23 @@ yukon.adminSetup.attributes = (function () {
                 var assignmentId = $(this).data('assignmentId'),
                     url = yukon.url('/admin/config/attributeAssignments/popup?id=' + assignmentId),
                     popup = $('.js-edit-assignment-popup'),
-                    popupTitle = popup.data('title');
-
-                popup.load(url, function () {
-                    popup.dialog({
-                        title : popupTitle,
-                        width: 'auto',
-                        modal: true,
-                        buttons: yukon.ui.buttons({
-                            okText: yg.text.save,
-                            event: 'yukon:assignment:save'
-                        })
-                    });
-                    if (popup.find('.user-message').is(':visible')) {
-                        $('.ui-dialog-buttonset').find('.js-primary-action').prop('disabled', true);
-                    }
-                });
-
+                    popupTitle = popup.data('title'),
+                    dialogDivJson = {
+                        "data-url" : url,
+                        "data-dialog": '',
+                        "data-load-event" : "yukon:assignment:load",
+                        "data-event" : "yukon:assignment:save",
+                        "data-title" : popupTitle,
+                        "data-ok-text" : yg.text.save
+                    };
+                
+                yukon.ui.dialog($("<div/>").attr(dialogDivJson));
             });
             
             $(document).on("yukon:assignment:save", function (event) {
                 var popup = $(event.target),
                     attributeName = $('#attributeId option:selected').text();
-                $('#attributeName').val(attributeName);
+                $('#attributeName').val(yukon.escapeXml(attributeName));
                 $('#assignment-form').ajaxSubmit({
                     success: function () {
                         popup.dialog('close');

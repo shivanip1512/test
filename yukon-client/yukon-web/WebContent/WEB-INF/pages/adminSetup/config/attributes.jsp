@@ -115,7 +115,7 @@
                  data-dialog
                  data-title="${addAssignmentTitle}"
                  data-url="${addAssignmentUrl}"
-                 data-load-event="yukon:assignment:add"
+                 data-load-event="yukon:assignment:load"
                  data-ok-text="${saveText}"
                  data-event="yukon:assignment:save">
         </div>

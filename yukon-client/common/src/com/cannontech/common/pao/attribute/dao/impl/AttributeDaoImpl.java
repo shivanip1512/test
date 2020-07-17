@@ -25,7 +25,7 @@ public class AttributeDaoImpl implements AttributeDao {
     private YukonRowMapper<CustomAttribute> customAttributeMapper = rs -> {
         CustomAttribute row = new CustomAttribute();
         row.setId(rs.getInt("AttributeId"));
-        row.setName(rs.getStringSafe("AttributeName"));
+        row.setName(rs.getString("AttributeName"));
         return row;
     };
 
@@ -34,7 +34,7 @@ public class AttributeDaoImpl implements AttributeDao {
         row.setId(rs.getInt("AttributeAssignmentId"));
         CustomAttribute att = new CustomAttribute();
         att.setId(rs.getInt("AttributeId"));
-        att.setName(rs.getStringSafe("AttributeName"));
+        att.setName(rs.getString("AttributeName"));
         row.setAttribute(att);
         row.setDeviceType(rs.getEnum("DeviceType", PaoType.class));
         row.setPointType(rs.getEnum("PointType", PointType.class));

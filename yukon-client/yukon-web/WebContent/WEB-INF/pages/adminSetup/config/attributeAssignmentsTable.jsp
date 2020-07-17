@@ -9,7 +9,7 @@
 <cti:msgScope paths="modules.adminSetup.config.attributes,yukon.common">
 
     <c:if test="${not empty errorMessage}">
-        <tags:alertBox includeCloseButton="true">${errorMessage}</tags:alertBox>
+        <tags:alertBox includeCloseButton="true">${fn:escapeXml(errorMessage)}</tags:alertBox>
     </c:if>
 
     <table class="compact-results-table row-highlighting has-actions">
@@ -36,7 +36,7 @@
                             <cti:url var="deleteUrl" value="/admin/config/attributeAssignments/${assignment.id}/delete"/>
                             <form:form id="delete-assignment-form-${assignment.id}" action="${deleteUrl}" method="DELETE">
                                 <cti:csrfToken/>
-                                <input type="hidden" name="name" value="${assignment.attribute.name}"/>
+                                <input type="hidden" name="name" value="${fn:escapeXml(assignment.attribute.name)}"/>
                             </form:form>
                         </cm:dropdown>
                     </td>
