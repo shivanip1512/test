@@ -22,7 +22,6 @@ public class TrendSeries {
     
     public TrendSeries () {
         this.color = Color.getNextDefaultColor(0);
-        applyDefaults();
     }
     
     public TrendSeries (Color color) {

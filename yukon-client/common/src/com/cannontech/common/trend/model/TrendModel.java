@@ -55,11 +55,6 @@ public class TrendModel {
         if (CollectionUtils.isNotEmpty(getTrendSeries())) {
             for (TrendSeries series : getTrendSeries()) {
                 GraphDataSeries graphSeries = new GraphDataSeries();
-                if (series.getType().isMarkerType()) {
-                    graphSeries.setPointID(-100);
-                } else {
-                    graphSeries.setPointID(series.getPointId());
-                }
                 graphSeries.setLabel(series.getLabel());
                 graphSeries.setAxis(
                         series.getAxis() == null ? TrendAxis.LEFT.getAbbreviation() : series.getAxis().getAbbreviation());
@@ -68,7 +63,6 @@ public class TrendModel {
                 graphSeries.setType(series.getType() == null ? GDSTypes.BASIC_GRAPH_TYPE
                         : GDSTypesFuncs.getTypeInt(series.getType().getStringType()));
                 graphSeries.setMultiplier(series.getMultiplier() == null ? 1 : series.getMultiplier());
-                graphSeries.setRenderer(series.getStyle() == null ? RenderType.LINE.getId() : series.getStyle().getId());
                 if (series.getType() != null
                         && (series.getType() == GraphType.PEAK_TYPE || series.getType() == GraphType.DATE_TYPE)) {
                     if (series.getType() == GraphType.PEAK_TYPE) {
@@ -83,6 +77,14 @@ public class TrendModel {
                     }
                 } else {
                     graphSeries.setMoreData(CtiUtilities.STRING_NONE);
+                }
+                // use defaults when MarkerType
+                if (series.getType().isMarkerType()) {
+                    graphSeries.setPointID(-100);
+                    graphSeries.setRenderer(RenderType.LINE);
+                } else {
+                    graphSeries.setPointID(series.getPointId());
+                    graphSeries.setRenderer(series.getStyle() == null ? RenderType.LINE : series.getStyle());
                 }
                 // Set GraphDefinationId in case of Update flow.
                 if (graph.getGraphDefinition().getGraphDefinitionID() != null) {
