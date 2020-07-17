@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
 import com.cannontech.common.trend.model.TrendType.GraphType;
@@ -31,7 +32,7 @@ public class TrendModel {
     }
 
     public void setName(String name) {
-        this.name = name == null ? name : name.trim();
+        this.name = StringUtils.trim(name);
     }
 
     public List<TrendSeries> getTrendSeries() {

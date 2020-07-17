@@ -134,7 +134,7 @@ yukon.tools.trend.setup = (function() {
                 var uniqueIdentifier = $(".js-unique-identifier").val();
                 $(".js-date-picker-row").toggleClass("dn", !isDateTypeGraphSelected);
                 if (isDateTypeGraphSelected) {
-                    var date = moment().tz(yg.timezone).format(yg.formats.date.date_only);
+                    var date = moment().tz(yg.timezone).format(yg.formats.date.date);
                     $(this).closest("form").find("#js-date-picker_" + uniqueIdentifier).val(date);
                 }
             });
