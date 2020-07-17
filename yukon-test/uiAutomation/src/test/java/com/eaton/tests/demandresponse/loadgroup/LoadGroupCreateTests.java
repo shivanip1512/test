@@ -36,8 +36,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         createPage = new LoadGroupCreatePage(driverExt);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS,
-            TestConstants.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Load Group";
 
@@ -46,22 +45,21 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS,
-            TestConstants.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_NameRequiredValidation() {
         createPage.getSaveBtn().click();
 
         assertThat(createPage.getName().getValidationError()).isEqualTo("Name is required.");
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_TypeRequiredValidation() {
         createPage.getSaveBtn().click();
 
         assertThat(createPage.getType().getValidationError()).isEqualTo("Type is required.");
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_NameInvalidCharValidation() {
 
         createPage.getName().setInputValue("test/,");
@@ -71,7 +69,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
                 .isEqualTo("Name must not contain any of the following characters: / \\ , ' \" |.");
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_CancelButtonNavigatesToCorrectUrl() {
         String expectedURL = getBaseUrl() + Urls.DemandResponse.SETUP_FILTER + "LOAD_GROUP";
         String actualURL;
@@ -83,7 +81,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(actualURL).isEqualTo(expectedURL);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_kWCapacityRequired() {
 
         createPage.getType().selectItemByIndex(2);
@@ -93,7 +91,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getkWCapacity().getValidationError()).isEqualTo("kW Capacity is required.");
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_kWCapacityMaxRangeValidation() {
         
         createPage.getType().selectItemByIndex(2);
@@ -103,7 +101,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getkWCapacity().getValidationError()).isEqualTo("Must be between 0 and 99,999.999.");
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_kWCapacityMinRangeValidation() {
 
         createPage.getType().selectItemByIndex(2);
@@ -113,24 +111,24 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getkWCapacity().getValidationError()).isEqualTo("Must be between 0 and 99,999.999.");
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_GeneralSectionTitleCorrect() {
 
-        Section general = createPage.getSection("General");
+        Section general = createPage.getPageSection("General");
         assertThat(general.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_OptionalAttributeSectionTitleCorrect() {
 
         createPage.getType().selectItemByIndex(2);
         createPage.getkWCapacity().clearInputValue();
         
-        Section optAttr = createPage.getSection("Optional Attributes");
+        Section optAttr = createPage.getPageSection("Optional Attributes");
         assertThat(optAttr.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_TypeDropDownContainsAllExpectedValues() {
         List<String> expectedDropDownValues = new ArrayList<>(List.of("Select", "Digi SEP Group", "ecobee Group", "Emetcon Group", "Expresscom Group", "Honeywell Group",
                 "Itron Group", "MCT Group", "Meter Disconnect Group", "Point Group", "RFN Expresscom Group", "Ripple Group",
@@ -140,7 +138,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(actualDropDownValues).containsExactlyElementsOf(expectedDropDownValues);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_NameUniqueValidation() {
 
         // API test data. Creating Load group using hard coded json file, to be changed when builder pattern is implemented.
@@ -161,24 +159,24 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getName().getValidationError()).isEqualTo("Name must be unique.");
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreateCommon_GeneralSectionLabelsCorrect() {
         String sectionName = "General";
         List<String> expectedLabels = new ArrayList<>(List.of("Name:", "Type:" ));
 
-        List<String> actualLabels = createPage.getSection(sectionName).getSectionLabels();
+        List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreateCommon_OptionalAttrSectionLabelsCorrect() {
         String sectionName = "Optional Attributes";
         List<String> expectedLabels = new ArrayList<>(List.of("kW Capacity:", "Disable Group:", "Disable Control:"));
 
         createPage.getType().selectItemByIndex(2);
         createPage.getkWCapacity().setInputValue("2");
-        List<String> actualLabels = createPage.getSection(sectionName).getSectionLabels();
+        List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
         
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }

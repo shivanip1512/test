@@ -19,42 +19,42 @@ public class ScenarioDetailsTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        driverExt = getDriverExt();                
+        driverExt = getDriverExt();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_14_DeleteScenario" })
-    public void pageTitleCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void scenarioDetails_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Scenario: AT Scenario";
-        
+
         navigate(Urls.DemandResponse.SCENARIO_DETAILS + "663");
-        
+
         ScenarioDetailPage editPage = new ScenarioDetailPage(driverExt, 663);
 
         String actualPageTitle = editPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
-    }    
-    
-    @Test(enabled = true, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_14_DeleteScenario"})
-    public void deleteScenarioSuccess() {
+    }
+
+    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void scenarioDetails_deleteScenarioSuccess() {
         final String EXPECTED_MSG = "AT Delete Scenario deleted successfully.";
-        
+
         navigate(Urls.DemandResponse.SCENARIO_DETAILS + "619");
 
         ScenarioDetailPage detailPage = new ScenarioDetailPage(driverExt, 619);
-        
-        ConfirmModal  confirmModal = detailPage.showDeleteControlAreaModal();
-        
+
+        ConfirmModal confirmModal = detailPage.showDeleteControlAreaModal();
+
         confirmModal.clickOkAndWait();
-        
+
         waitForPageToLoad("Setup", Optional.empty());
-        
+
         DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.CONTROl_SCENARIO);
-        
+
         String userMsg = setupPage.getUserMessage();
-        
+
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 }

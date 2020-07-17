@@ -8,6 +8,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.cicurtailment.CiGroupListPage;
 
@@ -15,7 +16,7 @@ public class GroupListTests extends SeleniumTestSetup {
 
     private CiGroupListPage listPage;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
@@ -26,12 +27,12 @@ public class GroupListTests extends SeleniumTestSetup {
         listPage = new CiGroupListPage(driverExt);
     }
 
-    @Test
-    public void pageTitleCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void groupList_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Groups";
 
         String actualPageTitle = listPage.getPageTitle();
 
-        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);  
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 }

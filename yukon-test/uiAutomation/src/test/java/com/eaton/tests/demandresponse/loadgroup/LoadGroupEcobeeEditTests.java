@@ -19,45 +19,45 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        driverExt = getDriverExt();                
+        driverExt = getDriverExt();
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE})
-    public void pageTitleCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpEcobeeEdit_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Load Group: AT Load Group";
-        
+
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + "664" + Urls.EDIT);
-        
+
         LoadGroupEditPage editPage = new LoadGroupEditPage(driverExt, 664);
 
         String actualPageTitle = editPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
-    
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE})
-    public void editLoadGroupNameOnlySuccess() {              
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpEcobeeEdit_requiredFieldsOnlySuccess() {
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + "596" + Urls.EDIT);
-        
+
         LoadGroupEditPage editPage = new LoadGroupEditPage(driverExt, 596);
-        
+
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited Ecobee Ldgrp " + timeStamp;
-        
+
         final String EXPECTED_MSG = name + " saved successfully.";
-        
+
         editPage.getName().setInputValue(name);
-        
+
         editPage.getSaveBtn().click();
-        
+
         waitForPageToLoad("Load Group: " + name, Optional.empty());
-        
+
         LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt, 596);
-        
+
         String userMsg = detailsPage.getUserMessage();
-        
+
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }        
+    }
 }

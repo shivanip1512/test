@@ -9,7 +9,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.eaton.elements.WebTableRow;
-import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.CreateCommChannelModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
@@ -78,14 +77,14 @@ public class CommChannelsListTests extends SeleniumTestSetup {
         listPage = new CommChannelsListPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelList_TitleCorrect() {
         String EXPECTED_TITLE = "Comm Channels";
         String actualPageTitle = listPage.getPageTitle();
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelList_HeadersCorrect() {
         int EXPECTED_COUNT = 3;
         List<String> headers = this.listPage.getTable().getListTableHeaders();
@@ -97,7 +96,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelList_NameLinkCorrect() { 
         WebTableRow row = listPage.getTable().getDataRowByName(udpCommChannelName); 
         String link = row.getCellLinkByIndex(0);
@@ -105,7 +104,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
         assertThat(link).contains(Urls.Assets.COMM_CHANNEL_DETAIL.concat(udpCommChannelId));
     }		
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelList_SortNamesAscCorrectly() {
         Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
         
@@ -116,7 +115,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
         assertThat(names).isEqualTo(namesList);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelList_SortNamesDescCorrectly() {
         Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
         Collections.reverse(names);
@@ -128,7 +127,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
         assertThat(names).isEqualTo(namesList);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelList_SortTypesAscCorrectly() {
         Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
         
@@ -139,7 +138,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
         assertThat(types).isEqualTo(typesList);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelList_SortTypesDescCorrectly() {
         Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
         Collections.reverse(types);
@@ -149,7 +148,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
         assertThat(types).isEqualTo(typesList);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelList_SortStatusesAscCorrectly() {
         Collections.sort(statuses, String.CASE_INSENSITIVE_ORDER);
 
@@ -161,7 +160,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
         assertThat(statuses).isEqualTo(statusList);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelList_SortStatusesDescCorrectly() {
         Collections.sort(statuses, String.CASE_INSENSITIVE_ORDER);
         Collections.reverse(statuses);
@@ -174,7 +173,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
         assertThat(statuses).isEqualTo(statusList);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelList_CreateOpensPopupCorrect() {
         String EXPECTED_CREATE_MODEL_TITLE = "Create Comm Channel";
         CreateCommChannelModal createModel = listPage.showAndWaitCreateCommChannelModal();

@@ -21,37 +21,37 @@ public class CbcEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects" })
-    public void pageTitleCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    public void cbcEdit_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit CBC: AT CBC";
-        
+
         navigate(Urls.CapControl.CBC_EDIT + "670" + Urls.EDIT);
 
         CbcEditPage editPage = new CbcEditPage(driverExt, 670);
 
         String actualPageTitle = editPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects" })
-    public void editCbcRequiredFieldsOnlySuccess() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    public void cbcEdit_requiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "CBC was successfully saved.";
-        
+
         navigate(Urls.CapControl.CBC_EDIT + "563" + Urls.EDIT);
 
         CbcEditPage editPage = new CbcEditPage(driverExt, 563);
 
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
-        
+
         String name = "AT Edited CBC " + timeStamp;
         editPage.getName().setInputValue(name);
-        
+
         editPage.getSaveBtn().click();
 
         waitForPageToLoad("CBC: " + name, Optional.empty());
@@ -62,25 +62,25 @@ public class CbcEditTests extends SeleniumTestSetup {
 
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
-    
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
-    public void deleteCbcSuccess() {
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    public void cbcEdit_deleteCbcSuccess() {
         final String EXPECTED_MSG = "Deleted CBC";
-        
+
         navigate(Urls.CapControl.CBC_EDIT + "577" + Urls.EDIT);
 
         CbcEditPage editPage = new CbcEditPage(driverExt, 577);
-        
+
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
-        
+
         modal.clickOkAndWait();
-        
+
         waitForPageToLoad("Orphans", Optional.empty());
-        
+
         OrphansPage detailsPage = new OrphansPage(driverExt);
-        
+
         String userMsg = detailsPage.getUserMessage();
-        
+
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 }
