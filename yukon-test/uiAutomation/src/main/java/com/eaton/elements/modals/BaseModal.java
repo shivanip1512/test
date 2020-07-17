@@ -38,7 +38,9 @@ public class BaseModal {
 
             List<WebElement> elements = this.driverExt.findElements(By.cssSelector(".ui-dialog"), Optional.of(0));
 
-            found = elements.stream().filter(element -> element.findElement(By.cssSelector(".ui-dialog-title")).getText().equals(this.modalTitle)).findFirst();
+            found = elements.stream()
+                    .filter(element -> element.findElement(By.cssSelector(".ui-dialog-title")).getText().equals(this.modalTitle))
+                    .findFirst();
         }
 
         return found.get();
@@ -50,10 +52,10 @@ public class BaseModal {
 
     public void clickCloseAndWait() {
         getModal().findElement(By.cssSelector(".ui-dialog-titlebar-close")).click();
-        
+
         if (describedBy != null) {
             SeleniumTestSetup.waitUntilModalClosedByDescribedBy(describedBy);
-        } else if(modalTitle != null) {
+        } else if (modalTitle != null) {
             SeleniumTestSetup.waitUntilModalClosedByTitle(modalTitle);
         }
     }
@@ -61,10 +63,10 @@ public class BaseModal {
     // TODO need a unique way to select the save button
     public void clickOkAndWait() {
         getModal().findElement(By.cssSelector(".ui-dialog-buttonset .primary")).click();
-        
+
         if (describedBy != null) {
             SeleniumTestSetup.waitUntilModalClosedByDescribedBy(describedBy);
-        } else if(modalTitle != null) {
+        } else if (modalTitle != null) {
             SeleniumTestSetup.waitUntilModalClosedByTitle(modalTitle);
         }
     }
@@ -72,37 +74,37 @@ public class BaseModal {
     /// TODO need a unique way to select the cancel button
     public void clickCancelAndWait() {
         getModal().findElement(By.cssSelector(".ui-dialog-buttonset .js-secondary-action")).click();
-        
+
         if (describedBy != null) {
             SeleniumTestSetup.waitUntilModalClosedByDescribedBy(describedBy);
-        } else if(modalTitle != null) {
+        } else if (modalTitle != null) {
             SeleniumTestSetup.waitUntilModalClosedByTitle(modalTitle);
         }
     }
-    
+
     public void clickCancelBtnByNameAndWait() {
         List<WebElement> el = getModal().findElements(By.cssSelector("button"));
-        
+
         WebElement button = el.stream().filter(element -> element.getText().equals("Cancel")).findFirst().orElseThrow();
-        
+
         button.click();
-        
+
         if (this.describedBy.isEmpty()) {
             SeleniumTestSetup.waitUntilModalClosedByDescribedBy(describedBy);
-        } else if(this.modalTitle.isEmpty()) {
+        } else if (this.modalTitle.isEmpty()) {
             SeleniumTestSetup.waitUntilModalClosedByTitle(modalTitle);
         }
     }
-    
+
     public List<String> getFieldLabels() {
-    	List<WebElement> nameElements = getModal().findElements(By.cssSelector("table tr .name"));
-    	
-	List<String> names = new ArrayList<>();
-		
+        List<WebElement> nameElements = getModal().findElements(By.cssSelector("table tr .name"));
+
+        List<String> names = new ArrayList<>();
+
         for (WebElement element : nameElements) {
-        	names.add(element.getText());
+            names.add(element.getText());
         }
-    	
-        return names;	
+
+        return names;
     }
 }

@@ -31,8 +31,8 @@ public class EnergyCompanyOperatorUserCreateTests extends SeleniumTestSetup {
         createPage = new EnergyCompanyOperatorUserCreatePage(driverExt, 64);
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_01_CreateAndDeleteEC()"})
-    public void pageTitleCorrect() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    public void energyCompanyOperatorUserCreate_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Operator User";
         
         String actualPageTitle = createPage.getPageTitle();
@@ -40,8 +40,8 @@ public class EnergyCompanyOperatorUserCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_02_AddLogin"})
-    public void createEnergyCompanyOperatorUserAllFieldsSuccess() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    public void energyCompanyOperatorUserCreate_createOperatorUserAllFieldsSuccess() {
         final String EXPECTED_USER_MSG = "Successfully created the user.";
         final String PASSWORD = "Atoperator1";
         

@@ -65,7 +65,7 @@ public class DropDownElement {
     }
     
     public List<String> getOptionValues() {
-        List<String> optionValues = new ArrayList<String>();
+        List<String> optionValues = new ArrayList<>();
         List<WebElement> options = getSelectElement().findElements(By.tagName("option"));
         for(WebElement option : options) {
             optionValues.add(option.getText());

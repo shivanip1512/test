@@ -10,59 +10,52 @@ import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 
-public class CreateCommChannelModal extends BaseModal{
+public class CreateCommChannelModal extends BaseModal {
 
-    private DriverExtensions driverExt;
-    private String modalName; 
+    private String modalName;
     private WebElement modal;
-    
+
     public CreateCommChannelModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
         super(driverExt, modalTitle, describedBy);
-
-        this.driverExt = driverExt;
     }
 
     private static final String PARENT_NAME = "js-create-comm-channel-popup";
-    
+
     public TextEditElement getName() {
-    	return new TextEditElement(this.driverExt, "name", PARENT_NAME);
-    }        
-    
-    public DropDownElement getType() {
-    	return new DropDownElement(this.driverExt, "type", PARENT_NAME);
+        return new TextEditElement(this.driverExt, "name", PARENT_NAME);
     }
-    
-    public TextEditElement getIpAddress() {
+
+    public DropDownElement getType() {
+        return new DropDownElement(this.driverExt, "type", PARENT_NAME);
+    }
+
+    public TextEditElement getPortNumber() {
+        return new TextEditElement(this.driverExt, "portNumber", PARENT_NAME);
+    }
+
+    public DropDownElement getBaudRate() {
+        return new DropDownElement(this.driverExt, "baudRate", PARENT_NAME);
+    }
+
+    public DropDownElement getPhysicalPort() {
+        return new DropDownElement(this.driverExt, "physicalPort", PARENT_NAME);
+    }
+
+    public TextEditElement getPhysicalPortOther() {
+        return new TextEditElement(this.driverExt, "physicalPort", PARENT_NAME);
+    }
+
+    public TextEditElement getIPAddress() {
         return new TextEditElement(this.driverExt, "ipAddress", PARENT_NAME);
     }
-    
-    public TextEditElement getPortNumber() {
-    	return new TextEditElement(this.driverExt, "portNumber", PARENT_NAME);
-    } 
-    
-    public DropDownElement getBaudRate() {
-    	return new DropDownElement(this.driverExt, "baudRate", PARENT_NAME);
-    }
-    
-    public DropDownElement getPhysicalPort() {
-    	return new DropDownElement(this.driverExt, "physicalPort", PARENT_NAME);
-    }
-    
-    public TextEditElement getPhysicalPortOther() {
-    	return new TextEditElement(this.driverExt, "physicalPort", PARENT_NAME);
-    }
-    
-    public TextEditElement getIPAddress() {
-    	return new TextEditElement(this.driverExt, "ipAddress", PARENT_NAME);
-    }
-    
+
     public String getModalTitle() {
-    	return getModal().findElement(By.cssSelector(".ui-dialog-titlebar .ui-dialog-title")).getText();
+        return getModal().findElement(By.cssSelector(".ui-dialog-titlebar .ui-dialog-title")).getText();
     }
 
     public void clickClose() {
         modal.findElement(By.cssSelector(".ui-dialog-titlebar-close")).click();
-        
+
         SeleniumTestSetup.waitUntilModalClosedByTitle(this.modalName);
     }
 
@@ -71,10 +64,8 @@ public class CreateCommChannelModal extends BaseModal{
         modal.findElement(By.cssSelector(".ui-dialog-buttonset .primary")).click();
     }
 
-    ///TODO need a unique way to select the cancel button
+    /// TODO need a unique way to select the cancel button
     public void clickCancel() {
         modal.findElement(By.cssSelector(".ui-dialog-buttonset .js-secondary-action")).click();
     }
-    
-   
 }

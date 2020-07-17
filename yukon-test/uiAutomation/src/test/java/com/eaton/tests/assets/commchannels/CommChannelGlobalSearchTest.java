@@ -31,21 +31,23 @@ public class CommChannelGlobalSearchTest extends SeleniumTestSetup {
         commChannel = new CommChannelGlobalSearch(driverExt);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelGlobalSearch_SearchCommChannelAndEnterNavigatesToSearchPage() {
         commChannel.searchDirectlyWithText(this.searchText);
         String expectedUrl = Urls.SEARCH + "Comm+Channels";
+        
         assertThat(driver.getCurrentUrl()).contains(expectedUrl);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelGlobalSearch_ResultNavigatesToCommChannelListPage() {
         commChannel.clickOnSearchedText_InGlobalSearchResult(this.searchText);
         String expectedTitle = "Comm Channels";
+        
         assertThat(driver.getTitle()).contains(expectedTitle);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelGlobalSearch_SearchCommResultsContainCommChannel() {
         List<String> list = commChannel.verifySearchResult_InSearchSuggestionList(this.searchText);
         assertThat(list.size() != 0);

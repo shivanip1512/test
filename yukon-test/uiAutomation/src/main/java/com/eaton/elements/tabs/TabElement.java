@@ -40,7 +40,7 @@ public class TabElement {
 	public List<String> getTitles() {
 		List<WebElement> elements = getTabs();
 
-		List<String> titles = new ArrayList<String>();
+		List<String> titles = new ArrayList<>();
 		for (WebElement element : elements) {
 			titles.add(element.findElement(By.cssSelector("a")).getText());
 		}
@@ -75,7 +75,7 @@ public class TabElement {
 
 		List<WebElement> nameElements = panel.findElements(By.cssSelector("table tr .name"));
 
-		List<String> names = new ArrayList<String>();
+		List<String> names = new ArrayList<>();
 		for (WebElement element : nameElements) {
 			names.add(element.getText());
 		}
@@ -92,7 +92,7 @@ public class TabElement {
 
 		List<WebElement> valueElements = panel.findElements(By.cssSelector("table tr .value"));
 
-		List<String> values = new ArrayList<String>();
+		List<String> values = new ArrayList<>();
 		for (WebElement element : valueElements) {
 			values.add(element.getText());
 		}

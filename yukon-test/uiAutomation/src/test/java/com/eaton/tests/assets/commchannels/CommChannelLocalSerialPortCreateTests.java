@@ -36,7 +36,7 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
         channelCreatePage = new CommChannelsListPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
     public void createCommChannelLocalSerialPort_AllFieldsSuccess() {
         CreateCommChannelModal createModal = channelCreatePage.showAndWaitCreateCommChannelModal();
 
@@ -64,7 +64,7 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void createCommChannelLocalSerialPort_LabelsCorrect() {
         CreateCommChannelModal createModal = channelCreatePage.showAndWaitCreateCommChannelModal();
 
@@ -81,7 +81,7 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void createCommChannelLocalSerialPort_PhysicalPortOtherRequiredValidation() {
         CreateCommChannelModal createModal = channelCreatePage.showAndWaitCreateCommChannelModal();
 

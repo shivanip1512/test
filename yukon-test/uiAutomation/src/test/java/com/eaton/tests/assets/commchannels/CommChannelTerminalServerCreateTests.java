@@ -39,8 +39,8 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         channelCreatePage = new CommChannelsListPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
-    public void createCommChannelTerminalServer_LabelsCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
+    public void createCommChannelTerminalServer_RequiredFieldsOnlySuccess() {
         CreateCommChannelModal createModal = channelCreatePage.showAndWaitCreateCommChannelModal();
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -59,7 +59,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
 
         createModal.getName().setInputValue(name);
         createModal.getType().selectItemByText(type);
-        createModal.getIpAddress().setInputValue(ipAddress);
+        createModal.getIPAddress().setInputValue(ipAddress);
         createModal.getPortNumber().setInputValue(portNumber);
         createModal.getBaudRate().selectItemByText(baudRate);
 
@@ -74,7 +74,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
     public void createCommChannelTerminalServer_AllFieldsSuccess() {
         CreateCommChannelModal createModal = channelCreatePage.showAndWaitCreateCommChannelModal();
 
@@ -92,7 +92,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void createCommChannelTerminalServer_IpAddressRequiredValidation() {
         CreateCommChannelModal createModal = channelCreatePage.showAndWaitCreateCommChannelModal();
 
@@ -102,12 +102,12 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
 
         createModal.clickOkAndWait();
 
-        String errorMsg = createModal.getIpAddress().getValidationError();
+        String errorMsg = createModal.getIPAddress().getValidationError();
 
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void createCommChannelTerminalServer_IpAddressInvalidValidation() {
         CreateCommChannelModal createModal = channelCreatePage.showAndWaitCreateCommChannelModal();
 
@@ -116,16 +116,16 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = "Invalid IP/Host Name.";
 
         createModal.getType().selectItemByText(type);
-        createModal.getIpAddress().setInputValue(ipAddress);
+        createModal.getIPAddress().setInputValue(ipAddress);
 
         createModal.clickOkAndWait();
 
-        String errorMsg = createModal.getIpAddress().getValidationError();
+        String errorMsg = createModal.getIPAddress().getValidationError();
 
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void createCommChannelTerminalServer_PortNumberMinValidation() {
         CreateCommChannelModal createModal = channelCreatePage.showAndWaitCreateCommChannelModal();
 
@@ -143,7 +143,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void createCommChannelTerminalServer_PortNumberMaxValidation() {
         CreateCommChannelModal createModal = channelCreatePage.showAndWaitCreateCommChannelModal();
 
@@ -161,7 +161,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void createCommChannelTerminalServer_PortNumberEmptyValidation() {
         CreateCommChannelModal createModal = channelCreatePage.showAndWaitCreateCommChannelModal();
 

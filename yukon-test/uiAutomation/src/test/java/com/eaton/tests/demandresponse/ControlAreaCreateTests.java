@@ -18,56 +18,56 @@ import com.eaton.pages.demandresponse.ControlAreaCreatePage;
 import com.eaton.pages.demandresponse.ControlAreaDetailPage;
 
 public class ControlAreaCreateTests extends SeleniumTestSetup {
-    
+
     private ControlAreaCreatePage createPage;
     private DriverExtensions driverExt;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
 
-        WebDriver driver = getDriver();  
+        WebDriver driver = getDriver();
         driverExt = getDriverExt();
-        
+
         driver.get(getBaseUrl() + Urls.DemandResponse.CONTROL_AREA_CREATE);
 
-        createPage = new ControlAreaCreatePage(driverExt);                
-    }  
-    
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_09_CreateControlArea"})
-    public void pageTitleCorrect() {
+        createPage = new ControlAreaCreatePage(driverExt);
+    }
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void controlAreaCreate_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Control Area";
-        
+
         String actualPageTitle = createPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
-    
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_09_CreateControlArea"})
-    public void createControlAreaSuccess() {
-        
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void controlAreaCreate_requiredFieldsOnlySuccess() {
+
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-                 
-        String name = "AT Control Area " + timeStamp;     
-        
+
+        String name = "AT Control Area " + timeStamp;
+
         final String EXPECTED_MSG = name + " saved successfully.";
-        
-        createPage.getName().setInputValue(name);  
-        
+
+        createPage.getName().setInputValue(name);
+
         createPage.getProgramAssignments().addSingleAvailable("AT Direct Program for Create Control Area");
-        
+
         createPage.getSave().click();
-        
+
         waitForPageToLoad("Control Area: " + name, Optional.empty());
-        
+
         ControlAreaDetailPage detailsPage = new ControlAreaDetailPage(driverExt);
-        
+
         String userMsg = detailsPage.getUserMessage();
-        
+
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }    
-    
-    @AfterMethod(alwaysRun=true)
-    public void afterTest() {        
+    }
+
+    @AfterMethod(alwaysRun = true)
+    public void afterTest() {
         refreshPage(createPage);
     }
 }

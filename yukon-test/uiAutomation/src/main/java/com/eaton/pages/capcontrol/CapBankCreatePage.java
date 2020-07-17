@@ -9,42 +9,30 @@ import com.eaton.pages.PageBase;
 
 public class CapBankCreatePage  extends PageBase {
     
-    private TextEditElement name;
-    private TrueFalseCheckboxElement status;
-    private TrueFalseCheckboxElement createNewCbc;
-    private Button saveBtn;
-    private Button cancelBtn;
-
     public CapBankCreatePage(DriverExtensions driverExt) {
         super(driverExt);
         
         requiresLogin = true;
         pageUrl = Urls.CapControl.CAP_BANK_CREATE;
-
-        name = new TextEditElement(driverExt, "name");
-        status = new TrueFalseCheckboxElement(driverExt, "disabled");
-        createNewCbc = new TrueFalseCheckboxElement(driverExt, "createCBC");
-        saveBtn = new Button(driverExt, "Save");
-        cancelBtn = new Button(driverExt, "Cancel");
     }
     
     public TextEditElement getName() {
-        return name;
+        return new TextEditElement(driverExt, "name");
     }
     
     public TrueFalseCheckboxElement getStatus() {
-        return status;
+        return new TrueFalseCheckboxElement(driverExt, "disabled");
     }
     
     public TrueFalseCheckboxElement getCreateNewCbc() {
-        return createNewCbc;
+        return new TrueFalseCheckboxElement(driverExt, "createCBC");
     }
     
     public Button getSaveBtn() {
-        return saveBtn;
+        return new Button(driverExt, "Save");
     }
     
     public Button getCancelBtn() {
-        return cancelBtn;
+        return new Button(driverExt, "Cancel");
     }    
 }
