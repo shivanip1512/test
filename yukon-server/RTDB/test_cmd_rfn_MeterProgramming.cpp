@@ -171,6 +171,31 @@ BOOST_AUTO_TEST_CASE( test_getConfigurationCommand_error_decode_device_busy )
     BOOST_CHECK_EQUAL( command.getMeterConfigurationID(), "" );
 }
 
+BOOST_AUTO_TEST_CASE( test_getConfigurationCommand_error_decode_other )
+{
+    RfnMeterProgrammingGetConfigurationCommand  command;
+
+    const std::vector< unsigned char > response
+    {
+        0x92,   // Configuration response
+        1,      // Unchanged
+        99,     // Other (99)
+        1,      // 1 TLV
+        3,      // TLV type 3, configuration ID
+        0,      // payload length
+    };
+
+    auto rcv = command.decodeCommand(execute_time, response);
+
+    BOOST_CHECK_EQUAL(rcv.status, ClientErrors::ReasonUnknown);
+    BOOST_CHECK_EQUAL(rcv.description,
+        "Meter Status: Unchanged (1)"
+        "\nDetailed Configuration Status: Other (99)");
+
+    BOOST_CHECK_EQUAL(command.getStatusCode(), ClientErrors::ReasonUnknown);
+    BOOST_CHECK_EQUAL(command.getMeterConfigurationID(), "");
+}
+
 BOOST_AUTO_TEST_CASE( test_getConfigurationCommand_success_with_unmapped_prefix )
 {
     RfnMeterProgrammingGetConfigurationCommand  command;

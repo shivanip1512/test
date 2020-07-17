@@ -62,6 +62,7 @@ public class CalcAnalogPointModel extends ScalarPointModel<CalculatedPoint> {
                 calculatedPoint.setBaselineAssigned(true);
                 if (getBaselineId() != null) {
                     calculatedPoint.getCalcBaselinePoint().setBaselineID(getBaselineId());
+                    calculatedPoint.setPointID(getPointId());
                 }
             } else {
                 calculatedPoint.setBaselineAssigned(false);

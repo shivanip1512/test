@@ -9,48 +9,34 @@ import com.eaton.pages.PageBase;
 
 public class SubstationCreatePage extends PageBase {
     
-    private TextEditElement name;
-    private TextEditElement geoName;
-    private TextEditElement mapLocation;
-    private TrueFalseCheckboxElement status;
-    private Button saveBtn;
-    private Button cancelBtn;
-
     public SubstationCreatePage(DriverExtensions driverExt) {
         super(driverExt);
         
         requiresLogin = true;
         pageUrl = Urls.CapControl.SUBSTATION_CREATE;
-
-        name = new TextEditElement(this.driverExt, "name");
-        geoName = new TextEditElement(this.driverExt, "geoAreaName");
-        mapLocation = new TextEditElement(this.driverExt, "CapControlSubstation.mapLocationID");
-        status = new TrueFalseCheckboxElement(this.driverExt, "disabled");
-        saveBtn = new Button(this.driverExt, "Save");
-        cancelBtn = new Button(this.driverExt, "Cancel");
     }
     
     public TextEditElement getName() {
-        return name;
+        return new TextEditElement(this.driverExt, "name");
     }
     
     public TextEditElement getGeoName() {
-        return geoName;
+        return new TextEditElement(this.driverExt, "geoAreaName");
     }
     
     public TextEditElement getMapLocation() {
-        return mapLocation;
+        return new TextEditElement(this.driverExt, "CapControlSubstation.mapLocationID");
     }
     
     public TrueFalseCheckboxElement getStatus() {
-        return status;
+        return new TrueFalseCheckboxElement(this.driverExt, "disabled");
     }
     
     public Button getSaveBtn() {
-        return saveBtn;
+        return new Button(this.driverExt, "Save");
     }
     
     public Button getCancelBtn() {
-        return cancelBtn;
+        return new Button(this.driverExt, "Cancel");
     }    
 }

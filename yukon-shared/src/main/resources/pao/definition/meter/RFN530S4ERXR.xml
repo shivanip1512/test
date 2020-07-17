@@ -102,6 +102,7 @@
         <pointInfo name="Sum Peak kW (Rate D kW)" attributes="SUM_PEAK_DEMAND_RATE_D,PEAK_DEMAND_RATE_D"/>
         <pointInfo name="Total Outage Count" init="true" attributes="BLINK_COUNT"/>
         <pointInfo name="TOU Schedule Change" attributes="TOU_SCHEDULE_CHANGE"/>
+        <pointInfo name="Ultra Capacitor Bad" attributes="ULTRA_CAPACITOR_BAD"/>
         <pointInfo name="Under Voltage" attributes="UNDER_VOLTAGE"/>
         <pointInfo name="Unprogrammed" attributes="UNPROGRAMMED"/>
         <pointInfo name="Voltage Phase A" attributes="VOLTAGE_PHASE_A"/>

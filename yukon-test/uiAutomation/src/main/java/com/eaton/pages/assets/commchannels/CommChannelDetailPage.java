@@ -1,4 +1,4 @@
-package com.eaton.pages.assets.commChannels;
+package com.eaton.pages.assets.commchannels;
 
 import java.util.Optional;
 
@@ -7,7 +7,6 @@ import com.eaton.elements.Section;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.CreateCommChannelModal;
 import com.eaton.elements.modals.EditCommChannelModal;
-import com.eaton.elements.modals.EditMeterModal;
 import com.eaton.elements.panels.CommChannelInfoPanel;
 import com.eaton.elements.tabs.TabElement;
 import com.eaton.framework.DriverExtensions;
@@ -16,6 +15,8 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class CommChannelDetailPage extends PageBase {
+    
+    private static final String CONFIRM_DIALOG = "yukon_dialog_confirm";
     
     public CommChannelDetailPage(DriverExtensions driverExt, int id) {
         super(driverExt);
@@ -63,16 +64,16 @@ public class CommChannelDetailPage extends PageBase {
     public ConfirmModal showDeleteLoadGroupModal() {
         getActionBtn().clickAndSelectOptionByText("Delete"); 
         
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("yukon_dialog_confirm");
+        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy(CONFIRM_DIALOG);
         
-        return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of("yukon_dialog_confirm"));        
+        return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of(CONFIRM_DIALOG));        
     }
     
     public CreateCommChannelModal showCreateCommChannelModal(String modalName) {
         getActionBtn().clickAndSelectOptionByText("Create"); 
         
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("yukon_dialog_confirm");
+        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy(CONFIRM_DIALOG);
         
-        return new CreateCommChannelModal(this.driverExt, modalName);
+        return new CreateCommChannelModal(this.driverExt, Optional.of(modalName), Optional.empty());
     }
 }

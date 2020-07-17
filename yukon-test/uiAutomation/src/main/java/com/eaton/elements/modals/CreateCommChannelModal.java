@@ -1,73 +1,58 @@
 package com.eaton.elements.modals;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import com.eaton.elements.MultiLineTextElement;
+import com.eaton.elements.DropDownElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 
-public class CreateCommChannelModal{
+public class CreateCommChannelModal extends BaseModal {
 
-    private DriverExtensions driverExt;
-    private TextEditElement name;
-    private MultiLineTextElement description;
-    private String modalName; 
+    private String modalName;
     private WebElement modal;
-    
-    public CreateCommChannelModal(DriverExtensions driverExt, String modalName) {
-        
-        this.driverExt = driverExt;
-        this.modalName = modalName;
-        modal = getModal();
-        
-        name = new TextEditElement(this.driverExt, "name", modal);
-    } 
-    
-    protected WebElement getModal() {
-        Optional<WebElement> found = Optional.empty();
 
-        long startTime = System.currentTimeMillis();                
-        
-        while (found.isEmpty() && System.currentTimeMillis() - startTime < 5000) {
-            
-            List<WebElement> elements = this.driverExt.findElements(By.cssSelector(".ui-dialog"), Optional.of(0));
-            
-            found = elements.stream().filter(element -> element.findElement(By.cssSelector(".ui-dialog-title")).getText().equals(this.modalName)).findFirst();
-        }
-        
-        return found.get();             
+    public CreateCommChannelModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
+        super(driverExt, modalTitle, describedBy);
+    }
+
+    private static final String PARENT_NAME = "js-create-comm-channel-popup";
+
+    public TextEditElement getName() {
+        return new TextEditElement(this.driverExt, "name", PARENT_NAME);
+    }
+
+    public DropDownElement getType() {
+        return new DropDownElement(this.driverExt, "type", PARENT_NAME);
+    }
+
+    public TextEditElement getPortNumber() {
+        return new TextEditElement(this.driverExt, "portNumber", PARENT_NAME);
+    }
+
+    public DropDownElement getBaudRate() {
+        return new DropDownElement(this.driverExt, "baudRate", PARENT_NAME);
     }
     
-    public TextEditElement getName() {
-        return name;
-    }        
-    
-    public MultiLineTextElement getDescription() {
-        return description;
-    }      
-    
-    
-    public String getModalTitle() {
-        return modal.findElement(By.cssSelector(".ui-dialog-titlebar .ui-dialog-title")).getText();
+    public TextEditElement getIpAddress() {
+        return new TextEditElement(this.driverExt, "ipAddress", PARENT_NAME);
     }
 
     public void clickClose() {
         modal.findElement(By.cssSelector(".ui-dialog-titlebar-close")).click();
-        
+
         SeleniumTestSetup.waitUntilModalClosedByTitle(this.modalName);
     }
 
     // TODO need a unique way to select the save button
-    public void clickOk() {
+    public void clickSave() {
         modal.findElement(By.cssSelector(".ui-dialog-buttonset .primary")).click();
     }
 
-    ///TODO need a unique way to select the cancel button
+    /// TODO need a unique way to select the cancel button
     public void clickCancel() {
         modal.findElement(By.cssSelector(".ui-dialog-buttonset .js-secondary-action")).click();
     }

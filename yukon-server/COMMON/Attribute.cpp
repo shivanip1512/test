@@ -496,6 +496,7 @@ INIT_ATTRIBUTE( TimeAdjustment,                                     "TIME_ADJUST
 INIT_ATTRIBUTE( TimeSyncFailed,                                     "TIME_SYNC_FAILED" );
 INIT_ATTRIBUTE( TOUScheduleChange,                                  "TOU_SCHEDULE_CHANGE" );
 INIT_ATTRIBUTE( TOUScheduleError,                                   "TOU_SCHEDULE_ERROR" );
+INIT_ATTRIBUTE( UltraCapacitorBad,                                  "ULTRA_CAPACITOR_BAD" );
 INIT_ATTRIBUTE( Unconfigured,                                       "UNCONFIGURED" );
 INIT_ATTRIBUTE( Unprogrammed,                                       "UNPROGRAMMED" );
 INIT_ATTRIBUTE( UserProgrammableTemperatureThresholdExceeded,       "USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED" );
@@ -530,6 +531,8 @@ INIT_ATTRIBUTE( PowerFailure,                                       "POWER_FAILU
 INIT_ATTRIBUTE( RadioFailure,                                       "RADIO_FAILURE" );
 INIT_ATTRIBUTE( DoorOpen,                                           "DOOR_OPEN" );
 INIT_ATTRIBUTE( NodeCountExceeded,                                  "NODE_COUNT_EXCEEDED" );
+INIT_ATTRIBUTE( UpsBatteryVoltageLow,                               "UPS_BATTERY_VOLTAGE_LOW" );
+INIT_ATTRIBUTE( CertificateExpiration,                              "CERTIFICATE_EXPIRATION" );
 
 INIT_ATTRIBUTE( StreamingCapableDeviceCount,                        "STREAMING_CAPABLE_DEVICE_COUNT" );
 INIT_ATTRIBUTE( StreamingActiveDeviceCount,                         "STREAMING_ACTIVE_DEVICE_COUNT" );

@@ -487,6 +487,7 @@ public:
     static const Attribute  TimeSyncFailed;
     static const Attribute  TOUScheduleChange;
     static const Attribute  TOUScheduleError;
+    static const Attribute  UltraCapacitorBad;
     static const Attribute  Unconfigured;
     static const Attribute  Unprogrammed;
     static const Attribute  UserProgrammableTemperatureThresholdExceeded;
@@ -521,6 +522,8 @@ public:
     static const Attribute  RadioFailure;
     static const Attribute  DoorOpen;
     static const Attribute  NodeCountExceeded;
+    static const Attribute  UpsBatteryVoltageLow;
+    static const Attribute  CertificateExpiration;
 
     static const Attribute  StreamingCapableDeviceCount;
     static const Attribute  StreamingActiveDeviceCount;

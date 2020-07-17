@@ -8,6 +8,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.cicurtailment.CiProgramCreatePage;
 
@@ -15,7 +16,7 @@ public class CiProgramCreateTests extends SeleniumTestSetup {
 
     private CiProgramCreatePage createPage;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         WebDriver driver = getDriver();
 
@@ -26,8 +27,8 @@ public class CiProgramCreateTests extends SeleniumTestSetup {
         createPage = new CiProgramCreatePage(driverExt);
     }
 
-    @Test
-    public void pageTitleCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ciProgramCreate_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Program";
 
         String actualPageTitle = createPage.getPageTitle();
