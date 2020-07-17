@@ -3,53 +3,58 @@ package com.eaton.tests.assets.commchannels;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.*;
+
+import com.eaton.elements.SearchBoxElement;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.assets.commchannels.CommChannelGlobalSearch;
+import com.eaton.pages.admin.GlobalSearchPage;
 
 public class CommChannelGlobalSearchTest extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
-    private CommChannelGlobalSearch commChannel;
-    private WebDriver driver;
-    private String searchText = "Comm Channels";
+    private GlobalSearchPage globalSearchPage;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
+        WebDriver driver = getDriver();
         driverExt = getDriverExt();
-        driver = getDriver();
 
-    }
-
-    @BeforeMethod(alwaysRun = true)
-    public void beforeMethod() {
-        navigate(Urls.HOME);
-        commChannel = new CommChannelGlobalSearch(driverExt);
+        driver.get(getBaseUrl() + Urls.HOME);
+        
+        globalSearchPage = new GlobalSearchPage(driverExt);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelGlobalSearch_SearchCommChannelAndEnterNavigatesToSearchPage() {
-        commChannel.searchDirectlyWithText(this.searchText);
-        String expectedUrl = Urls.SEARCH + "Comm+Channels";
+        globalSearchPage.getSearchBoxElement().setSearchValueAndEnter("Comm Channels");
         
-        assertThat(driver.getCurrentUrl()).contains(expectedUrl);
+        boolean pageLoaded = waitForUrlToLoad(Urls.SEARCH + Urls.SEARCH_PARAM + "Comm+Channels", Optional.empty());
+        
+        assertThat(pageLoaded).isTrue();
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelGlobalSearch_ResultNavigatesToCommChannelListPage() {
-        commChannel.clickOnSearchedText_InGlobalSearchResult(this.searchText);
-        String expectedTitle = "Comm Channels";
+        globalSearchPage.getSearchBoxElement().setSearchValueAndClickResult("Comm Channels");
         
-        assertThat(driver.getTitle()).contains(expectedTitle);
+        boolean pageLoaded = waitForUrlToLoad(Urls.Assets.COMM_CHANNELS_LIST, Optional.empty());
+        
+        assertThat(pageLoaded).isTrue();       
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelGlobalSearch_SearchCommResultsContainCommChannel() {
-        List<String> list = commChannel.verifySearchResult_InSearchSuggestionList(this.searchText);
-        assertThat(list.size() != 0);
-    }
+        SearchBoxElement searchBox = globalSearchPage.getSearchBoxElement();
+        
+        searchBox.setSearchValue("Comm Chann");
+        List<String> results = searchBox.getSearchResults();
+        
+        assertThat(results).contains("Comm Channels");
+    }        
 }

@@ -33,6 +33,6 @@ public class PageBase implements ISeleniumPage {
     }
     
     public String getUserMessage() {
-        return this.driverExt.findElement(By.cssSelector(".yukon-content .user-message"), Optional.empty()).getText();
+        return this.driverExt.findElement(By.cssSelector(".yukon-content .user-message"), Optional.of(2)).getText();
     }
 }

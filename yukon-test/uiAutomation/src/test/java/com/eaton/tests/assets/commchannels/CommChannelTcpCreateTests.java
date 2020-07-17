@@ -7,8 +7,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.assertj.core.api.SoftAssertions;
+import org.openqa.selenium.WebDriver;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.eaton.elements.modals.CreateCommChannelModal;
@@ -28,13 +29,12 @@ public class CommChannelTcpCreateTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
+        WebDriver driver = getDriver();
         driverExt = getDriverExt();
         softly = new SoftAssertions();
-    }
-
-    @BeforeMethod(alwaysRun = true)
-    public void beforeMethod() {
-        navigate(Urls.Assets.COMM_CHANNELS_LIST);
+        
+        driver.get(getBaseUrl() + Urls.Assets.COMM_CHANNELS_LIST);
+        
         listPage = new CommChannelsListPage(driverExt);
     }
 
@@ -51,6 +51,7 @@ public class CommChannelTcpCreateTests extends SeleniumTestSetup {
 
         createModal.getName().setInputValue(name);
         createModal.getType().selectItemByText(type);
+        waitForLoadingSpinner();
         createModal.getBaudRate().selectItemByText(baudRate);
 
         createModal.clickOkAndWait();
@@ -69,6 +70,7 @@ public class CommChannelTcpCreateTests extends SeleniumTestSetup {
         CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
 
         createModal.getType().selectItemByText(type);
+        waitForLoadingSpinner();
 
         List<String> labels = createModal.getFieldLabels();
 
@@ -78,5 +80,11 @@ public class CommChannelTcpCreateTests extends SeleniumTestSetup {
         softly.assertThat(labels.get(2)).contains("Baud Rate:");
         softly.assertThat(labels.get(3)).contains("Status:");
         softly.assertAll();
+    }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterTest() {
+        refreshPage(listPage);
+        listPage = new CommChannelsListPage(driverExt);
     }
 }

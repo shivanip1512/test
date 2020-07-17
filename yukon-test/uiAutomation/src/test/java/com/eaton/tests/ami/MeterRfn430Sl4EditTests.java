@@ -28,8 +28,9 @@ public class MeterRfn430Sl4EditTests extends SeleniumTestSetup {
     }
 
     @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
-    public void meterRfn430Sl4Edit_nameOnlySuccess() {
+    public void meterRfn430Sl4Edit_requiredFieldsOnlySuccess() {
         navigate(Urls.Ami.METER_DETAIL + "585");
+        
         String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited RFN-430SL4 " + timeStamp;
 
@@ -40,7 +41,7 @@ public class MeterRfn430Sl4EditTests extends SeleniumTestSetup {
         editModal.getdeviceName().setInputValue(name);
         editModal.clickOkAndWait();
 
-        waitForUrlToLoad(Urls.Ami.METER_DETAIL, Optional.of(10));
+        waitForUrlToLoad(Urls.Ami.METER_DETAIL + 585, Optional.of(10));
 
         MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, 585);
 

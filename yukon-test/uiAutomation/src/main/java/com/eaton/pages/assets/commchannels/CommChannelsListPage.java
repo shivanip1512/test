@@ -33,8 +33,8 @@ public class CommChannelsListPage extends PageBase {
     public CreateCommChannelModal showAndWaitCreateCommChannelModal() {        
     	actionBtn.clickAndSelectOptionByText("Create");
     	
-    	SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-create-comm-channel-popup");
+    	SeleniumTestSetup.waitUntilModalVisibleByTitle("Create Comm Channel");
     	
-    	return new CreateCommChannelModal(this.driverExt, Optional.empty(), Optional.of("js-create-comm-channel-popup"));
+    	return new CreateCommChannelModal(this.driverExt, Optional.of("Create Comm Channel"), Optional.empty());
     }      
 }
