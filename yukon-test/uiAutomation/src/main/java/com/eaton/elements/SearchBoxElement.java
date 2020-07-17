@@ -52,7 +52,7 @@ public class SearchBoxElement {
         action.sendKeys(search, searchValue).build().perform();
     }
     
-    public void setSearchValueWithEnter(String searchValue) {
+    public void setSearchValueAndEnter(String searchValue) {
         WebElement search =  getSearchBoxElement();
         
         search.click();
@@ -63,26 +63,16 @@ public class SearchBoxElement {
         action.sendKeys(Keys.ENTER).build().perform();
     }    
 
-    public List<String> getSearchResults(String searchText) {
-    	setSearchValue(searchText);
+    public List<String> getSearchResults() {
         List<WebElement> list = this.driverExt.findElements(By.cssSelector(".ui-menu .ui-menu-item"), Optional.empty());
         
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         for (WebElement webElement : list) {
             results.add(webElement.findElement(By.cssSelector(".ui-menu-item-wrapper")).getText());
         }
         
         return results;
-    }    
-    
-    public List<String> validateSearchTextPresentInSugestionList(String searchText) {
-    	List<String> list=getSearchResults(searchText);
-        List<String> matchingElements = list.stream()
-          .filter(str -> str.trim().contains(searchText))
-          .collect(Collectors.toList());
-     
-        return matchingElements;
-    }
+    }        
     
     public void setSearchValueAndClickResult(String searchValue) {        
         setSearchValue(searchValue);

@@ -65,7 +65,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelDetailsUdp_PageTitleCorrect() {
-        String EXPECTED_TITLE = commChannelName;     
+        String EXPECTED_TITLE = commChannelName;
         String actualPageTitle = channelDetailPage.getPageTitle();
         assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);
     }
@@ -73,7 +73,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelDetailsUdp_TabTitlesCorrect() {        
         List<String> titles = channelDetailPage.getTabElement().getTitles();
-        
+
         softly.assertThat(titles.size()).isEqualTo(2);
         softly.assertThat(titles.get(0)).isEqualTo("Info");
         softly.assertThat(titles.get(1)).isEqualTo("Configuration");
@@ -123,7 +123,6 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         Section timing = channelDetailPage.getGeneralSection();
         assertThat(timing.getSection()).isNotNull();
     }
-    
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelDetailsUdp_ConfigTabSharedSectionDisplayed() {
         String infoTitle = "Configuration";
@@ -135,12 +134,12 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelDetailsUdp_ConfigTabLabelsCorrect() {
         String infoTitle = "Configuration";
-        
+
         channelDetailPage.getTabElement().clickTab(infoTitle);
         List<String> labels = channelDetailPage.getTabElement().getTabLabels(infoTitle);
-       
+
         softly.assertThat(labels.size()).isEqualTo(10);
-        
+
         softly.assertThat(labels.get(0)).isEqualTo("Protocol Wrap:");
         softly.assertThat(labels.get(1)).isEqualTo("Carrier Detect Wait:");
         softly.assertThat(labels.get(2)).isEqualTo("Encryption key:");
@@ -153,13 +152,12 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         softly.assertThat(labels.get(9)).isEqualTo("Socket Number:");
         softly.assertAll();
     }
-    
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelDetailsUdp_ConfigTabValuesCorrect() {
         channelDetailPage.getTabElement().clickTab("Configuration");
-        
-        List<String> values = channelDetailPage.getTabElement().getTabValues("Configuration");        
-        
+
+        List<String> values = channelDetailPage.getTabElement().getTabValues("Configuration");
+
         softly.assertThat(values.size()).isEqualTo(10);
         softly.assertThat(values.get(0)).isEqualTo("IDLC");
         softly.assertThat(values.get(1)).isEqualTo("544 ms");

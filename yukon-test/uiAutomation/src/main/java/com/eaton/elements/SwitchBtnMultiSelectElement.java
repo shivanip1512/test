@@ -75,7 +75,7 @@ public class SwitchBtnMultiSelectElement {
         return allDisabled;
                 
 //        list.stream().filter(x -> x.findElement(By.cssSelector(".title")).getText().contains(panelName))
-//                .findFirst().orElseThrow();
+//                .findFirst();
     }
 
     private WebElement getSwitchBtn() {

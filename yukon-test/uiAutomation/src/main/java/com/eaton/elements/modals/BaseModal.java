@@ -27,7 +27,7 @@ public class BaseModal {
 
     public WebElement getModal() {
         if (describedBy != null) {
-            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.describedBy + "']"), Optional.empty());
+            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.describedBy + "']"), Optional.of(2));
         }
 
         Optional<WebElement> found = Optional.empty();
@@ -36,7 +36,7 @@ public class BaseModal {
 
         while (found.isEmpty() && System.currentTimeMillis() - startTime < 3000) {
 
-            List<WebElement> elements = this.driverExt.findElements(By.cssSelector(".ui-dialog"), Optional.of(0));
+            List<WebElement> elements = this.driverExt.findElements(By.cssSelector(".ui-dialog"), Optional.of(5));
 
             found = elements.stream()
                     .filter(element -> element.findElement(By.cssSelector(".ui-dialog-title")).getText().equals(this.modalTitle))

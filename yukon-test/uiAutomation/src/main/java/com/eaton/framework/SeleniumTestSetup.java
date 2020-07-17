@@ -163,7 +163,7 @@ public class SeleniumTestSetup {
         return logger;
     }
 
-    public void waitForUrlToLoad(String expectedUrl, Optional<Integer> timeOutSeconds) {
+    public boolean waitForUrlToLoad(String expectedUrl, Optional<Integer> timeOutSeconds) {
         Integer timeOut = timeOutSeconds.orElse(null);
 
         Integer waitTime;
@@ -185,7 +185,7 @@ public class SeleniumTestSetup {
             expectedUrlLoaded = currentUrl.contains(expectedUrl);
         }
 
-        // add code to throw an exception if the url is not loaded
+        return expectedUrlLoaded;
     }
 
     public void waitForPageToLoad(String pageTitle, Optional<Integer> timeOutSeconds) {
@@ -227,7 +227,7 @@ public class SeleniumTestSetup {
         long startTime = System.currentTimeMillis();
         while (!display.equals("display: none;") && System.currentTimeMillis() - startTime < 2000) {            
             try {
-                display = driverExt.findElement(By.id("modal-glass"), Optional.of(0)).getAttribute("style");
+                display = driverExt.findElement(By.id("modal-glass"), Optional.of(1)).getAttribute("style");
             }
             catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {               
             }  

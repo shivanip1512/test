@@ -11,7 +11,8 @@ public final class Urls {
     public static final String SUPPORT = "/support";
     public static final String SITE_MAP = "/sitemap";
     public static final String EDIT = "/edit";
-    public static final String SEARCH= "/search?q=";
+    public static final String SEARCH = "/search";
+    public static final String SEARCH_PARAM = "?q=";
 
     public static final class Ami {
 
