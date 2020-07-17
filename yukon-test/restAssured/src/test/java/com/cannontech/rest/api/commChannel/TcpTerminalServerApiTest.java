@@ -80,7 +80,7 @@ public class TcpTerminalServerApiTest {
         tcpTerminal.setPortNumber(6734);
         tcpTerminal.getSharing().setSharedPortType(MockSharedPortType.ILEX);
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.post("updatePort", tcpTerminal,
+        ExtractableResponse<?> getResponse = ApiCallHelper.patch("updatePort", tcpTerminal,
                 context.getAttribute(CommChannelHelper.CONTEXT_PORT_ID).toString());
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
 
