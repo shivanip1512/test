@@ -91,24 +91,26 @@ public class ItronDeviceDataParserTest {
     
     @Test
     public void validateRowParsingForTwoPartVoltageMin() {
-        String[] rowData = rowData("type: 0, log event ID: 32924 (0x809C) - Vendor-specific or Unknown, payload:  data(0002000000)");
+        //0x960 = 2400 mV
+        String[] rowData = rowData("type: 0, log event ID: 32924 (0x809C) - Vendor-specific or Unknown, payload:  data(0960000000)");
         Collection<PointData> data = parseRow(BuiltInAttribute.MINIMUM_VOLTAGE, rowData);
         Assert.assertEquals(0, data.size());
         
         String[] rowData2 = rowData("type: 0, log event ID: 32926 (0x809E) - Vendor-specific or Unknown, payload:  data(2213E24400)");
         data = parseRow(BuiltInAttribute.MINIMUM_VOLTAGE, rowData2);
-        assertOnlyEntryEquals(data, 2);
+        assertOnlyEntryEquals(data, 240);
     }
 
     @Test
     public void validateRowParsingForTwoPartVoltageMax() {
-        String[] rowData = rowData("type: 0, log event ID: 32923 (0x809B) - Vendor-specific or Unknown, payload:  data(0002000000)");
+        //0x4B5 = 1205 mV
+        String[] rowData = rowData("type: 0, log event ID: 32923 (0x809B) - Vendor-specific or Unknown, payload:  data(04B5000000)");
         Collection<PointData> data = parseRow(BuiltInAttribute.MAXIMUM_VOLTAGE, rowData);
         Assert.assertEquals(0, data.size());
         
         String[] rowData2 = rowData("type: 0, log event ID: 32927 (0x809F) - Vendor-specific or Unknown, payload:  data(2213E24400)");
         data = parseRow(BuiltInAttribute.MAXIMUM_VOLTAGE, rowData2);
-        assertOnlyEntryEquals(data, 2);
+        assertOnlyEntryEquals(data, 120.5);
     }
     
     @Test
@@ -221,7 +223,7 @@ public class ItronDeviceDataParserTest {
         return results.get(lpo.getPaoIdentifier());
     }
     
-    private void assertOnlyEntryEquals(Collection<PointData> data, int expectedEntryValue) {
+    private void assertOnlyEntryEquals(Collection<PointData> data, double expectedEntryValue) {
         Assert.assertEquals(1, data.size());
         PointData pointData = (PointData) data.toArray()[0];
         Assert.assertEquals(expectedEntryValue, pointData.getValue(), 0.1);
