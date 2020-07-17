@@ -30,7 +30,6 @@ bool    _LOG_MAPID_INFO;
 unsigned long   _LIKEDAY_OVERRIDE_TIMEOUT;
 bool    _RETRY_ADJUST_LAST_OP_TIME;
 unsigned long   _REFUSAL_TIMEOUT;
-unsigned long   _MSG_PRIORITY;
 bool    CC_TERMINATE_THREAD_TEST;
 unsigned long   _OP_STATS_USER_DEF_PERIOD;
 unsigned long   _OP_STATS_REFRESH_RATE;
@@ -353,7 +352,7 @@ void refreshGlobalCParms()
         return value;
     };
 
-    _MSG_PRIORITY = readMessagingCparm("CAP_CONTROL_MSG_PRIORITY", 13);
+    Cti::CapControl::MessagePriorities::Other       = readMessagingCparm("CAP_CONTROL_MSG_PRIORITY", 13);
 
     Cti::CapControl::MessagePriorities::DnpTimesync = readMessagingCparm("CAP_CONTROL_MSG_PRIORITY_DNP_TIMESYNC", 12);
     Cti::CapControl::MessagePriorities::Heartbeat   = readMessagingCparm("CAP_CONTROL_MSG_PRIORITY_HEARTBEAT", 13);

@@ -2,18 +2,26 @@
 
 #include "Requests.h"
 
+#include "msg_pcrequest.h"
 #include "LitePoint.h"
 
+#include "connection_client.h"
 #include "cccapbank.h"
 
-#include <boost/assign/list_of.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/range/numeric.hpp>
 
 using std::string;
 
-extern unsigned long _MSG_PRIORITY;
-namespace Cti           {
-namespace CapControl    {
+namespace Cti::CapControl {
+
+namespace MessagePriorities {
+    extern uint8_t Operate;
+    extern uint8_t Heartbeat;
+    extern uint8_t DnpTimesync;
+    extern uint8_t Scan;
+    extern uint8_t Other;
+}
 
 typedef std::string (LitePoint::*CommandLookupMethod)() const;
 
@@ -30,12 +38,11 @@ CommandInfo makeCommandInfo(std::string s, CommandLookupMethod m)
     return info;
 }
 
-typedef std::map<BankOperationType, CommandInfo> BankOperationCommands;
+const std::map<BankOperationType, CommandInfo> availableOperations {
+    { BankOperation_Open,  makeCommandInfo("control open",  &LitePoint::getStateZeroControl) },
+    { BankOperation_Close, makeCommandInfo("control close", &LitePoint::getStateOneControl) },
+    { BankOperation_Flip,  makeCommandInfo("control flip",  0) } };
 
-const BankOperationCommands availableOperations = boost::assign::map_list_of
-    (BankOperation_Open,  makeCommandInfo("control open",  &LitePoint::getStateZeroControl))
-    (BankOperation_Close, makeCommandInfo("control close", &LitePoint::getStateOneControl))
-    (BankOperation_Flip,  makeCommandInfo("control flip",  0));
 
 
 std::string getCommandStringForOperation(const LitePoint &p, const CommandInfo &info)
@@ -80,7 +87,7 @@ std::string getBankOperationCommand( const BankOperationType bankOperation, cons
 {
     const LitePoint & p = capBank.getControlPoint();
 
-    BankOperationCommands::const_iterator itr = availableOperations.find(bankOperation);
+    const auto itr = availableOperations.find(bankOperation);
 
     if( itr == availableOperations.end() )
     {
@@ -90,7 +97,7 @@ std::string getBankOperationCommand( const BankOperationType bankOperation, cons
     return getCommandStringForOperation(p, itr->second);
 }
 
-std::unique_ptr<CtiRequestMsg> createBankOperationRequest( const CtiCCCapBank &capBank, const BankOperationType bankOperation )
+CategorizedRequest createBankOperationRequest( const CtiCCCapBank &capBank, const BankOperationType bankOperation )
 {
     auto operationCmd = getBankOperationCommand( bankOperation, capBank );
 
@@ -99,41 +106,108 @@ std::unique_ptr<CtiRequestMsg> createBankOperationRequest( const CtiCCCapBank &c
         operationCmd += " select pointid " + std::to_string( capBank.getControlPointId() );
     }
 
-    return std::unique_ptr<CtiRequestMsg>(
-       createPorterRequestMsg(
-          capBank.getControlDeviceId(),
-          operationCmd ) );
+    return createPorterRequestMsg(
+                capBank.getControlDeviceId(),
+                operationCmd,
+                RequestType::Operate );
 }
 
-std::unique_ptr<CtiRequestMsg> createBankOpenRequest(const CtiCCCapBank &capBank)
+CategorizedRequest createBankOpenRequest(const CtiCCCapBank &capBank)
 {
     return createBankOperationRequest(capBank, BankOperation_Open);
 }
 
-std::unique_ptr<CtiRequestMsg> createBankCloseRequest(const CtiCCCapBank &capBank)
+CategorizedRequest createBankCloseRequest(const CtiCCCapBank &capBank)
 {
     return createBankOperationRequest(capBank, BankOperation_Close);
 }
 
-std::unique_ptr<CtiRequestMsg> createBankFlipRequest(const CtiCCCapBank &capBank)
+CategorizedRequest createBankFlipRequest(const CtiCCCapBank &capBank)
 {
     return createBankOperationRequest(capBank, BankOperation_Flip);
 }
 
 
-CtiRequestMsg* createPorterRequestMsg(long controllerId, const string& commandString)
+CategorizedRequest createPorterRequestMsg(long controllerId, const string& commandString, RequestType requestType)
 {
-    CtiRequestMsg* reqMsg = new CtiRequestMsg(controllerId, commandString);
-    reqMsg->setMessagePriority(_MSG_PRIORITY);
-    return reqMsg;
+    auto reqMsg = std::make_unique<CtiRequestMsg>(controllerId, commandString);
+    reqMsg->setMessagePriority(getRequestPriority(requestType));
+    return { requestType, std::move(reqMsg) };
 }
 
-CtiRequestMsg* createPorterRequestMsg(long controllerId, const string& commandString, const string& user)
+CategorizedRequest createPorterRequestMsg(long controllerId, const string& commandString, RequestType requestType, const string& user)
 {
-    CtiRequestMsg* reqMsg = createPorterRequestMsg(controllerId, commandString);
-    reqMsg->setUser(user);
-    return reqMsg;
+    auto request = createPorterRequestMsg(controllerId, commandString, requestType);
+    request->setUser(user);
+    return request;
 }
 
+std::unique_ptr<CtiRequestMsg> extractRequestMsg(CategorizedRequest request)
+{
+    auto msg = std::move(request.message);
+
+    msg->setMessagePriority(Cti::CapControl::getRequestPriority(request.type));
+
+    return msg;
 }
+
+void sendPorterRequest(CtiClientConnection& porterConnection, CategorizedRequest request, CallSite callsite)
+{
+    if( request.message )
+    {
+        porterConnection.WriteConnQue(extractRequestMsg(std::move(request)), callsite);
+    }
+}
+
+void sendPorterRequests(CtiClientConnection& porterConnection, CategorizedRequests requests, CallSite callsite)
+{
+    if( ! requests.empty() )
+    {
+        auto multi = std::make_unique<CtiMultiMsg>();
+        int maxPriority = 0;
+
+        for( auto& request : requests )
+        {
+            auto requestMsg = extractRequestMsg(std::move(request));
+
+            maxPriority = std::max(maxPriority, requestMsg->getMessagePriority());
+
+            multi->getData().push_back(requestMsg.release());
+        }
+
+        multi->setMessagePriority(maxPriority);
+
+        porterConnection.WriteConnQue(std::move(multi), callsite);
+    }
+}
+
+uint8_t getRequestPriority(RequestType requestType)
+{
+    switch( requestType )
+    {
+        case RequestType::DnpTimesync:
+            return MessagePriorities::DnpTimesync;
+        case RequestType::Heartbeat:
+            return MessagePriorities::Heartbeat;
+        case RequestType::Operate:
+            return MessagePriorities::Operate;
+        case RequestType::Scan:
+            return MessagePriorities::Scan;
+
+        default: 
+            [[fallthrough]];
+        case RequestType::Other:
+            return MessagePriorities::Other;
+    }
+}
+
+std::ostream& operator<<(std::ostream& o, const CategorizedRequest& request)
+{
+    if( request.empty() )
+    {
+        return o << "[empty CategorizedRequest]";
+    }
+    return o << "[type:" << static_cast<int>(request.type) << ",message:" << request->toString() << "]";
+}
+
 }
