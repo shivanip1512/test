@@ -14,7 +14,6 @@ public class DrSetupCreateRequest {
         String pathParam = APIs.DemandResponse.createLoadGroup;
         ExtractableResponse<?> createResponse = ApiCallHelper.post(pathParam, body);
         assertThat(createResponse.statusCode()).as("Error in create load group \"%s\"").isEqualTo(200);
-        assertTrue(true);
         return createResponse;
     }
 
