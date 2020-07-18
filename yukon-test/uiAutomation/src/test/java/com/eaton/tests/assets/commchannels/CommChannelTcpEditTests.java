@@ -20,7 +20,8 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.assets.commchannels.CommChannelDetailPage;
 import com.eaton.rest.api.assets.AssetsCreateRequestAPI;
 import com.eaton.rest.api.assets.AssetsGetRequestAPI;
-import com.eaton.rest.api.dbetoweb.JsonFileHelper;
+import com.eaton.rest.api.drsetup.JsonFileHelper;
+
 import io.restassured.response.ExtractableResponse;
 
 public class CommChannelTcpEditTests extends SeleniumTestSetup {
