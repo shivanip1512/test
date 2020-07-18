@@ -69,7 +69,7 @@ public class WebTable {
     public List<String> getDataRowsTextByCellIndex(int index) {
         List<WebTableRow> rows = getDataRows();
         
-        List<String> cellRowsData = new ArrayList<String>();
+        List<String> cellRowsData = new ArrayList<>();
         
         for (WebTableRow row : rows) {
             WebElement cell = row.getCell(index);
