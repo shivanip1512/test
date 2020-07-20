@@ -297,7 +297,7 @@ public class PointHelper {
     }
 
     public static void deletePoint(String pointId) {
-        ExtractableResponse<?> response = ApiCallHelper.delete("deletePoint", pointId);
+        ExtractableResponse<?> response = ApiCallHelper.delete("pointBaseUrl", pointId);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
