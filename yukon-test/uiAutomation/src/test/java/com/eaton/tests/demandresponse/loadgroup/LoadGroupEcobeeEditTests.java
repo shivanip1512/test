@@ -10,7 +10,7 @@ import org.json.JSONObject;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.eaton.builders.LoadGroupEcobeeCreate;
+import com.eaton.builders.LoadGroupEcobeeCreateBuilder;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
@@ -31,7 +31,7 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpEcobeeEdit_pageTitleCorrect() {        
-        Pair<JSONObject,ExtractableResponse<?>> pair = new LoadGroupEcobeeCreate.Builder()
+        Pair<JSONObject,ExtractableResponse<?>> pair = new LoadGroupEcobeeCreateBuilder.Builder()
                 .withName(Optional.empty())
                 .create();
         
@@ -54,7 +54,7 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpEcobeeEdit_requiredFieldsOnlySuccess() {
-        Pair<JSONObject,ExtractableResponse<?>> pair = new LoadGroupEcobeeCreate.Builder()
+        Pair<JSONObject,ExtractableResponse<?>> pair = new LoadGroupEcobeeCreateBuilder.Builder()
                 .withName(Optional.empty())
                 .withKwCapacity(Optional.empty())
                 .withDisableControl(Optional.empty())

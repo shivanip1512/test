@@ -11,7 +11,7 @@ import com.github.javafaker.Faker;
 
 import io.restassured.response.ExtractableResponse;
 
-public class LoadGroupEcobeeCreate {
+public class LoadGroupEcobeeCreateBuilder {
 
     public static class Builder {
         private Faker faker = new Faker();
