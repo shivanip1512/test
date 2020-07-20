@@ -189,7 +189,10 @@
       </option>
     <option name="dmvTest">
         <permissions>
-            <license name="DEMAND_MEASUREMENT_VERIFICATION_ENABLED" />
+            <and>
+                <roleProperty name="CAP_CONTROL_ACCESS" />
+                <license name="DEMAND_MEASUREMENT_VERIFICATION_ENABLED" />
+            </and>
         </permissions>
         <link>/capcontrol/dmvTestList</link>
       </option>
