@@ -2,6 +2,8 @@ package com.cannontech.amr.archivedValueExporter.model;
 
 import java.text.DecimalFormat;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -345,15 +347,11 @@ public class ExportField implements Displayable {
         }
         return true;
     }
-
+    
     @Override
     public String toString() {
-        return String
-                .format("ExportField [fieldId=%s, field=%s, formatId=%s, attributeField=%s, readingPattern=%s, timestampPattern=%s, maxLength=%s, padChar=%s, padSide=%s, roundingMode=%s, missingAttribute=%s, missingAttributeValue=%s, pattern=%s]",
-                        fieldId, field, formatId, attributeField,
-                        readingPattern, timestampPattern, maxLength, padChar,
-                        padSide, roundingMode, missingAttribute,
-                        missingAttributeValue, pattern);
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                + System.getProperty("line.separator");
     }
     
 }

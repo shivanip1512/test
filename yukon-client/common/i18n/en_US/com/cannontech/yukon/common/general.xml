@@ -16,6 +16,7 @@
 <entry key="yukon.common.attributeGroups.BLINK_AND_OUTAGE">Blink &amp; Outage</entry>
 <entry key="yukon.common.attributeGroups.CAPCONTROL">CapControl</entry>
 <entry key="yukon.common.attributeGroups.CURRENT">Current</entry>
+<entry key="yukon.common.attributeGroups.CUSTOM">Custom</entry>
 <entry key="yukon.common.attributeGroups.DEMAND">Demand</entry>
 <entry key="yukon.common.attributeGroups.ITRON">Itron</entry>
 <entry key="yukon.common.attributeGroups.OTHER">Other</entry>

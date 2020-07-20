@@ -1,103 +1,142 @@
 package com.cannontech.common.pao.attribute.dao.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
+import com.cannontech.common.pao.attribute.model.AttributeAssignmentRequest;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DuplicateException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 public class AttributeDaoImpl implements AttributeDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
 
+    private final Cache<Pair<Integer, PaoType>, PointIdentifier> attributeToPoint = CacheBuilder.newBuilder().build();
+    private final Cache<Integer, CustomAttribute> idToAttribute = CacheBuilder.newBuilder().build();
+
+    @PostConstruct
+    public void init() {
+        cacheAttributes();
+    }
+    
+    /**
+     * Caches custom attributes
+     */
+    private void cacheAttributes() {
+        attributeToPoint.invalidateAll();
+        idToAttribute.invalidateAll();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT AttributeId, AttributeName");
+        sql.append("FROM CustomAttribute");
+        List<CustomAttribute> attributes = jdbcTemplate.query(sql, customAttributeMapper);
+        if(attributes.isEmpty()) {
+            return;
+        }
+        attributes.forEach(attribute -> idToAttribute.put(attribute.getId(), attribute));
+        sql = new SqlStatementBuilder();
+        sql.append("SELECT AttributeAssignmentId, aa.AttributeId, AttributeName, PaoType, PointType, PointOffset");
+        sql.append("FROM AttributeAssignment aa");
+        sql.append("JOIN CustomAttribute ca ON aa.AttributeId = ca.AttributeId");
+        List<AttributeAssignment> assignments = jdbcTemplate.query(sql, attributeAssignmentMapper);
+        assignments.forEach(assignment -> {
+            Pair<Integer, PaoType> pair = Pair.of(assignment.getCustomAttribute().getId(), assignment.getPaoType());
+            attributeToPoint.put(pair, assignment.getPointIdentifier());
+        });
+    }
+    
     private YukonRowMapper<CustomAttribute> customAttributeMapper = rs -> {
-        CustomAttribute row = new CustomAttribute();
-        row.setId(rs.getInt("AttributeId"));
-        row.setName(rs.getString("AttributeName"));
-        return row;
+        return new CustomAttribute(rs.getInt("AttributeId"), rs.getStringSafe("AttributeName"));
     };
-
-    private YukonRowMapper<AttributeAssignment> attributeAssignmentMapper = rs -> {
+    
+    public static YukonRowMapper<AttributeAssignment> attributeAssignmentMapper = rs -> {
         AttributeAssignment row = new AttributeAssignment();
-        row.setId(rs.getInt("AttributeAssignmentId"));
-        CustomAttribute att = new CustomAttribute();
-        att.setId(rs.getInt("AttributeId"));
-        att.setName(rs.getString("AttributeName"));
-        row.setAttribute(att);
-        row.setDeviceType(rs.getEnum("DeviceType", PaoType.class));
-        row.setPointType(rs.getEnum("PointType", PointType.class));
-        row.setPointOffset(rs.getInt("PointOffset"));
+        row.setAttributeAssignmentId(rs.getInt("AttributeAssignmentId"));
+        row.setCustomAttribute(new CustomAttribute(rs.getInt("AttributeId"), rs.getStringSafe("AttributeName")));
+        row.setPaoType(rs.getEnum("PaoType", PaoType.class));
+        row.setPointIdentifier(new PointIdentifier(rs.getEnum("PointType", PointType.class), rs.getInt("PointOffset")));
         return row;
     };
-
+    
     @Override
-    public void saveAttributeAssignment(AttributeAssignment assignment) {
+    public void saveAttributeAssignment(AttributeAssignmentRequest assignment) {        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT AttributeAssignmentId");
         sql.append("FROM AttributeAssignment");
-        sql.append("WHERE AttributeAssignmentId").eq(assignment.getId());
+        sql.append("WHERE AttributeAssignmentId").eq(assignment.getAttributeAssignmentId());
 
         SqlStatementBuilder updateCreateSql = new SqlStatementBuilder();
         try {
             jdbcTemplate.queryForInt(sql);
             SqlParameterSink params = updateCreateSql.update("AttributeAssignment");
             addAssignmentParameters(params, assignment);
-            updateCreateSql.append("WHERE AttributeAssignmentId").eq(assignment.getId());
+            updateCreateSql.append("WHERE AttributeAssignmentId").eq(assignment.getAttributeAssignmentId());
         } catch (EmptyResultDataAccessException e) {
             SqlParameterSink params = updateCreateSql.insertInto("AttributeAssignment");
             params.addValue("AttributeAssignmentId", nextValueHelper.getNextValue("AttributeAssignment"));
             addAssignmentParameters(params, assignment);
         }
-        try {
-            jdbcTemplate.update(updateCreateSql);
-        } catch (DataIntegrityViolationException e) {
-            throw new DuplicateException("Assignment " + assignment
-                    + " has either same attribute assigned to multiple points on the same device or multiple entries with the exact same mapping",
-                    e);
-        }
+        jdbcTemplate.update(updateCreateSql);
+        cacheAttributes();
     }
 
-    private void addAssignmentParameters(SqlParameterSink params, AttributeAssignment assignment) {
-        params.addValue("AttributeId", assignment.getAttribute().getId());
-        params.addValue("DeviceType", assignment.getDeviceType());
-        params.addValue("PointType", assignment.getPointType());
-        params.addValue("PointOffset", assignment.getPointOffset());
+    private void addAssignmentParameters(SqlParameterSink params, AttributeAssignmentRequest assignment) {
+        params.addValue("AttributeId", assignment.getAttributeId());
+        params.addValue("PaoType", assignment.getPaoType());
+        params.addValue("PointType", assignment.getPointIdentifier().getPointType());
+        params.addValue("PointOffset", assignment.getPointIdentifier().getOffset());
     }
 
     @Override
     public void deleteAttributeAssignment(int attributeAssignmentId) {
-        // Check if an attribute assignment is being used elsewhere in Yukon (to provide an error to a user attempting to delete
-        // it). This can just be stubbed out, for now. (Does this make sense to have for attribute assignments?)
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM AttributeAssignment");
         sql.append("WHERE AttributeAssignmentId").eq(attributeAssignmentId);
         jdbcTemplate.update(sql);
+        cacheAttributes();
     }
 
     @Override
-    public AttributeAssignment getAttributeAssignmentById(int attributeAssignmentId) {
+    public AttributeAssignment getAssignmentById(int attributeAssignmentId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT AttributeAssignmentId, AttributeId, AttributeName, DeviceType, PointType, PointOffset");
+        sql.append("SELECT AttributeAssignmentId, aa.AttributeId, AttributeName, PaoType, PointType, PointOffset");
         sql.append("FROM AttributeAssignment aa");
-        sql.append("LEFT JOIN CustomAttribute ca on ca.AttributeId = aa.AttributeId");
+        sql.append("JOIN CustomAttribute ca ON aa.AttributeId = ca.AttributeId");
         sql.append("WHERE AttributeAssignmentId").eq(attributeAssignmentId);
         return jdbcTemplate.queryForObject(sql, attributeAssignmentMapper);
     }
+    
+    @Override
+    public PointIdentifier getPointIdentifier(int attributeId, PaoType paoType) {
+        Pair<Integer, PaoType> pair = Pair.of(attributeId, paoType);
+        PointIdentifier point = attributeToPoint.getIfPresent(pair);
+        if(point == null) {
+            throw new IllegalUseOfAttribute("No Custom Attribute exists for attributeId " + attributeId + " and " + paoType);
+        }
+        return point;
+    }
 
     @Override
-    public void saveCustomAttribute(CustomAttribute attribute) {
+    public void saveCustomAttribute(CustomAttribute attribute) {         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT AttributeId");
         sql.append("FROM CustomAttribute");
@@ -114,29 +153,42 @@ public class AttributeDaoImpl implements AttributeDao {
             params.addValue("AttributeId", nextValueHelper.getNextValue("CustomAttribute"));
             params.addValue("AttributeName", attribute.getName());
         }
-        try {
-            jdbcTemplate.update(updateCreateSql);
-        } catch (DataIntegrityViolationException e) {
-            throw new DuplicateException("Attribute with name " + attribute.getName() + " already exist.", e);
-        }
+        jdbcTemplate.update(updateCreateSql);
+        cacheAttributes();
     }
 
     @Override
-    public int deleteCustomAttribute(int attributeId) {
+    public void deleteCustomAttribute(int attributeId) throws DataDependencyException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM CustomAttribute");
         sql.append("WHERE AttributeId").eq(attributeId);
-        sql.append("AND AttributeId NOT IN");
-        sql.append("  (SELECT AttributeId FROM AttributeAssignment)");
-        return jdbcTemplate.update(sql);
+        /* if(true) {
+         *      throw new DataDependencyException("--------DataDependencyException-------");
+         * }
+         */
+        jdbcTemplate.update(sql);
+        cacheAttributes();
     }
 
     @Override
     public List<CustomAttribute> getCustomAttributes() {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT AttributeId, AttributeName");
-        sql.append("FROM CustomAttribute");
-        sql.append("ORDER BY AttributeName");
-        return jdbcTemplate.query(sql, customAttributeMapper);
+        return idToAttribute.asMap().values().stream()
+                .sorted((e1, e2) -> e1.getName().compareTo(e2.getName()))
+                .collect(Collectors.toList()); 
+    }
+    
+    @Override
+    public CustomAttribute getCustomAttribute(int attributeId) {
+        return idToAttribute.getIfPresent(attributeId);
+    }
+    
+    @Override
+    public PaoType getPaoTypeByAttributeId(int attributeId) {
+        return attributeToPoint.asMap().keySet()
+            .stream()
+            .filter(cachedAttribute -> attributeId == cachedAttribute.getKey())
+            .map(pair -> pair.getValue())
+            .findFirst()
+            .orElseThrow(() -> new NotFoundException("Attribute id:"+ attributeId +"is not in cache"));
     }
 }

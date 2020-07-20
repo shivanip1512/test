@@ -121,7 +121,7 @@
                             <tr>
                                 <td>
                                     <tags:hidden path="attributes[${row.index}]"/>
-                                    <span><i:inline key="${attribute.attribute}"/></span>
+                                    <span>${attribute.description}</span>
                                 </td>
                                 <td><span><cti:msg2 key="${attribute.dataSelection}"/></span></td>
                                 <td><span>${fn:escapeXml(attribute.daysPrevious)}</span></td>
@@ -161,7 +161,7 @@
                         <tr>
                             <td>
                                 <tags:hidden path="fields[${row.index}]"/>
-                                <span><i:inline key="${exportField}" htmlEscape="true"/></span>
+                                <span>${exportField.description}</span>
                             </td>
                             <td>
                                 <span><i:inline key="${exportField.attributeField}" htmlEscape="true"/></span>

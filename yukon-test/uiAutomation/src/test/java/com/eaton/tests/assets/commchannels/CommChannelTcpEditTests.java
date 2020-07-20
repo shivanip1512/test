@@ -126,7 +126,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_CreateOpensPopupCorrect() {
         String EXPECTED_CREATE_MODEL_TITLE = "Create Comm Channel";
-        CreateCommChannelModal createModel = channelDetailPage.showCreateCommChannelModal(EXPECTED_CREATE_MODEL_TITLE);
+        CreateCommChannelModal createModel = channelDetailPage.showCreateCommChannelModal();
         String actualCreateModelTitle = createModel.getModalTitle();
 
         assertThat(actualCreateModelTitle).isEqualTo(EXPECTED_CREATE_MODEL_TITLE);

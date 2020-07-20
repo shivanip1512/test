@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -41,15 +40,12 @@ public class MeterRfn530S4xEditTests extends SeleniumTestSetup {
         editModal.getdeviceName().setInputValue(name);
         editModal.clickOkAndWait();
 
-        waitForUrlToLoad(Urls.Ami.METER_DETAIL, Optional.of(10));
+        waitForUrlToLoad(Urls.Ami.METER_DETAIL + 587, Optional.of(10));
 
         MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, 587);
 
         String userMsg = detailPage.getUserMessage();
 
-//        Assert.assertEquals(userMsg, METER + name + UPDATED,
-//                "Expected User Msg: '" + METER + name + UPDATED + "' but found " + userMsg);
-        
         assertThat(userMsg).isEqualTo(METER + name + UPDATED);
     }
 }
