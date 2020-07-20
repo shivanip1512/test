@@ -3,9 +3,13 @@ package com.eaton.builders;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.javatuples.Pair;
 import org.json.JSONObject;
 
+import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
 import com.github.javafaker.Faker;
+
+import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupEcobeeCreate {
 
@@ -41,18 +45,27 @@ public class LoadGroupEcobeeCreate {
             return this;
         }
        
-        public Object build() {
-            JSONObject obj = new JSONObject();
-            JSONObject params = new JSONObject();
-            params.put("name", this.name);
-            params.put("type", TYPE);
-            params.put("kwCapacity", this.kwCapacity);
-            params.put("disableGroup", this.disableGroup);
-            params.put("disableControl", this.disableControl);
+        public JSONObject build() {            
+            JSONObject j = new JSONObject();            
+            
+            JSONObject jo = new JSONObject();            
+            jo.put("name", this.name);
+            jo.put("type", TYPE);
+            jo.put("kWCapacity", this.kwCapacity);
+            jo.put("disableGroup", this.disableGroup);
+            jo.put("disableControl", this.disableControl);            
 
-            obj.put(TYPE, params);
-
-            return obj;
+            j.put(TYPE, jo);
+            
+            return j;
+        }
+        
+        public Pair<JSONObject, ExtractableResponse<?>> create() {
+            JSONObject json = build(); 
+            
+            ExtractableResponse<?> createResponse = DrSetupCreateRequest.createLoadGroup(json.toString());
+            
+            return new Pair<>(json, createResponse);
         }
     }
 }
