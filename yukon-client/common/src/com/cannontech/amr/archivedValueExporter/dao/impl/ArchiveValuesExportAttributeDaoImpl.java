@@ -70,7 +70,8 @@ public class ArchiveValuesExportAttributeDaoImpl implements ArchiveValuesExportA
                 final ExportAttribute attribute = new ExportAttribute();
                 attribute.setFormatId(rs.getInt("FormatID"));
                 attribute.setAttributeId(rs.getInt("AttributeID"));
-                attribute.setAttribute(rs.getString("AttributeName"));
+            //    Carrie
+           //     attribute.setAttribute(rs.getString("AttributeName"));
                 attribute.setDataSelection(rs.getEnum("DataSelection", DataSelection.class));
                 attribute.setDaysPrevious(rs.getInt("DaysPrevious"));
                 return attribute;

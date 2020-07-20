@@ -118,16 +118,16 @@ public class ExporterReportGeneratorServiceImplTest {
     private final static ExportAttribute maxPeakDemandAttribute = new ExportAttribute();
     private final static ExportAttribute minPeakKVarAttribute = new ExportAttribute();
     static {
-        earliestUsageAttribute.setAttribute(USAGE.name());
+        earliestUsageAttribute.setAttribute(USAGE);
         earliestUsageAttribute.setDataSelection(EARLIEST);
         earliestUsageAttribute.setDaysPrevious(7);
-        latestUsageAttribute.setAttribute(USAGE.name());
+        latestUsageAttribute.setAttribute(USAGE);
         latestUsageAttribute.setDataSelection(LATEST);
         latestUsageAttribute.setDaysPrevious(7);
-        maxPeakDemandAttribute.setAttribute(PEAK_DEMAND.name());
+        maxPeakDemandAttribute.setAttribute(PEAK_DEMAND);
         maxPeakDemandAttribute.setDataSelection(MAX);
         maxPeakDemandAttribute.setDaysPrevious(4);
-        minPeakKVarAttribute.setAttribute(PEAK_KVAR.name());
+        minPeakKVarAttribute.setAttribute(PEAK_KVAR);
         minPeakKVarAttribute.setDataSelection(MIN);
         minPeakKVarAttribute.setDaysPrevious(4);
     }

@@ -60,8 +60,7 @@ public class AttributeDaoImpl implements AttributeDao {
         List<AttributeAssignment> assignments = jdbcTemplate.query(sql, attributeAssignmentMapper);
         assignments.forEach(assignment -> {
             Pair<Integer, PaoType> pair = Pair.of(assignment.getCustomAttribute().getId(), assignment.getPaoType());
-            PointIdentifier point = new PointIdentifier(assignment.getPointType(), assignment.getPointOffset());
-            attributeToPoint.put(pair, point);
+            attributeToPoint.put(pair, assignment.getPointIdentifier());
         });
     }
     
@@ -71,11 +70,10 @@ public class AttributeDaoImpl implements AttributeDao {
     
     public static YukonRowMapper<AttributeAssignment> attributeAssignmentMapper = rs -> {
         AttributeAssignment row = new AttributeAssignment();
-        row.setId(rs.getInt("AttributeAssignmentId"));
+        row.setAttributeAssignmentId(rs.getInt("AttributeAssignmentId"));
         row.setCustomAttribute(new CustomAttribute(rs.getInt("AttributeId"), rs.getStringSafe("AttributeName")));
         row.setPaoType(rs.getEnum("PaoType", PaoType.class));
-        row.setPointType(rs.getEnum("PointType", PointType.class));
-        row.setPointOffset(rs.getInt("PointOffset"));
+        row.setPointIdentifier(new PointIdentifier(rs.getEnum("PointType", PointType.class), rs.getInt("PointOffset")));
         return row;
     };
     
@@ -84,14 +82,14 @@ public class AttributeDaoImpl implements AttributeDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT AttributeAssignmentId");
         sql.append("FROM AttributeAssignment");
-        sql.append("WHERE AttributeAssignmentId").eq(assignment.getId());
+        sql.append("WHERE AttributeAssignmentId").eq(assignment.getAttributeAssignmentId());
 
         SqlStatementBuilder updateCreateSql = new SqlStatementBuilder();
         try {
             jdbcTemplate.queryForInt(sql);
             SqlParameterSink params = updateCreateSql.update("AttributeAssignment");
             addAssignmentParameters(params, assignment);
-            updateCreateSql.append("WHERE AttributeAssignmentId").eq(assignment.getId());
+            updateCreateSql.append("WHERE AttributeAssignmentId").eq(assignment.getAttributeAssignmentId());
         } catch (EmptyResultDataAccessException e) {
             SqlParameterSink params = updateCreateSql.insertInto("AttributeAssignment");
             params.addValue("AttributeAssignmentId", nextValueHelper.getNextValue("AttributeAssignment"));
@@ -104,8 +102,8 @@ public class AttributeDaoImpl implements AttributeDao {
     private void addAssignmentParameters(SqlParameterSink params, AttributeAssignmentRequest assignment) {
         params.addValue("AttributeId", assignment.getAttributeId());
         params.addValue("PaoType", assignment.getPaoType());
-        params.addValue("PointType", assignment.getPointType());
-        params.addValue("PointOffset", assignment.getPointOffset());
+        params.addValue("PointType", assignment.getPointIdentifier().getPointType());
+        params.addValue("PointOffset", assignment.getPointIdentifier().getOffset());
     }
 
     @Override

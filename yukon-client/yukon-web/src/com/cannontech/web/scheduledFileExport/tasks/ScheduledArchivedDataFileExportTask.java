@@ -35,7 +35,6 @@ import com.cannontech.common.scheduledFileExport.ArchivedDataExportFileGeneratio
 import com.cannontech.common.scheduledFileExport.ExportFileGenerationParameters;
 import com.cannontech.common.scheduledFileExport.dao.ScheduledFileExportDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.user.YukonUserContext;
 
 public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask implements PersistedFormatTask {
 	@Autowired private ExportReportGeneratorService exportReportGeneratorService;
@@ -56,7 +55,7 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 	public void start() {
 		DeviceCollection deviceCollection = deviceCollectionService.loadCollection(collectionId);
 	    List<YukonMeter> meters = meterDao.getMetersForYukonPaos(deviceCollection.getDeviceList());
-		ExportFormat format = archiveValuesExportFormatDao.getByFormatId(formatId, YukonUserContext.system);
+		ExportFormat format = archiveValuesExportFormatDao.getByFormatId(formatId);
 		populateDataRange();
 		
 		log.debug("Generating scheduled data file export");

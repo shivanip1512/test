@@ -1,9 +1,6 @@
 package com.cannontech.amr.archivedValueExporter.model;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
@@ -11,8 +8,7 @@ public class ExportAttribute {
     
     private int attributeId;
     private int formatId;
-    private String attribute;
-    private String description;
+    private Attribute attribute;
     private DataSelection dataSelection;
     private Integer daysPrevious = 1;
     
@@ -36,11 +32,11 @@ public class ExportAttribute {
         this.formatId = formatId;
     }
     
-    public String getAttribute() {
+    public Attribute getAttribute() {
         return attribute;
     }
-
-    public void setAttribute(String attribute) {
+    
+    public void setAttribute(Attribute attribute) {
         this.attribute = attribute;
     }
     
@@ -59,49 +55,17 @@ public class ExportAttribute {
     public void setDaysPrevious(Integer daysPrevious) {
         this.daysPrevious = daysPrevious;
     }
-    
-    /**
-     * True is attribute is built in attribute, false is attribute is custom
-     */
-    public boolean isBuiltInAttribute() {
-        try {
-            BuiltInAttribute.valueOf(attribute);
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-    }
-    
-    public boolean isStatusType() {
-        if(isBuiltInAttribute()) {
-            return BuiltInAttribute.valueOf(attribute).isStatusType();
-        }
-        return false;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                + System.getProperty("line.separator");
-    }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((attribute == null) ? 0 : attribute.hashCode());
+        result = prime * result
+                + ((attribute == null) ? 0 : attribute.hashCode());
         result = prime * result + attributeId;
-        result = prime * result + ((dataSelection == null) ? 0 : dataSelection.hashCode());
-        result = prime * result + ((daysPrevious == null) ? 0 : daysPrevious.hashCode());
-        result = prime * result + ((description == null) ? 0 : description.hashCode());
+        result = prime * result
+                + ((dataSelection == null) ? 0 : dataSelection.hashCode());
+        result = prime * result + daysPrevious;
         result = prime * result + formatId;
         return result;
     }
@@ -115,27 +79,24 @@ public class ExportAttribute {
         if (getClass() != obj.getClass())
             return false;
         ExportAttribute other = (ExportAttribute) obj;
-        if (attribute == null) {
-            if (other.attribute != null)
-                return false;
-        } else if (!attribute.equals(other.attribute))
+        if (attribute != other.attribute)
             return false;
         if (attributeId != other.attributeId)
             return false;
         if (dataSelection != other.dataSelection)
             return false;
-        if (daysPrevious == null) {
-            if (other.daysPrevious != null)
-                return false;
-        } else if (!daysPrevious.equals(other.daysPrevious))
-            return false;
-        if (description == null) {
-            if (other.description != null)
-                return false;
-        } else if (!description.equals(other.description))
+        if (daysPrevious != other.daysPrevious)
             return false;
         if (formatId != other.formatId)
             return false;
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return String
+                .format("ExportAttribute [attributeId=%s, formatId=%s, attribute=%s, dataSelection=%s, daysPrevious=%s]",
+                        attributeId, formatId, attribute, dataSelection,
+                        daysPrevious);
     }
 }
