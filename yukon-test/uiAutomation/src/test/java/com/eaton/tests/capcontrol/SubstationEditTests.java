@@ -21,66 +21,66 @@ public class SubstationEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        driverExt = getDriverExt();        
+        driverExt = getDriverExt();
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects"})
-    public void pageTitleCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    public void substationEdit_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Substation: AT Substation";
-        
+
         navigate(Urls.CapControl.SUBSTATION_EDIT + "666" + Urls.EDIT);
-        
+
         SubstationEditPage editPage = new SubstationEditPage(driverExt, 666);
 
         String actualPageTitle = editPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
-    
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects"})
-    public void editSubstationRequiredFieldsOnlySuccess() {
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    public void substationEdit_requiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "Substation was saved successfully.";
-        
+
         navigate(Urls.CapControl.SUBSTATION_EDIT + "451" + Urls.EDIT);
-        
-        SubstationEditPage editPage = new SubstationEditPage(driverExt, 451);        
-        
+
+        SubstationEditPage editPage = new SubstationEditPage(driverExt, 451);
+
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
-        
-        String name = "AT Edited Substation " + timeStamp; 
+
+        String name = "AT Edited Substation " + timeStamp;
         editPage.getName().setInputValue(name);
-        
+
         editPage.getSaveBtn().click();
-        
+
         waitForPageToLoad("Substation: " + name, Optional.empty());
-        
+
         SubstationDetailPage detailsPage = new SubstationDetailPage(driverExt, 451);
-        
+
         String userMsg = detailsPage.getUserMessage();
-        
+
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }     
-    
-    @Test(enabled = true, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
-    public void deleteSubstationSuccess() {
+    }
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    public void substationEdit_deleteSubstationSuccess() {
         final String EXPECTED_MSG = "Substation AT Delete Substation deleted successfully.";
-        
+
         navigate(Urls.CapControl.SUBSTATION_EDIT + "573" + Urls.EDIT);
 
         SubstationEditPage editPage = new SubstationEditPage(driverExt, 573);
-        
+
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
-        
+
         modal.clickOkAndWait();
-        
+
         waitForPageToLoad("Orphans", Optional.empty());
-        
+
         OrphansPage detailsPage = new OrphansPage(driverExt);
-        
+
         String userMsg = detailsPage.getUserMessage();
-        
+
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 }

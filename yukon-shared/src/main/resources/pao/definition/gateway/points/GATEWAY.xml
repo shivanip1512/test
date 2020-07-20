@@ -51,6 +51,14 @@
         <name>Node Count Exceeded</name>
         <stategroup value="TrueFalse"/>
     </point>
+    <point offset="6" type="Status">
+        <name>UPS Battery Voltage Low</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="7" type="Status">
+        <name>Certificate Expiration</name>
+        <stategroup value="TrueFalse"/>
+    </point>
     <point offset="9" type="Status">
         <name>Time Sync Failed</name>
         <stategroup value="TrueFalse"/>

@@ -24,8 +24,8 @@ public class EnergyCompanyGeneralInfoEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_01_CreateAndDeleteEC()"})
-    public void pageTitleCorrect() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    public void energyCompanyGeneralInfoEdit_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit General Info: QA_Test";
         
         navigate(Urls.Admin.ENERGY_COMPANY_GENERAL_INFO + "64");
@@ -43,8 +43,8 @@ public class EnergyCompanyGeneralInfoEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_01_CreateAndDeleteEC()"})
-    public void deleteEnergyComapnySuccess() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    public void energyCompanyGeneralInfoEdit_deleteEnergyComapnySuccess() {
         final String NAME = "AT Delete EC";
         final String EXPECTED_MSG = "The energy company " + NAME + " was deleted successfully.";
         

@@ -13,7 +13,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <analog offset="394"/>
         <calcAnalog offset="0"/>
         <demandAccumulator offset="251"/>
-        <status offset="101"/>
+        <status offset="102"/>
         <systemStatus offset="2000"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -2425,6 +2425,11 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <name>Meter Programming Attempted</name>
         <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="Meter Programming"/>
+    </point>
+    <point offset="102" type="Status">
+        <name>Ultra Capacitor Bad</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Event Status"/>
     </point>
     <point offset="1000" type="Status">
         <name>Outage Status</name>

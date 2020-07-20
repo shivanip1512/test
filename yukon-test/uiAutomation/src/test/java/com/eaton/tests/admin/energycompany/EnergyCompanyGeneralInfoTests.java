@@ -19,8 +19,8 @@ public class EnergyCompanyGeneralInfoTests extends SeleniumTestSetup {
         driverExt = getDriverExt();               
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, ""})
-    public void pageTitleCorrect() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    public void energyCompanyGeneralInfo_pageTitleCorrect() {
         final String EXPECTED_TITLE = "QA_Test";
         
         navigate(Urls.Admin.ENERGY_COMPANY_GENERAL_INFO + "64");

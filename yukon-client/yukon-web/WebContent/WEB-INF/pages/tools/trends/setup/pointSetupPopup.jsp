@@ -16,6 +16,7 @@
     <cti:url var="addPointUrl" value="/tools/trend/addPointOrMarker"/>
     <form:form class="js-point-setup-form" modelAttribute="trendSeries" method="POST" action="${addPointUrl}">
         <cti:csrfToken/>
+        <input type="hidden" class="js-unique-identifier" value="${uniqueId}"/>
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey="yukon.common.point" nameClass="vam">
                 <tags:pickerDialog id="trendPointPicker_${uniqueId}"

@@ -9,6 +9,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.SubstationBusListPage;
 
@@ -29,8 +30,8 @@ public class SubstationBusListTests extends SeleniumTestSetup {
         listPage = new SubstationBusListPage(driverExt);
     }
 
-    @Test
-    public void columnHeadersCorrect() {
+    @Test(groups = {TestConstants.Priority.MEDIUM, TestConstants.VoltVar.VOLT_VAR })
+    public void substationBusList_columnHeadersCorrect() {
         final int EXPECTED_COUNT = 3;
 
         List<String> headers = this.listPage.getTable().getListTableHeaders();

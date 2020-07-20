@@ -28,8 +28,8 @@ public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
         softly = new SoftAssertions();
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, ""})
-    public void pageTitleCorrect() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    public void energyCompanyOperatorUserEdit_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Operator User: automation";
         
         navigate(Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_EDIT + "64" + Urls.Admin.ENERGY_COMPANY_OPERATOR_LOGIN_ID + "212");
@@ -41,8 +41,8 @@ public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     } 
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_07_editRFNOjects" })
-    public void deleteOperatorUserSuccess() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    public void energyCompanyOperatorUserEdit_deleteOperatorUserSuccess() {
         final String EXPECTED_USER_MSG = "Successfully deleted the user.";
         final String OPERATOR_USER = "ATDeleteUser";
         

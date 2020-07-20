@@ -8,6 +8,8 @@
 plugins {
     // Apply the java-library plugin to add support for Java Library
     id 'java-library'
+    // Apply base plugin for support gradel clean for jenkins
+    id 'base'
 }
 
 repositories {
@@ -42,4 +44,10 @@ dependencies {
 	implementation group: 'org.json', name: 'json', version: '20200518'
 	
 	implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'	       
+}
+
+test{
+	useTestNG(){
+	suites 'smoketests.xml'
+	}
 }

@@ -64,7 +64,7 @@ public class TcpPortApiTest {
         tcpPort.setName(name);
         tcpPort.setBaudRate(MockBaudRate.BAUD_115200);
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.post("updatePort", tcpPort,
+        ExtractableResponse<?> getResponse = ApiCallHelper.patch("updatePort", tcpPort,
                 context.getAttribute(CommChannelHelper.CONTEXT_PORT_ID).toString());
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
 

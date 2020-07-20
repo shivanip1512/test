@@ -33,6 +33,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.trend.model.Color;
 import com.cannontech.common.trend.model.RenderType;
@@ -44,7 +45,10 @@ import com.cannontech.common.trend.model.TrendType.GraphType;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LitePoint;
@@ -61,6 +65,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.EnumPropertyEditor;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.tools.trends.validator.TrendEditorValidator;
 import com.cannontech.web.tools.trends.validator.TrendSeriesValidator;
@@ -86,6 +91,7 @@ public class TrendEditorController {
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private RolePropertyDao rolePropertyDao;
 
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
     private static final String redirectLink = "redirect:/tools/trends";
@@ -93,6 +99,7 @@ public class TrendEditorController {
     private static final Logger log = YukonLogManager.getLogger(TrendEditorController.class);
 
     @GetMapping("/create")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.CREATE)
     public String create(ModelMap model) {
         model.addAttribute("mode", PageEditMode.CREATE);
         TrendModel trendModel = new TrendModel();
@@ -104,9 +111,9 @@ public class TrendEditorController {
     }
 
     @GetMapping("/renderSetupPopup")
-    public String renderSetupPopup(ModelMap model, @RequestParam("isMarker") boolean isMarker) {
+    public String renderSetupPopup(ModelMap model, @RequestParam("isMarker") boolean isMarker, @RequestParam("numberOfRows") Integer numberOfRows) {
         model.addAttribute("mode", PageEditMode.CREATE);
-        TrendSeries trendSeries = new TrendSeries();
+        TrendSeries trendSeries = new TrendSeries(Color.getNextDefaultColor(numberOfRows));
         trendSeries.applyDefaults();
         model.addAttribute("trendSeries", trendSeries);
         if (isMarker) {
@@ -121,7 +128,6 @@ public class TrendEditorController {
     @GetMapping("/renderEditSetupPopup")
     public String renderEditSetupPopup(ModelMap model, @RequestParam("trendSeries") TrendSeries trendSeries) {
         boolean isMarker = trendSeries.getType().isMarkerType();
-        trendSeries.applyDefaults();
         model.addAttribute("trendSeries", trendSeries);
         if (!isMarker) {
             LiteYukonPAObject yukonPao = paoDao.getLiteYukonPaoByPointId(trendSeries.getPointId());
@@ -133,6 +139,7 @@ public class TrendEditorController {
     }
     
     @GetMapping("{id}/edit")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.UPDATE)
     public String edit(ModelMap model, @PathVariable int id, HttpServletRequest request, YukonUserContext userContext, FlashScope flashScope) {
         model.addAttribute("mode", PageEditMode.EDIT);
         TrendModel trendModel = null;
@@ -168,6 +175,13 @@ public class TrendEditorController {
     public String save(ModelMap model, YukonUserContext userContext,
             @ModelAttribute("trendDefinition") TrendModel trendModel, BindingResult result, RedirectAttributes redirectAttributes,
             FlashScope flashScope, HttpServletRequest request) {
+
+        if (trendModel.getTrendId() != null && !rolePropertyDao.checkLevel(YukonRoleProperty.MANAGE_TRENDS, HierarchyPermissionLevel.UPDATE, userContext.getYukonUser())) {
+            throw new NotAuthorizedException("User not authorized to edit trends.");
+        } else if (trendModel.getTrendId() == null && !rolePropertyDao.checkLevel(YukonRoleProperty.MANAGE_TRENDS, HierarchyPermissionLevel.CREATE, userContext.getYukonUser()) ) {
+            throw new NotAuthorizedException("User not authorized to create trends.");
+        }
+        
         trendEditorValidator.validate(trendModel, result);
         if (result.hasErrors()) {
             return bindAndForward(trendModel, result, redirectAttributes);
@@ -219,7 +233,6 @@ public class TrendEditorController {
         
         if (result.hasErrors()) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
-            trendSeries.applyDefaultsIfNoErrors(result);
             setModel(model, isMarker);
             if (!isMarker) {
                 model.addAttribute("deviceName", yukonPao != null ? yukonPao.getPaoName() : "");
@@ -229,7 +242,6 @@ public class TrendEditorController {
         }
 
         model.clear();
-        trendSeries.applyDefaults();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
         json.put("trendSeries", trendSeries);
@@ -251,6 +263,7 @@ public class TrendEditorController {
     }
     
     @DeleteMapping("/{id}/delete")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.OWNER)
     public String delete(@PathVariable int id, @ModelAttribute TrendModel trendModel, YukonUserContext userContext,
             FlashScope flash, HttpServletRequest request) {
         try {

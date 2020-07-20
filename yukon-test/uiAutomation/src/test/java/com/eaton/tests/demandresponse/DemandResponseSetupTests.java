@@ -29,8 +29,8 @@ public class DemandResponseSetupTests extends SeleniumTestSetup {
         
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_02_EditLoadGrp"})
-    public void pageTitleCorrect() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void demandResponseSetup_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Setup";
         
         String actualPageTitle = page.getPageTitle();
