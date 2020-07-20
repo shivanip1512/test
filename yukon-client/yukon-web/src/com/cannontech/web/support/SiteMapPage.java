@@ -92,7 +92,7 @@ public enum SiteMapPage implements DisplayableEnum {
     FDR_TRANSLATIONS(SiteMapCategory.VV, "yukon.web.modules.tools.bulk.fdrTranslationManagement.pageName", "/bulk/fdrTranslationManager/home",
              MatchStyle.all, YukonRoleProperty.FDR_TRANSLATION_MANAGER),
     DMV_TEST(SiteMapCategory.VV, "yukon.web.menu.vv.dmvTest", "/capcontrol/dmvTestList", 
-             MatchStyle.all, MasterConfigLicenseKey.DEMAND_MEASUREMENT_VERIFICATION_ENABLED),
+             MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS, MasterConfigLicenseKey.DEMAND_MEASUREMENT_VERIFICATION_ENABLED),
     
     CREATE_ACCOUNT(SiteMapCategory.ASSETS, "yukon.web.modules.operator.account.CREATE.pageName", "/stars/operator/account/accountCreate",
             MatchStyle.all, OtherPermission.EC_OPERATOR, YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD),

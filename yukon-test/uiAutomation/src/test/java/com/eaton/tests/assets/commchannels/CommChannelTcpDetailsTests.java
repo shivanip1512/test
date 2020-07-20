@@ -167,9 +167,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTCP_CreateOpensCorrectModal() {
         String expectedModalTitle = "Create Comm Channel";
-        
-        CreateCommChannelModal createModal = channelDetailPage.showCreateCommChannelModal(expectedModalTitle);
-        
+        CreateCommChannelModal createModal = channelDetailPage.showCreateCommChannelModal();
         String actualModalTitle = createModal.getModalTitle();
         
         assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
