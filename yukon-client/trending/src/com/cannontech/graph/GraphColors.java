@@ -13,11 +13,11 @@ import com.cannontech.common.YukonColorPallet;
 public class GraphColors {
     
     private static final java.awt.Color lineColors[] = {
-        YukonColorPallet.RED.getAwtColor(),
+        YukonColorPallet.WINE.getAwtColor(),
         YukonColorPallet.BLUE.getAwtColor(),
         YukonColorPallet.GREEN.getAwtColor(),
         YukonColorPallet.BLACK.getAwtColor(),
-        YukonColorPallet.LIGHT_GREEN.getAwtColor(),
+        YukonColorPallet.SAGE.getAwtColor(),
         YukonColorPallet.ORANGE.getAwtColor(),
         YukonColorPallet.SKY.getAwtColor(),
         YukonColorPallet.YELLOW.getAwtColor(),

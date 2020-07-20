@@ -51,10 +51,10 @@ public class Colors {
             .put(Colors.TEAL_ID, YukonColorPallet.TEAL.getHexValue())
             .put(Colors.GRAY_ID, YukonColorPallet.GRAY.getHexValue())
             .put(Colors.GREEN_ID, YukonColorPallet.GREEN.getHexValue())
-            .put(Colors.LIGHT_GREEN_ID, YukonColorPallet.LIGHT_GREEN.getHexValue())
+            .put(Colors.LIGHT_GREEN_ID, YukonColorPallet.SAGE.getHexValue())
             .put(Colors.ORANGE_ID, YukonColorPallet.ORANGE.getHexValue())
             .put(Colors.PURPLE_ID, YukonColorPallet.PURPLE.getHexValue())
-            .put(Colors.RED_ID, YukonColorPallet.RED.getHexValue())
+            .put(Colors.RED_ID, YukonColorPallet.WINE.getHexValue())
             .put(Colors.YELLOW_ID, YukonColorPallet.YELLOW.getHexValue())
             .put(Colors.SKY_ID, YukonColorPallet.SKY.getHexValue())
             .build();
@@ -67,14 +67,14 @@ public class Colors {
     // Mapping from integer enumerations into java.awt.Color
     private static final java.awt.Color[] IDToColorMapping = {
             YukonColorPallet.GREEN.getAwtColor(),
-            YukonColorPallet.RED.getAwtColor(),
+            YukonColorPallet.WINE.getAwtColor(),
             YukonColorPallet.WHITE.getAwtColor(),
             YukonColorPallet.YELLOW.getAwtColor(),
             YukonColorPallet.BLUE.getAwtColor(),
             YukonColorPallet.TEAL.getAwtColor(),
             YukonColorPallet.BLACK.getAwtColor(),
             YukonColorPallet.ORANGE.getAwtColor(),
-            YukonColorPallet.LIGHT_GREEN.getAwtColor(),
+            YukonColorPallet.SAGE.getAwtColor(),
             YukonColorPallet.GRAY.getAwtColor(),
             YukonColorPallet.PURPLE.getAwtColor(),
             YukonColorPallet.SKY.getAwtColor(),

@@ -10,10 +10,10 @@ import com.google.common.collect.ImmutableMap.Builder;
 public enum Color implements DatabaseRepresentationSource, DisplayableEnum {
     
     BLUE(Colors.BLUE_ID, YukonColorPallet.BLUE),
-    RED(Colors.RED_ID, YukonColorPallet.RED),
+    RED(Colors.RED_ID, YukonColorPallet.WINE),
     GREEN(Colors.GREEN_ID, YukonColorPallet.GREEN),
     BLACK(Colors.BLACK_ID, YukonColorPallet.BLACK),
-    SAGE(Colors.LIGHT_GREEN_ID, YukonColorPallet.LIGHT_GREEN),
+    SAGE(Colors.LIGHT_GREEN_ID, YukonColorPallet.SAGE),
     ORANGE(Colors.ORANGE_ID, YukonColorPallet.ORANGE),
     YELLOW(Colors.YELLOW_ID, YukonColorPallet.YELLOW),
     PURPLE(Colors.PURPLE_ID, YukonColorPallet.PURPLE),

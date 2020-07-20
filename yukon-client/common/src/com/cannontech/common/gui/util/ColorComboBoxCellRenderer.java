@@ -32,7 +32,7 @@ public ColorComboBoxCellRenderer() {
             stringColor = YukonColorPallet.GREEN.getAwtColor();
             break;
         case Colors.RED_STR_ID:
-            stringColor = YukonColorPallet.RED.getAwtColor();
+            stringColor = YukonColorPallet.WINE.getAwtColor();
             break;
         case Colors.WHITE_STR_ID:
             stringColor = YukonColorPallet.WHITE.getAwtColor();
@@ -53,7 +53,7 @@ public ColorComboBoxCellRenderer() {
             stringColor = YukonColorPallet.ORANGE.getAwtColor();
             break;
         case Colors.LIGHT_GREEN_STR_ID:
-            stringColor = YukonColorPallet.LIGHT_GREEN.getAwtColor();
+            stringColor = YukonColorPallet.SAGE.getAwtColor();
             break;
         case Colors.GRAY_STR_ID:
             stringColor = YukonColorPallet.GRAY.getAwtColor();
