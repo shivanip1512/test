@@ -17,7 +17,17 @@ public class CalcStatusPointApiDoc extends PointApiDocBase {
 
     private String pointId = null;
     private String copyPointId = null;
-    
+
+    private static List<FieldDescriptor> buildCalcStatusPointDescriptor() {
+        List<FieldDescriptor> list = new ArrayList<>(Arrays.asList(pointBaseFields()));
+        list.addAll(Arrays.asList(CalcPointsFields()));
+        list.add(23,fieldWithPath("calculationBase.updateType").type(JsonFieldType.STRING)
+                .description("Calc analog update type possible values are : ON_FIRST_CHANGE,ON_ALL_CHANGE,ON_TIMER,ON_TIMER_AND_CHANGE,CONSTANT,HISTORICAL").optional());
+        list.add(24,fieldWithPath("calculationBase.periodicRate").type(JsonFieldType.NUMBER).description("Calc Base Periodic rate").optional());
+        list.addAll(Arrays.asList(buildStatusDescriptor()));
+        return list;
+    }
+
     @Test
     public void Test_CalcStatusPoint_01_Create() {
         pointId = createDoc();
@@ -45,17 +55,7 @@ public class CalcStatusPointApiDoc extends PointApiDocBase {
         //Delete copied point.
         PointHelper.deletePoint(copyPointId);
     }
-    
-    private static List<FieldDescriptor> buildCalcStatusPointDescriptor() {
-        List<FieldDescriptor> list = new ArrayList<>(Arrays.asList(pointBaseFields()));
-        list.addAll(Arrays.asList(CalcPointsFields()));
-        list.add(23,fieldWithPath("calculationBase.updateType").type(JsonFieldType.STRING)
-                .description("Calc analog update type possible values are : ON_FIRST_CHANGE,ON_ALL_CHANGE,ON_TIMER,ON_TIMER_AND_CHANGE,CONSTANT,HISTORICAL").optional());
-        list.add(24,fieldWithPath("calculationBase.periodicRate").type(JsonFieldType.NUMBER).description("Calc Base Periodic rate").optional());
-        list.addAll(Arrays.asList(buildStatusDescriptor()));
-        return list;
-    }
-    
+
     @Override
     protected MockPointType getMockPointType() {
         return MockPointType.CalcStatus;

@@ -7,5 +7,6 @@
         <suite-file path="src/test/resources/testSuiteFiles/documentationSuites/commChannelDocumentation.xml"/>
         <suite-file path="src/test/resources/testSuiteFiles/documentationSuites/trendDocumentationSuite.xml"/>
         <suite-file path="src/test/resources/testSuiteFiles/documentationSuites/pointApiDocumentation.xml"/>
+        <suite-file path="src/test/resources/testSuiteFiles/documentationSuites/virtualDeviceDocumentationSuite.xml"/>
     </suite-files>
 </suite>

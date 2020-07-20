@@ -40,3 +40,6 @@ include::Trend.adoc[]
 == Point
 include::Point.adoc[]
 
+== Virtual Device
+include::VirtualDevice.adoc[]
+

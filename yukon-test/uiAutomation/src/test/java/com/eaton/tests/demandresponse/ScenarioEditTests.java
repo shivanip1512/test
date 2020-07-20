@@ -16,47 +16,47 @@ import com.eaton.pages.demandresponse.ScenarioDetailPage;
 import com.eaton.pages.demandresponse.ScenarioEditPage;
 
 public class ScenarioEditTests extends SeleniumTestSetup {
-    
+
     private DriverExtensions driverExt;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        driverExt = getDriverExt();        
-    }  
-    
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_13_EditScenario"})
-    public void pageTitleCorrect() {
+        driverExt = getDriverExt();
+    }
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void scenarioEdit_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Scenario: AT Scenario";
-        
+
         navigate(Urls.DemandResponse.SCENARIO_EDIT + "663" + Urls.EDIT);
-        
+
         ScenarioEditPage editPage = new ScenarioEditPage(driverExt, 663);
 
         String actualPageTitle = editPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
-    
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_13_EditScenario"})
-    public void editScenarioNameOnlySuccess() {
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void scenarioEdit_requiredFieldsOnlySuccess() {
         navigate(Urls.DemandResponse.SCENARIO_EDIT + "590" + Urls.EDIT);
-        
+
         ScenarioEditPage editPage = new ScenarioEditPage(driverExt, 590);
-        
+
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited Scenario " + timeStamp;
         final String EXPECTED_MSG = name + " saved successfully.";
-        
+
         editPage.getName().setInputValue(name);
-        
+
         editPage.getSave().click();
-        
+
         waitForPageToLoad("Scenario: " + name, Optional.empty());
-        
+
         ScenarioDetailPage detailsPage = new ScenarioDetailPage(driverExt, 590);
-        
+
         String userMsg = detailsPage.getUserMessage();
-        
+
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }        
+    }
 }

@@ -49,6 +49,13 @@ public class AnalogPointApiDoc extends PointApiDocBase {
         };
     }
 
+    private static List<FieldDescriptor> buildAnalogPointDescriptor() {
+        List<FieldDescriptor> list = new ArrayList<>(Arrays.asList(pointBaseFields()));
+        list.addAll(Arrays.asList(buildPointUnitAndLimitDescriptor()));
+        list.addAll(Arrays.asList(buildAnalogDescriptor()));
+        return list;
+    }
+
     @Test
     public void Test_AnalogPoint_01_Create() {
         pointId = createDoc();
@@ -77,33 +84,6 @@ public class AnalogPointApiDoc extends PointApiDocBase {
         PointHelper.deletePoint(copyPointId);
     }
 
-    @Override
-    protected MockPointType getMockPointType() {
-        return MockPointType.Analog;
-    }
-
-    private static List<FieldDescriptor> buildAnalogPointDescriptor() {
-        List<FieldDescriptor> list = new ArrayList<>(Arrays.asList(pointBaseFields()));
-        list.addAll(Arrays.asList(buildPointUnitAndLimitDescriptor()));
-        list.addAll(Arrays.asList(buildAnalogDescriptor()));
-        return list;
-    }
-
-    @Override
-    protected List<FieldDescriptor> getFieldDescriptors() {
-        return buildAnalogPointDescriptor();
-    }
-
-    @Override
-    protected String getPointId() {
-        return pointId;
-    }
-
-    @Override
-    protected List<FieldDescriptor> getCopyPointFieldDescriptors() {
-        return Arrays.asList(pointCopyFieldsDescriptor());
-    }
-
     /**
      * Test case is to  retrieve all points associated with pao Id.
      */
@@ -123,6 +103,26 @@ public class AnalogPointApiDoc extends PointApiDocBase {
                                 .response();
     
         assertTrue("Status code should be 200", response.statusCode() == 200);
+    }
+
+    @Override
+    protected MockPointType getMockPointType() {
+        return MockPointType.Analog;
+    }
+
+    @Override
+    protected List<FieldDescriptor> getFieldDescriptors() {
+        return buildAnalogPointDescriptor();
+    }
+
+    @Override
+    protected String getPointId() {
+        return pointId;
+    }
+
+    @Override
+    protected List<FieldDescriptor> getCopyPointFieldDescriptors() {
+        return Arrays.asList(pointCopyFieldsDescriptor());
     }
 
 }

@@ -48,11 +48,8 @@ public class TrendApiController {
 
     @DeleteMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.OWNER)
-    public ResponseEntity<HashMap<String, Integer>> delete(@PathVariable int id) {
-        int trendId = trendService.delete(id);
-        HashMap<String, Integer> trendIdMap = new HashMap<>();
-        trendIdMap.put("trendId", trendId);
-        return new ResponseEntity<>(trendIdMap, HttpStatus.OK);
+    public ResponseEntity<Object> delete(@PathVariable int id) {
+        return new ResponseEntity<>(trendService.delete(id), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")

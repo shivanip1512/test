@@ -18,6 +18,17 @@ public class CalcAnalogPointApiDoc extends PointApiDocBase {
     private String pointId = null;
     private String copyPointId = null;
 
+    private static List<FieldDescriptor> buildCalcAnalogPointDescriptor() {
+        List<FieldDescriptor> list = new ArrayList<>(Arrays.asList(pointBaseFields()));
+        list.addAll(Arrays.asList(CalcPointsFields()));
+        list.add(23,fieldWithPath("calcAnalogBase.updateType").type(JsonFieldType.STRING)
+                .description("Calc Analog Base update type possible values are : ON_FIRST_CHANGE,ON_ALL_CHANGE,ON_TIMER,ON_TIMER_AND_CHANGE,CONSTANT,HISTORICAL").optional());
+        list.add(24,fieldWithPath("calcAnalogBase.periodicRate").type(JsonFieldType.NUMBER).description("Calc Base Periodic rate").optional());
+        list.add(25,fieldWithPath("calcAnalogBase.calculateQuality").type(JsonFieldType.BOOLEAN).description("Calc Base Calculate Quality").optional());
+        list.addAll(Arrays.asList(buildPointUnitAndLimitDescriptor()));
+        return list;
+    }
+
     @Test
     public void Test_CalcAnalogPoint_01_Create() {
         pointId = createDoc();
@@ -44,17 +55,6 @@ public class CalcAnalogPointApiDoc extends PointApiDocBase {
         
         //Delete copied point.
         PointHelper.deletePoint(copyPointId);
-    }
-    
-    private static List<FieldDescriptor> buildCalcAnalogPointDescriptor() {
-        List<FieldDescriptor> list = new ArrayList<>(Arrays.asList(pointBaseFields()));
-        list.addAll(Arrays.asList(CalcPointsFields()));
-        list.add(23,fieldWithPath("calcAnalogBase.updateType").type(JsonFieldType.STRING)
-                .description("Calc Analog Base update type possible values are : ON_FIRST_CHANGE,ON_ALL_CHANGE,ON_TIMER,ON_TIMER_AND_CHANGE,CONSTANT,HISTORICAL").optional());
-        list.add(24,fieldWithPath("calcAnalogBase.periodicRate").type(JsonFieldType.NUMBER).description("Calc Base Periodic rate").optional());
-        list.add(25,fieldWithPath("calcAnalogBase.calculateQuality").type(JsonFieldType.BOOLEAN).description("Calc Base Calculate Quality").optional());
-        list.addAll(Arrays.asList(buildPointUnitAndLimitDescriptor()));
-        return list;
     }
 
     @Override

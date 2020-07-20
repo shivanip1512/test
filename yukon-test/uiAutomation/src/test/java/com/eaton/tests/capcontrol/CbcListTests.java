@@ -9,6 +9,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.CbcListPage;
 
@@ -17,7 +18,7 @@ public class CbcListTests extends SeleniumTestSetup {
     private CbcListPage listPage;
     private SoftAssertions softly;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
@@ -28,19 +29,19 @@ public class CbcListTests extends SeleniumTestSetup {
         this.listPage = new CbcListPage(driverExt);
     }
 
-    @Test
-    public void columnHeadersCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    public void cbcList_columnHeadersCorrect() {
         final int EXPECTED_COUNT = 3;
 
         List<String> headers = this.listPage.getTable().getListTableHeaders();
-        
+
         int actualCount = headers.size();
-        
+
         softly.assertThat(actualCount).isEqualTo(EXPECTED_COUNT);
         softly.assertThat(headers).contains("Name");
         softly.assertThat(headers).contains("Item Type");
         softly.assertThat(headers).contains("Description");
-        
+
         softly.assertAll();
     }
 }

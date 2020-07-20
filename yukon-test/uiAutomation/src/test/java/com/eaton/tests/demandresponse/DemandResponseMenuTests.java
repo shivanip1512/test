@@ -15,9 +15,9 @@ import com.eaton.pages.HomePage;
 public class DemandResponseMenuTests extends SeleniumTestSetup {
 
     private HomePage page;
-    private static final int DEMAND_RESPONSE_INDEX =  1;
+    private static final int DEMAND_RESPONSE_INDEX = 1;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
@@ -27,73 +27,73 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
 
         page = new HomePage(driverExt);
     }
-    
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_02_NavigateToLinks" })
-    public void dashboardUrlCorrect() {
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void demandResponseMenu_dashboardUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 0);
 
         assertThat(url).contains(Urls.DemandResponse.DASHBOARD);
     }
 
-    @Test
-    public void scenariosUrlCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void demandResponseMenu_scenariosUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 1);
 
         assertThat(url).contains(Urls.DemandResponse.SCENARIOS);
     }
-    
-    @Test
-    public void controlAreasUrlCorrect() {
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void demandResponseMenu_controlAreasUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 2);
 
         assertThat(url).contains(Urls.DemandResponse.CONTROL_AREA);
     }
-    
-    @Test
-    public void programsUrlCorrect() {
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void demandResponseMenu_programsUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 3);
 
         assertThat(url).contains(Urls.DemandResponse.PROGRAMS);
     }
-    
-    @Test
-    public void loadGroupsUrlCorrect() {
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void demandResponseMenu_loadGroupsUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 4);
 
         assertThat(url).contains(Urls.DemandResponse.LOAD_GROUPS);
-    }    
-    
-    @Test
-    public void setupUrlCorrect() {
+    }
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void demandResponseMenu_setupUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 5);
 
         assertThat(url).contains(Urls.DemandResponse.SETUP);
     }
-    
-    @Test
-    public void ciCurtailmentUrlCorrect() {
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void demandResponseMenu_ciCurtailmentUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 6);
 
         assertThat(url).contains(Urls.DemandResponse.CI_CURTAILMENT);
-    }    
-    
-    @Test
-    public void bulkUpdateUrlCorrect() {
+    }
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void demandResponseMenu_bulkUpdateUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 7);
 
         assertThat(url).contains(Urls.DemandResponse.BULK_UPDATE);
     }
-    
-    @Test
-    public void reportsUrlCorrect() {
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void demandResponseMenu_reportsUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 8);
 

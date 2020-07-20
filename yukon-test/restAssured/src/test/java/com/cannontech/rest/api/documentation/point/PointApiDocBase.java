@@ -147,7 +147,7 @@ public abstract class PointApiDocBase extends DocumentationBase {
         List<FieldDescriptor> requestFields = getFieldDescriptors();
         List<FieldDescriptor> responseFields = getFieldDescriptors();
         responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
-        String url = ApiCallHelper.getProperty("updatePoint") + getPointId();
+        String url = ApiCallHelper.getProperty("pointBaseUrl") + getPointId();
         return new DocumentationFields.Update(requestFields, responseFields, idStr, idDescStr, getMockObject(), url);
     }
 
@@ -155,13 +155,13 @@ public abstract class PointApiDocBase extends DocumentationBase {
     protected Get buildGetFields() {
         List<FieldDescriptor> responseFields = getFieldDescriptors();
         responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
-        String url = ApiCallHelper.getProperty("getPoint") + getPointId();
+        String url = ApiCallHelper.getProperty("pointBaseUrl") + getPointId();
         return new DocumentationFields.Get(responseFields, url);
     }
 
     @Override
     protected Delete buildDeleteFields() {
-        String url = ApiCallHelper.getProperty("deletePoint") + getPointId();
+        String url = ApiCallHelper.getProperty("pointBaseUrl") + getPointId();
         return new DocumentationFields.Delete(url);
     }
 
@@ -170,7 +170,7 @@ public abstract class PointApiDocBase extends DocumentationBase {
         List<FieldDescriptor> requestFields = getCopyPointFieldDescriptors();
         List<FieldDescriptor> responseFields = getFieldDescriptors();
         responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
-        String url = ApiCallHelper.getProperty("copyPoint") + getPointId() +"/copy";
+        String url = ApiCallHelper.getProperty("pointBaseUrl") + getPointId() +"/copy";
         return new DocumentationFields.Copy(requestFields, responseFields, idStr, idDescStr, getMockCopyObject(), url);
     }
 
