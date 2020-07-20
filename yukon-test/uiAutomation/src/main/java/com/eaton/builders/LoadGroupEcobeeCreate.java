@@ -1,54 +1,56 @@
 package com.eaton.builders;
 
-import org.json.JSONArray;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.json.JSONObject;
+
+import com.github.javafaker.Faker;
 
 public class LoadGroupEcobeeCreate {
 
     public static class Builder {
+        private Faker faker = new Faker();
+        
+        private static final String TYPE = "LM_GROUP_ECOBEE";
         private String name;
         private double kwCapacity;
         private boolean disableGroup;
-        private boolean disableControl;
+        private boolean disableControl;        
 
-        public Builder withName(String name) {
-            this.name = name;
+        public Builder withName(Optional<String> name) {
+            String u = UUID.randomUUID().toString();            
+            String uuid = u.replace("-", "");
+            
+            this.name = name.orElse("AT LG " + uuid);
             return this;
         }
 
-        public Builder withKwCapacity(double kwCapacity) {
-            this.kwCapacity = kwCapacity;
+        public Builder withKwCapacity(Optional<Double> kwCapacity) {
+            this.kwCapacity = kwCapacity.orElse(faker.number().randomDouble(3, 0, 99999));            
             return this;
         }
 
-        public Builder withDisableGroup(boolean disableGroup) {
-            this.disableGroup = disableGroup;
+        public Builder withDisableGroup(Optional<Boolean> disableGroup) {
+            this.disableGroup = disableGroup.orElse(false);
             return this;
         }
 
-        public Builder withDisableControl(boolean disableControl) {
-            this.disableControl = disableControl;
+        public Builder withDisableControl(Optional<Boolean> disableControl) {
+            this.disableControl = disableControl.orElse(false);
             return this;
         }
-
-//      { 
-//      "LM_GROUP_ECOBEE": 
-//      {
-//      "name": "test61",
-//      "type": ,
-//      "kWCapacity": "23",
-//      "disableGroup": false,
-//      "disableControl": false
-//  }
-//}        
+       
         public Object build() {
             JSONObject obj = new JSONObject();
-            
-            obj.put("name", this.name);
-            obj.put("type", "LM_GROUP_ECOBEE");
-            obj.put("kwCapacity", this.kwCapacity);
-            obj.put("disableGroup", this.disableGroup);
-            obj.put("disableControl", this.disableControl);
+            JSONObject params = new JSONObject();
+            params.put("name", this.name);
+            params.put("type", TYPE);
+            params.put("kwCapacity", this.kwCapacity);
+            params.put("disableGroup", this.disableGroup);
+            params.put("disableControl", this.disableControl);
+
+            obj.put(TYPE, params);
 
             return obj;
         }

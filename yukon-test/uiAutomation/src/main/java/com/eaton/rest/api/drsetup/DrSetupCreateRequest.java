@@ -1,7 +1,6 @@
 package com.eaton.rest.api.drsetup;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.testng.Assert.assertTrue;
 
 import com.eaton.framework.APIs;
 import com.eaton.rest.api.common.ApiCallHelper;
