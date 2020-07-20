@@ -1,6 +1,6 @@
 package com.cannontech.amr.archivedValueExporter.model;
 
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
@@ -8,7 +8,7 @@ public class ExportAttribute {
     
     private int attributeId;
     private int formatId;
-    private BuiltInAttribute attribute;
+    private Attribute attribute;
     private DataSelection dataSelection;
     private Integer daysPrevious = 1;
     
@@ -32,11 +32,11 @@ public class ExportAttribute {
         this.formatId = formatId;
     }
     
-    public BuiltInAttribute getAttribute() {
+    public Attribute getAttribute() {
         return attribute;
     }
     
-    public void setAttribute(BuiltInAttribute attribute) {
+    public void setAttribute(Attribute attribute) {
         this.attribute = attribute;
     }
     
@@ -98,9 +98,5 @@ public class ExportAttribute {
                 .format("ExportAttribute [attributeId=%s, formatId=%s, attribute=%s, dataSelection=%s, daysPrevious=%s]",
                         attributeId, formatId, attribute, dataSelection,
                         daysPrevious);
-    }
-    
-    public boolean isStatusType() {
-        return attribute.isStatusType();
     }
 }
