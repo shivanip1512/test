@@ -28,13 +28,15 @@ import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.SetMultimap;
 
 public class AttributeDaoImpl implements AttributeDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
 
     private final Cache<Pair<Integer, PaoType>, PointIdentifier> attributeToPoint = CacheBuilder.newBuilder().build();
-    private final Cache<PaoTypePointIdentifier, CustomAttribute> paoAndPointToAttribute = CacheBuilder.newBuilder().build();
+    private final SetMultimap<PaoTypePointIdentifier, CustomAttribute> paoAndPointToAttribute = HashMultimap.create();
 
     @PostConstruct
     public void init() {
@@ -46,7 +48,7 @@ public class AttributeDaoImpl implements AttributeDao {
      */
     private void cacheAttributes() {
         attributeToPoint.invalidateAll();
-        paoAndPointToAttribute.invalidateAll();
+        paoAndPointToAttribute.clear();
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT AttributeAssignmentId, aa.AttributeId, AttributeName, PaoType, PointType, PointOffset");
         sql.append("FROM AttributeAssignment aa");
@@ -164,15 +166,17 @@ public class AttributeDaoImpl implements AttributeDao {
 
     @Override
     public List<CustomAttribute> getCustomAttributes() {
-        return paoAndPointToAttribute.asMap().values().stream()
+        return paoAndPointToAttribute.values().stream()
+                .distinct()
                 .sorted((e1, e2) -> e1.getName().compareTo(e2.getName()))
                 .collect(Collectors.toList()); 
     }
     
     @Override
     public CustomAttribute getCustomAttribute(int attributeId) {
-        return paoAndPointToAttribute.asMap().values()
+        return paoAndPointToAttribute.values()
                 .stream()
+                .distinct()
                 .filter(cachedAttribute -> attributeId == cachedAttribute.getId())
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Attribute id:"+ attributeId +"is not in cache"));
@@ -190,6 +194,7 @@ public class AttributeDaoImpl implements AttributeDao {
     
     @Override
     public Attribute findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier) {
-        return paoAndPointToAttribute.getIfPresent(paoTypePointIdentifier);
+        return paoAndPointToAttribute.get(paoTypePointIdentifier).isEmpty() ? null : paoAndPointToAttribute
+                .get(paoTypePointIdentifier).iterator().next();
     }
 }
