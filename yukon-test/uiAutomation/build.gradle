@@ -50,4 +50,6 @@ test{
 	useTestNG(){
 	suites 'smoketests.xml'
 	}
+	
+	// test
 }
