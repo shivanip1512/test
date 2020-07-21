@@ -86,4 +86,19 @@ public class RadioButtonElement {
     private List<WebElement> getRadioBoxes() {
         return this.radioBtns;
     }
+    
+    public String getValueChecked() {
+    	List<WebElement> elements = getRadioBoxes();
+    	String checkedValue = "";
+    	for(int i=0;i<elements.size();i++)
+    	{
+    		
+    		boolean bValue = elements.get(i).isSelected();
+        	if(bValue==true) {
+        		checkedValue = elements.get(i).getAttribute("value");
+        		break;
+        	}
+    	}
+    	return checkedValue;
+    }
 }

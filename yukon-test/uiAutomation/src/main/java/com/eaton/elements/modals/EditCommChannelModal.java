@@ -3,7 +3,9 @@ package com.eaton.elements.modals;
 import java.util.Optional;
 
 import com.eaton.elements.DropDownElement;
+import com.eaton.elements.RadioButtonElement;
 import com.eaton.elements.Section;
+import com.eaton.elements.SwitchBtnYesNoElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
 import com.eaton.elements.tabs.TabElement;
@@ -48,19 +50,39 @@ public class EditCommChannelModal extends BaseModal {
     }
 
     public TextEditElement getPortNumber() {
-        return new TextEditElement(this.driverExt, "address", getModal());
+        return new TextEditElement(this.driverExt, "portNumber", getModal());
     }
 
     public DropDownElement getBaudRate() {
         return new DropDownElement(this.driverExt, "baudRate", getModal());
     }
 
-    public TrueFalseCheckboxElement getStatus() {
-        return new TrueFalseCheckboxElement(this.driverExt, "disabled", getModal());
+    public DropDownElement getPhysicalPort() {
+    	return new DropDownElement(this.driverExt, "physicalPort", getModal());
+    }
+    
+    public TextEditElement getPhysicalPortOther() {
+    	return new TextEditElement(this.driverExt, "physicalPort", getModal());
+    } 
+    
+    public SwitchBtnYesNoElement getStatus() {
+        return new SwitchBtnYesNoElement(this.driverExt, "disable", getModal());
     }
     
     public TabElement getTabElement() {
         return new TabElement(this.driverExt, getModal());
     }
-        
+       
+    public RadioButtonElement getProtocolWrap() {
+    	return new RadioButtonElement(this.driverExt, "protocolWrap", getModal());
+    } 
+    public TextEditElement getCarrierDetectWait() {
+        return new TextEditElement(this.driverExt, "carrierDetectWaitInMilliseconds", getModal());
+    }
+    public TextEditElement getEncryptionKey() {
+        return new TextEditElement(this.driverExt, "keyInHex", getModal());
+    }
+    public SwitchBtnYesNoElement getCheckedButtonCarrier() {
+        return new SwitchBtnYesNoElement(this.driverExt, "carrierDetectWait", getModal());
+    }
 }

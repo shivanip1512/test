@@ -91,4 +91,21 @@ public class DropDownElement {
     public String getValidationError() {
         return this.driverExt.findElement(By.cssSelector("span[id='" + this.elementName + ".errors']"), Optional.empty()).getText();
      }
+    
+    public String getSelectedValue() {
+    	List<WebElement> options = this.driverExt.findElements(By.tagName("option"), Optional.empty());
+    	String selectedDropDownValue = "";
+    	boolean bValue = false;
+    	for (int i=0;i<options.size();i++)
+    	{
+    		bValue = options.get(i).isSelected();
+    		if(bValue==true) {
+    			selectedDropDownValue = options.get(i).getText();
+    			break;
+    		}
+    	}
+    	return selectedDropDownValue;
+    }
 }
+
+
