@@ -23,20 +23,21 @@
         <tbody>
             <c:forEach var="assignment" items="${assignments}">
                 <tr>
-                    <td>${fn:escapeXml(assignment.attribute.name)}</td>
-                    <td><i:inline key="${assignment.deviceType.formatKey}"/></td>
-                    <td><i:inline key="${assignment.pointType.formatKey}"/></td>
-                    <td>${assignment.pointOffset}</td>
+                    <c:set var="assignmentId" value="${assignment.attributeAssignmentId}"/>
+                    <td>${fn:escapeXml(assignment.customAttribute.name)}</td>
+                    <td><i:inline key="${assignment.paoType.formatKey}"/></td>
+                    <td><i:inline key="${assignment.pointIdentifier.pointType.formatKey}"/></td>
+                    <td>${assignment.pointIdentifier.offset}</td>
                     <td>
                         <cm:dropdown icon="icon-cog">
-                            <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-edit-assignment" data-assignment-id="${assignment.id}"/>
-                            <cm:dropdownOption id="delete-assignment-${assignment.id}" key=".delete" icon="icon-cross" 
-                                data-ok-event="yukon:assignment:delete" classes="js-hide-dropdown" data-assignment-id="${assignment.id}"/>
-                            <d:confirm on="#delete-assignment-${assignment.id}" nameKey="assignmentConfirmDelete" argument="${assignment.attribute.name}"  />
-                            <cti:url var="deleteUrl" value="/admin/config/attributeAssignments/${assignment.id}/delete"/>
-                            <form:form id="delete-assignment-form-${assignment.id}" action="${deleteUrl}" method="DELETE">
+                            <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-edit-assignment" data-assignment-id="${assignmentId}"/>
+                            <cm:dropdownOption id="delete-assignment-${assignmentId}" key=".delete" icon="icon-cross" 
+                                data-ok-event="yukon:assignment:delete" classes="js-hide-dropdown" data-assignment-id="${assignmentId}"/>
+                            <d:confirm on="#delete-assignment-${assignmentId}" nameKey="assignmentConfirmDelete" argument="${assignment.customAttribute.name}"  />
+                            <cti:url var="deleteUrl" value="/admin/config/attributeAssignments/${assignmentId}/delete"/>
+                            <form:form id="delete-assignment-form-${assignmentId}" action="${deleteUrl}" method="DELETE">
                                 <cti:csrfToken/>
-                                <input type="hidden" name="name" value="${fn:escapeXml(assignment.attribute.name)}"/>
+                                <input type="hidden" name="name" value="${fn:escapeXml(assignment.customAttribute.name)}"/>
                             </form:form>
                         </cm:dropdown>
                     </td>

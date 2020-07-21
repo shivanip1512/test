@@ -16,14 +16,14 @@
     
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".attributeName">
-                    <tags:selectWithItems id="attributeId" path="attribute.id" items="${attributes}" itemValue="id" itemLabel="name"/>
-                    <input id="attributeName" type="hidden" name="attribute.name"/>
+                    <tags:selectWithItems id="attributeId" path="attributeId" items="${attributes}" itemValue="id" itemLabel="name"/>
+                    <input id="attributeName" type="hidden" name="attributeName"/>
                 </tags:nameValue2>
                 
                 <c:choose>
                     <c:when test="${isEditMode}">
                         <tags:nameValue2 nameKey=".deviceType">
-                            <tags:selectWithItems path="deviceType" items="${deviceTypes}"/>
+                            <tags:selectWithItems path="paoType" items="${deviceTypes}"/>
                         </tags:nameValue2>
                     </c:when>
                     <c:otherwise>
@@ -46,13 +46,13 @@
                 </c:choose>
     
                 <tags:nameValue2 nameKey=".pointType">
-                    <tags:selectWithItems inputClass="js-point-type MR0" path="pointType" items="${pointTypes}"/>
+                    <tags:selectWithItems inputClass="js-point-type MR0" path="pointIdentifier.pointType" items="${pointTypes}"/>
                     <tags:pickerDialog id="displayPointPicker" type="pointPicker" linkType="button" icon="icon-magnifier" 
                         buttonRenderMode="image" buttonStyleClass="fn vam" endEvent="yukon:assignment:pointSelected" immediateSelectMode="true"/>
                 </tags:nameValue2>
                 
                 <tags:nameValue2 nameKey=".pointOffset">
-                    <tags:input path="pointOffset" inputClass="js-point-offset" size="6"/>
+                    <tags:input path="pointIdentifier.offset" inputClass="js-point-offset" size="6"/>
                 </tags:nameValue2>
             
             </tags:nameValueContainer2>

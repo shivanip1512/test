@@ -31,6 +31,6 @@ public class AttributeAssignmentValidator extends SimpleValidator<AttributeAssig
     @Override
     protected void doValidation(AttributeAssignment assignment, Errors errors) {
         String pointOffsetLabel = accessor.getMessage("yukon.common.pointOffset");
-        YukonValidationUtils.checkIfFieldRequired("pointOffset", errors, assignment.getPointOffset(), pointOffsetLabel);
+        YukonValidationUtils.checkIfFieldRequired("pointOffset", errors, assignment.getPointIdentifier().getOffset(), pointOffsetLabel);
     }
 }

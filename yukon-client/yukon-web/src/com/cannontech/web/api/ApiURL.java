@@ -59,7 +59,7 @@ public class ApiURL {
 
     public static final String trendUrl = "/trends";
     
-    public static final String attributeUrl = "/attributes/";
-    public static final String attributeAssignmentsUrl = "/attributeAssignments/";
+    public static final String attributeUrl = "/attributes";
+    public static final String attributeAssignmentsUrl = "/attributeAssignments";
 
 }
