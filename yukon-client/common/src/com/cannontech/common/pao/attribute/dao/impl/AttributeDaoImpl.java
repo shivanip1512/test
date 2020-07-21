@@ -196,7 +196,7 @@ public class AttributeDaoImpl implements AttributeDao {
     }
     
     @Override
-    public Attribute findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier) {
+    public Attribute findCustomAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier) {
         return paoAndPointToAttribute.get(paoTypePointIdentifier).isEmpty() ? null : paoAndPointToAttribute
                 .get(paoTypePointIdentifier).iterator().next();
     }

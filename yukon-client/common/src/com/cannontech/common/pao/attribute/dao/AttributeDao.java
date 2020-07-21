@@ -68,5 +68,5 @@ public interface AttributeDao {
     /**
      * Returns attribute for PaoType and Point
      */
-    Attribute findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier);
+    Attribute findCustomAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier);
 }
