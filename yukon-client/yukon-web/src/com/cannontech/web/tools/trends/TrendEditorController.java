@@ -174,7 +174,7 @@ public class TrendEditorController {
     @PostMapping("/save")
     public String save(ModelMap model, YukonUserContext userContext,
             @ModelAttribute("trendDefinition") TrendModel trendModel, BindingResult result, RedirectAttributes redirectAttributes,
-            FlashScope flashScope, HttpServletRequest request) {
+            FlashScope flashScope, HttpServletRequest request) throws JsonProcessingException {
 
         if (trendModel.getTrendId() != null && !rolePropertyDao.checkLevel(YukonRoleProperty.MANAGE_TRENDS, HierarchyPermissionLevel.UPDATE, userContext.getYukonUser())) {
             throw new NotAuthorizedException("User not authorized to edit trends.");
@@ -196,12 +196,22 @@ public class TrendEditorController {
                 url = url + "/"+ trendModel.getTrendId();
             }
 
-            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, httpMethod, TrendModel.class, trendModel);
-
+            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, httpMethod, Object.class, trendModel);
             if (response.getStatusCode() == HttpStatus.OK) {
                 TrendModel trend = (TrendModel) response.getBody();
                 flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", trendModel.getName()));
                 return redirectLink + "/" + trend.getTrendId();
+            }
+            
+            /**
+             *  The validations at the MVC side and the API side for save trends are the same. Since the inputs are already validated at the MVC side, this condition below
+             *  will never execute. This code is added just to ensure that if we receive HttpStatus.UNPROCESSABLE_ENTITY in the response for some reason, UI does not 
+             *  break. So we display a generic error message in this case.
+             */
+            if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
+                log.error("Error saving trend:{}", JsonUtils.toJson(response.getBody()));
+                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.error.genericMainMessage"));
+                return bindAndForward(trendModel, result, redirectAttributes);
             }
 
         } catch (ApiCommunicationException e) {
