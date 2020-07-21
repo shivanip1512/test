@@ -15,6 +15,12 @@ public class StatusPointApiDoc extends PointApiDocBase {
     private String pointId = null;
     private String copyPointId = null;
 
+    private static List<FieldDescriptor> buildStatusPointDescriptor() {
+        List<FieldDescriptor> list = new ArrayList<>(Arrays.asList(pointBaseFields()));
+        list.addAll(Arrays.asList(buildStatusDescriptor()));
+        return list;
+    }
+
     @Test
     public void Test_StatusPoint_01_Create() {
         pointId = createDoc();
@@ -46,12 +52,6 @@ public class StatusPointApiDoc extends PointApiDocBase {
     @Override
     protected MockPointType getMockPointType() {
         return MockPointType.Status;
-    }
-
-    private static List<FieldDescriptor> buildStatusPointDescriptor() {
-        List<FieldDescriptor> list = new ArrayList<>(Arrays.asList(pointBaseFields()));
-        list.addAll(Arrays.asList(buildStatusDescriptor()));
-        return list;
     }
 
     @Override

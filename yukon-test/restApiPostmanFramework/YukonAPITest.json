@@ -3170,7 +3170,15 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": ""
+									"raw": "{{api-url}}/api/points/{pointId}",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}"
+									]
 								}
 							},
 							"response": []
@@ -3291,7 +3299,15 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": ""
+									"raw": "{{api-url}}/api/points/{pointId}",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}"
+									]
 								}
 							},
 							"response": []
@@ -3302,14 +3318,14 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/points/232988",
+									"raw": "{{api-url}}/api/points/{pointId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"points",
-										"232988"
+										"{pointId}"
 									]
 								}
 							},
@@ -3358,7 +3374,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "",
+									"raw": "{\r\n    \"pointName\": \"Pulse Accumulator point create\",\r\n    \"pointType\": \"PulseAccumulator\",\r\n    \"pointOffset\": 43632,\r\n    \"paoId\": 40704,\r\n    \"stateGroupId\": -1,\r\n    \"enable\": true,\r\n    \"archiveType\": \"NONE\",\r\n    \"archiveInterval\": 0,\r\n    \"timingGroup\": \"DEFAULT\",\r\n    \"alarmsDisabled\": false,\r\n    \"staleData\": {\r\n        \"updateStyle\": 1,\r\n        \"time\": 5\r\n    },\r\n    \"alarming\": {\r\n        \"notificationGroupId\": 1,\r\n        \"notifyOnAck\": false,\r\n        \"notifyOnClear\": false,\r\n        \"alarmTableList\": [\r\n            {\r\n                \"condition\": \"Non-updated\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Rate Of Change\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Limit Set 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Limit Set 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Reasonability\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Reasonability\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Limit 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Limit 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Limit 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Limit 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Stale\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            }\r\n        ]\r\n    },\r\n         \"limits\": [\r\n         {\r\n            \"limitNumber\": 1,\r\n            \"highLimit\": 5.0,\r\n            \"lowLimit\": 1.0,\r\n            \"limitDuration\": 1\r\n        },\r\n       {\r\n            \"limitNumber\": 2,\r\n            \"highLimit\": 0.0,\r\n            \"lowLimit\": 0.0,\r\n            \"limitDuration\": 0\r\n        }\r\n    ],\r\n    \"pointUnit\": {\r\n        \"uomId\": 0,\r\n        \"decimalPlaces\": 2,\r\n        \"highReasonabilityLimit\": 1.0E30,\r\n        \"lowReasonabilityLimit\": -1.0E30,\r\n        \"meterDials\": 0\r\n    },\r\n    \"accumulatorPoint\": {\r\n        \"multiplier\": 1.0,\r\n        \"dataOffset\": 0.0\r\n    }\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3385,7 +3401,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n\r\n    \"pointName\": \"Pulse Accumulator point create\",\r\n    \"pointType\": \"PulseAccumulator\",\r\n    \"pointOffset\": 4332,\r\n    \"paoId\": 40704,\r\n    \"stateGroupId\": -1,\r\n    \"enable\": true,\r\n    \"archiveType\": \"NONE\",\r\n    \"archiveInterval\": 0,\r\n    \"timingGroup\": \"DEFAULT\",\r\n    \"alarmsDisabled\": false,\r\n    \"staleData\": {\r\n        \"updateStyle\": 1,\r\n        \"time\": 5\r\n    },\r\n    \"alarming\": {\r\n        \"notificationGroupId\": 1,\r\n        \"notifyOnAck\": false,\r\n        \"notifyOnClear\": false,\r\n        \"alarmTableList\": [\r\n            {\r\n                \"condition\": \"Non-updated\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Rate Of Change\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Limit Set 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Limit Set 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Reasonability\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Reasonability\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Limit 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Limit 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Limit 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Limit 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Stale\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            }\r\n        ]\r\n    },\r\n         \"limits\": [\r\n         {\r\n            \"limitNumber\": 1,\r\n            \"highLimit\": 5.0,\r\n            \"lowLimit\": 1.0,\r\n            \"limitDuration\": 1\r\n        },\r\n       {\r\n            \"limitNumber\": 2,\r\n            \"highLimit\": 0.0,\r\n            \"lowLimit\": 0.0,\r\n            \"limitDuration\": 0\r\n        }\r\n    ],\r\n    \"pointUnit\": {\r\n        \"uomId\": 0,\r\n        \"decimalPlaces\": 2,\r\n        \"highReasonabilityLimit\": 1.0E30,\r\n        \"lowReasonabilityLimit\": -1.0E30,\r\n        \"meterDials\": 0\r\n    },\r\n    \"accumulatorPoint\": {\r\n        \"multiplier\": 1.0,\r\n        \"dataOffset\": 0.0\r\n    }\r\n}",
+									"raw": "{\r\n    \"pointName\": \"Pulse Accumulator point Update\",\r\n    \"pointType\": \"PulseAccumulator\",\r\n    \"pointOffset\": 43632,\r\n    \"paoId\": 40704,\r\n    \"stateGroupId\": -1,\r\n    \"enable\": true,\r\n    \"archiveType\": \"NONE\",\r\n    \"archiveInterval\": 0,\r\n    \"timingGroup\": \"DEFAULT\",\r\n    \"alarmsDisabled\": false,\r\n    \"staleData\": {\r\n        \"updateStyle\": 1,\r\n        \"time\": 5\r\n    },\r\n    \"alarming\": {\r\n        \"notificationGroupId\": 1,\r\n        \"notifyOnAck\": false,\r\n        \"notifyOnClear\": false,\r\n        \"alarmTableList\": [\r\n            {\r\n                \"condition\": \"Non-updated\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Rate Of Change\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Limit Set 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Limit Set 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Reasonability\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Reasonability\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Limit 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Limit 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Limit 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Limit 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Stale\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            }\r\n        ]\r\n    },\r\n         \"limits\": [\r\n         {\r\n            \"limitNumber\": 1,\r\n            \"highLimit\": 5.0,\r\n            \"lowLimit\": 1.0,\r\n            \"limitDuration\": 1\r\n        },\r\n       {\r\n            \"limitNumber\": 2,\r\n            \"highLimit\": 0.0,\r\n            \"lowLimit\": 0.0,\r\n            \"limitDuration\": 0\r\n        }\r\n    ],\r\n    \"pointUnit\": {\r\n        \"uomId\": 0,\r\n        \"decimalPlaces\": 2,\r\n        \"highReasonabilityLimit\": 1.0E30,\r\n        \"lowReasonabilityLimit\": -1.0E30,\r\n        \"meterDials\": 0\r\n    },\r\n    \"accumulatorPoint\": {\r\n        \"multiplier\": 1.0,\r\n        \"dataOffset\": 0.0\r\n    }\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3483,10 +3499,26 @@
 						{
 							"name": "Create",
 							"request": {
-								"method": "GET",
+								"method": "POST",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"pointName\": \"Status Point Create\",\r\n    \"pointType\": \"Status\",\r\n    \"pointOffset\": 2233,\r\n    \"paoId\": 40704,\r\n    \"stateGroupId\": -11,\r\n    \"initialState\": 0,\r\n    \"enable\": true,\r\n    \"archiveType\": \"NONE\",\r\n    \"archiveInterval\": 0,\r\n    \"timingGroup\": \"DEFAULT\",\r\n    \"alarmsDisabled\": false,\r\n    \"staleData\": {\r\n        \"updateStyle\": 1,\r\n        \"time\": 5\r\n    },\r\n    \"alarming\": {\r\n        \"notificationGroupId\": 1,\r\n        \"notifyOnAck\": false,\r\n        \"notifyOnClear\": false,\r\n        \"alarmTableList\": [\r\n            {\r\n                \"condition\": \"Non-updated\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Abnormal\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Uncommanded State Change\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Command Failure\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Stale\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"-1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"0\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            }\r\n        ]\r\n    },\r\n    \"pointStatusControl\": {\r\n        \"controlOffset\": 0,\r\n        \"controlInhibited\": false,\r\n        \"closeTime1\": 0,\r\n        \"closeTime2\": 0,\r\n        \"openCommand\": \"control open\",\r\n        \"closeCommand\": \"control close\",\r\n        \"commandTimeOut\": 44,\r\n        \"controlType\": \"SBOLATCH\"\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
 								"url": {
-									"raw": ""
+									"raw": "{{api-url}}/api/points",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points"
+									]
 								}
 							},
 							"response": []
@@ -3498,7 +3530,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "\r\n{\r\n    \"pointName\": \"Status Point Update\",\r\n    \"pointType\": \"Status\",\r\n    \"pointOffset\": 63333,\r\n    \"paoId\": 40704,\r\n    \"stateGroupId\": 3,\r\n    \"initialState\": 0,\r\n    \"enable\": true,\r\n    \"archiveType\": \"NONE\",\r\n    \"archiveInterval\": 0,\r\n    \"timingGroup\": \"DEFAULT\",\r\n    \"alarmsDisabled\": false,\r\n    \"staleData\": {\r\n        \"updateStyle\": 1,\r\n        \"time\": 5\r\n    },\r\n    \"alarming\": {\r\n        \"notificationGroupId\": 1,\r\n        \"notifyOnAck\": false,\r\n        \"notifyOnClear\": false,\r\n        \"alarmTableList\": [\r\n            {\r\n                \"condition\": \"Non-updated\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Abnormal\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Uncommanded State Change\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Command Failure\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Stale\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"-1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"0\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"3\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"4\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"5\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"6\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"7\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            }\r\n        ]\r\n    },\r\n    \"pointStatusControl\": {\r\n        \"controlOffset\": 0,\r\n        \"controlInhibited\": false,\r\n        \"closeTime1\": 0,\r\n        \"closeTime2\": 0,\r\n        \"openCommand\": \"control open\",\r\n        \"closeCommand\": \"control close\",\r\n        \"commandTimeOut\": 0,\r\n        \"controlType\": \"NONE\"\r\n\r\n    }\r\n\r\n}\r\n",
+									"raw": "{\r\n    \"pointName\": \"Status Point Update\",\r\n    \"pointType\": \"Status\",\r\n    \"pointOffset\": 38233,\r\n    \"paoId\": 40704,\r\n    \"stateGroupId\": -11,\r\n    \"initialState\": 0,\r\n    \"enable\": true,\r\n    \"archiveType\": \"NONE\",\r\n    \"archiveInterval\": 0,\r\n    \"timingGroup\": \"DEFAULT\",\r\n    \"alarmsDisabled\": false,\r\n    \"staleData\": {\r\n        \"updateStyle\": 1,\r\n        \"time\": 5\r\n    },\r\n    \"alarming\": {\r\n        \"notificationGroupId\": 1,\r\n        \"notifyOnAck\": false,\r\n        \"notifyOnClear\": false,\r\n        \"alarmTableList\": [\r\n            {\r\n                \"condition\": \"Non-updated\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Abnormal\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Uncommanded State Change\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Command Failure\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Stale\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"-1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"0\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            }\r\n        ]\r\n    },\r\n    \"pointStatusControl\": {\r\n        \"controlOffset\": 0,\r\n        \"controlInhibited\": false,\r\n        \"closeTime1\": 0,\r\n        \"closeTime2\": 0,\r\n        \"openCommand\": \"control open\",\r\n        \"closeCommand\": \"control close\",\r\n        \"commandTimeOut\": 44,\r\n        \"controlType\": \"SBOLATCH\"\r\n    }\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"

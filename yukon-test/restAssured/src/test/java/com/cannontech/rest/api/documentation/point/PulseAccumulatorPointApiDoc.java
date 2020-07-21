@@ -25,6 +25,13 @@ public class PulseAccumulatorPointApiDoc extends PointApiDocBase {
           };
     }
 
+    private static List<FieldDescriptor> buildPulseAccumulatorPointDescriptor() {
+        List<FieldDescriptor> list = new ArrayList<>(Arrays.asList(pointBaseFields()));
+        list.addAll(Arrays.asList(buildPulseAccumulatorDescriptor()));
+        list.addAll(Arrays.asList(buildPointUnitAndLimitDescriptor()));
+        return list;
+    }
+
     @Test
     public void Test_PulseAccumulatorPoint_01_Create() {
         pointId = createDoc();
@@ -58,13 +65,6 @@ public class PulseAccumulatorPointApiDoc extends PointApiDocBase {
         return MockPointType.PulseAccumulator;
     }
 
-    private static List<FieldDescriptor> buildPulseAccumulatorPointDescriptor() {
-        List<FieldDescriptor> list = new ArrayList<>(Arrays.asList(pointBaseFields()));
-        list.addAll(Arrays.asList(buildPulseAccumulatorDescriptor()));
-        list.addAll(Arrays.asList(buildPointUnitAndLimitDescriptor()));
-        return list;
-    }
-    
     @Override
     protected List<FieldDescriptor> getFieldDescriptors() {
         return buildPulseAccumulatorPointDescriptor();
