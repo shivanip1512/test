@@ -67,7 +67,8 @@ public class TrendValidatorHelper {
         String labelI18nText = accessor.getMessage(tdcBasekey + "label");
         String dateI18nText = accessor.getMessage(commonkey + "date");
 
-        if (!trendSeries.getType().isMarkerType()) {
+        
+        if (trendSeries.getType() == null || !trendSeries.getType().isMarkerType()) {
             YukonValidationUtils.checkIsBlank(errors, "pointId", Objects.toString(trendSeries.getPointId(), null), pointI18nText,
                     false);
             if (!errors.hasFieldErrors("pointId")) {

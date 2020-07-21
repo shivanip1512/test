@@ -79,7 +79,7 @@ public class TrendModel {
                     graphSeries.setMoreData(CtiUtilities.STRING_NONE);
                 }
                 // use defaults when MarkerType
-                if (series.getType().isMarkerType()) {
+                if (series.getType() != null && series.getType().isMarkerType()) {
                     graphSeries.setPointID(-100);
                     graphSeries.setRenderer(RenderType.LINE);
                 } else {
