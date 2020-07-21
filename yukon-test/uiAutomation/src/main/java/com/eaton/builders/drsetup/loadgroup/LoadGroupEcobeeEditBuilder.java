@@ -1,4 +1,4 @@
-package com.eaton.builders;
+package com.eaton.builders.drsetup.loadgroup;
 
 public class LoadGroupEcobeeEditBuilder {
 

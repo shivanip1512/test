@@ -1,4 +1,4 @@
-package com.eaton.builders;
+package com.eaton.builders.drsetup.loadgroup;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -7,6 +7,7 @@ import org.javatuples.Pair;
 import org.json.JSONObject;
 
 import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
+import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 import com.github.javafaker.Faker;
 
 import io.restassured.response.ExtractableResponse;
@@ -20,14 +21,13 @@ public class LoadGroupEcobeeCreateBuilder {
         private String name;
         private double kwCapacity;
         private boolean disableGroup;
-        private boolean disableControl;        
-
-        public Builder withName(Optional<String> name) {
+        private boolean disableControl;   
+        
+        public Builder(Optional<String> name) {
             String u = UUID.randomUUID().toString();            
             String uuid = u.replace("-", "");
             
             this.name = name.orElse("AT LG " + uuid);
-            return this;
         }
 
         public Builder withKwCapacity(Optional<Double> kwCapacity) {
@@ -60,12 +60,20 @@ public class LoadGroupEcobeeCreateBuilder {
             return j;
         }
         
-        public Pair<JSONObject, ExtractableResponse<?>> create() {
-            JSONObject json = build(); 
+        public Pair<JSONObject, JSONObject> create() {
+            JSONObject request = build(); 
             
-            ExtractableResponse<?> createResponse = DrSetupCreateRequest.createLoadGroup(json.toString());
+            ExtractableResponse<?> createResponse = DrSetupCreateRequest.createLoadGroup(request.toString());
             
-            return new Pair<>(json, createResponse);
+            String id = createResponse.path("groupId").toString();
+            
+            ExtractableResponse<?> er = DrSetupGetRequest.getLoadGroup(Integer.parseInt(id)); 
+            
+            String res = er.asString();
+            JSONObject response = new JSONObject(res);
+            JSONObject jsonResponse = response.getJSONObject("LM_GROUP_ECOBEE");
+            
+            return new Pair<>(request, jsonResponse);
         }
     }
 }
