@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.api.token.ApiRequestContext;
@@ -32,10 +33,10 @@ import com.cannontech.common.model.SortingParameters;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.data.point.PointTypeEditor;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.pao.service.YukonPointHelper;
-import com.cannontech.web.spring.parameters.exceptions.InvalidFilteringParametersException;
 import com.cannontech.web.spring.parameters.exceptions.InvalidSortingParametersException;
 import com.cannontech.web.tools.points.model.PointBaseModel;
 import com.cannontech.web.tools.points.model.PointCopy;
@@ -85,7 +86,9 @@ public class PointApiController <T extends PointBaseModel<?>> {
     }
 
     @GetMapping("/devices/{paoId}/points")
-    public ResponseEntity<Object> getPoints(@PathVariable int paoId, DevicePointsFilter filter,
+    public ResponseEntity<Object> getPoints(@PathVariable int paoId , 
+            @RequestParam(value = "types", required = false) List<PointType> types,
+            @RequestParam(value = "pointNames", required = false) List<String> pointNames,
             @DefaultSort(dir = Direction.asc, sort = "pointName") SortingParameters sorting,
             @DefaultItemsPerPage(value = 250) PagingParameters paging,
             HttpServletRequest request) {
@@ -94,9 +97,7 @@ public class PointApiController <T extends PointBaseModel<?>> {
         // Fetch valid sort by
         SortBy sortBy = getValidSortBy(sorting.getSort());
 
-        // check for valid point type
-        checkValidPointTypes(filter.getTypes());
-
+        DevicePointsFilter filter = new DevicePointsFilter(types,pointNames);
         Direction direction = sorting.getDirection();
         return new ResponseEntity<>(pointEditorService.getDevicePointDetail(paoId, filter, direction, sortBy, paging), HttpStatus.OK);
     }
@@ -135,6 +136,11 @@ public class PointApiController <T extends PointBaseModel<?>> {
         binder.addValidators(pointCopyApiValidator);
     }
 
+    @InitBinder("type")
+    public void initBinder(WebDataBinder dataBinder) {
+        dataBinder.registerCustomEditor(PointType.class,new PointTypeEditor());
+    }
+
     /**
      * Get valid Sort By from request parameters
      * @throws InvalidSortingParametersException when sorting parameters is in valid
@@ -144,20 +150,6 @@ public class PointApiController <T extends PointBaseModel<?>> {
             return DevicePointDao.SortBy.valueOf(sortByString);
         } catch (IllegalArgumentException e) {
             throw new InvalidSortingParametersException(sortByString + " could not be interpreted as sorting by parameter");
-        }
-    }
-
-    /**
-     * Check Point Types in request is valid or not
-     * @throws InvalidFilteringParametersException when point types in filtering parameters in invalid
-     */
-    private void checkValidPointTypes(List<PointType> pointTypes) {
-        if (pointTypes != null) {
-            for (PointType type : pointTypes) {
-                if (type == null) {
-                    throw new InvalidFilteringParametersException("types is invalid");
-                }
-            }
         }
     }
 }

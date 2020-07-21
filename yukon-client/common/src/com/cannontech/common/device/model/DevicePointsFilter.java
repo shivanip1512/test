@@ -9,6 +9,12 @@ public class DevicePointsFilter {
     private List<PointType> types;
     private List<String> pointNames;
 
+    public DevicePointsFilter(List<PointType> types, List<String> pointNames) {
+        super();
+        this.types = types;
+        this.pointNames = pointNames;
+    }
+
     public List<PointType> getTypes() {
         return types;
     }

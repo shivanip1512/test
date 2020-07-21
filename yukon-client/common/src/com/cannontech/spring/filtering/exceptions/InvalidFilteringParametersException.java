@@ -1,4 +1,4 @@
-package com.cannontech.web.spring.parameters.exceptions;
+package com.cannontech.spring.filtering.exceptions;
 
 public class InvalidFilteringParametersException extends RuntimeException {
 
