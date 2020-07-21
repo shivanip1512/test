@@ -221,7 +221,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         for (ExportField field:format.getFields()) {
             
             if (field.getField().getType().equals(FieldType.ATTRIBUTE)
-                && field.getField().getAttribute().getAttribute() == attribute.getAttribute()
+                && field.getField().getAttribute().getAttribute().equals(attribute.getAttribute())
                 && field.getField().getAttribute().getDataSelection() == attribute.getDataSelection()
                 && field.getField().getAttribute().getDaysPrevious().intValue() == attribute.getDaysPrevious().intValue()) {
                 exportFields.add(field);
