@@ -114,17 +114,17 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
         createPage.getCommunicationRoute().selectItemByText("a_CCU-711");
 
-        createPage.getAddressUsage().setTrueFalseByValue("Section", true);
-        createPage.getAddressUsage().setTrueFalseByValue("Class", true);
-        createPage.getAddressUsage().setTrueFalseByValue("Division", true);
+        createPage.getAddressUsage().setTrueFalseByName("Section", true);
+        createPage.getAddressUsage().setTrueFalseByName("Class", true);
+        createPage.getAddressUsage().setTrueFalseByName("Division", true);
         
         createPage.getUtilityAddress().setInputValue(String.valueOf(randomNum.nextInt(254)));
         createPage.getSectionAddress().setInputValue(String.valueOf(randomNum.nextInt(255)));
 
-        createPage.getClassAddress().setTrueFalseByValue("1", true);
-        createPage.getDivisionAddress().setTrueFalseByValue("11", true);
+        createPage.getClassAddress().setTrueFalseByName("1", true);
+        createPage.getDivisionAddress().setTrueFalseByName("11", true);
         
-        createPage.getRelayUsage().setTrueFalseByValue("Relay_3", true);
+        createPage.getRelayUsage().setTrueFalseByName("Relay 3", true);
 
         createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
 

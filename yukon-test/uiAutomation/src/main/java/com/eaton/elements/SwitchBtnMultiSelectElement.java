@@ -1,6 +1,5 @@
 package com.eaton.elements;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,11 +37,25 @@ public class SwitchBtnMultiSelectElement {
         for (WebElement webElement : switchBtnList) {
             List<WebElement> list = webElement.findElements(By.cssSelector("input[id='" + value.toUpperCase() + "_chk']"));
 
-            if (!list.isEmpty()) {               
+            if (!list.isEmpty()) {
                 if ((isChecked == null && checked) || (isChecked != null && !checked)) {
                     webElement.findElement(By.cssSelector("span>span")).click();
+                    break;
                 }
-            } 
+            }
+        }
+    }
+
+    public void setTrueFalseByName(String buttonNameWithSpace, boolean checked) {
+        WebElement switchElement = getSwitchBtn();
+        String buttonName = buttonNameWithSpace.replace(" ", "_");
+        WebElement switchButton = getSwitchBtnByName(buttonNameWithSpace);
+        WebElement switchBtn = switchElement.findElement(By.cssSelector("input[id='" + buttonName.toUpperCase() + "_chk']"));
+
+        String isChecked = switchBtn.getAttribute("checked");
+
+        if ((isChecked == null && checked) || (isChecked != null && !checked)) {
+            switchButton.click();
         }
     }
 
@@ -55,25 +68,26 @@ public class SwitchBtnMultiSelectElement {
 
         if (disabled == null) {
             return false;
-        } else return true;
+        } else
+            return true;
     }
-    
+
     public boolean allValuesDisabled() {
         WebElement element = getSwitchBtn();
-        
+
         List<WebElement> list = element.findElements(By.cssSelector("label .switch-btn-checkbox"));
-        
+
         boolean allDisabled = true;
         for (WebElement webElement : list) {
             String disabled = webElement.getAttribute("disabled");
-            
+
             if (!disabled.equals("true")) {
-                 return false;                
+                return false;
             }
         }
-        
+
         return allDisabled;
-                
+
 //        list.stream().filter(x -> x.findElement(By.cssSelector(".title")).getText().contains(panelName))
 //                .findFirst();
     }
@@ -84,5 +98,17 @@ public class SwitchBtnMultiSelectElement {
         } else {
             return this.driverExt.findElement(By.cssSelector("." + this.elementName), Optional.empty());
         }
+    }
+
+    private WebElement getSwitchBtnByName(String switchName) {
+        WebElement switchbtn = getSwitchBtn();
+        List<WebElement> switchElement = switchbtn.findElements(By.cssSelector("span>span"));
+
+        for (WebElement element : switchElement) {
+            if (element.getText().contentEquals(switchName)) {
+                return element;
+            }
+        }
+        return null;
     }
 }
