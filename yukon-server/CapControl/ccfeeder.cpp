@@ -12,8 +12,8 @@
 #include "Requests.h"
 
 using Cti::CapControl::PointResponse;
-using Cti::CapControl::CategorizedRequest;
-using Cti::CapControl::CategorizedRequests;
+using Cti::CapControl::PorterRequest;
+using Cti::CapControl::PorterRequests;
 using Cti::CapControl::createBankOpenRequest;
 using Cti::CapControl::createBankCloseRequest;
 using Cti::CapControl::createBankFlipRequest;
@@ -542,8 +542,8 @@ bool CtiCCFeeder::removeMaxKvar( long bankId )
     Creates a CtiRequestMsg to open the next cap bank to increase the
     var level for a strategy.
 ---------------------------------------------------------------------------*/
-CategorizedRequest CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
-                                                         string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue)
+PorterRequest CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
+                                                    string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue)
 {
     if( capBank == NULL )
     {
@@ -631,8 +631,8 @@ CategorizedRequest CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, 
     return reqMsg;
 }
 
-CategorizedRequest CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
-                                                                     string textInfo, int controlOp, double kvarBefore, double varAValue, double varBValue, double varCValue )
+PorterRequest CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
+                                                                string textInfo, int controlOp, double kvarBefore, double varAValue, double varBValue, double varCValue )
 {
     if( capBank == NULL )
         return {};
@@ -702,7 +702,7 @@ CategorizedRequest CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBan
         ccEvents.push_back(EventLogEntry(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control verification"));
     }
 
-    CategorizedRequest reqMsg;
+    PorterRequest reqMsg;
 
     if  (stringContainsIgnoreCase(capBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG )
     {
@@ -717,8 +717,8 @@ CategorizedRequest CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBan
     return reqMsg;
 }
 
-CategorizedRequest CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
-                                                                     string textInfo, int controlOp, double kvarBefore, double varAValue, double varBValue, double varCValue )
+PorterRequest CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
+                                                                string textInfo, int controlOp, double kvarBefore, double varAValue, double varBValue, double varCValue )
 {
     if( capBank == NULL )
         return {};
@@ -788,7 +788,7 @@ CategorizedRequest CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBan
         ccEvents.push_back(EventLogEntry(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control verification"));
     }
 
-    CategorizedRequest reqMsg;
+    PorterRequest reqMsg;
 
     if  (stringContainsIgnoreCase(capBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG )
     {
@@ -812,8 +812,8 @@ CategorizedRequest CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBan
 ---------------------------------------------------------------------------*/
 
 
-CategorizedRequest CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
-                                                         string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue)
+PorterRequest CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
+                                                    string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue)
 {
     if( capBank == NULL )
     {
@@ -895,7 +895,7 @@ CategorizedRequest CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, 
         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
     }
 
-    CategorizedRequest reqMsg = createBankCloseRequest(*capBank);
+    PorterRequest reqMsg = createBankCloseRequest(*capBank);
     reqMsg->setSOE(4);
 
     return reqMsg;
@@ -907,7 +907,7 @@ CategorizedRequest CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, 
     Creates a CtiRequestMsg to close the next cap bank to decrease the
     var level for a strategy.
 ---------------------------------------------------------------------------*/
-CategorizedRequest CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, int action, string typeOfControl)
+PorterRequest CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, int action, string typeOfControl)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
@@ -998,7 +998,7 @@ CategorizedRequest CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, Ct
         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
     }
 
-    CategorizedRequest reqMsg;
+    PorterRequest reqMsg;
 
     if (capBank->getControlStatus() == CtiCCCapBank::Close )
     {
@@ -1287,7 +1287,7 @@ void CtiCCFeeder::figureAndSetTargetVarValue(const string& controlMethod, const 
 
 
 ---------------------------------------------------------------------------*/
-bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages, bool peakTimeFlag, long decimalPlaces, const string& controlUnits, bool dailyMaxOpsHitFlag)
+bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages, bool peakTimeFlag, long decimalPlaces, const string& controlUnits, bool dailyMaxOpsHitFlag)
 {
     bool returnBoolean = false;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -1342,7 +1342,7 @@ bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
 
 
     //if current var load is outside of range defined by the set point plus/minus the bandwidths
-    CategorizedRequest request;
+    PorterRequest request;
 
     //checks max daily op count, feeder disable if maxOperationDisableFlag set.
     checkMaxDailyOpCountExceeded(pointChanges);
@@ -2899,11 +2899,11 @@ bool CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
 }
 
 
-bool CtiCCFeeder::startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages)
+bool CtiCCFeeder::startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
     //get CapBank to perform verification on...subbus stores, currentCapBankToVerifyId
 
-    CategorizedRequest request;
+    PorterRequest request;
     bool retVal = true;
 
     for(long j=0;j<_cccapbanks.size();j++)
@@ -2960,11 +2960,11 @@ bool CtiCCFeeder::startVerificationOnCapBank(const CtiTime& currentDateTime, Cti
     return retVal;
 }
 
-CategorizedRequest CtiCCFeeder::createCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
-                                      CategorizedRequests& pilMessages, CtiCCCapBank* currentCapBank, int control)
+PorterRequest CtiCCFeeder::createCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
+                                      PorterRequests& pilMessages, CtiCCCapBank* currentCapBank, int control)
 {
 
-    CategorizedRequest request;
+    PorterRequest request;
     if( control == CtiCCCapBank::Close && currentCapBank->getRecloseDelay() > 0 &&
         currentDateTime.seconds() < currentCapBank->getLastStatusChangeTime().seconds() + currentCapBank->getRecloseDelay() )
     {
@@ -3014,10 +3014,10 @@ CategorizedRequest CtiCCFeeder::createCapBankVerificationControl(const CtiTime& 
 
 
 
-bool CtiCCFeeder::sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages)
+bool CtiCCFeeder::sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
     bool retVal = false;
-    CategorizedRequest request;
+    PorterRequest request;
     for(long j=0;j<_cccapbanks.size();j++)
     {
         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[j];
@@ -3476,7 +3476,7 @@ bool CtiCCFeeder::isVerificationAlreadyControlled(long minConfirmPercent, long q
 
     Returns a .
 ---------------------------------------------------------------------------*/
-bool CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages, long maxConfirmTime)
+bool CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages, long maxConfirmTime)
 {
     bool returnBoolean = false;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -3571,7 +3571,7 @@ bool CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
     return returnBoolean;
 }
 
-bool CtiCCFeeder::checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages, long maxConfirmTime, long sendRetries)
+bool CtiCCFeeder::checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages, long maxConfirmTime, long sendRetries)
 {
    bool returnBoolean = false;
    if (getVerificationFlag() && getPerformingVerificationFlag() &&
@@ -3723,12 +3723,12 @@ long CtiCCFeeder::getCurrentVerificationCapBankId() const
     return _currentVerificationCapBankId;
 }
 
-bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, CtiMultiMsg_vec &pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages)
+bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, CtiMultiMsg_vec &pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
     bool retVal = false;
     CtiCCCapBank* bestBank = NULL;
 
-    CategorizedRequest request;
+    PorterRequest request;
    //Check for undervoltage condition first.
    try
    {
@@ -4945,10 +4945,10 @@ CtiCCCapBank* CtiCCFeeder::getMonitorPointParentBank(const CtiCCMonitorPoint & p
 }
 
 bool CtiCCFeeder::checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime,
-                        CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages)
+                        CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
     bool retVal = false;
-    CategorizedRequest request;
+    PorterRequest request;
 
     map <long, long> controlid_action_map;
     controlid_action_map.clear();

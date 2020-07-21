@@ -179,7 +179,7 @@ BOOST_AUTO_TEST_SUITE(test_ccFeeder_fixtures)
 BOOST_FIXTURE_TEST_CASE(test_default_resend_control_open, defaultGlobals)
 {
     CtiMultiMsg_vec pointChanges;
-    Cti::CapControl::CategorizedRequests pilMessages;
+    Cti::CapControl::PorterRequests pilMessages;
     Cti::CapControl::EventLogEntries ccEvents;
 
     feeder->setLastCapBankControlledDeviceId(5);
@@ -203,7 +203,7 @@ BOOST_FIXTURE_TEST_CASE(test_default_resend_control_open, defaultGlobals)
 BOOST_FIXTURE_TEST_CASE(test_default_resend_control_close, defaultGlobals)
 {
     CtiMultiMsg_vec pointChanges;
-    Cti::CapControl::CategorizedRequests pilMessages;
+    Cti::CapControl::PorterRequests pilMessages;
     Cti::CapControl::EventLogEntries ccEvents;
 
     feeder->setLastCapBankControlledDeviceId(5);
@@ -227,7 +227,7 @@ BOOST_FIXTURE_TEST_CASE(test_default_resend_control_close, defaultGlobals)
 BOOST_FIXTURE_TEST_CASE(test_custom_resend_control_open, customGlobals)
 {
     CtiMultiMsg_vec pointChanges;
-    Cti::CapControl::CategorizedRequests pilMessages;
+    Cti::CapControl::PorterRequests pilMessages;
     Cti::CapControl::EventLogEntries ccEvents;
 
     feeder->setLastCapBankControlledDeviceId(5);
@@ -251,7 +251,7 @@ BOOST_FIXTURE_TEST_CASE(test_custom_resend_control_open, customGlobals)
 BOOST_FIXTURE_TEST_CASE(test_custom_resend_control_close, customGlobals)
 {
     CtiMultiMsg_vec pointChanges;
-    Cti::CapControl::CategorizedRequests pilMessages;
+    Cti::CapControl::PorterRequests pilMessages;
     Cti::CapControl::EventLogEntries ccEvents;
 
     feeder->setLastCapBankControlledDeviceId(5);

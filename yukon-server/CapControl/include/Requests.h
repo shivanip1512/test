@@ -31,7 +31,7 @@ enum class RequestType
 
 BankOperationType resolveOperationTypeForPointId(const std::string &commandString, CtiCCCapBank & bank);
 
-struct CategorizedRequest
+struct PorterRequest
 {
     RequestType type;
     std::unique_ptr<CtiRequestMsg> message;
@@ -51,7 +51,7 @@ struct CategorizedRequest
     {
         return message.operator bool();
     }
-    static CategorizedRequest none()
+    static PorterRequest none()
     {
         return {};
     }
@@ -61,19 +61,19 @@ struct CategorizedRequest
     }
 };
 
-std::ostream& operator<<(std::ostream& o, const CategorizedRequest& request);
+std::ostream& operator<<(std::ostream& o, const PorterRequest& request);
 
-using CategorizedRequests = std::vector<CategorizedRequest>;
+using PorterRequests = std::vector<PorterRequest>;
 
-CategorizedRequest createBankOpenRequest (const CtiCCCapBank &capBank);
-CategorizedRequest createBankCloseRequest(const CtiCCCapBank &capBank);
-CategorizedRequest createBankFlipRequest (const CtiCCCapBank &capBank);
+PorterRequest createBankOpenRequest (const CtiCCCapBank &capBank);
+PorterRequest createBankCloseRequest(const CtiCCCapBank &capBank);
+PorterRequest createBankFlipRequest (const CtiCCCapBank &capBank);
 
-CategorizedRequest createPorterRequestMsg(long controllerId, const std::string& commandString, RequestType requestType);
-CategorizedRequest createPorterRequestMsg(long controllerId, const std::string& commandString, RequestType requestType, const std::string& user);
+PorterRequest createPorterRequestMsg(long controllerId, const std::string& commandString, RequestType requestType);
+PorterRequest createPorterRequestMsg(long controllerId, const std::string& commandString, RequestType requestType, const std::string& user);
 
-void sendPorterRequest(CtiClientConnection& porterConnection, CategorizedRequest request, CallSite callsite);
-void sendPorterRequests(CtiClientConnection& porterConnection, CategorizedRequests requests, CallSite callsite);
+void sendPorterRequest(CtiClientConnection& porterConnection, PorterRequest request, CallSite callsite);
+void sendPorterRequests(CtiClientConnection& porterConnection, PorterRequests requests, CallSite callsite);
 
 uint8_t getRequestPriority(RequestType requestType);
 

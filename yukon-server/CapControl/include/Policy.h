@@ -18,7 +18,7 @@ struct Policy
 {
     using IDSet = std::set<long>;
     using Action = std::pair<std::unique_ptr<CtiSignalMsg>,
-                             CategorizedRequest>;
+                             PorterRequest>;
     using Actions = std::vector<Action>;
 
     void loadAttributes( AttributeService & service, const long paoID );
@@ -47,7 +47,7 @@ protected:
     virtual AttributeList getSupportedAttributes() const = 0;
 
     std::unique_ptr<CtiSignalMsg>   makeSignalTemplate( const long ID, const long pointValue, const std::string & description );
-    CategorizedRequest              makeRequestTemplate( const long ID, const std::string & command, const RequestType requestType );
+    PorterRequest                   makeRequestTemplate( const long ID, const std::string & command, const RequestType requestType );
 
     Action makeStandardDigitalControl( const LitePoint & point, const std::string & description, const RequestType requestType );
 

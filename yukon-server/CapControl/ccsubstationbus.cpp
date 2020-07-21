@@ -19,8 +19,8 @@ using Cti::CapControl::PointResponsePtr;
 using Cti::CapControl::PointResponseKey;
 using Cti::CapControl::ConvertIntToVerificationStrategy;
 using Cti::CapControl::PointResponseDaoPtr;
-using Cti::CapControl::CategorizedRequest;
-using Cti::CapControl::CategorizedRequests;
+using Cti::CapControl::PorterRequest;
+using Cti::CapControl::PorterRequests;
 using Cti::CapControl::EventLogEntry;
 using Cti::CapControl::EventLogEntries;
 using Cti::CapControl::Database::DatabaseDaoFactory;
@@ -997,7 +997,7 @@ bool CtiCCSubstationBus::maxOperationsHitDisableBus()
 
 
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBus::checkForAndProvideNeededControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages)
+void CtiCCSubstationBus::checkForAndProvideNeededControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
     bool keepGoing = true;
 
@@ -1325,9 +1325,9 @@ void CtiCCSubstationBus::figureAndSetTargetVarValue()
 
 
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBus::regularSubstationBusControl(double lagLevel, double leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages)
+void CtiCCSubstationBus::regularSubstationBusControl(double lagLevel, double leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
-    CategorizedRequest request;
+    PorterRequest request;
 
     try
     {
@@ -1693,9 +1693,9 @@ void CtiCCSubstationBus::regularSubstationBusControl(double lagLevel, double lea
 
 
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBus::optimizedSubstationBusControl(double lagLevel, double leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages)
+void CtiCCSubstationBus::optimizedSubstationBusControl(double lagLevel, double leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
-    CategorizedRequest request;
+    PorterRequest request;
     CtiCCFeeder* lastFeederControlled = NULL;
     int positionLastFeederControlled = -1;
 
@@ -4142,10 +4142,10 @@ void CtiCCSubstationBus::setCurrentVerificationCapBankId(long capBankId)
 }
 
 
-bool CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages)
+bool CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
     bool retVal = true;
-    CategorizedRequest request;
+    PorterRequest request;
     for (long i = 0; i < _ccfeeders.size(); i++)
     {
         CtiCCFeeder* currentFeeder = (CtiCCFeeder*) _ccfeeders.at(i);
@@ -4348,11 +4348,11 @@ bool CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
     return retVal;
 }
 
-void CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages)
+void CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
     //get CapBank to perform verification on...subbus stores, currentCapBankToVerifyId
 
-    CategorizedRequest request;
+    PorterRequest request;
 
     for (long i = 0; i < _ccfeeders.size(); i++)
     {
@@ -4608,7 +4608,7 @@ bool CtiCCSubstationBus::isVerificationAlreadyControlled()
     return returnBoolean;
 }
 
-void CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages, CtiMultiMsg_vec& capMessages)
+void CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages, CtiMultiMsg_vec& capMessages)
 {
     bool verifyCapFound = false;
 
@@ -4807,7 +4807,7 @@ bool CtiCCSubstationBus::isPastMaxConfirmTime(const CtiTime& currentDateTime)
 
     Returns boolean if .
 ---------------------------------------------------------------------------*/
-bool CtiCCSubstationBus::checkForAndPerformSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages)
+bool CtiCCSubstationBus::checkForAndPerformSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
     bool returnBoolean = false;
 
@@ -4885,7 +4885,7 @@ bool CtiCCSubstationBus::checkForAndPerformSendRetry(const CtiTime& currentDateT
 }
 
 
-bool CtiCCSubstationBus::checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages)
+bool CtiCCSubstationBus::checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
    bool returnBoolean = false;
 
@@ -5676,7 +5676,7 @@ bool CtiCCSubstationBus::scanAllMonitorPoints()
     return issueTwoWayScans( _multipleMonitorPoints, getAllCapBanks() );
 }
 
-void CtiCCSubstationBus::analyzeMultiVoltBus1(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages)
+void CtiCCSubstationBus::analyzeMultiVoltBus1(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
     CtiCCMonitorPointPtr outOfRangeMonitorPoint;
 
@@ -5827,7 +5827,7 @@ void CtiCCSubstationBus::analyzeMultiVoltBus1(const CtiTime& currentDateTime, Ct
     }
 }
 
-void CtiCCSubstationBus::analyzeMultiVoltBus(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages)
+void CtiCCSubstationBus::analyzeMultiVoltBus(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
     CtiCCMonitorPointPtr outOfRangeMonitorPoint;
 
@@ -6033,9 +6033,9 @@ std::vector< Value >
 }
 
 
-bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages)
+bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
-    CategorizedRequest request;
+    PorterRequest request;
     CtiCCCapBankPtr bank    = nullptr;
     CtiCCFeederPtr  feeder  = nullptr;
 
@@ -6393,11 +6393,11 @@ bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChang
 }
 
 
-bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, CtiMultiMsg_vec &pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages)
+bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, CtiMultiMsg_vec &pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
     bool retVal = false;
 
-    CategorizedRequest request;
+    PorterRequest request;
 
     CtiCCCapBank* bestBank = NULL;
     CtiCCFeederPtr  parentFeeder = nullptr;
@@ -7073,9 +7073,9 @@ std::set<long> CtiCCSubstationBus::getAllCapBankIds()
 }
 
 void CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl(const CtiTime& currentDateTime,
-                        CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages)
+                        CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
-    CategorizedRequest request;
+    PorterRequest request;
 
     if( !getDisableFlag() &&
         currentDateTime.seconds() >= getLastOperationTime().seconds() + getStrategy()->getControlDelayTime() )
@@ -7235,9 +7235,9 @@ void CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl(const CtiTime&
 }
 
 void CtiCCSubstationBus::checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime,
-                        CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages)
+                        CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
-    CategorizedRequest request;
+    PorterRequest request;
 
     map <long, long> controlid_action_map;
     controlid_action_map.clear();

@@ -780,7 +780,7 @@ try
 {
     bool scanSent = false;
 
-    std::map<long, CategorizedRequest> requests;
+    std::map<long, PorterRequest> requests;
 
     for ( auto & action : _scanPolicy->IntegrityScan() )
     {

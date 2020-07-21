@@ -26,11 +26,11 @@ struct overrideGlobals
     {
         using CtiCapController::porterReturnMsg;
 
-        Cti::CapControl::CategorizedRequests requests;
+        Cti::CapControl::PorterRequests requests;
         boost::ptr_vector<CtiMultiMsg> points;
-        std::vector<Cti::CapControl::CategorizedRequests> pilMultiMsgs;
+        std::vector<Cti::CapControl::PorterRequests> pilMultiMsgs;
 
-        void confirmCapBankControl(Cti::CapControl::CategorizedRequests pilMultiMsg, CtiMultiMsg* multiMsg) override
+        void confirmCapBankControl(Cti::CapControl::PorterRequests pilMultiMsg, CtiMultiMsg* multiMsg) override
         {
             pilMultiMsgs.push_back( std::move( pilMultiMsg ) );
             if (multiMsg)
@@ -39,7 +39,7 @@ struct overrideGlobals
             }
         }
 
-        void manualCapBankControl(Cti::CapControl::CategorizedRequest pilRequest, CtiMultiMsg* multiMsg) override
+        void manualCapBankControl(Cti::CapControl::PorterRequest pilRequest, CtiMultiMsg* multiMsg) override
         {
             if (pilRequest)
             {

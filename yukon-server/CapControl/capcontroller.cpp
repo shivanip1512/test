@@ -75,8 +75,8 @@ extern unsigned long _SCAN_WAIT_EXPIRE;
 using Cti::ThreadStatusKeeper;
 using std::endl;
 using std::string;
-using Cti::CapControl::CategorizedRequest;
-using Cti::CapControl::CategorizedRequests;
+using Cti::CapControl::PorterRequest;
+using Cti::CapControl::PorterRequests;
 using Cti::CapControl::EventLogEntry;
 using Cti::CapControl::EventLogEntries;
 
@@ -486,7 +486,7 @@ void CtiCapController::controlLoop()
                 dout->poke();  //  called around 2x/second (see boost::this_thread::sleep at bottom of loop)
 
                 CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
-                CategorizedRequests pilMessages;
+                PorterRequests pilMessages;
                 CtiMultiMsg_vec& capMessages = multiCapMsg->getData();
                 EventLogEntries ccEvents;
 
@@ -958,7 +958,7 @@ void CtiCapController::controlLoop()
 }
 
 void CtiCapController::checkBusForNeededControl(CtiCCAreaPtr currentArea,  CtiCCSubstationPtr currentStation, CtiCCSubstationBusPtr currentSubstationBus, const CtiTime& currentDateTime,
-                            CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages)
+                            CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
 
     try
@@ -1073,7 +1073,7 @@ void CtiCapController::broadcastMessagesToClient(CtiCCSubstationBus_vec& substat
 }
 
 void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubstationBus, const CtiTime& currentDateTime,
-                            CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CategorizedRequests& pilMessages,
+                            CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages,
                             CtiMultiMsg_vec& capMessages)
 {
     // shim out IVVC bus verification to its own function
@@ -3872,7 +3872,7 @@ void CtiCapController::sendMessageToDispatch( CtiMessage* message, Cti::CallSite
 
     Handles a manual cap bank control sent by a client application.
 ---------------------------------------------------------------------------*/
-void CtiCapController::manualCapBankControl( CategorizedRequest pilRequest, CtiMultiMsg* multiMsg )
+void CtiCapController::manualCapBankControl( PorterRequest pilRequest, CtiMultiMsg* multiMsg )
 {
     try
     {
@@ -3899,7 +3899,7 @@ void CtiCapController::manualCapBankControl( CategorizedRequest pilRequest, CtiM
     }
 }
 
-void CtiCapController::sendCapBankRequestAndPoints( CategorizedRequest pilRequest, CtiMultiMsg* multiMsg)
+void CtiCapController::sendCapBankRequestAndPoints( PorterRequest pilRequest, CtiMultiMsg* multiMsg)
 {
     getInstance()->manualCapBankControl(std::move(pilRequest), multiMsg);
 }
@@ -3911,7 +3911,7 @@ void CtiCapController::sendCapBankRequestAndPoints( CategorizedRequest pilReques
     field state.  Just sends a command, does not look for var changes or
     update cap bank control status point.
 ---------------------------------------------------------------------------*/
-void CtiCapController::confirmCapBankControl( CategorizedRequests pilMultiMsg, CtiMultiMsg* multiMsg )
+void CtiCapController::confirmCapBankControl( PorterRequests pilMultiMsg, CtiMultiMsg* multiMsg )
 {
     try
     {
@@ -3981,7 +3981,7 @@ void CtiCapController::analyzeVerificationBusIvvc( CtiCCSubstationBusPtr current
                                                    const CtiTime &       currentDateTime,
                                                    CtiMultiMsg_vec &     pointChanges,
                                                    EventLogEntries &     ccEvents,
-                                                   CategorizedRequests & pilMessages,
+                                                   PorterRequests &      pilMessages,
                                                    CtiMultiMsg_vec &     capMessages )
 {
     struct LocalScanState

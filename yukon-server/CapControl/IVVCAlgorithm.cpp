@@ -25,8 +25,8 @@
 #include "database_reader.h"
 #include "tbl_pt_alarm.h"
 
-using Cti::CapControl::CategorizedRequest;
-using Cti::CapControl::CategorizedRequests;
+using Cti::CapControl::PorterRequest;
+using Cti::CapControl::PorterRequests;
 using Cti::CapControl::PaoIdVector;
 using Cti::CapControl::PointIdVector;
 using Cti::CapControl::PointResponse;
@@ -2082,7 +2082,7 @@ bool IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
                     varValueC  = feeder->getPhaseCValue();
                 }
 
-                CategorizedRequest request;
+                PorterRequest request;
 
                 if (isCapBankOpen)
                 {
@@ -2102,7 +2102,7 @@ bool IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
 
                 CtiTime timestamp;
 
-                if (request.has_value())
+                if( request )
                 {
                     CtiTime time = request->getMessageTime();
                     sendPorterRequest(
@@ -4866,7 +4866,7 @@ bool IVVCAlgorithm::executeBusVerification( IVVCStatePtr state, CtiCCSubstationB
 
     CtiMultiMsg_vec pointChanges,
                     capMessages;
-    CategorizedRequests pilMessages;
+    PorterRequests pilMessages;
 
     EventLogEntries events;
 

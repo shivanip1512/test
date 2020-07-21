@@ -354,7 +354,7 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     auto multiDispatchMsg = std::make_unique<CtiMultiMsg>();
     auto multiCapMsg      = std::make_unique<CtiMultiMsg>();
     CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
-    Cti::CapControl::CategorizedRequests pilMessages;
+    Cti::CapControl::PorterRequests pilMessages;
     CtiMultiMsg_vec& capMessages = multiCapMsg->getData();
     Cti::CapControl::EventLogEntries ccEvents;
 

@@ -108,9 +108,9 @@ std::unique_ptr<CtiSignalMsg> Policy::makeSignalTemplate( const long ID, const l
     return signal;
 }
 
-CategorizedRequest Policy::makeRequestTemplate( const long ID, const std::string & command, const RequestType requestType )
+PorterRequest Policy::makeRequestTemplate( const long ID, const std::string & command, const RequestType requestType )
 {
-    CategorizedRequest request { requestType, std::make_unique<CtiRequestMsg>( ID, command ) };
+    PorterRequest request { requestType, std::make_unique<CtiRequestMsg>( ID, command ) };
 
     request->setSOE( 5 );
 

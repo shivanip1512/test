@@ -47,7 +47,7 @@ struct cbc_heartbeat_fixture_core
         {
             signalMessages.push_back(message);
         }
-        void manualCapBankControl(Cti::CapControl::CategorizedRequest pilRequest, CtiMultiMsg* multiMsg = NULL) override
+        void manualCapBankControl(Cti::CapControl::PorterRequest pilRequest, CtiMultiMsg* multiMsg = NULL) override
         {
             requestMessages.emplace_back(std::move(pilRequest));
         }
@@ -57,7 +57,7 @@ struct cbc_heartbeat_fixture_core
         }
 
         std::vector<CtiMessage*>    signalMessages;
-        Cti::CapControl::CategorizedRequests requestMessages;
+        Cti::CapControl::PorterRequests requestMessages;
         Cti::CapControl::EventLogEntries eventMessages;
     }
     capController;

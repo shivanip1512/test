@@ -97,7 +97,7 @@ std::string getBankOperationCommand( const BankOperationType bankOperation, cons
     return getCommandStringForOperation(p, itr->second);
 }
 
-CategorizedRequest createBankOperationRequest( const CtiCCCapBank &capBank, const BankOperationType bankOperation )
+PorterRequest createBankOperationRequest( const CtiCCCapBank &capBank, const BankOperationType bankOperation )
 {
     auto operationCmd = getBankOperationCommand( bankOperation, capBank );
 
@@ -112,37 +112,37 @@ CategorizedRequest createBankOperationRequest( const CtiCCCapBank &capBank, cons
                 RequestType::Operate );
 }
 
-CategorizedRequest createBankOpenRequest(const CtiCCCapBank &capBank)
+PorterRequest createBankOpenRequest(const CtiCCCapBank &capBank)
 {
     return createBankOperationRequest(capBank, BankOperation_Open);
 }
 
-CategorizedRequest createBankCloseRequest(const CtiCCCapBank &capBank)
+PorterRequest createBankCloseRequest(const CtiCCCapBank &capBank)
 {
     return createBankOperationRequest(capBank, BankOperation_Close);
 }
 
-CategorizedRequest createBankFlipRequest(const CtiCCCapBank &capBank)
+PorterRequest createBankFlipRequest(const CtiCCCapBank &capBank)
 {
     return createBankOperationRequest(capBank, BankOperation_Flip);
 }
 
 
-CategorizedRequest createPorterRequestMsg(long controllerId, const string& commandString, RequestType requestType)
+PorterRequest createPorterRequestMsg(long controllerId, const string& commandString, RequestType requestType)
 {
     auto reqMsg = std::make_unique<CtiRequestMsg>(controllerId, commandString);
     reqMsg->setMessagePriority(getRequestPriority(requestType));
     return { requestType, std::move(reqMsg) };
 }
 
-CategorizedRequest createPorterRequestMsg(long controllerId, const string& commandString, RequestType requestType, const string& user)
+PorterRequest createPorterRequestMsg(long controllerId, const string& commandString, RequestType requestType, const string& user)
 {
     auto request = createPorterRequestMsg(controllerId, commandString, requestType);
     request->setUser(user);
     return request;
 }
 
-std::unique_ptr<CtiRequestMsg> extractRequestMsg(CategorizedRequest request)
+std::unique_ptr<CtiRequestMsg> extractRequestMsg(PorterRequest request)
 {
     auto msg = std::move(request.message);
 
@@ -151,7 +151,7 @@ std::unique_ptr<CtiRequestMsg> extractRequestMsg(CategorizedRequest request)
     return msg;
 }
 
-void sendPorterRequest(CtiClientConnection& porterConnection, CategorizedRequest request, CallSite callsite)
+void sendPorterRequest(CtiClientConnection& porterConnection, PorterRequest request, CallSite callsite)
 {
     if( request.message )
     {
@@ -159,7 +159,7 @@ void sendPorterRequest(CtiClientConnection& porterConnection, CategorizedRequest
     }
 }
 
-void sendPorterRequests(CtiClientConnection& porterConnection, CategorizedRequests requests, CallSite callsite)
+void sendPorterRequests(CtiClientConnection& porterConnection, PorterRequests requests, CallSite callsite)
 {
     if( ! requests.empty() )
     {
@@ -201,11 +201,11 @@ uint8_t getRequestPriority(RequestType requestType)
     }
 }
 
-std::ostream& operator<<(std::ostream& o, const CategorizedRequest& request)
+std::ostream& operator<<(std::ostream& o, const PorterRequest& request)
 {
     if( request.empty() )
     {
-        return o << "[empty CategorizedRequest]";
+        return o << "[empty PorterRequest]";
     }
     return o << "[type:" << static_cast<int>(request.type) << ",message:" << request->toString() << "]";
 }

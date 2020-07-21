@@ -29,8 +29,8 @@
 using Cti::CapControl::VoltageRegulatorManager;
 using Cti::CapControl::createPorterRequestMsg;
 using Cti::CapControl::RequestType;
-using Cti::CapControl::CategorizedRequest;
-using Cti::CapControl::CategorizedRequests;
+using Cti::CapControl::PorterRequest;
+using Cti::CapControl::PorterRequests;
 using Cti::CapControl::EventLogEntry;
 using Cti::CapControl::EventLogEntries;
 using Cti::CapControl::createBankOpenRequest;
@@ -664,7 +664,7 @@ void CtiCCCommandExecutor::syncCbcAndCapBankStates(long bankId)
 void CtiCCCommandExecutor::enableOvUv(long bankId,
                                       std::vector<CtiSignalMsg*>& signals,
                                       EventLogEntries &events,
-                                      CategorizedRequests& requests)
+                                      PorterRequests& requests)
 {
     string commandName = " Enable OvUv";
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -706,7 +706,7 @@ void CtiCCCommandExecutor::enableOvUv(long bankId,
     capBank->setOvUvDisabledFlag(false);
     subBus->setBusUpdatedFlag(true);
 
-    CategorizedRequest reqMsg;
+    PorterRequest reqMsg;
     if (cbc702)
     {
         CtiCCTwoWayPoints & points = capBank->getTwoWayPoints();
@@ -746,7 +746,7 @@ void CtiCCCommandExecutor::enableOvUv(long bankId,
 void CtiCCCommandExecutor::disableOvUv(long bankId,
                                        std::vector<CtiSignalMsg*>& signals,
                                        EventLogEntries &events,
-                                       CategorizedRequests& requests)
+                                       PorterRequests& requests)
 {
     string commandName = " Disable OvUv";
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -788,7 +788,7 @@ void CtiCCCommandExecutor::disableOvUv(long bankId,
     capBank->setOvUvDisabledFlag(true);
     subBus->setBusUpdatedFlag(true);
 
-    CategorizedRequest reqMsg;
+    PorterRequest reqMsg;
     if (cbc702)
     {
         CtiCCTwoWayPoints & points = capBank->getTwoWayPoints();
@@ -822,7 +822,7 @@ void CtiCCCommandExecutor::disableOvUv(long bankId,
     requests.emplace_back(std::move(reqMsg));
 }
 
-void CtiCCCommandExecutor::enableTempControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, CategorizedRequests& requests)
+void CtiCCCommandExecutor::enableTempControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, PorterRequests& requests)
 {
     string commandName = " Enable Temp Control";
 
@@ -862,7 +862,7 @@ void CtiCCCommandExecutor::enableTempControl(long bankId,std::vector<CtiSignalMs
     events.push_back(EventLogEntry(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capControlEnableOvUv, seqId, 1, text, _command->getUser()));
 
     //Actual Command Work
-    CategorizedRequest reqMsg;
+    PorterRequest reqMsg;
 
     if ( cbc702 )
     {
@@ -912,7 +912,7 @@ void CtiCCCommandExecutor::enableTempControl(long bankId,std::vector<CtiSignalMs
     requests.emplace_back(std::move(reqMsg));
 }
 
-void CtiCCCommandExecutor::disableTempControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, CategorizedRequests& requests)
+void CtiCCCommandExecutor::disableTempControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, PorterRequests& requests)
 {
     string commandName = " Disable Temp Control";
 
@@ -952,7 +952,7 @@ void CtiCCCommandExecutor::disableTempControl(long bankId,std::vector<CtiSignalM
     events.push_back(EventLogEntry(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capControlEnableOvUv, seqId, 1, text, _command->getUser()));
 
     //Actual Command Work
-    CategorizedRequest reqMsg;
+    PorterRequest reqMsg;
 
     if ( cbc702 )
     {
@@ -989,7 +989,7 @@ void CtiCCCommandExecutor::disableTempControl(long bankId,std::vector<CtiSignalM
     requests.emplace_back(std::move(reqMsg));
 }
 
-void CtiCCCommandExecutor::enableVarControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, CategorizedRequests& requests)
+void CtiCCCommandExecutor::enableVarControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, PorterRequests& requests)
 {
     string commandName = " Enable Var Control";
 
@@ -1029,7 +1029,7 @@ void CtiCCCommandExecutor::enableVarControl(long bankId,std::vector<CtiSignalMsg
     events.push_back(EventLogEntry(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capControlEnableOvUv, seqId, 1, text, _command->getUser()));
 
     //Actual Command Work
-    CategorizedRequest reqMsg;
+    PorterRequest reqMsg;
 
     if ( cbc702 )
     {
@@ -1065,7 +1065,7 @@ void CtiCCCommandExecutor::enableVarControl(long bankId,std::vector<CtiSignalMsg
     requests.emplace_back(std::move(reqMsg));
 }
 
-void CtiCCCommandExecutor::disableVarControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, CategorizedRequests& requests)
+void CtiCCCommandExecutor::disableVarControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, PorterRequests& requests)
 {
     string commandName = " Disable Var Control";
 
@@ -1105,7 +1105,7 @@ void CtiCCCommandExecutor::disableVarControl(long bankId,std::vector<CtiSignalMs
     events.push_back(EventLogEntry(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capControlEnableOvUv, seqId, 1, text, _command->getUser()));
 
     //Actual Command Work
-    CategorizedRequest reqMsg;
+    PorterRequest reqMsg;
 
     if ( cbc702 )
     {
@@ -1141,7 +1141,7 @@ void CtiCCCommandExecutor::disableVarControl(long bankId,std::vector<CtiSignalMs
     requests.emplace_back(std::move(reqMsg));
 }
 
-void CtiCCCommandExecutor::enableTimeControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, CategorizedRequests& requests)
+void CtiCCCommandExecutor::enableTimeControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, PorterRequests& requests)
 {
     string commandName = " Enable Time Control";
     bool implemented = false;
@@ -1182,7 +1182,7 @@ void CtiCCCommandExecutor::enableTimeControl(long bankId,std::vector<CtiSignalMs
     events.push_back(EventLogEntry(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capControlEnableOvUv, seqId, 1, text, _command->getUser()));
 
     //Actual Command Work
-    CategorizedRequest reqMsg;
+    PorterRequest reqMsg;
 
     if ( cbc702 )
     {
@@ -1232,7 +1232,7 @@ void CtiCCCommandExecutor::enableTimeControl(long bankId,std::vector<CtiSignalMs
     requests.emplace_back(std::move(reqMsg));
 }
 
-void CtiCCCommandExecutor::disableTimeControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, CategorizedRequests& requests)
+void CtiCCCommandExecutor::disableTimeControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, PorterRequests& requests)
 {
     string commandName = " Disable Time Control";
     bool implemented = false;
@@ -1273,7 +1273,7 @@ void CtiCCCommandExecutor::disableTimeControl(long bankId,std::vector<CtiSignalM
     events.push_back(EventLogEntry(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capControlEnableOvUv, seqId, 1, text, _command->getUser()));
 
     //Actual Command Work
-    CategorizedRequest reqMsg;
+    PorterRequest reqMsg;
 
     if ( cbc702 )
     {
@@ -1310,7 +1310,7 @@ void CtiCCCommandExecutor::disableTimeControl(long bankId,std::vector<CtiSignalM
     requests.emplace_back(std::move(reqMsg));
 }
 
-void CtiCCCommandExecutor::queueCapBankTimeSyncPilMessages(Cti::CapControl::CategorizedRequests& pilMessages, CapBankList capBanks)
+void CtiCCCommandExecutor::queueCapBankTimeSyncPilMessages(Cti::CapControl::PorterRequests& pilMessages, CapBankList capBanks)
 {
     static const std::string timeSyncCommand     = "putconfig timesync";
     static const std::string xcomTimeSyncCommand = "putconfig xcom timesync";
@@ -1340,7 +1340,7 @@ void CtiCCCommandExecutor::SendTimeSync()
     long paoId = _itemId;
     long controlID = 0;
     CtiMultiMsg* multi = new CtiMultiMsg();
-    CategorizedRequests pilMessages;
+    PorterRequests pilMessages;
     CtiMultiMsg_vec& pointChanges = multi->getData();
     EventLogEntries ccEvents;
 
@@ -1418,7 +1418,7 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
     //Main work of this function, split the command to every bank attached to paoId
     std::vector<CtiSignalMsg*> signals;
     EventLogEntries events;
-    CategorizedRequests requests;
+    PorterRequests requests;
 
     // Grab the collections of banks to operate on.  If the paoType is anything other than CapBank then we need to
     //  filter out the disabled banks.  If it is an individual bank, then we do want to run the command on it, even
@@ -3228,7 +3228,7 @@ void CtiCCCommandExecutor::ConfirmSubstationBus()
     long controlID = 0;
     bool found = false;
     CtiMultiMsg* multi = new CtiMultiMsg();
-    CategorizedRequests pilMessages;
+    PorterRequests pilMessages;
     CtiMultiMsg_vec& pointChanges = multi->getData();
     EventLogEntries ccEvents;
 
@@ -3342,7 +3342,7 @@ void CtiCCCommandExecutor::ConfirmSubstationBus()
 
                             if( controlID > 0 )
                             {
-                                CategorizedRequest reqMsg;
+                                PorterRequest reqMsg;
 
                                 if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending)
                                 {
@@ -3395,7 +3395,7 @@ void CtiCCCommandExecutor::ConfirmFeeder()
     long controlID = 0;
     bool found = false;
     CtiMultiMsg* multi = new CtiMultiMsg();
-    CategorizedRequests pilMessages;
+    PorterRequests pilMessages;
     CtiMultiMsg_vec& pointChanges = multi->getData();
     EventLogEntries ccEvents;
 
@@ -3509,7 +3509,7 @@ void CtiCCCommandExecutor::ConfirmFeeder()
 
                 if( controlID > 0 )
                 {
-                    CategorizedRequest reqMsg;
+                    PorterRequest reqMsg;
 
                     if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending)
                     {

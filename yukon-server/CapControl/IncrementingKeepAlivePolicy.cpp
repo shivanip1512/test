@@ -83,7 +83,7 @@ Policy::Actions IncrementingKeepAlivePolicy::EnableRemoteControl( const long kee
     LitePoint point = getPointByAttribute( Attribute::KeepAlive );
 
     actions.emplace_back( makeSignalTemplate( point.getPointId(), readKeepAliveValue(), EnableRemoteControlText ),
-                          CategorizedRequest::none() );
+                          PorterRequest::none() );
 
     return actions;
 }
@@ -95,7 +95,7 @@ Policy::Actions IncrementingKeepAlivePolicy::DisableRemoteControl()
     LitePoint point = getPointByAttribute( Attribute::KeepAlive );
 
     actions.emplace_back( makeSignalTemplate( point.getPointId(), 0, DisableRemoteControlText ),
-                          CategorizedRequest::none() );
+                          PorterRequest::none() );
 
     return actions;
 }
