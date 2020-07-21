@@ -47,10 +47,12 @@ import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorSer
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.i18n.ObjectFormattingService;
+import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.model.CustomAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.TimeZoneFormat;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
@@ -88,10 +90,11 @@ public class DataExporterFormatController {
     @Autowired private ExportFormatValidator exportFormatValidator;
     @Autowired private ExportReportGeneratorService exportReportGeneratorService;
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
     @Autowired private ToolsEventLogService toolsEventLogService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private AttributeService attributeService;
+    @Autowired private AttributeDao attributeDao;
 
     @RequestMapping(value = "/data-exporter/format/{id}", method = RequestMethod.GET)
     public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
@@ -192,8 +195,7 @@ public class DataExporterFormatController {
         
         model.addAttribute("attribute", new ExportAttribute());
         
-        Map<AttributeGroup, List<BuiltInAttribute>> groupedAttributes = 
-                objectFormattingService.sortDisplayableValues(BuiltInAttribute.getAllGroupedAttributes(), userContext);
+        Map<AttributeGroup, List<Attribute>> groupedAttributes = attributeService.getAllGroupedAttributes(userContext);
         model.addAttribute("groupedAttributes", groupedAttributes);
         model.addAttribute("dataSelection", DataSelection.values());
         
@@ -212,8 +214,7 @@ public class DataExporterFormatController {
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             
-            Map<AttributeGroup, List<BuiltInAttribute>> groupedAttributes = 
-                    objectFormattingService.sortDisplayableValues(BuiltInAttribute.getAllGroupedAttributes(), userContext);
+            Map<AttributeGroup, List<Attribute>> groupedAttributes = attributeService.getAllGroupedAttributes(userContext);
             model.addAttribute("groupedAttributes", groupedAttributes);
             model.addAttribute("dataSelection", DataSelection.values());
             
@@ -453,13 +454,42 @@ public class DataExporterFormatController {
             binder.setMessageCodesResolver(new YukonMessageCodeResolver(BASE_KEY));
         }
 
-        binder.registerCustomEditor(Attribute.class, new EnumPropertyEditor<>(BuiltInAttribute.class));
         binder.registerCustomEditor(AttributeField.class, new EnumPropertyEditor<>(AttributeField.class));
         binder.registerCustomEditor(FieldType.class, new EnumPropertyEditor<>(FieldType.class));
         binder.registerCustomEditor(MissingAttribute.class, new EnumPropertyEditor<>(MissingAttribute.class));
         binder.registerCustomEditor(PadSide.class, new EnumPropertyEditor<>(PadSide.class));
         binder.registerCustomEditor(YukonRoundingMode.class, new EnumPropertyEditor<>(YukonRoundingMode.class));
         
+        binder.registerCustomEditor(Attribute.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String attributeString) throws IllegalArgumentException {
+                if (attributeString == null || attributeString.length() < 1) {
+                    setValue(null);
+                    return;
+                }
+                try {
+                    BuiltInAttribute bAtt = BuiltInAttribute.valueOf(attributeString);
+                    setValue(bAtt);
+                } catch (IllegalArgumentException e) {
+                    CustomAttribute cAtt = attributeDao.getCustomAttribute(Integer.parseInt(attributeString));
+                    setValue(cAtt);
+                }
+            }
+            @Override
+            public String getAsText() {
+                Attribute attribute;
+                attribute = (BuiltInAttribute) getValue();
+                if (attribute == null) {
+                    attribute = (CustomAttribute) getValue();
+                }
+                try {
+                    return JsonUtils.toJson(attribute);
+                } catch (JsonProcessingException e) {
+                    log.error("Unable to convert Attribute to JSON", e);
+                    return "";
+                }
+            }
+        });
         binder.registerCustomEditor(Field.class, new PropertyEditorSupport() {
             @Override
             public void setAsText(String fieldString) throws IllegalArgumentException {

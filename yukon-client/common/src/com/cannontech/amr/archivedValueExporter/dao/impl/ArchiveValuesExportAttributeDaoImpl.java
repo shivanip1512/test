@@ -9,6 +9,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportAttributeDao;
 import com.cannontech.amr.archivedValueExporter.model.DataSelection;
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.model.CustomAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
@@ -24,6 +27,7 @@ public class ArchiveValuesExportAttributeDaoImpl implements ArchiveValuesExportA
     private final YukonRowMapper<ExportAttribute> rowMapper = createRowMapper();
     @Autowired  private NextValueHelper nextValueHelper;
     @Autowired  private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired AttributeService attributeService;
 
     @Override
     public ExportAttribute create(ExportAttribute attribute) {
@@ -32,7 +36,11 @@ public class ArchiveValuesExportAttributeDaoImpl implements ArchiveValuesExportA
         SqlParameterSink sink = sql.insertInto(TABLE_NAME);
         sink.addValue("AttributeID", attribute.getAttributeId());
         sink.addValue("FormatID", attribute.getFormatId());
-        sink.addValue("AttributeName", attribute.getAttribute());
+        if (attribute.getAttribute() instanceof CustomAttribute) {
+            sink.addValue("AttributeName", ((CustomAttribute) attribute.getAttribute()).getId());
+        } else if (attribute.getAttribute() instanceof BuiltInAttribute) {
+            sink.addValue("AttributeName", ((BuiltInAttribute) attribute.getAttribute()).name());
+        }
         sink.addValue("DataSelection", attribute.getDataSelection().name());
         sink.addValue("DaysPrevious",  attribute.getDaysPrevious());
         yukonJdbcTemplate.update(sql);
@@ -70,8 +78,7 @@ public class ArchiveValuesExportAttributeDaoImpl implements ArchiveValuesExportA
                 final ExportAttribute attribute = new ExportAttribute();
                 attribute.setFormatId(rs.getInt("FormatID"));
                 attribute.setAttributeId(rs.getInt("AttributeID"));
-            //    Carrie
-           //     attribute.setAttribute(rs.getString("AttributeName"));
+                attribute.setAttribute(attributeService.parseAttribute(rs.getString("AttributeName")));
                 attribute.setDataSelection(rs.getEnum("DataSelection", DataSelection.class));
                 attribute.setDaysPrevious(rs.getInt("DaysPrevious"));
                 return attribute;
