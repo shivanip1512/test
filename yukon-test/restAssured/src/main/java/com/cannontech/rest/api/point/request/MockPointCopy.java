@@ -13,7 +13,8 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class MockAccumulatorPoint extends MockScalarPoint {
-
-    private MockPointAccumulator accumulatorPoint;
+public class MockPointCopy {
+    private Integer paoId;
+    private String pointName;
+    private Integer pointOffset;
 }

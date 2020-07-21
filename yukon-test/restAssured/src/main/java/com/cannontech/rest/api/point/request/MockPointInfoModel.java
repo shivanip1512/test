@@ -1,5 +1,8 @@
 package com.cannontech.rest.api.point.request;
 
+import java.util.Set;
+
+import com.cannontech.rest.api.deviceReadings.request.MockBuiltInAttribute;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -13,7 +16,10 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class MockAccumulatorPoint extends MockScalarPoint {
-
-    private MockPointAccumulator accumulatorPoint;
+public class MockPointInfoModel {
+    private int pointId;
+    private String name;
+    private MockPointIdentifier pointIdentifier;
+    private int stateGroupId;
+    private Set<MockBuiltInAttribute> attributes;
 }
