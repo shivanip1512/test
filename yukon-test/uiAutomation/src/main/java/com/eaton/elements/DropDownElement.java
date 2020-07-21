@@ -93,18 +93,9 @@ public class DropDownElement {
      }
     
     public String getSelectedValue() {
-    	List<WebElement> options = this.driverExt.findElements(By.tagName("option"), Optional.empty());
-    	String selectedDropDownValue = "";
-    	boolean bValue = false;
-    	for (int i=0;i<options.size();i++)
-    	{
-    		bValue = options.get(i).isSelected();
-    		if(bValue==true) {
-    			selectedDropDownValue = options.get(i).getText();
-    			break;
-    		}
-    	}
-    	return selectedDropDownValue;
+    	List<WebElement> elements = getSelectElement().findElements(By.tagName("option"));
+    	WebElement element = elements.stream().filter(x -> x.isSelected()).findFirst().orElseThrow();
+    	return element.getText();
     }
 }
 
