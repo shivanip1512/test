@@ -154,25 +154,5 @@ public class CalcStatusPointTest extends StatusPointApiTest {
                       "baselineId does not exist."), "Expected code in response is not correct");
     }
 
-    /**
-     * Test case to validate Calc Status Point cannot be created with invalid point id i.e. Point id is not of calc Status type.
-     * and validates valid error message in response
-     */
-    @Test
-    public void calcStatusPoint_06_InvalidPointId() {
-        MockCalcStatusPointModel mockCalcStatusPointModel = (MockCalcStatusPointModel) PointHelper.buildPoint(pointType);
-
-        List<MockCalculationComponent> mockCalcComponents=mockCalcStatusPointModel.getCalcComponents();
-        MockCalculationComponent mockCalcComponent=mockCalcComponents.get(0);
-        mockCalcComponent.setOperation(MockCalcOperation.ADDITION_FUNCTION);
-        mockCalcComponent.setOperand(12444.0);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockCalcStatusPointModel);
-        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
-        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
-                "Expected message should be - Validation error");
-        assertTrue(
-                ValidationHelper.validateFieldError(createResponse, "calcComponents[0].operand",
-                        "Point Id should be of type " +mockCalcStatusPointModel.getPointType()+ "."), "Expected code in response is not correct");
-    }
 
 }

@@ -23,7 +23,7 @@ public class PointCreateApiValidator<T extends PointBaseModel<?>> extends Simple
         // Check if point Type is NULL
         YukonValidationUtils.checkIfFieldRequired("pointType", errors, pointBase.getPointType(), "Point Type");
         // Check if point Name is NULL
-        YukonValidationUtils.checkIfFieldRequired("pointName", errors, pointBase.getPointName(), "Point Name");
+        YukonValidationUtils.checkIfFieldRequired("pointName", errors, pointBase.getPointName(), "Name");
         // Check if pointOffset is NULL
         YukonValidationUtils.checkIfFieldRequired("pointOffset", errors, pointBase.getPointOffset(), "Point Offset");
         // Check if paoId is NULL
