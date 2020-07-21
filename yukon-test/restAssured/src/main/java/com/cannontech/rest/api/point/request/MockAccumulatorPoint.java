@@ -15,5 +15,5 @@ import lombok.experimental.SuperBuilder;
 @RequiredArgsConstructor
 public class MockAccumulatorPoint extends MockScalarPoint {
 
-    MockPointAccumulator pointAccumulator;
+    private MockPointAccumulator accumulatorPoint;
 }

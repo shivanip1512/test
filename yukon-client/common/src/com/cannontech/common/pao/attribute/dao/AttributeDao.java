@@ -2,8 +2,13 @@ package com.cannontech.common.pao.attribute.dao;
 
 import java.util.List;
 
+import com.cannontech.common.exception.DataDependencyException;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
+import com.cannontech.common.pao.attribute.model.AttributeAssignmentRequest;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.core.dao.DuplicateException;
 
 public interface AttributeDao {
 
@@ -12,14 +17,14 @@ public interface AttributeDao {
      * 
      * @throws DuplicateException - if attribute name already exists
      */
-    void saveCustomAttribute(CustomAttribute attribute);
+    public void saveCustomAttribute(CustomAttribute attribute);
 
     /**
      * Deletes custom attribute
      * 
-     * @return number of rows deleted. If 0 is returned row was not deleted.
+     * @throws DataDependencyException
      */
-    int deleteCustomAttribute(int attributeId);
+    void deleteCustomAttribute(int attributeId) throws DataDependencyException;
 
     /**
      * Returns the list of attributes
@@ -32,7 +37,7 @@ public interface AttributeDao {
      * @throws DuplicateException - if assignment has either same attribute assigned to multiple points on the same device or
      *                            multiple entries with the exact same mapping
      */
-    void saveAttributeAssignment(AttributeAssignment assignment);
+    void saveAttributeAssignment(AttributeAssignmentRequest assignment);
 
     /**
      * Deletes attribute assignment
@@ -42,5 +47,20 @@ public interface AttributeDao {
     /**
      * Returns attribute assignment
      */
-    AttributeAssignment getAttributeAssignmentById(int attributeAssignmentId);
+    AttributeAssignment getAssignmentById(int attributeAssignmentId);
+
+    /**
+     * Returns custom attribute
+     */
+    CustomAttribute getCustomAttribute(int attributeId);
+
+    /**
+     * Returns Point Identifier for attributeId and paoType
+     */
+    PointIdentifier getPointIdentifier(int attributeId, PaoType paoType);
+
+    /**
+     * Returns PaoType by Attribute Id
+     */
+    PaoType getPaoTypeByAttributeId(int attributeId);
 }

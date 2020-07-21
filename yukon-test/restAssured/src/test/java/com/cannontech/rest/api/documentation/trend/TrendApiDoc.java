@@ -29,7 +29,7 @@ public class TrendApiDoc extends DocumentationBase {
 
     private String trendId = null;
     public final static String idStr = "trendId";
-    public final static String idDescStr = "Trend Id";
+    public final static String idDescStr = "Trend Id.";
     
     private MockTrendModel getMockObject() {
         return TrendHelper.buildTrend();
@@ -43,17 +43,17 @@ public class TrendApiDoc extends DocumentationBase {
         FieldDescriptor[] trendFieldDescriptor = new FieldDescriptor[] {
                 fieldWithPath("name")
                     .type(JsonFieldType.STRING)
-                    .description("Trend Name"),
+                    .description("Trend Name."),
                 fieldWithPath("trendSeries[].type")
                     .type(JsonFieldType.STRING)
                     .optional()
                     .description("Graph Type. Expected: BASIC_TYPE, USAGE_TYPE, PEAK_TYPE, YESTERDAY_TYPE, MARKER_TYPE, DATE_TYPE. Default Type: BASIC_TYPE."),
                 fieldWithPath("trendSeries[].pointId")
                     .type(JsonFieldType.NUMBER)
-                    .description("Point ID. Point Id for MARKER_TYPE is -100."),
+                    .description("Point Id. Point Id for MARKER_TYPE is -100."),
                 fieldWithPath("trendSeries[].label")
                     .type(JsonFieldType.STRING)
-                    .description("Label for the selected point. If not provided, a default label will be generated as 'Device name / Point name'. Max length 40 characters."),
+                    .description("Label for the selected point. If not provided, a default Label will be generated as 'Device name / Point name'. Max length 40 characters."),
                 fieldWithPath("trendSeries[].color")
                     .type(JsonFieldType.STRING)
                     .optional()
@@ -65,7 +65,7 @@ public class TrendApiDoc extends DocumentationBase {
                 fieldWithPath("trendSeries[].multiplier")
                     .type(JsonFieldType.NUMBER)
                     .optional()
-                    .description("Multiplier. Default Value: 1"),
+                    .description("Multiplier. Default Value: 1."),
                 fieldWithPath("trendSeries[].style")
                     .type(JsonFieldType.STRING)
                     .optional()

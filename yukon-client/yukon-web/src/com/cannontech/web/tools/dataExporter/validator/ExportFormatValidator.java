@@ -7,6 +7,7 @@ import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFormatDao
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.dataExporter.DataExporterFormatController;
 
 public class ExportFormatValidator extends SimpleValidator<ExportFormat> {
