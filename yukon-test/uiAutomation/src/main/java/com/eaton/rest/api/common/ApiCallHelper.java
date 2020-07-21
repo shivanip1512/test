@@ -37,6 +37,22 @@ public class ApiCallHelper {
                 return getHeader().delete(pathParam + id).then().log().all().extract();
     }
     
+    /**
+     * Returns <code>ExtractableResponse</code> by invoking corresponding HTTP PUT method for specified URI
+     * and request parameter.
+     */
+    public static ExtractableResponse<?> put(String pathParam, Object body) {
+        return getHeader().body(body).put(pathParam).then().log().all().extract();
+    }
+    
+    /**
+     * Returns <code>ExtractableResponse</code> by invoking corresponding HTTP PATCH method for specified URI
+     * and request parameter.
+     */
+    public static ExtractableResponse<?> patch(String pathParam, Object body) {
+        return getHeader().body(body).when().patch(pathParam).then().log().all().extract();
+    }
+    
     private static RequestSpecification getHeader() {
         return given().accept("application/json").contentType("application/json").header("Authorization",
             "Bearer " + authToken).log().all();
