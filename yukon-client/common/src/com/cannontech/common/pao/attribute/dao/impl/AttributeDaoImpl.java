@@ -12,9 +12,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.dao.AttributeDao;
+import com.cannontech.common.pao.attribute.model.Assignment;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
-import com.cannontech.common.pao.attribute.model.AttributeAssignmentRequest;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
@@ -55,24 +55,27 @@ public class AttributeDaoImpl implements AttributeDao {
         sql.append("JOIN CustomAttribute ca ON aa.AttributeId = ca.AttributeId");
         List<AttributeAssignment> assignments = jdbcTemplate.query(sql, attributeAssignmentMapper);
         assignments.forEach(assignment -> {
-            Pair<Integer, PaoType> pair = Pair.of(assignment.getCustomAttribute().getId(), assignment.getPaoType());
-            attributeToPoint.put(pair, assignment.getPointIdentifier());
-            paoAndPointToAttribute.put(PaoTypePointIdentifier.of(assignment.getPaoType(), assignment.getPointIdentifier()),
+            PointIdentifier pointIdent = new PointIdentifier(assignment.getPointType(), assignment.getOffset());
+            Pair<Integer, PaoType> pair = Pair.of(assignment.getCustomAttribute().getCustomAttributeId(),
+                    assignment.getPaoType());
+            attributeToPoint.put(pair, pointIdent);
+            paoAndPointToAttribute.put(PaoTypePointIdentifier.of(assignment.getPaoType(), pointIdent),
                     assignment.getCustomAttribute());
         });
     }
- 
+
     public static YukonRowMapper<AttributeAssignment> attributeAssignmentMapper = rs -> {
         AttributeAssignment row = new AttributeAssignment();
         row.setAttributeAssignmentId(rs.getInt("AttributeAssignmentId"));
         row.setCustomAttribute(new CustomAttribute(rs.getInt("AttributeId"), rs.getStringSafe("AttributeName")));
         row.setPaoType(rs.getEnum("PaoType", PaoType.class));
-        row.setPointIdentifier(new PointIdentifier(rs.getEnum("PointType", PointType.class), rs.getInt("PointOffset")));
+        row.setOffset(rs.getInt("PointOffset"));
+        row.setPointType(rs.getEnum("PointType", PointType.class));
         return row;
     };
     
     @Override
-    public void saveAttributeAssignment(AttributeAssignmentRequest assignment) {        
+    public void saveAttributeAssignment(Assignment assignment) {        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT AttributeAssignmentId");
         sql.append("FROM AttributeAssignment");
@@ -93,11 +96,11 @@ public class AttributeDaoImpl implements AttributeDao {
         cacheAttributes();
     }
 
-    private void addAssignmentParameters(SqlParameterSink params, AttributeAssignmentRequest assignment) {
+    private void addAssignmentParameters(SqlParameterSink params, Assignment assignment) {
         params.addValue("AttributeId", assignment.getAttributeId());
         params.addValue("PaoType", assignment.getPaoType());
-        params.addValue("PointType", assignment.getPointIdentifier().getPointType());
-        params.addValue("PointOffset", assignment.getPointIdentifier().getOffset());
+        params.addValue("PointType", assignment.getPointType());
+        params.addValue("PointOffset", assignment.getOffset());
     }
 
     @Override
@@ -134,14 +137,14 @@ public class AttributeDaoImpl implements AttributeDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT AttributeId");
         sql.append("FROM CustomAttribute");
-        sql.append("WHERE AttributeId").eq(attribute.getId());
+        sql.append("WHERE AttributeId").eq(attribute.getCustomAttributeId());
 
         SqlStatementBuilder updateCreateSql = new SqlStatementBuilder();
         try {
             jdbcTemplate.queryForInt(sql);
             SqlParameterSink params = updateCreateSql.update("CustomAttribute");
             params.addValue("AttributeName", attribute.getName());
-            updateCreateSql.append("WHERE AttributeId").eq(attribute.getId());
+            updateCreateSql.append("WHERE AttributeId").eq(attribute.getCustomAttributeId());
         } catch (EmptyResultDataAccessException e) {
             SqlParameterSink params = updateCreateSql.insertInto("CustomAttribute");
             params.addValue("AttributeId", nextValueHelper.getNextValue("CustomAttribute"));
@@ -177,7 +180,7 @@ public class AttributeDaoImpl implements AttributeDao {
         return paoAndPointToAttribute.values()
                 .stream()
                 .distinct()
-                .filter(cachedAttribute -> attributeId == cachedAttribute.getId())
+                .filter(cachedAttribute -> attributeId == cachedAttribute.getCustomAttributeId())
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Attribute id:"+ attributeId +"is not in cache"));
     }

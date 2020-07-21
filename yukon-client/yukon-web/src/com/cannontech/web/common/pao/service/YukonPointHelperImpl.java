@@ -73,12 +73,10 @@ public class YukonPointHelperImpl implements YukonPointHelper {
     private List<LiteYukonPoint> getYukonPointsForSorting(final YukonPao pao) {
         List<LitePoint> points = pointDao.getLitePointsByPaObjectId(pao.getPaoIdentifier().getPaoId());
         return points.stream().map(point -> {
-            PointIdentifier pointIdent = new PointIdentifier(point.getPointTypeEnum(), point.getPointOffset());
-            PaoPointIdentifier paoPointIdent = new PaoPointIdentifier(pao.getPaoIdentifier(), pointIdent);
-            PaoTypePointIdentifier paoTypePointIdent = PaoTypePointIdentifier.of(pao.getPaoIdentifier().getPaoType(), pointIdent);
-            Set<BuiltInAttribute> attributes = paoDefinitionDao.findAttributeForPaoTypeAndPoint(paoTypePointIdent);
+            PaoPointIdentifier paoPointIdent = new PaoPointIdentifier(pao.getPaoIdentifier(), new PointIdentifier(point.getPointTypeEnum(), point.getPointOffset()));
+            Set<BuiltInAttribute> attributes = paoDefinitionDao.findAttributeForPaoTypeAndPoint(paoPointIdent.getPaoTypePointIdentifier());
             Attribute attribute = !attributes.isEmpty() ? attributes.iterator().next() : attributeDao
-                    .findAttributeForPaoTypeAndPoint(paoTypePointIdent);
+                    .findAttributeForPaoTypeAndPoint(paoPointIdent.getPaoTypePointIdentifier());
             return LiteYukonPoint.of(paoPointIdent, attribute, point.getPointName(), point.getLiteID());
         }).collect(Collectors.toList());
     }
