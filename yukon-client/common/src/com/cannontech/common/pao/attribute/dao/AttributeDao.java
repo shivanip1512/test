@@ -4,9 +4,11 @@ import java.util.List;
 
 import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
 import com.cannontech.common.pao.attribute.model.AttributeAssignmentRequest;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
+import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.dao.DuplicateException;
 
@@ -63,4 +65,9 @@ public interface AttributeDao {
      * Returns PaoType by Attribute Id
      */
     PaoType getPaoTypeByAttributeId(int attributeId);
+
+    /**
+     * Returns attribute for PaoType and Point
+     */
+    Attribute findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier);
 }

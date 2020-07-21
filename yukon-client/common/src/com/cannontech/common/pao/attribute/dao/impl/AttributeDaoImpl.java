@@ -12,10 +12,12 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.dao.AttributeDao;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
 import com.cannontech.common.pao.attribute.model.AttributeAssignmentRequest;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
+import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
@@ -32,7 +34,7 @@ public class AttributeDaoImpl implements AttributeDao {
     @Autowired private NextValueHelper nextValueHelper;
 
     private final Cache<Pair<Integer, PaoType>, PointIdentifier> attributeToPoint = CacheBuilder.newBuilder().build();
-    private final Cache<Integer, CustomAttribute> idToAttribute = CacheBuilder.newBuilder().build();
+    private final Cache<PaoTypePointIdentifier, CustomAttribute> paoAndPointToAttribute = CacheBuilder.newBuilder().build();
 
     @PostConstruct
     public void init() {
@@ -44,16 +46,8 @@ public class AttributeDaoImpl implements AttributeDao {
      */
     private void cacheAttributes() {
         attributeToPoint.invalidateAll();
-        idToAttribute.invalidateAll();
+        paoAndPointToAttribute.invalidateAll();
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT AttributeId, AttributeName");
-        sql.append("FROM CustomAttribute");
-        List<CustomAttribute> attributes = jdbcTemplate.query(sql, customAttributeMapper);
-        if(attributes.isEmpty()) {
-            return;
-        }
-        attributes.forEach(attribute -> idToAttribute.put(attribute.getId(), attribute));
-        sql = new SqlStatementBuilder();
         sql.append("SELECT AttributeAssignmentId, aa.AttributeId, AttributeName, PaoType, PointType, PointOffset");
         sql.append("FROM AttributeAssignment aa");
         sql.append("JOIN CustomAttribute ca ON aa.AttributeId = ca.AttributeId");
@@ -61,13 +55,11 @@ public class AttributeDaoImpl implements AttributeDao {
         assignments.forEach(assignment -> {
             Pair<Integer, PaoType> pair = Pair.of(assignment.getCustomAttribute().getId(), assignment.getPaoType());
             attributeToPoint.put(pair, assignment.getPointIdentifier());
+            paoAndPointToAttribute.put(PaoTypePointIdentifier.of(assignment.getPaoType(), assignment.getPointIdentifier()),
+                    assignment.getCustomAttribute());
         });
     }
-    
-    private YukonRowMapper<CustomAttribute> customAttributeMapper = rs -> {
-        return new CustomAttribute(rs.getInt("AttributeId"), rs.getStringSafe("AttributeName"));
-    };
-    
+ 
     public static YukonRowMapper<AttributeAssignment> attributeAssignmentMapper = rs -> {
         AttributeAssignment row = new AttributeAssignment();
         row.setAttributeAssignmentId(rs.getInt("AttributeAssignmentId"));
@@ -172,14 +164,18 @@ public class AttributeDaoImpl implements AttributeDao {
 
     @Override
     public List<CustomAttribute> getCustomAttributes() {
-        return idToAttribute.asMap().values().stream()
+        return paoAndPointToAttribute.asMap().values().stream()
                 .sorted((e1, e2) -> e1.getName().compareTo(e2.getName()))
                 .collect(Collectors.toList()); 
     }
     
     @Override
     public CustomAttribute getCustomAttribute(int attributeId) {
-        return idToAttribute.getIfPresent(attributeId);
+        return paoAndPointToAttribute.asMap().values()
+                .stream()
+                .filter(cachedAttribute -> attributeId == cachedAttribute.getId())
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Attribute id:"+ attributeId +"is not in cache"));
     }
     
     @Override
@@ -190,5 +186,10 @@ public class AttributeDaoImpl implements AttributeDao {
             .map(pair -> pair.getValue())
             .findFirst()
             .orElseThrow(() -> new NotFoundException("Attribute id:"+ attributeId +"is not in cache"));
+    }
+    
+    @Override
+    public Attribute findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier) {
+        return paoAndPointToAttribute.getIfPresent(paoTypePointIdentifier);
     }
 }
