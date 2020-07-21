@@ -1,6 +1,10 @@
 package com.cannontech.web.contextualMenu;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 
 /**
  * Used as the applicability decider for all meter MenuEntry's
@@ -15,11 +19,12 @@ import com.cannontech.common.pao.PaoIdentifier;
  *        <constructor-arg value="ARCHIVED_DATA_EXPORT"/>
  *    </bean>
  */
-public class MeterEventsDevicesMenuDecider implements MenuTypeApplicabilityDecider {
+public class EventsMenuDecider implements MenuTypeApplicabilityDecider {
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
 
     @Override
     public boolean isApplicable(PaoIdentifier paoIdentifier) {
-        return paoIdentifier.getPaoType().isMeter() || paoIdentifier.getPaoType().isRfRelay()
-                || paoIdentifier.getPaoType().isRfGateway();
+        return paoIdentifier.getPaoType().isMeter()
+                || paoDefinitionDao.isTagSupported(paoIdentifier.getPaoType(), PaoTag.RFN_EVENTS);
     }
 }

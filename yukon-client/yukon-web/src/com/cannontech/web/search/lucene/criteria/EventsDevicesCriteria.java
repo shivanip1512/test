@@ -8,9 +8,9 @@ import com.cannontech.common.pao.PaoType;
  * Criteria used to filter devices and return only devices that are meters or relays or gateways
  * 
  */
-public class MeterEventsDevicesCriteria extends YukonObjectCriteriaHelper {
+public class EventsDevicesCriteria extends YukonObjectCriteriaHelper {
 
-    public MeterEventsDevicesCriteria() {
+    public EventsDevicesCriteria() {
         addCriteria("isMeter", "true", BooleanClause.Occur.SHOULD);
         for (PaoType relay : PaoType.getRfRelayTypes()) {
             addCriteria("type", relay.getDbString(), BooleanClause.Occur.SHOULD);

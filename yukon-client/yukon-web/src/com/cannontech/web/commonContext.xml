@@ -95,7 +95,7 @@
     </bean>
      <bean name="meterEventsDevicesPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
         <property name="criteria">
-            <bean class="com.cannontech.web.search.lucene.criteria.MeterEventsDevicesCriteria"/>
+            <bean class="com.cannontech.web.search.lucene.criteria.EventsDevicesCriteria"/>
         </property>
     </bean>
     <bean name="waterMeterPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">

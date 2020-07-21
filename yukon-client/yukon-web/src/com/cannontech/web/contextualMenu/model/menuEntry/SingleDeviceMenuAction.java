@@ -10,7 +10,7 @@ import com.cannontech.web.contextualMenu.CollectionCategory;
 public class SingleDeviceMenuAction extends DeviceMenuAction {
 
     public SingleDeviceMenuAction(String baseUrl) {
-        this(baseUrl, true, defaultDeviceIdParamName, defaultDeviceIdParamName, null);
+        this(baseUrl, defaultDeviceIdParamName, defaultDeviceIdParamName, null);
     }
 
     public SingleDeviceMenuAction(String baseUrl, Boolean appendParamName) {
@@ -18,22 +18,28 @@ public class SingleDeviceMenuAction extends DeviceMenuAction {
     }
 
     public SingleDeviceMenuAction(String baseUrl, YukonRole requiredRole) {
-        this(baseUrl, true, defaultDeviceIdParamName, defaultDeviceIdParamName, requiredRole);
+        this(baseUrl, defaultDeviceIdParamName, defaultDeviceIdParamName, requiredRole);
     }
 
     public SingleDeviceMenuAction(String baseUrl, YukonRoleProperty... requiredRoleProperties) {
-        this(baseUrl, true, defaultDeviceIdParamName, defaultDeviceIdParamName, null, requiredRoleProperties);
+        this(baseUrl, defaultDeviceIdParamName, defaultDeviceIdParamName, null, requiredRoleProperties);
     }
 
     public SingleDeviceMenuAction(String baseUrl, YukonRole requiredRole,
             YukonRoleProperty... requiredRoleProperties) {
-        this(baseUrl, true, defaultDeviceIdParamName, defaultDeviceIdParamName, requiredRole, requiredRoleProperties);
+        this(baseUrl, defaultDeviceIdParamName, defaultDeviceIdParamName, requiredRole, requiredRoleProperties);
     }
 
     public SingleDeviceMenuAction(String baseUrl, String inputParamName,
             YukonRole requiredRole,
             YukonRoleProperty... requiredRoleProperties) {
-        this(baseUrl, true, inputParamName, inputParamName, requiredRole, requiredRoleProperties);
+        this(baseUrl, inputParamName, inputParamName, requiredRole, requiredRoleProperties);
+    }
+    
+    public SingleDeviceMenuAction(String baseUrl, String inputParamName, String outputParamName,
+            YukonRole requiredRole,
+            YukonRoleProperty... requiredRoleProperties) {
+        this(baseUrl, true, inputParamName, outputParamName, requiredRole, requiredRoleProperties);
     }
 
     public SingleDeviceMenuAction(String baseUrl, Boolean appendParamName, String inputParamName, String outputParamName,

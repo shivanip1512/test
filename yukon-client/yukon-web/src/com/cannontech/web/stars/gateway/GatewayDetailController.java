@@ -18,6 +18,8 @@ import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.gateway.DataSequence;
 import com.cannontech.common.rfn.model.NmCommunicationException;
@@ -54,6 +56,7 @@ public class GatewayDetailController {
     @Autowired private GatewayEventLogService gatewayEventLogService;
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private PointDao pointDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     
     @RequestMapping("/gateways/{id}")
     public String detail(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
@@ -96,7 +99,9 @@ public class GatewayDetailController {
         model.addAttribute("gatewayPaoTypes", PaoType.getRfGatewayTypes());
         model.addAttribute("relayPaoTypes", PaoType.getRfRelayTypes());
         model.addAttribute("wifiPaoTypes", PaoType.getWifiTypes());
-        model.addAttribute("showEvents", gateway.getPaoIdentifier().getPaoType() != PaoType.RFN_GATEWAY);
+        model.addAttribute("showEvents",
+                paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.RFN_EVENTS).contains(gateway.getPaoIdentifier().getPaoType()));
+        
         
         model.addAttribute("mileValues", NearbyMiles.values());
         
