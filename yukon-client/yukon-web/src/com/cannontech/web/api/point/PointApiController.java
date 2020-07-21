@@ -87,17 +87,18 @@ public class PointApiController <T extends PointBaseModel<?>> {
 
     @GetMapping("/devices/{paoId}/points")
     public ResponseEntity<Object> getPoints(@PathVariable int paoId , 
-            @RequestParam(value = "types", required = false) List<PointType> types,
-            @RequestParam(value = "pointNames", required = false) List<String> pointNames,
-            @DefaultSort(dir = Direction.asc, sort = "pointName") SortingParameters sorting,
-            @DefaultItemsPerPage(value = 250) PagingParameters paging,
-            HttpServletRequest request) {
+                                            @RequestParam(value = "types", required = false) List<PointType> types,
+                                            @RequestParam(value = "pointNames", required = false) List<String> pointNames,
+                                            @DefaultSort(dir = Direction.asc, sort = "pointName") SortingParameters sorting,
+                                            @DefaultItemsPerPage(value = 250) PagingParameters paging,
+                                            HttpServletRequest request) {
+
         pointHelper.verifyRoles(getYukonUserContext(request).getYukonUser(), HierarchyPermissionLevel.VIEW);
 
         // Fetch valid sort by
         SortBy sortBy = getValidSortBy(sorting.getSort());
 
-        DevicePointsFilter filter = new DevicePointsFilter(types,pointNames);
+        DevicePointsFilter filter = new DevicePointsFilter(types, pointNames);
         Direction direction = sorting.getDirection();
         return new ResponseEntity<>(pointEditorService.getDevicePointDetail(paoId, filter, direction, sortBy, paging), HttpStatus.OK);
     }
