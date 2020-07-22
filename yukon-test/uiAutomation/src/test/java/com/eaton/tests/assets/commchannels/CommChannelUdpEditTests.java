@@ -461,7 +461,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
     public void commChannelUdpEdit_UpdateAllFieldsSuccess() {
         String expectedModalTitle = "Edit " + commChannelName;
         String commChannelName = "CommChannel_Udp_Update";
-        String baudRate = "BAUD_4800";
+        String baudRate = "4800";
         String configFieldsValues[] = { "55", "10", "20", "15", "500" };
         String tabName = "Configuration";
 
@@ -483,7 +483,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         
         softly.assertThat(userMsg).isEqualTo(commChannelName + " saved successfully.");
         softly.assertThat(response.path("name").toString()).isEqualTo(commChannelName);
-        softly.assertThat(response.path("baudRate").toString()).isEqualTo(baudRate);
+        softly.assertThat(response.path("baudRate").toString()).isEqualTo("BAUD_"+baudRate);
         softly.assertThat(response.path("timing.preTxWait").toString()).isEqualTo((configFieldsValues[0]));
         softly.assertThat(response.path("timing.rtsToTxWait").toString()).isEqualTo((configFieldsValues[1]));
         softly.assertThat(response.path("timing.postTxWait").toString()).isEqualTo((configFieldsValues[2]));
