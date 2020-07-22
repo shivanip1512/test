@@ -66,7 +66,10 @@ public class SeleniumTestSetup {
 
             setDriver(new DriverFactory().getWebDriver(configFileReader.getBrowser(),
                     Boolean.parseBoolean(configFileReader.getUseRemoteDriver()),
-                    Boolean.parseBoolean(configFileReader.getRunHeadless())));
+                    Boolean.parseBoolean(configFileReader.getRunHeadless()),
+                    configFileReader.getProxy(),
+                    configFileReader.getProxyFlag()
+                    ));
             setDriverExt();
             setScreenShotPath(configFileReader.getScreenShotPath());
         } catch (Exception ex) {

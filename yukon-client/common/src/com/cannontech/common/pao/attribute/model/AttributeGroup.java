@@ -7,6 +7,7 @@ public enum AttributeGroup implements DisplayableEnum {
     BLINK_AND_OUTAGE,
     CAPCONTROL,
     CURRENT,
+    CUSTOM,
     DEMAND,
     ITRON,
     OTHER,

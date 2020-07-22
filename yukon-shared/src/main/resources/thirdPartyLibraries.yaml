@@ -4951,19 +4951,19 @@ Network Manager :
     jira : NM-885
     notes : 
 
-  - filename : quartz-1.6.4.jar
+  - filename : quartz-2.3.0-SNAPSHOT.jar
     yukon group : Scheduling
     project : Quartz
-    version : 1.6.4
+    version : 2.3.0
     project URL : "http://www.quartz-scheduler.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.quartz-scheduler/quartz"
-    md5 : 69f2b06f0f8d4d8bf78ad0ac418dc623
-    sha1 : 333dc5c5b65d89d5cf64759f5f8b939d6e3279c6
-    updated : 2009-02-10
-    jira : none
-    notes : 
+    md5 : a9c2bcf5ed6b2c8b6ca315a545d01261
+    sha1 : a090397102a12f6241177c5d501835334bb7662a
+    updated : 2020-07-10
+    jira : NM-1559
+    notes : Quartz is used for scheduling the jobs.
 
   - filename : reactive-streams-1.0.2.jar
     yukon group : Spring
@@ -5910,9 +5910,9 @@ C++ :
     
   - project : OpenSSL
     path : OPENSSL
-    version : 1.1.1d
+    version : 1.1.1g
     project URL : "https://www.openssl.org/"
-    license : BSD-style
+    license : Apache 2.0
     license URLs : "https://github.com/openssl/openssl/blob/e216bf9d7ca761718f34e8b3094fcb32c7a143e4/LICENSE"
     md5 : 3f0767ccd6a78251d62a12ef5fbea75d
     sha1 : f9d68f06ad869adf29f70edafc36095a5a646a5e
@@ -5920,20 +5920,20 @@ C++ :
     totalSize : 10019274
     updated : 2020-07-14  
     jira : YUK-22506
-    notes : Since transitioned to Apache 2.0 license
+    notes : 
     
   - project : Eaton Remote Meter Programming Converter
     path : RMP_CONVERTER
-    version : 1.0
+    version : 1.0.2
     project URL : none
     license : Eaton-owned
     license URLs : none
-    md5 : 15cbdcec65264af23738261965cce359
-    sha1 : cacf1f02b964bd8166a4056ae51f4636fbf9bae6
-    fileCount : 3
-    totalSize : 57814
-    updated : 2020-06-15
-    jira : YUK-22351
+    md5 : 2bca7e9542592b2901af9477c1a5333c
+    sha1 : 4fe99a1af377a806888a7f1f943155f0c2281797
+    fileCount : 4
+    totalSize : 1126870
+    updated : 2020-07-21
+    jira : YUK-22553
     notes : 
     
   - project : SQLAPI 

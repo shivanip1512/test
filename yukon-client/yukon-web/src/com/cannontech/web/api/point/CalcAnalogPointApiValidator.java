@@ -50,7 +50,7 @@ public class CalcAnalogPointApiValidator extends ScalarPointApiValidator<CalcAna
     * Validate Calc Components Fields.
     */
     private void validateCalcComponent(CalcAnalogPointModel calAnalogPointModel, Errors errors) {
-        CalcPointValidationHelper.ValidateCalcComponent(calAnalogPointModel.getCalcComponents(), calAnalogPointModel.getPointType(), errors);
+        CalcPointValidationHelper.ValidateCalcComponent(calAnalogPointModel.getCalcComponents(), errors);
     }
 
     /**

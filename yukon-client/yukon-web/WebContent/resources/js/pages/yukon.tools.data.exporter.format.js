@@ -158,7 +158,7 @@ yukon.tools.dataExporterFormat = (function () {
                             daysPrevious = dataSelection.next();
                         
                         attribute.find('input').val(JSON.stringify(data.attribute));
-                        attribute.append('<span>' + data.text.attribute + '</span>');
+                        attribute.append('<span>' + data.text.description + '</span>');
                         dataSelection.append('<span>' + data.text.dataSelection + '</span>');
                         daysPrevious.append('<span>' + data.text.daysPrevious + '</span>');
                         

@@ -28,10 +28,10 @@ public class MappingServiceImpl implements MappingService {
     public String getMappingUrl(String viewType) {
         boolean devMode = configSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
         boolean disableAnalytics = configSource.getBoolean(MasterConfigBoolean.DISABLE_ANALYTICS);
-        String streetUrl = configSource.getString(MasterConfigString.MAP_DEVICES_STREET_URL, mappingStreetUrl);
-        String satelliteUrl = configSource.getString(MasterConfigString.MAP_DEVICES_SATELLITE_URL, mappingSatelliteUrl);
-        String hybridUrl = configSource.getString(MasterConfigString.MAP_DEVICES_HYBRID_URL, mappingHybridUrl);
-        String elevationUrl = configSource.getString(MasterConfigString.MAP_DEVICES_ELEVATION_URL, mappingElevationUrl);
+        String streetUrl = configSource.getString(MasterConfigString.MAP_DEVICES_STREET_URL_2, mappingStreetUrl);
+        String satelliteUrl = configSource.getString(MasterConfigString.MAP_DEVICES_SATELLITE_URL_2, mappingSatelliteUrl);
+        String hybridUrl = configSource.getString(MasterConfigString.MAP_DEVICES_HYBRID_URL_2, mappingHybridUrl);
+        String elevationUrl = configSource.getString(MasterConfigString.MAP_DEVICES_ELEVATION_URL_2, mappingElevationUrl);
         String devMappingKey = configSource.getString(MasterConfigString.MAP_DEVICES_KEY, mappingDevKey);
         String prodMappingKey = configSource.getString(MasterConfigString.MAP_DEVICES_KEY, mappingProdKey);
         

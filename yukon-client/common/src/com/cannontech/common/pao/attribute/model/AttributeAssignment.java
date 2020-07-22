@@ -3,60 +3,46 @@ package com.cannontech.common.pao.attribute.model;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import com.cannontech.common.pao.PaoType;
-import com.cannontech.database.data.point.PointType;
+public class AttributeAssignment extends Assignment {
 
-public class AttributeAssignment {
-   
-    private int id;
-    private int attributeId;
-    private PaoType deviceType;
-    private int pointOffset;
-    private PointType pointType;
-     
-    public int getId() {
-        return id;
+    private CustomAttribute customAttribute;
+
+    public CustomAttribute getCustomAttribute() {
+        return customAttribute;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setCustomAttribute(CustomAttribute customAttribute) {
+        this.customAttribute = customAttribute;
     }
 
-    public int getAttributeId() {
-        return attributeId;
-    }
-
-    public void setAttributeId(int attributeId) {
-        this.attributeId = attributeId;
-    }
-
-    public PaoType getDeviceType() {
-        return deviceType;
-    }
-
-    public void setDeviceType(PaoType deviceType) {
-        this.deviceType = deviceType;
-    }
-
-    public int getPointOffset() {
-        return pointOffset;
-    }
-
-    public void setPointOffset(int pointOffset) {
-        this.pointOffset = pointOffset;
-    }
-    
-    public PointType getPointType() {
-        return pointType;
-    }
-
-    public void setPointType(PointType pointType) {
-        this.pointType = pointType;
-    }
-    
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
-            + System.getProperty("line.separator");
+                + System.getProperty("line.separator");
+    }
+    
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((customAttribute == null) ? 0 : customAttribute.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        AttributeAssignment other = (AttributeAssignment) obj;
+        if (customAttribute == null) {
+            if (other.customAttribute != null)
+                return false;
+        } else if (!customAttribute.equals(other.customAttribute))
+            return false;
+        return true;
     }
 }
