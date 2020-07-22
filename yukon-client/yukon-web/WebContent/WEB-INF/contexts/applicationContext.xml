@@ -1120,11 +1120,6 @@
     <bean id="meterMenuDecider" class="com.cannontech.web.contextualMenu.MeterMenuDecider"/>
     <bean id="eventsMenuDecider" class="com.cannontech.web.contextualMenu.EventsMenuDecider"/>
 
-    <bean id="menuItemAmrArchivedDataExporter" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
-        <property name="decider" ref="eventsMenuDecider"/>
-        <constructor-arg value="/tools/data-exporter/view"/>
-        <constructor-arg value="ARCHIVED_DATA_EXPORT"/>
-    </bean>
     <bean id="menuItemBulkCollectionAction" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
         <constructor-arg value="/bulk/collectionActions"/>
     </bean>
@@ -1155,25 +1150,6 @@
         <property name="decider" ref="meterMenuDecider"/>
         <constructor-arg value="/bulk/archiveDataAnalysis/home/setup"/>
         <constructor-arg value="ARCHIVED_DATA_ANALYSIS"/>
-    </bean>
-    <bean id="menuItemBulkDeviceCollectionReport" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
-        <property name="decider" ref="eventsMenuDecider"/>
-        <constructor-arg value="/bulk/deviceCollectionReport"/>
-    </bean>
-    <bean id="menuItemBulkPointsAdd" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
-        <property name="decider" ref="eventsMenuDecider"/>
-        <constructor-arg value="/bulk/addPoints/home"/>
-        <constructor-arg value="ADD_REMOVE_POINTS"/>
-    </bean>
-    <bean id="menuItemBulkPointsRemove" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
-        <property name="decider" ref="eventsMenuDecider"/>
-        <constructor-arg value="/bulk/removePoints/home"/>
-        <constructor-arg value="ADD_REMOVE_POINTS"/>
-    </bean>
-    <bean id="menuItemBulkPointsUpdate" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
-        <property name="decider" ref="eventsMenuDecider"/>
-        <constructor-arg value="/bulk/updatePoints/home"/>
-        <constructor-arg value="ADD_REMOVE_POINTS"/>
     </bean>
     <bean id="menuItemBulkRouteLocate" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
         <property name="decider" ref="meterMenuDecider"/>
@@ -1209,19 +1185,6 @@
         <constructor-arg value="/group/groupMeterRead/homeCollection"/>
         <constructor-arg value="DEVICE_ACTIONS"/>
     </bean>
-    <bean id="menuItemBulkMassChange" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
-        <property name="decider" ref="eventsMenuDecider"/>
-        <constructor-arg value="/bulk/massChange/massChangeSelect"/>
-        <constructor-arg value="DEVICE_ACTIONS"/>
-        <constructor-arg value="MASS_CHANGE"/>
-    </bean>
-    <bean id="menuItemBulkMassDelete" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
-        <property name="decider" ref="eventsMenuDecider"/>
-        <constructor-arg value="/bulk/massDelete/massDelete"/>
-        <constructor-arg value="DEVICE_ACTIONS"/>
-        <constructor-arg value="MASS_DELETE"/>
-    </bean>
-
     <bean id="menuItemMeterDetail" class="com.cannontech.web.contextualMenu.model.menuEntry.SingleDeviceMenuAction">
         <property name="decider" ref="meterMenuDecider"/>
         <constructor-arg value="/meter/home"/>

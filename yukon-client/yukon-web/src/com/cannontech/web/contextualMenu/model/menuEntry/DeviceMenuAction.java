@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableSet.Builder;
 public abstract class DeviceMenuAction implements DeviceAction {
 
     protected String baseUrl;
-    protected boolean appendParamName;
+    protected boolean appendParamName = true;
     protected String inputParamName;
     protected String outputParamName;
 

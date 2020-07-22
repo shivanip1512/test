@@ -100,8 +100,7 @@ public class GatewayDetailController {
         model.addAttribute("relayPaoTypes", PaoType.getRfRelayTypes());
         model.addAttribute("wifiPaoTypes", PaoType.getWifiTypes());
         model.addAttribute("showEvents",
-                paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.RFN_EVENTS).contains(gateway.getPaoIdentifier().getPaoType()));
-        
+                paoDefinitionDao.isTagSupported(gateway.getPaoIdentifier().getPaoType(), PaoTag.RFN_EVENTS));
         
         model.addAttribute("mileValues", NearbyMiles.values());
         
