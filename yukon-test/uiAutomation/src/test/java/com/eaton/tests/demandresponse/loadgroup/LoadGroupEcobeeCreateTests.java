@@ -65,6 +65,35 @@ public class LoadGroupEcobeeCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpCreateEcobee_AllFieldsDisableTrueFalseSuccessfully() {
+
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String name = "AT ecobee " + timeStamp;
+        double randomDouble = randomNum.nextDouble();
+        int randomInt = randomNum.nextInt(9999);
+        double capacity = randomDouble + randomInt;
+
+        final String EXPECTED_MSG = name + " saved successfully.";
+
+        createPage.getName().setInputValue(name);
+        createPage.getType().selectItemByText("ecobee Group");
+        waitForLoadingSpinner();
+
+        createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
+        createPage.getDisableGroup().setValue(true);
+        createPage.getDisableControl().setValue(false);
+
+        createPage.getSaveBtn().click();
+
+        waitForPageToLoad("Load Group: " + name, Optional.empty());
+
+        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
+
+        String userMsg = detailsPage.getUserMessage();
+
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+    }
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
         refreshPage(createPage);
