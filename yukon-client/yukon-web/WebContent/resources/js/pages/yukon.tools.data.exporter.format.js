@@ -158,7 +158,7 @@ yukon.tools.dataExporterFormat = (function () {
                             daysPrevious = dataSelection.next();
                         
                         attribute.find('input').val(JSON.stringify(data.attribute));
-                        attribute.append('<span>' + data.text.attribute + '</span>');
+                        attribute.append('<span>' + yukon.escapeXml(data.text.attribute) + '</span>');
                         dataSelection.append('<span>' + data.text.dataSelection + '</span>');
                         daysPrevious.append('<span>' + data.text.daysPrevious + '</span>');
                         
@@ -198,7 +198,7 @@ yukon.tools.dataExporterFormat = (function () {
                             padding = fieldSize.next();
                         
                         field.find('input').val(JSON.stringify(data.exportField));
-                        field.append('<span>' + data.text.exportField + '</span>');
+                        field.append('<span>' + yukon.escapeXml(data.text.exportField) + '</span>');
                         attributeField.append('<span>' + data.text.attributeField + '</span>');
                         dataSelection.append('<span>' + data.text.dataSelection + '</span>');
                         daysPrevious.append('<span>' + data.text.daysPrevious + '</span>');
