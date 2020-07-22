@@ -36,7 +36,7 @@ public class CalcStatusPointTest extends StatusPointApiTest {
         Log.info("Point Id of CALC_STATUS_POINT point created is : "
                 + context.getAttribute(PointHelper.CONTEXT_POINT_ID).toString());
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("getPoint",
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("pointBaseUrl",
                 context.getAttribute(PointHelper.CONTEXT_POINT_ID).toString());
 
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
