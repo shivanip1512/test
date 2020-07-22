@@ -5,14 +5,30 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.point.PointType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@JsonIgnoreProperties(value={"attributeAssignmentId"}, allowGetters= true, ignoreUnknown = true)
+@JsonInclude(Include.NON_NULL)
 public class Assignment { 
     private Integer attributeId;
     private Integer attributeAssignmentId;
     private PaoType paoType;
     private int offset;
     private PointType pointType;
-     
+    
+    public Assignment() {
+    }
+    
+    public Assignment(Assignment assignment) {
+        this.attributeAssignmentId = assignment.attributeAssignmentId;
+        this.attributeId = assignment.attributeId;
+        this.attributeAssignmentId = assignment.attributeAssignmentId;
+        this.paoType = assignment.paoType;
+        this.offset = assignment.offset;
+    }
+
     public Integer getAttributeAssignmentId() {
         return attributeAssignmentId;
     }

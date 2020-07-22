@@ -6,6 +6,15 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class AttributeAssignment extends Assignment {
 
     private CustomAttribute customAttribute;
+    
+    public AttributeAssignment() {
+        super();
+    }
+
+    public AttributeAssignment(Assignment assignment, CustomAttribute customAttribute) {
+        super(assignment);
+        this.customAttribute = customAttribute;
+    }
 
     public CustomAttribute getCustomAttribute() {
         return customAttribute;
