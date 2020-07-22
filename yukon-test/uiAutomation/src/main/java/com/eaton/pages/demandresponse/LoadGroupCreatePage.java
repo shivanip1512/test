@@ -37,25 +37,6 @@ public class LoadGroupCreatePage extends PageBase {
         return new DropDownElement(this.driverExt, "routeId");
     }
 
-    // Device Class
-    public DropDownElement getDeviceClass() {
-        return new DropDownElement(this.driverExt, "deviceClassSet");
-    }
-
-    // Enrollment
-    public TextEditElement getUtilityEnrollmentGroup() {
-        return new TextEditElement(this.driverExt, "utilityEnrollmentGroup");
-    }
-
-    // Timing
-    public TextEditElement getRampInTime() {
-        return new TextEditElement(this.driverExt, "rampInMinutes");
-    }
-
-    public TextEditElement getRampOutTime() {
-        return new TextEditElement(this.driverExt, "rampOutMinutes");
-    }
-
     // Geographical Address
     public SwitchBtnMultiSelectElement getGeographicalAddressUsage() {
         return new SwitchBtnMultiSelectElement(this.driverExt, "addressUsage");
