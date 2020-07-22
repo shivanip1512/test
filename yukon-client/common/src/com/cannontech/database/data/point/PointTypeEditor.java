@@ -9,7 +9,7 @@ public class PointTypeEditor extends PropertyEditorSupport {
         try {
             setValue(PointType.valueOf(pointTypeString));
         } catch (Exception ex) {
-            throw new InvalidFilteringParametersException(pointTypeString + " is a Invalid PointType");
+            throw new InvalidFilteringParametersException(pointTypeString + " is an invalid PointType.");
         }
     }
 }

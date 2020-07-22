@@ -89,27 +89,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler({ NotFoundException.class })
-    public ResponseEntity<Object> handleNotFoundException(final Exception ex, final WebRequest request) {
-
-        String uniqueKey = CtiUtilities.getYKUniqueKey();
-        logApiException(request, ex, uniqueKey);
-
-        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
-    }
-    
-    @ExceptionHandler({ LoadProgramProcessingException.class, MacroLoadGroupProcessingException.class,
-        HoneywellProcessingException.class, LMObjectDeletionFailureException.class , TypeNotSupportedException.class})
-    public ResponseEntity<Object> handleProcessingException(final Exception ex, final WebRequest request) {
-
-        String uniqueKey = CtiUtilities.getYKUniqueKey();
-        logApiException(request, ex, uniqueKey);
-
-        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
-    }
-    
     @ExceptionHandler({AttachedException.class})
     public ResponseEntity<Object> handleBadRequestException(final AttachedException ex, final WebRequest request) {
 
@@ -151,9 +130,18 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({ InvalidFilteringParametersException.class, InvalidSortingParametersException.class,
+    @ExceptionHandler({ NotFoundException.class,
+                        LoadProgramProcessingException.class,
+                        MacroLoadGroupProcessingException.class,
+                        HoneywellProcessingException.class,
+                        LMObjectDeletionFailureException.class,
+                        TypeNotSupportedException.class,
+                        DynamicDataAccessException.class,
+                        IllegalUseOfAttribute.class,
+                        InvalidFilteringParametersException.class,
+                        InvalidSortingParametersException.class,
                         InvalidPagingParametersException.class })
-    protected ResponseEntity<Object> handleInvalidParametersException(Exception ex, WebRequest request) {
+    public ResponseEntity<Object> handleBadRequestException(final Exception ex, final WebRequest request) {
 
         String uniqueKey = CtiUtilities.getYKUniqueKey();
         logApiException(request, ex, uniqueKey);
@@ -312,25 +300,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             String.format("Could not find the %s method for URL %s", request.getMethod(), url), uniqueKey);
         parseToJson(response, apiError, HttpStatus.NOT_FOUND);
 
-    }
-
-    @ExceptionHandler({ DynamicDataAccessException.class })
-    public ResponseEntity<Object> dynamicDataAccessException(final Exception ex, final WebRequest request) {
-
-        String uniqueKey = CtiUtilities.getYKUniqueKey();
-        logApiException(request, ex, uniqueKey);
-        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler({ IllegalUseOfAttribute.class })
-    public ResponseEntity<Object> handleIllegalUseOfAttributeException(final Exception ex, final WebRequest request) {
-
-        String uniqueKey = CtiUtilities.getYKUniqueKey();
-        logApiException(request, ex, uniqueKey);
-
-        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     /**
