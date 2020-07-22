@@ -4405,46 +4405,46 @@ Network Manager :
     jira : none
     notes : 
 
-  - filename : jackson-annotations-2.9.6.jar
+  - filename : jackson-annotations-2.11.1.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.9.6
+    version : 2.11.1
     project URL : "http://github.com/FasterXML/jackson"
     license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.9.6"
-    md5 : 6486a3fb86a14e04ac131c44f078b6dc
-    sha1 : 6a0f0f154edaba00067772ce02e24f8c0973d84c
-    updated : 2019-11-04
-    jira : NM-1372
+    license URLs : "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.11.1"
+    md5 : ae29476ef47b802516535a8fbd964ec2
+    sha1 : f083c4ac0fb8b3c6b8d5b62cd54122228ef62cee
+    updated : 2020-07-22
+    jira : NM-1554
     notes : Jackson Annotations
 
-  - filename : jackson-core-2.9.8.jar
+  - filename : jackson-core-2.11.1.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.9.8
-    project URL : "http://github.com/FasterXML/jackson"
+    version : 2.11.1
+    project URL : "https://github.com/FasterXML/jackson-core"
     license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.9.8"
-    md5 : 65831e4f46f29db904708e4b9cc72843
-    sha1 : 0f5a654e4675769c716e5b387830d19b501ca191
-    updated : 2019-11-04
-    jira : NM-1372
+    license URLs : "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.11.1"
+    md5 : 178171dcc707f3aa1b5d53717530a589
+    sha1 : 8b02908d53183fdf9758e7e20f2fdee87613a962
+    updated : 2020-07-22
+    jira : NM-1554
     notes : Jackson Core
 
-  - filename : jackson-databind-2.9.8.jar
+  - filename : jackson-databind-2.11.1.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.9.8
+    version : 2.11.1
     project URL : "http://github.com/FasterXML/jackson"
     license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.9.8"
-    md5 : 39271d9bb1cb7ec563925953b1fa9ff7
-    sha1 : 11283f21cc480aa86c4df7a0a3243ec508372ed2
-    updated : 2019-11-04
-    jira : NM-1372
+    license URLs : "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.11.1"
+    md5 : 5dc6f0ba9a79ffb5440b9561a55806ed
+    sha1 : f5d24a1dcf46000316d40c8c61196c48dd5677c5
+    updated : 2020-07-22
+    jira : NM-1554
     notes : Jackson Databind
 
   - filename : jakarta-regexp-1.3.jar
