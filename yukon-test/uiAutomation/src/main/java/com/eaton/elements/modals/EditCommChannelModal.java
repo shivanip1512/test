@@ -7,7 +7,6 @@ import com.eaton.elements.RadioButtonElement;
 import com.eaton.elements.Section;
 import com.eaton.elements.SwitchBtnYesNoElement;
 import com.eaton.elements.TextEditElement;
-import com.eaton.elements.TrueFalseCheckboxElement;
 import com.eaton.elements.tabs.TabElement;
 import com.eaton.framework.DriverExtensions;
 
@@ -17,36 +16,40 @@ public class EditCommChannelModal extends BaseModal {
         super(driverExt, modalTitle, describedBy);
     }
 
-    // TODO need to add all fields as there are more based on the device you select
+    // TODO need to split the modal out so there is a modal per type
 
     public TextEditElement getChannelName() {
         return new TextEditElement(this.driverExt, "name", getModal());
     }
+
     public TextEditElement getChannelPreTxWait() {
         return new TextEditElement(this.driverExt, "timing.preTxWait", getModal());
     }
+
     public Section getTimingSection() {
         return new Section(this.driverExt, "Timing", getModal());
     }
+
     public Section getSharingSection() {
-        return new Section(this.driverExt, "Sharing", getModal());
+        return new Section(this.driverExt, "Shared", getModal());
     }
+
     public TextEditElement getChannelRTSTxWait() {
         return new TextEditElement(this.driverExt, "timing.rtsToTxWait", getModal());
     }
-    
+
     public TextEditElement getChannelPostTxWait() {
         return new TextEditElement(this.driverExt, "timing.postTxWait", getModal());
     }
-    
+
     public TextEditElement getChannelRecDataWait() {
         return new TextEditElement(this.driverExt, "timing.receiveDataWait", getModal());
     }
-    
+
     public TextEditElement getChannelAdditionalTimeOut() {
         return new TextEditElement(this.driverExt, "timing.extraTimeOut", getModal());
     }
-    
+
     public TextEditElement getIPAddress() {
         return new TextEditElement(this.driverExt, "meterNumber", getModal());
     }
@@ -60,39 +63,47 @@ public class EditCommChannelModal extends BaseModal {
     }
 
     public DropDownElement getPhysicalPort() {
-    	return new DropDownElement(this.driverExt, "physicalPort", getModal());
+        return new DropDownElement(this.driverExt, "physicalPort", getModal());
     }
-    
+
     public TextEditElement getPhysicalPortOther() {
-    	return new TextEditElement(this.driverExt, "physicalPort", getModal());
-    } 
-    
-    public SwitchBtnYesNoElement getStatus() {
-        return new SwitchBtnYesNoElement(this.driverExt, "disable", getModal());
+        return new TextEditElement(this.driverExt, "physicalPort", getModal());
     }
-    
+
+    public SwitchBtnYesNoElement getStatus() {
+        return new SwitchBtnYesNoElement(this.driverExt, "enable", getModal());
+    }
+
     public TabElement getTabElement() {
         return new TabElement(this.driverExt, getModal());
     }
-       
+
     public RadioButtonElement getProtocolWrap() {
-    	return new RadioButtonElement(this.driverExt, "protocolWrap", getModal());
-    } 
-    public TextEditElement getCarrierDetectWait() {
+        return new RadioButtonElement(this.driverExt, "protocolWrap", getModal());
+    }
+
+    public TextEditElement getCarrierDetectWaitTextBox() {
         return new TextEditElement(this.driverExt, "carrierDetectWaitInMilliseconds", getModal());
     }
-    public TextEditElement getEncryptionKey() {
+
+    public TextEditElement getEncryptionKeyTextBox() {
         return new TextEditElement(this.driverExt, "keyInHex", getModal());
     }
-    public SwitchBtnYesNoElement getCheckedButtonCarrier() {
+
+    public SwitchBtnYesNoElement getEncryptionKey() {
+        return new SwitchBtnYesNoElement(this.driverExt, "encryptionKey", getModal());
+    }
+
+    public SwitchBtnYesNoElement getCarrierDetectWait() {
         return new SwitchBtnYesNoElement(this.driverExt, "carrierDetectWait", getModal());
     }
-    public TextEditElement getSocketNumber() {	
-        return new TextEditElement(this.driverExt, "sharing.sharedSocketNumber", getModal());	
-    }	
-    public RadioButtonElement getSharedPortType() {	
-    	return new RadioButtonElement(this.driverExt, "sharing.sharedPortType", getModal());
-    } 	
-	
+
+    public TextEditElement getSocketNumber() {
+        return new TextEditElement(this.driverExt, "sharing.sharedSocketNumber", getModal());
+    }
+
+    public RadioButtonElement getSharedPortType() {
+        return new RadioButtonElement(this.driverExt, "sharing.sharedPortType", getModal());
+    }
 
 }
