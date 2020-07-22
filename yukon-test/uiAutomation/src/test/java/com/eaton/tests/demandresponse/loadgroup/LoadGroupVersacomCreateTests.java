@@ -387,6 +387,8 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getAddressUsage().setTrueFalseByName("Serial", true);
 
         assertThat(createPage.getClassAddress().allValuesDisabled()).isTrue();
+        assertThat(createPage.getSectionAddress().isDisabled()).isFalse();
+        assertThat(createPage.getDivisionAddress().allValuesDisabled()).isTrue();
     }
 
     @AfterMethod(alwaysRun = true)

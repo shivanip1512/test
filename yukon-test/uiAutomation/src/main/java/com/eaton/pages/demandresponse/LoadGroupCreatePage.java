@@ -66,11 +66,6 @@ public class LoadGroupCreatePage extends PageBase {
         return new TextEditElement(this.driverExt, "serviceProvider");
     }
     
-    public SwitchBtnMultiSelectElement getAddressUsage() {
-        
-        return new SwitchBtnMultiSelectElement(this.driverExt, "verAddressUsage");
-    }
-
     public TextEditElement getGeo() {
         return new TextEditElement(this.driverExt, "geo");
     }
@@ -102,26 +97,6 @@ public class LoadGroupCreatePage extends PageBase {
 
     public TextEditElement getSilverAddress() {
         return new TextEditElement(this.driverExt, "silverAddress");
-    }
-
-    public TextEditElement getUtilityAddress() {
-        return new TextEditElement(this.driverExt, "utilityAddress");
-    }
-
-    public TextEditElement getSectionAddress() {
-        return new TextEditElement(this.driverExt, "sectionAddress");
-    }
-
-    public TextEditElement getClassAddress() {
-        return new TextEditElement(this.driverExt, "classAddress");
-    }
-
-    public TextEditElement getDivisionAddress() {
-        return new TextEditElement(this.driverExt, "divisionAddress");
-    }
-
-    public TextEditElement getSerialAddress() {
-        return new TextEditElement(this.driverExt, "serialAddress");
     }
 
     public RadioButtonElement getAddressToUse() {
