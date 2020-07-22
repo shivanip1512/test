@@ -34,9 +34,10 @@ class IM_EX_FDRBASE CtiFDRInterface
         CtiCommandMsg* createAnalogOutputMessage(long pointId, std::string translationName, double value);
         CtiCommandMsg* createScanDeviceMessage(long paoId, std::string translationName);
 
-        bool                sendPointRegistration();
+        void                sendPointRegistration();
         virtual std::unique_ptr<CtiPointRegistrationMsg> buildRegistrationPointList();
-
+        virtual bool hasPointsToRegisterFor();
+        virtual bool loadOutBoundPoints( boost::scoped_ptr<CtiFDRManager> & points );
 
         std::string              getCparmValueAsString(std::string key);
 

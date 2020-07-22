@@ -212,8 +212,7 @@ long CtiFDRInterface::getClientLinkStatusID(const std::string &aClientName)
 BOOL CtiFDRInterface::init( void )
 {
     // only need to register outbound points
-    iOutBoundPoints.reset( new CtiFDRManager(iInterfaceName, string(FDR_INTERFACE_SEND)) );
-    iOutBoundPoints->loadPointList();
+    loadOutBoundPoints( iOutBoundPoints );
 
     if ( !reloadConfigs() )
     {
@@ -538,7 +537,7 @@ bool CtiFDRInterface::connectWithDispatch()
             return false;
         }
 
-        if( iOutBoundPoints && iOutBoundPoints->entries() > 0 )
+        if( hasPointsToRegisterFor() )
         {
             std::unique_ptr<CtiMultiMsg> multiMsg( new CtiMultiMsg() );
 
@@ -691,19 +690,11 @@ bool CtiFDRInterface::readConfig()
 *************************************************************************
 */
 
-bool CtiFDRInterface::sendPointRegistration( void )
+void CtiFDRInterface::sendPointRegistration( void )
 {
-    ReaderGuard guard(iDispatchLock);
-
-    if( ! iOutBoundPoints || ! iDispatchConn )
-    {
-        // not started correctly
-        return false;
-    }
-
     try
     {
-        if (iOutBoundPoints->entries() > 0)
+        if ( hasPointsToRegisterFor() )
         {
             std::unique_ptr<CtiMultiMsg> multiMsg( new CtiMultiMsg() );
 
@@ -711,12 +702,10 @@ bool CtiFDRInterface::sendPointRegistration( void )
 
             sendMessageToDispatch( multiMsg.release() );
         }
-        return true;
     }
     catch (...)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, getInterfaceName() <<"'s sendRegistration failed");
-        return false;
     }
 }
 
@@ -1263,15 +1252,15 @@ bool CtiFDRInterface::reRegisterWithDispatch()
 {
     bool retVal=true;
 
-    std::unique_ptr<CtiFDRManager> tmpList( new CtiFDRManager(iInterfaceName, string(FDR_INTERFACE_SEND)));
+    boost::scoped_ptr<CtiFDRManager> tmpList;
 
     // try and reload the outbound list
-    if( tmpList->loadPointList() )
+    if( loadOutBoundPoints( tmpList ) )
     {
         WriterGuard guard(iDispatchLock);
 
         // destroy the old one and set it to the new one
-        iOutBoundPoints.reset( tmpList.release() );
+        iOutBoundPoints.swap( tmpList );
     }
     else
     {
@@ -1555,3 +1544,17 @@ bool CtiFDRInterface::verifyDispatchConnection()
 
     return false;
 }
+
+// If iOutBoundPoints has any points loaded into it 
+bool CtiFDRInterface::hasPointsToRegisterFor()
+{
+    return iOutBoundPoints && iOutBoundPoints->entries() > 0;
+}
+
+bool CtiFDRInterface::loadOutBoundPoints( boost::scoped_ptr<CtiFDRManager> & points )
+{
+    points.reset( new CtiFDRManager(iInterfaceName, string(FDR_INTERFACE_SEND)) );
+
+    return points->loadPointList();
+}
+

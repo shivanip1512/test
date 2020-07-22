@@ -55,8 +55,7 @@ DLLEXPORT int StopInterface( void )
 
 }
 
-namespace Cti {
-namespace Fdr {
+namespace Cti::Fdr {
 
 const std::string DNPInMessageString  = "DNP InMessage";
 const std::string DNPOutMessageString = "DNP OutMessage";
@@ -1525,7 +1524,19 @@ unsigned int DnpSlave::getHeaderLength()
 }
 
 
-}
+bool DnpSlave::hasPointsToRegisterFor()
+{
+    std::size_t
+        sendCount    = getSendToList().getPointList()->entries(),
+        receiveCount = getReceiveFromList().getPointList()->entries();
+
+    return ( sendCount + receiveCount ) > 0;
 }
 
+bool DnpSlave::loadOutBoundPoints( boost::scoped_ptr<CtiFDRManager> & points )
+{
+    return true;
+}
+
+}
 
