@@ -28,7 +28,9 @@ public class EditCommChannelModal extends BaseModal {
     public Section getTimingSection() {
         return new Section(this.driverExt, "Timing", getModal());
     }
-    
+    public Section getSharingSection() {
+        return new Section(this.driverExt, "Sharing", getModal());
+    }
     public TextEditElement getChannelRTSTxWait() {
         return new TextEditElement(this.driverExt, "timing.rtsToTxWait", getModal());
     }
