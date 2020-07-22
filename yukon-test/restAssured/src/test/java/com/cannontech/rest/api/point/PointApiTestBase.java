@@ -43,7 +43,7 @@ public abstract class PointApiTestBase {
         String pointId = context.getAttribute(PointHelper.CONTEXT_POINT_ID).toString();
         mockPointBase.setPointName(pointName);
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.patch("updatePoint", mockPointBase, pointId);
+        ExtractableResponse<?> getResponse = ApiCallHelper.patch("pointBaseUrl", mockPointBase, pointId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
         Log.endTestCase("point_02_Update");
     }
@@ -51,7 +51,7 @@ public abstract class PointApiTestBase {
     @Test(dependsOnMethods = { "point_02_Update" })
     public void point_03_Delete(ITestContext context) {
         Log.startTestCase("point_03_Delete");
-        ExtractableResponse<?> response = ApiCallHelper.delete("deletePoint", context.getAttribute(PointHelper.CONTEXT_POINT_ID).toString());
+        ExtractableResponse<?> response = ApiCallHelper.delete("pointBaseUrl", context.getAttribute(PointHelper.CONTEXT_POINT_ID).toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
         Log.startTestCase("point_03_Delete");
@@ -99,7 +99,7 @@ public abstract class PointApiTestBase {
         ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockPointBase);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be - Validation error");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "pointName", "Point Name is required."), "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "pointName", "Name is required."), "Expected code in response is not correct");
     }
 
     /**

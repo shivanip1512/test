@@ -6,13 +6,12 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LiteBaseline;
-import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.web.tools.points.model.CalcCompType;
 import com.cannontech.web.tools.points.model.CalcOperation;
@@ -31,7 +30,7 @@ public class CalcPointValidationHelper {
         CalcPointValidationHelper.pointDao = pointDao;
     }
 
-    public static void ValidateCalcComponent(List<CalculationComponent> calcComponents, PointType pointType, Errors errors) {
+    public static void ValidateCalcComponent(List<CalculationComponent> calcComponents, Errors errors) {
 
         if (CollectionUtils.isNotEmpty(calcComponents)) {
             for (int i = 0; i < calcComponents.size(); i++) {
@@ -57,9 +56,10 @@ public class CalcPointValidationHelper {
                     YukonValidationUtils.checkIfFieldRequired("operand", errors, calcComponent.getOperand(), "operand");
                     if (!errors.hasFieldErrors("operand")) {
                         if (calcComponent.getComponentType() == CalcCompType.OPERATION || calcComponent.getComponentType() == CalcCompType.FUNCTION) {
-                            PointBase pointBase = pointDao.get(calcComponent.getOperand().intValue());
-                            if (!pointBase.getPoint().getPointType().equals(pointType.toString())) {
-                                errors.rejectValue("operand", baseKey + ".invalidPointId", new Object[] { pointType }, "");
+                            try {
+                                pointDao.getPointName(calcComponent.getOperand().intValue());
+                            } catch (IncorrectResultSizeDataAccessException ee) {
+                                errors.rejectValue("operand", baseKey + ".invalidPointId", new Object[] { calcComponent.getOperand() }, "");
                             }
                         }
                     }

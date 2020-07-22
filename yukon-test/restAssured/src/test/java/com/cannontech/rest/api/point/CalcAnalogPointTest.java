@@ -36,7 +36,7 @@ public class CalcAnalogPointTest extends ScalarPointApiTest {
         Log.info("Point Id of CALC_ANALOG_POINT point created is : "
                 + context.getAttribute(PointHelper.CONTEXT_POINT_ID).toString());
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("getPoint",
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("pointBaseUrl",
                 context.getAttribute(PointHelper.CONTEXT_POINT_ID).toString());
 
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
@@ -153,27 +153,6 @@ public class CalcAnalogPointTest extends ScalarPointApiTest {
         assertTrue(
                 ValidationHelper.validateFieldError(createResponse, "baselineId",
                         "baselineId does not exist."), "Expected code in response is not correct");
-    }
-
-    /**
-     * Test case to validate Calc Analog Point cannot be created with invalid point id i.e. Point id is not of calc Analog type.
-     * and validates valid error message in response
-     */
-    @Test
-    public void calcAnalogPoint_06_InvalidPointId() {
-        MockCalcAnalogPointModel mockCalcAnalogPointModel = (MockCalcAnalogPointModel) PointHelper.buildPoint(pointType);
-
-        List<MockCalculationComponent> mockCalcComponents=mockCalcAnalogPointModel.getCalcComponents();
-        MockCalculationComponent mockCalcComponent=mockCalcComponents.get(0);
-        mockCalcComponent.setOperation(MockCalcOperation.ADDITION_FUNCTION);
-        mockCalcComponent.setOperand(12444.0);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockCalcAnalogPointModel);
-        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
-        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
-                "Expected message should be - Validation error");
-        assertTrue(
-                ValidationHelper.validateFieldError(createResponse, "calcComponents[0].operand",
-                        "Point Id should be of type " +mockCalcAnalogPointModel.getPointType()+ "."), "Expected code in response is not correct");
     }
 
 }

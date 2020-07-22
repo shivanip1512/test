@@ -72,6 +72,8 @@ public class PointStatusControl extends PointControl<com.cannontech.database.db.
             pointStatusControl.setStateZeroControl(ControlStateType.OPEN.getControlCommand());
             pointStatusControl.setControlInhibited(false);
             pointStatusControl.setControlOffset(0);
+            pointStatusControl.setControlType(StatusControlType.NONE.getControlName());
+            pointStatusControl.setCommandTimeOut(0);
         } else {
             if (getCloseTime1() != null) {
                 pointStatusControl.setCloseTime1(getCloseTime1());
