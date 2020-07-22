@@ -85,4 +85,12 @@ public class EditCommChannelModal extends BaseModal {
     public SwitchBtnYesNoElement getCheckedButtonCarrier() {
         return new SwitchBtnYesNoElement(this.driverExt, "carrierDetectWait", getModal());
     }
+    public TextEditElement getSocketNumber() {	
+        return new TextEditElement(this.driverExt, "sharing.sharedSocketNumber", getModal());	
+    }	
+    public RadioButtonElement getSharedPortType() {	
+    	return new RadioButtonElement(this.driverExt, "sharing.sharedPortType", getModal());
+    } 	
+	
+
 }
