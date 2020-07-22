@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -255,6 +256,7 @@ public class TrendEditorController {
             }
         }
         json.put("color", accessor.getMessage(trendSeries.getColor().getFormatKey()));
+        json.put("colorHexValue", trendSeries.getColor().getHexValue());
         json.put("axis", accessor.getMessage(trendSeries.getAxis().getFormatKey()));
         
         response.setContentType("application/json");
@@ -289,7 +291,8 @@ public class TrendEditorController {
     }
 
     private void setModel(ModelMap model, boolean isMarker) {
-        model.addAttribute("colors", Color.values());
+        List<String> colors = Lists.newArrayList(Color.values()).stream().map(color -> color.getHexValue()).collect(Collectors.toList());
+        model.addAttribute("colors", colors);
         model.addAttribute("axes", Lists.newArrayList(TrendAxis.values()));
         
         if (!isMarker) {
@@ -304,12 +307,9 @@ public class TrendEditorController {
 
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
-
         binder.registerCustomEditor(TrendType.GraphType.class, new EnumPropertyEditor<>(TrendType.GraphType.class));
         binder.registerCustomEditor(TrendAxis.class, new EnumPropertyEditor<>(TrendAxis.class));
         binder.registerCustomEditor(RenderType.class, new EnumPropertyEditor<>(RenderType.class));
-        binder.registerCustomEditor(Color.class, new EnumPropertyEditor<>(Color.class));
-
         PropertyEditor dateTimeEditor = datePropertyEditorFactory.getDateTimePropertyEditor(DateFormatEnum.DATE, userContext, BlankMode.NULL);
         
         binder.registerCustomEditor(DateTime.class, dateTimeEditor);
@@ -342,6 +342,13 @@ public class TrendEditorController {
                     log.error("Unable to convert Field to JSON", e);
                     return "";
                 }
+            }
+        });
+        
+        binder.registerCustomEditor(Color.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String color) throws IllegalArgumentException {
+                setValue(Color.getColorByHexValue(color));
             }
         });
     }

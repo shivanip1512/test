@@ -564,12 +564,12 @@ private void initialize() {
 		getColorComboBox().addItem(com.cannontech.common.gui.util.Colors.WHITE_STR_ID);
 		getColorComboBox().addItem(com.cannontech.common.gui.util.Colors.YELLOW_STR_ID);
 		getColorComboBox().addItem(com.cannontech.common.gui.util.Colors.BLUE_STR_ID);
-		getColorComboBox().addItem(com.cannontech.common.gui.util.Colors.CYAN_STR_ID);
+		getColorComboBox().addItem(com.cannontech.common.gui.util.Colors.TEAL_STR_ID);
 		getColorComboBox().addItem(com.cannontech.common.gui.util.Colors.BLACK_STR_ID);
 		getColorComboBox().addItem(com.cannontech.common.gui.util.Colors.ORANGE_STR_ID);
-		getColorComboBox().addItem(com.cannontech.common.gui.util.Colors.MAGENTA_STR_ID);
+		getColorComboBox().addItem(com.cannontech.common.gui.util.Colors.LIGHT_GREEN_STR_ID);
 		getColorComboBox().addItem(com.cannontech.common.gui.util.Colors.GRAY_STR_ID);
-		getColorComboBox().addItem(com.cannontech.common.gui.util.Colors.PINK_STR_ID);
+		getColorComboBox().addItem(com.cannontech.common.gui.util.Colors.PURPLE_STR_ID);
 		// user code end
 		setName("TagWizardPanel");
 		setLayout(new java.awt.GridBagLayout());
