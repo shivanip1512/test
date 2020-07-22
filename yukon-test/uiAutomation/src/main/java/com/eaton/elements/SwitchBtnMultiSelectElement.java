@@ -25,32 +25,11 @@ public class SwitchBtnMultiSelectElement {
         this.parentElement = parentElement;
     }
 
-    public void setTrueFalseByValue(String value, boolean checked) {
-        WebElement element = getSwitchBtn();
-
-        List<WebElement> switchBtnList = element.findElements(By.cssSelector(".switch-btn"));
-
-        WebElement switchBtn = element.findElement(By.cssSelector("input[id='" + value.toUpperCase() + "_chk']"));
-
-        String isChecked = switchBtn.getAttribute("checked");
-
-        for (WebElement webElement : switchBtnList) {
-            List<WebElement> list = webElement.findElements(By.cssSelector("input[id='" + value.toUpperCase() + "_chk']"));
-
-            if (!list.isEmpty()) {
-                if ((isChecked == null && checked) || (isChecked != null && !checked)) {
-                    webElement.findElement(By.cssSelector("span>span")).click();
-                    break;
-                }
-            }
-        }
-    }
-
-    public void setTrueFalseByName(String buttonNameWithSpace, boolean checked) {
+    public void setTrueFalseByName(String buttonName, boolean checked) {
         WebElement switchElement = getSwitchBtn();
-        String buttonName = buttonNameWithSpace.replace(" ", "_");
-        WebElement switchButton = getSwitchBtnByName(buttonNameWithSpace);
-        WebElement switchBtn = switchElement.findElement(By.cssSelector("input[id='" + buttonName.toUpperCase() + "_chk']"));
+        String name = buttonName.replace(" ", "_");
+        WebElement switchButton = getSwitchBtnByName(buttonName);
+        WebElement switchBtn = switchElement.findElement(By.cssSelector("input[id='" + name.toUpperCase() + "_chk']"));
 
         String isChecked = switchBtn.getAttribute("checked");
 
@@ -87,9 +66,6 @@ public class SwitchBtnMultiSelectElement {
         }
 
         return allDisabled;
-
-//        list.stream().filter(x -> x.findElement(By.cssSelector(".title")).getText().contains(panelName))
-//                .findFirst();
     }
 
     private WebElement getSwitchBtn() {
@@ -102,13 +78,8 @@ public class SwitchBtnMultiSelectElement {
 
     private WebElement getSwitchBtnByName(String switchName) {
         WebElement switchbtn = getSwitchBtn();
-        List<WebElement> switchElement = switchbtn.findElements(By.cssSelector("span>span"));
-
-        for (WebElement element : switchElement) {
-            if (element.getText().contentEquals(switchName)) {
-                return element;
-            }
-        }
-        return null;
+        List<WebElement> switchElements = switchbtn.findElements(By.cssSelector(".button .b-label"));
+        
+        return switchElements.stream().filter(x -> x.getText().contains(switchName)).findFirst().orElseThrow();
     }
 }

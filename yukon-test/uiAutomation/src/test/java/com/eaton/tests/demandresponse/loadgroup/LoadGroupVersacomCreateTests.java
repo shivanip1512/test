@@ -79,10 +79,10 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
 
         waitForLoadingSpinner();
         createPage.getCommunicationRoute().selectItemByText("a_CCU-711"); 
-        createPage.getAddressUsage().setTrueFalseByValue("Serial", true);
+        createPage.getAddressUsage().setTrueFalseByName("Serial", true);
         createPage.getName().setInputValue(name);      
         createPage.getSerialAddress().setInputValue(String.valueOf("40"));
-        createPage.getRelayUsage().setTrueFalseByValue("Relay_2", true);
+        createPage.getRelayUsage().setTrueFalseByName("Relay 2", true);
         createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
 
         createPage.getDisableGroup().setValue(true);
@@ -196,10 +196,10 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         String sectionName = "Addressing";
         createPage.getType().selectItemByText("Versacom Group");
 
-        createPage.getAddressUsage().setTrueFalseByValue("Section", true);
-        createPage.getAddressUsage().setTrueFalseByValue("Class", true);
-        createPage.getAddressUsage().setTrueFalseByValue("Division", true);
-        createPage.getAddressUsage().setTrueFalseByValue("Serial", true);
+        createPage.getAddressUsage().setTrueFalseByName("Section", true);
+        createPage.getAddressUsage().setTrueFalseByName("Class", true);
+        createPage.getAddressUsage().setTrueFalseByName("Division", true);
+        createPage.getAddressUsage().setTrueFalseByName("Serial", true);
 
         List<String> expectedLabels = new ArrayList<>(
                 List.of("Utility Address:", "Section Address:", "Class Address:", "Division Address:", "Serial Address:"));
@@ -296,7 +296,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
-        createPage.getAddressUsage().setTrueFalseByValue("Serial", true);
+        createPage.getAddressUsage().setTrueFalseByName("Serial", true);
         createPage.getSerialAddress().setInputValue("");
         createPage.getSaveBtn().click();
 
@@ -308,7 +308,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
-        createPage.getAddressUsage().setTrueFalseByValue("Serial", true);
+        createPage.getAddressUsage().setTrueFalseByName("Serial", true);
         createPage.getSerialAddress().setInputValue("100000");
         createPage.getSaveBtn().click();
 
@@ -320,7 +320,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
-        createPage.getAddressUsage().setTrueFalseByValue("Serial", true);
+        createPage.getAddressUsage().setTrueFalseByName("Serial", true);
         createPage.getSerialAddress().setInputValue("-1");
         createPage.getSaveBtn().click();
 
@@ -332,7 +332,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
-        createPage.getAddressUsage().setTrueFalseByValue("Section", true);
+        createPage.getAddressUsage().setTrueFalseByName("Section", true);
         createPage.getSectionAddress().setInputValue("");
         createPage.getSaveBtn().click();
 
@@ -344,7 +344,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
-        createPage.getAddressUsage().setTrueFalseByValue("Section", true);
+        createPage.getAddressUsage().setTrueFalseByName("Section", true);
         createPage.getSectionAddress().setInputValue("257");
         createPage.getSaveBtn().click();
 
@@ -356,7 +356,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
-        createPage.getAddressUsage().setTrueFalseByValue("Section", true);
+        createPage.getAddressUsage().setTrueFalseByName("Section", true);
         createPage.getSectionAddress().setInputValue("-1");
         createPage.getSaveBtn().click();
 
@@ -368,7 +368,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
-        createPage.getAddressUsage().setTrueFalseByValue("Serial", true);
+        createPage.getAddressUsage().setTrueFalseByName("Serial", true);
               
         softly.assertThat(createPage.getAddressUsage().isValueDisabled("Section")).isTrue();
         softly.assertThat(createPage.getAddressUsage().isValueDisabled("Class")).isTrue();
@@ -381,10 +381,10 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
-        createPage.getAddressUsage().setTrueFalseByValue("Section", true);
-        createPage.getAddressUsage().setTrueFalseByValue("Class", true);
-        createPage.getAddressUsage().setTrueFalseByValue("Division", true);
-        createPage.getAddressUsage().setTrueFalseByValue("Serial", true);
+        createPage.getAddressUsage().setTrueFalseByName("Section", true);
+        createPage.getAddressUsage().setTrueFalseByName("Class", true);
+        createPage.getAddressUsage().setTrueFalseByName("Division", true);
+        createPage.getAddressUsage().setTrueFalseByName("Serial", true);
 
         assertThat(createPage.getClassAddress().allValuesDisabled()).isTrue();
     }
