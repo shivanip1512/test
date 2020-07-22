@@ -22,10 +22,6 @@ public class TextEditElement extends EditElement {
         this.elementName = elementName;
     }
     
-    public TextEditElement(DriverExtensions driverExt, String elementName, WebElement parentElement, String elementType) {
-        super(driverExt, elementName, parentElement, elementType);
-    }
-    
     public TextEditElement(DriverExtensions driverExt, String elementName, String parentName) {
         super(driverExt, elementName, parentName);
         this.elementName = elementName;

@@ -2,11 +2,7 @@ package com.eaton.tests.support;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.text.SimpleDateFormat;
-import java.util.Optional;
-import java.util.Random;
-
-import org.apache.commons.lang3.RandomStringUtils;
+import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -16,15 +12,13 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.support.SupportBundlePage;
 import com.eaton.pages.support.SupportPage;
 
 public class SupportDetailsTests extends SeleniumTestSetup {
 
+	private SoftAssertions softly;
 	private DriverExtensions driverExt;
     private SupportPage supportPage;
-    private SupportBundlePage supportBundlePage;
-    private boolean needsPageRefresh;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
@@ -32,17 +26,14 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
 
         driver.get(getBaseUrl() + Urls.SUPPORT);
-
+        softly = new SoftAssertions();
+        
         supportPage = new SupportPage(driverExt);
     }
     
     @AfterMethod(alwaysRun=true)
     public void afterTest() {        
-        if(needsPageRefresh) {
-        	refreshPage(supportPage);
-        	supportPage = new SupportPage(driverExt);
-        	needsPageRefresh = false;
-        }
+
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN })
@@ -71,8 +62,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.BATTERY_NODE_ANALYSIS;
         final int POSITION = 0;
     	
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -81,8 +73,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.DATA_STREAMING_DEVICE_ATTRIBUTES;
         final int POSITION = 1;
     	
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -91,8 +84,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.DATABASE_MIGRATION;
         final int POSITION = 2;
     	
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -101,8 +95,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.DEVICE_DEFINITIONS;
         final int POSITION = 3;
     	
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -111,8 +106,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.ERROR_CODES;
         final int POSITION = 4;
     	
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -121,8 +117,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.EVENT_LOG;
         final int POSITION = 5;
     	
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -131,8 +128,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.FILE_EXPORT_HISTORY;
         final int POSITION = 6;
     	
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -141,8 +139,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.LOCALIZATION_HELPER;
         final int POSITION = 7;
     	
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -151,8 +150,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.LOG_EXPLORER;
         final int POSITION = 8;
     	
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -161,8 +161,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.MANAGE_INDEXES;
         final int POSITION = 9;
     	
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -171,8 +172,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.ROUTE_USAGE;
         final int POSITION = 10;
     	
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -181,8 +183,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.SYSTEM_HEALTH;
         final int POSITION = 11;
     	
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -191,8 +194,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.SYSTEM_INFO;
         final int POSITION = 12;
     	
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -201,8 +205,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.THIRD_PARTY_LIBRARIES;
         final int POSITION = 13;
     	
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -211,8 +216,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.THREAD_DUMP;
         final int POSITION = 14;
     	
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     //================================================================================
@@ -232,8 +238,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Manuals.YUKON_MANUALS;
         final int POSITION = 0;
     	
-        assertThat(supportPage.getManualsSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        assertThat(supportPage.getManualsSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(supportPage.getManualsSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(supportPage.getManualsSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     //================================================================================
@@ -253,8 +260,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.CALC_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
     	
         int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        assertThat(position).isNotEqualTo(-1);
-        assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);  
+        softly.assertThat(position).isNotEqualTo(-1);
+        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -263,8 +271,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.CAPCONTROL_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
         
         int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        assertThat(position).isNotEqualTo(-1);
-        assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(position).isNotEqualTo(-1);
+        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -273,8 +282,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.DISPATCH_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
         
         int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        assertThat(position).isNotEqualTo(-1);
-        assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(position).isNotEqualTo(-1);
+        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -283,8 +293,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.FDR_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
         
         int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        assertThat(position).isNotEqualTo(-1);
-        assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(position).isNotEqualTo(-1);
+        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -293,8 +304,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.LOADMANGEMENT_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
         
         int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        assertThat(position).isNotEqualTo(-1);
-        assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(position).isNotEqualTo(-1);
+        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -303,8 +315,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.MACS_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
         
         int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        assertThat(position).isNotEqualTo(-1);
-        assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(position).isNotEqualTo(-1);
+        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -313,8 +326,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.MESSAGE_BROKER_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
         
         int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        assertThat(position).isNotEqualTo(-1);
-        assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(position).isNotEqualTo(-1);
+        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -323,8 +337,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.NOTIFICATION_SERVER_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
         
         int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        assertThat(position).isNotEqualTo(-1);
-        assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(position).isNotEqualTo(-1);
+        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -333,8 +348,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.PORTER_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
         
         int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        assertThat(position).isNotEqualTo(-1);
-        assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(position).isNotEqualTo(-1);
+        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -343,8 +359,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.SCANNER_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
         
         int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        assertThat(position).isNotEqualTo(-1);
-        assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(position).isNotEqualTo(-1);
+        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -353,8 +370,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.SERVICE_MANAGER_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
         
         int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        assertThat(position).isNotEqualTo(-1);
-        assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(position).isNotEqualTo(-1);
+        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -363,8 +381,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.WATCHDOG_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
         
         int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        assertThat(position).isNotEqualTo(-1);
-        assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(position).isNotEqualTo(-1);
+        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -373,8 +392,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.WEBSERVER_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
         
         int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        assertThat(position).isNotEqualTo(-1);
-        assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(position).isNotEqualTo(-1);
+        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
@@ -382,8 +402,9 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     	final String EXPECTED_ANCHOR = "View All Logs";
         final String EXPECTED_LINK = Urls.Support.LOGGING_MENU + Urls.Support.VIEW_ALL_LOGS;
     	
-        assertThat(supportPage.getTodaysLogsViewAllLogsAnchorText()).isEqualTo(EXPECTED_ANCHOR);
-        assertThat(supportPage.getTodaysLogsViewAllLogsLinkText()).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(supportPage.getTodaysLogsViewAllLogsAnchorText()).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(supportPage.getTodaysLogsViewAllLogsLinkText()).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
     
     //================================================================================
@@ -395,153 +416,8 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     	final String EXPECTED_ANCHOR = "Database Validation";
         final String EXPECTED_LINK = Urls.Support.DATABASE_VALIDATION;
     	
-        assertThat(supportPage.getDatabaseValidationAnchorText()).isEqualTo(EXPECTED_ANCHOR);
-        assertThat(supportPage.getDatabaseValidationLinkText()).isEqualTo(EXPECTED_LINK);
-    }
-    
-    //================================================================================
-    // Support Bundle
-    //================================================================================
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void createSupportBundleRequiredFieldsOnlySuccess() {
-    	final String EXPECTED_PENDING_STATUS = "Pending";
-    	final String EXPECTED_STATUS = "Finished";
-    	needsPageRefresh = true;
-    	String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
-        String name = "Test " + timeStamp;
-        
-    	supportPage.getCustomerName().setInputValue(name);
-    	supportPage.getCreateBundleBtn().click();
-    	
-    	waitForPageToLoad(SupportBundlePage.PAGE_TITLE,Optional.empty());
-    	
-    	supportBundlePage = new SupportBundlePage(driverExt);
-    	assertThat(supportBundlePage.pollSupportBundleItemsStatusNot(EXPECTED_PENDING_STATUS)).isEqualTo(true);
-    	assertThat(supportBundlePage.pollSupportBundleStatus(EXPECTED_STATUS)).isEqualTo(true);
-    }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void createSupportBundleRangeTwoWeeksSuccess() {
-    	final String EXPECTED_PENDING_STATUS = "Pending";
-    	final String EXPECTED_STATUS = "Finished";
-    	needsPageRefresh = true;
-    	String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
-        String name = "Test " + timeStamp;
-        
-    	supportPage.getCustomerName().setInputValue(name);
-    	supportPage.getRange().selectItemByIndex(SupportPage.RANGE_LAST_TWO_WEEKS_INDEX);
-    	supportPage.getCreateBundleBtn().click();
-    	
-    	waitForPageToLoad(SupportBundlePage.PAGE_TITLE,Optional.empty());
-    	
-    	supportBundlePage = new SupportBundlePage(driverExt);
-    	assertThat(supportBundlePage.pollSupportBundleItemsStatusNot(EXPECTED_PENDING_STATUS)).isEqualTo(true);
-    	assertThat(supportBundlePage.pollSupportBundleStatus(EXPECTED_STATUS)).isEqualTo(true);
-    }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void createSupportBundleRangeMonthSuccess() {
-    	final String EXPECTED_PENDING_STATUS = "Pending";
-    	final String EXPECTED_STATUS = "Finished";
-    	needsPageRefresh = true;
-    	String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
-        String name = "Test " + timeStamp;
-        
-    	supportPage.getCustomerName().setInputValue(name);
-    	supportPage.getRange().selectItemByIndex(SupportPage.RANGE_LAST_MONTH_INDEX);
-    	supportPage.getCreateBundleBtn().click();
-    	
-    	waitForPageToLoad(SupportBundlePage.PAGE_TITLE,Optional.empty());
-    	
-    	supportBundlePage = new SupportBundlePage(driverExt);
-    	assertThat(supportBundlePage.pollSupportBundleItemsStatusNot(EXPECTED_PENDING_STATUS)).isEqualTo(true);
-    	assertThat(supportBundlePage.pollSupportBundleStatus(EXPECTED_STATUS)).isEqualTo(true);
-    }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void createSupportBundleRangeEverythingSuccess() {
-    	final String EXPECTED_PENDING_STATUS = "Pending";
-    	final String EXPECTED_STATUS = "Finished";
-    	needsPageRefresh = true;
-    	String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
-        String name = "Test " + timeStamp;
-        
-    	supportPage.getCustomerName().setInputValue(name);
-    	supportPage.getRange().selectItemByIndex(SupportPage.RANGE_EVERYTHING_INDEX);
-    	supportPage.getCreateBundleBtn().click();
-    	
-    	waitForPageToLoad(SupportBundlePage.PAGE_TITLE,Optional.empty());
-    	
-    	supportBundlePage = new SupportBundlePage(driverExt);
-    	assertThat(supportBundlePage.pollSupportBundleItemsStatusNot(EXPECTED_PENDING_STATUS)).isEqualTo(true);
-    	assertThat(supportBundlePage.pollSupportBundleStatus(EXPECTED_STATUS)).isEqualTo(true);
-    }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void createSupportBundleCommLogSuccess() {
-    	final String EXPECTED_PENDING_STATUS = "Pending";
-    	final String EXPECTED_STATUS = "Finished";
-    	needsPageRefresh = true;
-    	String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
-        String name = "Test " + timeStamp;
-        
-    	supportPage.getCustomerName().setInputValue(name);
-    	supportPage.getCommLogFiles().setValue(true);
-    	supportPage.getCreateBundleBtn().click();
-    	
-    	waitForPageToLoad(SupportBundlePage.PAGE_TITLE,Optional.empty());
-    	
-    	supportBundlePage = new SupportBundlePage(driverExt);
-    	assertThat(supportBundlePage.pollSupportBundleItemsStatusNot(EXPECTED_PENDING_STATUS)).isEqualTo(true);
-    	assertThat(supportBundlePage.pollSupportBundleStatus(EXPECTED_STATUS)).isEqualTo(true);
-    }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void createSupportBundleNoteSuccess() {
-    	final String EXPECTED_PENDING_STATUS = "Pending";
-    	final String EXPECTED_STATUS = "Finished";
-    	needsPageRefresh = true;
-    	String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
-        String name = "Test " + timeStamp;
-        
-        int noteLength = new Random().nextInt(1024);
-        String note = RandomStringUtils.randomAlphabetic(noteLength);
-        
-        
-    	supportPage.getCustomerName().setInputValue(name);
-    	supportPage.getNotes().setInputValue(note);
-    	supportPage.getCreateBundleBtn().click();
-    	
-    	waitForPageToLoad(SupportBundlePage.PAGE_TITLE,Optional.empty());
-    	
-    	supportBundlePage = new SupportBundlePage(driverExt);
-    	assertThat(supportBundlePage.pollSupportBundleItemsStatusNot(EXPECTED_PENDING_STATUS)).isEqualTo(true);
-    	assertThat(supportBundlePage.pollSupportBundleStatus(EXPECTED_STATUS)).isEqualTo(true);
-    }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void createSupportBundleEverythingSuccess() {
-    	final String EXPECTED_PENDING_STATUS = "Pending";
-    	final String EXPECTED_STATUS = "Finished";
-    	needsPageRefresh = true;
-    	String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
-        String name = "Test " + timeStamp;
-        
-        int noteLength = new Random().nextInt(1024);
-        String note = RandomStringUtils.randomAlphabetic(noteLength);
-        
-        
-    	supportPage.getCustomerName().setInputValue(name);
-    	supportPage.getRange().selectItemByIndex(SupportPage.RANGE_EVERYTHING_INDEX);
-    	supportPage.getCommLogFiles().setValue(true);
-    	supportPage.getNotes().setInputValue(note);
-    	supportPage.getCreateBundleBtn().click();
-    	
-    	waitForPageToLoad(SupportBundlePage.PAGE_TITLE,Optional.empty());
-    	
-    	supportBundlePage = new SupportBundlePage(driverExt);
-    	assertThat(supportBundlePage.pollSupportBundleItemsStatusNot(EXPECTED_PENDING_STATUS)).isEqualTo(true);
-    	assertThat(supportBundlePage.pollSupportBundleStatus(EXPECTED_STATUS)).isEqualTo(true);
+        softly.assertThat(supportPage.getDatabaseValidationAnchorText()).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(supportPage.getDatabaseValidationLinkText()).isEqualTo(EXPECTED_LINK);
+        softly.assertAll();
     }
 }

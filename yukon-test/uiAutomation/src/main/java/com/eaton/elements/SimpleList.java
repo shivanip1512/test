@@ -38,10 +38,7 @@ public class SimpleList {
     }
     
     public List<WebElement> getSimpleListItems() {
-
-        if (this.simpleListItems == null) {
-            findSimpleListItems();
-        }
+        findSimpleListItems();
 
         return this.simpleListItems;
     }
@@ -52,11 +49,8 @@ public class SimpleList {
     }
     
     public WebElement getSimpleListItemAt(int index) {
-
-        if (this.simpleListItems == null) {
-            findSimpleListItems();
-        }
-
+        findSimpleListItems();
+        
         return this.simpleListItems.get(index);
     }
     

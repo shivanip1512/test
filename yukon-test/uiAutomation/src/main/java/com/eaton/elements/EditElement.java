@@ -10,40 +10,26 @@ import com.eaton.framework.DriverExtensions;
 
 public class EditElement {
 
-	public static final String ELEMENT_TYPE_INPUT = "input";
-	public static final String ELEMENT_TYPE_TEXTAREA = "textarea";
-	
     protected DriverExtensions driverExt;
     private String elementName;
     private String parentName;
     private WebElement parentElement;
-    private String elementType;
 
     public EditElement(DriverExtensions driverExt, String elementName) {
         this.driverExt = driverExt;
-        this.elementName = elementName;
-        this.elementType = ELEMENT_TYPE_INPUT;
+        this.elementName = elementName;     
     }
     
     public EditElement(DriverExtensions driverExt, String elementName, String parentName) {
         this.driverExt = driverExt;
         this.elementName = elementName;
         this.parentName = parentName;
-        this.elementType = ELEMENT_TYPE_INPUT;
     }  
     
     public EditElement(DriverExtensions driverExt, String elementName, WebElement parentElement) {
         this.driverExt = driverExt;
         this.elementName = elementName;
         this.parentElement = parentElement;
-        this.elementType = ELEMENT_TYPE_INPUT;
-    }
-    
-    public EditElement(DriverExtensions driverExt, String elementName, WebElement parentElement, String elementType) {
-        this.driverExt = driverExt;
-        this.elementName = elementName;
-        this.parentElement = parentElement;
-        this.elementType = elementType;
     }
 
     public Boolean errorDisplayed() {
@@ -54,11 +40,11 @@ public class EditElement {
 
     public WebElement getEditElement() {
         if (this.parentName != null) {
-            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] " + elementType + "[name='" + this.elementName + "']"), Optional.of(5));
+            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] input[name='" + this.elementName + "']"), Optional.of(5));
         } else if (this.parentElement != null) {
-            return this.parentElement.findElement(By.cssSelector(elementType + "[name='" + this.elementName + "']"));
+            return this.parentElement.findElement(By.cssSelector("input[name='" + this.elementName + "']"));
         } else {
-            return this.driverExt.findElement(By.cssSelector(elementType + "[name='" + this.elementName + "']"), Optional.of(5));
+            return this.driverExt.findElement(By.cssSelector("input[name='" + this.elementName + "']"), Optional.of(5));
         }        
     }    
 }
