@@ -142,7 +142,7 @@ public class AttributeServiceImpl implements AttributeService {
         } else {
             CustomAttribute customAttribute = (CustomAttribute) attribute;
             return new PaoPointIdentifier(pao.getPaoIdentifier(),
-                    attributeDao.getPointIdentifier(customAttribute.getId(), pao.getPaoIdentifier().getPaoType()));
+                    attributeDao.getPointIdentifier(customAttribute.getCustomAttributeId(), pao.getPaoIdentifier().getPaoType()));
         }
     }
 
@@ -650,7 +650,7 @@ public class AttributeServiceImpl implements AttributeService {
             paoTypes.addAll(dest.get(attribute));
         } else if (attribute instanceof CustomAttribute) {
             CustomAttribute customAttribute  = (CustomAttribute) attribute;
-            PaoType type = attributeDao.getPaoTypeByAttributeId(customAttribute.getId());
+            PaoType type = attributeDao.getPaoTypeByAttributeId(customAttribute.getCustomAttributeId());
             paoTypes.add(type);
         }
         
