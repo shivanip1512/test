@@ -55,6 +55,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
         createPage.getName().setInputValue(name);
         createPage.getDeviceClass().selectItemByText("Generation Systems");
+        createPage.getDeviceClass().selectItemByText("Smart Appliances");
         createPage.getUtilityEnrollmentGroup().setInputValue(String.valueOf("100"));
         createPage.getRampInTime().setInputValue(String.valueOf("500"));
         createPage.getRampOutTime().setInputValue(String.valueOf("999"));
