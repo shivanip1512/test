@@ -17,9 +17,9 @@ include::{snippets}/StatusPointApiDoc/Test_StatusPoint_01_Create/request-fields.
 *Request JSON* 
 include::{snippets}/StatusPointApiDoc/Test_StatusPoint_01_Create/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/StatusPointApiDoc/Test_TcpTerminalServer_01_Create/response-fields.adoc[]
+include::{snippets}/StatusPointApiDoc/Test_StatusPoint_01_Create/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/StatusPointApiDoc/Test_TcpTerminalServer_01_Create/http-response.adoc[]
+include::{snippets}/StatusPointApiDoc/Test_StatusPoint_01_Create/http-response.adoc[]
 
 ==== Calc Status Point
 *Request Properties* 
