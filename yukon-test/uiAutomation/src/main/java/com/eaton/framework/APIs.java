@@ -55,5 +55,14 @@ public final class APIs {
         public static final String updateCommChannel = "/api/devices/commChannels/";
         public static final String deleteCommChannel = "/api/devices/commChannels/";
     }
+    
+    public static final class Trend {
+        
+        //Trend URL
+        public static final String createTrend = "/api/trends";
+        public static final String deleteTrend = "/api/trends/";
+        public static final String updateTrend = "/api/trends/";
+        public static final String getTrend = "/api/trends/";
+    }
 
 }
