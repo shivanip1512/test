@@ -13,19 +13,34 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
     @Autowired private CustomAttributeDao customAttributeDao;
     
     @Override
-    public AttributeAssignment saveAttributeAssignment(Assignment assignment) {
-        return customAttributeDao.saveAttributeAssignment(assignment);
+    public AttributeAssignment createAttributeAssignment(Assignment assignment) {
+        return customAttributeDao.createAttributeAssignment(assignment);
         //dbchange
         //event log
     }
     
     @Override
-    public CustomAttribute saveCustomAttribute(CustomAttribute attribute) {
-        return customAttributeDao.saveCustomAttribute(attribute);
+    public CustomAttribute createCustomAttribute(CustomAttribute attribute) {
+        return customAttributeDao.createCustomAttribute(attribute);
         //dbchange
         //event log
     }
 
+    @Override
+    public AttributeAssignment updateAttributeAssignment(Assignment assignment) {
+        return customAttributeDao.updateAttributeAssignment(assignment);
+        //dbchange
+        //event log
+    }
+    
+    @Override
+    public CustomAttribute updateCustomAttribute(CustomAttribute attribute) {
+        return customAttributeDao.updateCustomAttribute(attribute);
+        //dbchange
+        //event log
+    }
+
+    
     @Override
     public void deleteCustomAttribute(int attributeId) throws DataDependencyException {
         customAttributeDao.deleteCustomAttribute(attributeId);

@@ -17,6 +17,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.admin.dao.CustomAttributeDao;
 
 public class CustomAttributeDaoImpl implements CustomAttributeDao {
@@ -55,42 +56,46 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
     }
     
     @Override
-    public AttributeAssignment saveAttributeAssignment(Assignment assignment) {
-        SqlStatementBuilder updateSql = new SqlStatementBuilder();
-        SqlParameterSink params = updateSql.update("AttributeAssignment");
+    public AttributeAssignment createAttributeAssignment(Assignment assignment) {
+        assignment.setAttributeAssignmentId(nextValueHelper.getNextValue("AttributeAssignment"));
+        SqlStatementBuilder createSql = new SqlStatementBuilder();
+        SqlParameterSink params = createSql.insertInto("AttributeAssignment");
+        params.addValue("AttributeAssignmentId", assignment.getAttributeAssignmentId());
         addAssignmentParameters(params, assignment);
-        updateSql.append("WHERE AttributeAssignmentId").eq(assignment.getAttributeAssignmentId());
-        int rowsUpdated = jdbcTemplate.update(updateSql);
-
-        if (rowsUpdated < 1) {
-            int pk = nextValueHelper.getNextValue("AttributeAssignment");
-            assignment.setAttributeAssignmentId(pk);
-            SqlStatementBuilder createSql = new SqlStatementBuilder();
-            params = createSql.insertInto("AttributeAssignment");
-            params.addValue("AttributeAssignmentId", assignment.getAttributeAssignmentId());
-            addAssignmentParameters(params, assignment);
-            jdbcTemplate.update(createSql);
-        }
+        jdbcTemplate.update(createSql);
         attributeDao.cacheAttributes();
         return attributeDao.getAssignmentById(assignment.getAttributeAssignmentId());
     }
     
     @Override
-    public CustomAttribute saveCustomAttribute(CustomAttribute attribute) {
+    public AttributeAssignment updateAttributeAssignment(Assignment assignment) {
+        SqlStatementBuilder updateSql = new SqlStatementBuilder();
+        SqlParameterSink params = updateSql.update("AttributeAssignment");
+        addAssignmentParameters(params, assignment);
+        updateSql.append("WHERE AttributeAssignmentId").eq(assignment.getAttributeAssignmentId());
+        attributeDao.cacheAttributes();
+        return attributeDao.getAssignmentById(assignment.getAttributeAssignmentId());
+    }
+    
+    @Override
+    public CustomAttribute createCustomAttribute(CustomAttribute attribute) {
         SqlStatementBuilder createSql = new SqlStatementBuilder();
-        SqlParameterSink params = createSql.update("CustomAttribute");
+        attribute.setCustomAttributeId(nextValueHelper.getNextValue("CustomAttribute"));
+        SqlParameterSink params = createSql.insertInto("CustomAttribute");
+        params.addValue("AttributeId", attribute.getCustomAttributeId());
         params.addValue("AttributeName", attribute.getName());
-        createSql.append("WHERE AttributeId").eq(attribute.getCustomAttributeId());
-        int rowsUpdated = jdbcTemplate.update(createSql);
-        if (rowsUpdated < 1) {
-            int pk = nextValueHelper.getNextValue("CustomAttribute");
-            attribute.setCustomAttributeId(pk);
-            SqlStatementBuilder updateSql = new SqlStatementBuilder();
-            params = updateSql.insertInto("CustomAttribute");
-            params.addValue("AttributeId", pk);
-            params.addValue("AttributeName", attribute.getName());
-            jdbcTemplate.update(updateSql);
-        }
+        jdbcTemplate.update(createSql);
+        attributeDao.cacheAttributes();
+        return attribute;
+    }
+    
+    @Override
+    public CustomAttribute updateCustomAttribute(CustomAttribute attribute) {
+        SqlStatementBuilder updateSql = new SqlStatementBuilder();
+        SqlParameterSink params = updateSql.update("CustomAttribute");
+        params.addValue("AttributeName", attribute.getName());
+        updateSql.append("WHERE AttributeId").eq(attribute.getCustomAttributeId());
+        jdbcTemplate.update(updateSql);
         attributeDao.cacheAttributes();
         return attribute;
     }

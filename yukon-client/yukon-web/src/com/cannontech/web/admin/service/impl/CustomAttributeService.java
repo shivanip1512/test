@@ -7,25 +7,42 @@ import com.cannontech.common.pao.attribute.model.CustomAttribute;
 
 public interface CustomAttributeService {
     /**
-     * Creates or updates attribute
-     * @return CustomAttribute
-     */
-    public CustomAttribute saveCustomAttribute(CustomAttribute attribute);
-
-    /**
      * Deletes custom attribute
+     * 
      * @throws DataDependencyException
      */
     void deleteCustomAttribute(int attributeId) throws DataDependencyException;
-    
-    /**
-     * Creates or updates attribute assignment
-     * @return AttributeAssignment 
-     */
-    AttributeAssignment saveAttributeAssignment(Assignment assignment);
 
     /**
      * Deletes attribute assignment
      */
     void deleteAttributeAssignment(int attributeAssignmentId);
+
+    /**
+     * Creates attribute assignment
+     * 
+     * @return AttributeAssignment
+     */
+    AttributeAssignment updateAttributeAssignment(Assignment assignment);
+
+    /**
+     * Updates attribute assignment
+     * 
+     * @return AttributeAssignment
+     */
+    AttributeAssignment createAttributeAssignment(Assignment assignment);
+
+    /**
+     * Creates attribute
+     * 
+     * @return CustomAttribute
+     */
+    CustomAttribute createCustomAttribute(CustomAttribute attribute);
+
+    /**
+     * Updates attribute
+     * 
+     * @return CustomAttribute
+     */
+    CustomAttribute updateCustomAttribute(CustomAttribute attribute);
 }
