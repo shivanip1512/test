@@ -79,7 +79,7 @@ public class UdpTerminalServerApiTest {
         udpTerminal.getSharing().setSharedSocketNumber(1025);
         udpTerminal.setKeyInHex("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.post("updatePort", udpTerminal,
+        ExtractableResponse<?> getResponse = ApiCallHelper.patch("updatePort", udpTerminal,
                 context.getAttribute(CommChannelHelper.CONTEXT_PORT_ID).toString());
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
 

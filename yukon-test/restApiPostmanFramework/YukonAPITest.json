@@ -2975,6 +2975,696 @@
 			"protocolProfileBehavior": {}
 		},
 		{
+			"name": "Point API",
+			"item": [
+				{
+					"name": "Analog Point",
+					"item": [
+						{
+							"name": "Create",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"pointName\": \"Analog point create\",\r\n    \"pointType\": \"Analog\",\r\n    \"pointOffset\": 894499,\r\n    \"paoId\": 6,\r\n    \"stateGroupId\": -11,\r\n    \"enable\": true,\r\n    \"archiveType\": \"NONE\",\r\n    \"archiveInterval\": 0,\r\n    \"timingGroup\": \"SOE\",\r\n    \"alarmsDisabled\": false,\r\n    \"staleData\": {\r\n        \"updateStyle\": 1,\r\n        \"time\": 5\r\n    },\r\n    \"alarming\": {\r\n        \"notificationGroupId\": 1,\r\n        \"notifyOnAck\": false,\r\n        \"notifyOnClear\": false,\r\n        \"alarmTableList\": [\r\n            {\r\n                \"condition\": \"Non-updated\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Rate Of Change\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Limit Set 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Limit Set 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Reasonability\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Reasonability\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Limit 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Limit 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Limit 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Limit 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Stale\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            }\r\n        ]\r\n    },\r\n       \"limits\": [\r\n         {\r\n            \"limitNumber\": 1,\r\n            \"highLimit\": 5.0,\r\n            \"lowLimit\": 1.0,\r\n            \"limitDuration\": 1\r\n        },\r\n       {\r\n            \"limitNumber\": 2,\r\n            \"highLimit\": 0.0,\r\n            \"lowLimit\": 0.0,\r\n            \"limitDuration\": 0\r\n        }\r\n    ],\r\n    \"pointUnit\": {\r\n        \"uomId\": 3,\r\n        \"decimalPlaces\": 9,\r\n        \"highReasonabilityLimit\": 1.0E30,\r\n        \"lowReasonabilityLimit\": 0.0,\r\n        \"meterDials\": 2\r\n    },\r\n    \"pointAnalog\": {\r\n        \"deadband\": -1.0,\r\n        \"multiplier\": 1.0,\r\n        \"dataOffset\": 0.0\r\n    },\r\n    \"pointAnalogControl\": {\r\n        \"controlOffset\": 0,\r\n        \"controlInhibited\": false,\r\n        \"controlType\": \"NONE\"\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/points",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"pointName\": \"Analog Point Update\",\r\n    \"pointType\": \"Analog\",\r\n    \"pointOffset\": 894499,\r\n    \"paoId\": 6,\r\n    \"stateGroupId\": -11,\r\n    \"enable\": true,\r\n    \"archiveType\": \"NONE\",\r\n    \"archiveInterval\": 0,\r\n    \"timingGroup\": \"SOE\",\r\n    \"alarmsDisabled\": false,\r\n    \"staleData\": {\r\n        \"updateStyle\": 1,\r\n        \"time\": 5\r\n    },\r\n    \"alarming\": {\r\n        \"notificationGroupId\": 1,\r\n        \"notifyOnAck\": false,\r\n        \"notifyOnClear\": false,\r\n        \"alarmTableList\": [\r\n            {\r\n                \"condition\": \"Non-updated\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Rate Of Change\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Limit Set 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Limit Set 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Reasonability\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Reasonability\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Limit 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Limit 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Limit 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Limit 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Stale\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            }\r\n        ]\r\n    },\r\n       \"limits\": [\r\n         {\r\n            \"limitNumber\": 1,\r\n            \"highLimit\": 5.0,\r\n            \"lowLimit\": 1.0,\r\n            \"limitDuration\": 1\r\n        },\r\n       {\r\n            \"limitNumber\": 2,\r\n            \"highLimit\": 0.0,\r\n            \"lowLimit\": 0.0,\r\n            \"limitDuration\": 0\r\n        }\r\n    ],\r\n    \"pointUnit\": {\r\n        \"uomId\": 3,\r\n        \"decimalPlaces\": 9,\r\n        \"highReasonabilityLimit\": 1.0E30,\r\n        \"lowReasonabilityLimit\": 0.0,\r\n        \"meterDials\": 2\r\n    },\r\n    \"pointAnalog\": {\r\n        \"deadband\": -1.0,\r\n        \"multiplier\": 1.0,\r\n        \"dataOffset\": 6.0\r\n    },\r\n    \"pointAnalogControl\": {\r\n        \"controlOffset\": 0,\r\n        \"controlInhibited\": false,\r\n        \"controlType\": \"NONE\"\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/points/233272",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"233272"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{api-url}}/api/points/{pointId}",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{api-url}}/api/points/{pointId}",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Copy",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{       \r\n        \"pointName\": \"Analog Point Copy\",\r\n        \"pointOffset\": 32536,\r\n        \"paoId\":4569\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/points/{pointId}/copy",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}",
+										"copy"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "CalcAnalogPoint",
+					"item": [
+						{
+							"name": "Create",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"pointName\": \"Calc Analog Point Create\",\r\n    \"pointType\": \"CalcAnalog\",\r\n    \"pointOffset\": 69323,\r\n    \"paoId\": 40704,\r\n    \"stateGroupId\": -11,\r\n    \"enable\": true,\r\n    \"archiveType\": \"ON_CHANGE\",\r\n    \"archiveInterval\": 0,\r\n    \"timingGroup\": \"SOE\",\r\n    \"alarmsDisabled\": false,\r\n    \"baselineId\": 1,\r\n    \"staleData\": {\r\n        \"updateStyle\": 1,\r\n        \"time\": 5\r\n    },\r\n    \"alarming\": {\r\n        \"notificationGroupId\": 1,\r\n        \"notifyOnAck\": false,\r\n        \"notifyOnClear\": false,\r\n        \"alarmTableList\": [\r\n            {\r\n                \"condition\": \"Non-updated\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Rate Of Change\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Limit Set 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Limit Set 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Reasonability\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Reasonability\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Limit 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Limit 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Limit 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Limit 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Stale\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            }\r\n        ]\r\n    },\r\n    \"limits\": [\r\n         {\r\n            \"limitNumber\": 1,\r\n            \"highLimit\": 5.0,\r\n            \"lowLimit\": 1.0,\r\n            \"limitDuration\": 1\r\n        },\r\n       {\r\n            \"limitNumber\": 2,\r\n            \"highLimit\": 0.0,\r\n            \"lowLimit\": 0.0,\r\n            \"limitDuration\": 0\r\n        }\r\n    ],\r\n    \"pointUnit\": {\r\n        \"uomId\": 46,\r\n        \"decimalPlaces\": 3,\r\n        \"highReasonabilityLimit\": 0.0,\r\n        \"lowReasonabilityLimit\": 0.0,\r\n        \"meterDials\": 0\r\n    },\r\n    \"calcAnalogBase\": {\r\n        \"updateType\": \"CONSTANT\",\r\n        \"periodicRate\": 1,\r\n        \"calculateQuality\": false\r\n    },\r\n    \"calcComponents\": [\r\n        {\r\n            \"componentType\": \"OPERATION\",\r\n            \"operation\": \"+\",\r\n            \"operand\": 595.0\r\n        },\r\n        {\r\n            \"componentType\": \"CONSTANT\",\r\n            \"operation\": \"+\",\r\n            \"operand\": 896.0\r\n        },\r\n        {\r\n            \"componentType\": \"FUNCTION\",\r\n            \"operation\": \"Baseline\",\r\n            \"operand\": 595.0\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/points",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"pointName\": \"Calc Analog Point Update\",\r\n    \"pointType\": \"CalcAnalog\",\r\n    \"pointOffset\": 69323,\r\n    \"paoId\": 40704,\r\n    \"stateGroupId\": -11,\r\n    \"enable\": true,\r\n    \"archiveType\": \"ON_CHANGE\",\r\n    \"archiveInterval\": 0,\r\n    \"timingGroup\": \"SOE\",\r\n    \"alarmsDisabled\": false,\r\n    \"baselineId\": 1,\r\n    \"staleData\": {\r\n        \"updateStyle\": 1,\r\n        \"time\": 5\r\n    },\r\n    \"alarming\": {\r\n        \"notificationGroupId\": 1,\r\n        \"notifyOnAck\": false,\r\n        \"notifyOnClear\": false,\r\n        \"alarmTableList\": [\r\n            {\r\n                \"condition\": \"Non-updated\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Rate Of Change\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Limit Set 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Limit Set 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Reasonability\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Reasonability\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Limit 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Limit 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Limit 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Limit 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Stale\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            }\r\n        ]\r\n    },\r\n     \"limits\": [\r\n         {\r\n            \"limitNumber\": 1,\r\n            \"highLimit\": 5.0,\r\n            \"lowLimit\": 1.0,\r\n            \"limitDuration\": 1\r\n        },\r\n       {\r\n            \"limitNumber\": 2,\r\n            \"highLimit\": 0.0,\r\n            \"lowLimit\": 0.0,\r\n            \"limitDuration\": 0\r\n        }\r\n    ],\r\n    \"pointUnit\": {\r\n        \"uomId\": 46,\r\n        \"decimalPlaces\": 3,\r\n        \"highReasonabilityLimit\": 0.0,\r\n        \"lowReasonabilityLimit\": 0.0,\r\n        \"meterDials\": 0\r\n    },\r\n    \"calcAnalogBase\": {\r\n        \"updateType\": \"CONSTANT\",\r\n        \"periodicRate\": 1,\r\n        \"calculateQuality\": false\r\n    },\r\n    \"calcComponents\": [\r\n        {\r\n            \"componentType\": \"OPERATION\",\r\n            \"operation\": \"+\",\r\n            \"operand\": 595.0\r\n        },\r\n        {\r\n            \"componentType\": \"CONSTANT\",\r\n            \"operation\": \"+\",\r\n            \"operand\": 896.0\r\n        },\r\n        {\r\n            \"componentType\": \"FUNCTION\",\r\n            \"operation\": \"Baseline\",\r\n            \"operand\": 595.0\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/points/{pointId}",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{api-url}}/api/points/{pointId}",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{api-url}}/api/points/{pointId}",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Copy",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{       \r\n        \"pointName\": \"Calc Analog Point Copy\",\r\n        \"pointOffset\": 3256,\r\n        \"paoId\":40704\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/points/{pointId}/copy",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}",
+										"copy"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "CalcStatusPoint",
+					"item": [
+						{
+							"name": "Create",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": " {\r\n    \"paoId\": 40704,\r\n    \"pointName\": \"Calc Status Point Create\",\r\n    \"pointType\": \"CalcStatus\",\r\n    \"timingGroup\": \"SOE\",\r\n    \"stateGroupId\": -11,\r\n    \"enable\": true,\r\n    \"pointOffset\": 88343,\r\n    \"archiveType\": \"ON_CHANGE\",\r\n    \"archiveInterval\": 0,\r\n    \"alarmsDisabled\": false,\r\n    \"baselineId\" : 1,\r\n\t\r\n    \"staleData\": {\r\n        \"updateStyle\": 1,\r\n        \"time\": 5\r\n    },\r\n    \"statusControl\": {\r\n        \"controlOffset\": 0,\r\n        \"controlInhibited\": false,\r\n        \"closeTime1\": 0,\r\n        \"closeTime2\": 0,\r\n        \"stateZeroControl\": \"control open\",\r\n        \"stateOneControl\": \"control close\",\r\n        \"commandTimeOut\": 0,\r\n        \"controlType\": \"None\"\r\n    },\r\n    \"calculationBase\": {\r\n        \"updateType\": \"ON_TIMER\",\r\n        \"periodicRate\": 15\r\n    },\r\n    \"calcComponents\": [\r\n        {\r\n            \"componentType\": \"OPERATION\",\r\n            \"operation\": \"+\",\r\n            \"operand\": 232944.0\r\n        },\r\n        {\r\n            \"componentType\": \"CONSTANT\",\r\n            \"operation\": \"+\",\r\n            \"operand\": 244.0\r\n        },\r\n        {\r\n            \"componentType\": \"FUNCTION\",\r\n            \"operation\": \"Baseline\",\r\n            \"operand\": 232944.0\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/points",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": " {\r\n    \"paoId\": 40704,\r\n    \"pointName\": \"CalcStatus Point Update\",\r\n    \"pointType\": \"CalcStatus\",\r\n    \"timingGroup\": \"SOE\",\r\n    \"stateGroupId\": -11,\r\n    \"enable\": true,\r\n    \"pointOffset\": 88343,\r\n    \"archiveType\": \"ON_CHANGE\",\r\n    \"archiveInterval\": 0,\r\n    \"alarmsDisabled\": false,\r\n    \"baselineId\" : 1,\r\n\t\r\n    \"staleData\": {\r\n        \"updateStyle\": 1,\r\n        \"time\": 5\r\n    },\r\n    \"statusControl\": {\r\n        \"controlOffset\": 0,\r\n        \"controlInhibited\": false,\r\n        \"closeTime1\": 0,\r\n        \"closeTime2\": 0,\r\n        \"stateZeroControl\": \"control open\",\r\n        \"stateOneControl\": \"control close\",\r\n        \"commandTimeOut\": 0,\r\n        \"controlType\": \"None\"\r\n    },\r\n    \"calculationBase\": {\r\n        \"updateType\": \"ON_TIMER\",\r\n        \"periodicRate\": 15\r\n    },\r\n    \"calcComponents\": [\r\n        {\r\n            \"componentType\": \"OPERATION\",\r\n            \"operation\": \"+\",\r\n            \"operand\": 232944.0\r\n        },\r\n        {\r\n            \"componentType\": \"CONSTANT\",\r\n            \"operation\": \"+\",\r\n            \"operand\": 244.0\r\n        },\r\n        {\r\n            \"componentType\": \"FUNCTION\",\r\n            \"operation\": \"Baseline\",\r\n            \"operand\": 232944.0\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/points/{pointId}",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{api-url}}/api/points/{pointId}",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{api-url}}/api/points/{pointId}",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Copy",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{       \r\n        \"pointName\": \"Calc Status Point Copy\",\r\n        \"pointOffset\": 3256,\r\n        \"paoId\":40704\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/points/{pointId}/copy",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}",
+										"copy"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Pulse Accumulator point",
+					"item": [
+						{
+							"name": "Create",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"pointName\": \"Pulse Accumulator point create\",\r\n    \"pointType\": \"PulseAccumulator\",\r\n    \"pointOffset\": 43632,\r\n    \"paoId\": 40704,\r\n    \"stateGroupId\": -1,\r\n    \"enable\": true,\r\n    \"archiveType\": \"NONE\",\r\n    \"archiveInterval\": 0,\r\n    \"timingGroup\": \"DEFAULT\",\r\n    \"alarmsDisabled\": false,\r\n    \"staleData\": {\r\n        \"updateStyle\": 1,\r\n        \"time\": 5\r\n    },\r\n    \"alarming\": {\r\n        \"notificationGroupId\": 1,\r\n        \"notifyOnAck\": false,\r\n        \"notifyOnClear\": false,\r\n        \"alarmTableList\": [\r\n            {\r\n                \"condition\": \"Non-updated\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Rate Of Change\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Limit Set 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Limit Set 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Reasonability\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Reasonability\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Limit 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Limit 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Limit 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Limit 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Stale\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            }\r\n        ]\r\n    },\r\n         \"limits\": [\r\n         {\r\n            \"limitNumber\": 1,\r\n            \"highLimit\": 5.0,\r\n            \"lowLimit\": 1.0,\r\n            \"limitDuration\": 1\r\n        },\r\n       {\r\n            \"limitNumber\": 2,\r\n            \"highLimit\": 0.0,\r\n            \"lowLimit\": 0.0,\r\n            \"limitDuration\": 0\r\n        }\r\n    ],\r\n    \"pointUnit\": {\r\n        \"uomId\": 0,\r\n        \"decimalPlaces\": 2,\r\n        \"highReasonabilityLimit\": 1.0E30,\r\n        \"lowReasonabilityLimit\": -1.0E30,\r\n        \"meterDials\": 0\r\n    },\r\n    \"accumulatorPoint\": {\r\n        \"multiplier\": 1.0,\r\n        \"dataOffset\": 0.0\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/points",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"pointName\": \"Pulse Accumulator point Update\",\r\n    \"pointType\": \"PulseAccumulator\",\r\n    \"pointOffset\": 43632,\r\n    \"paoId\": 40704,\r\n    \"stateGroupId\": -1,\r\n    \"enable\": true,\r\n    \"archiveType\": \"NONE\",\r\n    \"archiveInterval\": 0,\r\n    \"timingGroup\": \"DEFAULT\",\r\n    \"alarmsDisabled\": false,\r\n    \"staleData\": {\r\n        \"updateStyle\": 1,\r\n        \"time\": 5\r\n    },\r\n    \"alarming\": {\r\n        \"notificationGroupId\": 1,\r\n        \"notifyOnAck\": false,\r\n        \"notifyOnClear\": false,\r\n        \"alarmTableList\": [\r\n            {\r\n                \"condition\": \"Non-updated\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Rate Of Change\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Limit Set 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Limit Set 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Reasonability\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Reasonability\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Limit 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Low Limit 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Limit 1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"High Limit 2\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Stale\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            }\r\n        ]\r\n    },\r\n         \"limits\": [\r\n         {\r\n            \"limitNumber\": 1,\r\n            \"highLimit\": 5.0,\r\n            \"lowLimit\": 1.0,\r\n            \"limitDuration\": 1\r\n        },\r\n       {\r\n            \"limitNumber\": 2,\r\n            \"highLimit\": 0.0,\r\n            \"lowLimit\": 0.0,\r\n            \"limitDuration\": 0\r\n        }\r\n    ],\r\n    \"pointUnit\": {\r\n        \"uomId\": 0,\r\n        \"decimalPlaces\": 2,\r\n        \"highReasonabilityLimit\": 1.0E30,\r\n        \"lowReasonabilityLimit\": -1.0E30,\r\n        \"meterDials\": 0\r\n    },\r\n    \"accumulatorPoint\": {\r\n        \"multiplier\": 1.0,\r\n        \"dataOffset\": 0.0\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/points/{pointId}",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{api-url}}/api/points/{pointId}",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{api-url}}/api/points/{pointId}",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Copy",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{       \r\n        \"pointName\": \"Pulse Accumulator Point Copy\",\r\n        \"pointOffset\": 3256,\r\n        \"paoId\":40704\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/points/{pointId}/copy",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}",
+										"copy"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Status Point",
+					"item": [
+						{
+							"name": "Create",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"pointName\": \"Status Point Create\",\r\n    \"pointType\": \"Status\",\r\n    \"pointOffset\": 2233,\r\n    \"paoId\": 40704,\r\n    \"stateGroupId\": -11,\r\n    \"initialState\": 0,\r\n    \"enable\": true,\r\n    \"archiveType\": \"NONE\",\r\n    \"archiveInterval\": 0,\r\n    \"timingGroup\": \"DEFAULT\",\r\n    \"alarmsDisabled\": false,\r\n    \"staleData\": {\r\n        \"updateStyle\": 1,\r\n        \"time\": 5\r\n    },\r\n    \"alarming\": {\r\n        \"notificationGroupId\": 1,\r\n        \"notifyOnAck\": false,\r\n        \"notifyOnClear\": false,\r\n        \"alarmTableList\": [\r\n            {\r\n                \"condition\": \"Non-updated\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Abnormal\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Uncommanded State Change\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Command Failure\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Stale\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"-1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"0\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            }\r\n        ]\r\n    },\r\n    \"pointStatusControl\": {\r\n        \"controlOffset\": 0,\r\n        \"controlInhibited\": false,\r\n        \"closeTime1\": 0,\r\n        \"closeTime2\": 0,\r\n        \"openCommand\": \"control open\",\r\n        \"closeCommand\": \"control close\",\r\n        \"commandTimeOut\": 44,\r\n        \"controlType\": \"SBOLATCH\"\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/points",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"pointName\": \"Status Point Update\",\r\n    \"pointType\": \"Status\",\r\n    \"pointOffset\": 38233,\r\n    \"paoId\": 40704,\r\n    \"stateGroupId\": -11,\r\n    \"initialState\": 0,\r\n    \"enable\": true,\r\n    \"archiveType\": \"NONE\",\r\n    \"archiveInterval\": 0,\r\n    \"timingGroup\": \"DEFAULT\",\r\n    \"alarmsDisabled\": false,\r\n    \"staleData\": {\r\n        \"updateStyle\": 1,\r\n        \"time\": 5\r\n    },\r\n    \"alarming\": {\r\n        \"notificationGroupId\": 1,\r\n        \"notifyOnAck\": false,\r\n        \"notifyOnClear\": false,\r\n        \"alarmTableList\": [\r\n            {\r\n                \"condition\": \"Non-updated\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Abnormal\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Uncommanded State Change\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Command Failure\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"Stale\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"-1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"0\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            },\r\n            {\r\n                \"condition\": \"1\",\r\n                \"category\": \"(none)\",\r\n                \"notify\": \"NONE\"\r\n            }\r\n        ]\r\n    },\r\n    \"pointStatusControl\": {\r\n        \"controlOffset\": 0,\r\n        \"controlInhibited\": false,\r\n        \"closeTime1\": 0,\r\n        \"closeTime2\": 0,\r\n        \"openCommand\": \"control open\",\r\n        \"closeCommand\": \"control close\",\r\n        \"commandTimeOut\": 44,\r\n        \"controlType\": \"SBOLATCH\"\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/points/{pointId}",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{api-url}}/api/points/{pointId}",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{api-url}}/api/points/{pointId}",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Copy",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{       \r\n        \"pointName\": \"Status Point Copy\",\r\n        \"pointOffset\": 3256,\r\n        \"paoId\":40704\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/points/{pointId}/copy",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}",
+										"copy"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Retrieve All  Points",
+					"item": [
+						{
+							"name": "Retrieve",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/devices/{paoId}/points",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"devices",
+										"{paoId}",
+										"points"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
 			"name": "Trend",
 			"item": [
 				{
@@ -2984,7 +3674,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\"name\":\"Trend Test\",\r\n\t\"trendSeries\": [\r\n\t\t{\r\n\t\t\"type\": \"DATE_TYPE\",\r\n\t\t\"pointId\":-110,\r\n\t\t\"label\" : \"System Device / System Point\",\r\n\t\t\"color\" : \"BLACK\",\r\n\t\t\"TrendAxis\" :\"LEFT\",\r\n\t\t\"multiplier\" : 1.2,\r\n\t\t\"style\" : \"LINE\",\r\n\t\t\"date\":\"06/06/2020\"\r\n\t\t}\r\n\t]\r\n}",
+							"raw": "{\r\n\t\"name\":\"Trend Test\",\r\n\t\"trendSeries\": [\r\n\t\t{\r\n\t\t\"type\": \"DATE_TYPE\",\r\n\t\t\"pointId\":-110,\r\n\t\t\"label\" : \"System Device / System Point\",\r\n\t\t\"color\" : \"BLACK\",\r\n\t\t\"axis\" :\"LEFT\",\r\n\t\t\"multiplier\" : 1.2,\r\n\t\t\"style\" : \"LINE\",\r\n\t\t\"date\":\"06/06/2020\"\r\n\t\t}\r\n\t]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3030,7 +3720,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\"name\":\"Trend Test Update\",\r\n\t\"trendSeries\": [\r\n\t\t{\r\n\t\t\"type\": \"PEAK_TYPE\",\r\n\t\t\"pointId\":-110,\r\n\t\t\"label\" : \"System Device / System Point\",\r\n\t\t\"color\" : \"BLACK\",\r\n\t\t\"TrendAxis\" :\"LEFT\",\r\n\t\t\"multiplier\" : 1.2,\r\n\t\t\"style\" : \"LINE\",\r\n\t\t\"date\":\"06/10/2020\"\r\n\t\t}\r\n\t]\r\n}",
+							"raw": "{\r\n\t\"name\":\"Trend Test Update\",\r\n\t\"trendSeries\": [\r\n\t\t{\r\n\t\t\"type\": \"PEAK_TYPE\",\r\n\t\t\"pointId\":-110,\r\n\t\t\"label\" : \"System Device / System Point\",\r\n\t\t\"color\" : \"BLACK\",\r\n\t\t\"axis\" :\"LEFT\",\r\n\t\t\"multiplier\" : 1.2,\r\n\t\t\"style\" : \"LINE\",\r\n\t\t\"date\":\"06/10/2020\"\r\n\t\t}\r\n\t]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

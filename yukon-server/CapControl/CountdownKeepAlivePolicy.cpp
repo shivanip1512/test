@@ -40,7 +40,7 @@ Policy::Actions CountdownKeepAlivePolicy::EnableRemoteControl( const long keepAl
     LitePoint point = getPointByAttribute( Attribute::KeepAlive );
 
     actions.emplace_back( makeSignalTemplate( point.getPointId(), keepAliveValue, EnableRemoteControlText ),
-                          nullptr );
+                          PorterRequest::none() );
 
     return actions;
 }
@@ -52,7 +52,7 @@ Policy::Actions CountdownKeepAlivePolicy::DisableRemoteControl()
     LitePoint point = getPointByAttribute( Attribute::KeepAlive );
 
     actions.emplace_back( makeSignalTemplate( point.getPointId(), 0, DisableRemoteControlText ),
-                          nullptr );
+                          PorterRequest::none() );
 
     return actions;
 }

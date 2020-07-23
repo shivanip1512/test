@@ -8,6 +8,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.CapBankListPage;
 
@@ -16,7 +17,7 @@ public class CapBankListTests extends SeleniumTestSetup {
     private CapBankListPage listPage;
     private SoftAssertions softly;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
@@ -29,19 +30,19 @@ public class CapBankListTests extends SeleniumTestSetup {
         listPage = new CapBankListPage(driverExt);
     }
 
-    @Test
-    public void columnHeadersCorrect() {
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.VoltVar.VOLT_VAR })
+    public void capBankList_columnHeadersCorrect() {
         final int EXPECTED_COUNT = 3;
 
         List<String> headers = this.listPage.getTable().getListTableHeaders();
-        
+
         int actualCount = headers.size();
 
         softly.assertThat(actualCount).isEqualTo(EXPECTED_COUNT);
         softly.assertThat(headers).contains("Name");
         softly.assertThat(headers).contains("Item Type");
         softly.assertThat(headers).contains("Description");
-        
+
         softly.assertAll();
     }
 }

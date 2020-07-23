@@ -1,5 +1,6 @@
 package com.eaton.elements;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,29 +16,22 @@ public class DropDownElement {
     private String elementName;
     private String parentName;
     private WebElement parentElement;
-    private WebElement selectElement;
 
     public DropDownElement(DriverExtensions driverExt, String elementName) {
         this.driverExt = driverExt;
         this.elementName = elementName;
-        
-        setSelectElement();
     }
     
     public DropDownElement(DriverExtensions driverExt, String elementName, String parentName) {
         this.driverExt = driverExt;
         this.elementName = elementName;
         this.parentName = parentName;
-        
-        setSelectElement();
     }
     
     public DropDownElement(DriverExtensions driverExt, String elementName, WebElement parentElement) {
         this.driverExt = driverExt;
         this.elementName = elementName;
         this.parentElement = parentElement;
-        
-        setSelectElement();
     }
     
     public void selectItemByText(String text)
@@ -59,21 +53,31 @@ public class DropDownElement {
     
     public int getOptionCount() {
         List<WebElement> options = getSelectElement().findElements(By.tagName("option"));
-        
+
         return options.size();
     }
     
-    private void setSelectElement() {
+    public List<String> getOptionValues() {
+        List<String> optionValues = new ArrayList<>();
+        List<WebElement> options = getSelectElement().findElements(By.tagName("option"));
+        for(WebElement option : options) {
+            optionValues.add(option.getText());
+        }
+        
+        return optionValues;
+    }
+    
+    private WebElement getSelectElement() {
         if (this.parentName != null) {
-            this.selectElement = this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] select[name='" + this.elementName + "']"), Optional.empty());
+            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] select[name='" + this.elementName + "']"), Optional.empty());
         } else if (this.parentElement != null) {
-            this.selectElement = this.parentElement.findElement(By.cssSelector("select[name='" + this.elementName + "']"));
+            return this.parentElement.findElement(By.cssSelector("select[name='" + this.elementName + "']"));
         } else {
-            this.selectElement = this.driverExt.findElement(By.cssSelector("select[name='" + this.elementName + "']"), Optional.empty());   
+            return this.driverExt.findElement(By.cssSelector("select[name='" + this.elementName + "']"), Optional.empty());   
         }        
     }  
     
-    public WebElement getSelectElement() {
-        return selectElement;
-    }
+    public String getValidationError() {
+        return this.driverExt.findElement(By.cssSelector("span[id='" + this.elementName + ".errors']"), Optional.empty()).getText();
+     }
 }

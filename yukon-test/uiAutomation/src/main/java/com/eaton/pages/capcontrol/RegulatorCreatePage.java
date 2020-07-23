@@ -11,49 +11,35 @@ import com.eaton.pages.PageBase;
 
 public class RegulatorCreatePage extends PageBase {
     
-    private TextEditElement name;
-    private TextEditElement description;
-    private DropDownElement type;
-    private DropDownElement configuration;
-    private TrueFalseCheckboxElement status;
-    private WebTable table;
-
     public RegulatorCreatePage(DriverExtensions driverExt) {
         super(driverExt);
         
         requiresLogin = true;
         pageUrl = Urls.CapControl.REGULATOR_CREATE;
-
-        name = new TextEditElement(this.driverExt, "name");
-        description = new TextEditElement(this.driverExt, "description");
-        type = new DropDownElement(this.driverExt, "type");
-        configuration = new DropDownElement(this.driverExt, "configId");
-        status = new TrueFalseCheckboxElement(this.driverExt, "disabled");
-        table = new WebTable(this.driverExt, "compact-results-table");
     }
     
     public TextEditElement getName() {
-        return name;
+        return new TextEditElement(this.driverExt, "name");
     }
     
     public TextEditElement getDescription() {
-        return description;
+        return new TextEditElement(this.driverExt, "description");
     }
     
     public DropDownElement getType() {
-        return type;
+        return new DropDownElement(this.driverExt, "type");
     }
     
     public DropDownElement getConfiguration() {
-        return configuration;
+        return new DropDownElement(this.driverExt, "configId");
     }
     
     public TrueFalseCheckboxElement getStatus() {
-        return status;
+        return new TrueFalseCheckboxElement(this.driverExt, "disabled");
     }
     
     public WebTable getAttributeMappingsTable() {
-        return table;
+        return new WebTable(this.driverExt, "compact-results-table");
     }
     
     public Button getSaveBtn() {

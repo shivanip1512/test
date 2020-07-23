@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.web.admin.model.CustomAttributeDetail;
+import com.cannontech.common.pao.attribute.model.AttributeAssignment;
 
 public interface CustomAttributeDao {
 
@@ -33,6 +33,6 @@ public interface CustomAttributeDao {
      * @param sortBy - field to order by
      * @param direction - ascending or descending direction
      */
-    List<CustomAttributeDetail> getCustomAttributeDetails(List<Integer> attributeIds, List<PaoType> deviceTypes, SortBy sortBy,
+    List<AttributeAssignment> getCustomAttributeDetails(List<Integer> attributeIds, List<PaoType> deviceTypes, SortBy sortBy,
             Direction direction);
 }

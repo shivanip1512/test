@@ -45,10 +45,10 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -84,10 +84,10 @@ public class DataExporterHomeController {
     @Autowired private DeviceCollectionService deviceCollectionService;
     @Autowired private ExportReportGeneratorService exportReportGeneratorService;
     @Autowired private JobManager jobManager;
-    @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
     @Autowired private ToolsEventLogService toolsEventLogService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private AttributeService attributeService;
 
     public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
     
@@ -102,15 +102,14 @@ public class DataExporterHomeController {
     throws ServletRequestBindingException, DeviceCollectionCreationException, JsonProcessingException {
         
         List<ExportFormat> allFormats = archiveValuesExportFormatDao.getAllFormats();
-        ExportFormat format = getExportFormat(archivedValuesExporter.getFormatId(), allFormats, userContext);
+        ExportFormat format = getExportFormat(archivedValuesExporter.getFormatId(), allFormats);
         Preview preview = exportReportGeneratorService.generatePreview(format, userContext);
 
         archivedValuesExporter.setFormatId(format.getFormatId());
         archivedValuesExporter.setArchivedValuesExportFormatType(format.getFormatType());
         model.addAttribute("archivedValuesExporter", archivedValuesExporter);
 
-        Map<AttributeGroup, List<BuiltInAttribute>> groupedAttributes = 
-                objectFormattingService.sortDisplayableValues(BuiltInAttribute.getAllGroupedAttributes(), userContext);
+        Map<AttributeGroup, List<Attribute>> groupedAttributes = attributeService.getAllGroupedAttributes(userContext);
         model.addAttribute("groupedAttributes", groupedAttributes);
         
         model.addAttribute("allFormats", allFormats);
@@ -236,7 +235,7 @@ public class DataExporterHomeController {
 
         List<SimpleDevice> deviceList = archivedValuesExporter.getDeviceCollection().getDeviceList();
         DataRange dataRange = archivedValuesExporter.getRunDataRange();
-        ExportFormat format = archiveValuesExportFormatDao.getByFormatId(archivedValuesExporter.getFormatId(), userContext);
+        ExportFormat format = archiveValuesExportFormatDao.getByFormatId(archivedValuesExporter.getFormatId());
         
         String timestamp = dateFormattingService.format(new Instant(), DateFormatEnum.FILE_TIMESTAMP, userContext);
 
@@ -254,13 +253,13 @@ public class DataExporterHomeController {
         return null;
     }
     
-    private ExportFormat getExportFormat(int selectedFormatId, List<ExportFormat> allFormats, YukonUserContext userContext) {
+    private ExportFormat getExportFormat(int selectedFormatId, List<ExportFormat> allFormats) {
         if (selectedFormatId != 0) {
-            return archiveValuesExportFormatDao.getByFormatId(selectedFormatId, userContext);
+            return archiveValuesExportFormatDao.getByFormatId(selectedFormatId);
         } else {
             if (!allFormats.isEmpty()) {
                 int formatId = allFormats.get(0).getFormatId();
-                return archiveValuesExportFormatDao.getByFormatId(formatId, userContext);
+                return archiveValuesExportFormatDao.getByFormatId(formatId);
             } else {
                 return new ExportFormat();
             }

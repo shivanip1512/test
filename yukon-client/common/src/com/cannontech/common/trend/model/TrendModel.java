@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 import com.cannontech.common.trend.model.TrendType.GraphType;
 import com.cannontech.common.util.CtiUtilities;
@@ -32,7 +32,7 @@ public class TrendModel {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = StringUtils.trim(name);
     }
 
     public List<TrendSeries> getTrendSeries() {
@@ -55,11 +55,6 @@ public class TrendModel {
         if (CollectionUtils.isNotEmpty(getTrendSeries())) {
             for (TrendSeries series : getTrendSeries()) {
                 GraphDataSeries graphSeries = new GraphDataSeries();
-                if (series.getType().isMarkerType()) {
-                    graphSeries.setPointID(-100);
-                } else {
-                    graphSeries.setPointID(series.getPointId());
-                }
                 graphSeries.setLabel(series.getLabel());
                 graphSeries.setAxis(
                         series.getAxis() == null ? TrendAxis.LEFT.getAbbreviation() : series.getAxis().getAbbreviation());
@@ -83,10 +78,12 @@ public class TrendModel {
                 } else {
                     graphSeries.setMoreData(CtiUtilities.STRING_NONE);
                 }
-                // Setting LINE as default for Marker type.
-                if (series.getType().isMarkerType()) {
+                // use defaults when MarkerType
+                if (series.getType() != null && series.getType().isMarkerType()) {
+                    graphSeries.setPointID(-100);
                     graphSeries.setRenderer(RenderType.LINE);
                 } else {
+                    graphSeries.setPointID(series.getPointId());
                     graphSeries.setRenderer(series.getStyle() == null ? RenderType.LINE : series.getStyle());
                 }
                 // Set GraphDefinationId in case of Update flow.

@@ -12,6 +12,8 @@ yukon.tools.trend.setup = (function() {
 
     var _initialized = false,
     
+    _trendSetupDialogClass = "js-trend-setup-dialog-class",
+    
     _initColorPicker = function (dialog) {
         var colorArray = dialog.find(".js-color-item").map(function () {return $(this).val();}).get(),
                colorArrayLength = colorArray.length,
@@ -19,14 +21,13 @@ yukon.tools.trend.setup = (function() {
         
         dialog.find(".js-color-picker").spectrum({
             showPaletteOnly: true,
-            showPalette:true,
             hideAfterPaletteSelect:true,
             palette: [
                 colorArray, firstRowOfColors
             ],
-            preferredFormat: "name",
+            preferredFormat: "hex",
             move: function(color){
-                dialog.find(".js-color-input").val(color.toName().toUpperCase());
+                dialog.find(".js-color-input").val(color.toHexString());
             }
         });
     },
@@ -50,15 +51,11 @@ yukon.tools.trend.setup = (function() {
         form.ajaxSubmit({
             success: function(data, status, xhr, $form) {
                 dialog.dialog('close');
-                dialog.dialog('destroy');
-                dialog.empty();
-                dialog.remove();
-                
                 var clonnedRow = templateTable.find(".js-template-row").clone();
                 clonnedRow.removeClass("js-template-row");
                 clonnedRow.find(".js-label span").html(yukon.escapeXml(data.trendSeries.label));
                 clonnedRow.find(".js-color span").text(data.color);
-                clonnedRow.find(".js-color div.small-rectangle").css("background-color", data.color);
+                clonnedRow.find(".js-color div.small-rectangle").css("background-color", data.colorHexValue);
                 clonnedRow.find(".js-axis").html(data.axis);
                 clonnedRow.find(".js-multiplier").html(data.trendSeries.multiplier);
                 clonnedRow.find(".js-row-data").val(JSON.stringify(data.trendSeries));
@@ -108,19 +105,19 @@ yukon.tools.trend.setup = (function() {
             });
             
             $(document).on("yukon:trend:setup:addPoint", function () {
-                _updateSetupTable($("#js-add-point-dialog"), false, null);
+                _updateSetupTable($("#js-add-point-dialog:visible"), false, null);
             });
             
             $(document).on("yukon:trend:setup:updatePoint", function(event) {
-                _updateSetupTable($(".js-edit-point-dialog"), false, $(event.target));
+                _updateSetupTable($(".js-edit-point-dialog:visible"), false, $(event.target));
             });
             
             $(document).on("yukon:trend:setup:updateMarker", function(event) {
-                _updateSetupTable($(".js-edit-marker-dialog"), true, $(event.target));
+                _updateSetupTable($(".js-edit-marker-dialog:visible"), true, $(event.target));
             });
 
             $(document).on("yukon:trend:setup:addMarker", function() {
-                _updateSetupTable($("#js-add-marker-dialog"), true, null);
+                _updateSetupTable($("#js-add-marker-dialog:visible"), true, null);
             });
             
             $(document).on("yukon:trend:setup:markerPopupLoaded", function(event) {
@@ -132,7 +129,13 @@ yukon.tools.trend.setup = (function() {
             });
             
             $(document).on("change", ".js-graph-type", function () {
-                $(".js-date-picker-row").toggleClass("dn", !($(this).val() === $(".js-date-type-enum-value").val()));
+                var isDateTypeGraphSelected = $(this).val() === $(".js-date-type-enum-value").val();
+                var uniqueIdentifier = $(".js-unique-identifier").val();
+                $(".js-date-picker-row").toggleClass("dn", !isDateTypeGraphSelected);
+                if (isDateTypeGraphSelected) {
+                    var date = moment().tz(yg.timezone).format(yg.formats.date.date);
+                    $(this).closest("form").find("#js-date-picker_" + uniqueIdentifier).val(date);
+                }
             });
 
             $(document).on("click", ".js-remove", function (event) {
@@ -159,13 +162,13 @@ yukon.tools.trend.setup = (function() {
                 
                 if (isMarker) {
                     dailogTitle = yg.text.edit + " " + $(this).closest("tr").find(".js-label span").text();
-                    dialogPopup = $("<div class='js-edit-marker-dialog'/>");
+                    dialogPopup = $("<div class='js-edit-marker-dialog " + _trendSetupDialogClass + "'/>");
                     url = "/tools/trend/renderEditSetupPopup?";
                     dialogPopupSelector = ".js-edit-marker-dialog";
                     okEvent = 'yukon:trend:setup:updateMarker';
                 } else {
                     dailogTitle = yg.text.edit + " " + $(this).closest("tr").find(".js-point-name").text();
-                    dialogPopup = $("<div class='js-edit-point-dialog'/>");
+                    dialogPopup = $("<div class='js-edit-point-dialog " + _trendSetupDialogClass + "'/>");
                     url = "/tools/trend/renderEditSetupPopup?";
                     dialogPopupSelector = ".js-edit-point-dialog";
                     okEvent = 'yukon:trend:setup:updatePoint';
@@ -200,6 +203,7 @@ yukon.tools.trend.setup = (function() {
                         "data-title": $(".js-add-point-title").val(),
                         "data-dialog": '',
                         "id": "js-add-point-dialog",
+                        "class": _trendSetupDialogClass,
                         "data-event": "yukon:trend:setup:addPoint",
                         "data-load-event": "yukon:trend:setup:pointPopupLoaded",
                         "data-url": url
@@ -215,6 +219,7 @@ yukon.tools.trend.setup = (function() {
                             "data-title": $(".js-add-marker-title").val(),
                             "data-dialog": '',
                             "id": "js-add-marker-dialog",
+                            "class": _trendSetupDialogClass,
                             "data-event": "yukon:trend:setup:addMarker",
                             "data-load-event": "yukon:trend:setup:markerPopupLoaded",
                             "data-url": url
@@ -236,6 +241,14 @@ yukon.tools.trend.setup = (function() {
 
             yukon.ui.highlightErrorTabs();
             
+            $(document).on("dialogclose", function(event) {
+                if ($(event.target).hasClass(_trendSetupDialogClass)) {
+                    var dialog = $(event.target);
+                    dialog.dialog('destroy');
+                    dialog.empty();
+                    dialog.remove();
+                }
+            });
             _initialized = true;
         }
     };

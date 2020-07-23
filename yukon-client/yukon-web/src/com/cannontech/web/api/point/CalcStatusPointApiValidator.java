@@ -34,7 +34,7 @@ public class CalcStatusPointApiValidator extends StatusPointApiValidator<CalcSta
         if (calculationBase != null) {
             if (calculationBase.getUpdateType() != null) {
                 if (calculationBase.getUpdateType() == CalcUpdateType.ON_TIMER || calculationBase.getUpdateType() == CalcUpdateType.ON_TIMER_AND_CHANGE) {
-                    YukonValidationUtils.checkIfFieldRequired("calculationBase.periodicRate", errors, calculationBase, "calculationBase.periodicRate");
+                    YukonValidationUtils.checkIfFieldRequired("calculationBase.periodicRate", errors, calculationBase.getPeriodicRate(), "calculationBase.periodicRate");
                     if (!errors.hasFieldErrors("calculationBase.periodicRate")) {
                         TimeIntervals periodicRate = TimeIntervals.fromSeconds(calculationBase.getPeriodicRate());
                         if (!TimeIntervals.getUpdateAndScanRate().contains(periodicRate)) {
@@ -50,7 +50,7 @@ public class CalcStatusPointApiValidator extends StatusPointApiValidator<CalcSta
      * Validate Calc Components Fields.
      */
     private void validateCalcComponent(CalcStatusPointModel calcStatusPointModel, Errors errors) {
-        CalcPointValidationHelper.ValidateCalcComponent(calcStatusPointModel.getCalcComponents(), calcStatusPointModel.getPointType(), errors);
+        CalcPointValidationHelper.ValidateCalcComponent(calcStatusPointModel.getCalcComponents(), errors);
     }
 
 

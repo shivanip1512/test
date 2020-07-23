@@ -29,7 +29,7 @@ public class StatusPointApiValidator<T extends StatusPointModel<?>> extends Poin
     protected void doValidation(T statusPoint, Errors errors) {
         super.doValidation(statusPoint, errors);
 
-        if (!errors.hasFieldErrors("stateGroupId") && statusPoint.getInitialState() != null) {
+        if (!errors.hasFieldErrors("stateGroupId") && statusPoint.getInitialState() != null && statusPoint.getStateGroupId() != null) {
             List<LiteState> liteStates = stateGroupDao.getLiteStates(statusPoint.getStateGroupId());
             List<Integer> rawStates = liteStates.stream()
                                                 .map(state -> state.getStateRawState())
@@ -51,21 +51,25 @@ public class StatusPointApiValidator<T extends StatusPointModel<?>> extends Poin
      */
     private void validatePointStatusControl(PointStatusControl pointStatusControl, Errors errors) {
 
-        YukonValidationUtils.checkRange(errors, "pointStatusControl.controlOffset", pointStatusControl.getControlOffset(), -99999999, 99999999, false);
+        if(pointStatusControl.getControlType() != null && pointStatusControl.getControlType() != StatusControlType.NONE) {
 
-        YukonValidationUtils.checkRange(errors, "pointStatusControl.closeTime1", pointStatusControl.getCloseTime1(), 0, 9999, false);
+            YukonValidationUtils.checkRange(errors, "pointStatusControl.controlOffset", pointStatusControl.getControlOffset(), -99999999, 99999999, false);
 
-        YukonValidationUtils.checkRange(errors, "pointStatusControl.closeTime2", pointStatusControl.getCloseTime2(), 0, 9999, false);
+            YukonValidationUtils.checkRange(errors, "pointStatusControl.closeTime1", pointStatusControl.getCloseTime1(), 0, 9999, false);
 
-        YukonValidationUtils.checkRange(errors, "pointStatusControl.commandTimeOut", pointStatusControl.getCommandTimeOut(), 0, 9999999, false);
+            YukonValidationUtils.checkRange(errors, "pointStatusControl.closeTime2", pointStatusControl.getCloseTime2(), 0, 9999, false);
 
-        if (pointStatusControl.getCloseCommand() != null) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "pointStatusControl.closeCommand", pointStatusControl.getCloseCommand(), 100);
+            YukonValidationUtils.checkRange(errors, "pointStatusControl.commandTimeOut", pointStatusControl.getCommandTimeOut(), 0, 9999999, false);
+
+            if (pointStatusControl.getCloseCommand() != null) {
+                YukonValidationUtils.checkExceedsMaxLength(errors, "pointStatusControl.closeCommand", pointStatusControl.getCloseCommand(), 100);
+            }
+
+            if (pointStatusControl.getOpenCommand() != null) {
+                YukonValidationUtils.checkExceedsMaxLength(errors, "pointStatusControl.openCommand", pointStatusControl.getOpenCommand(), 100);
+            }
         }
 
-        if (pointStatusControl.getOpenCommand() != null) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "pointStatusControl.openCommand", pointStatusControl.getOpenCommand(), 100);
-        }
         // if for accepting non-default values, need to specify control type in request otherwise it would accept only default values.
         if (pointStatusControl.getControlType() == null || pointStatusControl.getControlType() == StatusControlType.NONE) {
             if (pointStatusControl.getControlOffset() != null && pointStatusControl.getControlOffset() != 0) {

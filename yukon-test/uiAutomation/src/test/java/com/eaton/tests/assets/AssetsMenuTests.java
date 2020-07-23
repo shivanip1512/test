@@ -28,66 +28,74 @@ public class AssetsMenuTests extends SeleniumTestSetup {
         page = new HomePage(driverExt);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_02_NavigateToLinks" })
-    public void dashboardUrlCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
+    public void assetsMenu_dashboardUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 0);
 
         assertThat(url).contains(Urls.Assets.DASHBOARD);
     }
 
-    @Test
-    public void gatewaysUrlCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
+    public void assetsMenu_gatewaysUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 1);
 
         assertThat(url).contains(Urls.Assets.GATEWAYS);
     }
 
-    @Test
-    public void relaysUrlCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
+    public void assetsMenu_relaysUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 2);
 
         assertThat(url).contains(Urls.Assets.RELAYS);
     }
 
-    @Test
-    public void rtusUrlCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
+    public void assetsMenu_rtusUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 3);
 
         assertThat(url).contains(Urls.Assets.RTUS);
     }
-
-    @Test
-    public void optOutStatusUrlCorrect() {
+        
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
+    public void assetsMenu_virtualDevicesUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 4);
+
+        assertThat(url).contains(Urls.Assets.VIRTUAL_DEVICES);
+    }
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
+    public void assetsMenu_optOutStatusUrlCorrect() {
+
+        String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 5);
 
         assertThat(url).contains(Urls.Assets.OPT_OUT_STATUS);
     }
 
-    @Test
-    public void workOrdersUrlCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
+    public void assetsMenu_workOrdersUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 5);
+        String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 6);
 
         assertThat(url).contains(Urls.Assets.WORK_ORDERS);
     }
 
-    @Test
-    public void importUrlCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
+    public void assetsMenu_importUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 6);
+        String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 7);
 
         assertThat(url).contains(Urls.Assets.IMPORT);
     }
 
-    @Test
-    public void reportsUrlCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
+    public void assetsMenu_reportsUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 7);
+        String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 8);
 
         assertThat(url).contains(Urls.Assets.REPORTS);
     }

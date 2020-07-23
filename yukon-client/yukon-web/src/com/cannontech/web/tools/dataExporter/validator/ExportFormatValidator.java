@@ -27,7 +27,7 @@ public class ExportFormatValidator extends SimpleValidator<ExportFormat> {
         YukonValidationUtils.checkExceedsMaxLength(errors, "header", target.getHeader(), 255);
         YukonValidationUtils.checkExceedsMaxLength(errors, "footer", target.getFooter(), 255);
 
-        ExportFormat format = archiveValuesExportFormatDao.findByFormatName(target.getFormatName(), YukonUserContext.system);
+        ExportFormat format = archiveValuesExportFormatDao.findByFormatName(target.getFormatName());
         if (format != null && format.getFormatId() != target.getFormatId()) {
             errors.rejectValue("formatName", DataExporterFormatController.BASE_KEY + "formatError.duplicateName");
         }

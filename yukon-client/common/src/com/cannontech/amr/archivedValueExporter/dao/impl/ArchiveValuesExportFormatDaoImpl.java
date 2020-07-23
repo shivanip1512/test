@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.NoSuchMessageException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,12 +15,7 @@ import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormat
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
 import com.cannontech.amr.archivedValueExporter.model.ExportField;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
-import com.cannontech.amr.archivedValueExporter.model.Field;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
-import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.attribute.dao.AttributeDao;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.TimeZoneFormat;
 import com.cannontech.core.dao.NotFoundException;
@@ -31,28 +25,20 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.user.YukonUserContext;
 
 
-public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportFormatDao {
+public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportFormatDao{
 
     public static final String TABLE_NAME = "ArchiveValuesExportFormat";
-    @Autowired DbChangeManager dbChangeManager;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private AttributeDao attributeDao;
-    
-    private class FormatRowMapper implements YukonRowMapper<ExportFormat>{
-        private YukonUserContext context;
-        FormatRowMapper(YukonUserContext context){
-            this.context = context;
-        }
+        @Autowired DbChangeManager dbChangeManager;
+    private final YukonRowMapper<ExportFormat> rowMapper = new YukonRowMapper<ExportFormat>() {
         @Override
         public ExportFormat mapRow(YukonResultSet rs) throws SQLException {
-            ExportFormat format = new ExportFormat();
+            
+            final ExportFormat format = new ExportFormat();
             format.setFormatId(rs.getInt("FormatID"));
             format.setFormatName(rs.getStringSafe("FormatName"));
             format.setDelimiter((rs.getString("Delimiter") == null) ? "" : rs.getString("Delimiter"));
@@ -61,15 +47,12 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
             format.setFormatType(rs.getEnum("FormatType", ArchivedValuesExportFormatType.class));
             format.setAttributes(archiveValuesExportAttributeDao.getByFormatId(format.getFormatId()));
             format.setFields(archiveValuesExportFieldDao.getByFormatId(format.getFormatId()));
-            format.getAttributes().forEach(attribute -> addAttributeDescription(attribute, context));
-            format.getFields().forEach(field -> addFieldDescription(field, context));
             format.setDateTimeZoneFormat(rs.getEnum("TimeZoneFormat", TimeZoneFormat.class));
             format.setExcludeAbnormal(rs.getBoolean("ExcludeAbnormal"));
+            
             return format;
         }
-        
-    }
-    
+    };
     private final YukonRowMapper<ExportFormat> formatIdAndFormatNameRowMapper = new YukonRowMapper<ExportFormat>() {
         @Override
         public ExportFormat mapRow(YukonResultSet rs) throws SQLException {
@@ -148,7 +131,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
     }
     
     @Override
-    public ExportFormat getByFormatId(int formatId, YukonUserContext context) {
+    public ExportFormat getByFormatId(int formatId) {
         ExportFormat format = null;
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -157,53 +140,11 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
             sql.append(TABLE_NAME);
             sql.append("WHERE FormatID").eq(formatId);
             
-            format = yukonJdbcTemplate.queryForObject(sql, new FormatRowMapper(context));
+            format = yukonJdbcTemplate.queryForObject(sql, rowMapper);
         } catch (EmptyResultDataAccessException ex){
             throw new NotFoundException("The format id supplied does not exist.");
         }
         return format;
-    }
-    
-    @Override
-    public void addAttributeDescription(ExportAttribute attribute, YukonUserContext context) {
-        if(attribute == null) { 
-            return;
-        }
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-        String attributeText;
-        if(attribute.isBuiltInAttribute()) {
-            attributeText = accessor.getMessage(BuiltInAttribute.valueOf(attribute.getAttribute()));
-        } else {
-            try {
-                attributeText = accessor.getMessage(CustomAttribute.i18Key + attribute.getAttribute());
-            } catch (NoSuchMessageException e) {
-                CustomAttribute customAttribute = attributeDao.getCustomAttribute(Integer.valueOf(attribute.getAttribute()));
-                attributeText = customAttribute.getName();
-            }
-        }
-        attribute.setDescription(attributeText);
-    }
-    
-    @Override
-    public void addFieldDescription(ExportField field, YukonUserContext context) {
-        if(field == null) { 
-            return;
-        }
-        addFieldDescription(field.getField(), context);
-    }
-    
-    @Override
-    public void addFieldDescription(Field field, YukonUserContext context) {
-        if(field == null) { 
-            return;
-        }
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-        if(field.getType() == FieldType.ATTRIBUTE) {
-            addAttributeDescription(field.getAttribute(), context);
-            field.setDescription(field.getAttribute().getDescription());
-        } else {
-            field.setDescription(accessor.getMessage(field.getType()));
-        }
     }
     
     @Override
@@ -213,7 +154,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
     }
     
     @Override
-    public ExportFormat findByFormatName(String formatName, YukonUserContext context) {
+    public ExportFormat findByFormatName(String formatName) {
         ExportFormat format = null;
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -221,7 +162,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
             sql.append("FROM");
             sql.append(TABLE_NAME);
             sql.append("WHERE upper(FormatName)").eq(formatName.toUpperCase());
-            format = yukonJdbcTemplate.queryForObject(sql, new FormatRowMapper(context));
+            format = yukonJdbcTemplate.queryForObject(sql, rowMapper);
         } catch (EmptyResultDataAccessException ex) {
             // returns null if the format was not found
         }
@@ -288,4 +229,5 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         }
         return exportFields;
     }
+    
 }

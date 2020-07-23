@@ -63,7 +63,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
         boolean isCreationOperation = target.getPointId() == null ? true : false;
 
         if (target.getPointName() != null) {
-            YukonValidationUtils.checkIsBlank(errors, "pointName", target.getPointName(), "Point Name", false);
+            YukonValidationUtils.checkIsBlank(errors, "pointName", target.getPointName(), "Name", false);
         }
         if (target.getPaoId() != null) {
             LiteYukonPAObject liteYukonPAObject = serverDatabaseCache.getAllPaosMap().get(target.getPaoId());
@@ -138,28 +138,28 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                 for (int i = 0; i < alarmList.size(); i++) {
                     errors.pushNestedPath("alarming.alarmTableList[" + i + "]");
                     AlarmTableEntry entry = alarmList.get(i);
-                    if (entry.getCondition()!= null && !alarmStates.contains(entry.getCondition())) {
-                        errors.rejectValue("condition", "yukon.web.api.error.invalid", new Object[] { "Condition" }, "");
-                    }
-                    if (!errors.hasFieldErrors("condition") && entry.getCondition()!= null 
-                            && alarmStateEntries.contains(entry.getCondition())) {
-                        errors.rejectValue("condition", "yukon.web.api.error.field.uniqueError", new Object[] { "Condition", entry.getCondition()}, "");
-                    }
-                    if (entry.getCondition() == null && entry.getCategory() != null && entry.getNotify() != null) {
+
+                    if (entry == null || entry.getCondition() == null) {
                         errors.rejectValue("condition", "yukon.web.error.fieldrequired", new Object[] { "Condition" }, "");
                     }
 
-                    if (entry.getCategory() != null) {
-                        Optional<LiteAlarmCategory> catagory = alarmCatDao.getAlarmCategories()
-                                                                          .stream()
-                                                                          .filter(e -> e.getCategoryName().equals(entry.getCategory()))
-                                                                          .findFirst();
-                       if (catagory.isEmpty()) {
-                           errors.rejectValue("category", "yukon.web.api.error.invalid", new Object[] { "Category" }, "");
-                       }
-                    }
+                    if (!errors.hasFieldErrors("condition")) {
+                        if (!alarmStates.contains(entry.getCondition())) {
+                            errors.rejectValue("condition", "yukon.web.api.error.invalid", new Object[] { "Condition" }, "");
+                        }
+                        if (!errors.hasFieldErrors("condition") && alarmStateEntries.contains(entry.getCondition())) {
+                            errors.rejectValue("condition", "yukon.web.api.error.field.uniqueError", new Object[] { "Condition", entry.getCondition() }, "");
+                        }
 
-                    if (entry.getCondition()!= null) {
+                        if (entry.getCategory() != null) {
+                            Optional<LiteAlarmCategory> catagory = alarmCatDao.getAlarmCategories()
+                                                                              .stream()
+                                                                              .filter(e -> e.getCategoryName().equals(entry.getCategory()))
+                                                                              .findFirst();
+                            if (catagory.isEmpty()) {
+                                errors.rejectValue("category", "yukon.web.api.error.invalid", new Object[] { "Category" }, "");
+                            }
+                        }
                         alarmStateEntries.add(entry.getCondition());
                     }
                     errors.popNestedPath();
@@ -226,13 +226,12 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                 errors.pushNestedPath("fdrList[" + i + "]");
                 FdrTranslation fdrTranslation = fdrList.get(i);
 
-                FdrInterfaceType fdrInterfaceType = fdrTranslation.getFdrInterfaceType();
-
-                if (fdrInterfaceType == null) {
+                if (fdrTranslation == null || fdrTranslation.getFdrInterfaceType() == null) {
                     errors.rejectValue("fdrInterfaceType", "yukon.web.error.fieldrequired", new Object[] { "Interface" }, "");
                 }
 
                 if (!errors.hasFieldErrors("fdrInterfaceType")) {
+                    FdrInterfaceType fdrInterfaceType = fdrTranslation.getFdrInterfaceType();
                     FdrDirection fdrDirection = fdrTranslation.getDirection();
                     List<FdrDirection> supportedDirections = fdrInterfaceType.getSupportedDirectionsList();
                     String supportedDirectionsInString  = supportedDirections.stream().map(direction -> direction.name()).collect(Collectors.joining(", "));

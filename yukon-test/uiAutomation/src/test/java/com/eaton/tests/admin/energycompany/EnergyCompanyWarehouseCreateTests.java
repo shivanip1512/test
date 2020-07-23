@@ -31,8 +31,8 @@ public class EnergyCompanyWarehouseCreateTests extends SeleniumTestSetup {
         createPage = new EnergyCompanyWarehouseCreatePage(driverExt, 64);
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_01_CreateAndDeleteEC()"})
-    public void pageTitleCorrect() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    public void energyCompanyWarehouseCreate_pageTitleCorrect() {
         final String EXPECTED_TITLE = "QA_Test";
         
         String actualPageTitle = createPage.getPageTitle();
@@ -40,8 +40,8 @@ public class EnergyCompanyWarehouseCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_01_CreateAndDeleteEC()"})
-    public void createEnergyCompanyWarehouseAllFieldsSuccess() {
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    public void energyCompanyWarehouseCreate_createWarehouseAllFieldsSuccess() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String wareHouseName = "AT EC Warehouse " + timeStamp;
         

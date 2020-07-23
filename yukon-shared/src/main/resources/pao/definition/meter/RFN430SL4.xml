@@ -185,6 +185,7 @@
         <pointInfo name="THD V or TDD I Error" attributes="THD_V_OR_TDD_I_ERROR"/>
         <pointInfo name="Total Outage Count" init="true" attributes="BLINK_COUNT"/>
         <pointInfo name="TOU Schedule Error" attributes="TOU_SCHEDULE_ERROR"/>
+        <pointInfo name="Ultra Capacitor Bad" attributes="ULTRA_CAPACITOR_BAD"/>
         <pointInfo name="Unprogrammed" attributes="UNPROGRAMMED"/>
         <pointInfo name="Volts Phase A" init="true" attributes="VOLTAGE_PHASE_A"/>
         <pointInfo name="Volts Phase B" init="true" attributes="VOLTAGE_PHASE_B"/>

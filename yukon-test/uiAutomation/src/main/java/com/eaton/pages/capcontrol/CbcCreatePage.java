@@ -10,43 +10,31 @@ import com.eaton.pages.PageBase;
 
 public class CbcCreatePage extends PageBase {
 
-    private TextEditElement name;
-    private DropDownElement type;
-    private TrueFalseCheckboxElement status;
-    private TextEditElement serialNumber;
-    private DropDownElement controlRoute;
-
     public CbcCreatePage(DriverExtensions driverExt) {
         super(driverExt);
         
         requiresLogin = true;
         pageUrl = Urls.CapControl.CBC_CREATE;
-
-        name = new TextEditElement(this.driverExt, "name");
-        type = new DropDownElement(this.driverExt, "paoType");
-        status = new TrueFalseCheckboxElement(this.driverExt, "disableFlag");
-        serialNumber = new TextEditElement(this.driverExt, "deviceCBC.serialNumber");
-        controlRoute = new DropDownElement(this.driverExt, "deviceCBC.routeID");
     }
 
     public TextEditElement getName() {
-        return name;
+        return new TextEditElement(this.driverExt, "name");
     }
 
     public DropDownElement getType() {
-        return type;
+        return new DropDownElement(this.driverExt, "paoType");
     }
 
     public TrueFalseCheckboxElement getStatus() {
-        return status;
+        return new TrueFalseCheckboxElement(this.driverExt, "disableFlag");
     }
 
     public TextEditElement getSerialNumber() {
-        return serialNumber;
+        return new TextEditElement(this.driverExt, "deviceCBC.serialNumber");
     }
 
     public DropDownElement getConrolRoute() {
-        return controlRoute;
+        return new DropDownElement(this.driverExt, "deviceCBC.routeID");
     }
 
     public TextEditElement getMasterAddress() {

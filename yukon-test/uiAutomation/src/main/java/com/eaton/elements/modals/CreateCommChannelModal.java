@@ -1,59 +1,59 @@
 package com.eaton.elements.modals;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import com.eaton.elements.MultiLineTextElement;
+import com.eaton.elements.DropDownElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 
-public class CreateCommChannelModal{
+public class CreateCommChannelModal extends BaseModal {
 
     private DriverExtensions driverExt;
-    private TextEditElement name;
-    private MultiLineTextElement description;
     private String modalName; 
     private WebElement modal;
     
-    public CreateCommChannelModal(DriverExtensions driverExt, String modalName) {
-        
-        this.driverExt = driverExt;
-        this.modalName = modalName;
-        modal = getModal();
-        
-        name = new TextEditElement(this.driverExt, "name", modal);
-    } 
+    private static final String modalAriaDescribedBy = "js-create-comm-channel-popup";
     
-    protected WebElement getModal() {
-        Optional<WebElement> found = Optional.empty();
+    public CreateCommChannelModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
+        super(driverExt, modalTitle, describedBy);
 
-        long startTime = System.currentTimeMillis();                
-        
-        while (found.isEmpty() && System.currentTimeMillis() - startTime < 5000) {
-            
-            List<WebElement> elements = this.driverExt.findElements(By.cssSelector(".ui-dialog"), Optional.of(0));
-            
-            found = elements.stream().filter(element -> element.findElement(By.cssSelector(".ui-dialog-title")).getText().equals(this.modalName)).findFirst();
-        }
-        
-        return found.get();             
+        this.driverExt = driverExt;
     }
-    
+
     public TextEditElement getName() {
-        return name;
+    	return new TextEditElement(this.driverExt, "name", modalAriaDescribedBy);
     }        
     
-    public MultiLineTextElement getDescription() {
-        return description;
-    }      
+    public DropDownElement getType() {
+    	return new DropDownElement(this.driverExt, "type", modalAriaDescribedBy);
+    }
     
+    public TextEditElement getIpAddress() {
+        return new TextEditElement(this.driverExt, "ipAddress", modalAriaDescribedBy);
+    }
+    
+    public TextEditElement getPortNumber() {
+    	return new TextEditElement(this.driverExt, "portNumber", modalAriaDescribedBy);
+    } 
+    
+    public DropDownElement getBaudRate() {
+    	return new DropDownElement(this.driverExt, "baudRate", modalAriaDescribedBy);
+    }
+    
+    public DropDownElement getPhysicalPort() {
+    	return new DropDownElement(this.driverExt, "physicalPort", modalAriaDescribedBy);
+    }
+    
+    public TextEditElement getPhysicalPortOther() {
+    	return new TextEditElement(this.driverExt, "physicalPort", modalAriaDescribedBy);
+    }    
     
     public String getModalTitle() {
-        return modal.findElement(By.cssSelector(".ui-dialog-titlebar .ui-dialog-title")).getText();
+    	return getModal().findElement(By.cssSelector(".ui-dialog-titlebar .ui-dialog-title")).getText();
     }
 
     public void clickClose() {
@@ -63,7 +63,7 @@ public class CreateCommChannelModal{
     }
 
     // TODO need a unique way to select the save button
-    public void clickOk() {
+    public void clickSave() {
         modal.findElement(By.cssSelector(".ui-dialog-buttonset .primary")).click();
     }
 
@@ -71,4 +71,6 @@ public class CreateCommChannelModal{
     public void clickCancel() {
         modal.findElement(By.cssSelector(".ui-dialog-buttonset .js-secondary-action")).click();
     }
+    
+   
 }

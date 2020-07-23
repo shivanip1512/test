@@ -19,42 +19,42 @@ public class ControlAreaDetailTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        driverExt = getDriverExt();                
+        driverExt = getDriverExt();
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_11_DeleteControlArea"})
-    public void pageTitleCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void controlAreaDetail_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Control Area: AT Control Area";
-        
+
         navigate(Urls.DemandResponse.CONTROL_AREA_DETAILS + "662");
-        
+
         ControlAreaDetailPage editPage = new ControlAreaDetailPage(driverExt, 662);
 
         String actualPageTitle = editPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
-    }    
-    
-    @Test(enabled = true, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_11_DeleteControlArea"})
-    public void deleteControlAreaSuccess() {
+    }
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void controlAreaDetail_deleteControlAreaSuccess() {
         final String EXPECTED_MSG = "AT Delete Control Area deleted successfully.";
-        
+
         navigate(Urls.DemandResponse.CONTROL_AREA_DETAILS + "589");
 
         ControlAreaDetailPage detailPage = new ControlAreaDetailPage(driverExt, 589);
-        
-        ConfirmModal  confirmModal = detailPage.showDeleteControlAreaModal();
-        
+
+        ConfirmModal confirmModal = detailPage.showDeleteControlAreaModal();
+
         confirmModal.clickOkAndWait();
-        
+
         waitForPageToLoad("Setup", Optional.empty());
-        
+
         DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.CONTROL_AREA);
-        
+
         String userMsg = setupPage.getUserMessage();
-        
+
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }  
+    }
 }
