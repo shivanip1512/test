@@ -37,7 +37,7 @@ class IM_EX_FDRBASE CtiFDRInterface
         void                sendPointRegistration();
         virtual std::unique_ptr<CtiPointRegistrationMsg> buildRegistrationPointList();
         virtual bool hasPointsToRegisterFor();
-        virtual bool loadOutBoundPoints( boost::scoped_ptr<CtiFDRManager> & points );
+        virtual bool loadOutboundPoints( boost::scoped_ptr<CtiFDRManager> & points );
 
         std::string              getCparmValueAsString(std::string key);
 

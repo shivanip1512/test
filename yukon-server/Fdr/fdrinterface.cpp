@@ -212,7 +212,7 @@ long CtiFDRInterface::getClientLinkStatusID(const std::string &aClientName)
 BOOL CtiFDRInterface::init( void )
 {
     // only need to register outbound points
-    loadOutBoundPoints( iOutBoundPoints );
+    loadOutboundPoints( iOutBoundPoints );
 
     if ( !reloadConfigs() )
     {
@@ -1255,7 +1255,7 @@ bool CtiFDRInterface::reRegisterWithDispatch()
     boost::scoped_ptr<CtiFDRManager> tmpList;
 
     // try and reload the outbound list
-    if( loadOutBoundPoints( tmpList ) )
+    if( loadOutboundPoints( tmpList ) )
     {
         WriterGuard guard(iDispatchLock);
 
@@ -1551,7 +1551,7 @@ bool CtiFDRInterface::hasPointsToRegisterFor()
     return iOutBoundPoints && iOutBoundPoints->entries() > 0;
 }
 
-bool CtiFDRInterface::loadOutBoundPoints( boost::scoped_ptr<CtiFDRManager> & points )
+bool CtiFDRInterface::loadOutboundPoints( boost::scoped_ptr<CtiFDRManager> & points )
 {
     points.reset( new CtiFDRManager(iInterfaceName, string(FDR_INTERFACE_SEND)) );
 

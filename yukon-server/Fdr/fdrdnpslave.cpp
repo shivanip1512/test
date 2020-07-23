@@ -1530,10 +1530,10 @@ bool DnpSlave::hasPointsToRegisterFor()
         sendCount    = getSendToList().getPointList()->entries(),
         receiveCount = getReceiveFromList().getPointList()->entries();
 
-    return ( sendCount + receiveCount ) > 0;
+    return ( sendCount || receiveCount );
 }
 
-bool DnpSlave::loadOutBoundPoints( boost::scoped_ptr<CtiFDRManager> & points )
+bool DnpSlave::loadOutboundPoints( boost::scoped_ptr<CtiFDRManager> & points )
 {
     return true;
 }
