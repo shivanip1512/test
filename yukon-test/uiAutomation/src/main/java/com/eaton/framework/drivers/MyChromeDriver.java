@@ -1,5 +1,7 @@
 package com.eaton.framework.drivers;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.WebDriver;
@@ -36,7 +38,16 @@ public final class MyChromeDriver {
             options.addArguments("headless");
 
         if (useRemoteDriver) {
-            driver = new RemoteWebDriver(options);
+//            driver = new RemoteWebDriver(options);
+        	URL url;
+        	try {
+				url = new URL("http://host.docker.internal:4444/wd/hub");
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}
+        	driver = new RemoteWebDriver(url, options);
         } else {
             driver = new ChromeDriver(options);
         }

@@ -47,9 +47,12 @@ dependencies {
 }
 
 test{
-	useTestNG(){
-	suites 'smoketests.xml'
+	useTestNG() {
+		//suites 'smoketests.xml'
+		suites 'testng.xml'
+		useDefaultListeners = true
+		outputDirectory = file("$buildDir/testngOutput")
 	}
 	
-	// test
+	reports.html.enabled = false
 }
