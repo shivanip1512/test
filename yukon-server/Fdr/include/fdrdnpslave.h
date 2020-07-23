@@ -67,7 +67,7 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
 
         std::unique_ptr<CtiPointRegistrationMsg> buildRegistrationPointList() override;
         bool hasPointsToRegisterFor() override;
-        bool loadOutboundPoints( boost::scoped_ptr<CtiFDRManager> & points ) override;
+        std::optional<std::set<long>> loadOutboundPoints() override;
 
     protected:
         CtiFDRClientServerConnectionSPtr createNewConnection(SOCKET newConnection) override;
