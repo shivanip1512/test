@@ -1,6 +1,5 @@
 package com.eaton.elements;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,23 +25,16 @@ public class SwitchBtnMultiSelectElement {
         this.parentElement = parentElement;
     }
 
-    public void setTrueFalseByValue(String value, boolean checked) {
-        WebElement element = getSwitchBtn();
-
-        List<WebElement> switchBtnList = element.findElements(By.cssSelector(".switch-btn"));
-
-        WebElement switchBtn = element.findElement(By.cssSelector("input[id='" + value.toUpperCase() + "_chk']"));
+    public void setTrueFalseByName(String buttonName, boolean checked) {
+        WebElement switchElement = getSwitchBtn();
+        String name = buttonName.replace(" ", "_");
+        WebElement switchButton = getSwitchBtnByName(buttonName);
+        WebElement switchBtn = switchElement.findElement(By.cssSelector("input[id='" + name.toUpperCase() + "_chk']"));
 
         String isChecked = switchBtn.getAttribute("checked");
 
-        for (WebElement webElement : switchBtnList) {
-            List<WebElement> list = webElement.findElements(By.cssSelector("input[id='" + value.toUpperCase() + "_chk']"));
-
-            if (!list.isEmpty()) {               
-                if ((isChecked == null && checked) || (isChecked != null && !checked)) {
-                    webElement.findElement(By.cssSelector("span>span")).click();
-                }
-            } 
+        if ((isChecked == null && checked) || (isChecked != null && !checked)) {
+            switchButton.click();
         }
     }
 
@@ -55,27 +47,25 @@ public class SwitchBtnMultiSelectElement {
 
         if (disabled == null) {
             return false;
-        } else return true;
+        } else
+            return true;
     }
-    
+
     public boolean allValuesDisabled() {
         WebElement element = getSwitchBtn();
-        
+
         List<WebElement> list = element.findElements(By.cssSelector("label .switch-btn-checkbox"));
-        
+
         boolean allDisabled = true;
         for (WebElement webElement : list) {
             String disabled = webElement.getAttribute("disabled");
-            
+
             if (!disabled.equals("true")) {
-                 return false;                
+                return false;
             }
         }
-        
+
         return allDisabled;
-                
-//        list.stream().filter(x -> x.findElement(By.cssSelector(".title")).getText().contains(panelName))
-//                .findFirst();
     }
 
     private WebElement getSwitchBtn() {
@@ -84,5 +74,12 @@ public class SwitchBtnMultiSelectElement {
         } else {
             return this.driverExt.findElement(By.cssSelector("." + this.elementName), Optional.empty());
         }
+    }
+
+    private WebElement getSwitchBtnByName(String switchName) {
+        WebElement switchbtn = getSwitchBtn();
+        List<WebElement> switchElements = switchbtn.findElements(By.cssSelector(".button .b-label"));
+        
+        return switchElements.stream().filter(x -> x.getText().contains(switchName)).findFirst().orElseThrow();
     }
 }

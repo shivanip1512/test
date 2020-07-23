@@ -39,7 +39,7 @@ public class Colors {
     public static final String TEAL_STR_ID = "Teal";
     public static final String BLACK_STR_ID = "Black";
     public static final String ORANGE_STR_ID = "Orange";
-    public static final String LIGHT_GREEN_STR_ID = "Light Green";
+    public static final String LIGHT_GREEN_STR_ID = "Sage";
     public static final String GRAY_STR_ID = "Gray";
     public static final String PURPLE_STR_ID = "Purple";
     public static final String SKY_STR_ID = "Sky";
