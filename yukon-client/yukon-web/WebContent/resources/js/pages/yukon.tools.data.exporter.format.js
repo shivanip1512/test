@@ -227,7 +227,8 @@ yukon.tools.dataExporterFormat = (function () {
                 
                 popup.load(_attributeUrl, function () {
                     popup.find('select[name=attribute]').addClass("dn");
-                    popup.find('select[name=attribute]').val(attribute.attribute).trigger("chosen:updated");
+                    var attributeKey = attribute.attribute.key ? attribute.attribute.key : attribute.attribute;
+                    popup.find('select[name=attribute]').val(attributeKey).trigger("chosen:updated");
                     popup.find('select[name=attribute]').removeClass("dn");
                     popup.find('select[name=dataSelection]').val(attribute.dataSelection);
                     popup.find('input[name=daysPrevious]').val(attribute.daysPrevious);

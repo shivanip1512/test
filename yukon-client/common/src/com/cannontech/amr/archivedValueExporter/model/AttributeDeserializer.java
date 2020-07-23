@@ -2,9 +2,8 @@ package com.cannontech.amr.archivedValueExporter.model;
 
 import java.io.IOException;
 
-import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.spring.YukonSpringHook;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,18 +17,20 @@ public class AttributeDeserializer extends StdDeserializer<Attribute> {
         super(Attribute.class);
     }
     
-    private AttributeDao attributeDao = YukonSpringHook.getBean(AttributeDao.class);
+    private AttributeService attributeService = YukonSpringHook.getBean(AttributeService.class);
 
     @Override
     public Attribute deserialize(JsonParser paramJsonParser, DeserializationContext paramDeserializationContext)
             throws IOException, JsonProcessingException {
         TreeNode node = paramJsonParser.readValueAsTree();
         TreeNode idNode = node.get("id");
+        String attributeName = null;
         if (idNode != null) {
-            return attributeDao.getCustomAttribute(Integer.parseInt(idNode.toString()));
+            attributeName = idNode.toString();
         } else {
-            return BuiltInAttribute.valueOf(node.toString().replaceAll("\"", ""));
+            attributeName = node.toString().replaceAll("\"", "");
         }
+        return attributeService.resolveAttributeName(attributeName);
     }
 
 }
