@@ -71,7 +71,7 @@ public class LoadGroupEcobeeCreateBuilder {
             
             String res = er.asString();
             JSONObject response = new JSONObject(res);
-            JSONObject jsonResponse = response.getJSONObject("LM_GROUP_ECOBEE");
+            JSONObject jsonResponse = response.getJSONObject(TYPE);
             
             return new Pair<>(request, jsonResponse);
         }
