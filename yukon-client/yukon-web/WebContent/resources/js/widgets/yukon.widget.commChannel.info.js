@@ -133,6 +133,10 @@ yukon.widget.commChannel.info = (function () {
                 $('.js-socket-number').toggleClass('dn', selectedSocketType === socketTypeNone);
             });
 
+            $(document).on('dialogclose', '#js-edit-comm-channel-popup', function(event) {
+                yukon.comm.channel.removePhysicalPortFields();
+            });
+
             _initialized = true;
         }
  

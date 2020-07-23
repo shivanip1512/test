@@ -64,6 +64,17 @@ yukon.comm.channel = (function () {
                     userEnteredPhysicalPort.val("");
                 }
             }
+        },
+
+        /**
+         * Removes the physical port related fields for closed popup in case of create and edit
+         */
+        removePhysicalPortFields: function() {
+            $('.js-physical-port-row').find("span[id='physicalPort.errors']").remove();
+            $('.js-physical-port-row').find("select.js-physical-port").remove();
+            $('.js-physical-port-row').find(".js-user-physical-port-value").remove();
+            $('.js-physical-port-row').find("#isOtherSelected").remove();
+            $('.js-physical-port-row').find("#physicalPortErrors").remove();
         }
     };
 

@@ -3,10 +3,10 @@ package com.cannontech.web.api.commChannel;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.device.port.LocalSharedPortDetail;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.device.port.TcpSharedPortDetail;
 import com.cannontech.common.device.port.TerminalServerPortDetailBase;
-import com.cannontech.common.util.Range;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 
@@ -42,5 +42,9 @@ public class PortCreateApiValidator <T extends PortBase<?>> extends SimpleValida
             }
         }
 
+        if (port instanceof LocalSharedPortDetail) {
+            YukonValidationUtils.checkIfFieldRequired("physicalPort", errors, ((LocalSharedPortDetail) port).getPhysicalPort(),
+                    "Physical Port");
+        }
     }
 }

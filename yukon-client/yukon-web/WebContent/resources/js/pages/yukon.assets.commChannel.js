@@ -59,7 +59,8 @@ yukon.assets.commChannel = (function () {
                     errorMessageFound = errorMessage.is(":visible"),
                     globalError = popup.find('.js-global-error'),
                     globalErrorFound = globalError.is(":visible"),
-                    userPortEntered = popup.find('.js-user-physical-port-value').is(':visible');
+                    userPortField = popup.find('.js-user-physical-port-value'),
+                    userPortEntered = userPortField.exists() && !userPortField.hasClass('dn');
 
                 popup.find('.js-physical-port').prop('disabled', userPortEntered);
                 popup.find('.js-user-physical-port-value').prop('disabled', !userPortEntered);
@@ -88,6 +89,10 @@ yukon.assets.commChannel = (function () {
                     yukon.ui.unblockPage();
                     window.location.href = window.location.href;
                 }
+            });
+
+            $(document).on('dialogclose', '#js-create-comm-channel-popup', function(event) {
+                yukon.comm.channel.removePhysicalPortFields();
             });
 
             _initialized = true;
