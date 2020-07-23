@@ -17,11 +17,14 @@ import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.paoPointValue.model.MeterPointValue;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.ReadableRange;
 import com.cannontech.core.dao.PointDao;
@@ -46,6 +49,7 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
     @Autowired PointDao pointDao;
     @Autowired PointFormattingService pointFormattingService;
     @Autowired RawPointHistoryDao rawPointHistoryDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     
     private static Comparator<MeterPointValue> getMeterPointValueComparator() {
         return MeterPointValue.getPaoIdOrdering().compound(MeterPointValue.getPointIdOrdering())
@@ -96,12 +100,12 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
             }
         } else {
             // get the PaoPointIdentifiers for the devices & attributes
-			List<PaoMultiPointIdentifier> paoMultiPointIdentifiersForAttributes = attributeService
-					.findPaoMultiPointIdentifiersForAttributes(devices, attributeSet);
-			Set<PaoPointIdentifier> paoPointIdentifiers = Sets.newHashSet();
-			for (PaoMultiPointIdentifier paoMultiPointIdentifier : paoMultiPointIdentifiersForAttributes) {
-				paoPointIdentifiers.addAll(paoMultiPointIdentifier.getPaoPointIdentifiers());
-			}
+            List<PaoMultiPointIdentifier> paoMultiPointIdentifiersForAttributes = attributeService
+                    .findPaoMultiPointIdentifiersForAttributes(devices, attributeSet);
+            Set<PaoPointIdentifier> paoPointIdentifiers = Sets.newHashSet();
+            for (PaoMultiPointIdentifier paoMultiPointIdentifier : paoMultiPointIdentifiersForAttributes) {
+                paoPointIdentifiers.addAll(paoMultiPointIdentifier.getPaoPointIdentifiers());
+            }
 
             // get the pointIds for the PaoPointIdentifiers
             paoPointInfoMap = pointDao.getPointInfoById(paoPointIdentifiers);
@@ -141,19 +145,21 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
             }
         }
         
-        Map<PaoIdentifier, RfnDevice> paoPointIdRelayMap = Maps.newHashMap();
-        if(meters.size() != retrievedPaoIds.size()){
-            Set<Integer> relayIds = Sets.newHashSet();
-            relayIds.addAll(retrievedPaoIds.stream().map(x -> x.getPaoId()).collect(Collectors.toSet()));
+        Map<PaoIdentifier, RfnDevice> paoPointIdRfnMap = Maps.newHashMap();
+        if (meters.size() != retrievedPaoIds.size()) {
+            Set<Integer> rfnDeviceIds = Sets.newHashSet();
+            rfnDeviceIds.addAll(retrievedPaoIds.stream().map(x -> x.getPaoId()).collect(Collectors.toSet()));
             Set<Integer> meterIds = meters.stream().map(x -> x.getPaoIdentifier().getPaoId()).collect(Collectors.toSet());
-            relayIds.removeAll(meterIds);     
-            List<RfnDevice> rfnDevices = rfnDeviceDao.getDevicesByPaoIds(relayIds);
+            rfnDeviceIds.removeAll(meterIds);
+
+            List<RfnDevice> rfnDevices = rfnDeviceDao.getDevicesByPaoIds(rfnDeviceIds);
             for (RfnDevice rfnDevice : rfnDevices) {
-                if(rfnDevice.getPaoIdentifier().getPaoType().isRfRelay()){
-                    paoPointIdRelayMap.put(rfnDevice.getPaoIdentifier(), rfnDevice);
+                if (paoDefinitionDao.isTagSupported(rfnDevice.getPaoIdentifier().getPaoType(), PaoTag.RFN_EVENTS)) {
+                    paoPointIdRfnMap.put(rfnDevice.getPaoIdentifier(), rfnDevice);
                 }
             }
         }
+        
 
         // put it all together into our return list
         List<MeterPointValue> pointValues = Lists.newArrayListWithExpectedSize(pointData.size());
@@ -167,12 +173,12 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
             if (meter != null) {
                 meterPointValue = new MeterPointValue(meter, paoPointIdentifier, pointValueHolder, pointInfo.getName());
             } else {
-                RfnDevice relay = paoPointIdRelayMap.get(paoPointIdentifier.getPaoIdentifier());
+                RfnDevice relay = paoPointIdRfnMap.get(paoPointIdentifier.getPaoIdentifier());
                 if (relay != null) {
                     meterPointValue = new MeterPointValue(relay, paoPointIdentifier, pointValueHolder, pointInfo.getName());
                 }
             }
-            
+ 
             if (meterPointValue != null) {
                 if (!CollectionUtils.isEmpty(discludedPointStateValues)) {
                     String valueString = meterPointValue.getFormattedRawValue(pointFormattingService, userContext);
@@ -182,10 +188,10 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
                 }
                 pointValues.add(meterPointValue);
             }
+            
         }
 
         Collections.sort(pointValues, getMeterPointValueComparator());
         return pointValues;
     }
-
 }

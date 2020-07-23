@@ -37,11 +37,10 @@ public class ArchiveValuesExportAttributeDaoImpl implements ArchiveValuesExportA
         sink.addValue("AttributeID", attribute.getAttributeId());
         sink.addValue("FormatID", attribute.getFormatId());
         if (attribute.getAttribute() instanceof CustomAttribute) {
-            sink.addValue("AttributeName", ((CustomAttribute) attribute.getAttribute()).getId());
+            sink.addValue("AttributeName", ((CustomAttribute) attribute.getAttribute()).getCustomAttributeId());
         } else if (attribute.getAttribute() instanceof BuiltInAttribute) {
             sink.addValue("AttributeName", ((BuiltInAttribute) attribute.getAttribute()).name());
         }
-        sink.addValue("AttributeName", attribute.getAttribute());
         sink.addValue("DataSelection", attribute.getDataSelection().name());
         sink.addValue("DaysPrevious",  attribute.getDaysPrevious());
         yukonJdbcTemplate.update(sql);

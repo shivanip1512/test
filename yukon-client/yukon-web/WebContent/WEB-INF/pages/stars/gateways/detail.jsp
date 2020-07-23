@@ -139,6 +139,15 @@
             <%-- <div class="action-area"> --%>
                 <%-- <cti:button nameKey="testConnection" busy="true" icon="icon-server-connect"/> --%>
             <%-- </div> --%>
+            <c:set var="attributes" value="READY_NODES"/>
+            <cti:checkLicenseKey keyName="RF_DATA_STREAMING_ENABLED">
+                <c:set var="attributes" value="READY_NODES,STREAMING_CAPABLE_DEVICE_COUNT,STREAMING_ACTIVE_DEVICE_COUNT"/>
+            </cti:checkLicenseKey>
+            <cti:msg2 var="widgetTitle" key=".metrics.title"/>
+            <tags:widget bean="simpleAttributesWidget" title="${widgetTitle}" container="section" attributes="${attributes}" />
+            <!-- Gateway node Information  -->
+            <cti:msg2 var="nodeInfoTitle" key=".gatewayNodeInfo.title"/>
+            <tags:widget bean="gatewayNodeInformationWidget" title="${nodeInfoTitle}" container="section" />
         </div>
         
         <div class="column two nogutter">
@@ -150,15 +159,10 @@
             
             <cti:msg2 var="infraStructureWarningsTitle" key=".infraStructureWarnings.title"/>
             <tags:widget bean="deviceInfrastructureWarningsWidget" title="${infraStructureWarningsTitle}" container="section"/>
-            <c:set var="attributes" value="READY_NODES"/>
-            <cti:checkLicenseKey keyName="RF_DATA_STREAMING_ENABLED">
-                <c:set var="attributes" value="READY_NODES,STREAMING_CAPABLE_DEVICE_COUNT,STREAMING_ACTIVE_DEVICE_COUNT"/>
-            </cti:checkLicenseKey>
-            <cti:msg2 var="widgetTitle" key=".metrics.title"/>
-            <tags:widget bean="simpleAttributesWidget" title="${widgetTitle}" container="section" attributes="${attributes}" />
-            <!-- Gateway node Information  -->
-            <cti:msg2 var="nodeInfoTitle" key=".gatewayNodeInfo.title"/>
-            <tags:widget bean="gatewayNodeInformationWidget" title="${nodeInfoTitle}" container="section" />
+            <c:if test="${showEvents}">
+                <cti:msg2 var="eventsTitle" key=".gatewayEvents.title"/>
+                <tags:widget bean="meterEventsWidget" title="${eventsTitle}" container="section"/>
+            </c:if>
         </div>
         
     </div>
