@@ -1,10 +1,10 @@
 package com.cannontech.common.device.virtualDevice.service;
 
-import com.cannontech.common.device.dao.DeviceBaseModelDao;
 import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.virtualDevice.VirtualDeviceModel;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PaginatedResponse;
+import com.cannontech.common.pao.LiteYukonPaoSortableField;
 
 public interface VirtualDeviceService {
 
@@ -31,6 +31,6 @@ public interface VirtualDeviceService {
     /*
      * Get a list of LiteYukonPAObjects
      */
-    PaginatedResponse<DeviceBaseModel> list(DeviceBaseModelDao.SortBy sort_by, Direction direction, Integer page,
+    PaginatedResponse<DeviceBaseModel> list(LiteYukonPaoSortableField sort_by, Direction direction, Integer page,
             Integer items_per_page);
 }

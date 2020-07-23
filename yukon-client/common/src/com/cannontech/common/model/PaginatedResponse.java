@@ -7,24 +7,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PaginatedResponse<T> {
 
-    private Integer totalItems;
     private Integer pageNumber;
     private Integer itemsPerPage;
     private List<T> items;
 
-    public PaginatedResponse(List<T> items, Integer totalItems, Integer pageNumber, Integer itemsPerPage) {
+    public PaginatedResponse(List<T> items, Integer pageNumber, Integer itemsPerPage) {
         this.items = items;
-        this.totalItems = totalItems;
         this.pageNumber = pageNumber;
         this.itemsPerPage = itemsPerPage;
     }
 
+    @JsonProperty
     public Integer getTotalItems() {
-        return totalItems;
-    }
-
-    public void setTotalItems(Integer totalItems) {
-        this.totalItems = totalItems;
+        return items.size();
     }
 
     public Integer getPageNumber() {
@@ -45,7 +40,9 @@ public class PaginatedResponse<T> {
 
     @JsonProperty
     public List<T> getItems() {
-        return items;
+        Integer startPosition = (pageNumber * itemsPerPage >= items.size() ? items.size() : pageNumber * itemsPerPage);
+        Integer endPosition = (startPosition + itemsPerPage > items.size() ? items.size() : startPosition + itemsPerPage);
+        return items.subList(startPosition, endPosition);
     }
 
     @JsonIgnore

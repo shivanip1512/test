@@ -1,15 +1,18 @@
 package com.cannontech.common.device.virtualDevice.service.impl;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.device.dao.DeviceBaseModelDao;
 import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.virtualDevice.VirtualDeviceModel;
 import com.cannontech.common.device.virtualDevice.service.VirtualDeviceService;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PaginatedResponse;
+import com.cannontech.common.pao.LiteYukonPaoSortableField;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.TransactionType;
@@ -21,7 +24,6 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
 
     @Autowired private DBPersistentDao dBPersistentDao;
     @Autowired private IDatabaseCache dbCache;
-    @Autowired private DeviceBaseModelDao<VirtualDeviceModel> deviceBaseModelDao;
 
     @Override
     public VirtualDeviceModel create(VirtualDeviceModel virtualDeviceBase) {
@@ -70,15 +72,23 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
     }
 
     @Override
-    public PaginatedResponse<DeviceBaseModel> list(DeviceBaseModelDao.SortBy sort_by, Direction direction, Integer page,
+    public PaginatedResponse<DeviceBaseModel> list(LiteYukonPaoSortableField sort_by, Direction direction, Integer page,
             Integer items_per_page) {
-        List<DeviceBaseModel> models = deviceBaseModelDao.listDevices(sort_by, direction);
-        Integer startPosition;
-        Integer endPosition;
-        startPosition = (page * items_per_page >= models.size() ? models.size() : page * items_per_page);
-        endPosition = (startPosition + items_per_page > models.size() ? models.size() : startPosition + items_per_page);
-        return new PaginatedResponse<DeviceBaseModel>(models.subList(startPosition, endPosition), models.size(), page,
-                items_per_page);
+        List<LiteYukonPAObject> litePAOs = dbCache.getAllYukonPAObjects().stream()
+                .filter(pao -> pao.getPaoType().equals(PaoType.VIRTUAL_SYSTEM)).collect(Collectors.toList());
+
+        Comparator<LiteYukonPAObject> comparator = (direction == Direction.desc ? sort_by.getComparator().reversed() : sort_by
+                .getComparator());
+        if (sort_by == LiteYukonPaoSortableField.DISABLE_FLAG) {
+            comparator = comparator.thenComparing(LiteYukonPaoSortableField.PAO_NAME.getComparator());
+        }
+        litePAOs.sort(comparator);
+
+        List<DeviceBaseModel> deviceModels = litePAOs.stream().map(
+                pao -> new DeviceBaseModel(pao.getPaoIdentifier().getPaoId(), pao.getPaoType(), pao.getPaoName(),
+                        (pao.getDisableFlag().equals("N") ? false : true)))
+                .collect(Collectors.toList());
+        return new PaginatedResponse<DeviceBaseModel>(deviceModels, page, items_per_page);
     }
 
 }
