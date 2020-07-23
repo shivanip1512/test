@@ -17,12 +17,14 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.CbcCreatePage;
 import com.eaton.pages.capcontrol.CbcDetailPage;
+import com.github.javafaker.Faker;
 
 public class CbcCreateTests extends SeleniumTestSetup {
 
     private CbcCreatePage createPage;
     private DriverExtensions driverExt;
     private Random randomNum;
+    private Faker faker = new Faker();
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
@@ -55,9 +57,18 @@ public class CbcCreateTests extends SeleniumTestSetup {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 
         String name = "AT CBC " + timeStamp;
+        Integer serialNumber = faker.number().numberBetween(1, 65535);
+        Integer port = faker.number().numberBetween(1, 65535);
+        Integer postCommWait = faker.number().numberBetween(1, 99999);
+        Integer slaveAddress = faker.number().numberBetween(1,  65535);
         this.createPage.getType().selectItemByText("CBC 8020");
         this.createPage.getMasterAddress().setInputValue(String.valueOf(masterAddress));
+        this.createPage.getSlaveAddress().setInputValue(slaveAddress.toString());
         this.createPage.getName().setInputValue(name);
+        this.createPage.getSerialNumber().setInputValue(serialNumber.toString());
+        this.createPage.getIpAddress().setInputValue(faker.internet().ipV4Address());
+        this.createPage.getPort().setInputValue(port.toString());
+        this.createPage.getPostCommWait().setInputValue(postCommWait.toString());
 
         this.createPage.getSaveBtn().click();
 
