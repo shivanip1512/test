@@ -2310,9 +2310,9 @@ Java :
     project URL : "http://www.quartz-scheduler.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.quartz-scheduler/quartz/2.3.0"
-    md5 : a9c2bcf5ed6b2c8b6ca315a545d01261
-    sha1 : a090397102a12f6241177c5d501835334bb7662a
+    maven URL : "https://mvnrepository.com/artifact/org.quartz-scheduler/quartz"
+    md5 : 11a382ed1dad917951c40c82d8ed92e1
+    sha1 : bba0794b3e979a04e39527a77950cef7d54d1677
     updated : 2020-07-23
     jira : YUK-22484
     notes : 
