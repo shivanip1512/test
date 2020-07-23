@@ -26,8 +26,8 @@
                     <c:set var="assignmentId" value="${assignment.attributeAssignmentId}"/>
                     <td>${fn:escapeXml(assignment.customAttribute.name)}</td>
                     <td><i:inline key="${assignment.paoType.formatKey}"/></td>
-                    <td><i:inline key="${assignment.pointIdentifier.pointType.formatKey}"/></td>
-                    <td>${assignment.pointIdentifier.offset}</td>
+                    <td><i:inline key="${assignment.pointType.formatKey}"/></td>
+                    <td>${assignment.offset}</td>
                     <td>
                         <cm:dropdown icon="icon-cog">
                             <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-edit-assignment" data-assignment-id="${assignmentId}"/>

@@ -117,7 +117,7 @@ public class AttributesController {
         try {
             ResponseEntity<? extends Object> response = null;
             if (attribute.getCustomAttributeId() != null) {
-                String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeUrl + attribute.getCustomAttributeId());
+                String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeUrl + "/" + attribute.getCustomAttributeId());
                 response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PATCH, CustomAttribute.class, attribute.getName());
             } else {
                 String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeUrl);
