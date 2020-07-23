@@ -560,7 +560,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         PointType ptType = pointBase.getPoint().getPointTypeEnum();
         PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType);
 
-        // Copy the StaleData
+        // copy the StaleData
         StaleData stateDataToCopy = getStaleData(pointId);
         StaleData newStaleData = populateStaleDataObjectToCopy(stateDataToCopy);
         saveStaleData(pointBaseModel.getPointId(), newStaleData);
