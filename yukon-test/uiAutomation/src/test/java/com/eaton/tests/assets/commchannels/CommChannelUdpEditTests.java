@@ -504,8 +504,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
                        	
         String userMsg = channelDetailPage.getUserMessage();        	
 	
-        ExtractableResponse<?> response = AssetsGetRequestAPI.getCommChannel(commChannelId);	
-        	
+        ExtractableResponse<?> response = AssetsGetRequestAPI.getCommChannel(commChannelId);	     	
         softly.assertThat(userMsg).isEqualTo(commChannelName + " saved successfully.");	
         softly.assertThat(response.path("name").toString()).isEqualTo(commChannelName);	
         softly.assertThat(response.path("baudRate").toString()).isEqualTo("BAUD_"+baudRate);	
