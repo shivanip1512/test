@@ -61,7 +61,7 @@ public class CommChannelDetailPage extends PageBase {
         return new EditCommChannelModal(this.driverExt, Optional.of(modalTitle), Optional.of("js-edit-comm-channel-popup"));
     }
 
-    public ConfirmModal showDeleteLoadGroupModal() {
+    public ConfirmModal showDeleteCommChannelModal() {
         getActionBtn().clickAndSelectOptionByText("Delete");
 
         SeleniumTestSetup.waitUntilModalVisibleByDescribedBy(CONFIRM_DIALOG);

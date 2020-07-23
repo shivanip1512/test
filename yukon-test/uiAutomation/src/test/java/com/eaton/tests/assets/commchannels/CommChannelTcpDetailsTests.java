@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Set;
 
 import org.assertj.core.api.SoftAssertions;
 import org.json.simple.JSONObject;
@@ -12,6 +13,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.eaton.elements.Section;
+import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.CreateCommChannelModal;
 import com.eaton.elements.modals.EditCommChannelModal;
 import com.eaton.framework.DriverExtensions;
@@ -172,4 +174,41 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         
         assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
     }
+    
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    public void commChannelDeleteTcp_ActionsDeleteOpensCorrectModal() {
+        String expectedModalTitle = "Confirm Delete";
+        ConfirmModal deleteConfirmModal = channelDetailPage.showDeleteCommChannelModal();
+        String actualModalTitle = deleteConfirmModal.getModalTitle();
+        
+        assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
+    }
+    
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    public void commChannelDeleteTcp_ActionsDeleteConfirmModalMessageValidation() {
+        String expectedModalTitle = "Are you sure you want to delete \""+commChannelName +"\"?";
+        ConfirmModal deleteConfirmModal = channelDetailPage.showDeleteCommChannelModal();
+        String actualModalTitle = deleteConfirmModal.getConfirmMsg();
+        
+        assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
+    }
+    
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    public void commChannelDeleteTcp_ActionsDeleteModalCancelButtonNavigation() {
+        String initialWindowHandle = getWindowHandle();
+        ConfirmModal deleteConfirmModal = channelDetailPage.showDeleteCommChannelModal();
+        Set<String> windowHandlesAfterModalOpening = getWindowHandles();
+        assertThat(windowHandlesAfterModalOpening.size()).isEqualTo("2");
+        deleteConfirmModal.clickCancelBtnByNameAndWait();
+        Set<String> windowHandlesAfterModalClosing = getWindowHandles();
+        assertThat(windowHandlesAfterModalClosing.size()).isEqualTo("1");
+        assertThat(windowHandlesAfterModalClosing).contains(initialWindowHandle);
+    }
+    
+    
+//    
+//    
+//    
+//    commChannelDeleteTcp_ActionsDeleteModalDeleteButton
+//    commChannelDeleteTcp_ActionsDeleteModalCrossButton
 }
