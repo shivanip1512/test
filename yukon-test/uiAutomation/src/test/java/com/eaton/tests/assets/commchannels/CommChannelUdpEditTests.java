@@ -387,28 +387,28 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_ConfigurationFieldsValuesCorrect() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String tabName = "Configuration";
-        EditCommChannelModal editModal = channelDetailPage.showCommChannelEditModal(expectedModalTitle);
-
-        editModal.getTabElement().clickTab(tabName);
-
-        softly.assertThat(editModal.getProtocolWrap().getValueChecked()).isEqualTo("IDLC");
-        softly.assertThat(editModal.getCarrierDetectWait().getCheckedValue()).isEqualTo("Yes");        
-        softly.assertThat(editModal.getCarrierDetectWaitTextBox().getInputValue()).isEqualTo("544");
-        softly.assertThat(editModal.getEncryptionKey().getCheckedValue()).isEqualTo("Yes");
-        softly.assertThat(editModal.getEncryptionKeyTextBox().getInputValue()).isEqualTo("00112233445566778899aabbccddeeff");
-        softly.assertThat(editModal.getChannelPreTxWait().getInputValue()).isEqualTo("87");
-        softly.assertThat(editModal.getChannelRTSTxWait().getInputValue()).isEqualTo("823");
-        softly.assertThat(editModal.getChannelPostTxWait().getInputValue()).isEqualTo("89");
-        softly.assertThat(editModal.getChannelRecDataWait().getInputValue()).isEqualTo("76");
-        softly.assertThat(editModal.getChannelAdditionalTimeOut().getInputValue()).isEqualTo("98");
-        softly.assertThat(editModal.getSocketNumber().getInputValue()).isEqualTo("100");
-        softly.assertThat(editModal.getSharedPortType().getValueChecked()).isEqualTo("ACS");
-        softly.assertAll();
-    }
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })	
+    public void commChannelUdpEdit_ConfigurationFieldsValuesCorrect() {	
+        String expectedModalTitle = "Edit " + commChannelName;	
+        String tabName = "Configuration";	
+        EditCommChannelModal editModal = channelDetailPage.showCommChannelEditModal(expectedModalTitle);	
+	
+        editModal.getTabElement().clickTab(tabName);	
+	   
+        softly.assertThat(editModal.getProtocolWrap().getValueChecked()).isEqualTo("IDLC"); 	
+        softly.assertThat(editModal.getCarrierDetectWait().getCheckedValue()).isEqualTo("Yes");	
+        softly.assertThat(editModal.getCarrierDetectWaitTextBox().getInputValue()).isEqualTo("544");	
+        softly.assertThat(editModal.getEncryptionKey().getCheckedValue()).isEqualTo("Yes");	
+        softly.assertThat(editModal.getEncryptionKeyTextBox().getInputValue()).isEqualTo("00112233445566778899aabbccddeeff");	
+        softly.assertThat(editModal.getChannelPreTxWait().getInputValue()).isEqualTo("87");	
+        softly.assertThat(editModal.getChannelRTSTxWait().getInputValue()).isEqualTo("823");	
+        softly.assertThat(editModal.getChannelPostTxWait().getInputValue()).isEqualTo("89");	
+        softly.assertThat(editModal.getChannelRecDataWait().getInputValue()).isEqualTo("76");	
+        softly.assertThat(editModal.getChannelAdditionalTimeOut().getInputValue()).isEqualTo("98");	
+        softly.assertThat(editModal.getSocketNumber().getInputValue()).isEqualTo("100");       	
+        softly.assertThat(editModal.getSharedPortType().getValueChecked()).isEqualTo("ACS");	
+        softly.assertAll();	
+    }	
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelUdpEdit_CancelNavigatesCorrectly() {
@@ -480,40 +480,44 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(sharing.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_UpdateAllFieldsSuccess() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String commChannelName = "CommChannel_Udp_Update " + timeStamp;
-        String baudRate = "4800";
-        String configFieldsValues[] = { "55", "10", "20", "15", "500" };
-        String tabName = "Configuration";
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })	
+    public void commChannelUdpEdit_UpdateAllFieldsSuccess() {	
+        String expectedModalTitle = "Edit " + commChannelName;	
+        String commChannelName = "CommChannel_Udp_Updatepe";	
+        String baudRate = "4800";	
+        String configFieldsValues[] = { "55", "10", "20", "15", "500" };	
+        String tabName = "Configuration";	
+	
+        EditCommChannelModal editModal = channelDetailPage.showCommChannelEditModal(expectedModalTitle);	
+        editModal.getChannelName().setInputValue(commChannelName);	
+        editModal.getBaudRate().selectItemByText(baudRate);	
+	
+        editModal.getTabElement().clickTab(tabName);	
+        editModal.getCarrierDetectWait().setValue(false);	
+        editModal.getEncryptionKey().setValue(false);	
+        editModal.getChannelPreTxWait().setInputValue(configFieldsValues[0]);	
+        editModal.getChannelRTSTxWait().setInputValue(configFieldsValues[1]);	
+        editModal.getChannelPostTxWait().setInputValue(configFieldsValues[2]);	
+        editModal.getChannelRecDataWait().setInputValue(configFieldsValues[3]);	
+        editModal.getChannelAdditionalTimeOut().setInputValue(configFieldsValues[4]);	
+        editModal.clickOkAndWait();	
+                       	
+        String userMsg = channelDetailPage.getUserMessage();        	
+	
+        ExtractableResponse<?> response = AssetsGetRequestAPI.getCommChannel(commChannelId);	
+        	
+        softly.assertThat(userMsg).isEqualTo(commChannelName + " saved successfully.");	
+        softly.assertThat(response.path("name").toString()).isEqualTo(commChannelName);	
+        softly.assertThat(response.path("baudRate").toString()).isEqualTo("BAUD_"+baudRate);	
+        softly.assertThat(response.path("keyInHex").toString()).isEqualTo("");       	
+        softly.assertThat(response.path("carrierDetectWaitInMilliseconds").toString()).isEqualTo("0");	
+        softly.assertThat(response.path("timing.preTxWait").toString()).isEqualTo((configFieldsValues[0]));	
+        softly.assertThat(response.path("timing.rtsToTxWait").toString()).isEqualTo((configFieldsValues[1]));	
+        softly.assertThat(response.path("timing.postTxWait").toString()).isEqualTo((configFieldsValues[2]));	
+        softly.assertThat(response.path("timing.receiveDataWait").toString()).isEqualTo((configFieldsValues[3]));	
+        softly.assertThat(response.path("timing.extraTimeOut").toString()).isEqualTo((configFieldsValues[4]));	
+        softly.assertAll();	
+    }	
 
-        EditCommChannelModal editModal = channelDetailPage.showCommChannelEditModal(expectedModalTitle);
-        editModal.getChannelName().setInputValue(commChannelName);
-        editModal.getBaudRate().selectItemByText(baudRate);
-
-        editModal.getTabElement().clickTab(tabName);
-        editModal.getChannelPreTxWait().setInputValue(configFieldsValues[0]);
-        editModal.getChannelRTSTxWait().setInputValue(configFieldsValues[1]);
-        editModal.getChannelPostTxWait().setInputValue(configFieldsValues[2]);
-        editModal.getChannelRecDataWait().setInputValue(configFieldsValues[3]);
-        editModal.getChannelAdditionalTimeOut().setInputValue(configFieldsValues[4]);
-        editModal.clickOkAndWait();
-
-        String userMsg = channelDetailPage.getUserMessage();
-
-        ExtractableResponse<?> response = AssetsGetRequestAPI.getCommChannel(commChannelId);
-
-        softly.assertThat(userMsg).isEqualTo(commChannelName + " saved successfully.");
-        softly.assertThat(response.path("name").toString()).isEqualTo(commChannelName);
-        softly.assertThat(response.path("baudRate").toString()).isEqualTo("BAUD_" + baudRate);
-        softly.assertThat(response.path("timing.preTxWait").toString()).isEqualTo((configFieldsValues[0]));
-        softly.assertThat(response.path("timing.rtsToTxWait").toString()).isEqualTo((configFieldsValues[1]));
-        softly.assertThat(response.path("timing.postTxWait").toString()).isEqualTo((configFieldsValues[2]));
-        softly.assertThat(response.path("timing.receiveDataWait").toString()).isEqualTo((configFieldsValues[3]));
-        softly.assertThat(response.path("timing.extraTimeOut").toString()).isEqualTo((configFieldsValues[4]));
-        softly.assertAll();
-    }
 
 }
