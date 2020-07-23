@@ -198,9 +198,9 @@ public class TrendEditorController {
 
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, httpMethod, Object.class, trendModel);
             if (response.getStatusCode() == HttpStatus.OK) {
-                TrendModel trend = (TrendModel) response.getBody();
-                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", trendModel.getName()));
-                return redirectLink + "/" + trend.getTrendId();
+                HashMap<String, Object> responseMap = (HashMap<String, Object>) response.getBody();
+                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", responseMap.get("name")));
+                return redirectLink + "/" + responseMap.get("trendId");
             }
             
             /**
