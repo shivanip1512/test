@@ -21,14 +21,13 @@ yukon.tools.trend.setup = (function() {
         
         dialog.find(".js-color-picker").spectrum({
             showPaletteOnly: true,
-            showPalette:true,
             hideAfterPaletteSelect:true,
             palette: [
                 colorArray, firstRowOfColors
             ],
-            preferredFormat: "name",
+            preferredFormat: "hex",
             move: function(color){
-                dialog.find(".js-color-input").val(color.toName().toUpperCase());
+                dialog.find(".js-color-input").val(color.toHexString());
             }
         });
     },
@@ -56,7 +55,7 @@ yukon.tools.trend.setup = (function() {
                 clonnedRow.removeClass("js-template-row");
                 clonnedRow.find(".js-label span").html(yukon.escapeXml(data.trendSeries.label));
                 clonnedRow.find(".js-color span").text(data.color);
-                clonnedRow.find(".js-color div.small-rectangle").css("background-color", data.color);
+                clonnedRow.find(".js-color div.small-rectangle").css("background-color", data.colorHexValue);
                 clonnedRow.find(".js-axis").html(data.axis);
                 clonnedRow.find(".js-multiplier").html(data.trendSeries.multiplier);
                 clonnedRow.find(".js-row-data").val(JSON.stringify(data.trendSeries));
