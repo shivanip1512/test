@@ -1,6 +1,6 @@
 package com.cannontech.web.api.customAttribute;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,20 +21,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cannontech.common.device.dao.DevicePointDao;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.Assignment;
-import com.cannontech.common.pao.attribute.model.AttributeAssignment;
-import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.admin.dao.CustomAttributeDao;
 import com.cannontech.web.admin.dao.CustomAttributeDao.SortBy;
+import com.cannontech.web.admin.service.impl.CustomAttributeService;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
@@ -43,17 +41,16 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 public class CustomAttributeAssignmentApiController {
 
     @Autowired private AttributeDao attributeDao;
-    @Autowired private CustomAttributeAssignmentValidator customAttributeAssignmentValidator;
-    @Autowired private CustomAttributeAssignmentCreationValidator customAttributeAssignmentCreationValidator;
     @Autowired private CustomAttributeDao customAttributeDao;
+    @Autowired private CustomAttributeService customAttributeService;
+    @Autowired private CustomAttributeAssignmentCreationValidator customAttributeAssignmentCreationValidator;
+    @Autowired private CustomAttributeAssignmentValidator customAttributeAssignmentValidator;
+
+
 
     @PostMapping("")
     public ResponseEntity<Object> create(@Valid @RequestBody Assignment assignment) {
-        attributeDao.saveAttributeAssignment(assignment);
-        CustomAttribute customAttribute = attributeDao.getCustomAttribute(assignment.getAttributeId());
-        AttributeAssignment attributeAssignment = new AttributeAssignment(assignment, customAttribute);
-
-        return new ResponseEntity<>(attributeAssignment, HttpStatus.OK);
+        return new ResponseEntity<>(customAttributeService.saveAttributeAssignment(assignment), HttpStatus.OK);
     }
 
     @GetMapping("/{attributeAssignmentId}")
@@ -64,16 +61,12 @@ public class CustomAttributeAssignmentApiController {
     @PatchMapping("/{attributeAssignmentId}")
     public ResponseEntity<Object> update(@PathVariable int attributeAssignmentId, @Valid @RequestBody Assignment assignment) {
         assignment.setAttributeId(attributeAssignmentId);
-        attributeDao.saveAttributeAssignment(assignment);
-        CustomAttribute customAttribute = attributeDao.getCustomAttribute(assignment.getAttributeId());
-        AttributeAssignment attributeAssignment = new AttributeAssignment(assignment, customAttribute);
-
-        return new ResponseEntity<>(attributeAssignment, HttpStatus.OK);
+        return new ResponseEntity<>(customAttributeService.updateAttributeAssignment(assignment), HttpStatus.OK);
     }
 
     @DeleteMapping("/{attributeAssignmentId}")
     public ResponseEntity<Object> delete(@PathVariable int attributeAssignmentId) {
-        attributeDao.deleteAttributeAssignment(attributeAssignmentId);
+        customAttributeService.deleteAttributeAssignment(attributeAssignmentId);
 
         Map<String, Object> jsonResponse = new HashMap<String, Object>();
         jsonResponse.put("id", attributeAssignmentId);
@@ -81,19 +74,27 @@ public class CustomAttributeAssignmentApiController {
         return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
     }
 
+    /**
+     * 
+     * Example url:
+     * /api/attributeAssignment?attributeIds=1&attributeIds=3&paoTypes=VIRTUAL_SYSTEM&paoTypes=RFN420FL&sort=ATTRIBUTE_NAME&dir=desc
+     * 
+     */
     @GetMapping("")
-    public ResponseEntity<Object> list(ArrayList<Integer> attributeIds, ArrayList<PaoType> paoTypes,
+    public ResponseEntity<Object> list(Integer[] attributeIds, PaoType[] paoTypes,
             @DefaultSort(dir = Direction.asc, sort = "attributeName") SortingParameters sorting) {
         SortBy sortBy = CustomAttributeDao.SortBy.valueOf(sorting.getSort());
         Direction direction = sorting.getDirection();
+        List<Integer> attributeIdList = Arrays.asList(attributeIds);
+        List<PaoType> paoTypeList = Arrays.asList(paoTypes);
 
-        return new ResponseEntity<>(customAttributeDao.getCustomAttributeDetails(attributeIds, paoTypes, sortBy, direction),
+        return new ResponseEntity<>(customAttributeDao.getCustomAttributeDetails(attributeIdList, paoTypeList, sortBy, direction),
                 HttpStatus.OK);
     }
 
     @InitBinder("assignment")
     public void setupBinderDelete(WebDataBinder binder) {
-         binder.setValidator(customAttributeAssignmentValidator);
+        binder.setValidator(customAttributeAssignmentValidator);
 
         String attributeAssignmentId = ServletUtils.getPathVariable("attributeAssignmentId");
         if (attributeAssignmentId == null) {

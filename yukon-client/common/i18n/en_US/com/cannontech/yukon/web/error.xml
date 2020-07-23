@@ -39,7 +39,7 @@
     <entry key="yukon.web.error.invalidStringLength">{0} must be of {1} character.</entry>
     <entry key="yukon.web.error.fieldrequired">{0} is required.</entry>
     <entry key="yukon.web.error.notSupported">{0} is not supported.</entry>
-    <entry key="yukon.web.error.notGreaterThanInt">Must be a whole number greater than {0}</entry>
+    <entry key="yukon.web.error.notGreaterThanInt">Must be a whole number greater than {0}.</entry>
 
     <entry key="yukon.web.error.noJs">For full functionality of this site it is necessary to enable JavaScript. Please contact your administrator to enable JavaScript in your web browser.</entry>
     

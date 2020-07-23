@@ -17,17 +17,6 @@ public class Assignment {
     private PaoType paoType;
     private int offset;
     private PointType pointType;
-    
-    public Assignment() {
-    }
-    
-    public Assignment(Assignment assignment) {
-        this.attributeAssignmentId = assignment.attributeAssignmentId;
-        this.attributeId = assignment.attributeId;
-        this.attributeAssignmentId = assignment.attributeAssignmentId;
-        this.paoType = assignment.paoType;
-        this.offset = assignment.offset;
-    }
 
     public Integer getAttributeAssignmentId() {
         return attributeAssignmentId;

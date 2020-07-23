@@ -355,14 +355,14 @@ public class YukonValidationUtils extends ValidationUtils {
     }
     
     /**
-     * Check if fieldValue < targetValue, if true throw error
+     * Check if fieldValue <= targetValue, if true throw error
      * @param field - model object name
      * @param fieldValue - value of field
      * @param targetValue - value you are testing if fieldValue is greater then
      * @param fieldAllowsNull
      */
     public static void checkIsFieldValueGreaterThenTargetValueInt(String field, Integer fieldValue, int targetValue, Errors errors) {
-        if(fieldValue == null || fieldValue < targetValue) {
+        if(fieldValue == null || fieldValue <= targetValue) {
             errors.rejectValue(field, "yukon.web.error.notGreaterThanInt", new Object[] { targetValue }, "");
         }
     }
