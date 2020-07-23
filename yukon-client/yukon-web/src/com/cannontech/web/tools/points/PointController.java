@@ -187,7 +187,7 @@ public class PointController {
         if (result.hasErrors()) {
             model.addAttribute("paoType", dbCache.getAllPaosMap().get(pointModel.getPaoId()).getPaoType());
             model.addAttribute("copyPointModel", pointModel);
-            model.addAttribute("isCalcType",pointModel.getPointType().isCalcPoint());
+            model.addAttribute("isCalcType", pointModel.getPointType().isCalcPoint());
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             return "point/copyPointPopup.jsp";
         }
