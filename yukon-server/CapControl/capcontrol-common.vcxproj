@@ -107,6 +107,7 @@
     <ClCompile Include="PointValueHolder.cpp" />
     <ClCompile Include="Policy.cpp" />
     <ClCompile Include="RegulatorEvents.cpp" />
+    <ClCompile Include="Requests.cpp" />
     <ClCompile Include="ScanPolicy.cpp" />
     <ClCompile Include="StandardControlPolicy.cpp" />
     <ClCompile Include="StandardScanPolicy.cpp" />
@@ -120,6 +121,9 @@
     <ClCompile Include="Zone.cpp" />
     <ClCompile Include="ZoneLoader.cpp" />
     <ClCompile Include="ZoneManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Requests.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -229,7 +233,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
       <WarningLevel>Level1</WarningLevel>
-      <SDLCheck></SDLCheck>
+      <SDLCheck>
+      </SDLCheck>
       <AdditionalIncludeDirectories>$(DBGHELP)\include;$(BOOST)\include;$(SQLAPI)\include;$(THRIFT)\include;.;..\capcontrol\include;..\common\include;..\database\include;..\deviceconfiguration\include;..\message\Serialization;..\message\include;..\protocol\include;..\rtdb\include;..\server\include;..\service\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USING_PCH;_DEBUG;WIN32;_LIB;_CONSOLE;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WINDOWS;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=capcontrol-common;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>

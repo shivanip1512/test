@@ -15,11 +15,13 @@ public final class MyChromeDriver {
     private MyChromeDriver() {
     }
 
-    static WebDriver getNewChromeDriver(boolean useRemoteDriver, boolean isHeadless) {
+    static WebDriver getNewChromeDriver(boolean useRemoteDriver, boolean isHeadless, String proxy, Boolean useProxy) {
 
         WebDriver driver;
-        
-        WebDriverManager.chromedriver().setup();
+        if(useProxy)
+            WebDriverManager.chromedriver().proxy(proxy).setup();
+        else
+            WebDriverManager.chromedriver().setup();
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--disable-infobars");
