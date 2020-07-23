@@ -50,7 +50,7 @@ public class TrueFalseCheckboxElement {
     private Boolean isChecked() {
          String checked = getCheckbox().getAttribute("checked");
          
-         return checked.equals("checked");
+         return checked == null ? false : checked.equals("checked");
     }
     
     private void setCheckbox() {

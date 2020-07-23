@@ -12,7 +12,7 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
-public class LoadGroupVersacomCreatePage extends PageBase {
+public class LoadGroupVersacomCreatePage extends LoadGroupCreatePage {
 
     public LoadGroupVersacomCreatePage(DriverExtensions driverExt) {
         super(driverExt);
@@ -21,19 +21,6 @@ public class LoadGroupVersacomCreatePage extends PageBase {
         pageUrl = Urls.DemandResponse.LOAD_GROUP_CREATE;
     }
 
-    // General
-    public TextEditElement getName() {
-        return new TextEditElement(this.driverExt, "name");
-    }
-
-    public DropDownElement getType() {
-        return new DropDownElement(this.driverExt, "type");
-    }
-
-    public DropDownElement getCommunicationRoute() {
-        return new DropDownElement(this.driverExt, "routeId");
-    }
-  
     public SwitchBtnMultiSelectElement getAddressUsage() {
         
         return new SwitchBtnMultiSelectElement(this.driverExt, "verAddressUsage");
@@ -68,34 +55,6 @@ public class LoadGroupVersacomCreatePage extends PageBase {
         WebElement section = getPageSection("Relay Usage").getSection();
         
         return new SwitchBtnMultiSelectElement(this.driverExt, "button-group", section);
-    }
-
-    public TextEditElement getkWCapacity() {
-        return new TextEditElement(this.driverExt, "kWCapacity");
-    }
-
-    public SwitchBtnYesNoElement getDisableGroup() {
-        WebElement section = getPageSection("Optional Attributes").getSection();
-        
-        return new SwitchBtnYesNoElement(this.driverExt, "disableGroup", section);
-    }
-
-    public SwitchBtnYesNoElement getDisableControl() {
-        WebElement section = getPageSection("Optional Attributes").getSection();
-        
-        return new SwitchBtnYesNoElement(this.driverExt, "disableControl", section);
-    }
-
-    public Button getSaveBtn() {
-        return new Button(this.driverExt, "Save");
-    }
-
-    public Button getCancelBtn() {
-        return new Button(this.driverExt, "Cancel");
-    }
-
-    public Section getPageSection(String sectionName) {
-        return new Section(this.driverExt, sectionName);
     }
 }
 

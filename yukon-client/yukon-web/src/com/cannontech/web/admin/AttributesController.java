@@ -33,8 +33,8 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.Assignment;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
-import com.cannontech.common.pao.attribute.model.AttributeAssignmentRequest;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -116,8 +116,8 @@ public class AttributesController {
 
         try {
             ResponseEntity<? extends Object> response = null;
-            if (attribute.getId() != null) {
-                String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeUrl + "/" + attribute.getId());
+            if (attribute.getCustomAttributeId() != null) {
+                String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeUrl + attribute.getCustomAttributeId());
                 response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PATCH, CustomAttribute.class, attribute.getName());
             } else {
                 String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeUrl);
@@ -149,7 +149,7 @@ public class AttributesController {
     
     private void setupErrorModel(RedirectAttributes redirectAttributes, CustomAttribute attribute, BindingResult result, Boolean isEditMode) {
         if (isEditMode) {
-            redirectAttributes.addFlashAttribute("enableEditId", attribute.getId());
+            redirectAttributes.addFlashAttribute("enableEditId", attribute.getCustomAttributeId());
             redirectAttributes.addFlashAttribute("editAttribute", attribute);
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.editAttribute", result);
         } else {
@@ -200,7 +200,7 @@ public class AttributesController {
     
     @GetMapping("/config/attributeAssignments/popup")
     public String assignmentPopup(Integer id, ModelMap model, YukonUserContext userContext, HttpServletRequest request, FlashScope flashScope) {
-        AttributeAssignmentRequest req = new AttributeAssignmentRequest();
+        Assignment req = new Assignment();
         if (id != null) {
             model.addAttribute("isEditMode", true);
             try {
@@ -211,9 +211,11 @@ public class AttributesController {
                 if (retrieveResponse.getStatusCode() == HttpStatus.OK) {
                     AttributeAssignment assignment = (AttributeAssignment) retrieveResponse.getBody();
                     req.setAttributeAssignmentId(assignment.getAttributeAssignmentId());
-                    req.setAttributeId(assignment.getCustomAttribute().getId());
+                    req.setAttributeId(assignment.getCustomAttribute().getCustomAttributeId());
                     req.setPaoType(assignment.getPaoType());
-                    req.setPointIdentifier(assignment.getPointIdentifier());                }
+                    req.setPointType(assignment.getPointType());
+                    req.setOffset(assignment.getOffset());
+                }
             } catch (ApiCommunicationException e) {
                 log.error(e);
                 flashScope.setError(new YukonMessageSourceResolvable(communicationKey));
@@ -240,7 +242,7 @@ public class AttributesController {
     }
     
     @PostMapping("/config/attributeAssignments/save")
-    public String saveAssignment(@ModelAttribute("assignment") AttributeAssignmentRequest assignment, BindingResult result, ModelMap model, 
+    public String saveAssignment(@ModelAttribute("assignment") Assignment assignment, BindingResult result, ModelMap model, 
                                     PaoType[] deviceTypes, String attributeName, YukonUserContext userContext, HttpServletRequest request, 
                                     HttpServletResponse resp, FlashScope flashScope) {
         attributeAssignmentValidator.validate(assignment, result);
@@ -285,7 +287,7 @@ public class AttributesController {
         return "config/attributeAssignmentPopup.jsp";
     }
     
-    private void callCreateAssignment(AttributeAssignmentRequest assignment, List<String> successDeviceTypes, List<String> failedDeviceTypes, 
+    private void callCreateAssignment(Assignment assignment, List<String> successDeviceTypes, List<String> failedDeviceTypes, 
                                       String attributeName, YukonUserContext userContext, HttpServletRequest request, String url, BindingResult result) {
         try {
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, 

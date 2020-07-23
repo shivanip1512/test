@@ -74,7 +74,8 @@
                             selectedAttributes="${archivedValuesExporter.attributes}"
                             name="attributes"
                             multipleSize="8"
-                            groupItems="true"/>
+                            groupItems="true"
+                            htmlEscape="true" />
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </form:form>
