@@ -37,7 +37,7 @@ class IM_EX_FDRBASE CtiFDRInterface
         void                sendPointRegistration();
         virtual std::unique_ptr<CtiPointRegistrationMsg> buildRegistrationPointList();
         virtual bool hasPointsToRegisterFor();
-        virtual bool loadOutboundPoints( boost::scoped_ptr<CtiFDRManager> & points );
+        virtual std::optional<std::set<long>> loadOutboundPoints();
 
         std::string              getCparmValueAsString(std::string key);
 
@@ -163,7 +163,7 @@ class IM_EX_FDRBASE CtiFDRInterface
 
         mutable Lock iDispatchLock;
 
-        boost::scoped_ptr<CtiFDRManager>       iOutBoundPoints;
+        std::set<long>                         iOutBoundPoints;
         boost::scoped_ptr<CtiClientConnection> iDispatchConn;
         boost::optional<int>                   iDispatchRegisterId;
         bool                                   iDispatchConnected;

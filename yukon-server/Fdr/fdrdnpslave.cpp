@@ -1533,9 +1533,9 @@ bool DnpSlave::hasPointsToRegisterFor()
     return ( sendCount || receiveCount );
 }
 
-bool DnpSlave::loadOutboundPoints( boost::scoped_ptr<CtiFDRManager> & points )
+std::optional<std::set<long>> DnpSlave::loadOutboundPoints()
 {
-    return true;
+    return {};
 }
 
 }

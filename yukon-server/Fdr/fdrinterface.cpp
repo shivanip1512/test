@@ -25,6 +25,8 @@
 #include "amq_constants.h"
 #include "MessageCounter.h"
 
+#include <boost/range/adaptor/map.hpp>
+
 using std::string;
 using std::endl;
 
@@ -212,7 +214,7 @@ long CtiFDRInterface::getClientLinkStatusID(const std::string &aClientName)
 BOOL CtiFDRInterface::init( void )
 {
     // only need to register outbound points
-    loadOutboundPoints( iOutBoundPoints );
+    iOutBoundPoints = loadOutboundPoints().value_or(std::set<long>());
 
     if ( !reloadConfigs() )
     {
@@ -712,22 +714,14 @@ void CtiFDRInterface::sendPointRegistration( void )
 
 std::unique_ptr<CtiPointRegistrationMsg> CtiFDRInterface::buildRegistrationPointList()
 {
-    CtiFDRPointSPtr pFdrPoint;
     auto ptRegMsg = std::make_unique<CtiPointRegistrationMsg>(REG_TAG_UPLOAD);
 
-    // get iterator on outbound list
-    CtiFDRManager::readerLock guard(iOutBoundPoints->getLock());
-    CtiFDRManager::spiterator  myIterator = iOutBoundPoints->getMap().begin();
-
-    for ( ; myIterator != iOutBoundPoints->getMap().end(); ++myIterator)
+    for( const auto pointId : iOutBoundPoints )
     {
-        pFdrPoint = (*myIterator).second;
-
-        // add this point ID to register
-        ptRegMsg->insert( pFdrPoint->getPointID());
+        ptRegMsg->insert( pointId );
     }
 
-    return std::move( ptRegMsg );
+    return ptRegMsg;
 }
 /************************************************************************
 * Function Name: CtiFDRInterface::disconnect(  )
@@ -1252,15 +1246,13 @@ bool CtiFDRInterface::reRegisterWithDispatch()
 {
     bool retVal=true;
 
-    boost::scoped_ptr<CtiFDRManager> tmpList;
-
     // try and reload the outbound list
-    if( loadOutboundPoints( tmpList ) )
+    if( auto tmpList = loadOutboundPoints() )
     {
         WriterGuard guard(iDispatchLock);
 
         // destroy the old one and set it to the new one
-        iOutBoundPoints.swap( tmpList );
+        iOutBoundPoints.swap( *tmpList );
     }
     else
     {
@@ -1548,13 +1540,18 @@ bool CtiFDRInterface::verifyDispatchConnection()
 // If iOutBoundPoints has any points loaded into it 
 bool CtiFDRInterface::hasPointsToRegisterFor()
 {
-    return iOutBoundPoints && iOutBoundPoints->entries() > 0;
+    return ! iOutBoundPoints.empty();
 }
 
-bool CtiFDRInterface::loadOutboundPoints( boost::scoped_ptr<CtiFDRManager> & points )
+std::optional<std::set<long>> CtiFDRInterface::loadOutboundPoints()
 {
-    points.reset( new CtiFDRManager(iInterfaceName, string(FDR_INTERFACE_SEND)) );
+    CtiFDRManager points(iInterfaceName, string(FDR_INTERFACE_SEND));
 
-    return points->loadPointList();
+    if( ! points.loadPointList() )
+    {
+        return std::nullopt;
+    }
+
+    return boost::copy_range<std::set<long>>(points.getMap() | boost::adaptors::map_keys);
 }
 
