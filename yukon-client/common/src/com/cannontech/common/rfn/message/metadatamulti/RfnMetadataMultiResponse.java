@@ -173,7 +173,7 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
 
     @Override
     public String loggingString(Level level) {
-        if (Level.INFO == level) {
+        if (level.isMoreSpecificThan(Level.INFO)) {
             return String.format(
                     "RfnMetadataMultiResponse [requestID=%s,responseType=%s,]",
                     requestID, responseType);
