@@ -32,7 +32,7 @@
                                    allowEmptySelection="false"/>
             </tags:nameValue2>
             <c:choose>
-                <c:when test = "${not isCalcType}">
+                <c:when test="${not isCalcType}">
                     <input type="hidden" id="isPhysicalOffset" value="${copyPointModel.physicalOffset}"/>
                     <tags:nameValue2 nameKey=".physicalOffset" rowClass="filter-section">
                          <tags:switchButton path="physicalOffset" offClasses="M0" inputClass="js-use-offset"

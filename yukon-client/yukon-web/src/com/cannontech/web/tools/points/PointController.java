@@ -175,7 +175,6 @@ public class PointController {
         pointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.CREATE);
 
         if (pointModel.isPhysicalOffset() || (pointModel.getPointType().isCalcPoint())) {
-            pointModel.setPointOffset(pointModel.getPointOffset());
             pointModel.setPhysicalOffset(true);
         } else {
             pointModel.setPhysicalOffset(false);
