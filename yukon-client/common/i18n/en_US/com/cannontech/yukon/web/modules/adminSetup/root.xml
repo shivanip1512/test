@@ -329,4 +329,8 @@
     <entry key="yukon.web.modules.adminSetup.config.attributes.attributeAssignments.title">Attribute Assignments</entry>
     <entry key="yukon.web.modules.adminSetup.config.attributes.attributeName">Attribute Name</entry>
     
+    <entry key="yukon.web.modules.adminSetup.config.attributes.deletion">Attribute {0} cannot be deleted, it is currently being used by: {1}.</entry>
+    <entry key="yukon.web.modules.adminSetup.config.attributes.deletion.export">Data Export(s) {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.config.attributes.deletion.ddm">Device Data Monitor(s) {0}</entry>
+    
 </properties>

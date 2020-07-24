@@ -44,8 +44,6 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
-import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoData;
 import com.cannontech.common.pao.definition.model.PaoData.OptionalField;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
@@ -86,7 +84,6 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     @Autowired private UnitMeasureDao unitMeasureDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ConfigurationSource configSource;
-    @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private StateGroupDao stateGroupDao;
 
     public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
@@ -430,7 +427,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         case UNIT_OF_MEASURE:
             return getUOMValue(pao, attribute, userContext, unitMeasureLookupTable);
         case POINT_NAME:
-            return pointValueQualityHolder == null ? "" : getPointName(attribute, pao);
+            return pointValueQualityHolder == null ? "" : getAttributeName(attribute, userContext);
         case POINT_VALUE:
             return getPointValue(exportField, pointValueQualityHolder);
         case POINT_TIMESTAMP:
@@ -462,12 +459,6 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             throw new IllegalArgumentException(
                     exportField.getField().getType() + " is not currently supported in the export report process");
         }
-    }
-
-    private String getPointName(Attribute attribute, YukonPao pao) {
-        Map<Attribute, AttributeDefinition> attrDefMap = paoDefinitionDao.getPaoAttributeAttrDefinitionMap()
-                .get(pao.getPaoIdentifier().getPaoType());
-        return attrDefMap.get(attribute).getPointTemplate().getName();
     }
 
     /**
