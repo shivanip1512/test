@@ -1125,16 +1125,18 @@ textarea.error {
     margin: 1px 0 0 0;
     
     &.green {background-color: @green;}
-    &.red {background-color: @red;}
+    &.red {background-color: @red;}         /* this isn't a valid color, but we may not have found all the hard-coded text in code*/
+    &.wine {background-color: #ce8799;}
     &.white {background-color: white;}
     &.yellow {background-color: yellow;}
     &.blue {background-color: blue;}
-    &.cyan {background-color: cyan;}
+    &.teal{background-color: #00b2a9;}
     &.black {background-color: black;}
     &.orange {background-color: @orange;}
-    &.magenta {background-color: magenta;}
+    &.sage {background-color: #b2c98d;}
     &.gray {background-color: gray;}
-    &.pink {background-color: pink;}
+    &.purple {background-color: #b779f4;}
+    &.sky{background-color: #abd7e1;}
 }
 .ie .state-box { outline: 1px solid #bbb; }
 .no-ie .state-box { box-shadow: 0px 0px 0px 1px #bbb; }
