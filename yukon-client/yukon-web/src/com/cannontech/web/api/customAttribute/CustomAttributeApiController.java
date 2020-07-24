@@ -20,11 +20,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cannontech.common.exception.ResourceNotFoundException;
+import com.cannontech.common.exception.DataDependencyException;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.admin.AttributeValidator;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
@@ -35,6 +39,7 @@ public class CustomAttributeApiController {
 
     @Autowired private AttributeDao attributeDao;
     @Autowired private AttributeValidator customAttributeValidator;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @PostMapping("")
     public ResponseEntity<Object> create(@Valid @RequestBody CustomAttribute customAttribute) {
@@ -43,34 +48,42 @@ public class CustomAttributeApiController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> retrieve(@PathVariable int id) throws ResourceNotFoundException {
+    public ResponseEntity<Object> retrieve(@PathVariable Integer id) {
         CustomAttribute attribute;
         try {
             attribute = attributeDao.getCustomAttribute(id);
         } catch (EmptyResultDataAccessException e) {
-            throw new ResourceNotFoundException("No custom attribute with the ID " + id + " was found");
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+            String message = messageSourceAccessor.getMessage("yukon.web.api.error.notFound",
+                    new Object[] { "Custom Attribute", id });
+            throw new NotFoundException(message);
         }
         return new ResponseEntity<>(attribute, HttpStatus.NOT_FOUND);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable int id, @Valid @RequestBody CustomAttribute customAttribute)
-            throws ResourceNotFoundException {
+    public ResponseEntity<Object> update(@PathVariable Integer id, @Valid @RequestBody CustomAttribute customAttribute) {
         CustomAttribute attribute = attributeDao.getCustomAttribute(id);
         if (attribute == null) {
-            throw new ResourceNotFoundException("No custom attribute with the ID " + id + " was found");
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+            String message = messageSourceAccessor.getMessage("yukon.web.api.error.notFound",
+                    new Object[] { "Custom Attribute", id });
+            throw new NotFoundException(message);
         }
-        customAttribute.setId(id);
+        customAttribute.setCustomAttributeId(id);
         attributeDao.saveCustomAttribute(customAttribute);
-        customAttribute = attributeDao.getCustomAttribute(customAttribute.getId());
+        customAttribute = attributeDao.getCustomAttribute(customAttribute.getCustomAttributeId());
         return new ResponseEntity<>(customAttribute, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> delete(@PathVariable int id) throws ResourceNotFoundException {
+    public ResponseEntity<Object> delete(@PathVariable Integer id) throws DataDependencyException {
         CustomAttribute attribute = attributeDao.getCustomAttribute(id);
         if (attribute == null) {
-            throw new ResourceNotFoundException("No custom attribute with the ID " + id + " was found");
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+            String message = messageSourceAccessor.getMessage("yukon.web.api.error.notFound",
+                    new Object[] { "Custom Attribute", id });
+            throw new NotFoundException(message);
         }
         attributeDao.deleteCustomAttribute(id);
         Map<String, Integer> jsonResponse = new HashMap<String, Integer>();

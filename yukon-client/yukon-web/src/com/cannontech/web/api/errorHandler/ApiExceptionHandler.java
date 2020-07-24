@@ -36,6 +36,7 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.exception.LMObjectDeletionFailureException;
 import com.cannontech.common.exception.LoadProgramProcessingException;
 import com.cannontech.common.exception.NotAuthorizedException;
@@ -312,6 +313,15 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({ IllegalUseOfAttribute.class })
     public ResponseEntity<Object> handleIllegalUseOfAttributeException(final Exception ex, final WebRequest request) {
 
+        String uniqueKey = CtiUtilities.getYKUniqueKey();
+        logApiException(request, ex, uniqueKey);
+
+        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
+        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({ DataDependencyException.class })
+    public ResponseEntity<Object> handleDataDependencyException(final Exception ex, final WebRequest request) {
         String uniqueKey = CtiUtilities.getYKUniqueKey();
         logApiException(request, ex, uniqueKey);
 
