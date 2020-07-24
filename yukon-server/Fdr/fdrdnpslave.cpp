@@ -1524,7 +1524,7 @@ unsigned int DnpSlave::getHeaderLength()
 }
 
 
-bool DnpSlave::hasPointsToRegisterFor()
+bool DnpSlave::hasRegistrationPoints()
 {
     std::size_t
         sendCount    = getSendToList().getPointList()->entries(),

@@ -36,7 +36,7 @@ class IM_EX_FDRBASE CtiFDRInterface
 
         void                sendPointRegistration();
         virtual std::unique_ptr<CtiPointRegistrationMsg> buildRegistrationPointList();
-        virtual bool hasPointsToRegisterFor();
+        virtual bool hasRegistrationPoints();
         virtual std::optional<std::set<long>> loadOutboundPoints();
 
         std::string              getCparmValueAsString(std::string key);

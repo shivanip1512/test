@@ -214,7 +214,7 @@ long CtiFDRInterface::getClientLinkStatusID(const std::string &aClientName)
 BOOL CtiFDRInterface::init( void )
 {
     // only need to register outbound points
-    iOutBoundPoints = loadOutboundPoints().value_or(std::set<long>());
+    iOutBoundPoints = loadOutboundPoints().value_or<std::set<long>>({});
 
     if ( !reloadConfigs() )
     {
@@ -539,7 +539,7 @@ bool CtiFDRInterface::connectWithDispatch()
             return false;
         }
 
-        if( hasPointsToRegisterFor() )
+        if( hasRegistrationPoints() )
         {
             std::unique_ptr<CtiMultiMsg> multiMsg( new CtiMultiMsg() );
 
@@ -696,7 +696,7 @@ void CtiFDRInterface::sendPointRegistration( void )
 {
     try
     {
-        if ( hasPointsToRegisterFor() )
+        if ( hasRegistrationPoints() )
         {
             std::unique_ptr<CtiMultiMsg> multiMsg( new CtiMultiMsg() );
 
@@ -1538,7 +1538,7 @@ bool CtiFDRInterface::verifyDispatchConnection()
 }
 
 // If iOutBoundPoints has any points loaded into it 
-bool CtiFDRInterface::hasPointsToRegisterFor()
+bool CtiFDRInterface::hasRegistrationPoints()
 {
     return ! iOutBoundPoints.empty();
 }
