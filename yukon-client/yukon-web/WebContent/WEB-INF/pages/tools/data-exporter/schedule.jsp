@@ -29,7 +29,7 @@
                 </tags:nameValue2>
                 <c:if test="${not empty attributes}">
                     <c:forEach var="attribute" items="${attributes}">
-                        <input type="hidden" name="attributes" value="${attribute}">
+                        <input type="hidden" name="attributes" value="${attribute.key}">
                     </c:forEach>
                     <tags:nameValue2 nameKey=".attribute">
                         <c:forEach var="attribute" items="${attributes}" varStatus="status">

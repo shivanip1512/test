@@ -1,9 +1,10 @@
 package com.cannontech.web.common.pao.service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,12 +13,12 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.attribute.dao.AttributeDao;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
-import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
@@ -25,7 +26,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 public class YukonPointHelperImpl implements YukonPointHelper {
@@ -33,6 +33,7 @@ public class YukonPointHelperImpl implements YukonPointHelper {
     @Autowired private PointDao pointDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private AttributeDao attributeDao;
 
     @Override
     public List<LiteYukonPoint> getYukonPoints(final YukonPao pao, SortingParameters sorting,
@@ -69,20 +70,14 @@ public class YukonPointHelperImpl implements YukonPointHelper {
      * Method to get list of YukonPoints for sorting
      */
     private List<LiteYukonPoint> getYukonPointsForSorting(final YukonPao pao) {
-        Function<LitePoint, LiteYukonPoint> pointFunction = new Function<LitePoint, LiteYukonPoint>() {
-            @Override
-            public LiteYukonPoint apply(LitePoint lp) {
-                PointIdentifier pointId = new PointIdentifier(lp.getPointTypeEnum(), lp.getPointOffset());
-                PaoType paoType = pao.getPaoIdentifier().getPaoType();
-                BuiltInAttribute attribute =
-                    paoDefinitionDao.findOneAttributeForPaoTypeAndPoint(PaoTypePointIdentifier.of(paoType, pointId));
-                return LiteYukonPoint.of(new PaoPointIdentifier(pao.getPaoIdentifier(), pointId), attribute,
-                    lp.getPointName(), lp.getPointID());
-            }
-        };
         List<LitePoint> points = pointDao.getLitePointsByPaObjectId(pao.getPaoIdentifier().getPaoId());
-        List<LiteYukonPoint> liteYukonPoints = new ArrayList<>(Lists.transform(points, pointFunction));
-        return liteYukonPoints;
+        return points.stream().map(point -> {
+            PaoPointIdentifier paoPointIdent = new PaoPointIdentifier(pao.getPaoIdentifier(), new PointIdentifier(point.getPointTypeEnum(), point.getPointOffset()));
+            Set<BuiltInAttribute> attributes = paoDefinitionDao.findAttributeForPaoTypeAndPoint(paoPointIdent.getPaoTypePointIdentifier());
+            Attribute attribute = !attributes.isEmpty() ? attributes.iterator().next() : attributeDao
+                    .findCustomAttributeForPaoTypeAndPoint(paoPointIdent.getPaoTypePointIdentifier());
+            return LiteYukonPoint.of(paoPointIdent, attribute, point.getPointName(), point.getLiteID());
+        }).collect(Collectors.toList());
     }
 
     @Override

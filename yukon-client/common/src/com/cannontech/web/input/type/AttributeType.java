@@ -9,7 +9,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 
 /**
- * Implementation of input type which represents an integer input type
+ * Implementation of input type which represents an Attribute input type
  */
 public class AttributeType extends DefaultValidatedType<Attribute> {
 	
@@ -47,12 +47,16 @@ public class AttributeType extends DefaultValidatedType<Attribute> {
             @Override
             public String getAsText() {
             	
-            	Attribute attribute = (Attribute)getValue();
-                return attribute.getKey();
+            	Attribute attribute = (Attribute) getValue();
+            	if (attribute != null) {
+            	    return attribute.getKey();
+            	}
+            	return "";
             }
         };
         return attrPropEditor;
     }
+    
     
     @Autowired
     public void setAttributeService(AttributeService attributeService) {
