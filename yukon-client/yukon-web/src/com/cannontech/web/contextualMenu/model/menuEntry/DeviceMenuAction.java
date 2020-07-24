@@ -48,6 +48,7 @@ public abstract class DeviceMenuAction implements DeviceAction {
         } else {
             this.baseUrl = baseUrl;
         }
+        this.appendParamName = appendParamName;
         this.requiredRole = requiredRole;
         
         Builder<YukonRoleProperty> builder = ImmutableSet.builder();
