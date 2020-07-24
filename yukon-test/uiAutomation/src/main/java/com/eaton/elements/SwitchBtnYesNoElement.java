@@ -9,12 +9,10 @@ import com.eaton.framework.DriverExtensions;
 
 public class SwitchBtnYesNoElement {
 
-    private DriverExtensions driverExt;
     private String elementName;
     private WebElement parentElement;
 
     public SwitchBtnYesNoElement(DriverExtensions driverExt, String elementName, WebElement parentElement) {
-        this.driverExt = driverExt;
         this.elementName = elementName;
         this.parentElement = parentElement;
     }
