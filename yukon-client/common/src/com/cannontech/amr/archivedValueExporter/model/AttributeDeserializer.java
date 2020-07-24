@@ -23,7 +23,7 @@ public class AttributeDeserializer extends StdDeserializer<Attribute> {
     public Attribute deserialize(JsonParser paramJsonParser, DeserializationContext paramDeserializationContext)
             throws IOException, JsonProcessingException {
         TreeNode node = paramJsonParser.readValueAsTree();
-        TreeNode idNode = node.get("id");
+        TreeNode idNode = node.get("customAttributeId");
         String attributeName = null;
         if (idNode != null) {
             attributeName = idNode.toString();

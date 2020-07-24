@@ -45,35 +45,36 @@
                 <table class="compact-results-table row-highlighting has-actions ${tableClass}">
                     <thead>
                         <tr>
-                            <th><i:inline key=".attributeName"></i:inline>
+                            <th><i:inline key=".attributeName"></i:inline></th>
                             <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
                         </tr>
                     </thead>
                     <tbody>
                         <c:forEach var="attr" items="${attributes}">
-                            <c:set var="enableEdit" value="${enableEditId == attr.id}"/>
+                            <c:set var="attributeId" value="${attr.customAttributeId}"/>
+                            <c:set var="enableEdit" value="${enableEditId == attributeId}"/>
                             <c:set var="editClass" value="${enableEdit ? '' : 'dn'}"/>
                             <c:set var="viewClass" value="${enableEdit ? 'dn' : ''}"/>
                             <tr>
                                 <td>
-                                    <span class="js-view-attribute-${attr.id} ${viewClass}" title="${attr.key}">
+                                    <span class="js-view-attribute-${attributeId} ${viewClass}" title="${attr.key}">
                                         ${fn:escapeXml(attr.name)}
                                     </span>
-                                    <span class="js-edit-attribute-${attr.id} ${editClass}">
+                                    <span class="js-edit-attribute-${attributeId} ${editClass}">
                                         <cti:url value="/admin/config/attribute/edit" var="editAttributeUrl" />
                                         <form:form modelAttribute="editAttribute" action="${editAttributeUrl}" method="POST">
                                             <cti:csrfToken />
-                                            <input type="hidden" name="id" value="${attr.id}"/>
+                                            <input type="hidden" name="id" value="${attributeId}"/>
                                             <input type="hidden" name="savedName" value="${attr.name}"/>
                                             <spring:bind path="name">
-                                                <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                                                <form:input path="name" maxlength="60" size="60" cssClass="${clazz}"/>
+                                                <c:set var="errorClass" value="${status.error ? 'error' : ''}"/>
+                                                <form:input path="name" maxlength="60" size="60" cssClass="${errorClass}"/>
                                             </spring:bind>
                                             <div class="button-group">
                                                 <cti:button renderMode="buttonImage" icon="icon-disk" type="submit"
-                                                    data-attribute-id="${attr.id}"/>
+                                                    data-attribute-id="${attributeId}"/>
                                                 <cti:button renderMode="buttonImage" icon="icon-delete" classes="js-cancel-edit-attribute" 
-                                                    data-attribute-id="${attr.id}"/>
+                                                    data-attribute-id="${attributeId}"/>
                                             </div>
                                             <spring:bind path="name">
                                                 <c:if test="${status.error}"><br><form:errors path="name" cssClass="error" /></c:if>
@@ -82,13 +83,13 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <cm:dropdown icon="icon-cog" triggerClasses="js-view-attribute-${attr.id} ${viewClass}">
-                                        <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-edit-attribute" data-attribute-id="${attr.id}"/>
-                                        <cm:dropdownOption id="delete-attribute-${attr.id}" key=".delete" icon="icon-cross" 
-                                            data-ok-event="yukon:attribute:delete" classes="js-hide-dropdown" data-attribute-id="${attr.id}"/>
-                                        <d:confirm on="#delete-attribute-${attr.id}" nameKey="confirmDelete" argument="${attr.name}"  />
-                                        <cti:url var="deleteUrl" value="/admin/config/attribute/${attr.id}/delete"/>
-                                        <form:form id="delete-attribute-form-${attr.id}" action="${deleteUrl}" method="DELETE">
+                                    <cm:dropdown icon="icon-cog" triggerClasses="js-view-attribute-${attributeId} ${viewClass}">
+                                        <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-edit-attribute" data-attribute-id="${attributeId}"/>
+                                        <cm:dropdownOption id="delete-attribute-${attributeId}" key=".delete" icon="icon-cross" 
+                                            data-ok-event="yukon:attribute:delete" classes="js-hide-dropdown" data-attribute-id="${attributeId}"/>
+                                        <d:confirm on="#delete-attribute-${attributeId}" nameKey="confirmDelete" argument="${attr.name}"  />
+                                        <cti:url var="deleteUrl" value="/admin/config/attribute/${attributeId}/delete"/>
+                                        <form:form id="delete-attribute-form-${attributeId}" action="${deleteUrl}" method="DELETE">
                                             <cti:csrfToken/>
                                             <input type="hidden" name="name" value="${attr.name}"/>
                                         </form:form>
@@ -106,7 +107,50 @@
      
         </tags:sectionContainer2>
         
+        <cti:button nameKey="add" classes="fr" icon="icon-add" data-popup=".js-assignment-popup"/>
+        <cti:url var="addAssignmentUrl" value="/admin/config/attributeAssignments/popup"/>
+        <cti:msg2 var="addAssignmentTitle" key=".addAssignmentTitle"/>
+        <cti:msg2 var="saveText" key=".save"/>
+        <div class="dn js-assignment-popup ov"
+                 data-popup
+                 data-dialog
+                 data-title="${addAssignmentTitle}"
+                 data-url="${addAssignmentUrl}"
+                 data-load-event="yukon:assignment:load"
+                 data-ok-text="${saveText}"
+                 data-event="yukon:assignment:save">
+        </div>
         <tags:sectionContainer2 nameKey="attributeAssignments">
+        
+            <div class="filter-section stacked-md">
+                <cti:url var="filterUrl" value="/admin/config/attributeAssignments/filter"/>
+                <form:form id="filter-form" action="${filterUrl}" method="get">
+                    <span class="fl">
+                        <span class="vat"><i:inline key="yukon.common.filterBy"/></span>
+                        
+                        <cti:msg2 var="allAttributes" key=".allAttributes"/>&nbsp;
+                        <select name="selectedAttributes" class="js-selected-attributes" multiple="multiple" data-placeholder="${allAttributes}">
+                            <c:forEach var="attribute" items="${attributes}">
+                                <option value="${attribute.customAttributeId}">${fn:escapeXml(attribute.name)}</option>
+                            </c:forEach>
+                        </select>
+                        
+                        <cti:msg2 var="allDeviceTypes" key=".allDeviceTypes"/>&nbsp;
+                        <select name="selectedDeviceTypes" class="js-selected-device-types" multiple="multiple" data-placeholder="${allDeviceTypes}">
+                            <c:forEach var="type" items="${deviceTypes}">
+                                <option value="${type}"><i:inline key="${type.formatKey}"/></option>
+                            </c:forEach>
+                        </select>
+                    </span>
+                                        
+                    <cti:button nameKey="filter" classes="js-filter-assignments action primary fn"/>
+                </form:form>
+            </div>
+            <hr/>
+
+            <div id="assignments-container" data-url="${filterUrl}">
+                <%@ include file="attributeAssignmentsTable.jsp" %>
+            </div>
         
         </tags:sectionContainer2>
         
