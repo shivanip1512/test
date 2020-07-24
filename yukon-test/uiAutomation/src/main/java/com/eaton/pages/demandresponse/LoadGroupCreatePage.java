@@ -153,4 +153,8 @@ public class LoadGroupCreatePage extends PageBase {
     public Section getPageSection(String sectionName) {
         return new Section(this.driverExt, sectionName);
     }
+    
+    public DropDownElement getRelay() {
+    	return new DropDownElement(this.driverExt, "virtualRelayId");
+    }
 }
