@@ -31,6 +31,6 @@ public interface VirtualDeviceService {
     /*
      * Get a list of LiteYukonPAObjects
      */
-    PaginatedResponse<DeviceBaseModel> list(LiteYukonPaoSortableField sort_by, Direction direction, Integer page,
-            Integer items_per_page);
+    PaginatedResponse<DeviceBaseModel> getPage(LiteYukonPaoSortableField sortBy, Direction direction, Integer page,
+            Integer itemsPerPage);
 }

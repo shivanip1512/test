@@ -38,13 +38,19 @@ public class PaginatedResponse<T> {
         this.itemsPerPage = itemsPerPage;
     }
 
-    @JsonProperty
-    public List<T> getItems() {
+    /**
+     * Returns a single page from an entire list of objects, determined by the page number and items per page.
+     */
+    @JsonProperty(value = "items")
+    public List<T> getPage() {
         Integer startPosition = (pageNumber * itemsPerPage >= items.size() ? items.size() : pageNumber * itemsPerPage);
         Integer endPosition = (startPosition + itemsPerPage > items.size() ? items.size() : startPosition + itemsPerPage);
         return items.subList(startPosition, endPosition);
     }
 
+    /**
+     * Accepts a list of items that needs to be divided into pages
+     */
     @JsonIgnore
     public void setItems(List<T> items) {
         this.items = items;

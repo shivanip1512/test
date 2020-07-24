@@ -72,23 +72,19 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
     }
 
     @Override
-    public PaginatedResponse<DeviceBaseModel> list(LiteYukonPaoSortableField sort_by, Direction direction, Integer page,
-            Integer items_per_page) {
-        List<LiteYukonPAObject> litePAOs = dbCache.getAllYukonPAObjects().stream()
-                .filter(pao -> pao.getPaoType().equals(PaoType.VIRTUAL_SYSTEM)).collect(Collectors.toList());
-
-        Comparator<LiteYukonPAObject> comparator = (direction == Direction.desc ? sort_by.getComparator().reversed() : sort_by
-                .getComparator());
-        if (sort_by == LiteYukonPaoSortableField.DISABLE_FLAG) {
+    public PaginatedResponse<DeviceBaseModel> getPage(LiteYukonPaoSortableField sortBy, Direction direction, Integer page, Integer itemsPerPage) {
+        Comparator<LiteYukonPAObject> comparator = (direction == Direction.desc ? sortBy.getComparator().reversed() : sortBy.getComparator());
+        if (sortBy != LiteYukonPaoSortableField.PAO_NAME) {
             comparator = comparator.thenComparing(LiteYukonPaoSortableField.PAO_NAME.getComparator());
         }
-        litePAOs.sort(comparator);
 
-        List<DeviceBaseModel> deviceModels = litePAOs.stream().map(
-                pao -> new DeviceBaseModel(pao.getPaoIdentifier().getPaoId(), pao.getPaoType(), pao.getPaoName(),
-                        (pao.getDisableFlag().equals("N") ? false : true)))
+        List<DeviceBaseModel> deviceModels = dbCache.getAllYukonPAObjects()
+                .stream()
+                .filter(pao -> pao.getPaoType() == PaoType.VIRTUAL_SYSTEM)
+                .sorted(comparator).map(pao -> DeviceBaseModel.of(pao))
                 .collect(Collectors.toList());
-        return new PaginatedResponse<DeviceBaseModel>(deviceModels, page, items_per_page);
+
+        return new PaginatedResponse<DeviceBaseModel>(deviceModels, page, itemsPerPage);
     }
 
 }

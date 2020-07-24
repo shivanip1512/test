@@ -60,13 +60,14 @@ public class VirtualDeviceApiController {
 
     @GetMapping("")
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.VIEW)
-    public ResponseEntity<Object> getAll(@RequestParam(defaultValue = "PAO_NAME") LiteYukonPaoSortableField sort_by,
+    public ResponseEntity<Object> getAll(
+            @RequestParam(name = "sort_by", defaultValue = "PAO_NAME") LiteYukonPaoSortableField sortBy,
             @RequestParam(defaultValue = "asc") Direction direction, @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "250") Integer items_per_page) {
-        return new ResponseEntity<>(virtualDeviceService.list(sort_by, direction, page, items_per_page), HttpStatus.OK);
+            @RequestParam(name = "items_per_page", defaultValue = "250") Integer itemsPerPage) {
+        return new ResponseEntity<>(virtualDeviceService.getPage(sortBy, direction, page, itemsPerPage), HttpStatus.OK);
     }
 
-    @InitBinder("virtualDeviceBase")
+    @InitBinder("virtualDeviceModel")
     public void setBinder(WebDataBinder binder) {
         binder.addValidators(virtualDeviceApiValidator);
 
