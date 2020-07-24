@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -29,13 +28,11 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
     WebDriver driver;
     private DriverExtensions driverExt;
     private Random randomNum;
-    private SoftAssertions softly;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
         randomNum = getRandomNum();
-        softly = new SoftAssertions();
     }
 
     @BeforeMethod(alwaysRun = true)
@@ -44,28 +41,7 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
         createPage = new LoadGroupRippleCreatePage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreateRipple_RequiredFieldsOnlySuccessfully() {
-        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT Ripple " + timeStamp;
-
-        final String EXPECTED_MSG = name + " saved successfully.";
-
-        createPage.getName().setInputValue(name);
-        createPage.getType().selectItemByText("Ripple Group");
-
-        waitForLoadingSpinner();
-        createPage.getSaveBtn().click();
-
-        waitForPageToLoad("Load Group: " + name, Optional.empty());
-
-        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
-        String userMsg = detailsPage.getUserMessage();
-        
-        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }
-
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_AllFieldsSuccessfully() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Ripple " + timeStamp;
@@ -79,19 +55,13 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Ripple Group");
 
         waitForLoadingSpinner();
-        createPage.getCommunicationRoute().selectItemByText("a_CCU-711");
+        createPage.getCommunicationRoute().selectItemByText("a_CCU-721");
 
-        createPage.getAddressUsage().setTrueFalseByValue("Section", true);
-        createPage.getAddressUsage().setTrueFalseByValue("Class", true);
-        createPage.getAddressUsage().setTrueFalseByValue("Division", true);
+        createPage.getShedTime().selectItemByText("15 minutes");
+        createPage.getGroup().selectItemByText("2.01");
+        createPage.getAreaCode().selectItemByText("Minnkota");
         
-        createPage.getUtilityAddress().setInputValue(String.valueOf(randomNum.nextInt(254)));
-        createPage.getSectionAddress().setInputValue(String.valueOf(randomNum.nextInt(255)));
-
-        createPage.getClassAddress().setTrueFalseByValue("1", true);
-        createPage.getDivisionAddress().setTrueFalseByValue("11", true);
         
-        createPage.getRelayUsage().setTrueFalseByValue("Relay_3", true);
 
         createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
 
@@ -101,20 +71,20 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
 
         LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
         String userMsg = detailsPage.getUserMessage();
-        
+
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_GeneralSectionTitleCorrect() {
         createPage.getType().selectItemByText("Ripple Group");
         waitForLoadingSpinner();
         Section generalSection = createPage.getPageSection("General");
-        
+
         assertThat(generalSection.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_GeneralSectionLabelsCorrect() {
         String sectionName = "General";
         createPage.getType().selectItemByText("Ripple Group");
@@ -126,33 +96,29 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
 
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreateRipple_AddressUsageSectionTitleCorrect() {
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpCreateRipple_AddressingSectionTitleCorrect() {
         createPage.getType().selectItemByText("Ripple Group");
         waitForLoadingSpinner();
-        Section generalSection = createPage.getPageSection("Address Usage");
-        
+
+        Section generalSection = createPage.getPageSection("Addressing");
+
         assertThat(generalSection.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_AddressingSectionLabelsCorrect() {
         String sectionName = "Addressing";
         createPage.getType().selectItemByText("Ripple Group");
 
-        createPage.getAddressUsage().setTrueFalseByValue("Section", true);
-        createPage.getAddressUsage().setTrueFalseByValue("Class", true);
-        createPage.getAddressUsage().setTrueFalseByValue("Division", true);
-        createPage.getAddressUsage().setTrueFalseByValue("Serial", true);
-
         List<String> expectedLabels = new ArrayList<>(
-                List.of("Utility Address:", "Section Address:", "Class Address:", "Division Address:", "Serial Address:"));
+                List.of("Shed Time:", "Group:", "Area Code:"));
         List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_OptionalAttributesSectionTitleCorrect() {
         createPage.getType().selectItemByText("Ripple Group");
         waitForLoadingSpinner();
@@ -161,7 +127,7 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
         assertThat(generalSection.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_OptionalAttributesSectionLabelsCorrect() {
         String sectionName = "Optional Attributes";
         createPage.getType().selectItemByText("Ripple Group");
