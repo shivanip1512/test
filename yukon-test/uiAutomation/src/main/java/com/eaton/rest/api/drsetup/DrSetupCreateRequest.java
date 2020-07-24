@@ -1,20 +1,18 @@
-package com.eaton.rest.api.dbetoweb;
+package com.eaton.rest.api.drsetup;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.testng.Assert.assertTrue;
 
 import com.eaton.framework.APIs;
 import com.eaton.rest.api.common.ApiCallHelper;
 
 import io.restassured.response.ExtractableResponse;
 
-public class DBEToWebCreateRequest {
+public class DrSetupCreateRequest {
 
     public static ExtractableResponse<?> createLoadGroup(Object body) {
         String pathParam = APIs.DemandResponse.createLoadGroup;
         ExtractableResponse<?> createResponse = ApiCallHelper.post(pathParam, body);
         assertThat(createResponse.statusCode()).as("Error in create load group \"%s\"").isEqualTo(200);
-        assertTrue(true);
         return createResponse;
     }
 
