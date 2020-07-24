@@ -63,5 +63,4 @@ public final class APIs {
         public static final String UPDATE_TREND = "/api/trends/";
         public static final String GET_TREND = "/api/trends/";
     }
-
 }
