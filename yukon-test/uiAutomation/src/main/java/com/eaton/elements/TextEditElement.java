@@ -41,8 +41,17 @@ public class TextEditElement extends EditElement {
         action.sendKeys(input, value).build().perform();
     }
     
-    public String getValidationError() {
-    	return this.driverExt.findElement(By.cssSelector("span[id='" + this.elementName + ".errors']"), Optional.empty()).getText();
+    public String getInputValue() {
+        return getEditElement().getAttribute("value");
     }
     
+    public boolean isDisabled() {
+        WebElement input = getEditElement();
+        
+        return input.isEnabled();
+    }
+    
+    public String getValidationError() {
+        return this.driverExt.findElement(By.cssSelector("span[id='" + this.elementName + ".errors']"), Optional.empty()).getText();
+    }
 }

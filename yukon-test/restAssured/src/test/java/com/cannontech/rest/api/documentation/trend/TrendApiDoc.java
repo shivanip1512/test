@@ -29,7 +29,7 @@ public class TrendApiDoc extends DocumentationBase {
 
     private String trendId = null;
     public final static String idStr = "trendId";
-    public final static String idDescStr = "Trend Id";
+    public final static String idDescStr = "Trend Id.";
     
     private MockTrendModel getMockObject() {
         return TrendHelper.buildTrend();
@@ -43,37 +43,33 @@ public class TrendApiDoc extends DocumentationBase {
         FieldDescriptor[] trendFieldDescriptor = new FieldDescriptor[] {
                 fieldWithPath("name")
                     .type(JsonFieldType.STRING)
-                    .description("Trend Name"),
+                    .description("Trend Name."),
                 fieldWithPath("trendSeries[].type")
                     .type(JsonFieldType.STRING)
                     .optional()
-                    .description("Graph Type. Expected: BASIC_TYPE, USAGE_TYPE, PEAK_TYPE, YESTERDAY_TYPE, MARKER_TYPE, DATE_TYPE. Default Type: BASIC_TYPE"),
+                    .description("Graph Type. Expected: BASIC_TYPE, USAGE_TYPE, PEAK_TYPE, YESTERDAY_TYPE, MARKER_TYPE, DATE_TYPE. Default Type: BASIC_TYPE."),
                 fieldWithPath("trendSeries[].pointId")
                     .type(JsonFieldType.NUMBER)
-                    .description("Point ID. Point Id for MARKER_TYPE is -100."),
+                    .description("Point Id. Point Id for MARKER_TYPE is -100."),
                 fieldWithPath("trendSeries[].label")
                     .type(JsonFieldType.STRING)
-                    .description("Device Name / Point Name. Max length 40 Character"),
+                    .description("Label for the selected point. If not provided, a default Label will be generated as 'Device name / Point name'. Max length 40 characters."),
                 fieldWithPath("trendSeries[].color")
                     .type(JsonFieldType.STRING)
                     .optional()
-                    .description("Color. Expected: BLACK, BLUE, CYAN, GREY, GREEN, MAGENTA, ORANGE, PINK, RED, YELLOW. Default Color: BLUE"),
+                    .description("Color. Expected: BLACK, BLUE, CYAN, GREY, GREEN, MAGENTA, ORANGE, PINK, RED, YELLOW. Default Color: BLUE."),
                 fieldWithPath("trendSeries[].axis")
                     .type(JsonFieldType.STRING)
                     .optional()
-                    .description("Axis. Expected: LEFT, RIGHT. Default Axis: LEFT"),
+                    .description("Axis. Expected: LEFT, RIGHT. Default Axis: LEFT."),
                 fieldWithPath("trendSeries[].multiplier")
                     .type(JsonFieldType.NUMBER)
                     .optional()
-                    .description("Multiplier. Default Value: 1"),
+                    .description("Multiplier. Default Value: 1."),
                 fieldWithPath("trendSeries[].style")
                     .type(JsonFieldType.STRING)
                     .optional()
-                    .description("Render Style. Expected:LINE, BAR, STEP. Default Style: LINE. Render Style for MARKER_TYPE is LINE"),
-                fieldWithPath("trendSeries[].date")
-                    .type(JsonFieldType.STRING)
-                    .optional()
-                    .description("Date in mm/dd/yyyy format. Applicable only when type is DATE_TYPE")
+                    .description("Render Style. Expected: LINE, BAR, STEP. Default Style: LINE. Render Style for MARKER_TYPE is LINE.")
         };
         return new ArrayList<>(Arrays.asList(trendFieldDescriptor));
     }
@@ -82,7 +78,7 @@ public class TrendApiDoc extends DocumentationBase {
         FieldDescriptor[] resetPeakFieldDescriptor = new FieldDescriptor[] {
                 fieldWithPath("startDate")
                         .type(JsonFieldType.STRING)
-                        .description("Start Date") };
+                        .description("Start Date in MM/dd/yyyy format.") };
         return new ArrayList<>(Arrays.asList(resetPeakFieldDescriptor));
     }
 
@@ -94,6 +90,20 @@ public class TrendApiDoc extends DocumentationBase {
         return new ArrayList<>(Arrays.asList(resetPeakFieldDescriptor));
     }
 
+    private static FieldDescriptor getRequestDateFieldDescriptor() {
+        return fieldWithPath("trendSeries[].date")
+                .type(JsonFieldType.STRING)
+                .optional()
+                .description("Date in MM/dd/yyyy format. Applicable only when type is DATE_TYPE.");
+    }
+
+    private static FieldDescriptor getResponseDateFieldDescriptor() {
+        return fieldWithPath("trendSeries[].date")
+                .type(JsonFieldType.STRING)
+                .optional()
+                .description(" Date in MM/dd/yyyy format. Applicable only when type is DATE_TYPE or PEAK_TYPE. Default for PEAK_TYPE is the first date of current month.");
+    }
+ 
     @Test
     public void Test_Trend_01_Create() {
         trendId = createDoc();
@@ -131,6 +141,7 @@ public class TrendApiDoc extends DocumentationBase {
     protected Get buildGetFields() {
         List<FieldDescriptor> responseFields = getFieldDescriptors();
         responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
+        responseFields.add(getResponseDateFieldDescriptor());
         String url = ApiCallHelper.getProperty("getTrend") + trendId;
         return new DocumentationFields.Get(responseFields, url);
     }
@@ -138,8 +149,10 @@ public class TrendApiDoc extends DocumentationBase {
     @Override
     protected Create buildCreateFields() {
         List<FieldDescriptor> requestFields = getFieldDescriptors();
+        requestFields.add(getRequestDateFieldDescriptor());
         List<FieldDescriptor> responseFields = getFieldDescriptors();
         responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
+        responseFields.add(getResponseDateFieldDescriptor());
         String url = ApiCallHelper.getProperty("createTrend");
         return new DocumentationFields.Create(requestFields, responseFields, idStr, idDescStr, getMockObject(), url);
     }
@@ -147,8 +160,10 @@ public class TrendApiDoc extends DocumentationBase {
     @Override
     protected Update buildUpdateFields() {
         List<FieldDescriptor> requestFields = getFieldDescriptors();
+        requestFields.add(getRequestDateFieldDescriptor());
         List<FieldDescriptor> responseFields = getFieldDescriptors();
         responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
+        responseFields.add(getResponseDateFieldDescriptor());
         String url = ApiCallHelper.getProperty("updateTrend") + trendId;
         return new DocumentationFields.Update(requestFields, responseFields, idStr, idDescStr, getMockObject(), url);
     }

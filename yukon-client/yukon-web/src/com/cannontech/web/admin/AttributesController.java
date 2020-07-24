@@ -89,8 +89,8 @@ public class AttributesController {
 
         try {
             ResponseEntity<? extends Object> response = null;
-            if (attribute.getId() != null) {
-                String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeUrl + attribute.getId());
+            if (attribute.getCustomAttributeId() != null) {
+                String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeUrl + attribute.getCustomAttributeId());
                 response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PATCH, CustomAttribute.class, attribute.getName());
             } else {
                 String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeUrl + "create");
@@ -122,7 +122,7 @@ public class AttributesController {
     
     private void setupErrorModel(RedirectAttributes redirectAttributes, CustomAttribute attribute, BindingResult result, Boolean isEditMode) {
         if (isEditMode) {
-            redirectAttributes.addFlashAttribute("enableEditId", attribute.getId());
+            redirectAttributes.addFlashAttribute("enableEditId", attribute.getCustomAttributeId());
             redirectAttributes.addFlashAttribute("editAttribute", attribute);
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.editAttribute", result);
         } else {
@@ -171,15 +171,15 @@ public class AttributesController {
         //mock up data for now
         List<CustomAttribute> atts = new ArrayList<>();
         CustomAttribute att1 = new CustomAttribute();
-        att1.setId(121);
+        att1.setCustomAttributeId(121);
         att1.setName("CustomAttribute-001");
         atts.add(att1);
         CustomAttribute att2 = new CustomAttribute();
-        att2.setId(122);
+        att2.setCustomAttributeId(122);
         att2.setName("CustomAttribute-002");
         atts.add(att2);
         CustomAttribute att3 = new CustomAttribute();
-        att3.setId(123);
+        att3.setCustomAttributeId(123);
         att3.setName("CustomAttribute-003");
         atts.add(att3);
         

@@ -2,74 +2,51 @@ package com.eaton.pages.demandresponse;
 
 import java.util.List;
 
+import org.openqa.selenium.WebElement;
+
 import com.eaton.elements.Button;
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.RadioButtonElement;
 import com.eaton.elements.Section;
+import com.eaton.elements.SwitchBtnMultiSelectElement;
+import com.eaton.elements.SwitchBtnYesNoElement;
 import com.eaton.elements.TextEditElement;
-import com.eaton.elements.TrueFalseCheckboxElement;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class LoadGroupCreatePage extends PageBase {
 
-    private TextEditElement name;
-    private DropDownElement type;
-
     public LoadGroupCreatePage(DriverExtensions driverExt) {
         super(driverExt);
-        
+
         requiresLogin = true;
         pageUrl = Urls.DemandResponse.LOAD_GROUP_CREATE;
-
-        name = new TextEditElement(this.driverExt, "name");
-        type = new DropDownElement(this.driverExt, "type");
-    }    
+    }
 
     // General
     public TextEditElement getName() {
-        return name;
+        return new TextEditElement(this.driverExt, "name");
     }
 
     public DropDownElement getType() {
-        return type;
+        return new DropDownElement(this.driverExt, "type");
     }
 
     public DropDownElement getCommunicationRoute() {
         return new DropDownElement(this.driverExt, "routeId");
     }
-    
-    //Device Class
-    public DropDownElement getDeviceClass() {
-        return new DropDownElement(this.driverExt, "deviceClassSet");
-    }
-    
-    //Enrollment
-    public TextEditElement getUtilityEnrollmentGroup() {
-        return new TextEditElement(this.driverExt, "utilityEnrollmentGroup");
-    }
-    
-    //Timing
-    public TextEditElement getRampInTime() {
-        return new TextEditElement(this.driverExt, "rampInMinutes");
-    }
-    
-    public TextEditElement getRampOutTime() {
-        return new TextEditElement(this.driverExt, "rampOutMinutes");
-    }
 
     // Geographical Address
-    public RadioButtonElement getAddressUsage() {
-        // addressUsage is used for 2 different radio buttons on this page
-        return new RadioButtonElement(this.driverExt, "addressUsage");
+    public SwitchBtnMultiSelectElement getGeographicalAddressUsage() {
+        return new SwitchBtnMultiSelectElement(this.driverExt, "addressUsage");
     }
 
     // Geographical Addressing
     public TextEditElement getSpid() {
         return new TextEditElement(this.driverExt, "serviceProvider");
     }
-
+    
     public TextEditElement getGeo() {
         return new TextEditElement(this.driverExt, "geo");
     }
@@ -118,16 +95,22 @@ public class LoadGroupCreatePage extends PageBase {
     public List<String> getAddressToUseValues() {
         return getAddressToUse().getValues();
     }
+    
+    public SwitchBtnMultiSelectElement getRelayUsage() {
+        WebElement section = getPageSection("Relay Usage").getSection();
+        
+        return new SwitchBtnMultiSelectElement(this.driverExt, "button-group", section);
+    }
 
     // LoadAddress
-    public RadioButtonElement getUsage() {
-        // addressUsage is used for 2 different radio buttons on this page
-        return new RadioButtonElement(this.driverExt, "addressUsage");
+    public SwitchBtnMultiSelectElement getUsage() {
+        return new SwitchBtnMultiSelectElement(this.driverExt, "loadaddressing");
     }
 
     // LoadAddressing
-    public RadioButtonElement getLoads() {
-        return new RadioButtonElement(this.driverExt, "relayUsage");
+    public SwitchBtnMultiSelectElement getLoads() {
+        WebElement section = getPageSection("Load Addressing").getSection();
+        return new SwitchBtnMultiSelectElement(this.driverExt, "button-group", section);
     }
 
     public TextEditElement getProgram() {
@@ -147,12 +130,16 @@ public class LoadGroupCreatePage extends PageBase {
         return new TextEditElement(this.driverExt, "kWCapacity");
     }
 
-    public TrueFalseCheckboxElement getDisableGroup() {
-        return new TrueFalseCheckboxElement(this.driverExt, "disableGroup");
+    public SwitchBtnYesNoElement getDisableGroup() {
+        WebElement section = getPageSection("Optional Attributes").getSection();
+        
+        return new SwitchBtnYesNoElement(this.driverExt, "disableGroup", section);
     }
 
-    public TrueFalseCheckboxElement getDisableControl() {
-        return new TrueFalseCheckboxElement(this.driverExt, "disableControl");
+    public SwitchBtnYesNoElement getDisableControl() {
+        WebElement section = getPageSection("Optional Attributes").getSection();
+        
+        return new SwitchBtnYesNoElement(this.driverExt, "disableControl", section);
     }
 
     public Button getSaveBtn() {
@@ -162,8 +149,8 @@ public class LoadGroupCreatePage extends PageBase {
     public Button getCancelBtn() {
         return new Button(this.driverExt, "Cancel");
     }
-    
-    public Section getSection(String sectionName) {
+
+    public Section getPageSection(String sectionName) {
         return new Section(this.driverExt, sectionName);
     }
 }

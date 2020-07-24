@@ -8,6 +8,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.regulatorsetup.RegulatorSetupPage;
 
@@ -15,7 +16,7 @@ public class RegulatorSetupTests extends SeleniumTestSetup {
 
     private RegulatorSetupPage regulatorSetupPage;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
@@ -26,12 +27,12 @@ public class RegulatorSetupTests extends SeleniumTestSetup {
         regulatorSetupPage = new RegulatorSetupPage(driverExt);
     }
 
-    @Test
-    public void pageTitleCorrect() {
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.VoltVar.VOLT_VAR })
+    public void regulatorSetup_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Regulator Setup";
-        
+
         String actualPageTitle = regulatorSetupPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 }

@@ -45,10 +45,9 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -64,6 +63,7 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.EnumPropertyEditor;
+import com.cannontech.web.input.type.AttributeType;
 import com.cannontech.web.scheduledFileExport.ScheduledFileExportJobData;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledArchivedDataFileExportTask;
@@ -84,10 +84,11 @@ public class DataExporterHomeController {
     @Autowired private DeviceCollectionService deviceCollectionService;
     @Autowired private ExportReportGeneratorService exportReportGeneratorService;
     @Autowired private JobManager jobManager;
-    @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
     @Autowired private ToolsEventLogService toolsEventLogService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private AttributeService attributeService;
+    @Autowired private AttributeType attributeTypeEditor;
 
     public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
     
@@ -109,8 +110,7 @@ public class DataExporterHomeController {
         archivedValuesExporter.setArchivedValuesExportFormatType(format.getFormatType());
         model.addAttribute("archivedValuesExporter", archivedValuesExporter);
 
-        Map<AttributeGroup, List<BuiltInAttribute>> groupedAttributes = 
-                objectFormattingService.sortDisplayableValues(BuiltInAttribute.getAllGroupedAttributes(), userContext);
+        Map<AttributeGroup, List<Attribute>> groupedAttributes = attributeService.getAllGroupedAttributes(userContext);
         model.addAttribute("groupedAttributes", groupedAttributes);
         
         model.addAttribute("allFormats", allFormats);
@@ -275,7 +275,7 @@ public class DataExporterHomeController {
             binder.setMessageCodesResolver(msgCodesResolver);
         }
 
-        binder.registerCustomEditor(Attribute.class, new EnumPropertyEditor<>(BuiltInAttribute.class));
+        binder.registerCustomEditor(Attribute.class, attributeTypeEditor.getPropertyEditor());
         binder.registerCustomEditor(DataRangeType.class, new EnumPropertyEditor<>(DataRangeType.class));
         
         PropertyEditor localDatePropertyEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext);

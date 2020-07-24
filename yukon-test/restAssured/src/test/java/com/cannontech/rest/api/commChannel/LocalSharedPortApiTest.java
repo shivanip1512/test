@@ -76,7 +76,7 @@ public class LocalSharedPortApiTest {
         localSharedPortDetail.setBaudRate(MockBaudRate.BAUD_115200);
         localSharedPortDetail.setEnable(true);
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.post("updatePort", localSharedPortDetail, portId);
+        ExtractableResponse<?> getResponse = ApiCallHelper.patch("updatePort", localSharedPortDetail, portId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
         Log.endTestCase("localSharedPortCommChannel_03_Update");
     }

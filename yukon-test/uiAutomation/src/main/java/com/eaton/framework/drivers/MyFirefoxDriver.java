@@ -15,11 +15,14 @@ public final class MyFirefoxDriver {
     private MyFirefoxDriver() {
     }
 
-    static WebDriver getNewFirefoxDriver(boolean useRemoteDriver, boolean isHeadless) {
+    static WebDriver getNewFirefoxDriver(boolean useRemoteDriver, boolean isHeadless, String proxy, Boolean useProxy) {
 
         WebDriver driver;
 
-        WebDriverManager.firefoxdriver().setup();
+        if(useProxy)
+            WebDriverManager.chromedriver().proxy(proxy).setup();
+        else
+            WebDriverManager.chromedriver().setup();
 
         FirefoxOptions options = new FirefoxOptions();
 

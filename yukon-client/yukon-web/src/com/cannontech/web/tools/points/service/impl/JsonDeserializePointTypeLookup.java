@@ -48,6 +48,7 @@ public class JsonDeserializePointTypeLookup extends StdDeserializer<LitePointMod
         }
 
         LitePointModel litePointModel = (LitePointModel) parser.getCodec().treeToValue(node, getPointFromModelFactory(pointType, id).getClass());
+        litePointModel.setPointType(pointType);
         litePointModel.setPointId(id);
         return litePointModel;
     }

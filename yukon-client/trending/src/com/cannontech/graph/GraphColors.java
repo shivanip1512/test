@@ -1,5 +1,7 @@
 package com.cannontech.graph;
 
+import com.cannontech.common.YukonColorPallet;
+
 /**
  * Provides colors for graphs and maintains state that
  * allow a user of this class to ask for valid graph colors.
@@ -9,15 +11,34 @@ package com.cannontech.graph;
  * @author:
  */
 public class GraphColors {
-    private static final java.awt.Color lineColors[] = { java.awt.Color.red, java.awt.Color.blue, java.awt.Color.green,
-        java.awt.Color.black, java.awt.Color.magenta, java.awt.Color.orange, java.awt.Color.yellow,
-        java.awt.Color.pink, java.awt.Color.gray };
+    
+    private static final java.awt.Color lineColors[] = {
+        YukonColorPallet.WINE.getAwtColor(),
+        YukonColorPallet.BLUE.getAwtColor(),
+        YukonColorPallet.GREEN.getAwtColor(),
+        YukonColorPallet.BLACK.getAwtColor(),
+        YukonColorPallet.SAGE.getAwtColor(),
+        YukonColorPallet.ORANGE.getAwtColor(),
+        YukonColorPallet.SKY.getAwtColor(),
+        YukonColorPallet.YELLOW.getAwtColor(),
+        YukonColorPallet.PURPLE.getAwtColor(),
+        YukonColorPallet.GRAY.getAwtColor(),
+        YukonColorPallet.TEAL.getAwtColor(),
+    };
 
-    private static final int lineColorEnumeration[] = { com.cannontech.common.gui.util.Colors.RED_ID,
-        com.cannontech.common.gui.util.Colors.BLUE_ID, com.cannontech.common.gui.util.Colors.GREEN_ID,
-        com.cannontech.common.gui.util.Colors.BLACK_ID, com.cannontech.common.gui.util.Colors.MAGENTA_ID,
-        com.cannontech.common.gui.util.Colors.ORANGE_ID, com.cannontech.common.gui.util.Colors.YELLOW_ID,
-        com.cannontech.common.gui.util.Colors.PINK_ID, com.cannontech.common.gui.util.Colors.GRAY_ID };
+    private static final int lineColorEnumeration[] = { 
+        com.cannontech.common.gui.util.Colors.RED_ID,
+        com.cannontech.common.gui.util.Colors.BLUE_ID,
+        com.cannontech.common.gui.util.Colors.GREEN_ID,
+        com.cannontech.common.gui.util.Colors.BLACK_ID,
+        com.cannontech.common.gui.util.Colors.LIGHT_GREEN_ID,
+        com.cannontech.common.gui.util.Colors.ORANGE_ID,
+        com.cannontech.common.gui.util.Colors.SKY_ID,
+        com.cannontech.common.gui.util.Colors.YELLOW_ID,
+        com.cannontech.common.gui.util.Colors.PURPLE_ID,
+        com.cannontech.common.gui.util.Colors.GRAY_ID,
+        com.cannontech.common.gui.util.Colors.TEAL_ID,
+    };
 
     // index into line colors array to determine line colors
     private int currentLineColor = 0;

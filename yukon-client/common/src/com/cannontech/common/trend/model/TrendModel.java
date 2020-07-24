@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
+import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.common.trend.model.TrendType.GraphType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.graph.GraphDefinition;
@@ -14,7 +15,7 @@ import com.cannontech.database.db.graph.GDSTypes;
 import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.database.db.graph.GraphDataSeries;
 
-public class TrendModel {
+public class TrendModel implements DBPersistentConverter<GraphDefinition> {
     private Integer trendId;
     private String name;
     private List<TrendSeries> trendSeries;
@@ -32,7 +33,7 @@ public class TrendModel {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = StringUtils.trim(name);
     }
 
     public List<TrendSeries> getTrendSeries() {
@@ -46,6 +47,7 @@ public class TrendModel {
     /*
      * Create DBPersistent object to insert
      */
+    @Override
     public void buildDBPersistent(GraphDefinition graph) {
         if (getName() != null) {
             graph.getGraphDefinition().setName(getName().trim());
@@ -79,7 +81,7 @@ public class TrendModel {
                     graphSeries.setMoreData(CtiUtilities.STRING_NONE);
                 }
                 // use defaults when MarkerType
-                if (series.getType().isMarkerType()) {
+                if (series.getType() != null && series.getType().isMarkerType()) {
                     graphSeries.setPointID(-100);
                     graphSeries.setRenderer(RenderType.LINE);
                 } else {
@@ -98,6 +100,7 @@ public class TrendModel {
         }
     }
 
+    @Override
     public void buildModel(GraphDefinition graph) {
         setName(graph.getGraphDefinition().getName());
         setTrendId(graph.getGraphDefinition().getGraphDefinitionID());

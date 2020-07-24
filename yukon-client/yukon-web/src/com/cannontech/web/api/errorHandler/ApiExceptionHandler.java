@@ -49,12 +49,15 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.spring.filtering.exceptions.InvalidFilteringParametersException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.api.errorHandler.model.ApiError;
 import com.cannontech.web.api.errorHandler.model.ApiFieldError;
 import com.cannontech.web.api.errorHandler.model.ApiGlobalError;
 import com.cannontech.web.api.token.AuthenticationException;
+import com.cannontech.web.spring.parameters.exceptions.InvalidPagingParametersException;
+import com.cannontech.web.spring.parameters.exceptions.InvalidSortingParametersException;
 import com.cannontech.web.tools.points.service.PointEditorService.AttachedException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -86,27 +89,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler({ NotFoundException.class })
-    public ResponseEntity<Object> handleNotFoundException(final Exception ex, final WebRequest request) {
-
-        String uniqueKey = CtiUtilities.getYKUniqueKey();
-        logApiException(request, ex, uniqueKey);
-
-        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
-    }
-    
-    @ExceptionHandler({ LoadProgramProcessingException.class, MacroLoadGroupProcessingException.class,
-        HoneywellProcessingException.class, LMObjectDeletionFailureException.class , TypeNotSupportedException.class})
-    public ResponseEntity<Object> handleProcessingException(final Exception ex, final WebRequest request) {
-
-        String uniqueKey = CtiUtilities.getYKUniqueKey();
-        logApiException(request, ex, uniqueKey);
-
-        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
-    }
-    
     @ExceptionHandler({AttachedException.class})
     public ResponseEntity<Object> handleBadRequestException(final AttachedException ex, final WebRequest request) {
 
@@ -146,6 +128,26 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             String.format("The parameter '%s' of value '%s' could not be converted to type '%s'", ex.getName(),
                 ex.getValue(), ex.getRequiredType().getSimpleName()), uniqueKey);
         return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({ NotFoundException.class,
+                        LoadProgramProcessingException.class,
+                        MacroLoadGroupProcessingException.class,
+                        HoneywellProcessingException.class,
+                        LMObjectDeletionFailureException.class,
+                        TypeNotSupportedException.class,
+                        DynamicDataAccessException.class,
+                        IllegalUseOfAttribute.class,
+                        InvalidFilteringParametersException.class,
+                        InvalidSortingParametersException.class,
+                        InvalidPagingParametersException.class })
+    public ResponseEntity<Object> handleBadRequestException(final Exception ex, final WebRequest request) {
+
+        String uniqueKey = CtiUtilities.getYKUniqueKey();
+        logApiException(request, ex, uniqueKey);
+
+        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
+        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @Override
@@ -298,25 +300,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             String.format("Could not find the %s method for URL %s", request.getMethod(), url), uniqueKey);
         parseToJson(response, apiError, HttpStatus.NOT_FOUND);
 
-    }
-
-    @ExceptionHandler({ DynamicDataAccessException.class })
-    public ResponseEntity<Object> dynamicDataAccessException(final Exception ex, final WebRequest request) {
-
-        String uniqueKey = CtiUtilities.getYKUniqueKey();
-        logApiException(request, ex, uniqueKey);
-        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler({ IllegalUseOfAttribute.class })
-    public ResponseEntity<Object> handleIllegalUseOfAttributeException(final Exception ex, final WebRequest request) {
-
-        String uniqueKey = CtiUtilities.getYKUniqueKey();
-        logApiException(request, ex, uniqueKey);
-
-        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     /**

@@ -833,18 +833,18 @@ Java :
     jira : YUK-20500
     notes :    
   
-  - filename : dom4j-2.1.1.jar
+  - filename : dom4j-2.1.3.jar
     yukon group : XML parsing
     project : dom4j
-    version : 2.1.1
+    version : 2.1.3
     project URL : "https://dom4j.github.io/"
     license : BSD-style
     license URLs : "https://github.com/dom4j/dom4j/blob/master/LICENSE"
-    maven URL : "https://mvnrepository.com/artifact/org.dom4j/dom4j/2.1.1"
-    md5 : f5710c1d5f5627ae5ce850a0b12ea87a
-    sha1 : 3dce5dbb3571aa820c677fadd8349bfa8f00c199
-    updated : 2019-24-09
-    jira : YUK-6281, YUK-20321
+    maven URL : "https://mvnrepository.com/artifact/org.dom4j/dom4j/2.1.3"
+    md5 : 41efcf234c5a05a8c590f9b51d53ca66
+    sha1 : a75914155a9f5808963170ec20653668a2ffd2fd
+    updated : 2020-22-07
+    jira : YUK-22484
     notes : 
   
   - filename : easymock-3.0.jar
@@ -4405,46 +4405,46 @@ Network Manager :
     jira : none
     notes : 
 
-  - filename : jackson-annotations-2.9.6.jar
+  - filename : jackson-annotations-2.11.1.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.9.6
+    version : 2.11.1
     project URL : "http://github.com/FasterXML/jackson"
     license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.9.6"
-    md5 : 6486a3fb86a14e04ac131c44f078b6dc
-    sha1 : 6a0f0f154edaba00067772ce02e24f8c0973d84c
-    updated : 2019-11-04
-    jira : NM-1372
+    license URLs : "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.11.1"
+    md5 : ae29476ef47b802516535a8fbd964ec2
+    sha1 : f083c4ac0fb8b3c6b8d5b62cd54122228ef62cee
+    updated : 2020-07-22
+    jira : NM-1554
     notes : Jackson Annotations
 
-  - filename : jackson-core-2.9.8.jar
+  - filename : jackson-core-2.11.1.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.9.8
-    project URL : "http://github.com/FasterXML/jackson"
+    version : 2.11.1
+    project URL : "https://github.com/FasterXML/jackson-core"
     license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.9.8"
-    md5 : 65831e4f46f29db904708e4b9cc72843
-    sha1 : 0f5a654e4675769c716e5b387830d19b501ca191
-    updated : 2019-11-04
-    jira : NM-1372
+    license URLs : "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.11.1"
+    md5 : 178171dcc707f3aa1b5d53717530a589
+    sha1 : 8b02908d53183fdf9758e7e20f2fdee87613a962
+    updated : 2020-07-22
+    jira : NM-1554
     notes : Jackson Core
 
-  - filename : jackson-databind-2.9.8.jar
+  - filename : jackson-databind-2.11.1.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.9.8
+    version : 2.11.1
     project URL : "http://github.com/FasterXML/jackson"
     license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.9.8"
-    md5 : 39271d9bb1cb7ec563925953b1fa9ff7
-    sha1 : 11283f21cc480aa86c4df7a0a3243ec508372ed2
-    updated : 2019-11-04
-    jira : NM-1372
+    license URLs : "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.11.1"
+    md5 : 5dc6f0ba9a79ffb5440b9561a55806ed
+    sha1 : f5d24a1dcf46000316d40c8c61196c48dd5677c5
+    updated : 2020-07-22
+    jira : NM-1554
     notes : Jackson Databind
 
   - filename : jakarta-regexp-1.3.jar
@@ -4951,19 +4951,19 @@ Network Manager :
     jira : NM-885
     notes : 
 
-  - filename : quartz-1.6.4.jar
+  - filename : quartz-2.3.0-SNAPSHOT.jar
     yukon group : Scheduling
     project : Quartz
-    version : 1.6.4
+    version : 2.3.0
     project URL : "http://www.quartz-scheduler.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.quartz-scheduler/quartz"
-    md5 : 69f2b06f0f8d4d8bf78ad0ac418dc623
-    sha1 : 333dc5c5b65d89d5cf64759f5f8b939d6e3279c6
-    updated : 2009-02-10
-    jira : none
-    notes : 
+    md5 : a9c2bcf5ed6b2c8b6ca315a545d01261
+    sha1 : a090397102a12f6241177c5d501835334bb7662a
+    updated : 2020-07-10
+    jira : NM-1559
+    notes : Quartz is used for scheduling the jobs.
 
   - filename : reactive-streams-1.0.2.jar
     yukon group : Spring
@@ -5910,9 +5910,9 @@ C++ :
     
   - project : OpenSSL
     path : OPENSSL
-    version : 1.1.1d
+    version : 1.1.1g
     project URL : "https://www.openssl.org/"
-    license : BSD-style
+    license : Apache 2.0
     license URLs : "https://github.com/openssl/openssl/blob/e216bf9d7ca761718f34e8b3094fcb32c7a143e4/LICENSE"
     md5 : 3f0767ccd6a78251d62a12ef5fbea75d
     sha1 : f9d68f06ad869adf29f70edafc36095a5a646a5e
@@ -5920,20 +5920,20 @@ C++ :
     totalSize : 10019274
     updated : 2020-07-14  
     jira : YUK-22506
-    notes : Since transitioned to Apache 2.0 license
+    notes : 
     
   - project : Eaton Remote Meter Programming Converter
     path : RMP_CONVERTER
-    version : 1.0
+    version : 1.0.2
     project URL : none
     license : Eaton-owned
     license URLs : none
-    md5 : 15cbdcec65264af23738261965cce359
-    sha1 : cacf1f02b964bd8166a4056ae51f4636fbf9bae6
-    fileCount : 3
-    totalSize : 57814
-    updated : 2020-06-15
-    jira : YUK-22351
+    md5 : 2bca7e9542592b2901af9477c1a5333c
+    sha1 : 4fe99a1af377a806888a7f1f943155f0c2281797
+    fileCount : 4
+    totalSize : 1126870
+    updated : 2020-07-21
+    jira : YUK-22553
     notes : 
     
   - project : SQLAPI 

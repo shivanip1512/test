@@ -17,7 +17,7 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.assets.commChannels.CommChannelDetailPage;
+import com.eaton.pages.assets.commchannels.CommChannelDetailPage;
 import com.eaton.rest.api.assets.AssetsCreateRequestAPI;
 import com.eaton.rest.api.dbetoweb.JsonFileHelper;
 
@@ -63,24 +63,24 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         channelDetailPage = new CommChannelDetailPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, "commChannelDetailsUdp_PageTitleCorrect()" })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelDetailsUdp_PageTitleCorrect() {
-        String EXPECTED_TITLE = commChannelName;     
+        String EXPECTED_TITLE = commChannelName;
         String actualPageTitle = channelDetailPage.getPageTitle();
         assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelDetailsUdp_TabTitlesCorrect() {        
         List<String> titles = channelDetailPage.getTabElement().getTitles();
-        
+
         softly.assertThat(titles.size()).isEqualTo(2);
         softly.assertThat(titles.get(0)).isEqualTo("Info");
         softly.assertThat(titles.get(1)).isEqualTo("Configuration");
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelDetailsUdp_InfoTabLabelsCorrect() {
         String infoTitle = "Info";
         channelDetailPage.getTabElement().clickTab(infoTitle);
@@ -95,7 +95,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelDetailsUdp_InfoTabValuesCorrect() {        
         List<String> values = channelDetailPage.getTabElement().getTabValues("Info");        
         
@@ -108,7 +108,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelDetailsUdp_ConfigTabTimingSectionDisplayed() {
         String infoTitle = "Configuration";
         channelDetailPage.getTabElement().clickTab(infoTitle);
@@ -116,15 +116,14 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         assertThat(timing.getSection()).isNotNull();
     }
     
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelDetailsUdp_ConfigTabGeneralSectionDisplayed() {
         String infoTitle = "Configuration";
         channelDetailPage.getTabElement().clickTab(infoTitle);
         Section timing = channelDetailPage.getGeneralSection();
         assertThat(timing.getSection()).isNotNull();
     }
-    
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelDetailsUdp_ConfigTabSharedSectionDisplayed() {
         String infoTitle = "Configuration";
         channelDetailPage.getTabElement().clickTab(infoTitle);
@@ -132,15 +131,15 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         assertThat(timing.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelDetailsUdp_ConfigTabLabelsCorrect() {
         String infoTitle = "Configuration";
-        
+
         channelDetailPage.getTabElement().clickTab(infoTitle);
         List<String> labels = channelDetailPage.getTabElement().getTabLabels(infoTitle);
-       
+
         softly.assertThat(labels.size()).isEqualTo(10);
-        
+
         softly.assertThat(labels.get(0)).isEqualTo("Protocol Wrap:");
         softly.assertThat(labels.get(1)).isEqualTo("Carrier Detect Wait:");
         softly.assertThat(labels.get(2)).isEqualTo("Encryption key:");
@@ -153,13 +152,12 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         softly.assertThat(labels.get(9)).isEqualTo("Socket Number:");
         softly.assertAll();
     }
-    
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelDetailsUdp_ConfigTabValuesCorrect() {
         channelDetailPage.getTabElement().clickTab("Configuration");
-        
-        List<String> values = channelDetailPage.getTabElement().getTabValues("Configuration");        
-        
+
+        List<String> values = channelDetailPage.getTabElement().getTabValues("Configuration");
+
         softly.assertThat(values.size()).isEqualTo(10);
         softly.assertThat(values.get(0)).isEqualTo("IDLC");
         softly.assertThat(values.get(1)).isEqualTo("544 ms");
@@ -175,11 +173,9 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelDetailsUdp_PanelTitleCorrect() {
-        // Validate Comm Channel Info Panel Text
         String expectedPanelText = "Comm Channel Information";
-        // panel text validation
         String actualPanelText = channelDetailPage.getCommChannelInfoPanel().getPanelName();
         assertThat(actualPanelText).isEqualTo(expectedPanelText);
     }

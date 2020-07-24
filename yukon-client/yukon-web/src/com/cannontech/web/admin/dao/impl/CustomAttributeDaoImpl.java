@@ -5,34 +5,32 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.dao.AttributeDao;
+import com.cannontech.common.pao.attribute.dao.impl.AttributeDaoImpl;
+import com.cannontech.common.pao.attribute.model.Assignment;
+import com.cannontech.common.pao.attribute.model.AttributeAssignment;
+import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.YukonRowMapper;
-import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.admin.dao.CustomAttributeDao;
-import com.cannontech.web.admin.model.CustomAttributeDetail;
 
 public class CustomAttributeDaoImpl implements CustomAttributeDao {
     
-    private YukonRowMapper<CustomAttributeDetail> detailMapper = rs -> {
-        CustomAttributeDetail row = new CustomAttributeDetail();
-        row.setId(rs.getInt("AttributeAssignmentId"));
-        row.setName(rs.getStringSafe("AttributeName"));
-        row.setDeviceType(rs.getEnum("DeviceType", PaoType.class));
-        row.setPointType(rs.getEnum("PointType", PointType.class));
-        row.setPointOffset(rs.getInt("PointOffset"));
-        return row;
-    };
-    
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    
+    @Autowired private AttributeDao attributeDao;
+    @Autowired private NextValueHelper nextValueHelper;
+
     @Override
-    public List<CustomAttributeDetail> getCustomAttributeDetails(List<Integer> attributeIds, List<PaoType> deviceTypes,
+    public List<AttributeAssignment> getCustomAttributeDetails(List<Integer> attributeIds, List<PaoType> deviceTypes,
             SortBy sortBy, Direction direction) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT AttributeAssignmentId, AttributeName, DeviceType, PointType, PointOffset");
+        sql.append("SELECT AttributeAssignmentId, aa.AttributeId, AttributeName, PaoType, PointType, PointOffset");
         sql.append("FROM AttributeAssignment aa");
         sql.append("JOIN CustomAttribute ca ON aa.AttributeId = ca.AttributeId");
 
@@ -41,9 +39,9 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
         }
         if (CollectionUtils.isNotEmpty(deviceTypes)) {
             if (CollectionUtils.isEmpty(attributeIds)) {
-                sql.append("WHERE DeviceType").in_k(deviceTypes);
+                sql.append("WHERE PaoType").in_k(deviceTypes);
             } else {
-                sql.append("AND DeviceType").in_k(deviceTypes);
+                sql.append("AND PaoType").in_k(deviceTypes);
             }
         }
 
@@ -54,7 +52,81 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
                 sql.append(direction);
             }
         }
-        return jdbcTemplate.query(sql, detailMapper);
+        return jdbcTemplate.query(sql, AttributeDaoImpl.attributeAssignmentMapper);
+    }
+    
+    @Override
+    public AttributeAssignment createAttributeAssignment(Assignment assignment) {
+        assignment.setAttributeAssignmentId(nextValueHelper.getNextValue("AttributeAssignment"));
+        SqlStatementBuilder createSql = new SqlStatementBuilder();
+        SqlParameterSink params = createSql.insertInto("AttributeAssignment");
+        params.addValue("AttributeAssignmentId", assignment.getAttributeAssignmentId());
+        addAssignmentParameters(params, assignment);
+        jdbcTemplate.update(createSql);
+        attributeDao.cacheAttributes();
+        return attributeDao.getAssignmentById(assignment.getAttributeAssignmentId());
+    }
+    
+    @Override
+    public AttributeAssignment updateAttributeAssignment(Assignment assignment) {
+        SqlStatementBuilder updateSql = new SqlStatementBuilder();
+        SqlParameterSink params = updateSql.update("AttributeAssignment");
+        addAssignmentParameters(params, assignment);
+        updateSql.append("WHERE AttributeAssignmentId").eq(assignment.getAttributeAssignmentId());
+        attributeDao.cacheAttributes();
+        return attributeDao.getAssignmentById(assignment.getAttributeAssignmentId());
+    }
+    
+    @Override
+    public CustomAttribute createCustomAttribute(CustomAttribute attribute) {
+        SqlStatementBuilder createSql = new SqlStatementBuilder();
+        attribute.setCustomAttributeId(nextValueHelper.getNextValue("CustomAttribute"));
+        SqlParameterSink params = createSql.insertInto("CustomAttribute");
+        params.addValue("AttributeId", attribute.getCustomAttributeId());
+        params.addValue("AttributeName", attribute.getName());
+        jdbcTemplate.update(createSql);
+        attributeDao.cacheAttributes();
+        return attribute;
+    }
+    
+    @Override
+    public CustomAttribute updateCustomAttribute(CustomAttribute attribute) {
+        SqlStatementBuilder updateSql = new SqlStatementBuilder();
+        SqlParameterSink params = updateSql.update("CustomAttribute");
+        params.addValue("AttributeName", attribute.getName());
+        updateSql.append("WHERE AttributeId").eq(attribute.getCustomAttributeId());
+        jdbcTemplate.update(updateSql);
+        attributeDao.cacheAttributes();
+        return attribute;
+    }
+
+    @Override
+    public void deleteCustomAttribute(int attributeId) throws DataDependencyException {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM CustomAttribute");
+        sql.append("WHERE AttributeId").eq(attributeId);
+        /* if(true) {
+         *      throw new DataDependencyException("--------DataDependencyException-------");
+         * }
+         */
+        jdbcTemplate.update(sql);
+        attributeDao.cacheAttributes();
+    }
+
+    @Override
+    public void deleteAttributeAssignment(int attributeAssignmentId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM AttributeAssignment");
+        sql.append("WHERE AttributeAssignmentId").eq(attributeAssignmentId);
+        jdbcTemplate.update(sql);
+        attributeDao.cacheAttributes();
+    }
+    
+    private void addAssignmentParameters(SqlParameterSink params, Assignment assignment) {
+        params.addValue("AttributeId", assignment.getAttributeId());
+        params.addValue("PaoType", assignment.getPaoType());
+        params.addValue("PointType", assignment.getPointType());
+        params.addValue("PointOffset", assignment.getOffset());
     }
 }
  

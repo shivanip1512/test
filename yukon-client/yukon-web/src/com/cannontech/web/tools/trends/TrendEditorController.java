@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -114,6 +115,7 @@ public class TrendEditorController {
     public String renderSetupPopup(ModelMap model, @RequestParam("isMarker") boolean isMarker, @RequestParam("numberOfRows") Integer numberOfRows) {
         model.addAttribute("mode", PageEditMode.CREATE);
         TrendSeries trendSeries = new TrendSeries(Color.getNextDefaultColor(numberOfRows));
+        trendSeries.applyDefaults();
         model.addAttribute("trendSeries", trendSeries);
         if (isMarker) {
             trendSeries.setMarkerDefaults();
@@ -127,7 +129,6 @@ public class TrendEditorController {
     @GetMapping("/renderEditSetupPopup")
     public String renderEditSetupPopup(ModelMap model, @RequestParam("trendSeries") TrendSeries trendSeries) {
         boolean isMarker = trendSeries.getType().isMarkerType();
-        trendSeries.applyDefaults();
         model.addAttribute("trendSeries", trendSeries);
         if (!isMarker) {
             LiteYukonPAObject yukonPao = paoDao.getLiteYukonPaoByPointId(trendSeries.getPointId());
@@ -174,7 +175,7 @@ public class TrendEditorController {
     @PostMapping("/save")
     public String save(ModelMap model, YukonUserContext userContext,
             @ModelAttribute("trendDefinition") TrendModel trendModel, BindingResult result, RedirectAttributes redirectAttributes,
-            FlashScope flashScope, HttpServletRequest request) {
+            FlashScope flashScope, HttpServletRequest request) throws JsonProcessingException {
 
         if (trendModel.getTrendId() != null && !rolePropertyDao.checkLevel(YukonRoleProperty.MANAGE_TRENDS, HierarchyPermissionLevel.UPDATE, userContext.getYukonUser())) {
             throw new NotAuthorizedException("User not authorized to edit trends.");
@@ -196,12 +197,22 @@ public class TrendEditorController {
                 url = url + "/"+ trendModel.getTrendId();
             }
 
-            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, httpMethod, TrendModel.class, trendModel);
-
+            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, httpMethod, Object.class, trendModel);
             if (response.getStatusCode() == HttpStatus.OK) {
-                TrendModel trend = (TrendModel) response.getBody();
-                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", trendModel.getName()));
-                return redirectLink + "/" + trend.getTrendId();
+                HashMap<String, Object> responseMap = (HashMap<String, Object>) response.getBody();
+                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", responseMap.get("name")));
+                return redirectLink + "/" + responseMap.get("trendId");
+            }
+            
+            /**
+             *  The validations at the MVC side and the API side for save trends are the same. Since the inputs are already validated at the MVC side, this condition below
+             *  will never execute. This code is added just to ensure that if we receive HttpStatus.UNPROCESSABLE_ENTITY in the response for some reason, UI does not 
+             *  break. So we display a generic error message in this case.
+             */
+            if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
+                log.error("Error saving trend:{}", JsonUtils.toJson(response.getBody()));
+                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.error.genericMainMessage"));
+                return bindAndForward(trendModel, result, redirectAttributes);
             }
 
         } catch (ApiCommunicationException e) {
@@ -233,7 +244,6 @@ public class TrendEditorController {
         
         if (result.hasErrors()) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
-            trendSeries.applyDefaultsIfNoErrors(result);
             setModel(model, isMarker);
             if (!isMarker) {
                 model.addAttribute("deviceName", yukonPao != null ? yukonPao.getPaoName() : "");
@@ -243,7 +253,6 @@ public class TrendEditorController {
         }
 
         model.clear();
-        trendSeries.applyDefaults();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
         json.put("trendSeries", trendSeries);
@@ -257,6 +266,7 @@ public class TrendEditorController {
             }
         }
         json.put("color", accessor.getMessage(trendSeries.getColor().getFormatKey()));
+        json.put("colorHexValue", trendSeries.getColor().getHexValue());
         json.put("axis", accessor.getMessage(trendSeries.getAxis().getFormatKey()));
         
         response.setContentType("application/json");
@@ -291,7 +301,8 @@ public class TrendEditorController {
     }
 
     private void setModel(ModelMap model, boolean isMarker) {
-        model.addAttribute("colors", Color.values());
+        List<String> colors = Lists.newArrayList(Color.values()).stream().map(color -> color.getHexValue()).collect(Collectors.toList());
+        model.addAttribute("colors", colors);
         model.addAttribute("axes", Lists.newArrayList(TrendAxis.values()));
         
         if (!isMarker) {
@@ -306,12 +317,9 @@ public class TrendEditorController {
 
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
-
         binder.registerCustomEditor(TrendType.GraphType.class, new EnumPropertyEditor<>(TrendType.GraphType.class));
         binder.registerCustomEditor(TrendAxis.class, new EnumPropertyEditor<>(TrendAxis.class));
         binder.registerCustomEditor(RenderType.class, new EnumPropertyEditor<>(RenderType.class));
-        binder.registerCustomEditor(Color.class, new EnumPropertyEditor<>(Color.class));
-
         PropertyEditor dateTimeEditor = datePropertyEditorFactory.getDateTimePropertyEditor(DateFormatEnum.DATE, userContext, BlankMode.NULL);
         
         binder.registerCustomEditor(DateTime.class, dateTimeEditor);
@@ -344,6 +352,13 @@ public class TrendEditorController {
                     log.error("Unable to convert Field to JSON", e);
                     return "";
                 }
+            }
+        });
+        
+        binder.registerCustomEditor(Color.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String color) throws IllegalArgumentException {
+                setValue(Color.getColorByHexValue(color));
             }
         });
     }
