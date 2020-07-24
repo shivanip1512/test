@@ -131,9 +131,9 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
             attributeDao.cacheAttributes();
         }
         
-        if(true) {
+      /* if(true) {
             throw new DataDependencyException("--------DataDependencyException-------");
-        }
+        }*/
     }
 
     @Override
