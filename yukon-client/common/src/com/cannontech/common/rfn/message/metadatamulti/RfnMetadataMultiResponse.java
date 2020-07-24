@@ -1,10 +1,10 @@
 package com.cannontech.common.rfn.message.metadatamulti;
 
+
 import java.util.Map;
 
-import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.Level;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.JmsMultiResponse;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 
@@ -48,7 +48,6 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
      * {@link com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse#getTreeGenerationStartTimeMillis()}
      */
     private long treeGenerationStartTimeMillis;
-    private static final Logger rfnLogger = YukonLogManager.getRfnLogger();
 
     public RfnMetadataMultiResponse(String requestID, int totalSegments, int segmentNumber) {
         super();
@@ -159,7 +158,22 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
 
     @Override
     public String toString() {
-        if (rfnLogger.isInfoEnabled()) {
+        return String.format(
+                "RfnMetadataMultiResponse [requestID=%s, totalSegments=%s, segmentNumber=%s, responseType=%s, responseMessage=%s, queryResults=%s, treeGenerationStartTimeMillis=%s]",
+                requestID, totalSegments, segmentNumber, responseType, responseMessage, queryResults,
+                treeGenerationStartTimeMillis);
+    }
+
+    public String toInfoString() { // use for log info level
+        return String.format(
+                "RfnMetadataMultiResponse [requestID=%s, totalSegments=%s, segmentNumber=%s, responseType=%s, responseMessage=%s, treeGenerationStartTimeMillis=%s]",
+                requestID, totalSegments, segmentNumber, responseType, responseMessage,
+                treeGenerationStartTimeMillis);
+    }
+
+    @Override
+    public String loggingString(Level level) {
+        if (Level.INFO == level) {
             return String.format(
                     "RfnMetadataMultiResponse [requestID=%s,responseType=%s,]",
                     requestID, responseType);
@@ -169,12 +183,5 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
                     requestID, totalSegments, segmentNumber, responseType, responseMessage, queryResults,
                     treeGenerationStartTimeMillis);
         }
-    }
-
-    public String toInfoString() { // use for log info level
-        return String.format(
-                "RfnMetadataMultiResponse [requestID=%s, totalSegments=%s, segmentNumber=%s, responseType=%s, responseMessage=%s, treeGenerationStartTimeMillis=%s]",
-                requestID, totalSegments, segmentNumber, responseType, responseMessage,
-                treeGenerationStartTimeMillis);
     }
 }
