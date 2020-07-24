@@ -1498,4 +1498,5 @@
     <bean class="com.cannontech.web.tools.trends.validator.ResetPeakPopupValidator"/>
 
     <bean class="com.cannontech.web.admin.dao.impl.CustomAttributeDaoImpl"/>
+    <bean class="com.cannontech.web.admin.service.impl.CustomAttributeServiceImpl"/>
 </beans>
