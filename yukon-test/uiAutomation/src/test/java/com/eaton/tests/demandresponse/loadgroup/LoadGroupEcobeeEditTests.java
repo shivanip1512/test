@@ -5,9 +5,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
+import org.javatuples.Pair;
+import org.json.JSONObject;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.eaton.builders.drsetup.loadgroup.LoadGroupEcobeeCreateBuilder;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
@@ -25,12 +28,20 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpEcobeeEdit_pageTitleCorrect() {
-        final String EXPECTED_TITLE = "Edit Load Group: AT Load Group";
+    public void ldGrpEcobeeEdit_pageTitleCorrect() {        
+        Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty())
+                .create();                 
+        
+        JSONObject response = pair.getValue1();
+        
+        String name = response.getString("name");
+        Integer id = response.getInt("id");
+                           
+        final String EXPECTED_TITLE = "Edit Load Group: " + name;
 
-        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + "664" + Urls.EDIT);
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
 
-        LoadGroupEditPage editPage = new LoadGroupEditPage(driverExt, 664);
+        LoadGroupEditPage editPage = new LoadGroupEditPage(driverExt, id);
 
         String actualPageTitle = editPage.getPageTitle();
 
@@ -39,9 +50,16 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpEcobeeEdit_requiredFieldsOnlySuccess() {
-        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + "596" + Urls.EDIT);
+        Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty())
+                .create();                 
+        
+        JSONObject response = pair.getValue1();
+        
+        Integer id = response.getInt("id");
+        
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
 
-        LoadGroupEditPage editPage = new LoadGroupEditPage(driverExt, 596);
+        LoadGroupEditPage editPage = new LoadGroupEditPage(driverExt, id);
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited Ecobee Ldgrp " + timeStamp;

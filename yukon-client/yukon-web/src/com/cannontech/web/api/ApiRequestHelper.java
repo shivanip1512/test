@@ -36,6 +36,8 @@ import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.ProgramConstraint;
+import com.cannontech.common.pao.attribute.model.AttributeAssignment;
+import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.database.data.lite.LiteGear;
@@ -93,6 +95,10 @@ public class ApiRequestHelper {
         paramTypeRefMap.put(ControlRawState.class, new ParameterizedTypeReference<List<ControlRawState>>() {
         });
         paramTypeRefMap.put(DeviceBaseModel.class, new ParameterizedTypeReference<List<DeviceBaseModel>>() {
+        });
+        paramTypeRefMap.put(AttributeAssignment.class, new ParameterizedTypeReference<List<AttributeAssignment>>() {
+        });
+        paramTypeRefMap.put(CustomAttribute.class, new ParameterizedTypeReference<List<CustomAttribute>>() {
         });
     }
     
