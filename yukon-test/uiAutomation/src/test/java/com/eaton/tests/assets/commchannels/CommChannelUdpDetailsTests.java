@@ -13,11 +13,13 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.eaton.elements.Section;
+import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.assets.commchannels.CommChannelDetailPage;
+import com.eaton.pages.assets.commchannels.CommChannelsListPage;
 import com.eaton.rest.api.assets.AssetsCreateRequestAPI;
 import com.eaton.rest.api.dbetoweb.JsonFileHelper;
 
@@ -178,5 +180,33 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         String expectedPanelText = "Comm Channel Information";
         String actualPanelText = channelDetailPage.getCommChannelInfoPanel().getPanelName();
         assertThat(actualPanelText).isEqualTo(expectedPanelText);
+    }
+        
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
+    public void commChannelDeleteUdp_ActionsDeleteModalDeleteButtonClick() {
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String deleteCommChannelName = "UDP Comm Channel " + timeStamp;
+
+        // Creating one UDP port comm channel using hard coded json file.
+        String payloadFile = System.getProperty("user.dir")
+                + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelUDP.json";
+
+        Object body = JsonFileHelper.parseJSONFile(payloadFile);
+        jo = (JSONObject) body;
+        jo.put("name", deleteCommChannelName);
+        Integer deletePortNumber = randomNum.nextInt(65536);
+        jo.put("portNumber", deletePortNumber);
+        ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
+        String deleteCommChannelId = createResponse.path("id").toString();
+        navigate(Urls.Assets.COMM_CHANNEL_DETAIL + deleteCommChannelId);
+        channelDetailPage = new CommChannelDetailPage(driverExt);
+        String modalTitle = "Confirm Delete";
+        String expectedMessage = deleteCommChannelName +" deleted successfully.";
+        ConfirmModal deleteConfirmModal = channelDetailPage.showDeleteCommChannelModal(modalTitle);
+        deleteConfirmModal.clickBtnByNameAndWait("Delete");
+        CommChannelsListPage listPage = new CommChannelsListPage(driverExt);
+        String userMsg = listPage.getUserMessage();
+
+        assertThat(userMsg).isEqualTo(expectedMessage);
     }
 }
