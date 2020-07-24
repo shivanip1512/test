@@ -60,7 +60,7 @@ public class AttributesController {
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private AttributeValidator attributeValidator;
-    @Autowired private AttributeAssignmentValidator attributeAssignmentValidator;
+    @Autowired private AssignmentValidator assignmentValidator;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
@@ -245,7 +245,7 @@ public class AttributesController {
     public String saveAssignment(@ModelAttribute("assignment") Assignment assignment, BindingResult result, ModelMap model, 
                                     PaoType[] deviceTypes, String attributeName, YukonUserContext userContext, HttpServletRequest request, 
                                     HttpServletResponse resp, FlashScope flashScope) {
-        attributeAssignmentValidator.validate(assignment, result);
+        assignmentValidator.validate(assignment, result);
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             retrievePopupModel(model, userContext, request, flashScope);
@@ -348,7 +348,7 @@ public class AttributesController {
         }
 
         List<AttributeAssignment> assignmentList = new ArrayList<>();
-
+        
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.attributeAssignmentsUrl);
             URIBuilder ub = new URIBuilder(url);

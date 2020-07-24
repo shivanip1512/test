@@ -16,7 +16,7 @@
     
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".attributeName">
-                    <tags:selectWithItems id="attributeId" path="attributeId" items="${attributes}" itemValue="id" itemLabel="name"/>
+                    <tags:selectWithItems id="attributeId" path="attributeId" items="${attributes}" itemValue="customAttributeId" itemLabel="name"/>
                     <input id="attributeName" type="hidden" name="attributeName"/>
                 </tags:nameValue2>
                 

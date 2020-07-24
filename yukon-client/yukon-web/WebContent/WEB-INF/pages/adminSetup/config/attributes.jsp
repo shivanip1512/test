@@ -51,19 +51,20 @@
                     </thead>
                     <tbody>
                         <c:forEach var="attr" items="${attributes}">
-                            <c:set var="enableEdit" value="${enableEditId == attr.id}"/>
+                            <c:set var="attributeId" value="${attr.customAttributeId}"/>
+                            <c:set var="enableEdit" value="${enableEditId == attributeId}"/>
                             <c:set var="editClass" value="${enableEdit ? '' : 'dn'}"/>
                             <c:set var="viewClass" value="${enableEdit ? 'dn' : ''}"/>
                             <tr>
                                 <td>
-                                    <span class="js-view-attribute-${attr.id} ${viewClass}" title="${attr.key}">
+                                    <span class="js-view-attribute-${attributeId} ${viewClass}" title="${attr.key}">
                                         ${fn:escapeXml(attr.name)}
                                     </span>
-                                    <span class="js-edit-attribute-${attr.id} ${editClass}">
+                                    <span class="js-edit-attribute-${attributeId} ${editClass}">
                                         <cti:url value="/admin/config/attribute/edit" var="editAttributeUrl" />
                                         <form:form modelAttribute="editAttribute" action="${editAttributeUrl}" method="POST">
                                             <cti:csrfToken />
-                                            <input type="hidden" name="id" value="${attr.id}"/>
+                                            <input type="hidden" name="id" value="${attributeId}"/>
                                             <input type="hidden" name="savedName" value="${attr.name}"/>
                                             <spring:bind path="name">
                                                 <c:set var="errorClass" value="${status.error ? 'error' : ''}"/>
@@ -71,9 +72,9 @@
                                             </spring:bind>
                                             <div class="button-group">
                                                 <cti:button renderMode="buttonImage" icon="icon-disk" type="submit"
-                                                    data-attribute-id="${attr.id}"/>
+                                                    data-attribute-id="${attributeId}"/>
                                                 <cti:button renderMode="buttonImage" icon="icon-delete" classes="js-cancel-edit-attribute" 
-                                                    data-attribute-id="${attr.id}"/>
+                                                    data-attribute-id="${attributeId}"/>
                                             </div>
                                             <spring:bind path="name">
                                                 <c:if test="${status.error}"><br><form:errors path="name" cssClass="error" /></c:if>
@@ -82,13 +83,13 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <cm:dropdown icon="icon-cog" triggerClasses="js-view-attribute-${attr.id} ${viewClass}">
-                                        <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-edit-attribute" data-attribute-id="${attr.id}"/>
-                                        <cm:dropdownOption id="delete-attribute-${attr.id}" key=".delete" icon="icon-cross" 
-                                            data-ok-event="yukon:attribute:delete" classes="js-hide-dropdown" data-attribute-id="${attr.id}"/>
-                                        <d:confirm on="#delete-attribute-${attr.id}" nameKey="confirmDelete" argument="${attr.name}"  />
-                                        <cti:url var="deleteUrl" value="/admin/config/attribute/${attr.id}/delete"/>
-                                        <form:form id="delete-attribute-form-${attr.id}" action="${deleteUrl}" method="DELETE">
+                                    <cm:dropdown icon="icon-cog" triggerClasses="js-view-attribute-${attributeId} ${viewClass}">
+                                        <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-edit-attribute" data-attribute-id="${attributeId}"/>
+                                        <cm:dropdownOption id="delete-attribute-${attributeId}" key=".delete" icon="icon-cross" 
+                                            data-ok-event="yukon:attribute:delete" classes="js-hide-dropdown" data-attribute-id="${attributeId}"/>
+                                        <d:confirm on="#delete-attribute-${attributeId}" nameKey="confirmDelete" argument="${attr.name}"  />
+                                        <cti:url var="deleteUrl" value="/admin/config/attribute/${attributeId}/delete"/>
+                                        <form:form id="delete-attribute-form-${attributeId}" action="${deleteUrl}" method="DELETE">
                                             <cti:csrfToken/>
                                             <input type="hidden" name="name" value="${attr.name}"/>
                                         </form:form>
@@ -130,7 +131,7 @@
                         <cti:msg2 var="allAttributes" key=".allAttributes"/>&nbsp;
                         <select name="selectedAttributes" class="js-selected-attributes" multiple="multiple" data-placeholder="${allAttributes}">
                             <c:forEach var="attribute" items="${attributes}">
-                                <option value="${attribute.id}">${fn:escapeXml(attribute.name)}</option>
+                                <option value="${attribute.customAttributeId}">${fn:escapeXml(attribute.name)}</option>
                             </c:forEach>
                         </select>
                         
