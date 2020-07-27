@@ -1,14 +1,13 @@
-package com.eaton.rest.api.dbetoweb;
+package com.eaton.rest.api.drsetup;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import com.eaton.framework.APIs;
 import com.eaton.rest.api.common.ApiCallHelper;
 
 import io.restassured.response.ExtractableResponse;
 
-public class DBEToWebGetRequest {
+public class DrSetupGetRequest {
 
     public static ExtractableResponse<?> getLoadGroup(int id) {
         String pathParam = APIs.DemandResponse.getLoadGroup + id;

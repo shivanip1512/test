@@ -80,4 +80,12 @@ public class DropDownElement {
     public String getValidationError() {
         return this.driverExt.findElement(By.cssSelector("span[id='" + this.elementName + ".errors']"), Optional.empty()).getText();
      }
+    
+    public String getSelectedValue() {
+    	List<WebElement> elements = getSelectElement().findElements(By.tagName("option"));
+    	WebElement element = elements.stream().filter(x -> x.isSelected()).findFirst().orElseThrow();
+    	return element.getText();
+    }
 }
+
+

@@ -15,6 +15,7 @@
         <tag name="OUTAGE"/>
         <tag name="PORTER_COMMAND_REQUESTS"/>
         <tag name="STARS_ACCOUNT_ATTACHABLE_METER"/>
+        <tag name="SUPPORTS_ATTRIBUTE_ASSIGNMENT"/>
         <tag name="THREE_PHASE_CURRENT"/>
         <tag name="THREE_PHASE_VOLTAGE"/>
         <tag name="TOU"/>
