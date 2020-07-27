@@ -24,6 +24,7 @@
 #include "utility.h"
 #include "amq_constants.h"
 #include "MessageCounter.h"
+#include "ctidate.h"
 
 #include <boost/range/adaptor/map.hpp>
 
@@ -764,8 +765,23 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
             CTILOG_DEBUG(dout, logNow() <<" Initializing threadFunctionReceiveFromDispatch");
         }
 
+        const CtiTime sentinel      { { 25, 7, 1980 } };
+        CtiTime lastPointUpdateTime { sentinel };
+
         for( ; ; )
         {
+            // registration
+            if ( lastPointUpdateTime != sentinel )
+            {
+                CtiTime now;
+
+                if ( ( lastPointUpdateTime + 15 ) <  now ) // at least 15s since last point update...
+                {
+                    lastPointUpdateTime = sentinel;
+                    reRegisterWithDispatch();
+                }
+            }
+
             std::unique_ptr<CtiMessage> incomingMsg;
 
             //  while i'm not getting anything
@@ -802,14 +818,10 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
 
                     if ( dBChangeMsg->getDatabase() == ChangePointDb)
                     {
-                        if (changeType == ChangeTypeDelete)
-                            processFDRPointChange(pidChanged, true);
-                        else
-                        {
-                            processFDRPointChange(pidChanged, false);
-                            reRegisterWithDispatch();
-                        }
-
+                        CtiTime now;
+ 
+                        processFDRPointChange(pidChanged, changeType == ChangeTypeDelete);
+                        lastPointUpdateTime = now;
                     }
                     else if ( dBChangeMsg->getDatabase() == ChangePAODb)
                     {
