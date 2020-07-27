@@ -146,10 +146,18 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
     }
     
     private void addAssignmentParameters(SqlParameterSink params, Assignment assignment) {
-        params.addValue("AttributeId", assignment.getAttributeId());
-        params.addValue("PaoType", assignment.getPaoType());
-        params.addValue("PointType", assignment.getPointType());
-        params.addValue("PointOffset", assignment.getOffset());
+        if (assignment.getAttributeId() != null) {
+            params.addValue("AttributeId", assignment.getAttributeId());
+        }
+        if (assignment.getPaoType() != null) {
+            params.addValue("PaoType", assignment.getPaoType());
+        }
+        if (assignment.getPointType() != null) {
+            params.addValue("PointType", assignment.getPointType());
+        }
+        if (assignment.getOffset() != null) {
+            params.addValue("PointOffset", assignment.getOffset());
+        }
     }
 }
  
