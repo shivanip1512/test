@@ -41,37 +41,15 @@ public class CreateBtnDropDownElement {
     public void clickAndSelectOptionByText(String value) {
         click();
 
-//        WebElement element = null;
-//        long startTime = System.currentTimeMillis();
-//        while (element == null && System.currentTimeMillis() - startTime < 3000) {
-//            element = this.driverExt.findElement(By.cssSelector(".dropdown-menu[style*='display: block;']"), Optional.empty());
-//        }
-
         WebElement el = SeleniumTestSetup.getDriverExt().getDriverWait()
                 .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".dropdown-menu[style*='display: block;']")));
 
         List<WebElement> options = el.findElements(By.cssSelector(".dropdown-option"));
-        
-//        for (WebElement webElement : options) {
-//            
-//            String text = webElement.findElement(By.cssSelector(".dropdown-option-label")).getText();
-//            
-//            if (text.equals(value)) {
-//                webElement.click();
-//            }
-//        }
 
         WebElement optionValue = options.stream().filter(option -> option.findElement(By.cssSelector(".dropdown-option-label")).getText().equals(value)).findFirst().orElseThrow();
 
         optionValue.click();
 
-//            for (WebElement option : options) {
-//                String optionText = option.getText();
-//                if (optionText.equals(value)) {
-//                    option.click();
-//                    return;
-//                }
-//            }
 //        }  //TODO add an exception stating did not find dropdown
     }
 }

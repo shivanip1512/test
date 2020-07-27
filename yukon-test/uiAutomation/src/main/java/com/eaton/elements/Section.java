@@ -45,5 +45,5 @@ public class Section {
             names.add(element.getText());
         }
         return names;
-    }
+    }    
 }
