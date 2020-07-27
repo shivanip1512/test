@@ -10,7 +10,7 @@ public class Assignment {
     private Integer attributeId;
     private Integer attributeAssignmentId;
     private PaoType paoType;
-    private int offset;
+    private Integer offset;
     private PointType pointType;
      
     public Integer getAttributeAssignmentId() {
@@ -29,21 +29,12 @@ public class Assignment {
         this.paoType = paoType;
     }
 
-    
     public Integer getAttributeId() {
         return attributeId;
     }
 
     public void setAttributeId(Integer attributeId) {
         this.attributeId = attributeId;
-    }
-    
-    public int getOffset() {
-        return offset;
-    }
-
-    public void setOffset(int offset) {
-        this.offset = offset;
     }
 
     public PointType getPointType() {
@@ -53,19 +44,22 @@ public class Assignment {
     public void setPointType(PointType pointType) {
         this.pointType = pointType;
     }
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
-            + System.getProperty("line.separator");
+    
+    public Integer getOffset() {
+        return offset;
     }
+
+    public void setOffset(Integer offset) {
+        this.offset = offset;
+    }
+    
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((attributeAssignmentId == null) ? 0 : attributeAssignmentId.hashCode());
         result = prime * result + ((attributeId == null) ? 0 : attributeId.hashCode());
-        result = prime * result + offset;
+        result = prime * result + ((offset == null) ? 0 : offset.hashCode());
         result = prime * result + ((paoType == null) ? 0 : paoType.hashCode());
         result = prime * result + ((pointType == null) ? 0 : pointType.hashCode());
         return result;
@@ -90,12 +84,21 @@ public class Assignment {
                 return false;
         } else if (!attributeId.equals(other.attributeId))
             return false;
-        if (offset != other.offset)
+        if (offset == null) {
+            if (other.offset != null)
+                return false;
+        } else if (!offset.equals(other.offset))
             return false;
         if (paoType != other.paoType)
             return false;
         if (pointType != other.pointType)
             return false;
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
+            + System.getProperty("line.separator");
     }
 }
