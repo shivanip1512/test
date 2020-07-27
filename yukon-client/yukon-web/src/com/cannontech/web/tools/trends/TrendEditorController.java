@@ -34,9 +34,10 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.YukonColorPallet;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.trend.model.Color;
+import com.cannontech.common.trend.model.GraphColors;
 import com.cannontech.common.trend.model.RenderType;
 import com.cannontech.common.trend.model.TrendAxis;
 import com.cannontech.common.trend.model.TrendModel;
@@ -114,7 +115,7 @@ public class TrendEditorController {
     @GetMapping("/renderSetupPopup")
     public String renderSetupPopup(ModelMap model, @RequestParam("isMarker") boolean isMarker, @RequestParam("numberOfRows") Integer numberOfRows) {
         model.addAttribute("mode", PageEditMode.CREATE);
-        TrendSeries trendSeries = new TrendSeries(Color.getNextDefaultColor(numberOfRows));
+        TrendSeries trendSeries = new TrendSeries(GraphColors.getNextDefaultColor(numberOfRows));
         trendSeries.applyDefaults();
         model.addAttribute("trendSeries", trendSeries);
         if (isMarker) {
@@ -291,7 +292,7 @@ public class TrendEditorController {
     }
 
     private void setModel(ModelMap model, boolean isMarker) {
-        List<String> colors = Lists.newArrayList(Color.values()).stream().map(color -> color.getHexValue()).collect(Collectors.toList());
+        List<String> colors = Lists.newArrayList(GraphColors.values()).stream().map(color -> color.getHexValue()).collect(Collectors.toList());
         model.addAttribute("colors", colors);
         model.addAttribute("axes", Lists.newArrayList(TrendAxis.values()));
         
@@ -345,10 +346,10 @@ public class TrendEditorController {
             }
         });
         
-        binder.registerCustomEditor(Color.class, new PropertyEditorSupport() {
+        binder.registerCustomEditor(YukonColorPallet.class, new PropertyEditorSupport() {
             @Override
             public void setAsText(String color) throws IllegalArgumentException {
-                setValue(Color.getColorByHexValue(color));
+                setValue(YukonColorPallet.getColorByHexValue(color));
             }
         });
     }

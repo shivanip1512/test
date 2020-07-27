@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.YukonColorPallet;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.trend.model.RenderType;
 import com.cannontech.common.trend.model.TrendType;
@@ -158,7 +158,7 @@ public class TrendDataController {
             case MARKER_TYPE:
                 seriesProperties.put("threshold-value", seriesItem.getMultiplier());
                 Map<String, Object> plotLineProperties = new HashMap<>();
-                plotLineProperties.put("color", Colors.colorPaletteToWeb(seriesItem.getColor()));
+                plotLineProperties.put("color", YukonColorPallet.getColor(seriesItem.getColor()).getHexValue());
                 plotLineProperties.put("width", 2);
                 plotLineProperties.put("value", seriesItem.getMultiplier());
                 plotLines.add(plotLineProperties);
@@ -210,7 +210,7 @@ public class TrendDataController {
             
             seriesProperties.put("name", seriesItem.getLabel() + " " + graphTypeLabel(seriesItem.getType(), userContext));
             log.debug("color from series:" + seriesItem.getColor());
-            seriesProperties.put("color", Colors.colorPaletteToWeb(seriesItem.getColor()));
+            seriesProperties.put("color", YukonColorPallet.getColor(seriesItem.getColor()).getHexValue());
             seriesList.add(seriesProperties);
         }
         
@@ -251,7 +251,7 @@ public class TrendDataController {
             }
             String reportDate = dateFormattingService.format(specificDate, DateFormatEnum.DATE, userContext);
             seriesProperties.put("name", seriesItem.getLabel() + " " + graphTypeLabel(seriesItem.getType(), userContext) +" " + reportDate);
-            seriesProperties.put("color", Colors.colorPaletteToWeb(seriesItem.getColor()));
+            seriesProperties.put("color", YukonColorPallet.getColor(seriesItem.getColor()).getHexValue());
             seriesList.add(seriesProperties);
         }
         Map<String, Object> json = new HashMap<>();
