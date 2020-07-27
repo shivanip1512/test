@@ -90,7 +90,7 @@
         <include name="smtp-1.5.1.jar"/>
         <include name="notification.jar"/>
         <include name="org.osgi.core-4.1.0.jar"/>
-        <include name="quartz-2.2.1.jar"/>
+        <include name="quartz-2.3.0-SNAPSHOT.jar"/>
         <include name="saaj.jar"/>
         <include name="slf4j-api-1.7.25.jar"/>
         <include name="slf4j-api-1.8.0-alpha2.jar"/>

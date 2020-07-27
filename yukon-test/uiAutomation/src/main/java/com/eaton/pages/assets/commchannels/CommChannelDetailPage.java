@@ -6,7 +6,6 @@ import com.eaton.elements.ActionBtnDropDownElement;
 import com.eaton.elements.Section;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.CreateCommChannelModal;
-import com.eaton.elements.modals.EditCommChannelModal;
 import com.eaton.elements.panels.CommChannelInfoPanel;
 import com.eaton.elements.tabs.TabElement;
 import com.eaton.framework.DriverExtensions;
@@ -43,22 +42,6 @@ public class CommChannelDetailPage extends PageBase {
 
     public Section getTimingSection() {
         return new Section(this.driverExt, "Timing");
-    }
-
-    public Section getGeneralSection() {
-        return new Section(this.driverExt, "General");
-    }
-
-    public Section getSharedSection() {
-        return new Section(this.driverExt, "Shared");
-    }
-
-    public EditCommChannelModal showCommChannelEditModal(String modalTitle) {
-        getCommChannelInfoPanel().getEdit().click();
-
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-edit-comm-channel-popup");
-
-        return new EditCommChannelModal(this.driverExt, Optional.of(modalTitle), Optional.of("js-edit-comm-channel-popup"));
     }
 
     public ConfirmModal showDeleteLoadGroupModal() {

@@ -68,7 +68,7 @@ Class-Path: ./
  commons-io-2.6.jar 
  httpclient-4.3.4.jar 
  httpcore-4.3.2.jar 
- quartz-2.2.1.jar 
+ quartz-2.3.0-SNAPSHOT.jar 
  joda-time-2.3.jar 
  activemq-broker-5.15.10.jar 
  activemq-client-5.15.10.jar 
