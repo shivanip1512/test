@@ -68,7 +68,8 @@ public enum PaoTag {
     DATA_STREAMING("Data Streaming Capable"),
     PORT_DETAIL_DISPLAYABLE("Port Detail Displayable"),
     SUPPORTS_PING("Supports Device Pinging"),
-    VIRTUAL_DEVICE_DISPLAYABLE("Virtual Device Displayable")
+    VIRTUAL_DEVICE_DISPLAYABLE("Virtual Device Displayable"),
+    SUPPORTS_ATTRIBUTE_ASSIGNMENT("Supports Attribute Assignment")
     ;
 
     private final String description;

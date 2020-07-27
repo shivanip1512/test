@@ -5,7 +5,7 @@ import java.util.Comparator;
 import com.cannontech.amr.meter.model.PointSortField;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.point.YukonPoint;
@@ -16,7 +16,7 @@ public class LiteYukonPoint implements YukonPao, YukonPoint {
     private final String pointName;
     private final int pointId;
     private final PaoPointIdentifier paoPointIdentifier;
-    private final BuiltInAttribute attribute;
+    private final Attribute attribute;
     
     public static Comparator<LiteYukonPoint> POINTNAME_COMPARATOR = new Comparator<LiteYukonPoint>() {
         @Override
@@ -74,7 +74,7 @@ public class LiteYukonPoint implements YukonPao, YukonPoint {
         orderByToComparatorMap = mapBuilder.build();
     }
     
-    private LiteYukonPoint(PaoPointIdentifier paoPointId, BuiltInAttribute attribute, String name, int pointId) {
+    private LiteYukonPoint(PaoPointIdentifier paoPointId, Attribute attribute, String name, int pointId) {
         this.paoPointIdentifier = paoPointId;
         this.attribute = attribute;
         this.pointName = name;
@@ -89,7 +89,7 @@ public class LiteYukonPoint implements YukonPao, YukonPoint {
         return pointId;
     }
     
-    public BuiltInAttribute getAttribute() {
+    public Attribute getAttribute() {
         return attribute;
     }
     
@@ -97,7 +97,7 @@ public class LiteYukonPoint implements YukonPao, YukonPoint {
         return paoPointIdentifier;
     }
     
-    public static LiteYukonPoint of(PaoPointIdentifier paoPointId, BuiltInAttribute attribute, String name, int pointId) {
+    public static LiteYukonPoint of(PaoPointIdentifier paoPointId, Attribute attribute, String name, int pointId) {
         return new LiteYukonPoint(paoPointId, attribute, name, pointId);
     }
     

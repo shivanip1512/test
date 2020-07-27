@@ -8,24 +8,16 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 public class CustomAttribute implements Attribute {
     public static String i18Key = "yukon.common.attribute.customAttribute.";
-    private Integer id;
+    private Integer customAttributeId;
     private String name;
 
     public CustomAttribute() {
 
     }
 
-    public CustomAttribute(Integer id, String name) {
-        this.id = id;
+    public CustomAttribute(Integer customAttributeId, String name) {
+        this.customAttributeId = customAttributeId;
         this.name = name;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -37,24 +29,38 @@ public class CustomAttribute implements Attribute {
     }
 
     public String getI18Key() {
-        return i18Key + id;
+        return i18Key + customAttributeId;
     }
 
     @Override
     public String getKey() {
-        return String.valueOf(id);
+        return String.valueOf(customAttributeId);
     }
 
     @Override
     public MessageSourceResolvable getMessage() {
         return YukonMessageSourceResolvable.createDefault(getI18Key(), name);
     }
+    
+    public Integer getCustomAttributeId() {
+        return customAttributeId;
+    }
 
+    public void setCustomAttributeId(Integer customAttributeId) {
+        this.customAttributeId = customAttributeId;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                + System.getProperty("line.separator");
+    }
+    
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((customAttributeId == null) ? 0 : customAttributeId.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         return result;
     }
@@ -68,10 +74,10 @@ public class CustomAttribute implements Attribute {
         if (getClass() != obj.getClass())
             return false;
         CustomAttribute other = (CustomAttribute) obj;
-        if (id == null) {
-            if (other.id != null)
+        if (customAttributeId == null) {
+            if (other.customAttributeId != null)
                 return false;
-        } else if (!id.equals(other.id))
+        } else if (!customAttributeId.equals(other.customAttributeId))
             return false;
         if (name == null) {
             if (other.name != null)
@@ -79,11 +85,5 @@ public class CustomAttribute implements Attribute {
         } else if (!name.equals(other.name))
             return false;
         return true;
-    }
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                + System.getProperty("line.separator");
     }
 }

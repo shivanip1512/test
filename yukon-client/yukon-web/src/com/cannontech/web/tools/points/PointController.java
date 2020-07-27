@@ -173,11 +173,20 @@ public class PointController {
             ModelMap model, FlashScope flashScope, YukonUserContext userContext, HttpServletResponse response)
             throws JsonGenerationException, JsonMappingException, IOException {
         pointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.CREATE);
+
+        if (pointModel.isPhysicalOffset() || (pointModel.getPointType().isCalcPoint())) {
+            pointModel.setPhysicalOffset(true);
+        } else {
+            pointModel.setPhysicalOffset(false);
+            pointModel.setPointOffset(0);
+        }
+
         copyPointValidator.validate(pointModel, result);
 
         if (result.hasErrors()) {
             model.addAttribute("paoType", dbCache.getAllPaosMap().get(pointModel.getPaoId()).getPaoType());
             model.addAttribute("copyPointModel", pointModel);
+            model.addAttribute("isCalcType", pointModel.getPointType().isCalcPoint());
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             return "point/copyPointPopup.jsp";
         }

@@ -9,11 +9,13 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.annotations.AfterSuite;
@@ -320,6 +322,17 @@ public class SeleniumTestSetup {
         SeleniumTestSetup.driver.navigate().to(getBaseUrl() + url);
 
         waitForUrlToLoad(url, Optional.empty());
+    }
+    
+    public static void moveToElement(WebElement element) {
+        Actions actions = new Actions(driver);
+        actions.moveToElement(element);
+        actions.perform();
+    }
+    
+    public static void scrollToElement(WebElement element) {
+        JavascriptExecutor je = (JavascriptExecutor) driver;
+        je.executeScript("arguments[0].scrollIntoView(true);",element);
     }
 
     @AfterSuite(alwaysRun = true)

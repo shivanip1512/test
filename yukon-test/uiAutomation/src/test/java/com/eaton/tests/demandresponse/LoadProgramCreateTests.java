@@ -65,7 +65,7 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
 
         LoadGroupsTab groupsTab = createPage.getLoadGroupTab();
 
-        groupsTab.clickTab("Load Groups");
+        groupsTab.clickTabAndWait("Load Groups");
         groupsTab.getLoadGroups().addSingleAvailable("AT RFN Expresscom Ldgrp for Create Ldprgm");
 
         createPage.getSaveBtn().click();

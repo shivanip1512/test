@@ -42,6 +42,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
@@ -430,7 +431,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         case UNIT_OF_MEASURE:
             return getUOMValue(pao, attribute, userContext, unitMeasureLookupTable);
         case POINT_NAME:
-            return pointValueQualityHolder == null ? "" : getPointName(attribute, pao);
+            return getPointName(attribute, pao, pointValueQualityHolder);
         case POINT_VALUE:
             return getPointValue(exportField, pointValueQualityHolder);
         case POINT_TIMESTAMP:
@@ -464,10 +465,21 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         }
     }
 
-    private String getPointName(Attribute attribute, YukonPao pao) {
-        Map<Attribute, AttributeDefinition> attrDefMap = paoDefinitionDao.getPaoAttributeAttrDefinitionMap()
-                .get(pao.getPaoIdentifier().getPaoType());
-        return attrDefMap.get(attribute).getPointTemplate().getName();
+    private String getPointName(Attribute attribute, YukonPao pao, PointValueQualityHolder pointValueQualityHolder) {
+        if (pointValueQualityHolder == null) {
+            return "";
+        }
+        if (attribute instanceof BuiltInAttribute) {
+            Map<Attribute, AttributeDefinition> attrDefMap = paoDefinitionDao.getPaoAttributeAttrDefinitionMap()
+                    .get(pao.getPaoIdentifier().getPaoType());
+            return attrDefMap.get(attribute).getPointTemplate().getName();
+        } else if (attribute instanceof CustomAttribute) {
+            LitePoint point = pointDao.getLitePoint(pointValueQualityHolder.getId());
+            if (point != null) {
+                return point.getPointName();
+            }
+        }
+        return "";
     }
 
     /**

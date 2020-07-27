@@ -3,11 +3,6 @@ package com.eaton.elements;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -18,15 +13,13 @@ import com.eaton.framework.DriverExtensions;
 
 public class SearchBoxElement {
     private DriverExtensions driverExt;
-    private WebDriver driver;
     private String childElementName;
     private String parentElement;
 
     public SearchBoxElement(DriverExtensions driverExt, String parentElement, String childElementName) {
         this.driverExt = driverExt;
         this.parentElement = parentElement;    
-        this.childElementName = childElementName;
-           
+        this.childElementName = childElementName;          
     }  
     
     public SearchBoxElement(DriverExtensions driverExt, String elementName) {

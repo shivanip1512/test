@@ -48,7 +48,7 @@ Class-Path: ./
  reactive-streams-1.0.2.jar 
  spring-xml-3.0.7.RELEASE.jar 
  stax2-api-3.1.4.jar 
- dom4j-2.1.1.jar 
+ dom4j-2.1.3.jar 
  cglib-2.1.3.jar 
  asm.jar 
  log4j-api-2.11.2.jar 
@@ -68,7 +68,7 @@ Class-Path: ./
  commons-io-2.6.jar 
  httpclient-4.3.4.jar 
  httpcore-4.3.2.jar 
- quartz-2.2.1.jar 
+ quartz-2.3.0-SNAPSHOT.jar 
  joda-time-2.3.jar 
  activemq-broker-5.15.10.jar 
  activemq-client-5.15.10.jar 
