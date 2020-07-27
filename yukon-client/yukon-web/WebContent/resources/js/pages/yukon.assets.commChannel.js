@@ -48,7 +48,7 @@ yukon.assets.commChannel = (function () {
             });
 
             $(document).on('change', '.js-physical-port', function (event) {
-                yukon.comm.channel.togglePhysicalPort();
+                yukon.comm.channel.togglePhysicalPort($(this).closest('.ui-dialog'));
             });
 
             $(document).on("yukon:assets:commChannel:create", function(event) {
@@ -81,18 +81,14 @@ yukon.assets.commChannel = (function () {
                     }).fail(function (xhr, status, error){
                         popup.html(xhr.responseText);
                         yukon.ui.initContent(popup);
-                        yukon.comm.channel.loadPhysicalPort();
-                        yukon.comm.channel.formatPhysicalPortErrors();
+                        yukon.comm.channel.loadPhysicalPort(popup);
+                        yukon.comm.channel.formatPhysicalPortErrors(popup);
                         yukon.ui.unblockPage();
                     });
                 } else {
                     yukon.ui.unblockPage();
                     window.location.href = window.location.href;
                 }
-            });
-
-            $(document).on('dialogclose', '#js-create-comm-channel-popup', function(event) {
-                yukon.comm.channel.removePhysicalPortFields();
             });
 
             _initialized = true;
