@@ -770,24 +770,24 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
 
         for( ; ; )
         {
-            // registration
-            if ( lastPointUpdateTime != sentinel )
-            {
-                CtiTime now;
-
-                if ( ( lastPointUpdateTime + 15 ) <  now ) // at least 15s since last point update...
-                {
-                    lastPointUpdateTime = sentinel;
-                    reRegisterWithDispatch();
-                }
-            }
-
             std::unique_ptr<CtiMessage> incomingMsg;
 
             //  while i'm not getting anything
             while( ! incomingMsg.get() )
             {
                 Cti::WorkerThread::interruptionPoint();
+
+                // registration
+                if ( lastPointUpdateTime != sentinel )
+                {
+                    CtiTime now;
+
+                    if ( ( lastPointUpdateTime + 15 ) <  now ) // at least 15s since last point update...
+                    {
+                        lastPointUpdateTime = sentinel;
+                        reRegisterWithDispatch();
+                    }
+                }
 
                 {
                     ReaderGuard guard(iDispatchLock);
