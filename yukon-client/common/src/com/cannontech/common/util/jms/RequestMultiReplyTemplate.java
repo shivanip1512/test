@@ -37,7 +37,6 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
     private final YukonJmsTemplate jmsTemplate;
     private final JmsApi<R,?,Q> api;
     private final Duration timeout;
-    private final boolean isInternal;
     private final ExecutorService executor;
     
     /**
@@ -47,7 +46,7 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
      * @param api The JmsApi that describes the communications via this template.
      */
     public RequestMultiReplyTemplate(YukonJmsTemplate jmsTemplate, JmsApi<R, ?, Q> api) {
-        this(jmsTemplate, null, api, defaultTimeout, false);
+        this(jmsTemplate, null, api, defaultTimeout);
     }
     
     /**
@@ -56,11 +55,8 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
      * @param workerQueueSize Size of the worker queue. If null, the default will be used.
      * @param api The JmsApi that describes the communications via this template.
      * @param timeout The maximum length of time to wait for responses after the request is sent.
-     * @param isInternal Whether the communications are internal to Yukon or external between Yukon and NM. External
-     * comms are logged to the RFN Comms logs.
      */
-    public RequestMultiReplyTemplate(YukonJmsTemplate jmsTemplate, Integer workerQueueSize, JmsApi<R, ?, Q> api, Duration timeout,
-            boolean isInternal) {
+    public RequestMultiReplyTemplate(YukonJmsTemplate jmsTemplate, Integer workerQueueSize, JmsApi<R, ?, Q> api, Duration timeout) {
         
         if (api.getPattern() != JmsCommunicationPattern.REQUEST_MULTI_RESPONSE) {
             throw new IllegalArgumentException("Specified API: " + api.getName() + 
@@ -70,8 +66,6 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
         this.jmsTemplate = jmsTemplate;
         this.api = api;
         this.timeout = timeout;
-        this.isInternal = isInternal;
-        
         // Default to 50 if worker queue size is not specified
         int queueSize = workerQueueSize == null ? 50 : workerQueueSize;
         
@@ -179,7 +173,7 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
             replyHandler.handleReply(reply);
             expectedMessages = reply.getTotalSegments();
             messagesReceived += 1;
-            logReply(request, reply.toString(), expectedMessages, messagesReceived);
+            logReply(request, reply.loggingString(rfnLogger.getLevel()), expectedMessages, messagesReceived);
         }
     }
     
@@ -203,9 +197,9 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
      * Adds an entry in rfnLogger
      */
     private void log(String text) {
-        if (!isInternal && rfnLogger.isInfoEnabled()) {
+        if (rfnLogger.isInfoEnabled()) {
             rfnLogger.info(text);
-        } else if (isInternal && rfnLogger.isDebugEnabled()) {
+        } else if (rfnLogger.isDebugEnabled()) {
             rfnLogger.debug(text);
         }
     }

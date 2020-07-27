@@ -3,11 +3,13 @@ package com.eaton.elements;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
 
 public class RadioButtonElement {
 
@@ -15,75 +17,86 @@ public class RadioButtonElement {
     private String elementName;
     private String parentName;
     private WebElement parentElement;
-    private List<WebElement> radioBtns;
-    
-    
-    public RadioButtonElement(DriverExtensions driverExt, String elementName) {        
+
+    public RadioButtonElement(DriverExtensions driverExt, String elementName) {
         this.driverExt = driverExt;
         this.elementName = elementName;
-        
-        setRadioBoxes();
     }
-    
-    public RadioButtonElement(DriverExtensions driverExt, String elementName, String parentName) {        
+
+    public RadioButtonElement(DriverExtensions driverExt, String elementName, String parentName) {
         this.driverExt = driverExt;
         this.elementName = elementName;
         this.parentName = parentName;
-        
-        setRadioBoxes();
     }
-    
-    public RadioButtonElement(DriverExtensions driverExt, String elementName, WebElement parentElement) {        
+
+    public RadioButtonElement(DriverExtensions driverExt, String elementName, WebElement parentElement) {
         this.driverExt = driverExt;
         this.elementName = elementName;
         this.parentElement = parentElement;
-        
-        setRadioBoxes();
     }
-    
+
     public void setByValue(String value, boolean check) {
-        List<WebElement> elements = getRadioBoxes();
-        
-        for (WebElement element : elements) {
-            String v = element.getAttribute("value");            
-                                   
-            if (v.equals(value)) {
-                
-                String checked = element.getAttribute("checked");
-                
-                if(!checked.equals("checked") && check) {
-                    element.click();   
-                }                                
-                
-                return;
-            }
+        List<WebElement> btnList = this.driverExt.findElements(By.cssSelector(".radio-btn"), Optional.empty());
+
+        for (WebElement btn : btnList) {
+
+            List<WebElement> list = btn.findElements(By.cssSelector("input[name='" + elementName + "']"));
+            
+            if(!list.isEmpty()) {
+                WebElement el = list.get(0);
+                if(el.getAttribute("value").equals(value)) {
+                    String checked = el.getAttribute("checked");
+                    
+                    if ((checked == null && check) || (checked != null && !check)) {
+                        btn.findElement(By.cssSelector(".button")).click();
+                    }   
+                }
+            }                        
         }
-    }     
-    
+    }
+
     public List<String> getValues() {
-        List<WebElement> elements = getRadioBoxes();
-        
+        List<WebElement> elements = getRadioButtons();
+
         List<String> values = new ArrayList<>();
         for (WebElement element : elements) {
             String value = element.getAttribute("value");
-            
+
             values.add(value);
         }
-        
+
         return values;
     }
-    
-    private void setRadioBoxes() {
-        if(this.parentName != null) {
-            this.radioBtns = this.driverExt.findElements(By.cssSelector("[aria-describedby='" + this.parentName + "'] input[name = '" + this.elementName + "']"), Optional.empty());
+
+    private List<WebElement> getRadioButtons() {
+        if (this.parentName != null) {
+            return this.driverExt.findElements(
+                    By.cssSelector("[aria-describedby='" + this.parentName + "'] input[name = '" + this.elementName + "']"),
+                    Optional.empty());
         } else if (this.parentElement != null) {
-            this.radioBtns = this.parentElement.findElements(By.cssSelector("input[name = '" + this.elementName + "']"));
+            return this.parentElement.findElements(By.cssSelector("input[name = '" + this.elementName + "']"));
         } else {
-            this.radioBtns = this.driverExt.findElements(By.cssSelector("input[name = '" + this.elementName + "']"), Optional.empty());   
-        }        
+            return this.driverExt.findElements(By.cssSelector("input[name = '" + this.elementName + "']"), Optional.empty());
+        }
     }
-    
-    private List<WebElement> getRadioBoxes() {
-        return this.radioBtns;
+
+    public String getValueChecked() {
+        List<WebElement> elements = getRadioButtons();
+        WebElement element = elements.stream().filter(x -> x.isSelected()).findFirst().orElseThrow();
+        return element.getAttribute("value");
+    }
+
+    public void scrollTo() {
+        List<WebElement> list = getRadioButtons();
+        WebElement el = list.get(0);
+
+        SeleniumTestSetup.scrollToElement(el);
+    }
+
+    public void moveTo() {
+        List<WebElement> list = getRadioButtons();
+        WebElement el = list.get(0);
+
+        SeleniumTestSetup.moveToElement(el);
     }
 }

@@ -262,7 +262,8 @@ public class PaoDefinitionDaoImplTest {
         ImmutableSet<PaoTag> expectedTags =
             ImmutableSet.of(PaoTag.COMMANDER_REQUESTS, PaoTag.DEVICE_ICON_TYPE, PaoTag.DLC_ADDRESS_RANGE_ENFORCE,
                 PaoTag.LOCATE_ROUTE, PaoTag.MCT_300_SERIES, PaoTag.METER_DETAIL_DISPLAYABLE, PaoTag.OUTAGE,
-                PaoTag.PORTER_COMMAND_REQUESTS, PaoTag.STARS_ACCOUNT_ATTACHABLE_METER, PaoTag.USES_METER_NUMBER_FOR_MSP);
+                PaoTag.PORTER_COMMAND_REQUESTS, PaoTag.STARS_ACCOUNT_ATTACHABLE_METER, PaoTag.SUPPORTS_ATTRIBUTE_ASSIGNMENT, 
+                PaoTag.USES_METER_NUMBER_FOR_MSP);
 
         PaoDefinition mct370Definition = dao.getPaoDefinition(PaoType.MCT370);
         Set<PaoTag> supportedTags = dao.getSupportedTags(mct370Definition);

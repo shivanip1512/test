@@ -35,7 +35,6 @@ import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.DeviceCollectionService;
 import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.scheduledFileExport.ArchivedDataExportFileGenerationParameters;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
@@ -63,6 +62,7 @@ import com.cannontech.web.amr.util.cronExpressionTag.handler.CustomCronTagStyleH
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.EnumPropertyEditor;
+import com.cannontech.web.input.type.AttributeType;
 import com.cannontech.web.scheduledFileExport.ScheduledFileExportHelper;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledArchivedDataFileExportTask;
@@ -90,6 +90,7 @@ public class DataExporterScheduleController {
     @Autowired private ScheduledFileExportHelper exportHelper;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
     @Autowired private ToolsEventLogService toolsEventLogService;
+    @Autowired private AttributeType attributeTypeEditor;
     
     public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
     private ScheduledFileExportValidator scheduledFileExportValidator = new ScheduledFileExportValidator(this.getClass());
@@ -293,7 +294,7 @@ public class DataExporterScheduleController {
             binder.setMessageCodesResolver(msgCodesResolver);
         }
 
-        binder.registerCustomEditor(Attribute.class, new EnumPropertyEditor<>(BuiltInAttribute.class));
+        binder.registerCustomEditor(Attribute.class, attributeTypeEditor.getPropertyEditor());
         binder.registerCustomEditor(DataRangeType.class, new EnumPropertyEditor<>(DataRangeType.class));
 
         PropertyEditor localDatePropertyEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext);

@@ -1,4 +1,4 @@
-package com.eaton.rest.api.dbetoweb;
+package com.eaton.rest.api.drsetup;
 
 import org.testng.annotations.Test;
 
@@ -10,12 +10,12 @@ public class SampleTests {
                 + "\\src\\test\\resources\\payload\\payload.loadgroup\\ecobee.json";
 
         Object body = JsonFileHelper.parseJSONFile(payloadFile);
-        DBEToWebCreateRequest.createLoadGroup(body);
+        DrSetupCreateRequest.createLoadGroup(body);
     }
 
     @Test
     public void test2() {
 
-        DBEToWebGetRequest.getLoadGroup(187);
+        DrSetupGetRequest.getLoadGroup(187);
     }
 }
