@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
 import com.cannontech.common.YukonColorPallet;
+import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.common.trend.model.TrendType.GraphType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.graph.GraphDefinition;
@@ -15,7 +16,7 @@ import com.cannontech.database.db.graph.GDSTypes;
 import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.database.db.graph.GraphDataSeries;
 
-public class TrendModel {
+public class TrendModel implements DBPersistentConverter<GraphDefinition> {
     private Integer trendId;
     private String name;
     private List<TrendSeries> trendSeries;
@@ -47,6 +48,7 @@ public class TrendModel {
     /*
      * Create DBPersistent object to insert
      */
+    @Override
     public void buildDBPersistent(GraphDefinition graph) {
         if (getName() != null) {
             graph.getGraphDefinition().setName(getName().trim());
@@ -99,6 +101,7 @@ public class TrendModel {
         }
     }
 
+    @Override
     public void buildModel(GraphDefinition graph) {
         setName(graph.getGraphDefinition().getName());
         setTrendId(graph.getGraphDefinition().getGraphDefinitionID());
