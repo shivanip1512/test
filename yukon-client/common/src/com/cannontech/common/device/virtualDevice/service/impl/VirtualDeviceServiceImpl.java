@@ -1,10 +1,18 @@
 package com.cannontech.common.device.virtualDevice.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.virtualDevice.VirtualDeviceModel;
 import com.cannontech.common.device.virtualDevice.service.VirtualDeviceService;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PaginatedResponse;
+import com.cannontech.common.pao.LiteYukonPaoSortableField;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.TransactionType;
@@ -61,6 +69,22 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
         VirtualDevice virtualDeviceRecord = (VirtualDevice) dBPersistentDao.retrieveDBPersistent(pao);
         dBPersistentDao.performDBChange(virtualDeviceRecord, TransactionType.DELETE);
         return virtualDeviceRecord.getPAObjectID();
+    }
+
+    @Override
+    public PaginatedResponse<DeviceBaseModel> getPage(LiteYukonPaoSortableField sortBy, Direction direction, Integer page, Integer itemsPerPage) {
+        Comparator<LiteYukonPAObject> comparator = (direction == Direction.desc ? sortBy.getComparator().reversed() : sortBy.getComparator());
+        if (sortBy != LiteYukonPaoSortableField.PAO_NAME) {
+            comparator = comparator.thenComparing(LiteYukonPaoSortableField.PAO_NAME.getComparator());
+        }
+
+        List<DeviceBaseModel> deviceModels = dbCache.getAllYukonPAObjects()
+                .stream()
+                .filter(pao -> pao.getPaoType() == PaoType.VIRTUAL_SYSTEM)
+                .sorted(comparator).map(pao -> DeviceBaseModel.of(pao))
+                .collect(Collectors.toList());
+
+        return new PaginatedResponse<DeviceBaseModel>(deviceModels, page, itemsPerPage);
     }
 
 }
