@@ -6,7 +6,7 @@ import com.eaton.elements.ActionBtnDropDownElement;
 import com.eaton.elements.Section;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.CreateCommChannelModal;
-import com.eaton.elements.modals.EditCommChannelModal;
+import com.eaton.elements.modals.commchannel.EditCommChannelModal;
 import com.eaton.elements.panels.CommChannelInfoPanel;
 import com.eaton.elements.tabs.TabElement;
 import com.eaton.framework.DriverExtensions;

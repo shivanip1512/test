@@ -138,6 +138,6 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
         nmError = messageSourceAccessor.getMessage("yukon.web.error.nm.error");
         Duration timeout = configSource.getDuration("RFN_META_DATA_REPLY_TIMEOUT", Duration.standardMinutes(2));
         multiReplyTemplate = new RequestMultiReplyTemplate<>(jmsTemplate, null, JmsApiDirectory.RF_METADATA_MULTI,
-                timeout, false);
+                timeout);
     }
 }

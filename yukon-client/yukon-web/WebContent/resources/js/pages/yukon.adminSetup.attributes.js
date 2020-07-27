@@ -37,6 +37,8 @@ yukon.adminSetup.attributes = (function () {
             if (_initialized) return;
             
             $('.js-attributes-table').scrollTableBody();
+            $('.js-selected-attributes').chosen({'width': '350px'});
+            $('.js-selected-device-types').chosen({'width': '350px'});
             
             $(document).on('yukon:attribute:delete', function (ev) {
                 var attributeId = $(ev.target).data('attributeId'),
@@ -53,6 +55,76 @@ yukon.adminSetup.attributes = (function () {
                 var attributeId = $(this).data('attributeId');
                 _toggleEditViewAttribute(attributeId, false);
             });
+            
+            $(document).on('click', '.js-filter-assignments', function() {
+                var tableContainer = $('#assignments-container'),
+                    form = $('#filter-form');
+                form.ajaxSubmit({
+                    success: function(data) {
+                        tableContainer.html(data);
+                        tableContainer.data('url', yukon.url('/admin/config/attributeAssignments/filter?' + form.serialize()));
+                    },
+                    error: function (xhr, status, error, $form) {
+                        tableContainer.html(xhr.responseText);
+                    },
+                });   
+            });
+            
+            $(document).on('yukon:assignment:load', function (ev) {
+                var popup = $(ev.target);
+                popup.find('.js-device-types').chosen({'width': '350px'});
+                if (popup.find('.user-message').is(':visible')) {
+                    $('.ui-dialog-buttonset').find('.js-primary-action').prop('disabled', true);
+                }
+            });  
+            
+            $(document).on('yukon:assignment:pointSelected', function (ev, items, picker) {
+                var pointType = items[0].pointType,
+                    pointOffset = items[0].pointOffset,
+                    dialog = $(ev.target);
+                dialog.find('.js-point-type').val(pointType);
+                dialog.find('.js-point-offset').val(pointOffset);
+                
+            });
+            
+            $(document).on('click', '.js-edit-assignment', function () {
+                var assignmentId = $(this).data('assignmentId'),
+                    url = yukon.url('/admin/config/attributeAssignments/popup?id=' + assignmentId),
+                    popup = $('.js-edit-assignment-popup'),
+                    popupTitle = popup.data('title'),
+                    dialogDivJson = {
+                        "data-url" : url,
+                        "data-dialog": '',
+                        "data-load-event" : "yukon:assignment:load",
+                        "data-event" : "yukon:assignment:save",
+                        "data-title" : popupTitle,
+                        "data-ok-text" : yg.text.save
+                    };
+                
+                yukon.ui.dialog($("<div/>").attr(dialogDivJson));
+            });
+            
+            $(document).on("yukon:assignment:save", function (event) {
+                var popup = $(event.target),
+                    attributeName = $('#attributeId option:selected').text();
+                $('#attributeName').val(yukon.escapeXml(attributeName));
+                $('#assignment-form').ajaxSubmit({
+                    success: function () {
+                        popup.dialog('close');
+                        window.location.href = window.location.href;
+                    },
+                    error: function (xhr) {
+                        popup.html(xhr.responseText);
+                        popup.find('.js-device-types').chosen({'width': '350px'});
+                    }
+                });
+            });
+            
+            $(document).on('yukon:assignment:delete', function (ev) {
+                var assignmentId = $(ev.target).data('assignmentId'),
+                    form = $('#delete-assignment-form-' + assignmentId);
+                form.submit();
+            });   
             
             _initialized = true;
         }

@@ -18,19 +18,19 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.assets.commchannels.CommChannelDetailPage;
 import com.eaton.pages.assets.commchannels.CommChannelsListPage;
+import com.eaton.pages.assets.commchannels.CommChannelTerminalServerDetailPage;
 import com.eaton.rest.api.assets.AssetsCreateRequestAPI;
-import com.eaton.rest.api.dbetoweb.JsonFileHelper;
+import com.eaton.rest.api.drsetup.JsonFileHelper;
 
 import io.restassured.response.ExtractableResponse;
 
 public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
 
-    private CommChannelDetailPage channelDetailPage;
+    private CommChannelTerminalServerDetailPage detailPage;
     private DriverExtensions driverExt;
     private SoftAssertions softly;
-    private String commChannelId;
+    private Integer commChannelId;
     private String commChannelName;
     private JSONObject jo;
     private Random randomNum;
@@ -40,7 +40,6 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         softly = new SoftAssertions();
-        channelDetailPage = new CommChannelDetailPage(driverExt);
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         commChannelName = "Terminal Server Comm Channel " + timeStamp;
@@ -56,25 +55,27 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
         portNumber = randomNum.nextInt(65536);
         jo.put("portNumber", portNumber);
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
-        commChannelId = createResponse.path("id").toString();
+        commChannelId = createResponse.path("id");
     }
 
     @BeforeMethod(alwaysRun = true)
     public void beforeMethod() {
         navigate(Urls.Assets.COMM_CHANNEL_DETAIL + commChannelId);
-        channelDetailPage = new CommChannelDetailPage(driverExt);
+        detailPage = new CommChannelTerminalServerDetailPage(driverExt, commChannelId);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTerminalServer_PageTitleCorrect() {
         String EXPECTED_TITLE = commChannelName;
-        String actualPageTitle = channelDetailPage.getPageTitle();
+        
+        String actualPageTitle = detailPage.getPageTitle();
+        
         assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTerminalServer_TabTitlesCorrect() {
-        List<String> titles = channelDetailPage.getTabElement().getTitles();
+        List<String> titles = detailPage.getTabElement().getTitles();
 
         softly.assertThat(titles.size()).isEqualTo(2);
         softly.assertThat(titles.get(0)).isEqualTo("Info");
@@ -85,8 +86,8 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTerminalServer_InfoTabLabelsCorrect() {
         String infoTitle = "Info";
-        channelDetailPage.getTabElement().clickTab(infoTitle);
-        List<String> labels = channelDetailPage.getTabElement().getTabLabels(infoTitle);
+        detailPage.getTabElement().clickTabAndWait(infoTitle);
+        List<String> labels = detailPage.getTabElement().getTabLabels(infoTitle);
 
         softly.assertThat(labels.size()).isEqualTo(6);
         softly.assertThat(labels.get(0)).isEqualTo("Name:");
@@ -100,7 +101,7 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTerminalServer_InfoTabValuesCorrect() {
-        List<String> values = channelDetailPage.getTabElement().getTabValues("Info");
+        List<String> values = detailPage.getTabElement().getTabValues("Info");
 
         softly.assertThat(values.size()).isEqualTo(6);
         softly.assertThat(values.get(0)).isEqualTo(commChannelName);
@@ -115,24 +116,30 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTerminalServer_ConfigTabTimingSectionDisplayed() {
         String infoTitle = "Configuration";
-        channelDetailPage.getTabElement().clickTab(infoTitle);
-        Section timing = channelDetailPage.getTimingSection();
+        
+        detailPage.getTabElement().clickTabAndWait(infoTitle);
+        Section timing = detailPage.getTimingSection();
+        
         assertThat(timing.getSection()).isNotNull();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTerminalServer_ConfigTabGeneralSectionDisplayed() {
         String infoTitle = "Configuration";
-        channelDetailPage.getTabElement().clickTab(infoTitle);
-        Section timing = channelDetailPage.getGeneralSection();
+        
+        detailPage.getTabElement().clickTabAndWait(infoTitle);
+        Section timing = detailPage.getGeneralSection();
+        
         assertThat(timing.getSection()).isNotNull();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTerminalServer_ConfigTabSharedSectionDisplayed() {
         String infoTitle = "Configuration";
-        channelDetailPage.getTabElement().clickTab(infoTitle);
-        Section timing = channelDetailPage.getSharedSection();
+        
+        detailPage.getTabElement().clickTabAndWait(infoTitle);
+        Section timing = detailPage.getSharedSection();
+        
         assertThat(timing.getSection()).isNotNull();
     }
 
@@ -140,8 +147,8 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
     public void commChannelDetailsTerminalServer_ConfigTabLabelsCorrect() {
         String infoTitle = "Configuration";
 
-        channelDetailPage.getTabElement().clickTab(infoTitle);
-        List<String> labels = channelDetailPage.getTabElement().getTabLabels(infoTitle);
+        detailPage.getTabElement().clickTabAndWait(infoTitle);
+        List<String> labels = detailPage.getTabElement().getTabLabels(infoTitle);
 
         softly.assertThat(labels.size()).isEqualTo(9);
 
@@ -159,9 +166,9 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTerminalServer_ConfigTabValuesCorrect() {
-        channelDetailPage.getTabElement().clickTab("Configuration");
+        detailPage.getTabElement().clickTabAndWait("Configuration");
 
-        List<String> values = channelDetailPage.getTabElement().getTabValues("Configuration");
+        List<String> values = detailPage.getTabElement().getTabValues("Configuration");
 
         softly.assertThat(values.size()).isEqualTo(9);
         softly.assertThat(values.get(0)).isEqualTo("IDLC");
@@ -180,7 +187,7 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTerminalServer_PanelTitleCorrect() {
         String expectedPanelText = "Comm Channel Information";
-        String actualPanelText = channelDetailPage.getCommChannelInfoPanel().getPanelName();
+        String actualPanelText = detailPage.getCommChannelInfoPanel().getPanelName();
         assertThat(actualPanelText).isEqualTo(expectedPanelText);
     }
     
@@ -199,12 +206,12 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
         Integer deletePortNumber = randomNum.nextInt(65536);
         jo.put("portNumber", deletePortNumber);
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
-        String deleteCommChannelId = createResponse.path("id").toString();
+        Integer deleteCommChannelId = createResponse.path("id");
         navigate(Urls.Assets.COMM_CHANNEL_DETAIL + deleteCommChannelId);
-        channelDetailPage = new CommChannelDetailPage(driverExt);
+        detailPage = new CommChannelTerminalServerDetailPage(driverExt, deleteCommChannelId);
         String modalTitle = "Confirm Delete";
         String expectedMessage = deleteCommChannelName +" deleted successfully.";
-        ConfirmModal deleteConfirmModal = channelDetailPage.showDeleteCommChannelModal(modalTitle);
+        ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal(modalTitle);
         deleteConfirmModal.clickBtnByNameAndWait("Delete");
         CommChannelsListPage listPage = new CommChannelsListPage(driverExt);
         String userMsg = listPage.getUserMessage();

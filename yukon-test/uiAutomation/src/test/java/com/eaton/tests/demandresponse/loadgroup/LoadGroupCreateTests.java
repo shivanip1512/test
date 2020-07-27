@@ -16,8 +16,8 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.LoadGroupCreatePage;
-import com.eaton.rest.api.dbetoweb.DBEToWebCreateRequest;
-import com.eaton.rest.api.dbetoweb.JsonFileHelper;
+import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
+import com.eaton.rest.api.drsetup.JsonFileHelper;
 
 public class LoadGroupCreateTests extends SeleniumTestSetup {
 
@@ -149,7 +149,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         JSONObject body = (JSONObject) JsonFileHelper.parseJSONFile(payloadFile);
         jo = (JSONObject) body.get("LM_GROUP_ECOBEE");
         name = (String) jo.get("name");
-        DBEToWebCreateRequest.createLoadGroup(body);
+        DrSetupCreateRequest.createLoadGroup(body);
 
         createPage.getName().setInputValue(name);
         createPage.getType().selectItemByText("ecobee Group");

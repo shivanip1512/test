@@ -2,30 +2,15 @@ package com.cannontech.common.pao.attribute.dao;
 
 import java.util.List;
 
-import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.attribute.model.Assignment;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.AttributeAssignment;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
-import com.cannontech.core.dao.DuplicateException;
 
 public interface AttributeDao {
 
-    /**
-     * Creates or updates attribute
-     * 
-     * @throws DuplicateException - if attribute name already exists
-     */
-    public void saveCustomAttribute(CustomAttribute attribute);
-
-    /**
-     * Deletes custom attribute
-     * 
-     * @throws DataDependencyException
-     */
-    void deleteCustomAttribute(int attributeId) throws DataDependencyException;
 
     /**
      * Returns the list of attributes
@@ -33,22 +18,9 @@ public interface AttributeDao {
     List<CustomAttribute> getCustomAttributes();
 
     /**
-     * Creates or updates attribute assignment
-     * 
-     * @throws DuplicateException - if assignment has either same attribute assigned to multiple points on the same device or
-     *                            multiple entries with the exact same mapping
-     */
-    void saveAttributeAssignment(Assignment assignment);
-
-    /**
-     * Deletes attribute assignment
-     */
-    void deleteAttributeAssignment(int attributeAssignmentId);
-
-    /**
      * Returns attribute assignment
      */
-    Assignment getAssignmentById(int attributeAssignmentId);
+    AttributeAssignment getAssignmentById(int attributeAssignmentId);
 
     /**
      * Returns custom attribute
@@ -69,4 +41,6 @@ public interface AttributeDao {
      * Returns attribute for PaoType and Point
      */
     Attribute findCustomAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier);
+
+    void cacheAttributes();
 }

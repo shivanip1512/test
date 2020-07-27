@@ -9,6 +9,7 @@
 <%@ attribute name="selectedAttributes" type="java.util.Set" %>
 <%@ attribute name="multipleSize" type="java.lang.Integer" %>
 <%@ attribute name="groupItems" type="java.lang.Boolean" %>
+<%@ attribute name="htmlEscape" type="java.lang.Boolean" %>
 
 <c:choose>
     <c:when test="${not empty pageScope.multipleSize}">
@@ -34,7 +35,7 @@
                 <optgroup label="<cti:msg2 key="${group.key}"/>">
                     <c:forEach items="${group.value}" var="item">
                         <c:set var="selected" value="${selectedAttributes.contains(item) ? 'selected' : ''}"/>
-                        <option value="${item.key}" ${selected}><cti:formatObject value="${item}"/></option>
+                        <option value="${item.key}" ${selected}><cti:formatObject value="${item}" htmlEscape="${htmlEscape}"/></option>
                     </c:forEach>
                 </optgroup>
             </c:forEach>
@@ -50,7 +51,7 @@
                         <c:set var="found" value="true"/>
                     </c:if>
                 </c:forEach>
-                <option value="${attr}" ${selected}><cti:msg2 key="${attr}"/></option>
+                <option value="${attr}" ${selected}><cti:msg2 key="${attr}" htmlEscape="${htmlEscape}"/></option>
             </c:forEach>
         </c:otherwise>
     </c:choose>

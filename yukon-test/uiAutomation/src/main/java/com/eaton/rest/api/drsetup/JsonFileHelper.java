@@ -1,4 +1,4 @@
-package com.eaton.rest.api.dbetoweb;
+package com.eaton.rest.api.drsetup;
 
 import java.io.FileReader;
 

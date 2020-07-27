@@ -549,22 +549,26 @@ public class PointEditorServiceImpl implements PointEditorService {
         }
         return pointBaseModel;
     }
-    
+
     @Override
     public PointBaseModel<? extends PointBase> copy(int pointId, PointCopy pointCopy) {
         PointBase pointBase = pointDao.get(pointId);
         pointBase.setPointID(null);
         pointCopy.buildDBPersistent(pointBase);
         dBPersistentDao.performDBChange(pointBase, TransactionType.INSERT);
-        
+
         PointType ptType = pointBase.getPoint().getPointTypeEnum();
         PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType);
-        StaleData staleData = getStaleData(pointId);
-        buildPointBaseModel(pointBase, pointBaseModel, staleData);
+
+        // copy the StaleData
+        StaleData stateDataToCopy = getStaleData(pointId);
+        StaleData newStaleData = populateStaleDataObjectToCopy(stateDataToCopy);
+        saveStaleData(pointBaseModel.getPointId(), newStaleData);
+
+        buildPointBaseModel(pointBase, pointBaseModel, newStaleData);
         return pointBaseModel;
     }
 
-    
     @Override
     public PaoPointModel getDevicePointDetail(int paoId, DevicePointsFilter devicePointsFilter, Direction direction,
             SortBy sortBy, PagingParameters paging) {
