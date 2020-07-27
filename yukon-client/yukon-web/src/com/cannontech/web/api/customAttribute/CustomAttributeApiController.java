@@ -30,6 +30,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.admin.AttributeValidator;
+import com.cannontech.web.admin.service.impl.CustomAttributeService;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
@@ -38,12 +39,13 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 public class CustomAttributeApiController {
 
     @Autowired private AttributeDao attributeDao;
+    @Autowired private CustomAttributeService customAttributeService;
     @Autowired private AttributeValidator customAttributeValidator;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @PostMapping("")
     public ResponseEntity<Object> create(@Valid @RequestBody CustomAttribute customAttribute) {
-        attributeDao.saveCustomAttribute(customAttribute);
+        customAttribute = customAttributeService.createCustomAttribute(customAttribute);
         return new ResponseEntity<>(customAttribute, HttpStatus.CREATED);
     }
 
@@ -71,7 +73,7 @@ public class CustomAttributeApiController {
             throw new NotFoundException(message);
         }
         customAttribute.setCustomAttributeId(id);
-        attributeDao.saveCustomAttribute(customAttribute);
+        customAttributeService.updateCustomAttribute(customAttribute);
         customAttribute = attributeDao.getCustomAttribute(customAttribute.getCustomAttributeId());
         return new ResponseEntity<>(customAttribute, HttpStatus.OK);
     }
@@ -85,7 +87,7 @@ public class CustomAttributeApiController {
                     new Object[] { "Custom Attribute", id });
             throw new NotFoundException(message);
         }
-        attributeDao.deleteCustomAttribute(id);
+        customAttributeService.deleteCustomAttribute(id);
         Map<String, Integer> jsonResponse = new HashMap<String, Integer>();
         jsonResponse.put("id", id);
         return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
