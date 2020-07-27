@@ -20,6 +20,10 @@ public class PickerElement {
         this.driverExt.findElement(By.cssSelector("#" + this.id + " .b-label"), Optional.empty()).click();
     }  
     
+    public void clickLinkWithDynamicId() {
+        this.driverExt.findElement(By.cssSelector("[id*= '" + this.id + "'] .b-label"), Optional.empty()).click();
+    }
+    
     public String getLinkValue() {
         return this.driverExt.findElement(By.cssSelector(this.id + ".b-label"), Optional.empty()).getText();
     }
