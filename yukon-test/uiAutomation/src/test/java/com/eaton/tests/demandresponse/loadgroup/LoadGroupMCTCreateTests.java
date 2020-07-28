@@ -126,7 +126,8 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getAddress().getValidationError()).isEqualTo(expectedErrorMsg);
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    //TODO: Defect has been raised for this.YUK-22593. 
+    @Test(enabled = false, groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreateMCT_AddressMaxRange() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT MCT " + timeStamp;
