@@ -765,8 +765,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
             CTILOG_DEBUG(dout, logNow() <<" Initializing threadFunctionReceiveFromDispatch");
         }
 
-        const CtiTime sentinel      { { 25, 7, 1980 } };
-        CtiTime lastPointUpdateTime { sentinel };
+        std::optional<CtiTime>  lastPointUpdateTime;
 
         for( ; ; )
         {
@@ -778,13 +777,13 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                 Cti::WorkerThread::interruptionPoint();
 
                 // registration
-                if ( lastPointUpdateTime != sentinel )
+                if ( lastPointUpdateTime )
                 {
                     CtiTime now;
 
-                    if ( ( lastPointUpdateTime + 15 ) <  now ) // at least 15s since last point update...
+                    if ( ( *lastPointUpdateTime + 15 ) <  now ) // at least 15s since last point update...
                     {
-                        lastPointUpdateTime = sentinel;
+                        lastPointUpdateTime.reset();
                         reRegisterWithDispatch();
                     }
                 }

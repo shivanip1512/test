@@ -1473,7 +1473,11 @@
     <bean class="com.cannontech.web.api.commChannel.PortApiValidator"/>
     <bean class="com.cannontech.common.validator.YukonValidationHelper"/>
     <bean class="com.cannontech.web.stars.commChannel.CommChannelValidator"/>
+
     <bean class="com.cannontech.web.admin.AttributeValidator"/>
+    <bean class="com.cannontech.web.api.customAttribute.CustomAttributeAssignmentApiController"/>
+    <bean class="com.cannontech.web.api.customAttribute.CustomAttributeAssignmentValidator"/>
+    <bean class="com.cannontech.web.api.customAttribute.CustomAttributeAssignmentCreationValidator"/>
 
     <bean class="com.cannontech.common.device.virtualDevice.service.impl.VirtualDeviceServiceImpl"/>
 

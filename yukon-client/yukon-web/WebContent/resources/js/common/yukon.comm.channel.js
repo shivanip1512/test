@@ -12,15 +12,15 @@ yukon.comm.channel = (function () {
         /**
          * Shows user entered physical port field based on the drop down value selected
          */
-        togglePhysicalPort: function() {
-            if ($('.js-physical-port').is(":visible")) {
-                var selectedPort = $('.js-physical-port option:selected').val(),
-                    otherEnumValue = $('#otherPhysicalPortEnumValue').val(),
+        togglePhysicalPort: function(dialog) {
+            if (dialog.find('.js-physical-port').is(":visible")) {
+                var selectedPort = dialog.find('.js-physical-port option:selected').val(),
+                    otherEnumValue = dialog.find('#otherPhysicalPortEnumValue').val(),
                     isOtherSelected = selectedPort === otherEnumValue;
-                $('.js-user-physical-port-value').toggleClass('dn', !isOtherSelected);
-                var physicalPortError = $("#physicalPortErrors").val();
+                dialog.find('.js-user-physical-port-value').toggleClass('dn', !isOtherSelected);
+                var physicalPortError = dialog.find("#physicalPortErrors").val();
                 if (physicalPortError) {
-                    var physicalPortRow = $('.js-physical-port-row'),
+                    var physicalPortRow = dialog.find('.js-physical-port-row'),
                         portError = physicalPortRow.find("span[id='physicalPort.errors']");
                     portError.toggleClass('dn', !isOtherSelected);
                 }
@@ -30,12 +30,12 @@ yukon.comm.channel = (function () {
         /**
          * Provides physical port error formatting
          */
-        formatPhysicalPortErrors: function() {
-            var physicalPort = $('.js-physical-port');
+        formatPhysicalPortErrors: function(dialog) {
+            var physicalPort = dialog.find('.js-physical-port');
             if (physicalPort.exists()) {
-                var physicalPortError = $("#physicalPortErrors").val();
+                var physicalPortError = dialog.find("#physicalPortErrors").val();
                 if (physicalPortError) {
-                    var physicalPortRow = $('.js-physical-port-row'),
+                    var physicalPortRow = dialog.find('.js-physical-port-row'),
                         firstPortError = physicalPortRow.find("span[id='physicalPort.errors']").first();
                     //remove second validation error and line break
                     firstPortError.prev('br').remove();
@@ -49,17 +49,17 @@ yukon.comm.channel = (function () {
         /**
          * Provides initial physical port other selection
          */
-        loadPhysicalPort: function() {
-            var physicalPort = $('.js-physical-port');
+        loadPhysicalPort: function(dialog) {
+            var physicalPort = dialog.find('.js-physical-port');
             if (physicalPort.exists()) {
-                var isOtherSelected = $('#isOtherSelected').val(),
-                    otherEnumValue = $('#otherPhysicalPortEnumValue').val(),
-                    userEnteredPhysicalPort = $('.js-user-physical-port-value');
+                var isOtherSelected = dialog.find('#isOtherSelected').val(),
+                    otherEnumValue = dialog.find('#otherPhysicalPortEnumValue').val(),
+                    userEnteredPhysicalPort = dialog.find('.js-user-physical-port-value');
                 if (isOtherSelected) {
                     physicalPort.val(otherEnumValue);
                     userEnteredPhysicalPort.toggleClass('dn', !isOtherSelected);
                 }
-                var physicalPortError = $("#physicalPortErrors").val();
+                var physicalPortError = dialog.find("#physicalPortErrors").val();
                 if (!physicalPortError && !isOtherSelected) {
                     userEnteredPhysicalPort.val("");
                 }
