@@ -259,7 +259,8 @@ yukon.tools.point = (function () {
         var hiddenRows = $('[data-fdr-translation]').not(':visible');
         var newRow = hiddenRows.eq(0);
         var number = newRow.data('fdrTranslation');
-        /* Reset the value of FDR interface type to ACS so that if user tires to add yet another translation, the value is set to default instead of perviously selected values. */
+        /* Reset the value of FDR interface type to ACS so that if user tires to add yet another translation after removing the last translation, 
+         *  the value of the interface type drop-down is set to ACS instead of previously selected value. */
         newRow.find('.js-fdr-interface').val($(".js-acs-interface-type-enum-val").val());
         updateFdrInterface(number);
         newRow.removeClass('dn');
