@@ -452,7 +452,7 @@
                     </tags:nameValue2>
 
                     <tags:nameValue2 nameKey=".stale.time" rowClass="js-stale-data-input">
-                    <cti:msg var="minuteTxt" key="yukon.common.durationFormatting.symbol.M_SHORT.suffix.singular"/>
+                        <cti:msg var="minuteTxt" key="yukon.common.durationFormatting.symbol.M_SHORT.suffix.singular"/>
                         <tags:input path="staleData.time" size="6" maxlength="8" inputClass="js-reset-field-time" units="${minuteTxt}"/>
                     </tags:nameValue2>
 
