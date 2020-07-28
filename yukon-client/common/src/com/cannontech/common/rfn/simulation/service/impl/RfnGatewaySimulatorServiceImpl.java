@@ -255,8 +255,8 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     public void sendGatewayArchiveRequest(String serial, String model) {
         
         GatewayArchiveRequest request = new GatewayArchiveRequest();
-  
-        RfnIdentifier rfnIdentifier = new RfnIdentifier(serial, "CPS", model);
+        String manufacturer = "GWY-801".equals(model) ? "Eaton" : "CPS";
+        RfnIdentifier rfnIdentifier = new RfnIdentifier(serial, manufacturer, model);
         request.setRfnIdentifier(rfnIdentifier);
         
         rfGatewayArchiveJmsTemplate.convertAndSend(request);
