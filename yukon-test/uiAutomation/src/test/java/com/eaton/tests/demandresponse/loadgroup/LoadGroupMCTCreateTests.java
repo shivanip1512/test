@@ -43,7 +43,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         createPage = new LoadGroupMCTCreatePage(driverExt);
     }
     
-/*	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldGrpCreateMCT_AllFieldsSuccessfully() {
     String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
     String name = "AT MCT " + timeStamp;
@@ -156,7 +156,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
 
         createPage.getSaveBtn().click();
         assertThat(createPage.getAddress().getValidationError()).isEqualTo(expectedErrorMsg);
-    }*/
+    }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreateMCT_MCTAddressSelection() {
