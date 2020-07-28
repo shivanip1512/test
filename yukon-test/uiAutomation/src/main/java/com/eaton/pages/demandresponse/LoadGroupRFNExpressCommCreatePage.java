@@ -1,17 +1,13 @@
 package com.eaton.pages.demandresponse;
 
 import org.openqa.selenium.WebElement;
-import com.eaton.elements.Button;
 import com.eaton.elements.DropDownElement;
-import com.eaton.elements.Section;
 import com.eaton.elements.SwitchBtnMultiSelectElement;
-import com.eaton.elements.SwitchBtnYesNoElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.Urls;
-import com.eaton.pages.PageBase;
 
-public class LoadGroupRFNExpressCommCreatePage extends PageBase {
+public class LoadGroupRFNExpressCommCreatePage extends LoadGroupCreatePage {
 
     public LoadGroupRFNExpressCommCreatePage(DriverExtensions driverExt) {
         super(driverExt);
@@ -30,8 +26,8 @@ public class LoadGroupRFNExpressCommCreatePage extends PageBase {
 
 	    // Address
 	    public SwitchBtnMultiSelectElement getAddressUsage() {
-	        
-	        return new SwitchBtnMultiSelectElement(this.driverExt, "addressUsage");
+	    	WebElement section = getPageSection("Geographical Address").getSection();
+	        return new SwitchBtnMultiSelectElement(this.driverExt, "addressUsage", section);
 	    }
 
 	    // Addressing
@@ -67,8 +63,8 @@ public class LoadGroupRFNExpressCommCreatePage extends PageBase {
 
 	    // Load Address
 	    public SwitchBtnMultiSelectElement getLoadAddressUsage() {
-	        
-	        return new SwitchBtnMultiSelectElement(this.driverExt, "loadaddressing");
+	    	WebElement section = getPageSection("Load Address").getSection();
+	        return new SwitchBtnMultiSelectElement(this.driverExt, "loadaddressing", section);
 	    }
 	    
 	    public TextEditElement getProgramLoadAddress() {
@@ -84,38 +80,5 @@ public class LoadGroupRFNExpressCommCreatePage extends PageBase {
 	        
 	        return new SwitchBtnMultiSelectElement(this.driverExt, "loads", section);
 	    }
-	    
-	    // Optional Attributes	    
-	    public TextEditElement getkWCapacity() {
-	        return new TextEditElement(this.driverExt, "kWCapacity");
-	    }
-
-	    public SwitchBtnYesNoElement getDisableGroup() {
-	        WebElement section = getPageSection("Optional Attributes").getSection();
-	        
-	        return new SwitchBtnYesNoElement(this.driverExt, "disableGroup", section);
-	    }
-
-	    public SwitchBtnYesNoElement getDisableControl() {
-	        WebElement section = getPageSection("Optional Attributes").getSection();
-	        
-	        return new SwitchBtnYesNoElement(this.driverExt, "disableControl", section);
-	    }
-
-	    public Button getSaveBtn() {
-	        return new Button(this.driverExt, "Save");
-	    }
-
-	    public Button getCancelBtn() {
-	        return new Button(this.driverExt, "Cancel");
-	    }
-
-	    public Section getPageSection(String sectionName) {
-	        return new Section(this.driverExt, sectionName);
-	    }
-	    
-	    
-	    public TextEditElement getFieldValidationError(String elementName) {
-	    	return new TextEditElement(this.driverExt, elementName);
-	    }
-	}
+	       
+}

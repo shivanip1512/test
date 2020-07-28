@@ -84,75 +84,146 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 
 	    
 	    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void LoadGroupRfnExpresscom_InvalidValueErrorGeographicalAddressingForGEO() {
+	    public void LoadGroupRfnExpresscom_GeographicalAddressingGeo_ValidIntegerValidation() {
 	    	createPage.getType().selectItemByText("RFN Expresscom Group");
 	        waitForLoadingSpinner();
 	        createPage.getAddressUsage().setTrueFalseByName("GEO", true);
 	        createPage.getGeoAddress().setInputValue("aaa");
 	        createPage.getSaveBtn().click();
-	        String errorMsg = createPage.getFieldValidationError("geo").getValidationError();
-	        final String exptd_msg_geo= "Must be a valid integer value.";
-	        assertThat(errorMsg).isEqualTo(exptd_msg_geo);
-	    	
+	        assertThat(createPage.getGeoAddress().getValidationError()).isEqualTo("Must be a valid integer value."); 
+		       
 	    }
 	    
 	    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void LoadGroupRfnExpresscom_InvalidValueErrorGeographicalAddressingForSubstation() {
+	    public void LoadGroupRfnExpresscom_GeographicalAddressingGeo_ValidMinValueValidation() {
+	    	createPage.getType().selectItemByText("RFN Expresscom Group");
+	        waitForLoadingSpinner();
+	        createPage.getAddressUsage().setTrueFalseByName("GEO", true);
+	        createPage.getGeoAddress().setInputValue("-1");
+	        createPage.getSaveBtn().click();
+	        assertThat(createPage.getGeoAddress().getValidationError()).isEqualTo("Must be between 1 and 65,534."); 
+		       
+	    }
+	    
+	    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+	    public void LoadGroupRfnExpresscom_GeographicalAddressingGeo_ValidMaxValueValidation() {
+	    	createPage.getType().selectItemByText("RFN Expresscom Group");
+	        waitForLoadingSpinner();
+	        createPage.getAddressUsage().setTrueFalseByName("GEO", true);
+	        createPage.getGeoAddress().setInputValue("65535");
+	        createPage.getSaveBtn().click();
+	        assertThat(createPage.getGeoAddress().getValidationError()).isEqualTo("Must be between 1 and 65,534."); 
+		       
+	    }
+	    
+	    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+	    public void LoadGroupRfnExpresscom_GeographicalAddressingSubstation_ValidIntegerValidation() {
 	    	createPage.getType().selectItemByText("RFN Expresscom Group");
 	        waitForLoadingSpinner();
 	        createPage.getAddressUsage().setTrueFalseByName("Substation", true);
 	        createPage.getSubstationAddress().setInputValue("aaa");
 	        createPage.getSaveBtn().click();
-	        String errorMsg = createPage.getFieldValidationError("substation").getValidationError();
-	        final String exptd_msg_substation= "Must be a valid integer value.";
-	        assertThat(errorMsg).isEqualTo(exptd_msg_substation);
-	    	
+	        assertThat(createPage.getSubstationAddress().getValidationError()).isEqualTo("Must be a valid integer value."); 
 	    } 
 	    
 	    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void LoadGroupRfnExpresscom_ValidationErrorOnKeepingZipValueBlank() {
+	    public void LoadGroupRfnExpresscom_GeographicalAddressingSubstation_ValidMinValueValidation() {
+	    	createPage.getType().selectItemByText("RFN Expresscom Group");
+	        waitForLoadingSpinner();
+	        createPage.getAddressUsage().setTrueFalseByName("Substation", true);
+	        createPage.getSubstationAddress().setInputValue("-1");
+	        createPage.getSaveBtn().click();
+	        assertThat(createPage.getSubstationAddress().getValidationError()).isEqualTo("Must be between 1 and 65,534."); 
+	    }
+	    
+	    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+	    public void LoadGroupRfnExpresscom_GeographicalAddressingSubstation_ValidMaxValueValidation() {
+	    	createPage.getType().selectItemByText("RFN Expresscom Group");
+	        waitForLoadingSpinner();
+	        createPage.getAddressUsage().setTrueFalseByName("Substation", true);
+	        createPage.getSubstationAddress().setInputValue("65535");
+	        createPage.getSaveBtn().click();
+	        assertThat(createPage.getSubstationAddress().getValidationError()).isEqualTo("Must be between 1 and 65,534."); 
+	    } 
+	    
+	    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+	    public void LoadGroupRfnExpresscom_GeographicalAddressingUser_ZipRequiredWhenProgramSelectedValidation() {
 	    	createPage.getType().selectItemByText("RFN Expresscom Group");
 	        waitForLoadingSpinner();
 	        createPage.getAddressUsage().setTrueFalseByName("Zip", true);
 	        createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
-	        createPage.getProgramLoadAddress().setInputValue("10");
 	        createPage.getSaveBtn().click();
-	        String errorMsg = createPage.getFieldValidationError("zip").getValidationError();
-	        final String exptd_msg_zip= "Zip is required.";
-	        assertThat(errorMsg).isEqualTo(exptd_msg_zip);
-	    	
+	        assertThat(createPage.getZipAddress().getValidationError()).isEqualTo("Zip is required."); 
+		    
 	    } 
 	    
 	    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void LoadGroupRfnExpresscom_ValidationErrorOnKeepingUserValueBlank() {
+	    public void LoadGroupRfnExpresscom_GeographicalAddressingZip_ValidMinValueValidation() {
+	    	createPage.getType().selectItemByText("RFN Expresscom Group");
+	        waitForLoadingSpinner();
+	        createPage.getAddressUsage().setTrueFalseByName("Zip", true);
+	        createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
+	        createPage.getZipAddress().setInputValue("-1");
+	        createPage.getSaveBtn().click();
+	        assertThat(createPage.getZipAddress().getValidationError()).isEqualTo("Must be between 1 and 16,777,214."); 
+	    }
+	    
+	    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+	    public void LoadGroupRfnExpresscom_GeographicalAddressingZip_ValidMaxValueValidation() {
+	    	createPage.getType().selectItemByText("RFN Expresscom Group");
+	        waitForLoadingSpinner();
+	        createPage.getAddressUsage().setTrueFalseByName("Zip", true);
+	        createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
+	        createPage.getZipAddress().setInputValue("16777216");
+	        createPage.getSaveBtn().click();
+	        assertThat(createPage.getZipAddress().getValidationError()).isEqualTo("Must be between 1 and 16,777,214."); 
+	    }
+	    
+	    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+	    public void LoadGroupRfnExpresscom_GeographicalAddressingUser_UserRequiredWhenProgramSelectedValidation() {
 	    	createPage.getType().selectItemByText("RFN Expresscom Group");
 	        waitForLoadingSpinner();
 	        createPage.getAddressUsage().setTrueFalseByName("User", true);
 	        createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
-	        createPage.getProgramLoadAddress().setInputValue("10");
 	        createPage.getSaveBtn().click();
-	        String errorMsg = createPage.getFieldValidationError("user").getValidationError();
-	        final String exptd_msg_user= "User is required.";
-	        assertThat(errorMsg).isEqualTo(exptd_msg_user);
-	    	
+	        assertThat(createPage.getUserAddress().getValidationError()).isEqualTo("User is required.");    	
 	    } 
 	    
 	    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void LoadGroupRfnExpresscom_ValidationErrorOnKeepingSerialNumberBlank() {
+	    public void LoadGroupRfnExpresscom_GeographicalAddressingUser_ValidMinValueValidation() {
+	    	createPage.getType().selectItemByText("RFN Expresscom Group");
+	        waitForLoadingSpinner();
+	        createPage.getAddressUsage().setTrueFalseByName("User", true);
+	        createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
+	        createPage.getUserAddress().setInputValue("-1");	        
+	        createPage.getSaveBtn().click();
+	        assertThat(createPage.getUserAddress().getValidationError()).isEqualTo("Must be between 1 and 65,534.");    	
+	    } 
+	    
+	    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+	    public void LoadGroupRfnExpresscom_GeographicalAddressingUser_ValidMaxValueValidation() {
+	    	createPage.getType().selectItemByText("RFN Expresscom Group");
+	        waitForLoadingSpinner();
+	        createPage.getAddressUsage().setTrueFalseByName("User", true);
+	        createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
+	        createPage.getUserAddress().setInputValue("65535");	        
+	        createPage.getSaveBtn().click();
+	        assertThat(createPage.getUserAddress().getValidationError()).isEqualTo("Must be between 1 and 65,534.");    	
+	    }
+	    
+	    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+	    public void LoadGroupRfnExpresscom_GeographicalAddressingSerial_SerialRequiredWhenProgramSelectedValidation() {
 	    	createPage.getType().selectItemByText("RFN Expresscom Group");
 	        waitForLoadingSpinner();
 	        createPage.getAddressUsage().setTrueFalseByName("Serial", true);
 	        createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
-	        createPage.getProgramLoadAddress().setInputValue("10");
 	        createPage.getSaveBtn().click();
-	        String errorMsg = createPage.getFieldValidationError("serialNumber").getValidationError();
-	        final String exptd_msg_serial= "Serial Number is required.";
-	        assertThat(errorMsg).isEqualTo(exptd_msg_serial);
-	    	
+	        assertThat(createPage.getSerialAddress().getValidationError()).isEqualTo("Serial Number is required."); 
+	       
 	    } 
 	    
 	    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void LoadGroupRfnExpresscom_GeneralSectionTitleCorrect() {
+	    public void LoadGroupRfnExpresscom_General_SectionTitleCorrect() {
 	        createPage.getType().selectItemByText("RFN Expresscom Group");
 	        waitForLoadingSpinner();
 	        Section generalSection = createPage.getPageSection("General");
@@ -161,7 +232,7 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    }
 
 	    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void LoadGroupRfnExpresscom_GeneralSectionLabelsCorrect() {
+	    public void LoadGroupRfnExpresscom_General_SectionLabelsCorrect() {
 	        String sectionName = "General";
 	        createPage.getType().selectItemByText("RFN Expresscom Group");
 	        waitForLoadingSpinner();
@@ -173,7 +244,7 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    }
 	    
 	    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void LoadGroupRfnExpresscom_GeographicalAddressSectionTitleCorrect() {
+	    public void LoadGroupRfnExpresscom_GeographicalAddress_SectionTitleCorrect() {
 	        createPage.getType().selectItemByText("RFN Expresscom Group");
 	        waitForLoadingSpinner();
 	        Section generalSection = createPage.getPageSection("Geographical Address");
@@ -182,7 +253,7 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    }
 
 	    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void LoadGroupRfnExpresscom_GeographicalAddressSectionLabelsCorrect() {
+	    public void LoadGroupRfnExpresscom_GeographicalAddress_SectionLabelsCorrect() {
 	        String sectionName = "Geographical Address";
 	        String expectedLabels = "Address Usage:";
 	        createPage.getType().selectItemByText("RFN Expresscom Group");
@@ -195,7 +266,7 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    }
 	    
 	    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void LoadGroupRfnExpresscom_GeographicalAddressingSectionTitleCorrect() {
+	    public void LoadGroupRfnExpresscom_GeographicalAddressing_SectionTitleCorrect() {
 	        createPage.getType().selectItemByText("RFN Expresscom Group");
 	        waitForLoadingSpinner();
 	        Section generalSection = createPage.getPageSection("Geographical Addressing");
@@ -204,7 +275,7 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    }
 
 	    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void LoadGroupRfnExpresscom_GeographicalAddressingSectionLabelsCorrect() {
+	    public void LoadGroupRfnExpresscom_GeographicalAddressing_SectionLabelsCorrect() {
 	      String sectionName = "Geographical Addressing";
 	      createPage.getType().selectItemByText("RFN Expresscom Group");
 	      waitForLoadingSpinner();
@@ -223,7 +294,7 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    }
 	    
 	    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void LoadGroupRfnExpresscom_LoadAddressSectionTitleCorrect() {
+	    public void LoadGroupRfnExpresscom_LoadAddress_SectionTitleCorrect() {
 	        createPage.getType().selectItemByText("RFN Expresscom Group");
 	        waitForLoadingSpinner();
 	        Section generalSection = createPage.getPageSection("Load Address");
@@ -232,7 +303,7 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    }
 
 	    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void LoadGroupRfnExpresscom_LoadAddressSectionLabelsCorrect() {
+	    public void LoadGroupRfnExpresscom_LoadAddress_SectionLabelsCorrect() {
 	        String sectionName = "Load Address";
 	        String expectedLabels = "Usage:";
 	        createPage.getType().selectItemByText("RFN Expresscom Group");
@@ -245,7 +316,7 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    }
 	    
 	    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void LoadGroupRfnExpresscom_LoadAddressingSectionLabelsCorrect() {
+	    public void LoadGroupRfnExpresscom_LoadAddressing_SectionLabelsCorrect() {
 	        String sectionName = "Load Addressing";
 	        createPage.getType().selectItemByText("RFN Expresscom Group");
 
@@ -260,7 +331,7 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    }
 	    
 	    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void LoadGroupRfnExpresscom_LoadAddressingSectionTitleCorrect() {
+	    public void LoadGroupRfnExpresscom_LoadAddressing_SectionTitleCorrect() {
 	        createPage.getType().selectItemByText("RFN Expresscom Group");
 	        waitForLoadingSpinner();
 
@@ -269,16 +340,7 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    }
 	    
 	    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void LoadGroupRfnExpresscom_OptionalAttributesSectionTitleCorrect() {
-	        createPage.getType().selectItemByText("RFN Expresscom Group");
-	        waitForLoadingSpinner();
-
-	        Section generalSection = createPage.getPageSection("Optional Attributes");
-	        assertThat(generalSection.getSection()).isNotNull();
-	    }
-	    
-	    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void LoadGroupRfnExpresscom_OptionalAttributesSectionLabelsCorrect() {
+	    public void LoadGroupRfnExpresscom_OptionalAttributes_SectionLabelsCorrect() {
 	        String sectionName = "Optional Attributes";
 	        createPage.getType().selectItemByText("RFN Expresscom Group");
 	        waitForLoadingSpinner();
@@ -290,7 +352,7 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    }
 	    
 	    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void LoadGroupRfnExpresscom_LoadAddressingProgramMinRangeValidation() {
+	    public void LoadGroupRfnExpresscom_LoadAddressing_ProgramMinRangeValidation() {
 	        createPage.getType().selectItemByText("RFN Expresscom Group");
 	        waitForLoadingSpinner(); 
 	        createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
@@ -301,7 +363,7 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    }
 	    
 	    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void LoadGroupRfnExpresscom_LoadAddressingProgramMaxRangeValidation() {
+	    public void LoadGroupRfnExpresscom_LoadAddressing_ProgramMaxRangeValidation() {
 	        createPage.getType().selectItemByText("RFN Expresscom Group");
 	        waitForLoadingSpinner(); 
 	        createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
@@ -312,7 +374,17 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    }
 	    
 	    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void LoadGroupRfnExpresscom_LoadAddressingSplinterMinRangeValidation() {
+	    public void LoadGroupRfnExpresscom_LoadAddressing_ProgramBlankFieldValidation() {
+	        createPage.getType().selectItemByText("RFN Expresscom Group");
+	        waitForLoadingSpinner(); 
+	        createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
+	        createPage.getSaveBtn().click();
+
+	        assertThat(createPage.getProgramLoadAddress().getValidationError()).isEqualTo("Program is required.");
+	    }
+	    
+	    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE})
+	    public void LoadGroupRfnExpresscom_LoadAddressing_SplinterMinRangeValidation() {
 	        createPage.getType().selectItemByText("RFN Expresscom Group");
 	        waitForLoadingSpinner(); 
 	        createPage.getLoadAddressUsage().setTrueFalseByName("Splinter", true);
@@ -323,7 +395,7 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    }
 	    
 	    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void LoadGroupRfnExpresscom_LoadAddressingSplinterMaxRangeValidation() {
+	    public void LoadGroupRfnExpresscom_LoadAddressing_SplinterMaxRangeValidation() {
 	        createPage.getType().selectItemByText("RFN Expresscom Group");
 	        waitForLoadingSpinner(); 
 	        createPage.getLoadAddressUsage().setTrueFalseByName("Splinter", true);
@@ -331,6 +403,16 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	        createPage.getSaveBtn().click();
 
 	        assertThat(createPage.getSplinterLoadAddress().getValidationError()).isEqualTo("Must be between 1 and 254.");
+	    }
+	    
+	    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE})
+	    public void LoadGroupRfnExpresscom_LoadAddressing_SplinterBlankFieldValidation() {
+	        createPage.getType().selectItemByText("RFN Expresscom Group");
+	        waitForLoadingSpinner(); 
+	        createPage.getLoadAddressUsage().setTrueFalseByName("Splinter", true);
+	        createPage.getSaveBtn().click();
+
+	        assertThat(createPage.getSplinterLoadAddress().getValidationError()).isEqualTo("Splinter is required.");
 	    }
 
 	    
