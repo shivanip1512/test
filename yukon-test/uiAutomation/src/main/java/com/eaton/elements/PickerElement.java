@@ -23,4 +23,8 @@ public class PickerElement {
     public String getLinkValue() {
         return this.driverExt.findElement(By.cssSelector(this.id + ".b-label"), Optional.empty()).getText();
     }
+    
+    public void clickLinkByClassName() {
+        this.driverExt.findElement(By.cssSelector("." + this.id), Optional.empty()).click();
+    } 
 }
