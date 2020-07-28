@@ -158,6 +158,31 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getAddress().getValidationError()).isEqualTo(expectedErrorMsg);
     }
     
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpCreateMCT_MCTAddressLabelDefaultValue() {
+        createPage.getType().selectItemByText("MCT Group");
+        waitForLoadingSpinner();
+
+        createPage.getAddressLevel().selectItemByText("MCT Address");
+        
+        assertThat(createPage.getMCTAddressLabelText()).isEqualTo("(none selected)");
+    }
+    
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpCreateMCT_MCTAddressRequied() {
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String name = "AT MCT " + timeStamp;
+        
+    	createPage.getType().selectItemByText("MCT Group");
+        waitForLoadingSpinner();
+
+        createPage.getName().setInputValue(name);
+        createPage.getAddressLevel().selectItemByText("MCT Address");
+        createPage.getSaveBtn().click();
+
+        assertThat(createPage.getMCTAddress().getValidationError()).isEqualTo("MCT Address is required.");
+    }
+    
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreateMCT_MCTAddressSelection() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -173,5 +198,5 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         mctMeterModal.selectMeter("a_MCT-430A");
         mctMeterModal.clickOkAndWait();
         createPage.getSaveBtn().click();
-    }   
+    }  
 }

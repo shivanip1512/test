@@ -24,6 +24,14 @@ public class LoadGroupMCTCreatePage extends LoadGroupCreatePage {
 	        pageUrl = Urls.DemandResponse.LOAD_GROUP_CREATE;
 	    } 
 	    
+	    public PickerElement getMCTAddress() {
+	        return new PickerElement(this.driverExt, "picker-mctMeterPicker");
+	    }
+
+	    public String getMCTAddressLabelText() {
+	        return getMCTAddress().getLinkValueDynamic();
+	    }
+	    
 	    public TextEditElement getAddress() {
 	        return new TextEditElement(this.driverExt, "address");
 	    }
