@@ -143,7 +143,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreateMCT_AddressRequired() {
+    public void ldGrpCreateMCT_MCTAddressRequired() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT MCT " + timeStamp;
         String expectedErrorMsg = "Address is required.";
@@ -169,7 +169,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateMCT_MCTAddressRequied() {
+    public void ldGrpCreateMCT_MCTAddressSelectionRequied() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT MCT " + timeStamp;
         
@@ -184,7 +184,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreateMCT_MCTAddressSelection() {
+    public void ldGrpCreateMCT_WithMCTAddressSelection() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT MCT " + timeStamp;
         
