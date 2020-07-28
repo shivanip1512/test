@@ -855,6 +855,7 @@ public class NmIntegrationController {
     public String sendEvent(@ModelAttribute RfnTestEvent event, ModelMap model, FlashScope flashScope) {
         int numEventsSent = rfnEventTestingService.sendEventsAndAlarms(event);
         addNumEventsSend(flashScope, numEventsSent);
+        model.addAttribute("restoreOutageEvent", new RfnTestOutageRestoreEvent());
         return setupEventAlarmAttributes(model, event);
     }
 
