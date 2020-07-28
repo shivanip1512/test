@@ -452,8 +452,8 @@
                     </tags:nameValue2>
 
                     <tags:nameValue2 nameKey=".stale.time" rowClass="js-stale-data-input">
-                        <tags:input path="staleData.time" size="6" maxlength="8" inputClass="js-reset-field-time"/>
-                        <i:inline key="yukon.common.durationFormatting.symbol.M_SHORT.suffix.singular"/>
+                    <cti:msg var="minuteTxt" key="yukon.common.durationFormatting.symbol.M_SHORT.suffix.singular"/>
+                        <tags:input path="staleData.time" size="6" maxlength="8" inputClass="js-reset-field-time" units="${minuteTxt}"/>
                     </tags:nameValue2>
 
                     <tags:nameValue2 nameKey=".stale.update" rowClass="js-stale-data-input">
@@ -528,6 +528,7 @@
             <cti:tab title="${fdrTab}">
                 <div class="separated-sections">
                     <c:set var="enabledFdrs" value="0" />
+                    <input type="hidden" class="js-acs-interface-type-enum-val" value="${acsInterfaceTypeEnumVal}"/>
 
                     <c:forEach var="fdrIdx" items="${fdrTranslationNumbers}">
                         <c:set var="fdrTranslation" value="${pointModel.pointBase.pointFDRList[fdrIdx]}" />
