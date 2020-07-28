@@ -114,6 +114,7 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
     public void ldGrpCreateRipple_AddressingSectionLabelsCorrect() {
         String sectionName = "Addressing";
         createPage.getType().selectItemByText("Ripple Group");
+        waitForLoadingSpinner();
 
         List<String> expectedLabels = new ArrayList<>(
                 List.of("Shed Time:", "Group:", "Area Code:"));
