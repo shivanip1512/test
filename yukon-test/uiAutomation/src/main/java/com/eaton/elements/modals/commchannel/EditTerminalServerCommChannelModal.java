@@ -45,8 +45,17 @@ public class EditTerminalServerCommChannelModal extends EditCommChannelModal{
         return new SwitchBtnYesNoElement(this.driverExt, "carrierDetectWait", getGeneralSection().getSection());
     }
     
+    public TextEditElement getCarrierDetectWaitTextBox() {
+        return new TextEditElement(this.driverExt, "carrierDetectWaitInMilliseconds", getGeneralSection().getSection());
+    }
+    
+    
     //Configuration - Shared Section
     public RadioButtonElement getSharedPortType() {
         return new RadioButtonElement(this.driverExt, "sharing.sharedPortType");
     }
+    
+    public TextEditElement getSocketNumber() {
+        return new TextEditElement(this.driverExt, "sharing.sharedSocketNumber", getSharedSection().getSection());
+    }  
 }
