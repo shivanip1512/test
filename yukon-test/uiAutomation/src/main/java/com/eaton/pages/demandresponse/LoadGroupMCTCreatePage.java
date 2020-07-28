@@ -39,12 +39,12 @@ public class LoadGroupMCTCreatePage extends LoadGroupCreatePage {
 	    }
 
 	    private PickerElement getMCTAddressSelection() {
-	        return new PickerElement(this.driverExt, "button.naked.picker-button");
+	        return new PickerElement(this.driverExt, "picker-mctMeterPicker");
 	    }
 	    
 	    public SelectMCTMeterModal showAndWaitMCTMeter() {
 	
-	    	getMCTAddressSelection().clickLinkByClassName();;
+	    	getMCTAddressSelection().clickButtonWithDynamicId();
 	
 	        SeleniumTestSetup.waitUntilModalVisibleByTitle("Select MCT Meter");
 	

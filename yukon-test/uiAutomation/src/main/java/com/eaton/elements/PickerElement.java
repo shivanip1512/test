@@ -24,7 +24,7 @@ public class PickerElement {
         return this.driverExt.findElement(By.cssSelector(this.id + ".b-label"), Optional.empty()).getText();
     }
     
-    public void clickLinkByClassName() {
-        this.driverExt.findElement(By.cssSelector("." + this.id), Optional.empty()).click();
+    public void clickButtonWithDynamicId() {
+    	this.driverExt.findElement(By.cssSelector("button[id*= '" + this.id + "']"), Optional.empty()).click();
     } 
 }
