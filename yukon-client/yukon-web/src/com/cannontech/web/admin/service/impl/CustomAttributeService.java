@@ -9,12 +9,13 @@ public interface CustomAttributeService {
     /**
      * Deletes custom attribute
      * 
-     * @throws DataDependencyException
+     * @throws DataDependencyException, NotFoundException
      */
     void deleteCustomAttribute(int attributeId) throws DataDependencyException;
 
     /**
      * Deletes attribute assignment
+     * @throws NotFoundException
      */
     void deleteAttributeAssignment(int attributeAssignmentId);
 
@@ -22,6 +23,7 @@ public interface CustomAttributeService {
      * Creates attribute assignment
      * 
      * @return AttributeAssignment
+     * @throws NotFoundException, DuplicateException
      */
     AttributeAssignment updateAttributeAssignment(Assignment assignment);
 
@@ -29,6 +31,7 @@ public interface CustomAttributeService {
      * Updates attribute assignment
      * 
      * @return AttributeAssignment
+     * @throws NotFoundException, DuplicateException
      */
     AttributeAssignment createAttributeAssignment(Assignment assignment);
 
@@ -36,6 +39,7 @@ public interface CustomAttributeService {
      * Creates attribute
      * 
      * @return CustomAttribute
+     * @throws NotFoundException, DuplicateException
      */
     CustomAttribute createCustomAttribute(CustomAttribute attribute);
 
@@ -43,6 +47,7 @@ public interface CustomAttributeService {
      * Updates attribute
      * 
      * @return CustomAttribute
+     * @throws NotFoundException, DuplicateException
      */
     CustomAttribute updateCustomAttribute(CustomAttribute attribute);
 }
