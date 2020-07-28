@@ -95,6 +95,7 @@ public class GatewayDataTopicListener implements MessageListener {
             // Archive data streaming point values only if data streaming is enabled and gateway supports it
             if (isDataStreamingEnabled) {
                 if (rfnDevice.getPaoIdentifier().getPaoType() == PaoType.GWY800
+                        || rfnDevice.getPaoIdentifier().getPaoType() == PaoType.GWY801
                         || rfnDevice.getPaoIdentifier().getPaoType() == PaoType.VIRTUAL_GATEWAY) {
                     rfnGatewayService.generatePointData(rfnDevice, BuiltInAttribute.DATA_STREAMING_LOAD,
                             data.getDataStreamingLoadingPercent(), false);
