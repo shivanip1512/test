@@ -74,7 +74,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
     
 	}
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreateMCT_CommunicationRouteLabelsCorrect() {
         String sectionName = "General";
         String expectedLabel = "Communication Route:";
@@ -87,7 +87,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         assertThat(actualLabels.contains(expectedLabel)).isTrue();
     }
     
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreateMCT_AddressingSectionLabelsCorrect() {
         String sectionName = "Addressing";
         List<String> expectedLabels = new ArrayList<>(List.of("Address Level:", "Address:", "Relay Usage:"));
@@ -100,7 +100,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         assertThat(actualLabels).containsAll(expectedLabels);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreateMCT_AddressingSectionTitleCorrect() {
 
         createPage.getType().selectItemByText("MCT Group");
@@ -110,7 +110,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         assertThat(address.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreateMCT_AddressMinRange() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT MCT " + timeStamp;
@@ -126,7 +126,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getAddress().getValidationError()).isEqualTo(expectedErrorMsg);
     }
     
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreateMCT_AddressMaxRange() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT MCT " + timeStamp;
@@ -168,7 +168,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getMCTAddressLabelText()).isEqualTo("(none selected)");
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateMCT_MCTAddressSelectionRequied() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT MCT " + timeStamp;
@@ -181,6 +181,20 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         createPage.getSaveBtn().click();
 
         assertThat(createPage.getMCTAddress().getValidationError()).isEqualTo("MCT Address is required.");
+    }
+    
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpCreateMCT_MCTAddressLabelValueAfterSelection() {
+        createPage.getType().selectItemByText("MCT Group");
+        waitForLoadingSpinner();
+     
+        createPage.getAddressLevel().selectItemByText("MCT Address");
+        
+        SelectMCTMeterModal mctMeterModal = this.createPage.showAndWaitMCTMeter();
+        mctMeterModal.selectMeter("a_MCT-430A");
+        mctMeterModal.clickOkAndWait();
+        
+        assertThat(createPage.getMCTAddressLabelText()).contains("a_MCT-430A");
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
