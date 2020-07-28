@@ -48,7 +48,7 @@ yukon.assets.commChannel = (function () {
             });
 
             $(document).on('change', '.js-physical-port', function (event) {
-                yukon.comm.channel.togglePhysicalPort();
+                yukon.comm.channel.togglePhysicalPort($(this).closest('.ui-dialog'));
             });
 
             $(document).on("yukon:assets:commChannel:create", function(event) {
@@ -59,7 +59,8 @@ yukon.assets.commChannel = (function () {
                     errorMessageFound = errorMessage.is(":visible"),
                     globalError = popup.find('.js-global-error'),
                     globalErrorFound = globalError.is(":visible"),
-                    userPortEntered = popup.find('.js-user-physical-port-value').is(':visible');
+                    userPortField = popup.find('.js-user-physical-port-value'),
+                    userPortEntered = userPortField.exists() && !userPortField.hasClass('dn');
 
                 popup.find('.js-physical-port').prop('disabled', userPortEntered);
                 popup.find('.js-user-physical-port-value').prop('disabled', !userPortEntered);
@@ -80,8 +81,8 @@ yukon.assets.commChannel = (function () {
                     }).fail(function (xhr, status, error){
                         popup.html(xhr.responseText);
                         yukon.ui.initContent(popup);
-                        yukon.comm.channel.loadPhysicalPort();
-                        yukon.comm.channel.formatPhysicalPortErrors();
+                        yukon.comm.channel.loadPhysicalPort(popup);
+                        yukon.comm.channel.formatPhysicalPortErrors(popup);
                         yukon.ui.unblockPage();
                     });
                 } else {
