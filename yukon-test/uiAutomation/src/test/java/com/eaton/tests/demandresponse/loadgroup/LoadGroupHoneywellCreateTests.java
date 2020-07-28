@@ -20,10 +20,10 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.LoadGroupDetailPage;
-import com.eaton.pages.demandresponse.LoadGroupHoneywellCreateTest;
+import com.eaton.pages.demandresponse.LoadGroupCreatePage;
 
 public class LoadGroupHoneywellCreateTests extends SeleniumTestSetup{
-	private LoadGroupHoneywellCreateTest createPage;
+	private LoadGroupCreatePage createPage;
     WebDriver driver;
     private DriverExtensions driverExt;
     private Random randomNum;
@@ -37,11 +37,11 @@ public class LoadGroupHoneywellCreateTests extends SeleniumTestSetup{
     @BeforeMethod(alwaysRun = true)
     public void beforeTest() {
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
-        createPage = new LoadGroupHoneywellCreateTest(driverExt);
+        createPage = new LoadGroupCreatePage(driverExt);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreateHoneywell_RequiredFieldsOnlySuccessfully() {
+    public void loadGroupCreateHoneywell_RequiredFieldsOnlySuccessfully() {
     	 String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());        
          String name = "Honeywell Group " + timeStamp;
          double randomDouble = randomNum.nextDouble();
@@ -67,7 +67,7 @@ public class LoadGroupHoneywellCreateTests extends SeleniumTestSetup{
     }
     
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreateHoneywell_DisableGroupAndControlOnlySuccessfully() {
+    public void loadGroupCreateHoneywell_DisableGroupAndControlOnlySuccessfully() {
     	 String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());        
          String name = "Honeywell Group " + timeStamp;
          double randomDouble = randomNum.nextDouble();
@@ -97,18 +97,29 @@ public class LoadGroupHoneywellCreateTests extends SeleniumTestSetup{
     }
     
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreateHoneywell_KWCapacityMaxValueValidation() {
+    public void loadGroupCreateHoneywell_KWCapacityMinValueValidation() {
         createPage.getType().selectItemByText("Honeywell Group");
         waitForLoadingSpinner();
 
-        createPage.getkWCapacity().setInputValue(String.valueOf("100000"));
+        createPage.getkWCapacity().setInputValue("-1");
+        createPage.getSaveBtn().click();
+
+        assertThat(createPage.getkWCapacity().getValidationError()).isEqualTo("Must be between 0 and 99,999.999.");
+    }
+    
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    public void loadGroupCreateHoneywell_KWCapacityMaxValueValidation() {
+        createPage.getType().selectItemByText("Honeywell Group");
+        waitForLoadingSpinner();
+
+        createPage.getkWCapacity().setInputValue("100000");
         createPage.getSaveBtn().click();
 
         assertThat(createPage.getkWCapacity().getValidationError()).isEqualTo("Must be between 0 and 99,999.999.");
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreateHoneywell_GeneralSectionTitleCorrect() {
+    public void loadGroupCreateHoneywell_GeneralSectionTitleCorrect() {
         createPage.getType().selectItemByText("Honeywell Group");
         waitForLoadingSpinner();
         Section generalSection = createPage.getPageSection("General");
@@ -117,7 +128,7 @@ public class LoadGroupHoneywellCreateTests extends SeleniumTestSetup{
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreateHoneywell_GeneralSectionLabelsCorrect() {
+    public void loadGroupCreateHoneywell_GeneralSectionLabelsCorrect() {
         String sectionName = "General";
         createPage.getType().selectItemByText("Honeywell Group");
         waitForLoadingSpinner();
@@ -128,31 +139,10 @@ public class LoadGroupHoneywellCreateTests extends SeleniumTestSetup{
 
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreateHoneywell_OptionalAttributesSectionTitleCorrect() {
-        createPage.getType().selectItemByText("Honeywell Group");
-        waitForLoadingSpinner();
-
-        Section generalSection = createPage.getPageSection("Optional Attributes");
-        assertThat(generalSection.getSection()).isNotNull();
-    }
-
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreateHoneywell_OptionalAttributesSectionLabelsCorrect() {
-        String sectionName = "Optional Attributes";
-        createPage.getType().selectItemByText("Honeywell Group");
-        waitForLoadingSpinner();
-
-        List<String> expectedLabels = new ArrayList<>(List.of("kW Capacity:", "Disable Group:", "Disable Control:"));
-        List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
-
-        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
-    }
-    
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
         refreshPage(createPage);
-        createPage = new LoadGroupHoneywellCreateTest(driverExt);
+        createPage = new LoadGroupCreatePage(driverExt);
     }
 	
 
