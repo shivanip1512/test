@@ -29,7 +29,6 @@
 <entry key="yukon.web.api.error.invalidOperation">Invalid Operation when Component Type is Operation or Constant.</entry>
 <entry key="yukon.web.api.error.invalidFunction">Invalid Operation(Function) value when Component Type is Function.</entry>
 <entry key="yukon.web.api.error.invalidPointId">Invalid Point Id {0}.</entry>
-<entry key="yukon.web.api.error.notFound">A {0} with ID {1} was not found</entry>
 
 <entry key="yukon.web.api.save.error">{0} could not be saved. Error: {1}</entry>
 <entry key="yukon.web.api.delete.error">{0} could not be deleted. Error: {1}</entry>
