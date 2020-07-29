@@ -9,17 +9,20 @@ import com.google.common.collect.ImmutableMap.Builder;
 
 public enum YukonColorPalette implements DatabaseRepresentationSource, DisplayableEnum {
 
+    // next colorId to use: 13
     BLACK("#000000", 6),
     BLUE("#4d90fe", 4),
     GREEN("#009933", 0),
     GRAY("#7b8387", 9),
-    SAGE("#b2c98d", 8),
     ORANGE("#ec971f", 7),
     PURPLE("#b779f4", 10),
-    WINE("#ce8799", 1),
+    //TODO - consider making this id 1 instead of WINE, would require dbUpdate to change existing GDS usage
+    //RED("#d14836", 12),   // recommend that this should not be used for anything but state
+    SAGE("#b2c98d", 8),
     SKY("#abd7e1", 11),
     TEAL("#00b2a9", 5),
-    WHITE("#FFFFFF", 2),
+    WHITE("#ffffff", 2),
+    WINE("#ce8799", 1),
     YELLOW("#f0cb2f", 3);
 
     private final String hexValue;

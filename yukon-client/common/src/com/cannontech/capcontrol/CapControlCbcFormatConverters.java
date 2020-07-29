@@ -2,7 +2,7 @@ package com.cannontech.capcontrol;
 
 import java.awt.Color;
 
-import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LiteState;
@@ -87,7 +87,7 @@ public class CapControlCbcFormatConverters {
 
         LiteState liteState = stateGroupDao.findLiteState(StateGroupUtils.STATEGROUP_LASTCONTROL_STATE, value.intValue());
 
-        Color stateColor = liteState == null ? Color.WHITE : Colors.getColor(liteState.getFgColor());
+        Color stateColor = liteState == null ? Color.WHITE : YukonColorPalette.getColor(liteState.getFgColor()).getAwtColor();
 
         if (stateColor == Color.green) {
             stateColor = new Color(0,153, 51); //#009933
@@ -123,7 +123,7 @@ public class CapControlCbcFormatConverters {
 
         LiteState liteState = stateGroupDao.findLiteState(StateGroupUtils.STATEGROUP_IGNORED_CONTROL, value.intValue());
 
-        Color stateColor = liteState == null ? Color.WHITE : Colors.getColor(liteState.getFgColor());
+        Color stateColor = liteState == null ? Color.WHITE : YukonColorPalette.getColor(liteState.getFgColor()).getAwtColor();
 
         if (stateColor == Color.green) {
             stateColor = new Color(0,153, 51); //#009933

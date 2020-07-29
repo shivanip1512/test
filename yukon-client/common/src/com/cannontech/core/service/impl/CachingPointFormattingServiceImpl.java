@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.FormattingTemplateProcessor;
@@ -89,17 +89,15 @@ public class CachingPointFormattingServiceImpl implements CachingPointFormatting
                 valueStr = liteState.getStateText();
 
                 state = liteState.getStateText();
-                stateColor = Colors.getColor(liteState.getFgColor());
+                YukonColorPalette yukonColor = YukonColorPalette.getColor(liteState.getFgColor());
+                stateColor = yukonColor.getAwtColor();
             
                 /* Use custom colors for red and green.
                  * Should be the same as the error and success styles in yukon.css 
-                 * YUK-9652 will solve this problem, at which point this can be reverted. */
-                if (stateColor == Color.green) {
-                    stateColor = new Color(0,153, 51); //#009933
-                } else if (stateColor == Color.red) {
+                 * Previously referenced YUK-9652, but that has been resolved without change.
+                 * YUK-22620 should resolve this custom handling*/
+                if (yukonColor == YukonColorPalette.WINE) {
                     stateColor = new Color(209, 72, 54); //#D14836
-                } else if (stateColor == Color.orange) {
-                    stateColor = new Color(255, 153, 0); //#FF9900
                 }
             }
         }

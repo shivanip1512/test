@@ -16,7 +16,6 @@ import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.YukonColorPalette;
-import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -1256,8 +1255,8 @@ public class UpdaterHelper {
         LiteState state = CapControlUtils.getCapBankState(status);
         
         if (state != null) {
-            retColor = Colors.getColor(state.getFgColor());
-            if (retColor.equals(Colors.getColor(YukonColorPalette.GREEN.getColorId()))){
+            retColor = YukonColorPalette.getColor(state.getFgColor()).getAwtColor();
+            if (retColor.equals(YukonColorPalette.GREEN.getAwtColor())){
                 retColor = _DEFAULT_COLORS[0];
             }
         }
