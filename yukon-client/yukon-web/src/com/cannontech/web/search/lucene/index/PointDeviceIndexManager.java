@@ -91,7 +91,7 @@ public class PointDeviceIndexManager extends SimpleIndexManager {
         doc.add(new Field("stategroupid", stateGroupID, TYPE_NOT_STORED));
         doc.add(new Field("paotype", paoType, TYPE_NOT_STORED));
         doc.add(new Field("pointName", pointName, TYPE_NOT_STORED));
-        doc.add(new Field("pointoffset", Integer.toString(pointOffset), TYPE_NOT_STORED));
+        doc.add(new Field("pointoffset", Integer.toString(pointOffset), TYPE_STORED));
         doc.add(new Field("category", category, TYPE_STORED));
 
         return doc;

@@ -32,7 +32,7 @@ public class TrendRequest {
         return response;
     }
     
-    public static ExtractableResponse<?> deleteTrend(String trendId, Object body) {
+    public static ExtractableResponse<?> deleteTrend(String trendId) {
 
         String pathParam = APIs.Trend.deleteTrend + trendId;
         ExtractableResponse<?> response = ApiCallHelper.delete(pathParam, trendId);

@@ -12,7 +12,6 @@ import com.eaton.framework.SeleniumTestSetup;
 
 public class CreateCommChannelModal extends BaseModal {
 
-    private DriverExtensions driverExt;
     private String modalName; 
     private WebElement modal;
     
@@ -20,8 +19,6 @@ public class CreateCommChannelModal extends BaseModal {
     
     public CreateCommChannelModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
         super(driverExt, modalTitle, describedBy);
-
-        this.driverExt = driverExt;
     }
 
     public TextEditElement getName() {
@@ -51,10 +48,6 @@ public class CreateCommChannelModal extends BaseModal {
     public TextEditElement getPhysicalPortOther() {
     	return new TextEditElement(this.driverExt, "physicalPort", modalAriaDescribedBy);
     }    
-    
-    public String getModalTitle() {
-    	return getModal().findElement(By.cssSelector(".ui-dialog-titlebar .ui-dialog-title")).getText();
-    }
 
     public void clickClose() {
         modal.findElement(By.cssSelector(".ui-dialog-titlebar-close")).click();

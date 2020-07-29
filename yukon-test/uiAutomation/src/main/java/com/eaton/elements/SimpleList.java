@@ -1,9 +1,11 @@
 package com.eaton.elements;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -37,12 +39,35 @@ public class SimpleList {
     }
     
     public List<WebElement> getSimpleListItems() {
-
-        if (this.simpleListItems == null) {
-            findSimpleListItems();
-        }
+        findSimpleListItems();
 
         return this.simpleListItems;
+    }
+    
+    private List<WebElement> getItems() {
+        return getSimpleList().findElements(By.cssSelector("li a"));
+    }
+    
+    public List<String> getListOfItemsText() {
+        List<WebElement> items = getItems();
+        
+        List<String> list = new ArrayList<>();
+        for (WebElement item : items) {
+            list.add(item.getText());            
+        }
+        
+        return list;
+    }
+    
+    public List<String> getListOfItemLinks() {
+        List<WebElement> items = getItems();
+        
+        List<String> list = new ArrayList<>();
+        for (WebElement item : items) {
+            list.add(item.getAttribute("href"));            
+        }
+        
+        return list;
     }
     
     private void findSimpleListItems() {
@@ -51,11 +76,8 @@ public class SimpleList {
     }
     
     public WebElement getSimpleListItemAt(int index) {
-
-        if (this.simpleListItems == null) {
-            findSimpleListItems();
-        }
-
+        findSimpleListItems();
+        
         return this.simpleListItems.get(index);
     }
     
@@ -87,7 +109,7 @@ public class SimpleList {
         return  enabled;
     }
     
-    private String getLinkFromOuterHTML(String html)
+    public static String getLinkFromOuterHTML(String html)
     {
         Pattern p = Pattern.compile("href=\"(.*?)\"");
         Matcher m = p.matcher(html);
@@ -96,6 +118,11 @@ public class SimpleList {
             link = m.group(1); // this variable should contain the link URL
         }
         return link;
+    }
+    
+    public int findSimpleListItemText(String text)
+    {
+    	return IntStream.range(0,getSimpleListItems().size()).filter(i -> text.equals(getSimpleListItems().get(i).getText())).findFirst().orElse(-1);
     }
     
 }

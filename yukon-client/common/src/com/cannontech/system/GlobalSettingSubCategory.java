@@ -2,6 +2,7 @@ package com.cannontech.system;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 
 public enum GlobalSettingSubCategory implements DisplayableEnum {
 
@@ -24,10 +25,11 @@ public enum GlobalSettingSubCategory implements DisplayableEnum {
     THEMES(GlobalSettingCategory.SYSTEM_SETUP),
     WEB_SERVER(GlobalSettingCategory.SYSTEM_SETUP),
     DASHBOARD_ADMIN(GlobalSettingCategory.SYSTEM_SETUP, YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS),
-    ATTRIBUTES(GlobalSettingCategory.SYSTEM_SETUP);
+    ATTRIBUTES(GlobalSettingCategory.SYSTEM_SETUP, YukonRoleProperty.ADMIN_MANAGE_ATTRIBUTES, HierarchyPermissionLevel.OWNER);
     
     private GlobalSettingCategory category;
     private YukonRoleProperty roleProperty;
+    private HierarchyPermissionLevel level;
     
     private GlobalSettingSubCategory(GlobalSettingCategory category) {
         this.category = category;
@@ -38,12 +40,22 @@ public enum GlobalSettingSubCategory implements DisplayableEnum {
         this.roleProperty = roleProperty;
     }
     
+    private GlobalSettingSubCategory(GlobalSettingCategory category, YukonRoleProperty roleProperty, HierarchyPermissionLevel level) {
+        this.category = category;
+        this.roleProperty = roleProperty;
+        this.level = level;
+    }
+    
     public GlobalSettingCategory getCategory() {
         return category;
     }
     
     public YukonRoleProperty getRoleProperty() {
         return roleProperty;
+    }
+    
+    public HierarchyPermissionLevel getLevel() {
+        return level;
     }
 
     @Override
