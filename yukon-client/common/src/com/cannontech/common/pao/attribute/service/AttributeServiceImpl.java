@@ -127,17 +127,25 @@ public class AttributeServiceImpl implements AttributeService {
     }
     
     private void createDatabaseChangeListeners() {
-        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.CUSTOM_ATTRIBUTE, addType, e -> {
-            CustomAttribute attribute = attributeDao.getCustomAttribute(e.getPrimaryKey());
-            customAttributes.put(attribute.getCustomAttributeId(), attribute);
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ATTRIBUTE, addType, e -> {
+            try {
+                CustomAttribute attribute = attributeDao.getCustomAttribute(e.getPrimaryKey());
+                customAttributes.put(attribute.getCustomAttributeId(), attribute);
+            } catch (NotFoundException ex) {
+                log.warn(e);
+            }
         });
         
-        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.CUSTOM_ATTRIBUTE_ASSIGNMENT, addType, e -> {
-            AttributeAssignment assignemnt = attributeDao.getAssignmentById(e.getPrimaryKey());
-            customAttributeAssignments.put(assignemnt.getAttributeAssignmentId(), assignemnt);
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ATTRIBUTE_ASSIGNMENT, addType, e -> {
+            try {
+                AttributeAssignment assignemnt = attributeDao.getAssignmentById(e.getPrimaryKey());
+                customAttributeAssignments.put(assignemnt.getAttributeAssignmentId(), assignemnt);
+            } catch (NotFoundException ex) {
+                log.warn(e);
+            }
         });
         
-        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.CUSTOM_ATTRIBUTE, deleteType, e -> {
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ATTRIBUTE, deleteType, e -> {
             List<Integer> assignmentsToDelete = customAttributeAssignments.asMap().values().stream()
                     .filter(assignment -> assignment.getAttributeId() == e.getPrimaryKey())
                     .map(assignment -> assignment.getAttributeAssignmentId())
@@ -146,7 +154,7 @@ public class AttributeServiceImpl implements AttributeService {
             customAttributes.invalidate(e.getPrimaryKey());
         });
         
-        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.CUSTOM_ATTRIBUTE_ASSIGNMENT, deleteType, e -> {
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ATTRIBUTE_ASSIGNMENT, deleteType, e -> {
             customAttributeAssignments.invalidate(e.getPrimaryKey());
         });
     }
@@ -176,9 +184,7 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public List<CustomAttribute> findCustomAttributesForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier) {
         return customAttributeAssignments.asMap().values().stream()
-                .filter(assignment -> assignment.getPaoType() == paoTypePointIdentifier.getPaoType() 
-                          && assignment.getOffset() == paoTypePointIdentifier.getPointIdentifier().getOffset() 
-                          && assignment.getPointType() ==  paoTypePointIdentifier.getPointIdentifier().getPointType())
+                .filter(assignment -> assignment.isAssignedTo(paoTypePointIdentifier))
                 .map(assignment -> assignment.getCustomAttribute())
                 .collect(Collectors.toList());
     }

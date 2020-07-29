@@ -25,7 +25,7 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
             throw new NotFoundException("Attribute id:" + assignment.getAttributeId() + " is not in the database.");
         }
         AttributeAssignment createdAssignment = customAttributeDao.createAttributeAssignment(assignment);
-        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.CUSTOM_ATTRIBUTE_ASSIGNMENT,
+        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.ATTRIBUTE_ASSIGNMENT,
                 createdAssignment.getAttributeAssignmentId());
         return createdAssignment;
     }
@@ -33,7 +33,7 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
     @Override
     public CustomAttribute createCustomAttribute(CustomAttribute attribute) {
         CustomAttribute createdAttribute = customAttributeDao.createCustomAttribute(attribute);
-        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.CUSTOM_ATTRIBUTE,
+        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.ATTRIBUTE,
                 createdAttribute.getCustomAttributeId());
         return createdAttribute;
     }
@@ -47,7 +47,7 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
             throw new NotFoundException("Attribute Assignment id:" + assignment.getAttributeAssignmentId() + " is not in the database.");
         }
         AttributeAssignment updatedAssignment = customAttributeDao.updateAttributeAssignment(assignment);
-        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.CUSTOM_ATTRIBUTE_ASSIGNMENT,
+        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.ATTRIBUTE_ASSIGNMENT,
                 updatedAssignment.getAttributeAssignmentId());
         return updatedAssignment;
     }
@@ -58,17 +58,17 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
             throw new NotFoundException("Attribute id:" + attribute.getCustomAttributeId() + " is not in the database.");
         }
         CustomAttribute updatedAttribute = customAttributeDao.updateCustomAttribute(attribute);
-        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.CUSTOM_ATTRIBUTE, attribute.getCustomAttributeId());
+        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.ATTRIBUTE, attribute.getCustomAttributeId());
         return updatedAttribute;
     }
 
     @Override
     public void deleteCustomAttribute(int attributeId) throws DataDependencyException {
         if (!attributeService.isValidAttributeId(attributeId)) {
-            throw new NotFoundException("Attribute id:" + attributeId + "is not in the database.");
+            throw new NotFoundException("Attribute id:" + attributeId + " is not in the database.");
         }
         customAttributeDao.deleteCustomAttribute(attributeId);
-        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.CUSTOM_ATTRIBUTE, attributeId);
+        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.ATTRIBUTE, attributeId);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
             throw new NotFoundException("Attribute Assignment id:" + attributeAssignmentId + " is not in the database.");
         }
         customAttributeDao.deleteAttributeAssignment(attributeAssignmentId);
-        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.CUSTOM_ATTRIBUTE_ASSIGNMENT, attributeAssignmentId);
+        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.ATTRIBUTE_ASSIGNMENT, attributeAssignmentId);
     }
 }
  
