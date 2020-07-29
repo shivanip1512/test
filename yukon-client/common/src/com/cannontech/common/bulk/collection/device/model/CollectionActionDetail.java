@@ -12,18 +12,18 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
  * This enum defines collection action buckets.
  */
 public enum CollectionActionDetail implements DisplayableEnum {
-    SUCCESS(CollectionActionDetailSummary.SUCCESS, null, YukonColorPallet.GREEN.getHexValue()),  //green
-    FAILURE(CollectionActionDetailSummary.FAILURE, null, YukonColorPallet.WINE.getHexValue()),  //red
-    UNSUPPORTED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.UNSUPPORTED, YukonColorPallet.GRAY.getHexValue()),  //grey
-    CONNECTED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPallet.GREEN.getHexValue()),  //green
-    ARMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPallet.SAGE.getHexValue()),  //light green
-    DISCONNECTED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPallet.ORANGE.getHexValue()),  //orange
+    SUCCESS(CollectionActionDetailSummary.SUCCESS, null, YukonColorPallet.GREEN.getHexValue()),
+    FAILURE(CollectionActionDetailSummary.FAILURE, null, YukonColorPallet.WINE.getHexValue()),
+    UNSUPPORTED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.UNSUPPORTED, YukonColorPallet.GRAY.getHexValue()),
+    CONNECTED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPallet.GREEN.getHexValue()),
+    ARMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPallet.SAGE.getHexValue()),
+    DISCONNECTED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPallet.ORANGE.getHexValue()),
     // NOT_CONFIGURED means the device was not in a proper state before the action was attempted so we were not able to perform the action.
-    NOT_CONFIGURED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.NOT_CONFIGURED, YukonColorPallet.BLUE.getHexValue()),  //blue
-    CANCELED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.CANCELED, YukonColorPallet.SKY.getHexValue()), //light blue
-    CONFIRMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPallet.GREEN.getHexValue()), //green
-    UNCONFIRMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPallet.LIGHT_GREY.getHexValue()),  //light grey
-    ALREADY_CONFIGURED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.ALREADY_CONFIGURED, YukonColorPallet.LIGHT_GREY.getHexValue()); //silver
+    NOT_CONFIGURED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.NOT_CONFIGURED, YukonColorPallet.BLUE.getHexValue()),
+    CANCELED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.CANCELED, YukonColorPallet.SKY.getHexValue()),
+    CONFIRMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPallet.GREEN.getHexValue()),
+    UNCONFIRMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPallet.LIGHT_GREY.getHexValue()),
+    ALREADY_CONFIGURED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.ALREADY_CONFIGURED, YukonColorPallet.LIGHT_GREY.getHexValue());
 
     private CollectionActionDetailSummary summary;
     private CommandRequestUnsupportedType unsupportedType;
