@@ -190,7 +190,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
     }
         
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDeleteUdp_ActionsDeleteModalDeleteButtonClick() {
+    public void commChannelDeleteUdp_DeleteCommChannelSuccessfully() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String deleteCommChannelName = "UDP Comm Channel " + timeStamp;
 

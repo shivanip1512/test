@@ -187,7 +187,7 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDeleteLocalSerial_ActionsDeleteModalDeleteButtonClick() {
+    public void commChannelDeleteLocalSerial_DeleteCommChannelSuccessfully() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String deleteCommChannelName = "Local Serial Comm Channel " + timeStamp;
 
