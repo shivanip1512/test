@@ -41,7 +41,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import com.cannontech.common.YukonColorPallet;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.ColorComboBoxCellRenderer;
 import com.cannontech.common.gui.util.ColorTableCellRenderer;
@@ -512,8 +512,8 @@ public class CreateGraphPanel extends DataInputPanel implements DataInputPanelLi
                 // colModel.getColumn(GDSTableModel.SETUP_NAME_COLUMN).setPreferredWidth(10);
 
                 // Color choices setup
-                YukonColorPallet[] colors = GraphColors.getYukonColors();
-                JComboBox<YukonColorPallet> colorComboBox = new JComboBox<>(colors);
+                YukonColorPalette[] colors = GraphColors.getYukonColors();
+                JComboBox<YukonColorPalette> colorComboBox = new JComboBox<>(colors);
                 colorComboBox.setRenderer(new ColorComboBoxCellRenderer());
                 DefaultCellEditor colorEditor = new DefaultCellEditor(colorComboBox);
 

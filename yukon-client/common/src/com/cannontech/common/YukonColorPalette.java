@@ -7,7 +7,7 @@ import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-public enum YukonColorPallet implements DatabaseRepresentationSource, DisplayableEnum {
+public enum YukonColorPalette implements DatabaseRepresentationSource, DisplayableEnum {
 
     BLACK("#000000", 6),
     BLUE("#4d90fe", 4),
@@ -26,24 +26,24 @@ public enum YukonColorPallet implements DatabaseRepresentationSource, Displayabl
     private final int colorId;
 
     
-    private final static ImmutableMap<Integer, YukonColorPallet> lookupById;
-    private final static ImmutableMap<String, YukonColorPallet> lookupByHexColorValue;
+    private final static ImmutableMap<Integer, YukonColorPalette> lookupById;
+    private final static ImmutableMap<String, YukonColorPalette> lookupByHexColorValue;
     
     static {
-        Builder<Integer, YukonColorPallet> dbBuilder = ImmutableMap.builder();
-        for (YukonColorPallet color : values()) {
+        Builder<Integer, YukonColorPalette> dbBuilder = ImmutableMap.builder();
+        for (YukonColorPalette color : values()) {
             dbBuilder.put(color.colorId, color);
         }
         lookupById = dbBuilder.build();
         
-        Builder<String, YukonColorPallet> hexColorLookupBuilder = ImmutableMap.builder();
-        for (YukonColorPallet color : values()) {
+        Builder<String, YukonColorPalette> hexColorLookupBuilder = ImmutableMap.builder();
+        for (YukonColorPalette color : values()) {
             hexColorLookupBuilder.put(color.getHexValue(), color);
         }
         lookupByHexColorValue = hexColorLookupBuilder.build();
     }
     
-    private YukonColorPallet(String hexValue, int colorId) {
+    private YukonColorPalette(String hexValue, int colorId) {
         this.hexValue = hexValue;
         this.colorId = colorId;
     }
@@ -67,11 +67,11 @@ public enum YukonColorPallet implements DatabaseRepresentationSource, Displayabl
         return colorId;
     }
 
-    public static YukonColorPallet getColor(int colorId) {
+    public static YukonColorPalette getColor(int colorId) {
         return lookupById.get(colorId);
     }
     
-    public static YukonColorPallet getColorByHexValue(String hexValue) {
+    public static YukonColorPalette getColorByHexValue(String hexValue) {
         return lookupByHexColorValue.get(hexValue);
     }
     
@@ -82,7 +82,7 @@ public enum YukonColorPallet implements DatabaseRepresentationSource, Displayabl
     /** 
      * Returns next color in values, loops around to the beginning of the values if index > values.length
      */
-    public static YukonColorPallet getNextColor(int index) {
+    public static YukonColorPalette getNextColor(int index) {
         return values()[index % values().length];
     }
     

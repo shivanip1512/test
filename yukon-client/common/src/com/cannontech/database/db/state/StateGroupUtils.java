@@ -1,6 +1,6 @@
 package com.cannontech.database.db.state;
 
-import com.cannontech.common.YukonColorPallet;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.database.data.state.GroupState;
 
 /**
@@ -74,7 +74,7 @@ public final class StateGroupUtils {
         for (int i = 0; i < stateText.length; i++) {
             com.cannontech.database.data.state.State tempStateData = new com.cannontech.database.data.state.State();
             tempStateData.setState(new State(gs.getStateGroup().getStateGroupID(), Integer.valueOf(i), stateText[i],
-                                             YukonColorPallet.getColor(i).getColorId(), YukonColorPallet.BLACK.getColorId()));
+                                             YukonColorPalette.getColor(i).getColorId(), YukonColorPalette.BLACK.getColorId()));
             gs.getStatesVector().add(tempStateData);
         }
         return gs;

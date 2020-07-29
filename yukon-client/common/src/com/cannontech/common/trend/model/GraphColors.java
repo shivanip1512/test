@@ -2,42 +2,42 @@ package com.cannontech.common.trend.model;
 
 import java.util.Arrays;
 
-import com.cannontech.common.YukonColorPallet;
+import com.cannontech.common.YukonColorPalette;
 
 /**
  * Provides colors for graphs.
  */
 public enum GraphColors {
-    WINE(YukonColorPallet.WINE),
-    BLUE(YukonColorPallet.BLUE),
-    GREEN(YukonColorPallet.GREEN),
-    BLACK(YukonColorPallet.BLACK),
-    SAGE(YukonColorPallet.SAGE),
-    ORANGE(YukonColorPallet.ORANGE),
-    SKY(YukonColorPallet.SKY),
-    YELLOW(YukonColorPallet.YELLOW),
-    PURPLE(YukonColorPallet.PURPLE),
-    GRAY(YukonColorPallet.GRAY),
-    TEAL(YukonColorPallet.TEAL);
+    WINE(YukonColorPalette.WINE),
+    BLUE(YukonColorPalette.BLUE),
+    GREEN(YukonColorPalette.GREEN),
+    BLACK(YukonColorPalette.BLACK),
+    SAGE(YukonColorPalette.SAGE),
+    ORANGE(YukonColorPalette.ORANGE),
+    SKY(YukonColorPalette.SKY),
+    YELLOW(YukonColorPalette.YELLOW),
+    PURPLE(YukonColorPalette.PURPLE),
+    GRAY(YukonColorPalette.GRAY),
+    TEAL(YukonColorPalette.TEAL);
     
-    private final YukonColorPallet yukonColor;
-    private final static YukonColorPallet[] yukonColors;
+    private final YukonColorPalette yukonColor;
+    private final static YukonColorPalette[] yukonColors;
     
     static {
         yukonColors = Arrays.stream(GraphColors.values())
                             .map(GraphColors::getYukonColor)
-                            .toArray(YukonColorPallet[]::new);
+                            .toArray(YukonColorPalette[]::new);
     }
 
-    private GraphColors(YukonColorPallet yukonColor) {
+    private GraphColors(YukonColorPalette yukonColor) {
         this.yukonColor = yukonColor;
     }
 
-    public YukonColorPallet getYukonColor() {
+    public YukonColorPalette getYukonColor() {
         return yukonColor;
     }
 
-    public static YukonColorPallet[] getYukonColors() {
+    public static YukonColorPalette[] getYukonColors() {
         return yukonColors;
     }
 
@@ -45,7 +45,7 @@ public enum GraphColors {
         return getYukonColor().getHexValue();
     }
 
-    public static YukonColorPallet getNextDefaultColor(int index) {
+    public static YukonColorPalette getNextDefaultColor(int index) {
         return GraphColors.values()[index % GraphColors.values().length].getYukonColor();
     } 
 }

@@ -26,7 +26,7 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.YukonColorPallet;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.YukonImagePanel;
 import com.cannontech.common.gui.util.ColorComboBoxCellRenderer;
@@ -51,7 +51,7 @@ public class GroupStateEditorPanel extends DataInputPanel implements JCValueList
 
     private JLabel[] rawStateLabels = null;
     private JTextField[] stateNameTextFields = null;
-    private JComboBox<YukonColorPallet>[] foregroundColorComboBoxes = null;
+    private JComboBox<YukonColorPalette>[] foregroundColorComboBoxes = null;
     private JButton[] imageButtons = null;
     private JLabel ivjStateGroupNameLabel = null;
     private JTextField ivjStateGroupNameTextField = null;
@@ -65,18 +65,18 @@ public class GroupStateEditorPanel extends DataInputPanel implements JCValueList
     private JScrollPane ivjJScrollPane = null;
     private JLabel ivjJLabelImage = null;
 
-    private YukonColorPallet[] foregroundColors = new YukonColorPallet[] {
-            YukonColorPallet.GREEN,
-            YukonColorPallet.WINE,
-            YukonColorPallet.WHITE,
-            YukonColorPallet.YELLOW,
-            YukonColorPallet.BLUE,
-            YukonColorPallet.TEAL,
-            YukonColorPallet.BLACK,
-            YukonColorPallet.ORANGE,
-            YukonColorPallet.SAGE,
-            YukonColorPallet.GRAY,
-            YukonColorPallet.PURPLE
+    private YukonColorPalette[] foregroundColors = new YukonColorPalette[] {
+            YukonColorPalette.GREEN,
+            YukonColorPalette.WINE,
+            YukonColorPalette.WHITE,
+            YukonColorPalette.YELLOW,
+            YukonColorPalette.BLUE,
+            YukonColorPalette.TEAL,
+            YukonColorPalette.BLACK,
+            YukonColorPalette.ORANGE,
+            YukonColorPalette.SAGE,
+            YukonColorPalette.GRAY,
+            YukonColorPalette.PURPLE
             };
     
     /**
@@ -139,14 +139,14 @@ public class GroupStateEditorPanel extends DataInputPanel implements JCValueList
      * 
      * @return JComboBox
      */
-    private JComboBox<YukonColorPallet> buildForegroundColorComboBox() {
-        JComboBox<YukonColorPallet> jComboBox = new JComboBox<YukonColorPallet>();
+    private JComboBox<YukonColorPalette> buildForegroundColorComboBox() {
+        JComboBox<YukonColorPalette> jComboBox = new JComboBox<YukonColorPalette>();
         jComboBox.setPreferredSize(new java.awt.Dimension(120, 25));
         jComboBox.setFont(new java.awt.Font("dialog", 0, 12));
         jComboBox.setMinimumSize(new java.awt.Dimension(120, 25));
         jComboBox.setRenderer(new ColorComboBoxCellRenderer());
 
-        for (YukonColorPallet color : foregroundColors) {
+        for (YukonColorPalette color : foregroundColors) {
             jComboBox.addItem(color);
         }
 
@@ -523,7 +523,7 @@ public class GroupStateEditorPanel extends DataInputPanel implements JCValueList
             tempStateData = new State();
             tempStateData.setState(new com.cannontech.database.db.state.State(
                 groupState.getStateGroup().getStateGroupID(), Integer.valueOf(i), stateNameTextFields[i].getText(),
-                foregroundColorComboBoxes[i].getSelectedIndex(), YukonColorPallet.BLACK.getColorId(), yukImgId));
+                foregroundColorComboBoxes[i].getSelectedIndex(), YukonColorPalette.BLACK.getColorId(), yukImgId));
 
             groupState.getStatesVector().add(tempStateData);
         }
@@ -637,7 +637,7 @@ public class GroupStateEditorPanel extends DataInputPanel implements JCValueList
      */
     @Override
     public void itemStateChanged(java.awt.event.ItemEvent e) {
-        for (JComboBox<YukonColorPallet> foregroundColorComboBox : foregroundColorComboBoxes) {
+        for (JComboBox<YukonColorPalette> foregroundColorComboBox : foregroundColorComboBoxes) {
             if (e.getSource() == foregroundColorComboBox) {
                 try {
                     fireInputUpdate();

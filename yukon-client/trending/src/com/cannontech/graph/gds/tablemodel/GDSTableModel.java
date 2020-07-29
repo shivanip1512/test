@@ -5,7 +5,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 
-import com.cannontech.common.YukonColorPallet;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
@@ -178,7 +178,7 @@ public Object getGDSAttribute(int index, GraphDataSeries gds) {
 			return gds.getLabel();
 			
 		case COLOR_NAME_COLUMN:	
-		    return YukonColorPallet.getColor(gds.getColor().intValue());
+		    return YukonColorPalette.getColor(gds.getColor().intValue());
 		
 		
 		case AXIS_NAME_COLUMN:
@@ -340,7 +340,7 @@ public void setValueAt(Object value, int row, int col)
 			gds.setLabel( valueString );
 		break;
 		case COLOR_NAME_COLUMN:
-			gds.setColor(((YukonColorPallet)value).getColorId());
+			gds.setColor(((YukonColorPalette)value).getColorId());
 			
 		break;		
 		case AXIS_NAME_COLUMN:

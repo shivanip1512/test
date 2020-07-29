@@ -3,7 +3,7 @@ package com.cannontech.dbeditor.wizard.tags;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.common.YukonColorPallet;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.ColorComboBoxCellRenderer;
 import com.cannontech.common.gui.util.DataInputPanelListener;
@@ -21,7 +21,7 @@ public class TagsBasePanel extends com.cannontech.common.gui.util.DataInputPanel
 	private javax.swing.JTextField ivjLevelTextField = null;
 	private javax.swing.JLabel ivjTagLevelLabel = null;
 	private javax.swing.JLabel ivjTagNameLabel = null;
-	private javax.swing.JComboBox<YukonColorPallet> ivjColorComboBox = null;
+	private javax.swing.JComboBox<YukonColorPalette> ivjColorComboBox = null;
 	private javax.swing.JLabel ivjColorLabel = null;
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
 	private javax.swing.JButton ivjImageButton = null;
@@ -29,18 +29,18 @@ public class TagsBasePanel extends com.cannontech.common.gui.util.DataInputPanel
 	private javax.swing.JCheckBox ivjInhibitCheckBox = null;
 	private javax.swing.JTextField ivjNameTexField = null;
 	
-    private YukonColorPallet[] tagColors = new YukonColorPallet[] {
-            YukonColorPallet.GREEN,
-            YukonColorPallet.WINE,
-            YukonColorPallet.WHITE,
-            YukonColorPallet.YELLOW,
-            YukonColorPallet.BLUE,
-            YukonColorPallet.TEAL,
-            YukonColorPallet.BLACK,
-            YukonColorPallet.ORANGE,
-            YukonColorPallet.SAGE,
-            YukonColorPallet.GRAY,
-            YukonColorPallet.PURPLE
+    private YukonColorPalette[] tagColors = new YukonColorPalette[] {
+            YukonColorPalette.GREEN,
+            YukonColorPalette.WINE,
+            YukonColorPalette.WHITE,
+            YukonColorPalette.YELLOW,
+            YukonColorPalette.BLUE,
+            YukonColorPalette.TEAL,
+            YukonColorPalette.BLACK,
+            YukonColorPalette.ORANGE,
+            YukonColorPalette.SAGE,
+            YukonColorPalette.GRAY,
+            YukonColorPalette.PURPLE
             };
 
     class IvjEventHandler implements java.awt.event.ActionListener, java.awt.event.ItemListener, javax.swing.event.CaretListener {
@@ -74,10 +74,10 @@ public TagsBasePanel() {
  * @return javax.swing.JComboBox
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox<YukonColorPallet> getColorComboBox() {
+private javax.swing.JComboBox<YukonColorPalette> getColorComboBox() {
 	if (ivjColorComboBox == null) {
 		try {
-			ivjColorComboBox = new javax.swing.JComboBox<YukonColorPallet>();
+			ivjColorComboBox = new javax.swing.JComboBox<YukonColorPalette>();
 			ivjColorComboBox.setName("ColorComboBox");
 			// user code begin {1}
 			ivjColorComboBox.setRenderer(new ColorComboBoxCellRenderer());
@@ -422,7 +422,7 @@ private void initConnections() throws java.lang.Exception {
 private void initialize() {
 	try {
 		// user code begin {1}
-        for (YukonColorPallet color : tagColors) {
+        for (YukonColorPalette color : tagColors) {
             getColorComboBox().addItem(color);
         }
 		// user code end

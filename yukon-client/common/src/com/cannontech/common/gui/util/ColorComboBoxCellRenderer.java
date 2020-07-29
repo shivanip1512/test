@@ -4,9 +4,9 @@ import java.awt.Component;
 
 import javax.swing.JList;
 
-import com.cannontech.common.YukonColorPallet;
+import com.cannontech.common.YukonColorPalette;
 
-public class ColorComboBoxCellRenderer extends javax.swing.JPanel implements javax.swing.ListCellRenderer<YukonColorPallet> {
+public class ColorComboBoxCellRenderer extends javax.swing.JPanel implements javax.swing.ListCellRenderer<YukonColorPalette> {
     private java.awt.Color iconColor = null;
     private String boxString = null;
 
@@ -23,9 +23,9 @@ public class ColorComboBoxCellRenderer extends javax.swing.JPanel implements jav
     /**
      * getListCellRendererComponent method comment.
      */
-    public Component getListCellRendererComponent(JList<? extends YukonColorPallet> list, YukonColorPallet value, int index,
+    public Component getListCellRendererComponent(JList<? extends YukonColorPalette> list, YukonColorPalette value, int index,
             boolean isSelected, boolean cellHasFocus) {
-        YukonColorPallet color = ((YukonColorPallet) value);
+        YukonColorPalette color = ((YukonColorPalette) value);
         iconColor = color.getAwtColor();
         boxString = color.toDefaultText();
         return this;

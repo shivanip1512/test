@@ -8,7 +8,7 @@ import java.awt.TexturePaint;
 import java.awt.image.BufferedImage;
 import java.util.Vector;
 
-import com.cannontech.common.YukonColorPallet;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
@@ -101,7 +101,7 @@ public class TrendSerie
 	 * @return java.awt.Color
 	 */
 	public Color getColor() {
-		return YukonColorPallet.getColor(getGraphDataSeries().getColor().intValue()).getAwtColor();
+		return YukonColorPalette.getColor(getGraphDataSeries().getColor().intValue()).getAwtColor();
 	}
 	/**
 	 * Returns the color value.
@@ -116,7 +116,7 @@ public class TrendSerie
 		// Render into the BufferedImage graphics to create the texture
 		big.setColor(Color.white);
 		big.fillRect(0,0,5,5);
-		big.setColor(YukonColorPallet.getColor(getGraphDataSeries().getColor().intValue()).getAwtColor());
+		big.setColor(YukonColorPalette.getColor(getGraphDataSeries().getColor().intValue()).getAwtColor());
 		big.fillOval(0,0,4,4);
 		
 		// Create a texture paint from the buffered image
@@ -357,7 +357,7 @@ public class TrendSerie
 	 * Sets the color value.
 	 * @param newColor java.awt.Color
 	 */
-	protected void setColor(YukonColorPallet newColor) {
+	protected void setColor(YukonColorPalette newColor) {
 	    getGraphDataSeries().setColor(newColor.getColorId());
 	}
 

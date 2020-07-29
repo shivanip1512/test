@@ -1,6 +1,6 @@
 package com.cannontech.common.gui.wizard.state;
 
-import com.cannontech.common.YukonColorPallet;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.gui.editor.state.GroupStateEditorPanel;
 import com.cannontech.database.data.state.GroupState;
 import com.cannontech.database.db.state.State;
@@ -122,8 +122,8 @@ public Object getValue(Object val) {
     tempStateData.setState(new State(gs.getStateGroup().getStateGroupID(),
                                      Integer.valueOf(State.ANY_ID),
                                      State.ANY,
-                                     YukonColorPallet.BLACK.getColorId(),
-                                     YukonColorPallet.WHITE.getColorId()));
+                                     YukonColorPalette.BLACK.getColorId(),
+                                     YukonColorPalette.WHITE.getColorId()));
 
     gs.getStatesVector().add(tempStateData);
 
@@ -143,8 +143,8 @@ public Object getValue(Object val) {
             tempStateData.setState(new State(gs.getStateGroup().getStateGroupID(),
                                              Integer.valueOf(i),
                                              "DefaultStateName" + (Integer.toString(i)),
-                                             YukonColorPallet.getColor(i).getColorId(),
-                                             YukonColorPallet.BLACK.getColorId()));
+                                             YukonColorPalette.getColor(i).getColorId(),
+                                             YukonColorPalette.BLACK.getColorId()));
 
             gs.getStatesVector().add(tempStateData);
         }
