@@ -234,12 +234,12 @@ public class AttributeServiceImpl implements AttributeService {
             return attributeDefinition.getPaoPointIdentifier(pao);
         } else {
             CustomAttribute customAttribute = (CustomAttribute) attribute;
-
+            //TODO: test
             AttributeAssignment attributeAssignment = customAttributeAssignments.asMap().values().stream()
                     .filter(assignment -> assignment.getAttributeId() == customAttribute.getCustomAttributeId())
                     .findFirst()
                     .orElseThrow(() -> new IllegalUseOfAttribute(
-                            "Attribute id:" + customAttribute.getCustomAttributeId() + "doesn't exits (not in cache)"));
+                            "Attribute id:" + customAttribute.getCustomAttributeId() + " doesn't exits (not in cache)"));
 
             return new PaoPointIdentifier(pao.getPaoIdentifier(),
                     new PointIdentifier(attributeAssignment.getPointType(), attributeAssignment.getOffset()));
