@@ -113,7 +113,7 @@ public class PortValidatorHelper {
      * Validate Physical Port
      */
     public static void validatePhysicalPort(Errors errors, String fieldValue, String fieldName) {
-        YukonValidationUtils.checkIsBlank(errors, "physicalPort", fieldValue, fieldName, true);
+        YukonValidationUtils.checkIsBlank(errors, "physicalPort", fieldValue, fieldName, false);
         if (!errors.hasFieldErrors("physicalPort")) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "physicalPort", fieldValue, 8);
         }
