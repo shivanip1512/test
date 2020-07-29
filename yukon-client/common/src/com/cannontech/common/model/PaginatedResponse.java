@@ -10,16 +10,21 @@ public class PaginatedResponse<T> {
     private Integer pageNumber;
     private Integer itemsPerPage;
     private List<T> items;
-
-    public PaginatedResponse(List<T> items, Integer pageNumber, Integer itemsPerPage) {
-        this.items = items;
-        this.pageNumber = pageNumber;
-        this.itemsPerPage = itemsPerPage;
+    private Integer totalItems;
+    
+    public PaginatedResponse() {
+        
     }
 
-    @JsonProperty
+    public PaginatedResponse(List<T> items, Integer pageNumber, Integer itemsPerPage) {
+        this.pageNumber = pageNumber;
+        this.itemsPerPage = itemsPerPage;
+        this.totalItems = items.size();
+        setItems(items);
+    }
+
     public Integer getTotalItems() {
-        return items.size();
+        return totalItems;
     }
 
     public Integer getPageNumber() {
@@ -42,18 +47,18 @@ public class PaginatedResponse<T> {
      * Returns a single page from an entire list of objects, determined by the page number and items per page.
      */
     @JsonProperty(value = "items")
-    public List<T> getPage() {
-        Integer startPosition = (pageNumber * itemsPerPage >= items.size() ? items.size() : pageNumber * itemsPerPage);
-        Integer endPosition = (startPosition + itemsPerPage > items.size() ? items.size() : startPosition + itemsPerPage);
-        return items.subList(startPosition, endPosition);
+    public List<T> getItems() {
+        return items;
     }
 
     /**
      * Accepts a list of items that needs to be divided into pages
      */
     @JsonIgnore
-    public void setItems(List<T> items) {
-        this.items = items;
+    public void setItems(List<T> allItems) {
+        Integer startPosition = (pageNumber * itemsPerPage >= allItems.size() ? allItems.size() : pageNumber * itemsPerPage);
+        Integer endPosition = (startPosition + itemsPerPage > allItems.size() ? allItems.size() : startPosition + itemsPerPage);
+        items = allItems.subList(startPosition, endPosition);
     }
 
 }

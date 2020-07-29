@@ -22,17 +22,17 @@
             <span class="fl page-size">
                 <i:inline key="yukon.common.paging.itemsPerPage"/>&nbsp;
                 <c:if test="${!thousands}">
-                    <tags:itemsPerPage result="${result}" itemsPerPage="10"/>&nbsp;
-                    <tags:itemsPerPage result="${result}" itemsPerPage="25"/>&nbsp;
-                    <tags:itemsPerPage result="${result}" itemsPerPage="50"/>&nbsp;
+                    <tags:itemsPerPage count="${result.count}" itemsPerPage="10"/>&nbsp;
+                    <tags:itemsPerPage count="${result.count}" itemsPerPage="25"/>&nbsp;
+                    <tags:itemsPerPage count="${result.count}" itemsPerPage="50"/>&nbsp;
                     <c:if test="${hundreds}">
-                        <tags:itemsPerPage result="${result}" itemsPerPage="100"/>&nbsp;
+                        <tags:itemsPerPage count="${result.count}" itemsPerPage="100"/>&nbsp;
                     </c:if>
                 </c:if>
                 <c:if test="${thousands}">
-                    <tags:itemsPerPage result="${result}" itemsPerPage="250"/>&nbsp;
-                    <tags:itemsPerPage result="${result}" itemsPerPage="500"/>&nbsp;
-                    <tags:itemsPerPage result="${result}" itemsPerPage="1000"/>&nbsp;
+                    <tags:itemsPerPage count="${result.count}" itemsPerPage="250"/>&nbsp;
+                    <tags:itemsPerPage count="${result.count}" itemsPerPage="500"/>&nbsp;
+                    <tags:itemsPerPage count="${result.count}" itemsPerPage="1000"/>&nbsp;
                 </c:if>
             </span>
         </c:if>
