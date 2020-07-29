@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
@@ -21,14 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.exception.DataDependencyException;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.admin.AttributeValidator;
 import com.cannontech.web.admin.service.impl.CustomAttributeService;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
@@ -41,7 +36,6 @@ public class CustomAttributeApiController {
     @Autowired private AttributeDao attributeDao;
     @Autowired private CustomAttributeService customAttributeService;
     @Autowired private AttributeValidator customAttributeValidator;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @PostMapping("")
     public ResponseEntity<Object> create(@Valid @RequestBody CustomAttribute customAttribute) {
@@ -51,27 +45,12 @@ public class CustomAttributeApiController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> retrieve(@PathVariable Integer id) {
-        CustomAttribute attribute;
-        try {
-            attribute = attributeDao.getCustomAttribute(id);
-        } catch (EmptyResultDataAccessException e) {
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
-            String message = messageSourceAccessor.getMessage("yukon.web.api.error.notFound",
-                    new Object[] { "Custom Attribute", id });
-            throw new NotFoundException(message);
-        }
+        CustomAttribute attribute = attributeDao.getCustomAttribute(id);
         return new ResponseEntity<>(attribute, HttpStatus.NOT_FOUND);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Object> update(@PathVariable Integer id, @Valid @RequestBody CustomAttribute customAttribute) {
-        CustomAttribute attribute = attributeDao.getCustomAttribute(id);
-        if (attribute == null) {
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
-            String message = messageSourceAccessor.getMessage("yukon.web.api.error.notFound",
-                    new Object[] { "Custom Attribute", id });
-            throw new NotFoundException(message);
-        }
         customAttribute.setCustomAttributeId(id);
         customAttributeService.updateCustomAttribute(customAttribute);
         customAttribute = attributeDao.getCustomAttribute(customAttribute.getCustomAttributeId());
@@ -80,13 +59,6 @@ public class CustomAttributeApiController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> delete(@PathVariable Integer id) throws DataDependencyException {
-        CustomAttribute attribute = attributeDao.getCustomAttribute(id);
-        if (attribute == null) {
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
-            String message = messageSourceAccessor.getMessage("yukon.web.api.error.notFound",
-                    new Object[] { "Custom Attribute", id });
-            throw new NotFoundException(message);
-        }
         customAttributeService.deleteCustomAttribute(id);
         Map<String, Integer> jsonResponse = new HashMap<String, Integer>();
         jsonResponse.put("id", id);
