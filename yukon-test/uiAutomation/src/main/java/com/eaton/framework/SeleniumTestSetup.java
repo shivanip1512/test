@@ -197,24 +197,15 @@ public class SeleniumTestSetup {
         Integer timeOut = timeOutSeconds.orElse(null);
 
         Integer waitTime;
-
+       
         if (timeOut == null) {
-            waitTime = 5000;
-        } else if (timeOut < 5) {
-            waitTime = 5000;
+            waitTime = 1;
         } else {
-            waitTime = timeOut * 1000;
+            waitTime = timeOut;
         }
 
-        long startTime = System.currentTimeMillis();
-        boolean found = false;
-
-        while (!found && System.currentTimeMillis() - startTime < (waitTime * 2)) {
-            found = SeleniumTestSetup.driverExt.getDriverWait(Optional.of(waitTime))
+        SeleniumTestSetup.driverExt.getDriverWait(Optional.of(waitTime))
                     .until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".page-heading"), pageTitle));
-        }
-
-        // add code to throw an exception if the url is not loaded
     }
 
     public void refreshPage(PageBase page) {

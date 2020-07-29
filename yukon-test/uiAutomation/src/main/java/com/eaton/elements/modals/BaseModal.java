@@ -82,10 +82,10 @@ public class BaseModal {
         }
     }
 
-    public void clickCancelBtnByNameAndWait() {
+    public void clickBtnByNameAndWait(String buttonName) {
         List<WebElement> el = getModal().findElements(By.cssSelector("button"));
 
-        WebElement button = el.stream().filter(element -> element.getText().equals("Cancel")).findFirst().orElseThrow();
+        WebElement button = el.stream().filter(element -> element.getText().equals(buttonName)).findFirst().orElseThrow();
 
         button.click();
 
@@ -106,5 +106,26 @@ public class BaseModal {
         }
 
         return names;
+    }
+    
+    public Boolean isModalDisplayed() {
+        Boolean isDisplayed = driverExt.findElement(By.cssSelector("[aria-describedby='"+describedBy+"']"), Optional.of(0)).isDisplayed();
+        return isDisplayed;
+    }
+    
+    public Boolean isModalClosed() {
+        WebElement element= this.driverExt.findElement(By.cssSelector("#"+describedBy+""),Optional.empty());
+        String styleAttribute = element.getAttribute("style");
+        Boolean isModalClosed = false;
+        if(styleAttribute.contains("display: none;")) {
+            isModalClosed = true;
+        } else {
+            element= this.driverExt.findElement(By.cssSelector("[aria-describedby='"+describedBy+"']"),Optional.empty());
+            styleAttribute = element.getAttribute("style");
+            if(styleAttribute.contains("display: none;")) {
+                isModalClosed = true;
+            }
+        }
+        return isModalClosed;
     }
 }

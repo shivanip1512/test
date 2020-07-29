@@ -2,9 +2,12 @@ package com.eaton.tests.support;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.WebDriver;
-import org.testng.annotations.AfterMethod;
+import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -16,9 +19,16 @@ import com.eaton.pages.support.SupportPage;
 
 public class SupportDetailsTests extends SeleniumTestSetup {
 
-	private SoftAssertions softly;
-	private DriverExtensions driverExt;
+    private SoftAssertions softly;
+    private DriverExtensions driverExt;
     private SupportPage supportPage;
+    private List<String> supportPageTitles = new ArrayList<>();
+    private List<String> supportPageLinks = new ArrayList<>();
+    private List<String> manualsPageTitles = new ArrayList<>();
+    private List<String> manualsPageLinks = new ArrayList<>();
+    private List<String> todaysLogsPageTitles = new ArrayList<>();
+    private List<String> todaysLogsPageLinks = new ArrayList<>();
+    private String baseUrl;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
@@ -27,13 +37,19 @@ public class SupportDetailsTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.SUPPORT);
         softly = new SoftAssertions();
-        
-        supportPage = new SupportPage(driverExt);
-    }
-    
-    @AfterMethod(alwaysRun=true)
-    public void afterTest() {        
 
+        supportPage = new SupportPage(driverExt);
+
+        supportPageTitles = supportPage.getSupportSectionPageList().getListOfItemsText();
+        supportPageLinks = supportPage.getSupportSectionPageList().getListOfItemLinks();
+        
+        manualsPageTitles = supportPage.getManualsSectionPageList().getListOfItemsText();
+        manualsPageLinks = supportPage.getManualsSectionPageList().getListOfItemLinks();
+        
+        todaysLogsPageTitles = supportPage.getTodaysLogsSectionPageList().getListOfItemsText();
+        todaysLogsPageLinks = supportPage.getTodaysLogsSectionPageList().getListOfItemLinks();
+        
+        baseUrl = getBaseUrl();
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN })
@@ -44,380 +60,289 @@ public class SupportDetailsTests extends SeleniumTestSetup {
 
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
-    
-    //================================================================================
+
+    // ================================================================================
     // Support Pages Section
-    //================================================================================
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageSupportSectionItemCountCorrect() {
-    	final int EXPECTED_COUNT = 15;
+    // ================================================================================
 
-        assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);
-    }
-    
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageBatteryNodeAnalysisLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Battery Node Analysis";
-        final String EXPECTED_LINK = Urls.Support.BATTERY_NODE_ANALYSIS;
-        final int POSITION = 0;
-    	
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+    public void supportPage_SupportSection_PageCountCorrect() {
+        throw new SkipException("Related to Development Defect: YUK-22612");
+//        final int EXPECTED_COUNT = 15;
+//        assertThat(supportPage.getSupportSectionPageList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);
+    }
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+    public void supportPage_SupportSection_BatteryNodeAnalysis_DisplayedAndCorrectLink() {
+        
+        throw new SkipException("Development Defect created: YUK-22612");
+//        softly = new SoftAssertions();
+//        softly.assertThat(supportPageTitles).contains("Battery Node Analysis");
+//        softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.BATTERY_NODE_ANALYSIS);
+//        softly.assertAll();
+    }
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+    public void supportPage_SupportSection_DataStreamingDeviceAttributes_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(supportPageTitles).contains("Data Streaming Device Attributes");
+        softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.DATA_STREAMING_DEVICE_ATTRIBUTES);
         softly.assertAll();
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageDataStreamingDeviceAttributesLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Data Streaming Device Attributes";
-        final String EXPECTED_LINK = Urls.Support.DATA_STREAMING_DEVICE_ATTRIBUTES;
-        final int POSITION = 1;
-    	
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+    public void supportPage_SupportSection_DatabaseMigration_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(supportPageTitles).contains("Database Migration");
+        softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.DATABASE_MIGRATION);
         softly.assertAll();
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageDatabaseMigrationLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Database Migration";
-        final String EXPECTED_LINK = Urls.Support.DATABASE_MIGRATION;
-        final int POSITION = 2;
-    	
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+    public void supportPage_SupportSection_DeviceDefinitions_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(supportPageTitles).contains("Device Definitions");
+        softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.DEVICE_DEFINITIONS);
         softly.assertAll();
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageDeviceDefinitionsLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Device Definitions";
-        final String EXPECTED_LINK = Urls.Support.DEVICE_DEFINITIONS;
-        final int POSITION = 3;
-    	
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+    public void supportPage_SupportSection_ErrorCodes_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(supportPageTitles).contains("Error Codes");
+        softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.ERROR_CODES);
         softly.assertAll();
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageErrorCodesLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Error Codes";
-        final String EXPECTED_LINK = Urls.Support.ERROR_CODES;
-        final int POSITION = 4;
-    	
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+    public void supportPage_SupportSection_EventLog_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(supportPageTitles).contains("Event Log");
+        softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.EVENT_LOG);
         softly.assertAll();
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageEventLogLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Event Log";
-        final String EXPECTED_LINK = Urls.Support.EVENT_LOG;
-        final int POSITION = 5;
-    	
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+    public void supportPage_SupportSection_FileExportHistory_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(supportPageTitles).contains("File Export History");
+        softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.FILE_EXPORT_HISTORY);
         softly.assertAll();
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageFileExportHistoryLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "File Export History";
-        final String EXPECTED_LINK = Urls.Support.FILE_EXPORT_HISTORY;
-        final int POSITION = 6;
-    	
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+    public void supportPage_SupportSection_LocalizationHelper_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(supportPageTitles).contains("Localization Helper");
+        softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.LOCALIZATION_HELPER);
         softly.assertAll();
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageLocalizationHelperLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Localization Helper";
-        final String EXPECTED_LINK = Urls.Support.LOCALIZATION_HELPER;
-        final int POSITION = 7;
-    	
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+    public void supportPage_SupportSection_LogExplorer_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(supportPageTitles).contains("Log Explorer");
+        softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.LOG_EXPLORER);
         softly.assertAll();
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageLogExplorerLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Log Explorer";
-        final String EXPECTED_LINK = Urls.Support.LOG_EXPLORER;
-        final int POSITION = 8;
-    	
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+    public void supportPage_SupportSection_ManageIndexes_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(supportPageTitles).contains("Manage Indexes");
+        softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.MANAGE_INDEXES);
         softly.assertAll();
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageManageIndexesLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Manage Indexes";
-        final String EXPECTED_LINK = Urls.Support.MANAGE_INDEXES;
-        final int POSITION = 9;
-    	
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+    public void supportPage_SupportSection_RouteUsage_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(supportPageTitles).contains("Route Usage");
+        softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.ROUTE_USAGE);
         softly.assertAll();
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageRouteUsageLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Route Usage";
-        final String EXPECTED_LINK = Urls.Support.ROUTE_USAGE;
-        final int POSITION = 10;
-    	
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+    public void supportPage_SupportSection_SystemHealth_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(supportPageTitles).contains("System Health");
+        softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.SYSTEM_HEALTH);
         softly.assertAll();
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageSystemHealthLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "System Health";
-        final String EXPECTED_LINK = Urls.Support.SYSTEM_HEALTH;
-        final int POSITION = 11;
-    	
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+    public void supportPage_SupportSection_SystemInfo_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(supportPageTitles).contains("System Info");
+        softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.SYSTEM_INFO);
         softly.assertAll();
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageSystemInfoLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "System Info";
-        final String EXPECTED_LINK = Urls.Support.SYSTEM_INFO;
-        final int POSITION = 12;
-    	
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+    public void supportPage_SupportSection_ThirdPartyLibraries_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(supportPageTitles).contains("Third Party Libraries");
+        softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.THIRD_PARTY_LIBRARIES);
         softly.assertAll();
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageThirdPartyLibrariesLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Third Party Libraries";
-        final String EXPECTED_LINK = Urls.Support.THIRD_PARTY_LIBRARIES;
-        final int POSITION = 13;
-    	
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+    public void supportPage_SupportSection_ThreadDump_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(supportPageTitles).contains("Thread Dump");
+        softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.THREAD_DUMP);
         softly.assertAll();
     }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageThreadDumpLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Thread Dump";
-        final String EXPECTED_LINK = Urls.Support.THREAD_DUMP;
-        final int POSITION = 14;
-    	
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(supportPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
-        softly.assertAll();
-    }
-    
-    //================================================================================
+
+    // ================================================================================
     // Manuals Section
-    //================================================================================
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageManualsSectionItemCountCorrect() {
-    	final int EXPECTED_COUNT = 1;
+    // ================================================================================
 
-        assertThat(supportPage.getManualsSectionSimpleList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);
-    }
-    
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageYukonManualsLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Yukon Manuals (Portal)";
-        final String EXPECTED_LINK = Urls.Manuals.YUKON_MANUALS;
-        final int POSITION = 0;
-    	
-        softly.assertThat(supportPage.getManualsSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(supportPage.getManualsSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
+    public void supportPage_ManualsSection_PageCountCorrect() {
+        final int EXPECTED_COUNT = 1;
+        assertThat(supportPage.getManualsSectionPageList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);
+    }
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+    public void supportPage_ManualsSection_YukonManuals_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(manualsPageTitles).contains("Yukon Manuals");
+        softly.assertThat(manualsPageLinks).contains(Urls.Manuals.YUKON_MANUALS);
         softly.assertAll();
     }
-    
-    //================================================================================
+
+    // ================================================================================
     // Today's Logs
-    //================================================================================
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageTodaysLogsSectionItemCountCorrect() {
-    	final int EXPECTED_COUNT = 13;
+    // ================================================================================
 
-        assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItems().size()).isGreaterThanOrEqualTo(EXPECTED_COUNT);
-    }
-    
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageCalcLogLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Calc";
-        final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.CALC_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
-    	
-        int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        softly.assertThat(position).isNotEqualTo(-1);
-        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+    public void supportPage_TodaysLogsSection_PageCountCorrect() {
+        final int EXPECTED_COUNT = 13;
+        assertThat(supportPage.getTodaysLogsSectionPageList().getSimpleListItems().size()).isGreaterThanOrEqualTo(EXPECTED_COUNT);
+    }
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+    public void supportPage_TodaysLogsSection_Calc_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(todaysLogsPageTitles).contains("Calc");
+        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.CALC_LOG + supportPage.getCurrentLogTimeStamp()+ ".log");
         softly.assertAll();
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageCapcontrolLogLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Capcontrol";
-        final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.CAPCONTROL_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
+    public void supportPage_TodaysLogsSection_Capcontrol_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(todaysLogsPageTitles).contains("Capcontrol");
+        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.CAPCONTROL_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
+        softly.assertAll();
+    }
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+    public void supportPage_TodaysLogsSection_Dispatch_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(todaysLogsPageTitles).contains("Dispatch");
+        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.DISPATCH_LOG + supportPage.getCurrentLogTimeStamp()+ ".log");
+        softly.assertAll();
+    }
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+    public void supportPage_TodaysLogsSection_Fdr_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(todaysLogsPageTitles).contains("Fdr");
+        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.FDR_LOG + supportPage.getCurrentLogTimeStamp()+ ".log");
+        softly.assertAll();
+    }
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+    public void supportPage_TodaysLogsSection_LoadManagement_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(todaysLogsPageTitles).contains("Loadmanagement");
+        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.LOADMANGEMENT_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
+        softly.assertAll();
+    }
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+    public void supportPage_TodaysLogsSection_Macs_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(todaysLogsPageTitles).contains("Macs");
+        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.MACS_LOG + supportPage.getCurrentLogTimeStamp()+ ".log");
+        softly.assertAll();
+    }
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+    public void supportPage_TodaysLogsSection_MessageBroker_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(todaysLogsPageTitles).contains("MessageBroker");
+        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.MESSAGE_BROKER_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
+        softly.assertAll();
+    }
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+    public void supportPage_TodaysLogsSection_NotificationServer_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(todaysLogsPageTitles).contains("NotificationServer");
+        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.NOTIFICATION_SERVER_LOG+ supportPage.getCurrentLogTimeStamp() + ".log");
+        softly.assertAll();
+    }
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+    public void supportPage_TodaysLogsSection_Porter_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(todaysLogsPageTitles).contains("Porter");
+        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.PORTER_LOG + supportPage.getCurrentLogTimeStamp()+ ".log");
+        softly.assertAll();
+    }
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+    public void supportPage_TodaysLogsSection_Scanner_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(todaysLogsPageTitles).contains("Scanner");
+        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.SCANNER_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
+        softly.assertAll();
+    }
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+    public void supportPage_TodaysLogsSection_ServiceManager_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(todaysLogsPageTitles).contains("ServiceManager");
+        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.SERVICE_MANAGER_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
+        softly.assertAll();
+    }
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+    public void supportPage_TodaysLogsSection_Watchdog_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(todaysLogsPageTitles).contains("Watchdog");
+        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.WATCHDOG_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
+        softly.assertAll();
+    }
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+    public void supportPage_TodaysLogsSection_Webserver_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
+        softly.assertThat(todaysLogsPageTitles).contains("Webserver");
+        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.WEBSERVER_LOG + supportPage.getCurrentLogTimeStamp()+ ".log");
+        softly.assertAll();
+    }
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+    public void supportPage_TodaysLogsSection_ViewAllLogs_DisplayedAndCorrectLink() {
+        softly = new SoftAssertions();
         
-        int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        softly.assertThat(position).isNotEqualTo(-1);
-        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
+        softly.assertThat(supportPage.getViewAllLogsText()).isEqualTo("View All Logs");
+        softly.assertThat(supportPage.getViewAllLogsLink()).isEqualTo(baseUrl + Urls.Support.LOGGING_MENU + Urls.Support.VIEW_ALL_LOGS);
         softly.assertAll();
     }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageDispatchLogLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Dispatch";
-        final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.DISPATCH_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
-        
-        int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        softly.assertThat(position).isNotEqualTo(-1);
-        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
-        softly.assertAll();
-    }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageFDRLogLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Fdr";
-        final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.FDR_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
-        
-        int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        softly.assertThat(position).isNotEqualTo(-1);
-        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
-        softly.assertAll();
-    }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageLoadManagementLogLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Loadmanagement";
-        final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.LOADMANGEMENT_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
-        
-        int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        softly.assertThat(position).isNotEqualTo(-1);
-        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
-        softly.assertAll();
-    }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageMACSLogLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Macs";
-        final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.MACS_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
-        
-        int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        softly.assertThat(position).isNotEqualTo(-1);
-        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
-        softly.assertAll();
-    }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageMessageBrokerLogLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "MessageBroker";
-        final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.MESSAGE_BROKER_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
-        
-        int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        softly.assertThat(position).isNotEqualTo(-1);
-        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
-        softly.assertAll();
-    }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageNotificationServerLogLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "NotificationServer";
-        final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.NOTIFICATION_SERVER_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
-        
-        int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        softly.assertThat(position).isNotEqualTo(-1);
-        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
-        softly.assertAll();
-    }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pagePorterLogLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Porter";
-        final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.PORTER_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
-        
-        int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        softly.assertThat(position).isNotEqualTo(-1);
-        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
-        softly.assertAll();
-    }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageScannerLogLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Scanner";
-        final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.SCANNER_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
-        
-        int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        softly.assertThat(position).isNotEqualTo(-1);
-        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
-        softly.assertAll();
-    }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageServiceManagerLogLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "ServiceManager";
-        final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.SERVICE_MANAGER_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
-        
-        int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        softly.assertThat(position).isNotEqualTo(-1);
-        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
-        softly.assertAll();
-    }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageWatchdogLogLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Watchdog";
-        final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.WATCHDOG_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
-        
-        int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        softly.assertThat(position).isNotEqualTo(-1);
-        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
-        softly.assertAll();
-    }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageWebserverLogLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Webserver";
-        final String EXPECTED_LINK = Urls.Support.LOGGING_VIEW + Urls.Support.WEBSERVER_LOG + supportPage.getCurrentLogTimeStamp() + ".log";
-        
-        int position = supportPage.getTodaysLogsSectionSimpleList().findSimpleListItemText(EXPECTED_ANCHOR);
-        softly.assertThat(position).isNotEqualTo(-1);
-        softly.assertThat(supportPage.getTodaysLogsSectionSimpleList().getSimpleListItemLinkTextAt(position)).isEqualTo(EXPECTED_LINK);
-        softly.assertAll();
-    }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageTodaysLogsViewAllLogsLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "View All Logs";
-        final String EXPECTED_LINK = Urls.Support.LOGGING_MENU + Urls.Support.VIEW_ALL_LOGS;
-    	
-        softly.assertThat(supportPage.getTodaysLogsViewAllLogsAnchorText()).isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(supportPage.getTodaysLogsViewAllLogsLinkText()).isEqualTo(EXPECTED_LINK);
-        softly.assertAll();
-    }
-    
-    //================================================================================
+
+    // ================================================================================
     // Database Info
-    //================================================================================
-    
+    // ================================================================================
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void pageDatabaseValidationLinkCorrect() {
-    	final String EXPECTED_ANCHOR = "Database Validation";
-        final String EXPECTED_LINK = Urls.Support.DATABASE_VALIDATION;
-    	
-        softly.assertThat(supportPage.getDatabaseValidationAnchorText()).isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(supportPage.getDatabaseValidationLinkText()).isEqualTo(EXPECTED_LINK);
+    public void supportPage_DatabaseInfo_DatabaseValidation_DisplayedAndCorrectLink() {
+        softly.assertThat(supportPage.getDatabaseValidationText()).isEqualTo("Database Validation");
+        softly.assertThat(supportPage.getDatabaseValidationLink()).isEqualTo(baseUrl + Urls.Support.DATABASE_VALIDATION);
         softly.assertAll();
     }
 }
