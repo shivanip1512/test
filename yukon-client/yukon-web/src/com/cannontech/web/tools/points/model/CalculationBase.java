@@ -28,9 +28,10 @@ public class CalculationBase implements DBPersistentConverter<com.cannontech.dat
     public void buildDBPersistent(CalcBase calcBase) {
         if (getUpdateType() != null) {
             calcBase.setUpdateType(getUpdateType().getCalcUpdateType());
-        }
-        if (getPeriodicRate() != null) {
-            calcBase.setPeriodicRate(getPeriodicRate());
+            if (getPeriodicRate() != null
+                    && (CalcUpdateType.getCalcUpdateType(calcBase.getUpdateType()) == CalcUpdateType.ON_TIMER || CalcUpdateType.getCalcUpdateType(calcBase.getUpdateType()) == CalcUpdateType.ON_TIMER_AND_CHANGE)) {
+                calcBase.setPeriodicRate(getPeriodicRate());
+            }
         }
     }
 
