@@ -16,17 +16,16 @@ public enum YukonColorPalette implements DatabaseRepresentationSource, Displayab
     GRAY("#7b8387", 9),
     ORANGE("#ec971f", 7),
     PURPLE("#b779f4", 10),
-    //TODO - consider making this id 1 instead of WINE, would require dbUpdate to change existing GDS usage
-    //RED("#d14836", 12),   // recommend that this should not be used for anything but state
+    RED("#d14836", 1),
     SAGE("#b2c98d", 8),
     SKY("#abd7e1", 11),
     TEAL("#00b2a9", 5),
     WHITE("#ffffff", 2),
-    WINE("#ce8799", 1),
+    WINE("#ce8799", 12),
     YELLOW("#f0cb2f", 3);
 
     private final String hexValue;
-    private final int colorId;
+    private final int colorId;  //database id
 
     
     private final static ImmutableMap<Integer, YukonColorPalette> lookupById;
@@ -96,9 +95,6 @@ public enum YukonColorPalette implements DatabaseRepresentationSource, Displayab
      * @deprecated use MessageSourceResolver.
      */
     public String toDefaultText() {
-        if (this == WINE) {
-            return "Red";
-        }
         return StringUtils.capitalize(this.name().toLowerCase());
     }
 }

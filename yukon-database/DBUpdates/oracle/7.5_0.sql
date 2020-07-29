@@ -665,6 +665,11 @@ AND PaobjectId IN (
 
 INSERT INTO DBUpdates VALUES ('YUK-22412', '7.5.0', SYSDATE);
 /* @end YUK-22412 */
+
+/* @start YUK-22578 */
+UPDATE GRAPHDATASERIES SET Color = 12 WHERE Color = 1;
+INSERT INTO DBUpdates VALUES ('YUK-22578', '7.5.0', SYSDATE);
+/* @end YUK-22578 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

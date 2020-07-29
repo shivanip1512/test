@@ -91,14 +91,6 @@ public class CachingPointFormattingServiceImpl implements CachingPointFormatting
                 state = liteState.getStateText();
                 YukonColorPalette yukonColor = YukonColorPalette.getColor(liteState.getFgColor());
                 stateColor = yukonColor.getAwtColor();
-            
-                /* Use custom colors for red and green.
-                 * Should be the same as the error and success styles in yukon.css 
-                 * Previously referenced YUK-9652, but that has been resolved without change.
-                 * YUK-22620 should resolve this custom handling*/
-                if (yukonColor == YukonColorPalette.WINE) {
-                    stateColor = new Color(209, 72, 54); //#D14836
-                }
             }
         }
         

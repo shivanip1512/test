@@ -56,7 +56,7 @@ public class Display2WayDataAdapter extends AbstractTableModel implements com.ca
 	public static final int DEFAULT_FOREGROUNDCOLOR = YukonColorPalette.WHITE.getColorId(); // white as of 3-23-2000
 	public static final int DEFAULT_BACKGROUNDCOLOR = YukonColorPalette.BLACK.getColorId();  // black as of 3-23-2000
 	public static final int DEFAULT_DISABLEDCOLOR = YukonColorPalette.GRAY.getColorId();  // gray as of 8-31-2000
-	public static final int DEFAULT_ALARMCOLOR = YukonColorPalette.WINE.getColorId();  // red as of 1-12-2001
+	public static final int DEFAULT_ALARMCOLOR = YukonColorPalette.RED.getColorId();  // red as of 1-12-2001
 	
 	private static final PointValues DUMMY_POINT_VALUES =
 						new PointValues(
