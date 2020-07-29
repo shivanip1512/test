@@ -1124,17 +1124,20 @@ textarea.error {
     border: 1px solid white;
     margin: 1px 0 0 0;
     
+    /* These match the YukonColorPalette.name strings and hex color*/
     &.green {background-color: @green;}
-    &.red {background-color: @red;}
-    &.white {background-color: white;}
-    &.yellow {background-color: yellow;}
-    &.blue {background-color: blue;}
-    &.cyan {background-color: cyan;}
-    &.black {background-color: black;}
+    &.red {background-color: @red;}         /* this isn't a valid color, but we may not have found all the hard-coded text in code*/
+    &.wine {background-color: #ce8799;}
+    &.white {background-color: #ffffff;}
+    &.yellow {background-color: #f0cb2f;}
+    &.blue {background-color: #4d90fe;}
+    &.teal{background-color: #00b2a9;}
+    &.black {background-color: #000000;}
     &.orange {background-color: @orange;}
-    &.magenta {background-color: magenta;}
-    &.gray {background-color: gray;}
-    &.pink {background-color: pink;}
+    &.sage {background-color: #b2c98d;}
+    &.gray {background-color: #7b8387;}
+    &.purple {background-color: #b779f4;}
+    &.sky{background-color: #abd7e1;}
 }
 .ie .state-box { outline: 1px solid #bbb; }
 .no-ie .state-box { box-shadow: 0px 0px 0px 1px #bbb; }

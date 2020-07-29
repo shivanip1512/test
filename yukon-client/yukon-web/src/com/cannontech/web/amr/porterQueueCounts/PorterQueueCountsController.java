@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.YukonColorPallet;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.users.model.PreferencePorterQueueCountsZoomOption;
@@ -85,12 +85,12 @@ public class PorterQueueCountsController {
                 }
             }
             seriesProperties.put("name", pointIdToPaoMap.get(pointId).getPaoName());
-            String color = Colors.colorPaletteToWeb(colorInt++);
-            if (color == "#FFFFFF") { //avoid white points on the graph
-                color = Colors.colorPaletteToWeb(colorInt++);
+            YukonColorPallet color = YukonColorPallet.getNextColor(colorInt++);;
+            if (color == YukonColorPallet.WHITE) { //avoid white points on the graph
+                color = YukonColorPallet.getNextColor(colorInt++);
             }
-            seriesProperties.put("color", color);
-            seriesProperties.put("lineColor", color);
+            seriesProperties.put("color", color.getHexValue());
+            seriesProperties.put("lineColor", color.getHexValue());
             seriesList.add(seriesProperties);
         }
         Map<String, Object> json = new HashMap<>();
