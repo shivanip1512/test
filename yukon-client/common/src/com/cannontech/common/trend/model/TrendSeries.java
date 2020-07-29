@@ -2,7 +2,7 @@ package com.cannontech.common.trend.model;
 
 import org.joda.time.DateTime;
 
-import com.cannontech.common.YukonColorPallet;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.trend.model.TrendType.GraphType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -14,7 +14,7 @@ public class TrendSeries {
     private TrendType.GraphType type;
     private Integer pointId;
     private String label;
-    private YukonColorPallet color;
+    private YukonColorPalette color;
     private TrendAxis axis;
     private Double multiplier;
     private RenderType style;
@@ -24,7 +24,7 @@ public class TrendSeries {
         this.color = GraphColors.getNextDefaultColor(0);
     }
     
-    public TrendSeries (YukonColorPallet color) {
+    public TrendSeries (YukonColorPalette color) {
         this.color = color;
     }
 
@@ -52,11 +52,11 @@ public class TrendSeries {
         this.label = label;
     }
 
-    public YukonColorPallet getColor() {
+    public YukonColorPalette getColor() {
         return color;
     }
 
-    public void setColor(YukonColorPallet color) {
+    public void setColor(YukonColorPalette color) {
         this.color = color;
     }
 

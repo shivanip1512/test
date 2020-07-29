@@ -1,6 +1,6 @@
 package com.cannontech.common.gui.util;
 
-import com.cannontech.common.YukonColorPallet;
+import com.cannontech.common.YukonColorPalette;
 
 /**
  * Provides static methods to obtain the java.awt.Color that the given
@@ -21,6 +21,6 @@ public class Colors {
      * @deprecated
      */
     public final static java.awt.Color getColor(int colorID) {
-        return YukonColorPallet.getColor(colorID).getAwtColor();
+        return YukonColorPalette.getColor(colorID).getAwtColor();
     }
 }

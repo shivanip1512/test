@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.TagUtils;
-import com.cannontech.common.YukonColorPallet;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
@@ -559,10 +559,10 @@ public class TdcServiceImpl implements TdcService {
         for (LiteState state : states.getStatesList()) {
             String colorString;
             int fgColor = state.getFgColor();
-            if (fgColor == YukonColorPallet.WINE.getColorId()) {
+            if (fgColor == YukonColorPalette.WINE.getColorId()) {
                 colorString = defaultAlertStr;
             } else {
-                colorString = YukonColorPallet.getColor(fgColor).name();    //use the enum name, defined in yukon.less 
+                colorString = YukonColorPalette.getColor(fgColor).name();    //use the enum name, defined in yukon.less 
             }
             stateColorMap.put(state.getStateRawState(), colorString);
         }

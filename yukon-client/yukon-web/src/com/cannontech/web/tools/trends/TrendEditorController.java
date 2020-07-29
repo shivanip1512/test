@@ -34,7 +34,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.YukonColorPallet;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.trend.model.GraphColors;
@@ -356,10 +356,10 @@ public class TrendEditorController {
             }
         });
         
-        binder.registerCustomEditor(YukonColorPallet.class, new PropertyEditorSupport() {
+        binder.registerCustomEditor(YukonColorPalette.class, new PropertyEditorSupport() {
             @Override
             public void setAsText(String color) throws IllegalArgumentException {
-                setValue(YukonColorPallet.getColorByHexValue(color));
+                setValue(YukonColorPalette.getColorByHexValue(color));
             }
         });
     }

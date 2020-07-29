@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.cannontech.clientutils.tags.IAlarmDefs;
-import com.cannontech.common.YukonColorPallet;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
@@ -39,10 +39,10 @@ public class PointValues
 	private String pointState = null;
 	private Integer decimalPlaces = null;
 
-	private int currentForegroundColor = YukonColorPallet.WHITE.getColorId();
-	private int currentBackgroundColor = YukonColorPallet.BLACK.getColorId();
+	private int currentForegroundColor = YukonColorPalette.WHITE.getColorId();
+	private int currentBackgroundColor = YukonColorPalette.BLACK.getColorId();
 
-	private int originalBackgroundColor = YukonColorPallet.BLACK.getColorId();
+	private int originalBackgroundColor = YukonColorPalette.BLACK.getColorId();
 
 
 /**

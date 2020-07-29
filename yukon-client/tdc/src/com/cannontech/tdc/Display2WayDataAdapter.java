@@ -17,7 +17,7 @@ import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
-import com.cannontech.common.YukonColorPallet;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.point.PointQuality;
@@ -54,10 +54,10 @@ public class Display2WayDataAdapter extends AbstractTableModel implements com.ca
 
 	private boolean exceededMaxMsg = true;
 
-	public static final int DEFAULT_FOREGROUNDCOLOR = YukonColorPallet.WHITE.getColorId(); // white as of 3-23-2000
-	public static final int DEFAULT_BACKGROUNDCOLOR = YukonColorPallet.BLACK.getColorId();  // black as of 3-23-2000
-	public static final int DEFAULT_DISABLEDCOLOR = YukonColorPallet.GRAY.getColorId();  // gray as of 8-31-2000
-	public static final int DEFAULT_ALARMCOLOR = YukonColorPallet.WINE.getColorId();  // red as of 1-12-2001
+	public static final int DEFAULT_FOREGROUNDCOLOR = YukonColorPalette.WHITE.getColorId(); // white as of 3-23-2000
+	public static final int DEFAULT_BACKGROUNDCOLOR = YukonColorPalette.BLACK.getColorId();  // black as of 3-23-2000
+	public static final int DEFAULT_DISABLEDCOLOR = YukonColorPalette.GRAY.getColorId();  // gray as of 8-31-2000
+	public static final int DEFAULT_ALARMCOLOR = YukonColorPalette.WINE.getColorId();  // red as of 1-12-2001
 	
 	private static final PointValues DUMMY_POINT_VALUES =
 						new PointValues(

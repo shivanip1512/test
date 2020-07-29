@@ -7,7 +7,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
-import com.cannontech.common.YukonColorPallet;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.common.trend.model.TrendType.GraphType;
 import com.cannontech.common.util.CtiUtilities;
@@ -61,7 +61,7 @@ public class TrendModel implements DBPersistentConverter<GraphDefinition> {
                 graphSeries.setLabel(series.getLabel());
                 graphSeries.setAxis(
                         series.getAxis() == null ? TrendAxis.LEFT.getAbbreviation() : series.getAxis().getAbbreviation());
-                graphSeries.setColor(series.getColor() == null ? (int) YukonColorPallet.BLUE.getDatabaseRepresentation()
+                graphSeries.setColor(series.getColor() == null ? (int) YukonColorPalette.BLUE.getDatabaseRepresentation()
                         : (int) series.getColor().getDatabaseRepresentation());
                 graphSeries.setType(series.getType() == null ? GDSTypes.BASIC_GRAPH_TYPE
                         : GDSTypesFuncs.getTypeInt(series.getType().getStringType()));
@@ -112,7 +112,7 @@ public class TrendModel implements DBPersistentConverter<GraphDefinition> {
             for (GraphDataSeries data : graphSeries) {
                 TrendSeries trend = new TrendSeries();
                 trend.setAxis(TrendAxis.getAxis(data.getAxis()));
-                trend.setColor(YukonColorPallet.getColor(data.getColor()));
+                trend.setColor(YukonColorPalette.getColor(data.getColor()));
                 if (!data.getMoreData().equals(CtiUtilities.STRING_NONE)) {
                     trend.setDate(new DateTime(Long.valueOf(data.getMoreData())));
                 }
