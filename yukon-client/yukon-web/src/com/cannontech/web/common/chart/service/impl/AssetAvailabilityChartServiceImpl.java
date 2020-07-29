@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.YukonColorPallet;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.dr.assetavailability.AssetAvailabilitySummary;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -28,10 +29,10 @@ public class AssetAvailabilityChartServiceImpl implements AssetAvailabilityChart
         String unavailable = msa.getMessage("yukon.web.modules.operator.hardware.assetAvailability.unavailable");
         
         Map<String, FlotPieDatas> labelDataColorMap = Maps.newHashMapWithExpectedSize(4);
-        labelDataColorMap.put(active, new FlotPieDatas(aaSummary.getActiveSize(), "#009933")); // .pie-green
-        labelDataColorMap.put(optedOut, new FlotPieDatas(aaSummary.getOptedOutSize(), "#4d90fe")); // .pie-blue
-        labelDataColorMap.put(inactive, new FlotPieDatas(aaSummary.getInactiveSize(), "#ec971f")); // .orange
-        labelDataColorMap.put(unavailable, new FlotPieDatas(aaSummary.getUnavailableSize(), "#888")); // .grey
+        labelDataColorMap.put(active, new FlotPieDatas(aaSummary.getActiveSize(), YukonColorPallet.GREEN.getHexValue()));
+        labelDataColorMap.put(optedOut, new FlotPieDatas(aaSummary.getOptedOutSize(), YukonColorPallet.BLUE.getHexValue()));
+        labelDataColorMap.put(inactive, new FlotPieDatas(aaSummary.getInactiveSize(), YukonColorPallet.ORANGE.getHexValue()));
+        labelDataColorMap.put(unavailable, new FlotPieDatas(aaSummary.getUnavailableSize(), YukonColorPallet.GRAY.getHexValue()));
 
         Map<String, Object> pieJsonData = flotChartService.getPieGraphDataWithColor(labelDataColorMap, false, false, 0.9);
         return pieJsonData;
