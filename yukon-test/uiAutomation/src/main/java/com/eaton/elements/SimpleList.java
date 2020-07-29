@@ -1,5 +1,6 @@
 package com.eaton.elements;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -41,6 +42,32 @@ public class SimpleList {
         findSimpleListItems();
 
         return this.simpleListItems;
+    }
+    
+    private List<WebElement> getItems() {
+        return getSimpleList().findElements(By.cssSelector("li a"));
+    }
+    
+    public List<String> getListOfItemsText() {
+        List<WebElement> items = getItems();
+        
+        List<String> list = new ArrayList<>();
+        for (WebElement item : items) {
+            list.add(item.getText());            
+        }
+        
+        return list;
+    }
+    
+    public List<String> getListOfItemLinks() {
+        List<WebElement> items = getItems();
+        
+        List<String> list = new ArrayList<>();
+        for (WebElement item : items) {
+            list.add(item.getAttribute("href"));            
+        }
+        
+        return list;
     }
     
     private void findSimpleListItems() {
