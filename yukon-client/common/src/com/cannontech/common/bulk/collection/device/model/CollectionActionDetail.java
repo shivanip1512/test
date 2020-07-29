@@ -23,7 +23,7 @@ public enum CollectionActionDetail implements DisplayableEnum {
     CANCELED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.CANCELED, YukonColorPallet.SKY.getHexValue()), //light blue
     CONFIRMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPallet.GREEN.getHexValue()), //green
     UNCONFIRMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPallet.LIGHT_GREY.getHexValue()),  //light grey
-    ALREADY_CONFIGURED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.ALREADY_CONFIGURED, YukonColorPallet.SILVER.getHexValue()); //silver
+    ALREADY_CONFIGURED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.ALREADY_CONFIGURED, YukonColorPallet.LIGHT_GREY.getHexValue()); //silver
 
     private CollectionActionDetailSummary summary;
     private CommandRequestUnsupportedType unsupportedType;

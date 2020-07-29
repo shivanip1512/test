@@ -8,12 +8,11 @@ public enum YukonColorPallet implements DisplayableEnum {
     BLUE("#4d90fe"),
     GREEN("#009933"),
     GRAY("#7b8387"),
-    LIGHT_GREY("#d5d8da"), //confirm
+    LIGHT_GREY("#d5d8da"),
     ORANGE("#ec971f"),
     PURPLE("#b779f4"),
     WINE("#ce8799"),
     SAGE("#b2c98d"),
-    SILVER("#b9bfc2"), //confirm
     SKY("#abd7e1"),
     TEAL("#00b2a9"),
     WHITE("#FFFFFF"),
