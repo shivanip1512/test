@@ -9,6 +9,7 @@ public interface AttributeDao {
 
     /**
      * Returns attribute assignment
+     * @throws NotFoundException
      */
     AttributeAssignment getAssignmentById(int attributeAssignmentId);
 
@@ -24,6 +25,7 @@ public interface AttributeDao {
 
     /**
      * Returns custom attribute for Id
+     * @throws NotFoundException
      */
     CustomAttribute getCustomAttribute(int attributeId);
 }
