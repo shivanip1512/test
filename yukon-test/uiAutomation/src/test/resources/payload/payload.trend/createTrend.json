@@ -1,0 +1,23 @@
+{
+    "name": "TestTrend33",
+    "trendSeries": [
+        {
+            "type": "BASIC_TYPE",
+            "pointId": 922,
+            "label": "kW / 101006",
+            "color": "RED",
+            "axis": "LEFT",
+            "multiplier": 1.0,
+            "style": "LINE"
+        }
+	{
+            "type": "MARKER_TYPE",
+            "pointId": -100,
+            "label": "Marker1",
+            "color": "BLUE",
+            "axis": "LEFT",
+            "multiplier": 1.0,
+            "style": "LINE"
+        }
+    ]
+}
