@@ -82,11 +82,9 @@ public class BaseModal {
         }
     }
 
-    //public void clickCancelBtnByNameAndWait() {
     public void clickBtnByNameAndWait(String buttonName) {
         List<WebElement> el = getModal().findElements(By.cssSelector("button"));
 
-        //WebElement button = el.stream().filter(element -> element.getText().equals("Cancel")).findFirst().orElseThrow();
         WebElement button = el.stream().filter(element -> element.getText().equals(buttonName)).findFirst().orElseThrow();
         button.click();
 
