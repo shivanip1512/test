@@ -20,7 +20,7 @@ import com.eaton.elements.TrueFalseCheckboxElement;
 
 public class SupportPage extends PageBase {
 
-	//Public
+        //Public
     public static final String DEFAULT_URL = Urls.SUPPORT;
     
     public static final int RANGE_LAST_WEEK_INDEX = 0;
@@ -30,26 +30,22 @@ public class SupportPage extends PageBase {
     
     //Private
     private Section supportSection;
-    private SimpleList supportSectionList;
     private Section manualsSection;
-    private SimpleList manualsSectionList;
     private Section customerSupportSection;
-    private SimpleList customerSupportSectionList;
     private Section todaysLogsSection;
-    private SimpleList todaysLogsSectionList;
     private String todaysLogsViewAllLogsAnchorText;
     private String todaysLogsViewAllLogsLinkText;
     private Section databaseInfoSection;
-    private SimpleList databaseInfoSectionList;
-    private String databaseValidationAnchorText;
-    private String databaseValidationLinkText;
+    //private SimpleList databaseInfoSectionList;
+    //private String databaseValidationAnchorText;
+    //private String databaseValidationLinkText;
     private TextEditElement customerName;
     private DropDownElement range;
     private TrueFalseCheckboxElement commLogFiles;
     private MultiLineTextElement notes;
     private Button createBundleBtn;
 
-	//================================================================================
+        //================================================================================
     // Constructors Section
     //================================================================================
     
@@ -60,28 +56,24 @@ public class SupportPage extends PageBase {
         pageUrl = DEFAULT_URL;
         
         supportSection = new Section(driverExt, "Support Pages");
-        supportSectionList = new SimpleList(driverExt, "simple-list", supportSection.getSection());
         manualsSection = new Section(driverExt, "Manuals");
-        manualsSectionList = new SimpleList(driverExt, "simple-list", manualsSection.getSection());
         customerSupportSection = new Section(driverExt, "Contact Customer Support");
-        customerSupportSectionList = new SimpleList(driverExt, "simple-list", customerSupportSection.getSection());
         todaysLogsSection = new Section(driverExt, "Today's Logs");
-        todaysLogsSectionList = new SimpleList(driverExt, "simple-list", todaysLogsSection.getSection());
         WebElement todaysLogs = getTodaysLogsSection().getSection();
-    	WebElement todaysLogsViewAllLogs = todaysLogs.findElement(By.cssSelector("div > a"));
-    	todaysLogsViewAllLogsAnchorText = todaysLogsViewAllLogs.getText();
-    	todaysLogsViewAllLogsLinkText = SimpleList.getLinkFromOuterHTML(todaysLogsViewAllLogs.getAttribute("outerHTML"));
-    	databaseInfoSection = new Section(driverExt, "Database Info");
-    	databaseInfoSectionList = new SimpleList(driverExt, "simple-list", todaysLogsSection.getSection());
-    	WebElement databaseInfo = databaseInfoSection.getSection();
-    	WebElement databaseValidation = databaseInfo.findElement(By.cssSelector("div > a"));
-    	databaseValidationAnchorText = databaseValidation.getText();
-    	databaseValidationLinkText = SimpleList.getLinkFromOuterHTML(databaseValidation.getAttribute("outerHTML"));
-    	customerName = new TextEditElement(driverExt, "customerName");
-    	range = new DropDownElement(driverExt, "bundleRangeSelection");
-    	commLogFiles = new TrueFalseCheckboxElement(driverExt, "optionalWritersToInclude");
-    	notes = new MultiLineTextElement(driverExt, "comments");
-    	createBundleBtn = new Button(driverExt, "Create Bundle");
+        WebElement todaysLogsViewAllLogs = todaysLogs.findElement(By.cssSelector("div > a"));
+        todaysLogsViewAllLogsAnchorText = todaysLogsViewAllLogs.getText();
+        todaysLogsViewAllLogsLinkText = SimpleList.getLinkFromOuterHTML(todaysLogsViewAllLogs.getAttribute("outerHTML"));
+        databaseInfoSection = new Section(driverExt, "Database Info");
+//        databaseInfoSectionList = new SimpleList(driverExt, "simple-list", todaysLogsSection.getSection());
+//        WebElement databaseInfo = databaseInfoSection.getSection();
+//        WebElement databaseValidation = databaseInfo.findElement(By.cssSelector("div > a"));
+//        databaseValidationAnchorText = databaseValidation.getText();
+//        databaseValidationLinkText = SimpleList.getLinkFromOuterHTML(databaseValidation.getAttribute("outerHTML"));
+        customerName = new TextEditElement(driverExt, "customerName");
+        range = new DropDownElement(driverExt, "bundleRangeSelection");
+        commLogFiles = new TrueFalseCheckboxElement(driverExt, "optionalWritersToInclude");
+        notes = new MultiLineTextElement(driverExt, "comments");
+        createBundleBtn = new Button(driverExt, "Create Bundle");
     }
     
     //================================================================================
@@ -89,7 +81,7 @@ public class SupportPage extends PageBase {
     //================================================================================
     
     public String getCurrentLogTimeStamp() {
-    	return new SimpleDateFormat("yyyyMMdd").format(new Date());
+        return new SimpleDateFormat("yyyyMMdd").format(new Date());
     }
     
     //================================================================================
@@ -97,60 +89,72 @@ public class SupportPage extends PageBase {
     //================================================================================
     
     public Section getSupportSection() {
-    	return supportSection;
+        return supportSection;
     }
     
-    public SimpleList getSupportSectionSimpleList() {
-    	return supportSectionList;
+    public SimpleList getSupportSectionPageList() {
+        return new SimpleList(driverExt, "simple-list", getSupportSection().getSection());
     }
     
     public Section getManualsSection() {
-    	return manualsSection;
+        return manualsSection;
     }
     
-    public SimpleList getManualsSectionSimpleList() {
-    	return manualsSectionList;
+    public SimpleList getManualsSectionPageList() {
+        return new SimpleList(driverExt, "simple-list", manualsSection.getSection());
     }
     
     public Section getCustomerSupportSection() {
-    	return customerSupportSection;
+        return customerSupportSection;
     }
     
-    public SimpleList getCustomerSupportSectionSimpleList() {
-    	return customerSupportSectionList;
+    public SimpleList getCustomerSupportSectionPageList() {
+        return new SimpleList(driverExt, "simple-list", customerSupportSection.getSection());
     }
     
     public Section getTodaysLogsSection() {
-    	return todaysLogsSection;
+        return todaysLogsSection;
     }
     
-    public SimpleList getTodaysLogsSectionSimpleList() {
-    	return todaysLogsSectionList;
+    public SimpleList getTodaysLogsSectionPageList() {
+        return new SimpleList(driverExt, "simple-list", todaysLogsSection.getSection());
     }
     
     public String getTodaysLogsViewAllLogsAnchorText() {
-    	return todaysLogsViewAllLogsAnchorText;
+        return todaysLogsViewAllLogsAnchorText;
     }
     
     public String getTodaysLogsViewAllLogsLinkText() {
-    	return todaysLogsViewAllLogsLinkText;
+        return todaysLogsViewAllLogsLinkText;
     }
     
     public Section getDatabaseInfoSection() {
-    	return databaseInfoSection;
+        return databaseInfoSection;
+    }    
+    
+    public String getDatabaseValidationText() {
+      WebElement databaseInfo = getDatabaseInfoSection().getSection();
+      WebElement databaseValidation = databaseInfo.findElement(By.cssSelector("a"));
+      return databaseValidation.getText();
     }
     
-    public SimpleList getDatabaseInfoSectionSimpleList() {
-    	return databaseInfoSectionList;
+    public String getDatabaseValidationLink() {
+        WebElement databaseInfo = getDatabaseInfoSection().getSection();
+        WebElement databaseValidation = databaseInfo.findElement(By.cssSelector("a"));
+        return databaseValidation.getAttribute("href");
     }
     
-    public String getDatabaseValidationAnchorText() {
-    	return databaseValidationAnchorText;
-    }
-    
-    public String getDatabaseValidationLinkText() {
-    	return databaseValidationLinkText;
-    }
+    public String getViewAllLogsText() {
+        WebElement databaseInfo = getTodaysLogsSection().getSection();
+        WebElement databaseValidation = databaseInfo.findElement(By.cssSelector("div > a"));
+        return databaseValidation.getText();
+      }
+      
+      public String getViewAllLogsLink() {
+          WebElement databaseInfo = getTodaysLogsSection().getSection();
+          WebElement databaseValidation = databaseInfo.findElement(By.cssSelector("div > a"));
+          return databaseValidation.getAttribute("href");
+      }
     
     public TextEditElement getCustomerName() {
         return customerName;

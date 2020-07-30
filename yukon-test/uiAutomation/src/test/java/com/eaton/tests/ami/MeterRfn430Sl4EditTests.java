@@ -41,7 +41,7 @@ public class MeterRfn430Sl4EditTests extends SeleniumTestSetup {
         editModal.getdeviceName().setInputValue(name);
         editModal.clickOkAndWait();
 
-        waitForUrlToLoad(Urls.Ami.METER_DETAIL + 585, Optional.of(10));
+        waitForUrlToLoad(Urls.Ami.METER_DETAIL + 585, Optional.of(5));
 
         MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, 585);
 

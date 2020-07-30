@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -16,13 +17,13 @@ import com.cannontech.common.pao.attribute.model.Assignment;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.database.SqlParameterSink;
-import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.admin.dao.CustomAttributeDao;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 
 public class CustomAttributeDaoImpl implements CustomAttributeDao {
     
@@ -66,48 +67,60 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
     
     @Override
     public AttributeAssignment createAttributeAssignment(Assignment assignment) {
-        assignment.setAttributeAssignmentId(nextValueHelper.getNextValue("AttributeAssignment"));
-        SqlStatementBuilder createSql = new SqlStatementBuilder();
-        SqlParameterSink params = createSql.insertInto("AttributeAssignment");
-        params.addValue("AttributeAssignmentId", assignment.getAttributeAssignmentId());
-        addAssignmentParameters(params, assignment);
-        jdbcTemplate.update(createSql);
-        attributeDao.cacheAttributes();
-        return attributeDao.getAssignmentById(assignment.getAttributeAssignmentId());
+        try {
+            assignment.setAttributeAssignmentId(nextValueHelper.getNextValue("AttributeAssignment"));
+            SqlStatementBuilder createSql = new SqlStatementBuilder();
+            SqlParameterSink params = createSql.insertInto("AttributeAssignment");
+            params.addValue("AttributeAssignmentId", assignment.getAttributeAssignmentId());
+            addAssignmentParameters(params, assignment);
+            jdbcTemplate.update(createSql);
+            return attributeDao.getAssignmentById(assignment.getAttributeAssignmentId());
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateException("Unable to create Attribute Assignment.", e);
+        }
     }
     
     @Override
     public AttributeAssignment updateAttributeAssignment(Assignment assignment) {
-        SqlStatementBuilder updateSql = new SqlStatementBuilder();
-        SqlParameterSink params = updateSql.update("AttributeAssignment");
-        addAssignmentParameters(params, assignment);
-        updateSql.append("WHERE AttributeAssignmentId").eq(assignment.getAttributeAssignmentId());
-        jdbcTemplate.update(updateSql);
-        attributeDao.cacheAttributes();
-        return attributeDao.getAssignmentById(assignment.getAttributeAssignmentId());
+        try {
+            SqlStatementBuilder updateSql = new SqlStatementBuilder();
+            SqlParameterSink params = updateSql.update("AttributeAssignment");
+            addAssignmentParameters(params, assignment);
+            updateSql.append("WHERE AttributeAssignmentId").eq(assignment.getAttributeAssignmentId());
+            jdbcTemplate.update(updateSql);
+            return attributeDao.getAssignmentById(assignment.getAttributeAssignmentId());
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateException("Unable to update Attribute Assignment.", e);
+        }
     }
     
     @Override
     public CustomAttribute createCustomAttribute(CustomAttribute attribute) {
-        SqlStatementBuilder createSql = new SqlStatementBuilder();
-        attribute.setCustomAttributeId(nextValueHelper.getNextValue("CustomAttribute"));
-        SqlParameterSink params = createSql.insertInto("CustomAttribute");
-        params.addValue("AttributeId", attribute.getCustomAttributeId());
-        params.addValue("AttributeName", attribute.getName());
-        jdbcTemplate.update(createSql);
-        attributeDao.cacheAttributes();
-        return attribute;
+        try {
+            SqlStatementBuilder createSql = new SqlStatementBuilder();
+            attribute.setCustomAttributeId(nextValueHelper.getNextValue("CustomAttribute"));
+            SqlParameterSink params = createSql.insertInto("CustomAttribute");
+            params.addValue("AttributeId", attribute.getCustomAttributeId());
+            params.addValue("AttributeName", attribute.getName());
+            jdbcTemplate.update(createSql);
+            return attribute;
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateException("Unable to create Custom Attribute.", e);
+        }
     }
     
     @Override
     public CustomAttribute updateCustomAttribute(CustomAttribute attribute) {
-        SqlStatementBuilder updateSql = new SqlStatementBuilder();
-        SqlParameterSink params = updateSql.update("CustomAttribute");
-        params.addValue("AttributeName", attribute.getName());
-        updateSql.append("WHERE AttributeId").eq(attribute.getCustomAttributeId());
-        jdbcTemplate.update(updateSql);
-        attributeDao.cacheAttributes();
-        return attribute;
+        try {
+            SqlStatementBuilder updateSql = new SqlStatementBuilder();
+            SqlParameterSink params = updateSql.update("CustomAttribute");
+            params.addValue("AttributeName", attribute.getName());
+            updateSql.append("WHERE AttributeId").eq(attribute.getCustomAttributeId());
+            jdbcTemplate.update(updateSql);
+            return attribute;
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateException("Unable to update Custom Attribute.", e);
+        }
     }
 
     @Override
@@ -121,14 +134,13 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
         sqlExport.append("SELECT FormatName FROM ArchiveValuesExportFormat format");
         sqlExport.append("JOIN ArchiveValuesExportAttribute att on att.FormatId = format.FormatId");
         sqlExport.append("WHERE att.AttributeName").eq(attributeId);
-        dataExportsUsingTheAttribute.addAll(jdbcTemplate.query(sqlExport, TypeRowMapper.STRING));
+        //dataExportsUsingTheAttribute.addAll(jdbcTemplate.query(sqlExport, TypeRowMapper.STRING));
         
         if(dataExportsUsingTheAttribute.isEmpty()) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("DELETE FROM CustomAttribute");
             sql.append("WHERE AttributeId").eq(attributeId);
             jdbcTemplate.update(sql);
-            attributeDao.cacheAttributes();
         }
         
       /* if(true) {
@@ -142,14 +154,21 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
         sql.append("DELETE FROM AttributeAssignment");
         sql.append("WHERE AttributeAssignmentId").eq(attributeAssignmentId);
         jdbcTemplate.update(sql);
-        attributeDao.cacheAttributes();
     }
     
     private void addAssignmentParameters(SqlParameterSink params, Assignment assignment) {
-        params.addValue("AttributeId", assignment.getAttributeId());
-        params.addValue("PaoType", assignment.getPaoType());
-        params.addValue("PointType", assignment.getPointType());
-        params.addValue("PointOffset", assignment.getOffset());
+        if (assignment.getAttributeId() != null) {
+            params.addValue("AttributeId", assignment.getAttributeId());
+        }
+        if (assignment.getPaoType() != null) {
+            params.addValue("PaoType", assignment.getPaoType());
+        }
+        if (assignment.getPointType() != null) {
+            params.addValue("PointType", assignment.getPointType());
+        }
+        if (assignment.getOffset() != null) {
+            params.addValue("PointOffset", assignment.getOffset());
+        }
     }
 }
  

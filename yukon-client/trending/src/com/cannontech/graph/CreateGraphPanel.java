@@ -41,14 +41,15 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.ColorComboBoxCellRenderer;
 import com.cannontech.common.gui.util.ColorTableCellRenderer;
-import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.CtiTreeCellRenderer;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.DataInputPanelListener;
 import com.cannontech.common.gui.util.TreeViewPanel;
+import com.cannontech.common.trend.model.GraphColors;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.data.lite.LitePoint;
@@ -75,7 +76,6 @@ public class CreateGraphPanel extends DataInputPanel implements DataInputPanelLi
     private DeviceTree_CustomPointsModel graphPointsModel = null;
     private DeviceTree_CustomPointsModel usagePointsModel = null;
     private TDCDeviceTreeModel allTypesPointsModel = null;
-    private GraphColors graphColors;
     private JButton ivjThresholdsButton = null;
     private GraphDefinition value;
     private JPanel ivjPointOptionsPanel = null;
@@ -147,7 +147,7 @@ public class CreateGraphPanel extends DataInputPanel implements DataInputPanelLi
 
                 // Create the GDS to add in the tables.
                 GraphDataSeries gds = createGDS(pt, null);
-                gds.setMultiplier(new Double(value));
+                gds.setMultiplier(Double.valueOf(value));
                 GDSTableModel model = (GDSTableModel) getGraphGDSTable().getModel();
                 model.addRow(gds);
             }
@@ -243,7 +243,7 @@ public class CreateGraphPanel extends DataInputPanel implements DataInputPanelLi
      */
     public GraphDataSeries createGDS(LitePoint point, String deviceName) {
         GraphDataSeries gds = new GraphDataSeries();
-        gds.setPointID(new Integer(point.getPointID()));
+        gds.setPointID(Integer.valueOf(point.getPointID()));
 
         String gdsLabel = point.getPointName();
 
@@ -263,15 +263,15 @@ public class CreateGraphPanel extends DataInputPanel implements DataInputPanelLi
         }
         gds.setLabel(gdsLabel);
 
-        gds.setAxis(new Character('L'));
-        gds.setColor(new Integer(getGraphColors().getNextLineColorID()));
+        gds.setAxis(Character.valueOf('L'));
+        gds.setColor(0);    //just default to first in list for now
 
-        gds.setRenderer(new Integer(GraphRenderers.LINE));
+        gds.setRenderer(Integer.valueOf(GraphRenderers.LINE));
         // call to obtain the type from the database (pointUnit)
         String type = getPointTypeString(point);
-        gds.setType(new Integer(GDSTypesFuncs.getTypeInt(type)));
+        gds.setType(Integer.valueOf(GDSTypesFuncs.getTypeInt(type)));
 
-        gds.setMultiplier(new Double(1.0));
+        gds.setMultiplier(Double.valueOf(1.0));
 
         // ADD GDS TO THE PRIMARY POINT COMBO BOX.
         getPrimaryPointComboBox().addItem(gds.getLabel().toString());
@@ -452,14 +452,6 @@ public class CreateGraphPanel extends DataInputPanel implements DataInputPanelLi
         return ivjCreateGraphSplitPane;
     }
 
-    public GraphColors getGraphColors() {
-        if (graphColors == null) {
-            graphColors = new GraphColors();
-        }
-
-        return graphColors;
-    }
-
     private GraphDefinition getGraphDefinitionValue() {
         return value;
     }
@@ -520,14 +512,8 @@ public class CreateGraphPanel extends DataInputPanel implements DataInputPanelLi
                 // colModel.getColumn(GDSTableModel.SETUP_NAME_COLUMN).setPreferredWidth(10);
 
                 // Color choices setup
-                Color[] colors = getGraphColors().getAvailableColors();
-                String[] colorStrings = new String[colors.length];
-
-                for (int i = 0; i < colors.length; i++) {
-                    colorStrings[i] =
-                        Colors.getColorString(com.cannontech.common.gui.util.Colors.getColorID(colors[i]));
-                }
-                JComboBox<String> colorComboBox = new JComboBox<>(colorStrings);
+                YukonColorPalette[] colors = GraphColors.getYukonColors();
+                JComboBox<YukonColorPalette> colorComboBox = new JComboBox<>(colors);
                 colorComboBox.setRenderer(new ColorComboBoxCellRenderer());
                 DefaultCellEditor colorEditor = new DefaultCellEditor(colorComboBox);
 
@@ -1030,27 +1016,27 @@ public class CreateGraphPanel extends DataInputPanel implements DataInputPanelLi
         gDefInfo.setName(trendName);
 
         if (!getAxisPanel().getLeftAutoScalingCheckBox().isSelected()) {
-            gDefInfo.setAutoScaleLeftAxis(new Character('N'));
+            gDefInfo.setAutoScaleLeftAxis(Character.valueOf('N'));
         } else {
-            gDefInfo.setAutoScaleLeftAxis(new Character('Y'));
+            gDefInfo.setAutoScaleLeftAxis(Character.valueOf('Y'));
         }
 
         try {
-            gDefInfo.setLeftMin(new Double(getAxisPanel().getLeftMinTextField().getText()));
-            gDefInfo.setLeftMax(new Double(getAxisPanel().getLeftMaxTextField().getText()));
+            gDefInfo.setLeftMin(Double.valueOf(getAxisPanel().getLeftMinTextField().getText()));
+            gDefInfo.setLeftMax(Double.valueOf(getAxisPanel().getLeftMaxTextField().getText()));
         } catch (NumberFormatException nfe) {
             nfe.printStackTrace();
         }
 
         if (!getAxisPanel().getRightAutoScalingCheckBox().isSelected()) {
-            gDefInfo.setAutoScaleRightAxis(new Character('N'));
+            gDefInfo.setAutoScaleRightAxis(Character.valueOf('N'));
         } else {
-            gDefInfo.setAutoScaleRightAxis(new Character('Y'));
+            gDefInfo.setAutoScaleRightAxis(Character.valueOf('Y'));
         }
 
         try {
-            gDefInfo.setRightMin(new Double(getAxisPanel().getRightMinTextField().getText()));
-            gDefInfo.setRightMax(new Double(getAxisPanel().getRightMaxTextField().getText()));
+            gDefInfo.setRightMin(Double.valueOf(getAxisPanel().getRightMinTextField().getText()));
+            gDefInfo.setRightMax(Double.valueOf(getAxisPanel().getRightMaxTextField().getText()));
         } catch (NumberFormatException nfe) {
             nfe.printStackTrace();
         }
@@ -1070,7 +1056,7 @@ public class CreateGraphPanel extends DataInputPanel implements DataInputPanelLi
                     type ^= GDSTypes.PRIMARY_TYPE;
                 }
             }
-            model.getRow(i - 1).setType(new Integer(type));
+            model.getRow(i - 1).setType(Integer.valueOf(type));
         }
 
         ArrayList<GraphDataSeries> dataSeries = new ArrayList<>(model.getRowCount());
@@ -1217,10 +1203,6 @@ public class CreateGraphPanel extends DataInputPanel implements DataInputPanelLi
         buttonPushed = newButtonPushed;
     }
 
-    public void setGraphColors(GraphColors newGraphColors) {
-        graphColors = newGraphColors;
-    }
-
     private void setGraphDefinitionValue(GraphDefinition newValue) {
         value = newValue;
     }
@@ -1350,8 +1332,8 @@ public class CreateGraphPanel extends DataInputPanel implements DataInputPanelLi
 	 */
     private boolean validData() {
         if (!getAxisPanel().getLeftAutoScalingCheckBox().isSelected()) {
-            double min = new Double(getAxisPanel().getLeftMinTextField().getText()).doubleValue();
-            double max = new Double(getAxisPanel().getLeftMaxTextField().getText()).doubleValue();
+            double min = Double.valueOf(getAxisPanel().getLeftMinTextField().getText()).doubleValue();
+            double max = Double.valueOf(getAxisPanel().getLeftMaxTextField().getText()).doubleValue();
             if (min > max) {
                 showPopupMessage("Left Axis Min value must be less than Max value.", JOptionPane.WARNING_MESSAGE);
                 return false;
@@ -1359,8 +1341,8 @@ public class CreateGraphPanel extends DataInputPanel implements DataInputPanelLi
         }
 
         if (!getAxisPanel().getRightAutoScalingCheckBox().isSelected()) {
-            double min = new Double(getAxisPanel().getRightMinTextField().getText()).doubleValue();
-            double max = new Double(getAxisPanel().getRightMaxTextField().getText()).doubleValue();
+            double min = Double.valueOf(getAxisPanel().getRightMinTextField().getText()).doubleValue();
+            double max = Double.valueOf(getAxisPanel().getRightMaxTextField().getText()).doubleValue();
             if (min > max) {
                 showPopupMessage("Right Axis Min value must be less than Max value.", JOptionPane.WARNING_MESSAGE);
                 return false;

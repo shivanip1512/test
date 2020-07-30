@@ -15,6 +15,7 @@ import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -1256,7 +1257,7 @@ public class UpdaterHelper {
         
         if (state != null) {
             retColor = Colors.getColor(state.getFgColor());
-            if (retColor.equals(Colors.getColor(Colors.GREEN_ID))){
+            if (retColor.equals(Colors.getColor(YukonColorPalette.GREEN.getColorId()))){
                 retColor = _DEFAULT_COLORS[0];
             }
         }

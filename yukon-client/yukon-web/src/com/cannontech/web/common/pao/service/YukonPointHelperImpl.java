@@ -17,6 +17,8 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.model.CustomAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
@@ -33,7 +35,7 @@ public class YukonPointHelperImpl implements YukonPointHelper {
     @Autowired private PointDao pointDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private AttributeDao attributeDao;
+    @Autowired private AttributeService attributeService;
 
     @Override
     public List<LiteYukonPoint> getYukonPoints(final YukonPao pao, SortingParameters sorting,
@@ -72,11 +74,23 @@ public class YukonPointHelperImpl implements YukonPointHelper {
     private List<LiteYukonPoint> getYukonPointsForSorting(final YukonPao pao) {
         List<LitePoint> points = pointDao.getLitePointsByPaObjectId(pao.getPaoIdentifier().getPaoId());
         return points.stream().map(point -> {
-            PaoPointIdentifier paoPointIdent = new PaoPointIdentifier(pao.getPaoIdentifier(), new PointIdentifier(point.getPointTypeEnum(), point.getPointOffset()));
-            Set<BuiltInAttribute> attributes = paoDefinitionDao.findAttributeForPaoTypeAndPoint(paoPointIdent.getPaoTypePointIdentifier());
-            Attribute attribute = !attributes.isEmpty() ? attributes.iterator().next() : attributeDao
-                    .findCustomAttributeForPaoTypeAndPoint(paoPointIdent.getPaoTypePointIdentifier());
-            return LiteYukonPoint.of(paoPointIdent, attribute, point.getPointName(), point.getLiteID());
+            PaoPointIdentifier paoPointIdent = new PaoPointIdentifier(pao.getPaoIdentifier(),
+                    new PointIdentifier(point.getPointTypeEnum(), point.getPointOffset()));
+            Set<BuiltInAttribute> attributes = paoDefinitionDao
+                    .findAttributeForPaoTypeAndPoint(paoPointIdent.getPaoTypePointIdentifier());
+
+            if (!attributes.isEmpty()) {
+                return LiteYukonPoint.of(paoPointIdent, attributes.iterator().next(), point.getPointName(), point.getLiteID());
+            }
+
+            List<CustomAttribute> customAttributes = attributeService
+                    .findCustomAttributesForPaoTypeAndPoint(paoPointIdent.getPaoTypePointIdentifier());
+
+            if (!customAttributes.isEmpty()) {
+                return LiteYukonPoint.of(paoPointIdent, customAttributes.iterator().next(), point.getPointName(),
+                        point.getLiteID());
+            }
+            return LiteYukonPoint.of(paoPointIdent, null, point.getPointName(), point.getLiteID());
         }).collect(Collectors.toList());
     }
 
