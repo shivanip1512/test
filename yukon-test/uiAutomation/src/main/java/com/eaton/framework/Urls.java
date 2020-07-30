@@ -294,7 +294,7 @@ public final class Urls {
     	public static final String SERVICE_MANAGER_LOG = "%2FServiceManager_";
     	public static final String WATCHDOG_LOG = "%2FWatchdog_";
     	public static final String WEBSERVER_LOG = "%2FWebserver_";
-    	public static final String VIEW_ALL_LOGS = "/&amp;sortType=date";
+    	public static final String VIEW_ALL_LOGS = "/&sortType=date";
     	
     	public static final String SUPPORT_BUNDLE = "/support/viewBundleProgress";
     }

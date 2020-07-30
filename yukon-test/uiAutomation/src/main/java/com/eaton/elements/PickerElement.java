@@ -21,7 +21,11 @@ public class PickerElement {
     }  
     
     public String getLinkValue() {
-        return this.driverExt.findElement(By.cssSelector(this.id + ".b-label"), Optional.empty()).getText();
+        return this.driverExt.findElement(By.cssSelector("#" +this.id + " .b-label"), Optional.empty()).getText();
+    }
+    
+    public String getValidationError() {
+        return this.driverExt.findElement(By.cssSelector("span[id='deviceUsage.id.errors']"), Optional.empty()).getText();
     }
     
     public String getLinkValueDynamic() {
