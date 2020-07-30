@@ -44,7 +44,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateMCT_AllFieldsSuccessfully() {
+    public void ldGrpCreateMCT_RequiredFieldsWithBronzeAddressSuccess() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT MCT " + timeStamp;
         double randomDouble = randomNum.nextDouble();
@@ -199,10 +199,11 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateMCT_WithMCTAddressSelection() {
+    public void ldGrpCreateMct_RequiredFieldsWithMctAddressSuccess() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT MCT " + timeStamp;
-
+        final String EXPECTED_MSG = name + " saved successfully.";
+        
         createPage.getType().selectItemByText("MCT Group");
         waitForLoadingSpinner();
 
@@ -213,5 +214,12 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         mctMeterModal.selectMeter("a_MCT-430A");
         mctMeterModal.clickOkAndWait();
         createPage.getSaveBtn().click();
+        waitForPageToLoad("Load Group: " + name, Optional.empty());
+
+        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
+        String userMsg = detailsPage.getUserMessage();
+
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+        
     }
 }
