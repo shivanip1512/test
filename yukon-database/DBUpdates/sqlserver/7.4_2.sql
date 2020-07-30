@@ -133,14 +133,14 @@ AND PaobjectId IN (
     WHERE Type IN ('LCR-6600S')
 );
 
-INSERT INTO DBUpdates VALUES ('YUK-22412', '7.5.0', GETDATE());
+INSERT INTO DBUpdates VALUES ('YUK-22412', '7.4.2', GETDATE());
 /* @end YUK-22412 */
 
 /* @start YUK-22518 */
 UPDATE GlobalSetting SET Name = 'ITRON_HCM_DATA_COLLECTION_MINUTES', Value = '15'
     WHERE Name = 'ITRON_HCM_DATA_COLLECTION_HOURS';
 
-INSERT INTO DBUpdates VALUES ('YUK-22518', '7.5.0', GETDATE());
+INSERT INTO DBUpdates VALUES ('YUK-22518', '7.4.2', GETDATE());
 /* @end YUK-22518 */
 /**************************************************************/
 /* VERSION INFO                                               */

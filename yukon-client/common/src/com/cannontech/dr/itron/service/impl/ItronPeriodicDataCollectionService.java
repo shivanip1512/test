@@ -163,23 +163,10 @@ public class ItronPeriodicDataCollectionService {
     }
     
     /**
-     * Get the data collection interval from the global setting and make sure it is valid.
+     * Get the data collection interval from the global setting.
      */
     private Duration getDataCollectionInterval() {
-        int minutes = settingsDao.getInteger(GlobalSettingType.ITRON_HCM_DATA_COLLECTION_MINUTES);
-
-        if (minutes > 0) {
-            if (minutes < 5) {
-                log.warn("Invalid data collection interval: " + minutes
-                        + ". Minimum data collection Interval is 5 minutes, setting the interval to 5 minutes.");
-                minutes = 5;
-            }
-            return Duration.ofMinutes(minutes);
-        } else if (minutes < 0) {
-            log.warn("Invalid data collection interval: " + minutes + ", setting to zero");
-        }
-
-        return Duration.ZERO;
+        return Duration.ofMinutes(settingsDao.getInteger(GlobalSettingType.ITRON_HCM_DATA_COLLECTION_MINUTES));
     }
     
     /**
