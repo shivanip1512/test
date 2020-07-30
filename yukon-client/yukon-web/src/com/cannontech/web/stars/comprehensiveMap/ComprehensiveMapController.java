@@ -55,6 +55,7 @@ import com.cannontech.common.rfn.message.route.RouteData;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.tree.Node;
@@ -104,6 +105,7 @@ public class ComprehensiveMapController {
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private IDatabaseCache cache;
     @Autowired private PaoLocationService paoLocationService;
+    @Autowired private RfnDeviceCreationService rfnDeviceCreationService;
     private Instant networkTreeUpdateTime = null;
 
     private static final Logger log = YukonLogManager.getLogger(ComprehensiveMapController.class);
@@ -201,8 +203,8 @@ public class ComprehensiveMapController {
     public void download(String groupName, YukonUserContext userContext, HttpServletResponse response) throws IOException {
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        //device name, meter number, device type, sensor s/n, lat, long, primary gateway, comm status, mac address, node s/n, link cost, hop count, descendant count
-        String[] headerRow = new String[13];
+        //device name, meter number, device type, sensor s/n, lat, long, primary gateway, comm status, mac address, node s/n, link cost, hop count, descendant count, next hop
+        String[] headerRow = new String[14];
         
         String baseKey = "yukon.web.modules.operator.mapNetwork.";
 
@@ -219,6 +221,7 @@ public class ComprehensiveMapController {
         headerRow[10] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.colorCodeBy.LINK_QUALITY");
         headerRow[11] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.colorCodeBy.HOP_COUNT");
         headerRow[12] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.colorCodeBy.DESCENDANT_COUNT");
+        headerRow[13] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.nextHop");
         
         DeviceGroup group = deviceGroupService.findGroupName(groupName);
         DeviceCollection collection = deviceGroupCollectionHelper.buildDeviceCollection(group);
@@ -251,7 +254,7 @@ public class ComprehensiveMapController {
         log.debug("Got data from NM for {} devices", metaData.keySet().size());
         for (RfnIdentifier device : metaData.keySet()) {
             RfnDevice rfnDevice = rfnDeviceDao.getDeviceForExactIdentifier(device);
-            String[] dataRow = new String[13];
+            String[] dataRow = new String[14];
             LiteYukonPAObject pao = cache.getAllPaosMap().get(rfnDevice.getPaoIdentifier().getPaoId());
             dataRow[0] = pao.getPaoName();
             SimpleMeter meter = cache.getAllMeters().get(rfnDevice.getPaoIdentifier().getPaoId());
@@ -293,6 +296,13 @@ public class ComprehensiveMapController {
                 if (metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA)) {
                     RouteData routeData = (RouteData) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA);
                     dataRow[11] = String.valueOf(routeData.getHopCount());
+                    RfnIdentifier nextHop = routeData.getNextHopRfnIdentifier();
+                    if (nextHop != null) {
+                        RfnDevice nextHopDevice = rfnDeviceCreationService.createIfNotFound(nextHop);
+                        if (nextHopDevice != null) {
+                            dataRow[13] = nextHopDevice.getName();
+                        }
+                    }
                 }
             }
             dataRows.add(dataRow);

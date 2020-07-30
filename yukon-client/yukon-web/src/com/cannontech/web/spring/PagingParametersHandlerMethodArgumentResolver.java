@@ -28,7 +28,6 @@ public class PagingParametersHandlerMethodArgumentResolver implements HandlerMet
                                   WebDataBinderFactory binderFactory) throws Exception {
         
         HttpServletRequest nativeRequest = (HttpServletRequest) webRequest.getNativeRequest();
-
         String itemsPerPageString;
         if (methodParameter.hasParameterAnnotation(DefaultItemsPerPage.class)) {
             int defaultItemsPerPage = methodParameter.getParameterAnnotation(DefaultItemsPerPage.class).value();
@@ -44,10 +43,13 @@ public class PagingParametersHandlerMethodArgumentResolver implements HandlerMet
 
     /**
      * Get valid Items per page
+     * Return default value of Items per page i.e 25 if null value passed.
      * @throws InvalidPagingParametersException for Invalid Items per page
      */
     private static Integer getValidItemsPerPage(String itemsPerPageString) {
-
+        if (itemsPerPageString == null) {
+            return CtiUtilities.DEFAULT_ITEMS_PER_PAGE;
+        }
         Integer itemsPerPage = null;
         try {
             itemsPerPage = Integer.valueOf(itemsPerPageString);
@@ -68,7 +70,6 @@ public class PagingParametersHandlerMethodArgumentResolver implements HandlerMet
      * @throws InvalidPagingParametersException for Invalid page number
      */
     private static Integer getValidPageNumber(String pageString) {
-
         Integer pageNumber = null;
         try {
             pageNumber = Integer.valueOf(pageString);
