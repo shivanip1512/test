@@ -23,7 +23,7 @@ public class BaseModal {
             this.modalTitle = modalTitle.get();
         if (describedBy.isPresent())
             this.describedBy = describedBy.get();
-    }
+    }    
 
     public WebElement getModal() {
         if (describedBy != null) {
@@ -82,16 +82,24 @@ public class BaseModal {
         }
     }
 
-    public void clickBtnByNameAndWait(String buttonName) {
-        List<WebElement> el = getModal().findElements(By.cssSelector("button"));
+    public void clickOkDeleteByClassAndWait() {
+        getModal().findElement(By.cssSelector(".ui-dialog-buttonset .primary")).click();
 
-        WebElement button = el.stream().filter(element -> element.getText().equals(buttonName)).findFirst().orElseThrow();
-
-        button.click();
-
-        if (this.describedBy.isEmpty()) {
+        if (describedBy != null) {
             SeleniumTestSetup.waitUntilModalClosedByDescribedBy(describedBy);
-        } else if (this.modalTitle.isEmpty()) {
+        } else if (modalTitle != null) {
+            SeleniumTestSetup.waitUntilModalClosedByTitle(modalTitle);
+        }
+    }
+    
+    public void clickCancelByNameAndWait() {
+        List<WebElement> list = getModal().findElements(By.cssSelector(".ui-dialog-buttonset button"));
+        
+        list.stream().filter(x -> x.getText().contains("Cancel")).findFirst().orElseThrow().click();
+        
+        if (describedBy != null) {
+            SeleniumTestSetup.waitUntilModalClosedByDescribedBy(describedBy);
+        } else if (modalTitle != null) {
             SeleniumTestSetup.waitUntilModalClosedByTitle(modalTitle);
         }
     }

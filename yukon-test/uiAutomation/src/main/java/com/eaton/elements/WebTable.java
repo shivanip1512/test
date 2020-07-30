@@ -39,9 +39,9 @@ public class WebTable {
         if (this.parentElement != null) {
             return this.parentElement.findElement(By.cssSelector("." + this.tableClassName));
         } else if (this.parent != null) {
-            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + parent + "'] ." + this.tableClassName), Optional.empty());   
+            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + parent + "'] ." + this.tableClassName), Optional.of(3));   
         } else {
-            return this.driverExt.findElement(By.cssSelector("." + this.tableClassName), Optional.empty()); 
+            return this.driverExt.findElement(By.cssSelector("." + this.tableClassName), Optional.of(3)); 
         }
     }
 
@@ -84,9 +84,9 @@ public class WebTable {
         List<WebElement> rows = new ArrayList<>();
         long startTime = System.currentTimeMillis();
 
-        while((rows.size() != 1) && (System.currentTimeMillis() - startTime) < 3000) {
+        while((rows.size() != 1) && (System.currentTimeMillis() - startTime) < 6000) {
             try {
-                table = this.driverExt.findElement(By.cssSelector(".compact-results-table"), Optional.empty());
+                table = this.driverExt.findElement(By.cssSelector(".compact-results-table"), Optional.of(3));
 
                 rows = table.findElements(By.cssSelector("tbody tr"));  
             } 

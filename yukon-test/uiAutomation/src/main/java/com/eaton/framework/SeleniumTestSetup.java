@@ -263,18 +263,20 @@ public class SeleniumTestSetup {
     }
 
     public static void waitUntilModalClosedByDescribedBy(String describedBy) {
-        boolean displayed = true;
+//        boolean displayed = true;
 
-        long startTime = System.currentTimeMillis();
+//        long startTime = System.currentTimeMillis();
 
-        while (displayed && System.currentTimeMillis() - startTime < 100) {
-            try {
-                displayed = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).isDisplayed();
-            }
-            catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {  
-                displayed = false;
-            }            
-        }
+        driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(3)).isDisplayed();
+        
+//        while (displayed && System.currentTimeMillis() - startTime < 100) {
+//            try {
+//                displayed = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(3)).isDisplayed();
+//            }
+//            catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {  
+//                displayed = false;
+//            }            
+//        }                    
     }
     
     public static void waitUntilModalClosedByTitle(String modalTitle) {
@@ -286,10 +288,13 @@ public class SeleniumTestSetup {
         
         while (found && System.currentTimeMillis() - startTime < 100) {              
             try {
-                elements = driverExt.findElements(By.cssSelector(".ui-dialog .ui-dialog-title"), Optional.of(0));            
+                elements = driverExt.findElements(By.cssSelector(".ui-dialog .ui-dialog-title"), Optional.empty());            
             
                 el = elements.stream().filter(element -> element.getText().equals(modalTitle)).findFirst();  
                 found = el.isPresent();
+                if(!found) {
+                    return;
+                }
             } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) { 
                 found = false;
             }            

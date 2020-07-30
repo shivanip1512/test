@@ -31,7 +31,7 @@ public class Section {
             List<WebElement> list = this.parentElement.findElements(By.cssSelector(".section-container"));
             return list.stream().filter(element -> element.findElement(By.cssSelector(".title-bar .title")).getText().contains(this.sectionName)).findFirst().orElseThrow();
         } else {
-            List<WebElement> list = this.driverExt.findElements(By.cssSelector(".section-container"), Optional.empty());
+            List<WebElement> list = this.driverExt.findElements(By.cssSelector(".section-container"), Optional.of(3));
             return list.stream().filter(element -> element.findElement(By.cssSelector(".title-bar .title")).getText().contains(this.sectionName)).findFirst().orElseThrow();
         }
     }

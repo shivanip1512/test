@@ -3,8 +3,6 @@ package com.eaton.tests.demandresponse.loadgroup;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -58,7 +56,7 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
         createPage.getName().setInputValue(name);
         SelectPointModal pointGroupControlDevice = createPage.showAndWaitPointGroupControlDeviceModal("Select Control Device");
         pointGroupControlDevice.selectPointGroupControlDeviceTable("SCADA Override");
-        pointGroupControlDevice.clickBtnByNameAndWait("OK");
+        pointGroupControlDevice.clickOkDeleteByClassAndWait();;
         createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
 
         createPage.getDisableGroup().setValue(true);
@@ -121,7 +119,7 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
 
         SelectPointModal pointGroupControlDevice = createPage.showAndWaitPointGroupControlDeviceModal("Select Control Device");
         pointGroupControlDevice.selectPointGroupControlDeviceTable("SCADA Override");
-        pointGroupControlDevice.clickBtnByNameAndWait("OK");
+        pointGroupControlDevice.clickOkDeleteByClassAndWait();
 
         assertThat(createPage.getControlDevicePointLabelText()).contains("SCADA Override");
     }
