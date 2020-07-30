@@ -168,8 +168,8 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
     public String loggingString(Level level) {
         if (level.isMoreSpecificThan(Level.INFO)) {
             return String.format(
-                    "RfnMetadataMultiResponse [requestID=%s, responseType=%s, responseMessage=%s, treeGenerationStartTimeMillis=%s]",
-                    requestID, responseType, responseMessage, treeGenerationStartTimeMillis);
+                    "RfnMetadataMultiResponse [requestID=%s, totalSegments=%s, segmentNumber=%s, responseType=%s, responseMessage=%s, treeGenerationStartTimeMillis=%s]",
+                    requestID, totalSegments, segmentNumber, responseType, responseMessage, treeGenerationStartTimeMillis);
         } else {
             return toString();
         }
