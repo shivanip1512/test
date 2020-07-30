@@ -47,7 +47,7 @@ public class ItronPeriodicDataCollectionService {
     private ScheduledFuture<?> scheduledTask;
     private boolean itronDevicesFound;
     public static final int maxRows = 1000;
-    private static final ReentrantLock _lock = new ReentrantLock(true);
+    private static final ReentrantLock lock = new ReentrantLock(true);
 
     @PostConstruct
     public void init() {
@@ -130,7 +130,7 @@ public class ItronPeriodicDataCollectionService {
             log.debug("Skipping Itron periodic data collection - no devices present that communicate over Itron network.");
             return;
         }
-        if (_lock.tryLock()) {
+        if (lock.tryLock()) {
             try {
                 log.info("Checking for devices with no secondary mac address.");
                 updateSecondaryMacAddresses();
@@ -138,8 +138,10 @@ public class ItronPeriodicDataCollectionService {
                 itronDataReadService.collectData();
                 log.info("Itron data collection complete");
             } finally {
-                _lock.unlock();
+                lock.unlock();
             }
+        } else {
+            log.info("Skipping scheduled data collection task because a previous collection task is still running.");
         }
     }
     

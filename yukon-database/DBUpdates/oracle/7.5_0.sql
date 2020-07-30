@@ -665,6 +665,13 @@ AND PaobjectId IN (
 
 INSERT INTO DBUpdates VALUES ('YUK-22412', '7.5.0', SYSDATE);
 /* @end YUK-22412 */
+
+/* @start YUK-22518 */
+UPDATE GlobalSetting SET Name = 'ITRON_HCM_DATA_COLLECTION_MINUTES', Value = '15'
+    WHERE Name = 'ITRON_HCM_DATA_COLLECTION_HOURS';
+
+INSERT INTO DBUpdates VALUES ('YUK-22518', '7.5.0', SYSDATE);
+/* @end YUK-22518 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
