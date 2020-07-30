@@ -280,10 +280,13 @@ yukon.tools.point = (function () {
         var buttonClicked = $(event.currentTarget);
         var row = buttonClicked.closest('[data-fdr-translation]');
         row.find('.js-fdr-translation').val('');
+        row.find("select,input").each(function (index, item) {
+            $(item).removeClass("error");
+        });
+        row.find("span.error").prev("br").remove();
+        row.find("span.error").remove();
         row.addClass('dn');
-
         $('.js-add-fdr').removeClass('dn');
-
         var visibleRows = $('[data-fdr-translation]').filter(':visible');
 
         if (visibleRows.length < 1) {
