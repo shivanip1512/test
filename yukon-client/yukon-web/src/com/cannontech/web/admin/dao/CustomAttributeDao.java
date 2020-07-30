@@ -13,7 +13,7 @@ public interface CustomAttributeDao {
 
     public enum SortBy {
         ATTRIBUTE_NAME("AttributeName"),
-        DEVICE_TYPE("DeviceType"),
+        DEVICE_TYPE("PaoType"),
         POINT_TYPE("PointType"),
         POINT_OFFSET("PointOffset");
 

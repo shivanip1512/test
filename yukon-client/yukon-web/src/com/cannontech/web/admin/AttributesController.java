@@ -37,6 +37,7 @@ import com.cannontech.common.pao.attribute.model.Assignment;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.web.admin.dao.CustomAttributeDao.SortBy;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -354,15 +355,17 @@ public class AttributesController {
             URIBuilder ub = new URIBuilder(url);
             if (selectedAttributes != null) {
                 for (Integer attr : selectedAttributes) {
-                    ub.addParameter("attributeId", Integer.toString(attr));
+                    ub.addParameter("attributeIds", Integer.toString(attr));
                 }
             }
             if (selectedDeviceTypes != null) {
                 for (PaoType type : selectedDeviceTypes) {
-                    ub.addParameter("deviceType", type.name());
+                    ub.addParameter("paoTypes", type.name());
                 }
             }
-            ub.addParameter("sort", dir == Direction.desc ? "-" + sortBy.name() : sortBy.name());
+            ub.addParameter("sort", sortBy.getValue().name());
+            ub.addParameter("dir", dir.name());
+            
             ResponseEntity<? extends Object> response = 
                     apiRequestHelper.callAPIForList(userContext, request, ub.toString(), AttributeAssignment.class, HttpMethod.GET, AttributeAssignment.class);
             if (response.getStatusCode() == HttpStatus.OK) {
@@ -412,10 +415,16 @@ public class AttributesController {
     
     public enum AssignmentSortBy implements DisplayableEnum {
 
-        attributeName,
-        deviceType,
-        pointType,
-        pointOffset;
+        attributeName(SortBy.ATTRIBUTE_NAME),
+        deviceType(SortBy.DEVICE_TYPE),
+        pointType(SortBy.POINT_TYPE),
+        pointOffset(SortBy.POINT_OFFSET);
+        
+        private final SortBy value;
+        
+        private AssignmentSortBy(SortBy value) {
+            this.value = value;
+        }
 
         @Override
         public String getFormatKey() {
@@ -423,6 +432,10 @@ public class AttributesController {
                 return "yukon.web.modules.adminSetup.config.attributes." + name();
             }
             return "yukon.common." + name();
+        }
+
+        public SortBy getValue() {
+            return value;
         }
     }
     

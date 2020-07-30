@@ -1,5 +1,6 @@
 package com.cannontech.web.api.customAttribute;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -82,11 +83,17 @@ public class CustomAttributeAssignmentApiController {
      */
     @GetMapping("")
     public ResponseEntity<Object> list(Integer[] attributeIds, PaoType[] paoTypes,
-            @DefaultSort(dir = Direction.asc, sort = "attributeName") SortingParameters sorting) {
+            @DefaultSort(dir = Direction.asc, sort = "ATTRIBUTE_NAME") SortingParameters sorting) {
         SortBy sortBy = CustomAttributeDao.SortBy.valueOf(sorting.getSort());
         Direction direction = sorting.getDirection();
-        List<Integer> attributeIdList = Arrays.asList(attributeIds);
-        List<PaoType> paoTypeList = Arrays.asList(paoTypes);
+        List<Integer> attributeIdList = new ArrayList<>();
+        if (attributeIds != null) {
+            attributeIdList = Arrays.asList(attributeIds);
+        }
+        List<PaoType> paoTypeList = new ArrayList<>();
+        if (paoTypes != null) {
+            paoTypeList = Arrays.asList(paoTypes);
+        }
 
         return new ResponseEntity<>(customAttributeDao.getCustomAttributeDetails(attributeIdList, paoTypeList, sortBy, direction),
                 HttpStatus.OK);
