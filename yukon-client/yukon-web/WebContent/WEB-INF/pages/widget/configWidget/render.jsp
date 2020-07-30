@@ -80,9 +80,11 @@
                             <c:when test="${dataStreamingConfig != null}">
                                 <a href="javascript:void(0);" data-popup="#data-streaming-popup">
                                     ${fn:escapeXml(dataStreamingConfig.name)}
-                                    <cti:url var="discrepancyUrl" value="/tools/dataStreaming/discrepancies"/>
-                                    <cti:msg2 var="viewDiscrepancy" key="yukon.web.modules.tools.dataStreaming.discrepancies.viewDiscrepancy"/>
-                                    <cti:icon icon="icon-error fn ML0" href="${discrepancyUrl}" title="${viewDiscrepancy}"/>
+                                    <c:if test="${dataStreamingDiscrepancy != null}">
+                                        <cti:url var="discrepancyUrl" value="/tools/dataStreaming/discrepancies"/>
+                                        <cti:msg2 var="viewDiscrepancy" key="yukon.web.modules.tools.dataStreaming.discrepancies.viewDiscrepancy"/>
+                                        <cti:icon icon="icon-error fn ML0" href="${discrepancyUrl}" title="${viewDiscrepancy}"/>
+                                    </c:if>
                                 </a>
                             </c:when>
                             <c:otherwise>

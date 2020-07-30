@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -15,6 +16,8 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +36,7 @@ import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.AttributeAssignment;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
@@ -57,6 +61,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -66,8 +71,12 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -94,12 +103,102 @@ public class AttributeServiceImpl implements AttributeService {
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private AttributeDao attributeDao;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    
+    private Set<DbChangeType> addType = EnumSet.of(DbChangeType.ADD, DbChangeType.UPDATE);
+    private Set<DbChangeType> deleteType = EnumSet.of(DbChangeType.DELETE);
+    private Cache<Integer, CustomAttribute> customAttributes = CacheBuilder.newBuilder().build();
+    private Cache<Integer, AttributeAssignment> customAttributeAssignments = CacheBuilder.newBuilder().build();
+    
+    @PostConstruct
+    public void init() {   
+        cacheCustomAttributes();
+        createDatabaseChangeListeners();
+    }
+    
+    @Override
+    public boolean isValidAttributeId(int attributeId) {
+        return customAttributes.getIfPresent(attributeId) != null;
+    }
+    
+    @Override
+    public boolean isValidAssignmentId(int assignmentId) {
+        return customAttributeAssignments.getIfPresent(assignmentId) != null;
+    }
+    
+    private void createDatabaseChangeListeners() {
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ATTRIBUTE, addType, e -> {
+            try {
+                CustomAttribute attribute = attributeDao.getCustomAttribute(e.getPrimaryKey());
+                customAttributes.put(attribute.getCustomAttributeId(), attribute);
+            } catch (NotFoundException ex) {
+                log.warn(e);
+            }
+        });
+        
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ATTRIBUTE_ASSIGNMENT, addType, e -> {
+            try {
+                AttributeAssignment assignemnt = attributeDao.getAssignmentById(e.getPrimaryKey());
+                customAttributeAssignments.put(assignemnt.getAttributeAssignmentId(), assignemnt);
+            } catch (NotFoundException ex) {
+                log.warn(e);
+            }
+        });
+        
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ATTRIBUTE, deleteType, e -> {
+            List<Integer> assignmentsToDelete = customAttributeAssignments.asMap().values().stream()
+                    .filter(assignment -> assignment.getAttributeId() == e.getPrimaryKey())
+                    .map(assignment -> assignment.getAttributeAssignmentId())
+                    .collect(Collectors.toList());
+            customAttributeAssignments.invalidateAll(assignmentsToDelete);
+            customAttributes.invalidate(e.getPrimaryKey());
+        });
+        
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ATTRIBUTE_ASSIGNMENT, deleteType, e -> {
+            customAttributeAssignments.invalidate(e.getPrimaryKey());
+        });
+    }
+        
+    private void cacheCustomAttributes() {
+        attributeDao.getCustomAttributes()
+                .forEach(attribute -> customAttributes.put(attribute.getCustomAttributeId(), attribute));
+        attributeDao.getAssignments()
+                .forEach(assignment -> customAttributeAssignments.put(assignment.getAttributeAssignmentId(), assignment));
+    }
+    
+    private PaoType getPaoTypeByAttributeId(int attributeId) {
+        return customAttributeAssignments.asMap().values().stream()
+                .filter(assignment -> assignment.getAttributeId() == attributeId)
+                .findFirst()
+                .orElse(null)
+                .getPaoType();
+    }
+
+    @Override
+    public List<CustomAttribute> getCustomAttributes() {
+        return customAttributes.asMap().values().stream()
+                .sorted((a1, a2) -> a1.getName().compareTo(a2.getName()))
+                .collect(Collectors.toList());
+    }
+    
+    @Override
+    public List<CustomAttribute> findCustomAttributesForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier) {
+        return customAttributeAssignments.asMap().values().stream()
+                .filter(assignment -> assignment.isAssignedTo(paoTypePointIdentifier))
+                .map(assignment -> assignment.getCustomAttribute())
+                .collect(Collectors.toList());
+    }
+    
+    @Override
+    public CustomAttribute getCustomAttribute(int attributeId) {
+        return customAttributes.getIfPresent(attributeId);
+    }
     
     @Override
     public Map<AttributeGroup, List<Attribute>> getAllGroupedAttributes(YukonUserContext context){
         Map<AttributeGroup, Set<Attribute>> groupedAttributes = new HashMap<>();
         BuiltInAttribute.getAllGroupedAttributes().forEach((k,v) -> groupedAttributes.put(k, Sets.newHashSet(v)));
-        Set<Attribute> customAttributes = Sets.newHashSet(attributeDao.getCustomAttributes());
+        Set<Attribute> customAttributes = Sets.newHashSet(getCustomAttributes());
         if(!customAttributes.isEmpty()) {
             groupedAttributes.put(AttributeGroup.CUSTOM, customAttributes);
         }
@@ -141,8 +240,15 @@ public class AttributeServiceImpl implements AttributeService {
             return attributeDefinition.getPaoPointIdentifier(pao);
         } else {
             CustomAttribute customAttribute = (CustomAttribute) attribute;
+            //TODO: test
+            AttributeAssignment attributeAssignment = customAttributeAssignments.asMap().values().stream()
+                    .filter(assignment -> assignment.getAttributeId() == customAttribute.getCustomAttributeId())
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalUseOfAttribute(
+                            "Attribute id:" + customAttribute.getCustomAttributeId() + " doesn't exits (not in cache)"));
+
             return new PaoPointIdentifier(pao.getPaoIdentifier(),
-                    attributeDao.getPointIdentifier(customAttribute.getCustomAttributeId(), pao.getPaoIdentifier().getPaoType()));
+                    new PointIdentifier(attributeAssignment.getPointType(), attributeAssignment.getOffset()));
         }
     }
 
@@ -225,7 +331,7 @@ public class AttributeServiceImpl implements AttributeService {
         try {
             return BuiltInAttribute.valueOf(name);
         } catch (IllegalArgumentException e) {
-            return attributeDao.getCustomAttribute(Integer.valueOf(name));
+            return getCustomAttribute(Integer.valueOf(name));
         }
     }
 
@@ -650,8 +756,16 @@ public class AttributeServiceImpl implements AttributeService {
             paoTypes.addAll(dest.get(attribute));
         } else if (attribute instanceof CustomAttribute) {
             CustomAttribute customAttribute  = (CustomAttribute) attribute;
-            PaoType type = attributeDao.getPaoTypeByAttributeId(customAttribute.getCustomAttributeId());
-            paoTypes.add(type);
+            
+            //TODO Test
+            PaoType type = getPaoTypeByAttributeId(customAttribute.getCustomAttributeId());
+            if(type != null) {
+                paoTypes.add(type);
+            }
+        }
+        
+        if(paoTypes.isEmpty()) {
+            return new ArrayList<>();
         }
         
         //TODO remove sql
@@ -724,8 +838,7 @@ public class AttributeServiceImpl implements AttributeService {
         try {
             return BuiltInAttribute.valueOf(attribute);
         } catch (IllegalArgumentException e) {
-            return attributeDao.getCustomAttribute(Integer.valueOf(attribute));
+            return getCustomAttribute(Integer.valueOf(attribute));
         }
     }
-    
 }
