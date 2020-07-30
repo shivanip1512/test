@@ -310,7 +310,7 @@ public class PointController {
         model.addAttribute("analogControlTypes", AnalogControlType.values());
         model.addAttribute("staleDataUpdateStyles", StaleData.UpdateStyle.values());
         model.addAttribute("alarmNotificationTypes", AlarmNotificationTypes.values());
-        if (calcAnalog) {
+        if (isCalcType) {
             model.addAttribute("baseLines", dbCache.getAllBaselines());
         }
         List<LiteNotificationGroup> notificationGroups = new ArrayList<>();
