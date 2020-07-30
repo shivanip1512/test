@@ -39,7 +39,7 @@ public class WebTable {
         if (this.parentElement != null) {
             return this.parentElement.findElement(By.cssSelector("." + this.tableClassName));
         } else if (this.parent != null) {
-            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + parent + "'] ." + this.tableClassName), Optional.empty());   
+            return this.driverExt.findElement(By.cssSelector("[aria-describedby*='" + parent + "'] ." + this.tableClassName), Optional.empty());   
         } else {
             return this.driverExt.findElement(By.cssSelector("." + this.tableClassName), Optional.empty()); 
         }

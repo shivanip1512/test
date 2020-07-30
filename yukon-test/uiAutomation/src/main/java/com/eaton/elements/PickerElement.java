@@ -21,6 +21,19 @@ public class PickerElement {
     }  
     
     public String getLinkValue() {
-        return this.driverExt.findElement(By.cssSelector(this.id + ".b-label"), Optional.empty()).getText();
+        return this.driverExt.findElement(By.cssSelector("#" +this.id + " .b-label"), Optional.empty()).getText();
+    }
+    
+    public String getLinkValueDynamic() {
+        return this.driverExt.findElement(By.cssSelector("button[id*= '" + this.id + "']"), Optional.empty()).getText();
+    }
+    
+    public void clickButtonWithDynamicId() {
+    	this.driverExt.findElement(By.cssSelector("button[id*= '" + this.id + "']"), Optional.empty()).click();
+    }
+    
+    public String getValidationError(String deviceId) {
+        return this.driverExt.findElement(By.cssSelector("span[id='" + deviceId + ".errors']"), Optional.empty()).getText();
     }
 }
+
