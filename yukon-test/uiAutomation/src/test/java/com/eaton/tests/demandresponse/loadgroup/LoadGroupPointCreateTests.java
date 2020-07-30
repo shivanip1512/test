@@ -126,27 +126,6 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getControlDevicePointLabelText()).contains("SCADA Override");
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreatePoint_OptionalAttributesSectionTitleCorrect() {
-        createPage.getType().selectItemByText("Point Group");
-        waitForLoadingSpinner();
-
-        Section generalSection = createPage.getPageSection("Optional Attributes");
-        assertThat(generalSection.getSection()).isNotNull();
-    }
-
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreatePoint_OptionalAttributesSectionLabelsCorrect() {
-        String sectionName = "Optional Attributes";
-        createPage.getType().selectItemByText("Point Group");
-        waitForLoadingSpinner();
-
-        List<String> expectedLabels = new ArrayList<>(List.of("kW Capacity:", "Disable Group:", "Disable Control:"));
-        List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
-
-        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
-    }
-
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
         refreshPage(createPage);
