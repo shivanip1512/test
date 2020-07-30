@@ -19,7 +19,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=Edge">
 <meta charset="UTF-8">
 
-<title>${pageDetail.pageTitle}</title>
+<title>${fn:escapeXml(pageDetail.pageTitle)}</title>
 
 <link rel="shortcut icon" href="<cti:url value="/resources/favicon.ico"/>" type="image/x-icon">
 
