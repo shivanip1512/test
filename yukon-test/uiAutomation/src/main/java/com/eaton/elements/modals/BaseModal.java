@@ -27,7 +27,7 @@ public class BaseModal {
 
     public WebElement getModal() {
         if (describedBy != null) {
-            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.describedBy + "']"), Optional.of(2));
+            return this.driverExt.findElement(By.cssSelector("[aria-describedby*='" + this.describedBy + "']"), Optional.of(2));
         }
 
         Optional<WebElement> found = Optional.empty();

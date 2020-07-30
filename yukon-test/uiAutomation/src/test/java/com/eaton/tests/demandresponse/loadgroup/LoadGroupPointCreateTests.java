@@ -101,7 +101,7 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
 
         createPage.getSaveBtn().click();
 
-        assertThat(createPage.getControlDevicePoint().getValidationError()).isEqualTo("Control Device Point is required.");
+        assertThat(createPage.getControlDevicePoint().getValidationError("deviceUsage.id")).isEqualTo("Control Device Point is required.");
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
