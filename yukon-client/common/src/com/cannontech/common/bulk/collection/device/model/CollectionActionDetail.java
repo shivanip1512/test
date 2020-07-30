@@ -3,7 +3,7 @@ package com.cannontech.common.bulk.collection.device.model;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
-import com.cannontech.common.YukonColorPallet;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -12,18 +12,18 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
  * This enum defines collection action buckets.
  */
 public enum CollectionActionDetail implements DisplayableEnum {
-    SUCCESS(CollectionActionDetailSummary.SUCCESS, null, YukonColorPallet.GREEN.getHexValue()),
-    FAILURE(CollectionActionDetailSummary.FAILURE, null, YukonColorPallet.WINE.getHexValue()),
-    UNSUPPORTED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.UNSUPPORTED, YukonColorPallet.GRAY.getHexValue()),
-    CONNECTED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPallet.GREEN.getHexValue()),
-    ARMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPallet.SAGE.getHexValue()),
-    DISCONNECTED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPallet.ORANGE.getHexValue()),
+    SUCCESS(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.GREEN.getHexValue()),
+    FAILURE(CollectionActionDetailSummary.FAILURE, null, YukonColorPalette.WINE.getHexValue()),
+    UNSUPPORTED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.UNSUPPORTED, YukonColorPalette.GRAY.getHexValue()),
+    CONNECTED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.GREEN.getHexValue()),
+    ARMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.SAGE.getHexValue()),
+    DISCONNECTED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.ORANGE.getHexValue()),
     // NOT_CONFIGURED means the device was not in a proper state before the action was attempted so we were not able to perform the action.
-    NOT_CONFIGURED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.NOT_CONFIGURED, YukonColorPallet.BLUE.getHexValue()),
-    CANCELED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.CANCELED, YukonColorPallet.SKY.getHexValue()),
-    CONFIRMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPallet.GREEN.getHexValue()),
-    UNCONFIRMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPallet.LIGHT_GREY.getHexValue()),
-    ALREADY_CONFIGURED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.ALREADY_CONFIGURED, YukonColorPallet.LIGHT_GREY.getHexValue());
+    NOT_CONFIGURED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.NOT_CONFIGURED, YukonColorPalette.BLUE.getHexValue()),
+    CANCELED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.CANCELED, YukonColorPalette.SKY.getHexValue()),
+    CONFIRMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.GREEN.getHexValue()),
+    UNCONFIRMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.LIGHT_GREY.getHexValue()),
+    ALREADY_CONFIGURED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.ALREADY_CONFIGURED, YukonColorPalette.LIGHT_GREY.getHexValue());
 
     private CollectionActionDetailSummary summary;
     private CommandRequestUnsupportedType unsupportedType;

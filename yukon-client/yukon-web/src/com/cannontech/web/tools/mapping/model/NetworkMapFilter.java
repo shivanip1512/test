@@ -1,7 +1,7 @@
 package com.cannontech.web.tools.mapping.model;
 
 import java.util.Arrays;
-import com.cannontech.common.YukonColorPallet;
+import com.cannontech.common.YukonColorPalette;
 import java.util.Comparator;
 import java.util.List;
 
@@ -81,16 +81,16 @@ public class NetworkMapFilter {
     }
     
     public enum Color {
-        GREEN(YukonColorPallet.GREEN.getHexValue(), 1),
-        BLUE(YukonColorPallet.BLUE.getHexValue(), 2),
-        ORANGE(YukonColorPallet.ORANGE.getHexValue(), 3),
-        YELLOW(YukonColorPallet.YELLOW.getHexValue(), 4),
-        WINE(YukonColorPallet.WINE.getHexValue(), 5),
-        TEAL(YukonColorPallet.TEAL.getHexValue(), 6),
-        LIGHT_GREEN(YukonColorPallet.SAGE.getHexValue(), 7),
-        PURPLE(YukonColorPallet.PURPLE.getHexValue(), 8),
-        SKY(YukonColorPallet.SKY.getHexValue(), 9),
-        GREY(YukonColorPallet.GRAY.getHexValue(), 10);
+        GREEN(YukonColorPalette.GREEN.getHexValue(), 1),
+        BLUE(YukonColorPalette.BLUE.getHexValue(), 2),
+        ORANGE(YukonColorPalette.ORANGE.getHexValue(), 3),
+        YELLOW(YukonColorPalette.YELLOW.getHexValue(), 4),
+        WINE(YukonColorPalette.WINE.getHexValue(), 5),
+        TEAL(YukonColorPalette.TEAL.getHexValue(), 6),
+        LIGHT_GREEN(YukonColorPalette.SAGE.getHexValue(), 7),
+        PURPLE(YukonColorPalette.PURPLE.getHexValue(), 8),
+        SKY(YukonColorPalette.SKY.getHexValue(), 9),
+        GREY(YukonColorPalette.GRAY.getHexValue(), 10);
         
         private Color(String hexColor, int order) {
             this.hexColor = hexColor;
