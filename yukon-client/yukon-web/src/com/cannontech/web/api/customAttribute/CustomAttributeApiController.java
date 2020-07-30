@@ -52,8 +52,8 @@ public class CustomAttributeApiController {
     @PatchMapping("/{id}")
     public ResponseEntity<Object> update(@PathVariable Integer id, @Valid @RequestBody CustomAttribute customAttribute) {
         customAttribute.setCustomAttributeId(id);
-        customAttributeService.updateCustomAttribute(customAttribute);
-        customAttribute = attributeDao.getCustomAttribute(customAttribute.getCustomAttributeId());
+        customAttribute = customAttributeService.updateCustomAttribute(customAttribute);
+
         return new ResponseEntity<>(customAttribute, HttpStatus.OK);
     }
 
