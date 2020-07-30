@@ -65,5 +65,8 @@
         <pointInfo name="Firmware Version" attributes="FIRMWARE_VERSION"/>
         <pointInfo name="Radio Link Quality" attributes="RADIO_LINK_QUALITY"/>
         <pointInfo name="Event Received" attributes="EVENT_RECEIVED"/>
+        <pointInfo name="Event Started" attributes="EVENT_STARTED"/>
+        <pointInfo name="Event Cancelled" attributes="EVENT_CANCELLED"/>
+        <pointInfo name="Event Stopped" attributes="EVENT_STOPPED"/>
     </pointInfos>
 </pao>
