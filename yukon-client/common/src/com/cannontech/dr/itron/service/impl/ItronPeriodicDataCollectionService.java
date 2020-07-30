@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.annotation.PostConstruct;
 
@@ -46,6 +47,7 @@ public class ItronPeriodicDataCollectionService {
     private ScheduledFuture<?> scheduledTask;
     private boolean itronDevicesFound;
     public static final int maxRows = 1000;
+    private static final ReentrantLock lock = new ReentrantLock(true);
 
     @PostConstruct
     public void init() {
@@ -124,17 +126,23 @@ public class ItronPeriodicDataCollectionService {
      * Start the data collection, so long as there are Itron devices present in the system.
      */
     private void collectData() {
-        if(!itronDevicesExist()) {
+        if (!itronDevicesExist()) {
             log.debug("Skipping Itron periodic data collection - no devices present that communicate over Itron network.");
             return;
         }
-        
-        log.info("Checking for devices with no secondary mac address.");
-        updateSecondaryMacAddresses();
-        
-        log.info("Starting Itron data collection");
-        itronDataReadService.collectData();
-        log.info("Itron data collection complete");
+        if (lock.tryLock()) {
+            try {
+                log.info("Checking for devices with no secondary mac address.");
+                updateSecondaryMacAddresses();
+                log.info("Starting Itron data collection");
+                itronDataReadService.collectData();
+                log.info("Itron data collection complete");
+            } finally {
+                lock.unlock();
+            }
+        } else {
+            log.info("Skipping scheduled data collection task because a previous collection task is still running.");
+        }
     }
     
     /**
@@ -158,12 +166,17 @@ public class ItronPeriodicDataCollectionService {
      * Get the data collection interval from the global setting and make sure it is valid.
      */
     private Duration getDataCollectionInterval() {
-        int hours = settingsDao.getInteger(GlobalSettingType.ITRON_HCM_DATA_COLLECTION_HOURS);
-        
-        if (hours > 0) {
-            return Duration.ofHours(hours);
-        } else if (hours < 0) {
-            log.warn("Invalid data collection interval: " + hours + ", setting to zero");
+        int minutes = settingsDao.getInteger(GlobalSettingType.ITRON_HCM_DATA_COLLECTION_MINUTES);
+
+        if (minutes > 0) {
+            if (minutes < 5) {
+                log.warn("Invalid data collection interval: " + minutes
+                        + ". Minimum data collection Interval is 5 minutes, setting the interval to 5 minutes.");
+                minutes = 5;
+            }
+            return Duration.ofMinutes(minutes);
+        } else if (minutes < 0) {
+            log.warn("Invalid data collection interval: " + minutes + ", setting to zero");
         }
 
         return Duration.ZERO;
