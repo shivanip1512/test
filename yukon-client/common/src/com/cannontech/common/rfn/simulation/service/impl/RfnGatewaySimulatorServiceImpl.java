@@ -245,8 +245,8 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     @Override
     public void sendGatewayDataResponse(String serial, String model, SimulatedGatewayDataSettings settings) {
         
-        RfnIdentifier rfnIdentifier = new RfnIdentifier(serial, "CPS", model);
-        
+        RfnIdentifier rfnIdentifier = createGatewayRfnIdentifier(serial, model);
+
         GatewayDataResponse response = setUpDataResponse(rfnIdentifier, settings);
         rfGatewayDataUnsolicitedJmsTemplate.convertAndSend(response);
     }
@@ -255,18 +255,24 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     public void sendGatewayArchiveRequest(String serial, String model) {
         
         GatewayArchiveRequest request = new GatewayArchiveRequest();
-        String manufacturer = "GWY-801".equals(model) ? "Eaton" : "CPS";
-        RfnIdentifier rfnIdentifier = new RfnIdentifier(serial, manufacturer, model);
-        request.setRfnIdentifier(rfnIdentifier);
-        
+        request.setRfnIdentifier(createGatewayRfnIdentifier(serial, model));
         rfGatewayArchiveJmsTemplate.convertAndSend(request);
+    }
+
+    /**
+     * Return RfnIdentifier instance based on serial and model number.
+     */
+    private RfnIdentifier createGatewayRfnIdentifier(String serial, String model) {
+        String manufacturer = RfnDeviceCreationService.GW_MANUFACTURER_EATON.equals(model) ? 
+                                  RfnDeviceCreationService.GW_MANUFACTURER_EATON : RfnDeviceCreationService.GW_MANUFACTURER_CPS;
+        return new RfnIdentifier(serial, manufacturer, model);
     }
 
     @Override
     public void sendGatewayDeleteRequest(String serial, String model) {
 
         GatewayDeleteRequest request = new GatewayDeleteRequest();
-        RfnIdentifier rfnIdentifier = new RfnIdentifier(serial, "CPS", model);
+        RfnIdentifier rfnIdentifier = createGatewayRfnIdentifier(serial, model);
         request.setRfnIdentifier(rfnIdentifier);
 
         rfGatewayDeleteFromNmJmsTemplate.convertAndSend(request);
@@ -617,7 +623,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         GatewayUpdateResponse response = new GatewayUpdateResponse();
         if (request instanceof GatewayCreateRequest) {
             GatewayCreateRequest createRequest = (GatewayCreateRequest) request;
-            RfnIdentifier rfnId = new RfnIdentifier(generateGatewaySerial(), "CPS", RfnDeviceCreationService.GATEWAY_1_MODEL_STRING);
+            RfnIdentifier rfnId = new RfnIdentifier(generateGatewaySerial(), RfnDeviceCreationService.GW_MANUFACTURER_CPS, RfnDeviceCreationService.GATEWAY_1_MODEL_STRING);
             // Cache the data so that it can be used to respond to data requests
             if (settings.getCreateResult() == GatewayUpdateResult.SUCCESSFUL) {
                 cacheGatewayData(rfnId, createRequest.getData());
