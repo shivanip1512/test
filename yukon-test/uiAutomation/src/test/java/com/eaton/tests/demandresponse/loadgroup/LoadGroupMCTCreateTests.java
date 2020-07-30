@@ -181,7 +181,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         createPage.getAddressLevel().selectItemByText("MCT Address");
         createPage.getSaveBtn().click();
 
-        assertThat(createPage.getMCTAddress().getValidationError()).isEqualTo("MCT Address is required.");
+        assertThat(createPage.getMCTAddress().getValidationError("mctDeviceId")).isEqualTo("MCT Address is required.");
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
