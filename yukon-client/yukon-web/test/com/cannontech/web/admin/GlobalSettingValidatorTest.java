@@ -44,7 +44,7 @@ public class GlobalSettingValidatorTest {
             messageSource.addMessage("yukon.common.setting.FDR_DNPSLAVE_APPLICATION_FRAGMENT_SIZE", Locale.US, "FDR DNP Slave Application Fragment Size ");
             messageSource.addMessage("yukon.common.setting.RFN_INCOMING_DATA_TIMESTAMP_LIMIT", Locale.US, "RFN Incoming Data Timestamp Limit");
             messageSource.addMessage("yukon.common.setting.DATA_AVAILABILITY_WINDOW_IN_DAYS", Locale.US, "Data Collection: Data Availability Window");
-            messageSource.addMessage("yukon.common.setting.ITRON_HCM_DATA_COLLECTION_MINUTES", Locale.US, "Itron HCM Data Collection IntervalData Collection: Data Availability Window");
+            messageSource.addMessage("yukon.common.setting.ITRON_HCM_DATA_COLLECTION_MINUTES", Locale.US, "Itron HCM Data Collection Interval");
         }
         YukonUserContextMessageSourceResolverMock messageResolver = new YukonUserContextMessageSourceResolverMock();
         messageResolver.setMessageSource(messageSource);
