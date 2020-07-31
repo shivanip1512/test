@@ -211,7 +211,7 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
         detailPage = new CommChannelTerminalServerDetailPage(driverExt, deleteCommChannelId);
         String expectedMessage = deleteCommChannelName +" deleted successfully.";
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
-        deleteConfirmModal.clickOkAndWait();
+        deleteConfirmModal.clickOkAndWaitForModalToClose();
         CommChannelsListPage listPage = new CommChannelsListPage(driverExt);
         String userMsg = listPage.getUserMessage();
 

@@ -79,7 +79,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         String EXPECTED_MSG = "Name is required.";
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal(expectedModalTitle);
 
-        editModal.getName().setInputValue(" ");
+        editModal.getName().clearInputValue();
         editModal.clickOkAndWait();
 
         assertThat(editModal.getName().getValidationError()).isEqualTo(EXPECTED_MSG);
@@ -314,7 +314,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal(expectedModalTitle);
 
         editModal.getTabs().clickTabAndWait(tabName);
-        editModal.getSocketNumber().setInputValue(" ");
+        editModal.getSocketNumber().clearInputValue();
         editModal.clickOkAndWait();
 
         assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
@@ -450,7 +450,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_CreateOpensPopupCorrect() {
+    public void commChannelUdpEdit_CreateOpensCorrectModal() {
         String EXPECTED_CREATE_MODEL_TITLE = "Create Comm Channel";
         CreateCommChannelModal createModel = detailPage.showCreateCommChannelModal();
         String actualCreateModelTitle = createModel.getModalTitle();
@@ -507,7 +507,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         editModal.getPostTxWait().setInputValue(configFieldsValues[2]);	
         editModal.getReceiveDataWait().setInputValue(configFieldsValues[3]);	
         editModal.getAdditionalTimeOut().setInputValue(configFieldsValues[4]);	
-        editModal.clickOkAndWait();	
+        editModal.clickOkAndWaitForModalToClose();	
                        	
         String userMsg = detailPage.getUserMessage();        	
 	

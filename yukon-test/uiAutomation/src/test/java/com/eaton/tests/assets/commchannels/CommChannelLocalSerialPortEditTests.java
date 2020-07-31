@@ -58,10 +58,12 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_ModalTitleCorrect() {
-
         String expectedModalTitle = "Edit " + commChannelName;
+        
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal(expectedModalTitle);
+        
         String actualModalTitle = editModal.getModalTitle();
+        
         assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
     }
 
@@ -71,7 +73,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         String EXPECTED_MSG = "Name is required.";
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal(expectedModalTitle);
 
-        editModal.getName().setInputValue(" ");
+        editModal.getName().clearInputValue();
         editModal.clickOkAndWait();
 
         assertThat(editModal.getName().getValidationError()).isEqualTo(EXPECTED_MSG);
@@ -167,11 +169,10 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
     public void commChannelLocalSerialEdit_PostTxWait_MinValueValidation() {
         String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_MSG = "Post Tx Wait must be between 0 and 10,000,000.";
-        String tabName = "Configuration";
-
+        
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal(expectedModalTitle);
 
-        editModal.getTabs().clickTabAndWait(tabName);
+        editModal.getTabs().clickTabAndWait("Configuration");
         editModal.getPostTxWait().setInputValue("-1");
         editModal.clickOkAndWait();
 
@@ -254,7 +255,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelLocalSerialEdit_SocketNumber_ACS_MinValueValidation() {
+    public void commChannelLocalSerialEdit_SocketNumber_MinValueValidation() {
         String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
         String tabName = "Configuration";
@@ -269,7 +270,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelLocalSerialEdit_SocketNumber_ACS_MaxValueValidation() {
+    public void commChannelLocalSerialEdit_SocketNumber_MaxValueValidation() {
         String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
         String tabName = "Configuration";
@@ -284,7 +285,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelLocalSerialEdit_SocketNumber_ACS_BlankValidation() {
+    public void commChannelLocalSerialEdit_SocketNumber_BlankValidation() {
         String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
         String tabName = "Configuration";
@@ -292,7 +293,8 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal(expectedModalTitle);
 
         editModal.getTabs().clickTabAndWait(tabName);
-        editModal.getSocketNumber().setInputValue(" ");
+        SeleniumTestSetup.moveToElement(editModal.getSocketNumber().getEditElement());
+        editModal.getSocketNumber().clearInputValue();
         editModal.clickOkAndWait();
 
         assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
@@ -457,8 +459,9 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_UpdateAllFieldsSuccess() {
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String expectedModalTitle = "Edit " + commChannelName;
-        String commChannelName = "CommChannel_LocalSerial_Update";
+        String commChannelName = "Local Serial Update " + timeStamp;
         String baudRate = "4800";
         String configFieldsValues[] = { "55", "10", "20", "15", "500" };
         String tabName = "Configuration";
@@ -475,7 +478,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         editModal.getPostTxWait().setInputValue(configFieldsValues[2]);
         editModal.getReceiveDataWait().setInputValue(configFieldsValues[3]);
         editModal.getAdditionalTimeOut().setInputValue(configFieldsValues[4]);
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForModalToClose();
 
         String userMsg = detailPage.getUserMessage();
 

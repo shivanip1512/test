@@ -192,7 +192,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         detailPage = new CommChannelUdpDetailPage(driverExt, deleteCommChannelId);
         String expectedMessage = deleteCommChannelName +" deleted successfully.";
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
-        deleteConfirmModal.clickOkAndWait();
+        deleteConfirmModal.clickOkAndWaitForModalToClose();
         CommChannelsListPage listPage = new CommChannelsListPage(driverExt);
         String userMsg = listPage.getUserMessage();
 

@@ -185,7 +185,7 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         detailPage = new CommChannelLocalSerialPortDetailPage(driverExt, deleteCommChannelId);
         String expectedMessage = deleteCommChannelName +" deleted successfully.";
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
-        deleteConfirmModal.clickOkAndWait();;
+        deleteConfirmModal.clickOkAndWaitForModalToClose();;
         CommChannelsListPage listPage = new CommChannelsListPage(driverExt);
         String userMsg = listPage.getUserMessage();
 

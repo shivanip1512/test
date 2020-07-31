@@ -61,7 +61,7 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
         modal.getGearName().setInputValue("TC " + timeStamp);
         modal.getGearType().selectItemByText("True Cycle");
         waitForLoadingSpinner();
-        modal.clickOkAndWait();
+        modal.clickOkAndWaitForModalToClose();
 
         LoadGroupsTab groupsTab = createPage.getLoadGroupTab();
 

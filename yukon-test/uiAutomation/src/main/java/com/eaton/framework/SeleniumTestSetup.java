@@ -216,7 +216,7 @@ public class SeleniumTestSetup {
         }
     }
 
-    public void waitForLoadingSpinner() {
+    public static void waitForLoadingSpinner() {
         String display = "";
 
         long startTime = System.currentTimeMillis();
@@ -314,7 +314,7 @@ public class SeleniumTestSetup {
         SeleniumTestSetup.driver.navigate().to(getBaseUrl() + url);
 
         waitForUrlToLoad(url, Optional.empty());
-    }
+    }    
     
     public static void moveToElement(WebElement element) {
         Actions actions = new Actions(driver);

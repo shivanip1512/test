@@ -94,12 +94,11 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
     public void siteMapAdminDetails_pageCIReportsLinkCorrect() {
         softly = new SoftAssertions();
-        final String EXPECTED_ANCHOR = "Attributes";
-        final String EXPECTED_LINK = Urls.Admin.ATTRIBUTES;
+        final String EXPECTED_ANCHOR = "C&I Reports";
+        final String EXPECTED_LINK = Urls.Admin.CI_REPORTS;
         final int POSITION = 3;
 
-        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }

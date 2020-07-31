@@ -61,7 +61,7 @@ public class BaseModal {
     }
 
     // TODO need a unique way to select the save button
-    public void clickOkAndWait() {
+    public void clickOkAndWaitForModalToClose() {
         getModal().findElement(By.cssSelector(".ui-dialog-buttonset .primary")).click();
 
         if (describedBy != null) {
@@ -69,6 +69,12 @@ public class BaseModal {
         } else if (modalTitle != null) {
             SeleniumTestSetup.waitUntilModalClosedByTitle(modalTitle);
         }
+    }
+    
+    public void clickOkAndWait() {
+        getModal().findElement(By.cssSelector(".ui-dialog-buttonset .primary")).click();
+        
+        SeleniumTestSetup.waitForLoadingSpinner();
     }
 
     /// TODO need a unique way to select the cancel button
