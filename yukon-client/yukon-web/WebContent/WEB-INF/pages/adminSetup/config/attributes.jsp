@@ -57,7 +57,7 @@
                             <c:set var="viewClass" value="${enableEdit ? 'dn' : ''}"/>
                             <tr>
                                 <td>
-                                    <span class="js-view-attribute-${attributeId} ${viewClass}" title="${attr.key}">
+                                    <span class="js-view-attribute-${attributeId} ${viewClass}" title="${attr.i18Key}">
                                         ${fn:escapeXml(attr.name)}
                                     </span>
                                     <span class="js-edit-attribute-${attributeId} ${editClass}">
