@@ -74,16 +74,6 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDetailsUdp_TabTitlesCorrect() {        
-        List<String> titles = detailPage.getTabElement().getTitles();
-
-        softly.assertThat(titles.size()).isEqualTo(2);
-        softly.assertThat(titles.get(0)).isEqualTo("Info");
-        softly.assertThat(titles.get(1)).isEqualTo("Configuration");
-        softly.assertAll();
-    }
-
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelDetailsUdp_InfoTabLabelsCorrect() {
         String infoTitle = "Info";
         detailPage.getTabElement().clickTabAndWait(infoTitle);
@@ -181,13 +171,6 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
 
         softly.assertAll();
     }
-
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDetailsUdp_PanelTitleCorrect() {
-        String expectedPanelText = "Comm Channel Information";
-        String actualPanelText = detailPage.getCommChannelInfoPanel().getPanelName();
-        assertThat(actualPanelText).isEqualTo(expectedPanelText);
-    }
         
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelDeleteUdp_DeleteCommChannelSuccessfully() {
@@ -207,10 +190,9 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         Integer deleteCommChannelId = createResponse.path("id");
         navigate(Urls.Assets.COMM_CHANNEL_DETAIL + deleteCommChannelId);
         detailPage = new CommChannelUdpDetailPage(driverExt, deleteCommChannelId);
-        String modalTitle = "Confirm Delete";
         String expectedMessage = deleteCommChannelName +" deleted successfully.";
-        ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal(modalTitle);
-        deleteConfirmModal.clickOkDeleteByClassAndWait();
+        ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
+        deleteConfirmModal.clickOkAndWait();
         CommChannelsListPage listPage = new CommChannelsListPage(driverExt);
         String userMsg = listPage.getUserMessage();
 

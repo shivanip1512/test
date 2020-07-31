@@ -22,8 +22,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         WebDriver driver = getDriver();
-        DriverExtensions driverExt = getDriverExt();
-        softly = new SoftAssertions();
+        DriverExtensions driverExt = getDriverExt();        
 
         driver.get(getBaseUrl() + Urls.SITE_MAP);
 
@@ -55,6 +54,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
     public void siteMapAdminDetails_pageActiveJobsLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Active Jobs";
         final String EXPECTED_LINK = Urls.Admin.ACTIVE_JOBS;
         final int POSITION = 0;
@@ -67,6 +67,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
     public void siteMapAdminDetails_pageAdministratorReportsLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Administrator Reports";
         final String EXPECTED_LINK = Urls.Admin.REPORTS;
         final int POSITION = 1;
@@ -79,6 +80,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
     public void siteMapAdminDetails_pageAllJobsLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "All Jobs";
         final String EXPECTED_LINK = Urls.Admin.ALL_JOBS;
         final int POSITION = 2;
@@ -91,6 +93,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
     public void siteMapAdminDetails_pageCIReportsLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Attributes";
         final String EXPECTED_LINK = Urls.Admin.ATTRIBUTES;
         final int POSITION = 3;
@@ -103,6 +106,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
     public void siteMapAdminDetails_pageAttributesLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "C&I Reports";
         final String EXPECTED_LINK = Urls.Admin.CI_REPORTS;
         final int POSITION = 4;
@@ -115,6 +119,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
     public void siteMapAdminDetails_pageDashboardAdministrationLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Dashboard Administration";
         final String EXPECTED_LINK = Urls.Admin.DASHBOARD;
         final int POSITION = 5;
@@ -127,6 +132,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
     public void siteMapAdminDetails_pageDatabaseReportsLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Database Reports";
         final String EXPECTED_LINK = Urls.Admin.DATABASE_REPORTS;
         final int POSITION = 6;
@@ -139,6 +145,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
     public void siteMapAdminDetails_pageEnergyCompanyAdministrationLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Energy Company Administration";
         final String EXPECTED_LINK = Urls.Admin.ENERGY_COMPANY_LIST;
         final int POSITION = 7;
@@ -151,6 +158,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
     public void siteMapAdminDetails_pageJobStatusLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Job Status";
         final String EXPECTED_LINK = Urls.Admin.JOB_STATUS;
         final int POSITION = 8;
@@ -163,6 +171,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
     public void siteMapAdminDetails_pageMaintenanceLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Maintenance";
         final String EXPECTED_LINK = Urls.Admin.MAINTENANCE;
         final int POSITION = 9;
@@ -175,6 +184,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
     public void siteMapAdminDetails_pageMultiSpeakSetupLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "MultiSpeak Setup";
         final String EXPECTED_LINK = Urls.Admin.MULTI_SPEAK;
         final int POSITION = 10;
@@ -187,6 +197,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
     public void siteMapAdminDetails_pageStatisticalReportsLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Statistical Reports";
         final String EXPECTED_LINK = Urls.Admin.STATISTICAL_REPORTS;
         final int POSITION = 11;
@@ -199,6 +210,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
     public void siteMapAdminDetails_pageSubstationsReportsLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Substations";
         final String EXPECTED_LINK = Urls.Admin.SUBSTATIONS;
         final int POSITION = 12;
@@ -211,6 +223,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
     public void siteMapAdminDetails_pageSurveysLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Surveys";
         final String EXPECTED_LINK = Urls.Admin.SURVEYS;
         final int POSITION = 13;
@@ -223,6 +236,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
     public void siteMapAdminDetails_pageThemesLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Themes";
         final String EXPECTED_LINK = Urls.Admin.THEMES;
         final int POSITION = 14;
@@ -235,6 +249,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
     public void siteMapAdminDetails_pageUsersAndGroupsLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Users and Groups";
         final String EXPECTED_LINK = Urls.Admin.USERS_AND_GROUPS;
         final int POSITION = 15;
@@ -247,6 +262,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
     public void siteMapAdminDetails_pageYukonConfigSettingsLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Yukon Configuration Settings";
         final String EXPECTED_LINK = Urls.Admin.CONFIGURATION;
         final int POSITION = 16;

@@ -27,7 +27,7 @@ public class BaseModal {
 
     public WebElement getModal() {
         if (describedBy != null) {
-            return this.driverExt.findElement(By.cssSelector("[aria-describedby*='" + this.describedBy + "']"), Optional.of(2));
+            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.describedBy + "']"), Optional.of(2));
         }
 
         Optional<WebElement> found = Optional.empty();
@@ -81,9 +81,11 @@ public class BaseModal {
             SeleniumTestSetup.waitUntilModalClosedByTitle(modalTitle);
         }
     }
+    
+    public void clickCancelByNameAndWait() {
+        List<WebElement> list = getModal().findElements(By.cssSelector(".ui-dialog-buttonset button"));
 
-    public void clickOkDeleteByClassAndWait() {
-        getModal().findElement(By.cssSelector(".ui-dialog-buttonset .primary")).click();
+        list.stream().filter(x -> x.getText().contains("Cancel")).findFirst().orElseThrow().click();
 
         if (describedBy != null) {
             SeleniumTestSetup.waitUntilModalClosedByDescribedBy(describedBy);
@@ -92,18 +94,6 @@ public class BaseModal {
         }
     }
     
-    public void clickCancelByNameAndWait() {
-        List<WebElement> list = getModal().findElements(By.cssSelector(".ui-dialog-buttonset button"));
-        
-        list.stream().filter(x -> x.getText().contains("Cancel")).findFirst().orElseThrow().click();
-        
-        if (describedBy != null) {
-            SeleniumTestSetup.waitUntilModalClosedByDescribedBy(describedBy);
-        } else if (modalTitle != null) {
-            SeleniumTestSetup.waitUntilModalClosedByTitle(modalTitle);
-        }
-    }
-
     public List<String> getFieldLabels() {
         List<WebElement> nameElements = getModal().findElements(By.cssSelector("table tr .name"));
 
@@ -114,26 +104,19 @@ public class BaseModal {
         }
 
         return names;
+    }            
+    
+    public boolean isModalDisplayed() {
+        WebElement modal = getModal();
+        String style = modal.getAttribute("style");
+        
+        return !style.contains("display: none;");            
     }
     
-    public Boolean isModalDisplayed() {
-        Boolean isDisplayed = driverExt.findElement(By.cssSelector("[aria-describedby='"+describedBy+"']"), Optional.of(0)).isDisplayed();
-        return isDisplayed;
-    }
-    
-    public Boolean isModalClosed() {
-        WebElement element= this.driverExt.findElement(By.cssSelector("#"+describedBy+""),Optional.empty());
-        String styleAttribute = element.getAttribute("style");
-        Boolean isModalClosed = false;
-        if(styleAttribute.contains("display: none;")) {
-            isModalClosed = true;
-        } else {
-            element= this.driverExt.findElement(By.cssSelector("[aria-describedby='"+describedBy+"']"),Optional.empty());
-            styleAttribute = element.getAttribute("style");
-            if(styleAttribute.contains("display: none;")) {
-                isModalClosed = true;
-            }
-        }
-        return isModalClosed;
+    //Comm Channels are completed removed from dom when running chrome so need to use this specifically for comm channels
+    public boolean isModalAvailable() {
+        List<WebElement> list = this.driverExt.findElements(By.cssSelector("[aria-describedby='" + this.describedBy + "']"), Optional.of(2));
+        
+        return !list.isEmpty();
     }
 }

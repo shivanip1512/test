@@ -85,9 +85,9 @@ public class WebTable {
         List<WebElement> rows = new ArrayList<>();
         long startTime = System.currentTimeMillis();
 
-        while((rows.size() != 1) && (System.currentTimeMillis() - startTime) < 6000) {
+        while((rows.size() != 1) && (System.currentTimeMillis() - startTime) < 500) {
             try {
-                table = this.driverExt.findElement(By.cssSelector(".compact-results-table"), Optional.of(3));
+                table = this.driverExt.findElement(By.cssSelector(".compact-results-table"), Optional.empty());
 
                 rows = table.findElements(By.cssSelector("tbody tr"));  
             } 
@@ -113,11 +113,26 @@ public class WebTable {
     }    
     
     public void searchTable(String value) {
-        TextEditElement search = new TextEditElement(this.driverExt, "ss");
         
-        search.setInputValue(value);
-        
-        waitForSearch();
+        if (parentElement != null) {
+            TextEditElement search = new TextEditElement(this.driverExt, "ss", parentElement);
+            
+            search.setInputValue(value);
+            
+            waitForSearch();
+        } else if (parent != null) {
+            TextEditElement search = new TextEditElement(this.driverExt, "ss", parent);
+            
+            search.setInputValue(value);
+            
+            waitForSearch();
+        } else {
+            TextEditElement search = new TextEditElement(this.driverExt, "ss");  
+            
+            search.setInputValue(value);
+            
+            waitForSearch();
+        }              
     }
     
     public void searchTable(String value, WebElement parent) {

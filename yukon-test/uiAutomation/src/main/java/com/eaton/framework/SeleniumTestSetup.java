@@ -204,8 +204,7 @@ public class SeleniumTestSetup {
             waitTime = timeOut;
         }
 
-        SeleniumTestSetup.driverExt.getDriverWait(Optional.of(waitTime))
-                    .until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".page-heading"), pageTitle));
+        SeleniumTestSetup.driverExt.getDriverWait(Optional.of(waitTime)).until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".page-heading"), pageTitle));
     }
 
     public void refreshPage(PageBase page) {
@@ -223,7 +222,7 @@ public class SeleniumTestSetup {
         long startTime = System.currentTimeMillis();
         while (!display.equals("display: none;") && System.currentTimeMillis() - startTime < 2000) {            
             try {
-                display = driverExt.findElement(By.id("modal-glass"), Optional.of(1)).getAttribute("style");
+                display = driverExt.findElement(By.id("modal-glass"), Optional.empty()).getAttribute("style");
             }
             catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {               
             }  
@@ -237,6 +236,20 @@ public class SeleniumTestSetup {
         long startTime = System.currentTimeMillis();
 
         while (!displayed && System.currentTimeMillis() - startTime < 300) {
+            try {
+                displayed = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).isDisplayed();
+            }
+            catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {               
+            }  
+        }
+    }
+    
+    public static void waitUntilModalClosedByDescribedBy(String describedBy) {
+        boolean displayed = true;
+
+        long startTime = System.currentTimeMillis();
+
+        while (displayed && System.currentTimeMillis() - startTime < 300) {
             try {
                 displayed = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).isDisplayed();
             }
@@ -260,24 +273,7 @@ public class SeleniumTestSetup {
                 found = el.isPresent();
             } catch(StaleElementReferenceException | NoSuchElementException | TimeoutException ex) { }            
         }
-    }
-
-    public static void waitUntilModalClosedByDescribedBy(String describedBy) {
-//        boolean displayed = true;
-
-//        long startTime = System.currentTimeMillis();
-
-        driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(3)).isDisplayed();
-        
-//        while (displayed && System.currentTimeMillis() - startTime < 100) {
-//            try {
-//                displayed = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(3)).isDisplayed();
-//            }
-//            catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {  
-//                displayed = false;
-//            }            
-//        }                    
-    }
+    }    
     
     public static void waitUntilModalClosedByTitle(String modalTitle) {
         List<WebElement> elements;
