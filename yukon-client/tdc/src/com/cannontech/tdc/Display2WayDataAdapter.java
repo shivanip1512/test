@@ -18,7 +18,6 @@ import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.YukonColorPalette;
-import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
@@ -57,7 +56,7 @@ public class Display2WayDataAdapter extends AbstractTableModel implements com.ca
 	public static final int DEFAULT_FOREGROUNDCOLOR = YukonColorPalette.WHITE.getColorId(); // white as of 3-23-2000
 	public static final int DEFAULT_BACKGROUNDCOLOR = YukonColorPalette.BLACK.getColorId();  // black as of 3-23-2000
 	public static final int DEFAULT_DISABLEDCOLOR = YukonColorPalette.GRAY.getColorId();  // gray as of 8-31-2000
-	public static final int DEFAULT_ALARMCOLOR = YukonColorPalette.WINE.getColorId();  // red as of 1-12-2001
+	public static final int DEFAULT_ALARMCOLOR = YukonColorPalette.RED.getColorId();  // red as of 1-12-2001
 	
 	private static final PointValues DUMMY_POINT_VALUES =
 						new PointValues(
@@ -647,25 +646,20 @@ public Object[] getBlankRows()
  * @param row int
  * @param col int
  */
-public java.awt.Color getCellBackgroundColor(int row, int col) 
-{
+public java.awt.Color getCellBackgroundColor(int row, int col) {
 
-	java.awt.Color color = Colors.getColor( DEFAULT_BACKGROUNDCOLOR );
+    java.awt.Color color = YukonColorPalette.getColor(DEFAULT_BACKGROUNDCOLOR).getAwtColor();
 
-	if( row < 0 || row >= getRowCount() )
-		return color;
-		
-	try
-	{
-		color = Colors.getColor( pointValues.elementAt( row ).getCurrentBackgroundColor() );
-	}
-	catch( ArrayIndexOutOfBoundsException e )
-	{
-		//do nothing here
-	}
-	
-	
-	return color;
+    if (row < 0 || row >= getRowCount()) {
+        return color;
+    }
+    try {
+        color = YukonColorPalette.getColor(pointValues.elementAt(row).getCurrentBackgroundColor()).getAwtColor();
+    } catch (ArrayIndexOutOfBoundsException e) {
+        // do nothing here
+    }
+
+    return color;
 }
 	/**
  * Insert the method's description here.
@@ -689,24 +683,21 @@ public String getCellData( int rowPosition, int colPosition )
  * @param row int
  * @param col int
  */
-public java.awt.Color getCellForegroundColor(int rowNumber, int col) 
-{
-	if( pointValues == null || rowNumber < 0 || rowNumber >= getRowCount() )
-		return Colors.getColor( DEFAULT_FOREGROUNDCOLOR );
+    public java.awt.Color getCellForegroundColor(int rowNumber, int col) {
+        if (pointValues == null || rowNumber < 0 || rowNumber >= getRowCount()) {
+            return YukonColorPalette.getColor(DEFAULT_FOREGROUNDCOLOR).getAwtColor();
+        }
+        int colorINT = 0;
 
-	int colorINT = 0;
-	
-	try
-	{		
-		colorINT = pointValues.elementAt( rowNumber ).getCurrentForegroundColor();
-	}
-	catch( ArrayIndexOutOfBoundsException e )  // no defined color, use default
-	{
-		colorINT = DEFAULT_FOREGROUNDCOLOR;
-	}
-		
-	return Colors.getColor( colorINT );
-}
+        try {
+            colorINT = pointValues.elementAt(rowNumber).getCurrentForegroundColor();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            // no defined color, use default
+            colorINT = DEFAULT_FOREGROUNDCOLOR;
+        }
+
+        return YukonColorPalette.getColor(colorINT).getAwtColor();
+    }
 /**
  * Insert the method's description here.
  * Creation date: (2/3/00 3:15:32 PM)

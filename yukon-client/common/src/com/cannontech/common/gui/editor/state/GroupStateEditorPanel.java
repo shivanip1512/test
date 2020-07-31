@@ -67,7 +67,7 @@ public class GroupStateEditorPanel extends DataInputPanel implements JCValueList
 
     private YukonColorPalette[] foregroundColors = new YukonColorPalette[] {
             YukonColorPalette.GREEN,
-            YukonColorPalette.WINE,
+            YukonColorPalette.RED,  // do not use WINE in this enum, as it's text will conflict. Both use "Red".
             YukonColorPalette.WHITE,
             YukonColorPalette.YELLOW,
             YukonColorPalette.BLUE,
