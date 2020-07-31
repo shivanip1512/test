@@ -559,7 +559,7 @@ public class TdcServiceImpl implements TdcService {
         for (LiteState state : states.getStatesList()) {
             String colorString;
             int fgColor = state.getFgColor();
-            if (fgColor == YukonColorPalette.WINE.getColorId()) {
+            if (fgColor == YukonColorPalette.RED.getColorId()) {
                 colorString = defaultAlertStr;
             } else {
                 colorString = YukonColorPalette.getColor(fgColor).name();    //use the enum name, defined in yukon.less 
