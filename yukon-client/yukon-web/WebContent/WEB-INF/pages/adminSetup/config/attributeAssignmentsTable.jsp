@@ -3,14 +3,16 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="modules.adminSetup.config.attributes,yukon.common">
-
-    <c:if test="${not empty errorMessage}">
-        <tags:alertBox includeCloseButton="true">${fn:escapeXml(errorMessage)}</tags:alertBox>
-    </c:if>
+    
+    <c:set var="errorClass" value="${not empty errorMessage ? '' : 'dn'}"/>
+    <tags:alertBox classes="js-error-msg ${errorClass}" includeCloseButton="true">${fn:escapeXml(errorMessage)}</tags:alertBox>
+    <c:set var="successClass" value="${not empty successMessage ? '' : 'dn'}"/>
+    <tags:alertBox type="success" classes="js-success-msg ${successClass}" includeCloseButton="true">${fn:escapeXml(successMessage)}</tags:alertBox>
 
     <table class="compact-results-table row-highlighting has-actions">
         <tr>

@@ -64,7 +64,7 @@
                                         <cti:url value="/admin/config/attribute/edit" var="editAttributeUrl" />
                                         <form:form modelAttribute="editAttribute" action="${editAttributeUrl}" method="POST">
                                             <cti:csrfToken />
-                                            <input type="hidden" name="id" value="${attributeId}"/>
+                                            <input type="hidden" name="customAttributeId" value="${attributeId}"/>
                                             <input type="hidden" name="savedName" value="${attr.name}"/>
                                             <spring:bind path="name">
                                                 <c:set var="errorClass" value="${status.error ? 'error' : ''}"/>
@@ -114,6 +114,7 @@
         <div class="dn js-assignment-popup ov"
                  data-popup
                  data-dialog
+                 data-destroy-dialog-on-close
                  data-title="${addAssignmentTitle}"
                  data-url="${addAssignmentUrl}"
                  data-load-event="yukon:assignment:load"

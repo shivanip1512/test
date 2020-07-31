@@ -61,7 +61,7 @@ public class CustomAttributeAssignmentApiController {
 
     @PatchMapping("/{attributeAssignmentId}")
     public ResponseEntity<Object> update(@PathVariable int attributeAssignmentId, @Valid @RequestBody Assignment assignment) {
-        assignment.setAttributeId(attributeAssignmentId);
+        assignment.setAttributeAssignmentId(attributeAssignmentId);
         return new ResponseEntity<>(customAttributeService.updateAttributeAssignment(assignment), HttpStatus.OK);
     }
 
