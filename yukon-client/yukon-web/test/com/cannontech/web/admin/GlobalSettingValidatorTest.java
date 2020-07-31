@@ -96,6 +96,7 @@ public class GlobalSettingValidatorTest {
         globalSettings.put(GlobalSettingType.ITRON_HCM_API_URL, "http://127.0.0.1");
         globalSettings.put(GlobalSettingType.LAST_COMMUNICATION_HOURS, 60);
         globalSettings.put(GlobalSettingType.LAST_RUNTIME_HOURS, 60);
+        globalSettings.put(GlobalSettingType.ITRON_HCM_DATA_COLLECTION_MINUTES, 15);
         command.setValues(globalSettings);
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
