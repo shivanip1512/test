@@ -39,9 +39,10 @@ public class WebTable {
         if (this.parentElement != null) {
             return this.parentElement.findElement(By.cssSelector("." + this.tableClassName));
         } else if (this.parent != null) {
-            return this.driverExt.findElement(By.cssSelector("[aria-describedby*='" + parent + "'] ." + this.tableClassName), Optional.empty());   
+            return this.driverExt.findElement(By.cssSelector("[aria-describedby*='" + parent + "'] ." + this.tableClassName), Optional.of(3));   
+
         } else {
-            return this.driverExt.findElement(By.cssSelector("." + this.tableClassName), Optional.empty()); 
+            return this.driverExt.findElement(By.cssSelector("." + this.tableClassName), Optional.of(3)); 
         }
     }
 
@@ -84,7 +85,7 @@ public class WebTable {
         List<WebElement> rows = new ArrayList<>();
         long startTime = System.currentTimeMillis();
 
-        while((rows.size() != 1) && (System.currentTimeMillis() - startTime) < 3000) {
+        while((rows.size() != 1) && (System.currentTimeMillis() - startTime) < 500) {
             try {
                 table = this.driverExt.findElement(By.cssSelector(".compact-results-table"), Optional.empty());
 
@@ -112,11 +113,26 @@ public class WebTable {
     }    
     
     public void searchTable(String value) {
-        TextEditElement search = new TextEditElement(this.driverExt, "ss");
         
-        search.setInputValue(value);
-        
-        waitForSearch();
+        if (parentElement != null) {
+            TextEditElement search = new TextEditElement(this.driverExt, "ss", parentElement);
+            
+            search.setInputValue(value);
+            
+            waitForSearch();
+        } else if (parent != null) {
+            TextEditElement search = new TextEditElement(this.driverExt, "ss", parent);
+            
+            search.setInputValue(value);
+            
+            waitForSearch();
+        } else {
+            TextEditElement search = new TextEditElement(this.driverExt, "ss");  
+            
+            search.setInputValue(value);
+            
+            waitForSearch();
+        }              
     }
     
     public void searchTable(String value, WebElement parent) {

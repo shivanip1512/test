@@ -35,7 +35,7 @@ public class MeterRfn430Sl4DetailTests extends SeleniumTestSetup {
 
         ConfirmModal modal = meterDetailsPage.showAndWaitConfirmDeleteModal();
 
-        modal.clickOkAndWait();
+        modal.clickOkAndWaitForModalToClose();
 
         waitForUrlToLoad(Urls.Ami.AMI, Optional.of(10));
 
