@@ -647,11 +647,14 @@ public:
     static const Attribute  ReverseSetPoint;
     static const Attribute  ReverseFlowIndicator;
 
+    static const Attribute  ConfigurationUpdatedHash;
+    static const Attribute  EventCancelled;
+    static const Attribute  EventReceived;
+    static const Attribute  EventStarted;
+    static const Attribute  EventStopped;
     static const Attribute  EventSuperseded;
     static const Attribute  MemoryMapLost;
-    static const Attribute  ConfigurationUpdatedHash;
     static const Attribute  RadioLinkQuality;
-    static const Attribute  EventReceived;
 };
 
 
