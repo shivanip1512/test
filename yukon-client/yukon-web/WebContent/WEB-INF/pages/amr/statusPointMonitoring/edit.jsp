@@ -68,7 +68,7 @@
             <tags:nameValueContainer2>
             
                 <%-- name --%>
-                <tags:inputNameValue nameKey=".name" path="name" size="60" maxlength="60"/>
+                <tags:inputNameValue nameKey="yukon.common.name" path="name" size="60" maxlength="60"/>
                 
                 <%-- device group --%>
                 <tags:nameValue2 nameKey=".deviceGroup">
@@ -83,7 +83,7 @@
                 </tags:nameValue2>
                 
                 <%-- attribute --%>
-                <tags:nameValue2 nameKey="yukon.common.device.commander.attributeSelector.selectAttribute">
+                <tags:nameValue2 nameKey="yukon.common.attribute.select">
                     <form:select path="attribute">
                         <c:forEach items="${allGroupedReadableAttributes}" var="group">
                             <optgroup label="<cti:msg2 key="${group.key}"/>">
@@ -153,14 +153,15 @@
                                         <form:option value="${eventType}">${eventType}</form:option>
                                     </c:forEach>
                                 </form:select>
-                                <cti:button nameKey="delete" renderMode="buttonImage" icon="icon-cross" classes="js-remove fr"/>
+                                <cti:button renderMode="buttonImage" icon="icon-cross" classes="js-remove fr"/>
                             </td>
                         </tr>
                     </c:forEach>
                 </tbody>
             </table>
             <div class="action-area">
-                <cti:button nameKey="addAction" icon="icon-add" classes="js-add"/>
+                <cti:msg var="addTxt" key="yukon.common.add"/>
+                <cti:button label="${addTxt}" icon="icon-add" classes="js-add"/>
             </div>
         </tags:sectionContainer2>
         
@@ -178,7 +179,7 @@
             <cti:url var="backUrl" value="/amr/statusPointMonitoring/viewPage">
                 <cti:param name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}" />
             </cti:url>
-            <cti:button nameKey="cancel" href="${backUrl }" busy="true" data-disable-group="actionButtons"/>
+            <cti:button nameKey="cancel" href="${backUrl}" busy="true" data-disable-group="actionButtons"/>
         </div>
     </form:form>
 <cti:includeScript link="/resources/js/pages/yukon.ami.monitor.js"/>

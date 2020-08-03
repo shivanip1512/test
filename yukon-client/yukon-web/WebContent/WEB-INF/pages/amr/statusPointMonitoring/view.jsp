@@ -14,14 +14,14 @@
     
     <tags:sectionContainer2 nameKey="sectionHeader">
         <tags:nameValueContainer2 tableClass="has-actions">
-            <tags:nameValue2 nameKey=".name">${fn:escapeXml(statusPointMonitor.name)}</tags:nameValue2>
+            <tags:nameValue2 nameKey="yukon.common.name">${fn:escapeXml(statusPointMonitor.name)}</tags:nameValue2>
             <tags:nameValue2 nameKey=".monitoring">
                 <cti:dataUpdaterValue type="STATUS_POINT_MONITORING" identifier="${statusPointMonitor.statusPointMonitorId}/MONITORING_COUNT"/>
             </tags:nameValue2>
             
             <tags:nameValueGap2 gapHeight="20px"/>
             
-            <tags:nameValue2 nameKey=".attribute">
+            <tags:nameValue2 nameKey="yukon.common.attribute">
                 <i:inline key="${statusPointMonitor.attribute}"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".stateGroup">${fn:escapeXml(statusPointMonitor.stateGroup.stateGroupName)}</tags:nameValue2>
@@ -53,7 +53,7 @@
             
             <c:if test="${statusPointMonitor.enabled}"><c:set var="clazz" value="success"/></c:if>
             <c:if test="${!statusPointMonitor.enabled}"><c:set var="clazz" value="error"/></c:if>
-            <tags:nameValue2 nameKey=".status" valueClass="${clazz}">
+            <tags:nameValue2 nameKey="yukon.common.status" valueClass="${clazz}">
                 <i:inline key="${statusPointMonitor.evaluatorStatus}"/>
             </tags:nameValue2>
         </tags:nameValueContainer2>
@@ -86,7 +86,7 @@
         </tags:sectionContainer2>
     </c:if>
     
-    <div class="page-action-area">        
+    <div class="page-action-area">
         <cti:url var="editPageUrl" value="/amr/statusPointMonitoring/editPage"/>
         <form action="${editPageUrl}" method="get">
             <input type="hidden" name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}">
