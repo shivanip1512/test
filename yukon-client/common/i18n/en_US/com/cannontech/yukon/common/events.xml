@@ -690,10 +690,10 @@
 
 <!--  Monitors -->
     <!-- Status Point Monitor -->
-    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorCreated">Status Point Monitor created with ID={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by {6}.</entry>
-    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorUpdated">Status Point Monitor updated with ID={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by {6}.</entry>
-    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorDeleted">Status Point Monitor deleted with ID={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by {6}.</entry>
-    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorEnableDisable">Status Point Monitor with ID={7} set to {1} by {2}.</entry>
+    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorCreated">Outage Notification Monitor created with ID={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by {6}.</entry>
+    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorUpdated">Outage Notification Monitor updated with ID={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by {6}.</entry>
+    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorDeleted">Outage Notification Monitor deleted with ID={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by {6}.</entry>
+    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorEnableDisable">Outage Notification Monitor with ID={7} set to {1} by {2}.</entry>
     
     <!-- Porter Response Monitor -->
     <entry key="yukon.common.events.system.outageEvents.porterResponseMonitor.porterResponseMonitorCreated">Porter Response Monitor created with ID={7} name={1} attribute={2} stateGroup= {3} evaluatorStatus={4} by {5}.</entry>
@@ -701,7 +701,7 @@
     <entry key="yukon.common.events.system.outageEvents.porterResponseMonitor.porterResponseMonitorDeleted">Porter Response Monitor deleted with ID={7} name={1} attribute={2} stateGroup= {3} evaluatorStatus={4} by {5}.</entry>
     <entry key="yukon.common.events.system.outageEvents.porterResponseMonitor.porterResponseMonitorEnableDisable">Porter Response Monitor with ID={7} set to {1} by {2}.</entry>
 
-    <entry key="yukon.common.events.system.outageEvents.mspHandler.mspMessageSentToVendor">Status Point Monitor {1} sent OutageDetectionEvent with eventType={2} objectId={3} deviceType={4} to Multispeak vendor={5}.</entry>
+    <entry key="yukon.common.events.system.outageEvents.mspHandler.mspMessageSentToVendor">Outage Notification Monitor {1} sent OutageDetectionEvent with eventType={2} objectId={3} deviceType={4} to Multispeak vendor={5}.</entry>
     <entry key="yukon.common.events.system.outageEvents.outageEventGenerated">OutageDetectionEvent generated with eventType={1} eventTime={11} deviceType={2} and objectId = {3}.</entry>
     
     

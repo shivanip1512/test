@@ -465,7 +465,7 @@
     
     <entry key="yukon.common.setting.RFN_INCOMING_DATA_TIMESTAMP_LIMIT">RFN Incoming Data Timestamp Limit</entry>
     <entry key="yukon.common.setting.RFN_INCOMING_DATA_TIMESTAMP_LIMIT.description">Incoming RFN data having timestamps older than this number (in months) will not be processed nor archived.</entry>
-    <entry key="yukon.common.setting.STATUS_POINT_MONITOR_NOTIFICATION_LIMIT">Status Point Monitor Notification Limit</entry>
+    <entry key="yukon.common.setting.STATUS_POINT_MONITOR_NOTIFICATION_LIMIT">Outage Notification Monitor Notification Limit</entry>
     <entry key="yukon.common.setting.STATUS_POINT_MONITOR_NOTIFICATION_LIMIT.description">Incoming point data having timestamps older than this number (in days) will not be processed nor published to OMS Vendors. A value of 0 will process all data.</entry>
    
     <entry key="yukon.common.setting.DATA_AVAILABILITY_WINDOW_IN_DAYS">Data Collection: Data Availability Window</entry>
