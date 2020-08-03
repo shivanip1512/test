@@ -175,10 +175,9 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
-        String actualLabels = createPage.getPageSection(sectionName).getSectionLabels().get(0);
+        Section addressUsageSection = createPage.getPageSection(sectionName);
         
-        assertThat(actualLabels.contains(expectedLabels)).withFailMessage("Assertion failed for label : " + expectedLabels)
-                .isTrue();
+        assertThat(addressUsageSection).isNotNull();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})

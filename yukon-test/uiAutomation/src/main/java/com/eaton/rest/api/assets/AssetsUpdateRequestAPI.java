@@ -8,7 +8,7 @@ import io.restassured.response.ExtractableResponse;
 
 public class AssetsUpdateRequestAPI {
     public static ExtractableResponse<?> updateCommChannelTCP(Object body, String id) {
-        String pathParam = APIs.CommChannel.updateCommChannel;
+        String pathParam = APIs.CommChannel.UPDATE_COMM_CHANNEL;
         ExtractableResponse<?> updateResponse = ApiCallHelper.post(pathParam, body, id);
         assertTrue("Error in create Comm Channel TCP", updateResponse.statusCode() == 200);
         return updateResponse;

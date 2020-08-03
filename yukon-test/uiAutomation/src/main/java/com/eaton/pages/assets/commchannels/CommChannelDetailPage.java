@@ -61,12 +61,12 @@ public class CommChannelDetailPage extends PageBase {
         return new EditCommChannelModal(this.driverExt, Optional.of(modalTitle), Optional.of("js-edit-comm-channel-popup"));
     }
 
-    public ConfirmModal showDeleteCommChannelModal(String modalTitle) {
+    public ConfirmModal showDeleteCommChannelModal() {
         getActionBtn().clickAndSelectOptionByText("Delete");
 
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy(CONFIRM_DIALOG);
+        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("yukon_dialog_confirm");
 
-        return new ConfirmModal(this.driverExt, Optional.of(modalTitle), Optional.of(CONFIRM_DIALOG));
+        return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of("yukon_dialog_confirm"));
     }
 
     public CreateCommChannelModal showCreateCommChannelModal() {

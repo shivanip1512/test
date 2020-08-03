@@ -193,7 +193,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
 
         SelectMCTMeterModal mctMeterModal = this.createPage.showAndWaitMCTMeter();
         mctMeterModal.selectMeter("a_MCT-430A");
-        mctMeterModal.clickOkAndWait();
+        mctMeterModal.clickOkAndWaitForModalToClose();
 
         assertThat(createPage.getMCTAddressLabelText()).contains("a_MCT-430A");
     }
@@ -212,7 +212,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
 
         SelectMCTMeterModal mctMeterModal = this.createPage.showAndWaitMCTMeter();
         mctMeterModal.selectMeter("a_MCT-430A");
-        mctMeterModal.clickOkAndWait();
+        mctMeterModal.clickOkAndWaitForModalToClose();
         createPage.getSaveBtn().click();
         waitForPageToLoad("Load Group: " + name, Optional.empty());
 

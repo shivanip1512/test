@@ -70,7 +70,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         String EXPECTED_MSG = "Name is required.";
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
 
-        editModal.getName().setInputValue(" ");
+        editModal.getName().clearInputValue();
         editModal.clickOkAndWait();
 
         assertThat(editModal.getName().getValidationError()).isEqualTo(EXPECTED_MSG);
@@ -362,6 +362,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         editModal.getTabs().clickTabAndWait(tabName);
 
         Section timing = editModal.getTimingSection();
+        
         assertThat(timing.getSection()).isNotNull();
     }
 
@@ -384,7 +385,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         editModal.getPostTxWait().setInputValue(configFieldsValues[2]);
         editModal.getReceiveDataWait().setInputValue(configFieldsValues[3]);
         editModal.getAdditionalTimeOut().setInputValue(configFieldsValues[4]);
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForModalToClose();
                        
         String userMsg = detailPage.getUserMessage();        
 
