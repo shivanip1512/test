@@ -29,6 +29,26 @@ yukon.adminSetup.attributes = (function () {
         editSpan.find('.error').text("");
     },
     
+    _refreshAssignmentsTable = function (successMessage, errorMessage) {
+        var tableContainer = $('#assignments-container'),
+            form = $('#filter-form');
+        form.ajaxSubmit({
+            success: function(data) {
+                tableContainer.html(data);
+                tableContainer.data('url', yukon.url('/admin/config/attributeAssignments/filter?' + form.serialize()));
+                if (successMessage) {
+                    $('.js-success-msg').append(yukon.escapeXml(successMessage)).removeClass('dn');
+                }
+                if (errorMessage) {
+                    $('.js-error-msg').append(yukon.escapeXml(errorMessage)).removeClass('dn');
+                }
+            },
+            error: function (xhr, status, error, $form) {
+                tableContainer.html(xhr.responseText);
+            },
+        });  
+    },
+    
     mod = {
     
         /** Initialize this module. */
@@ -57,17 +77,7 @@ yukon.adminSetup.attributes = (function () {
             });
             
             $(document).on('click', '.js-filter-assignments', function() {
-                var tableContainer = $('#assignments-container'),
-                    form = $('#filter-form');
-                form.ajaxSubmit({
-                    success: function(data) {
-                        tableContainer.html(data);
-                        tableContainer.data('url', yukon.url('/admin/config/attributeAssignments/filter?' + form.serialize()));
-                    },
-                    error: function (xhr, status, error, $form) {
-                        tableContainer.html(xhr.responseText);
-                    },
-                });   
+                _refreshAssignmentsTable();
             });
             
             $(document).on('yukon:assignment:load', function (ev) {
@@ -98,7 +108,8 @@ yukon.adminSetup.attributes = (function () {
                         "data-load-event" : "yukon:assignment:load",
                         "data-event" : "yukon:assignment:save",
                         "data-title" : popupTitle,
-                        "data-ok-text" : yg.text.save
+                        "data-ok-text" : yg.text.save,
+                        "data-destroy-dialog-on-close" : "",
                     };
                 
                 yukon.ui.dialog($("<div/>").attr(dialogDivJson));
@@ -106,12 +117,13 @@ yukon.adminSetup.attributes = (function () {
             
             $(document).on("yukon:assignment:save", function (event) {
                 var popup = $(event.target),
-                    attributeName = $('#attributeId option:selected').text();
-                $('#attributeName').val(yukon.escapeXml(attributeName));
-                $('#assignment-form').ajaxSubmit({
-                    success: function () {
+                    attributeName = popup.find('#attributeId option:selected').text();
+                popup.find('#attributeName').val(yukon.escapeXml(attributeName));
+                popup.find('#assignment-form').ajaxSubmit({
+                    success: function (data) {
                         popup.dialog('close');
-                        window.location.href = window.location.href;
+                        //refresh assignments table
+                        _refreshAssignmentsTable(data.successMessage, data.errorMessage);
                     },
                     error: function (xhr) {
                         popup.html(xhr.responseText);
@@ -123,7 +135,14 @@ yukon.adminSetup.attributes = (function () {
             $(document).on('yukon:assignment:delete', function (ev) {
                 var assignmentId = $(ev.target).data('assignmentId'),
                     form = $('#delete-assignment-form-' + assignmentId);
-                form.submit();
+                form.ajaxSubmit({
+                    success: function (data) {
+                        _refreshAssignmentsTable(data.successMessage, data.errorMessage);
+                    },
+                    error: function (xhr) {
+                        _refreshAssignmentsTable(xhr.successMessage, xhr.errorMessage);
+                    }
+                })
             });   
             
             _initialized = true;
