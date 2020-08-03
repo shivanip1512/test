@@ -49,6 +49,8 @@ import com.cannontech.dr.service.RuntimeCalcService;
 import com.cannontech.dr.service.impl.DatedRuntimeStatus;
 import com.cannontech.dr.service.impl.RuntimeStatus;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.collect.ListMultimap;
 
 public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntimeCalcService {
@@ -62,12 +64,18 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
     @Autowired private RuntimeCalcService runtimeCalcService;
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
     @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
     private static final int runtimePointOffset = 5;
+    private static final int defaultRuntimeCalcInterval = 2;
     
     @PostConstruct
     public void init() {
-        //Schedule calculateRuntimes() every 6 hours, with the first run 1 minute after the honeywell services init.
-        scheduledExecutor.scheduleAtFixedRate(this::calculateRuntimes, 1, 6*60, TimeUnit.MINUTES);
+
+        Integer runtimeCalcInterval = globalSettingDao.getNullableInteger(GlobalSettingType.RUNTIME_CALCULATION_INTERVAL);
+        runtimeCalcInterval = runtimeCalcInterval == null ? defaultRuntimeCalcInterval : runtimeCalcInterval;
+
+        //Schedule calculateRuntimes() every runtimeCalcInterval hours, with the first run 1 minute after the honeywell services init.
+        scheduledExecutor.scheduleAtFixedRate(this::calculateRuntimes, 1, runtimeCalcInterval * 60, TimeUnit.MINUTES);
         log.info("Initialized HoneywellWifiRuntimeCalcService");
     }
     
