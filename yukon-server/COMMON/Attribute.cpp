@@ -657,8 +657,8 @@ INIT_ATTRIBUTE( ReverseSetPoint,                                    "REVERSE_SET
 INIT_ATTRIBUTE( ReverseFlowIndicator,                               "REVERSE_FLOW_INDICATOR" );
 
 INIT_ATTRIBUTE( ConfigurationUpdatedHash,                           "CONFIGURATION_UPDATED_HASH" );
-INIT_ATTRIBUTE( EventCancelled,                                     "EVENT_RECEIVED" );
-INIT_ATTRIBUTE( EventReceived,                                      "EVENT_CANCELLED" );
+INIT_ATTRIBUTE( EventCancelled,                                     "EVENT_CANCELLED" );
+INIT_ATTRIBUTE( EventReceived,                                      "EVENT_RECEIVED" );
 INIT_ATTRIBUTE( EventStarted,                                       "EVENT_STARTED" );
 INIT_ATTRIBUTE( EventStopped,                                       "EVENT_STOPPED" );
 INIT_ATTRIBUTE( EventSuperseded,                                    "EVENT_SUPERSEDED" );
