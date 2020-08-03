@@ -14,7 +14,7 @@ public enum YukonColorPalette implements DatabaseRepresentationSource, Displayab
     BLUE("#4d90fe", 4),
     GREEN("#009933", 0),
     GRAY("#7b8387", 9),
-    LIGHT_GREY("#d5d8da", 13),
+    LIGHT_GRAY("#d5d8da", 13),
     ORANGE("#ec971f", 7),
     PURPLE("#b779f4", 10),
     RED("#d14836", 1),
