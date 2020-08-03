@@ -12,25 +12,25 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
  * This enum defines collection action buckets.
  */
 public enum CollectionActionDetail implements DisplayableEnum {
-    SUCCESS(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.GREEN.getHexValue()),
-    FAILURE(CollectionActionDetailSummary.FAILURE, null, YukonColorPalette.WINE.getHexValue()),
-    UNSUPPORTED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.UNSUPPORTED, YukonColorPalette.GRAY.getHexValue()),
-    CONNECTED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.GREEN.getHexValue()),
-    ARMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.SAGE.getHexValue()),
-    DISCONNECTED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.ORANGE.getHexValue()),
+    SUCCESS(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.GREEN),
+    FAILURE(CollectionActionDetailSummary.FAILURE, null, YukonColorPalette.RED),
+    UNSUPPORTED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.UNSUPPORTED, YukonColorPalette.GRAY),
+    CONNECTED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.GREEN),
+    ARMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.SAGE),
+    DISCONNECTED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.ORANGE),
     // NOT_CONFIGURED means the device was not in a proper state before the action was attempted so we were not able to perform the action.
-    NOT_CONFIGURED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.NOT_CONFIGURED, YukonColorPalette.BLUE.getHexValue()),
-    CANCELED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.CANCELED, YukonColorPalette.SKY.getHexValue()),
-    CONFIRMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.GREEN.getHexValue()),
-    UNCONFIRMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.LIGHT_GRAY.getHexValue()),
-    ALREADY_CONFIGURED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.ALREADY_CONFIGURED, YukonColorPalette.LIGHT_GRAY.getHexValue());
+    NOT_CONFIGURED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.NOT_CONFIGURED, YukonColorPalette.BLUE),
+    CANCELED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.CANCELED, YukonColorPalette.SKY),
+    CONFIRMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.GREEN),
+    UNCONFIRMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.LIGHT_GRAY),
+    ALREADY_CONFIGURED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.ALREADY_CONFIGURED, YukonColorPalette.LIGHT_GRAY);
 
     private CollectionActionDetailSummary summary;
     private CommandRequestUnsupportedType unsupportedType;
-    private String color;
+    private YukonColorPalette color;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
 
-    private CollectionActionDetail(CollectionActionDetailSummary summary, CommandRequestUnsupportedType unsupportedType, String color) {
+    private CollectionActionDetail(CollectionActionDetailSummary summary, CommandRequestUnsupportedType unsupportedType, YukonColorPalette color) {
         this.summary = summary;
         this.unsupportedType = unsupportedType;
         this.color = color;
@@ -80,8 +80,12 @@ public enum CollectionActionDetail implements DisplayableEnum {
         return detail;
     }
 
-    public String getColor() {
+    public YukonColorPalette getColor() {
         return color;
+    }
+    
+    public String getColorHex() {
+        return color.getHexValue();
     }
 
     @Override
