@@ -9,22 +9,23 @@ import com.google.common.collect.ImmutableMap.Builder;
 
 public enum YukonColorPalette implements DatabaseRepresentationSource, DisplayableEnum {
 
+    // next colorId to use: 13
     BLACK("#000000", 6),
     BLUE("#4d90fe", 4),
     GREEN("#009933", 0),
     GRAY("#7b8387", 9),
-    LIGHT_GREY("#d5d8da", 12),
     ORANGE("#ec971f", 7),
     PURPLE("#b779f4", 10),
-    WINE("#ce8799", 1),
+    RED("#d14836", 1),
     SAGE("#b2c98d", 8),
     SKY("#abd7e1", 11),
     TEAL("#00b2a9", 5),
-    WHITE("#FFFFFF", 2),
+    WHITE("#ffffff", 2),
+    WINE("#ce8799", 12),
     YELLOW("#f0cb2f", 3);
 
     private final String hexValue;
-    private final int colorId;
+    private final int colorId;  //database id
 
     
     private final static ImmutableMap<Integer, YukonColorPalette> lookupById;
@@ -94,9 +95,6 @@ public enum YukonColorPalette implements DatabaseRepresentationSource, Displayab
      * @deprecated use MessageSourceResolver.
      */
     public String toDefaultText() {
-        if (this == WINE) {
-            return "Red";
-        }
         return StringUtils.capitalize(this.name().toLowerCase());
     }
 }
