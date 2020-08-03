@@ -79,7 +79,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         String EXPECTED_MSG = "Name is required.";
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal(expectedModalTitle);
 
-        editModal.getName().setInputValue(" ");
+        editModal.getName().clearInputValue();
         editModal.clickOkAndWait();
 
         assertThat(editModal.getName().getValidationError()).isEqualTo(EXPECTED_MSG);
@@ -273,10 +273,10 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         editModal.clickOkAndWait();
 
         assertThat(editModal.getAdditionalTimeOut().getValidationError()).isEqualTo(EXPECTED_MSG);
-    }
+    }       
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_SocketNumber_ACS_MinValueValidation() {
+    public void commChannelUdpEdit_SocketNumber_MinValueValidation() {
         String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
         String tabName = "Configuration";
@@ -291,7 +291,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_SocketNumber_ACS_MaxValueValidation() {
+    public void commChannelUdpEdit_SocketNumber_MaxValueValidation() {
         String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
         String tabName = "Configuration";
@@ -306,7 +306,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_SocketNumber_ACS_BlankValidation() {
+    public void commChannelUdpEdit_SocketNumber_BlankValidation() {
         String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
         String tabName = "Configuration";
@@ -314,53 +314,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal(expectedModalTitle);
 
         editModal.getTabs().clickTabAndWait(tabName);
-        editModal.getSocketNumber().setInputValue(" ");
-        editModal.clickOkAndWait();
-
-        assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
-    }
-    
-
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_SocketNumber_ILEX_MinValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
-        String tabName = "Configuration";
-
-        EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal(expectedModalTitle);
-
-        editModal.getTabs().clickTabAndWait(tabName);
-        editModal.getSocketNumber().setInputValue("0");
-        editModal.clickOkAndWait();
-
-        assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
-    }
-
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_SocketNumber_ILEX_MaxValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
-        String tabName = "Configuration";
-
-        EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal(expectedModalTitle);
-
-        editModal.getTabs().clickTabAndWait(tabName);
-        editModal.getSocketNumber().setInputValue("65536");
-        editModal.clickOkAndWait();
-
-        assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
-    }
-
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_SocketNumber_ILEX_BlankValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
-        String tabName = "Configuration";
-
-        EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal(expectedModalTitle);
-
-        editModal.getTabs().clickTabAndWait(tabName);
-        editModal.getSocketNumber().setInputValue(" ");
+        editModal.getSocketNumber().clearInputValue();
         editModal.clickOkAndWait();
 
         assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
@@ -496,7 +450,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_CreateOpensPopupCorrect() {
+    public void commChannelUdpEdit_CreateOpensCorrectModal() {
         String EXPECTED_CREATE_MODEL_TITLE = "Create Comm Channel";
         CreateCommChannelModal createModel = detailPage.showCreateCommChannelModal();
         String actualCreateModelTitle = createModel.getModalTitle();
@@ -553,7 +507,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         editModal.getPostTxWait().setInputValue(configFieldsValues[2]);	
         editModal.getReceiveDataWait().setInputValue(configFieldsValues[3]);	
         editModal.getAdditionalTimeOut().setInputValue(configFieldsValues[4]);	
-        editModal.clickOkAndWait();	
+        editModal.clickOkAndWaitForModalToClose();	
                        	
         String userMsg = detailPage.getUserMessage();        	
 	

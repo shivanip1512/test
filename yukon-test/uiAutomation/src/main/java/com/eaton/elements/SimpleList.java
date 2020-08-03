@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.IntStream;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -34,7 +33,7 @@ public class SimpleList {
         if (this.parentElement != null) {
             return this.parentElement.findElement(By.cssSelector("." + this.listClassName));
         } else {
-            return this.driverExt.findElement(By.cssSelector("." + this.listClassName), Optional.empty()); 
+            return this.driverExt.findElement(By.cssSelector("." + this.listClassName), Optional.of(3)); 
         }
     }
     
@@ -119,10 +118,4 @@ public class SimpleList {
         }
         return link;
     }
-    
-    public int findSimpleListItemText(String text)
-    {
-    	return IntStream.range(0,getSimpleListItems().size()).filter(i -> text.equals(getSimpleListItems().get(i).getText())).findFirst().orElse(-1);
-    }
-    
 }

@@ -60,13 +60,8 @@ public class ZbProblemDevicesController {
         LiteStateGroup states = stateGroupDao.getStateGroup(StateGroupUtils.STATEGROUP_COMMISSIONED_STATE);
         Map<Double, String> stateColorMap = Maps.newHashMap();
         for (LiteState state : states.getStatesList()) {
-            String colorString;
             int fgColor = state.getFgColor();
-            if (fgColor == YukonColorPalette.WINE.getColorId()) {
-                colorString = "#D14836"; // yukon.css .error
-            } else {
-                colorString = YukonColorPalette.getColor(fgColor).getHexValue();
-            }
+            String colorString = YukonColorPalette.getColor(fgColor).getHexValue();
             stateColorMap.put(Double.valueOf(state.getStateRawState()), colorString);
         }
         model.addAttribute("stateColorMap", stateColorMap);

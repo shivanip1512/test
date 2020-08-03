@@ -9,7 +9,7 @@ import java.util.Properties;
 public class ConfigFileReader {
 
 	private Properties properties;
-	private static final String FILE_PATH = "configs//Config.properties";
+	private static final String FILE_PATH = "configs//config.properties";
 
 	public ConfigFileReader() throws IOException {
 		BufferedReader reader = null;
