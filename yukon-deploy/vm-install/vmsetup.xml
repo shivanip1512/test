@@ -8,8 +8,6 @@
 
     <property file="yukon-client/build/build.properties"/>
     <property file="yukon-build/build_version.properties"/>
-    <property name="vmware-cmd"  value="vmware-cmd.pl"/>
-    <property name="vmware-dir"  value="C:\Program Files (x86)\VMware\VMware vSphere CLI\bin\"/>
     
     <property name="physical_address" value="${env.VM_PHYSICAL_ADDRESS}" />
     <property name="datastore" value="${env.VM_DATASTORE}" if:set="env.VM_DATASTORE" />
@@ -49,7 +47,7 @@
     <property name="start_simulator" value="${env.VM_START_SIMULATOR}"/>
 
     <property name="db.name" value="${env.DB_NAME}"/>
-	<property name="db.name.temp" value="${env.DB_NAME}_temp"/>
+    <property name="db.name.temp" value="${env.DB_NAME}_temp"/>
 
     <property name="db.backup.name" value="${env.DB_BACKUP_NAME}"/>
     <property name="db_updater_check" value="${env.DB_UPDATER}"/>
@@ -62,10 +60,8 @@
 
     <target name="targets">
         <echo message="The following targets are available"/>
-        <echo message=" callall               - calls all targets in specific order"/>
-        <echo message=" clone_vm              - Create a new VM from a template"/>
+        <echo message=" create-vm-from-template - Create a new VM from a template"/>
         <echo message=" delete_vm             - Delete a VM"/>
-        <echo message=" revert_to_snapshot    - reverts the vm to the current snapshot"/>
         <echo message=" copy_to_vm            - copies the scripts to the vm to be executed"/>
         <echo message=" setup_db              - destroys previous test database and creates a new test database"/>
         <echo message=" install_in_vm         - copies installer to vm and installs yukon on the vm"/>
@@ -84,33 +80,8 @@
         <echo message=" restart_vm            - restarts the vm"/>
     </target>
 
-    <target name="callall">
-        <property name="db.type" value="${env.DATABASE_TYPE}"/>
-        <if>
-            <equals arg1="${db_updater_check}" arg2="true"/>
-            <then>
-                <antcall target="callall_with_dbclone" />
-            </then>
-            <elseif>
-            	<or>
-                    <equals arg1="${db.type}" arg2="oracle12"/>
-                    <equals arg1="${db.type}" arg2="oracle"/>
-                </or>
-                <then>
-                    <antcall target="callall_with_populate_oracle" />
-                </then>
-            </elseif>
-            <else>
-                <antcall target="callall_with_populate" />
-            </else>
-        </if>
-    </target>
-
-    <target name="callall_with_populate" depends="revert_to_snapshot, copy_to_vm, install_in_vm, create_db, start_dispatch, populate_db, start_all_services, verify_webserver, install_eim, verify_eim, start_simulator" />
     <target name="upgrade_with_clean_db" depends="copy_support_files, upgrade_installer_only, create_db, start_dispatch, populate_db, start_all_services, verify_webserver, install_eim, verify_eim, start_simulator" />
-	<target name="callall_with_populate_oracle" depends="revert_to_snapshot, copy_to_vm, install_in_vm, create_oracle_db, start_dispatch, populate_db, start_all_services, verify_webserver, install_eim, verify_eim, start_simulator" />
-    <target name="callall_with_dbclone" depends="revert_to_snapshot, copy_to_vm, clone_db, install_in_vm, db_updater, start_dispatch, start_all_services, verify_webserver, install_eim, verify_eim, start_simulator"/>
-	<target name="upgrade_in_vm" depends="copy_support_files, remote_upgrade, verify_webserver, verify_eim"/>
+    <target name="upgrade_in_vm" depends="copy_support_files, remote_upgrade, verify_webserver, verify_eim"/>
 
 
     <target name="upgrade_installer_only">
@@ -122,89 +93,17 @@
     </target>
         
     
-    <target name="revert_to_snapshot">
-    <!-- NOTE this is much simpler than the previous version, however the VM MAY NOT have more than one snapsnot or this command fails -->
-    	<echo message= "Running Revert Snapshot Command: /c C:\WINDOWS\system32\windowspowershell\v1.0\powershell.exe -PSConsoleFile &quot;C:\Program Files (x86)\VMware\Infrastructure\vSphere PowerCLI\vim.psc1&quot; -command &quot;connect-viserver -server ${physical_address}; $snapshot = Get-Snapshot -VM ${guest_name}; Set-VM -VM ${guest_name} -Snapshot $snapshot -confirm:$false&quot;"/>
-        <exec dir="${vmclone-dir}" executable="cmd" failonerror="true">
-	    <arg value="/c"/>
-	    <arg value="C:\WINDOWS\system32\windowspowershell\v1.0\powershell.exe"/>
-	    <arg value="-PSConsoleFile"/>
-            <arg value="&quot;C:\Program Files (x86)\VMware\Infrastructure\vSphere PowerCLI\vim.psc1&quot;"/>
-            <arg value="-command"/>
-	    <arg value="&quot;connect-viserver"/>
-	    <arg value="-server"/>
-	    <arg value="${physical_address};"/>
-	    <arg value="$snapshot = Get-Snapshot"/>
-	    <arg value="-VM"/>
-	    <arg value="${guest_name};"/>
-	    <arg value="Set-VM"/>
-	    <arg value="-VM"/>
-	    <arg value="${guest_name}"/>
-	    <arg value="-Snapshot"/>
-	    <arg value="$snapshot"/>
-	    <arg value="-confirm:$false&quot;"/>
-	</exec>
-
-        <!-- wait upto 5 minutes for the VM to start, error if no response.  The snapshot is in the running state, so no need to start the vm. -->
-        <waitfor maxwait="5" maxwaitunit="minute" checkevery="6" 
-            checkeveryunit="second" timeoutproperty="vm.timeout">
-            <isreachable host="${guest_address}" timeout="5" />
-        </waitfor>
-
-        <fail message="VMAutomation build FAILED Reason:[VM ${guest_address} failed to respond]">
-            <condition>
-                <isset property="vm.timeout" />
-            </condition>
-        </fail>
+    <target name="create-vm-from-template">
+        <!-- This should call the powershell script -->
     </target>
     
-    <target name="create_snapshot">
-        <echo message="Sleeping for 2 minutes to help snapshot be more successful"/>
-        <sleep minutes="2"/>
-    	
-        <echo message= "Running Create Snapshot Command: /c C:\WINDOWS\system32\windowspowershell\v1.0\powershell.exe -PSConsoleFile &quot;C:\Program Files (x86)\VMware\Infrastructure\vSphere PowerCLI\vim.psc1&quot; -command &quot;connect-viserver -server ${physical_address}; New-Snapshot -VM ${guest_name} -Name AutomaticallyCreatedSnapshot -confirm:$false -memory:$true&quot;"/>
-        <exec dir="${vmclone-dir}" executable="cmd" failonerror="true">
-	    <arg value="/c"/>
-	    <arg value="C:\WINDOWS\system32\windowspowershell\v1.0\powershell.exe"/>
-	    <arg value="-PSConsoleFile"/>
-            <arg value="&quot;C:\Program Files (x86)\VMware\Infrastructure\vSphere PowerCLI\vim.psc1&quot;"/>
-            <arg value="-command"/>
-	    <arg value="&quot;connect-viserver"/>
-	    <arg value="-server"/>
-	    <arg value="${physical_address};"/>
-	    <arg value="New-Snapshot"/>
-	    <arg value="-VM"/>
-	    <arg value="${guest_name}"/>
-	    <arg value="-Name"/>
-	    <arg value="AutomaticallyCreatedSnapshot"/>
-	    <arg value="-confirm:$false"/>
-	    <arg value="-memory:$true&quot;"/>
-	</exec>
-    </target>
-    
+   
     <target name="delete_vm">
-        <echo message= "Running Delete VM Command: /c C:\WINDOWS\system32\windowspowershell\v1.0\powershell.exe -PSConsoleFile &quot;C:\Program Files (x86)\VMware\Infrastructure\vSphere PowerCLI\vim.psc1&quot; -command &quot;connect-viserver -server ${physical_address}; stop-vm -vm ${guest_name} -confirm:$false; Remove-VM -DeletePermanently -vm ${guest_name} -confirm:$false&quot;"/>
-        <exec dir="${vmclone-dir}" executable="cmd" failonerror="false">
-	    <arg value="/c"/>
-	    <arg value="C:\WINDOWS\system32\windowspowershell\v1.0\powershell.exe"/>
-	    <arg value="-PSConsoleFile"/>
-            <arg value="&quot;C:\Program Files (x86)\VMware\Infrastructure\vSphere PowerCLI\vim.psc1&quot;"/>
-            <arg value="-command"/>
-	    <arg value="&quot;connect-viserver"/>
-	    <arg value="-server"/>
-	    <arg value="${physical_address};"/>
-	    <arg value="stop-vm"/>
-	    <arg value="-vm"/>
-	    <arg value="${guest_name}"/>
-	    <arg value="-confirm:$false;"/>
-	    <arg value="Remove-VM"/>
-	    <arg value="-DeletePermanently"/>
-	    <arg value="-vm"/>
-	    <arg value="${guest_name}"/>
-	    <arg value="-confirm:$false&quot;"/>
-        </exec>
+        <!-- This should call the powershell script -->
     </target>
     
+    <!-- This should not be used, but there may be valuable info here for our future use. This can be removed
+        once VM customation is working through powershell -->
     <target name="clone_vm">
         <echo message="Searching for an existing machine with address ${guest_address}"/>
         <waitfor maxwait="10" maxwaitunit="second" 
@@ -282,24 +181,24 @@
             <arg value="vmclone2inputCust.xml"/> 
             <arg value="--schema"/>
             <arg value="vmclone.xsd"/>
-	    <arg value="--runonce"/>
-	    <arg value="&quot;cmd /c c:/cygwin/bin/mkpasswd.exe -l > c:/cygwin/etc/passwd,cmd /c sc start sshd,cmd /c sc config sshd start=auto&quot;"/>
+        <arg value="--runonce"/>
+        <arg value="&quot;cmd /c c:/cygwin/bin/mkpasswd.exe -l > c:/cygwin/etc/passwd,cmd /c sc start sshd,cmd /c sc config sshd start=auto&quot;"/>
         </exec>
 
         <delete file="vmclone2inputCust.xml"/>
         
         <!-- wait upto 15 minutes for the VM to start, error if no response.  The clone command will automatically start then restart the VM with a new IP.
-	     NOTE! The current template does not start cygwin, the command above does which is intentional as this command runs after VMWARE believes the
-	     new vm configuration is complete. If the VM starts CygWin on its own it may start up then the computer may reboot again thus breaking this check.-->
+         NOTE! The current template does not start cygwin, the command above does which is intentional as this command runs after VMWARE believes the
+         new vm configuration is complete. If the VM starts CygWin on its own it may start up then the computer may reboot again thus breaking this check.-->
         <waitfor maxwait="30" maxwaitunit="minute" 
             checkevery="15" checkeveryunit="second" 
             timeoutproperty="ping_clone.timeout">
             <isreachable host="${guest_address}" timeout="5" />
         </waitfor>
         
-	<!-- The assumption here is that if we reached this point, the create exec above executed thus we own this VM -->
-	<antcall target="delete_on_ping_timeout"/>
-	
+    <!-- The assumption here is that if we reached this point, the create exec above executed thus we own this VM -->
+    <antcall target="delete_on_ping_timeout"/>
+    
         <fail message="VMAutomation clone FAILED Reason:[VM ${guest_address} failed to respond to ping]">
             <condition>
                 <isset property="ping_clone.timeout" />
@@ -308,16 +207,16 @@
         
         <echo message="New VM has responded to Ping!" />
         
-	<!-- Wait up to 30 minutes for SCP to start. If the Ping works, SCP should follow eventually but depending on VMWare it could take some time -->
+    <!-- Wait up to 30 minutes for SCP to start. If the Ping works, SCP should follow eventually but depending on VMWare it could take some time -->
         <waitfor maxwait="30" maxwaitunit="minute" 
             checkevery="15" checkeveryunit="second" 
             timeoutproperty="scp_clone.timeout">
             <socket server="${guest_address}" port="22"/> 
         </waitfor>
 
-	<!-- The assumption here is that if we reached this point, the create exec above executed thus we own this VM -->
-	<antcall target="delete_on_scp_timeout"/>
-	
+    <!-- The assumption here is that if we reached this point, the create exec above executed thus we own this VM -->
+    <antcall target="delete_on_scp_timeout"/>
+    
         <fail message="VMAutomation clone FAILED Reason:[VM ${guest_address} failed to respond on SCP port]">
             <condition>
                 <isset property="scp_clone.timeout" />
@@ -325,7 +224,7 @@
         </fail>
         
         <echo message="New VM has responded on SCP port!" />
-	<antcall target="find_guestid"/>
+    <antcall target="find_guestid"/>
 
     </target>
     
@@ -352,36 +251,36 @@
     </target>
 
     <target name="delete_on_ping_timeout" if="ping_clone.timeout">
-	<echo message="Ping Timeout, deleting VM as it was not created properly"/>
-	<antcall target="delete_vm"/>
+    <echo message="Ping Timeout, deleting VM as it was not created properly"/>
+    <antcall target="delete_vm"/>
     </target>
     
     <target name="delete_on_scp_timeout" if="scp_clone.timeout">
-	<echo message="SCP Timeout, deleting VM as it was not created properly"/>
-	<antcall target="delete_vm"/>
+    <echo message="SCP Timeout, deleting VM as it was not created properly"/>
+    <antcall target="delete_vm"/>
     </target>
 
-	<!-- When we are doing an upgrade, we do not want to overwrite master.cfg -->
-	<target name="copy_support_files" depends="find_guestid">
-		<echo message="SCP todir ${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" />
-	        <scp todir="${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" trust="true">
-	            <fileset dir="${basedir}/yukon-deploy/vm-install/copy-to-vm">
-	                <include name="**"/>
-	                <exclude name="master.cfg"/>
-	            </fileset>
-	        </scp>
-		
-		<echo message="SCP todir ${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" />
-	        <scp todir="${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" trust="true">
-	            <fileset dir="${basedir}/yukon-deploy/vm-install/third-party">
-	                <include name="*"/>
-	            </fileset>
-	        </scp>
-	    
-	    <antcall target="copy_installer_to_vm"/>
-	</target>
+    <!-- When we are doing an upgrade, we do not want to overwrite master.cfg -->
+    <target name="copy_support_files" depends="find_guestid">
+        <echo message="SCP todir ${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" />
+            <scp todir="${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" trust="true">
+                <fileset dir="${basedir}/yukon-deploy/vm-install/copy-to-vm">
+                    <include name="**"/>
+                    <exclude name="master.cfg"/>
+                </fileset>
+            </scp>
+        
+        <echo message="SCP todir ${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" />
+            <scp todir="${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" trust="true">
+                <fileset dir="${basedir}/yukon-deploy/vm-install/third-party">
+                    <include name="*"/>
+                </fileset>
+            </scp>
+        
+        <antcall target="copy_installer_to_vm"/>
+    </target>
 
-	<target name="copy_master_cfg" depends="setup_master_cfg">
+    <target name="copy_master_cfg" depends="setup_master_cfg">
         <echo message="SCP todir ${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" />
             <scp todir="${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" trust="true">
                 <fileset dir="${basedir}/yukon-deploy/vm-install/copy-to-vm">
@@ -389,13 +288,13 @@
                 </fileset>
             </scp>
     </target>
-	
+    
     <target name="copy_to_vm" depends="find_guestid, copy_master_cfg, copy_support_files"/>
 
-	<target name="clone_db">
-		<property name="create_drop_database" value="${env.CREATE_DROP_DATABASE}"/>
-		 
-		<!-- clone a mssql db -->
+    <target name="clone_db">
+        <property name="create_drop_database" value="${env.CREATE_DROP_DATABASE}"/>
+         
+        <!-- clone a mssql db -->
         <if>
             <equals arg1="${create_drop_database}" arg2="true"/>
             <then>
@@ -405,14 +304,14 @@
                 </antcall>
                 <!-- clone the database -->
                 <antcall target="clone_sql_db"/>
-        	</then>
-    	</if>
-		
-		<antcall target="setup_master_cfg"/>
-	</target>
-	
-	
-	<target name="create_db">
+            </then>
+        </if>
+        
+        <antcall target="setup_master_cfg"/>
+    </target>
+    
+    
+    <target name="create_db">
         <property name="create_drop_database" value="${env.CREATE_DROP_DATABASE}"/>
          
         <!-- create a mssql db -->
@@ -427,8 +326,8 @@
                 <antcall target="create_sql_db"/>
             </then>
         </if>
-		
-		<antcall target="setup_master_cfg"/>
+        
+        <antcall target="setup_master_cfg"/>
     </target>
 
     <target name="create_oracle_db">
@@ -455,7 +354,7 @@
     <target name="setup_master_cfg" depends="find_guestid">
         <property name="create_drop_database" value="${env.CREATE_DROP_DATABASE}"/>
         <property name="db.type" value="${env.DATABASE_TYPE}"/>
-    	<echo message="db type == ${db.type}"></echo>
+        <echo message="db type == ${db.type}"></echo>
         <property name="db.sqlserver" value="${env.DATABASE_SQLSERVER}"/>
         <property name="db.sqlserver_host" value="${env.DATABASE_SQLSERVER_HOST}"/>
         <property name="db.username" value="${env.DATABASE_USERNAME}"/>
@@ -465,9 +364,9 @@
         <if>
             <equals arg1="${create_drop_database}" arg2="true"/>
             <then>
-            	<echo message="rewrite sql db username in master.cfg to: ${db.name}"/>
-            	<echo message="rewrite sql db password in master.cfg to: ${db.name}"/>
-            	<echo message="rewrite sql db server in master.cfg to: ${db.sqlserver}"/>
+                <echo message="rewrite sql db username in master.cfg to: ${db.name}"/>
+                <echo message="rewrite sql db password in master.cfg to: ${db.name}"/>
+                <echo message="rewrite sql db server in master.cfg to: ${db.sqlserver}"/>
                 
                 <!-- rewrite the master.cfg file in preparation to place it on the guest -->
                 <replace file="${basedir}/yukon-deploy/vm-install/copy-to-vm/master.cfg" token="&lt;dbtype&gt;" value="${db.type}"/>
@@ -505,7 +404,7 @@
                         <replace file="${basedir}/yukon-deploy/vm-install/copy-to-vm/master.cfg" token="#DB_JAVA_URL" value="DB_JAVA_URL : jdbc:jtds:sqlserver://${db.sqlserver};APPNAME=yukon-client;TDS=8.0"/>
                     </then>
                     <elseif>
-                    	<or>
+                        <or>
                             <equals arg1="${db.type}" arg2="oracle12"/>
                             <equals arg1="${db.type}" arg2="oracle"/>
                         </or>
@@ -568,7 +467,7 @@
             </fileset> 
         </path>
 
-    	<echo message="Dropping oracle db using connection string jdbc:oracle:thin:@${db.sqlserverhost}:1521:${db.sid} Username ${database.username} Passowrd ${database.password}"/>
+        <echo message="Dropping oracle db using connection string jdbc:oracle:thin:@${db.sqlserverhost}:1521:${db.sid} Username ${database.username} Passowrd ${database.password}"/>
         <!-- Drop Oracle database -->
         <sql
             driver="oracle.jdbc.driver.OracleDriver"
@@ -576,8 +475,8 @@
             userid="${database.username}"
             password="${database.password}"
             classpathref="antclasspath"
-       	    delimiter="/"
-       	    delimitertype="row">
+            delimiter="/"
+            delimitertype="row">
             DECLARE 
                 i NUMBER;
                 l_cnt integer;
@@ -601,14 +500,14 @@
                 END LOOP;
                 EXECUTE IMMEDIATE 'DROP USER ${db.name} CASCADE';
             END IF;
-           	END;
+            END;
             /
         </sql>
         <echo message="Dropped database ${db.name}"/>
     </target>
 
-	<target name="clone_sql_db">
-	    <property name="db.sqlserver" value="${env.DATABASE_SQLSERVER}"/>
+    <target name="clone_sql_db">
+        <property name="db.sqlserver" value="${env.DATABASE_SQLSERVER}"/>
         <property name="database.username" value="sa"/>
         <property name="database.password" value="cannontech123"/>
 
@@ -624,8 +523,8 @@
                 <pathelement location="${basedir}/yukon-deploy/vm-install/third-party/jtds.jar"/>
             </classpath>
             USE MASTER;
-        	RESTORE DATABASE ${db.name} FROM DISK = 'C:\backupfilefordbupdater\${db.backup.name}' WITH MOVE 'VM5' TO 'E:\autoDBs\${db.name}.mdf',
-        	                        MOVE 'VM5_log' TO 'E:\autoDBs\${db.name}_log.ldf';
+            RESTORE DATABASE ${db.name} FROM DISK = 'C:\backupfilefordbupdater\${db.backup.name}' WITH MOVE 'VM5' TO 'E:\autoDBs\${db.name}.mdf',
+                                    MOVE 'VM5_log' TO 'E:\autoDBs\${db.name}_log.ldf';
             USE ${db.name};
             CREATE LOGIN ${db.name}
             WITH PASSWORD = '${db.name}', 
@@ -634,12 +533,12 @@
             CREATE USER ${db.name} FOR LOGIN ${db.name};
             GRANT SELECT, INSERT, DELETE, UPDATE TO ${db.name}; 
         </sql>
-		
-		<tstamp>
+        
+        <tstamp>
             <format property="current.time" pattern="MM/dd/yyyy hh:mm"/>
         </tstamp>
-		
-		<sql
+        
+        <sql
             classpath="" driver="net.sourceforge.jtds.jdbc.Driver"
             url="jdbc:jtds:sqlserver://${db.sqlserver}"
             userid="${database.username}"
@@ -671,8 +570,8 @@
             </classpath> 
             sp_addsrvrolemember '${db.name}' , 'sysadmin';
         </sql>
-		
-	</target>
+        
+    </target>
 
     <target name="create_oracle_database">
         <property name="db.sqlserverhost" value="${env.DATABASE_SQLSERVER_HOST}"/>
@@ -715,36 +614,36 @@
         
         <antcall target="populate_oracle_db"/>
     </target>
-	
-	<target name="remote_upgrade" depends="find_guestid">
-		<property name="db.type" value="${env.DATABASE_TYPE}"/>
+    
+    <target name="remote_upgrade" depends="find_guestid">
+        <property name="db.type" value="${env.DATABASE_TYPE}"/>
         <property name="db.sqlserver" value="${env.DATABASE_SQLSERVER}"/>
         <property name="db.sqlserver_host" value="${env.DATABASE_SQLSERVER_HOST}"/>
         <property name="db.username" value="${db.name}"/>
         <property name="db.password" value="${db.name}"/>
-		<property name="db.backup.required" value ="${env.IS_DB_BACKUP_REQUIRED}"/>
+        <property name="db.backup.required" value ="${env.IS_DB_BACKUP_REQUIRED}"/>
         <property name="db.backup.directory" value ="${env.DB_BACKUP_DIRECTORY}"/>
         <property name="db.backup.cleanupTime" value ="${env.DB_BACKUP_CLEANUP_TIME}"/>
         
-		<if>
+        <if>
             <equals arg1="${db.backup.required}" arg2="true"/>
             <then>
-        	<sshexec host="${guest_address}"
-	                            trust="true"
-	                            username="${guest_userid}"
-	                            password="${guest_password}"
-	                            command="ant -f C:/install.xml upgrade_yukon
-	                                    -Ddatabase.name=${db.name}
-	                                    -Ddatabase.server=${db.sqlserver_host}
-	                                    -Ddatabase.username=${db.username}
-	                                    -Ddatabase.password=${db.password}
-	                                    -Ddb.type=${db.type}
-	                                    -Ddatabase.backup.directory=${db.backup.directory}
-	                                    -Ddatabase.backup.cleanupTime=${db.backup.cleanupTime}
-	                                    -Ddatabase.backup.required=${db.backup.required}"/>
+            <sshexec host="${guest_address}"
+                                trust="true"
+                                username="${guest_userid}"
+                                password="${guest_password}"
+                                command="ant -f C:/install.xml upgrade_yukon
+                                        -Ddatabase.name=${db.name}
+                                        -Ddatabase.server=${db.sqlserver_host}
+                                        -Ddatabase.username=${db.username}
+                                        -Ddatabase.password=${db.password}
+                                        -Ddb.type=${db.type}
+                                        -Ddatabase.backup.directory=${db.backup.directory}
+                                        -Ddatabase.backup.cleanupTime=${db.backup.cleanupTime}
+                                        -Ddatabase.backup.required=${db.backup.required}"/>
             </then>
             <else>
-        	<sshexec host="${guest_address}"
+            <sshexec host="${guest_address}"
                                 trust="true"
                                 username="${guest_userid}"
                                 password="${guest_password}"
@@ -838,7 +737,7 @@
             END;
             /
         </sql>
-   	 <echo message="Populated database ${db.name}"/>
+     <echo message="Populated database ${db.name}"/>
     </target>
 
 
@@ -847,9 +746,9 @@
         <property name="database.username" value="sa"/>
         <property name="database.password" value="cannontech123"/>
 
-		<echo message="Creating new database ${db.name}"/>
+        <echo message="Creating new database ${db.name}"/>
         <!-- Create sql server database and user -->
-    	
+        
         <sql
             classpath="" driver="net.sourceforge.jtds.jdbc.Driver"
             url="jdbc:jtds:sqlserver://${db.sqlserver}"
@@ -880,9 +779,9 @@
             sp_addsrvrolemember '${db.name}' , 'sysadmin';
         </sql>
 
-		<tstamp>
-			<format property="current.time" pattern="MM/dd/yyyy hh:mm"/>
-		</tstamp>
+        <tstamp>
+            <format property="current.time" pattern="MM/dd/yyyy hh:mm"/>
+        </tstamp>
 
         <!-- The client has copies of the creation scripts. Tell the client to populate the DB. -->
         <sshexec host="${guest_address}"
@@ -985,54 +884,27 @@
                 command="ant -f C:/install.xml install"/>
     </target>
 
-	<target name="populate_db" depends="find_guestid">
+    <target name="populate_db" depends="find_guestid">
         <if>
             <equals arg1="${populate_database}" arg2="true"/>
             <then>
-		        <!-- try to populate the db -->
-		        <sshexec host="${guest_address}"
-		                failonerror="true"
-		                trust="true"
-		                username="${guest_userid}"
-		                password="${guest_password}"
-		                command="ant -f C:/install.xml dbpopulation"/>
+                <!-- try to populate the db -->
+                <sshexec host="${guest_address}"
+                        failonerror="true"
+                        trust="true"
+                        username="${guest_userid}"
+                        password="${guest_password}"
+                        command="ant -f C:/install.xml dbpopulation"/>
             </then>
-        	<else>
-        		<echo message="(Populate Database Not Selected)"/>
-        	</else>
+            <else>
+                <echo message="(Populate Database Not Selected)"/>
+            </else>
         </if>
     </target>
-	
-	<target name="restart_vm">
-        <if>
-            <equals arg1="${restart_vm}" arg2="true"/>
-            <then>
-                <echo message= "Running Command:/c &quot;${vmware-cmd}&quot; --server ${physical_address} -U ${host_username} -P ${host_password} --vihost ${host_address} &quot;${config_file_path}&quot; reset soft"/>
-                <exec dir="${vmware-dir}" executable="cmd" failonerror="true">
-                    <arg value="/c"/>
-                    <arg value="${vmware-cmd}"/>
-                    <arg value="--server"/>
-                    <arg value="${physical_address}"/>
-                    <arg value="-U"/>
-                    <arg value="${host_username}"/>
-                    <arg value="-P"/>
-                    <arg value="${host_password}"/>
-                    <arg value="--vihost"/>
-                    <arg value="${host_address}"/>
-                    <arg value="&quot;${config_file_path}&quot;"/>
-                    <arg value="reset"/>
-                    <arg value="soft"/>
-                </exec>
-                <echo message="VM is restarting"/>   
-            </then>
-        	<else>
-        		<echo message="(Restart VM Not Selected)"/>
-        	</else>
-        </if>
-    </target>
+    
 
     <target name="install_eim" depends="find_guestid">
-    	<!-- start the EIM on the remote machine -->
+        <!-- start the EIM on the remote machine -->
         <sshexec host="${guest_address}"
             failonerror="true"
             trust="true"
@@ -1044,7 +916,7 @@
    <!-- verify that the eim webserver is accessible in vm -->
     <target name="verify_eim">
         <!-- wait upto 5 minutes for the EIM to start, error if no response -->
-    	<echo message="Waiting for EIM to start... (up to 5 minutes)"/>
+        <echo message="Waiting for EIM to start... (up to 5 minutes)"/>
         <waitfor maxwait="5" maxwaitunit="minute" checkevery="6" checkeveryunit="second" timeoutproperty="vm.timeout">
             <socket server="${guest_address}" port="8081"/>
         </waitfor>
@@ -1054,31 +926,31 @@
             <then>
                 <echo message="${vm.timeout}"/>
             </then>
-        	<else>
-        		<echo message="EIM started successfully"/>   
-    	    </else>
+            <else>
+                <echo message="EIM started successfully"/>   
+            </else>
         </if>
     </target>
     
     <!-- verify that the webserver is accessible in vm -->
     <target name="verify_webserver">
         <!-- wait upto 5 minutes for the VM to start, error if no response -->
-    	<echo message="Waiting for Webserver to start... (up to 5 minutes)"/>
-    	<limit maxwait="3" maxwaitunit="minute">
+        <echo message="Waiting for Webserver to start... (up to 5 minutes)"/>
+        <limit maxwait="3" maxwaitunit="minute">
             <waitfor maxwait="3" maxwaitunit="minute" checkevery="6" 
                 checkeveryunit="second">
                 <http url="http://${guest_address}:8080/login.jsp" errorsbeginat="400"/>
             </waitfor>
-		</limit>
-    	
-    	<echo message="Waiting for Webserver to start... (up to 5 minutes)"/>
+        </limit>
+        
+        <echo message="Waiting for Webserver to start... (up to 5 minutes)"/>
         <limit maxwait="2" maxwaitunit="minute">
             <waitfor maxwait="2" maxwaitunit="minute" checkevery="6" 
                 checkeveryunit="second" timeoutproperty="vm.timeout">
                 <http url="http://${guest_address}:8080/login.jsp" errorsbeginat="400"/>
             </waitfor>
         </limit>
-    		
+            
 
         <if>
             <isset property="${vm.timeout}"/>
@@ -1099,15 +971,15 @@
                      password="${guest_password}"
                      command="ant -f C:/install.xml start_broker"/>
     </target>
-	
-	<target name="start_dispatch" depends="start_broker,start_service_manager,find_guestid">
-	       <sshexec host="${guest_address}"
-	                 failonerror="true"
-	                 trust="true"
-	                 username="${guest_userid}"
-	                 password="${guest_password}"
-	                 command="ant -f C:/install.xml start_dispatch"/>
-	</target>
+    
+    <target name="start_dispatch" depends="start_broker,start_service_manager,find_guestid">
+           <sshexec host="${guest_address}"
+                     failonerror="true"
+                     trust="true"
+                     username="${guest_userid}"
+                     password="${guest_password}"
+                     command="ant -f C:/install.xml start_dispatch"/>
+    </target>
     
     <target name="start_service_manager" depends="find_guestid">
            <sshexec host="${guest_address}"
@@ -1118,57 +990,57 @@
                      command="ant -f C:/install.xml start_service_manager"/>
     </target>
 
-	<target name="start_all_services" depends="find_guestid">
-		<sshexec host="${guest_address}"
+    <target name="start_all_services" depends="find_guestid">
+        <sshexec host="${guest_address}"
                  failonerror="true"
                  trust="true"
                  username="${guest_userid}"
                  password="${guest_password}"
                  command="ant -f C:/install.xml start_all_services"/>
-	</target>
+    </target>
 
    <target name="start_simulator" depends="find_guestid">
         <if>
             <equals arg1="${start_simulator}" arg2="true"/>
             <then>
-            	<sshexec host="${guest_address}"
-            	                            failonerror="false"
-            	                            trust="true"
-            	                            username="${guest_userid}"
-            	                            password="${guest_password}"
-            	                            command="ant -f C:/install.xml start_simulator"/>
+                <sshexec host="${guest_address}"
+                                            failonerror="false"
+                                            trust="true"
+                                            username="${guest_userid}"
+                                            password="${guest_password}"
+                                            command="ant -f C:/install.xml start_simulator"/>
             </then>
             <else>
-            	<echo message="(Start simulator not selected)"/>
+                <echo message="(Start simulator not selected)"/>
             </else>
         </if>
     </target>
 
     <target name="db_updater" depends="find_guestid">
-    	<property name="db.type" value="${env.DATABASE_TYPE}"/>
-    	
-    	 <if>
-    	 	<or>
+        <property name="db.type" value="${env.DATABASE_TYPE}"/>
+        
+         <if>
+            <or>
                 <equals arg1="${db.type}" arg2="oracle12"/>
                 <equals arg1="${db.type}" arg2="oracle"/>
             </or>
             <then>
-            	<echo message="Update oracle database ${db.name}" />
-            	        <sshexec host="${guest_address}"
-            	                        failonerror="true"
-            	                        trust="true"
-            	                        username="${guest_userid}"
-            	                        password="${guest_password}"
-            	                        command="ant -f C:/install.xml db_updater_oracle"/>
+                <echo message="Update oracle database ${db.name}" />
+                        <sshexec host="${guest_address}"
+                                        failonerror="true"
+                                        trust="true"
+                                        username="${guest_userid}"
+                                        password="${guest_password}"
+                                        command="ant -f C:/install.xml db_updater_oracle"/>
             </then>
             <else>
-            	<echo message="Update SQL Server database ${db.name}" />
-            	        <sshexec host="${guest_address}"
-            	                        failonerror="true"
-            	                        trust="true"
-            	                        username="${guest_userid}"
-            	                        password="${guest_password}"
-            	                        command="ant -f C:/install.xml db_updater_sqlserver"/>
+                <echo message="Update SQL Server database ${db.name}" />
+                        <sshexec host="${guest_address}"
+                                        failonerror="true"
+                                        trust="true"
+                                        username="${guest_userid}"
+                                        password="${guest_password}"
+                                        command="ant -f C:/install.xml db_updater_sqlserver"/>
             </else>
         </if>
     </target>
