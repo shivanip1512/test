@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/9/2020 11:22:01 AM                         */
+/* Created on:     8/3/2020 5:42:50 AM                          */
 /*==============================================================*/
 
 
@@ -1259,6 +1259,9 @@ create table CCurtProgramType  (
    CCurtProgramTypeName VARCHAR2(255),
    constraint PK_CCURTPROGRAMTYPE primary key (CCurtProgramTypeID)
 );
+
+alter table CCurtProgramType
+   add constraint AK_CCurtProgramType_Strategy unique (CCurtProgramTypeStrategy);
 
 /*==============================================================*/
 /* Table: CICUSTOMERPOINTDATA                                   */
