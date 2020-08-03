@@ -16,6 +16,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifierWithUnsupported;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
@@ -285,4 +286,29 @@ public interface AttributeService {
      * This method works recursively on each child group of the requested group.
      */
     List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute);
+
+    /**
+     * Returns Custom Attributes
+     */
+    List<CustomAttribute> getCustomAttributes();
+
+    /**
+     * Returns Custom Attribute for id, null if doesn't exist
+     */
+    CustomAttribute getCustomAttribute(int attributeId);
+
+    /**
+     * Returns List of attributes for identifier
+     */
+    List<CustomAttribute> findCustomAttributesForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier);
+
+    /**
+     * Returns true if the attribute is cached 
+     */
+    boolean isValidAttributeId(int attributeId);
+    
+    /**
+     * Returns true if the assignment is cached 
+     */
+    boolean isValidAssignmentId(int assignmentId);
 }

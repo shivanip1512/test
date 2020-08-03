@@ -10,7 +10,7 @@ public class AssetsCreateRequestAPI {
 
     public static ExtractableResponse<?> createCommChannel(Object body) {
 
-        String pathParam = APIs.CommChannel.createCommChannel;
+        String pathParam = APIs.CommChannel.CREATE_COMM_CHANNEL;
         ExtractableResponse<?> createResponse = ApiCallHelper.post(pathParam, body);
         assertThat(createResponse.statusCode()).isEqualTo(200);
         return createResponse;

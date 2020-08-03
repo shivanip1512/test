@@ -55,7 +55,7 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
         
         modal.getName().setInputValue(name);
         
-        modal.clickOkAndWait();
+        modal.clickOkAndWaitForModalToClose();
         
         waitForPageToLoad("Load Group: " + name, Optional.of(8));
         
@@ -76,7 +76,7 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
         
         ConfirmModal  confirmModal = detailPage.showDeleteLoadGroupModal();
         
-        confirmModal.clickOkAndWait();
+        confirmModal.clickOkAndWaitForModalToClose();
         
         waitForPageToLoad("Setup", Optional.empty());
         

@@ -58,7 +58,7 @@ public class MeterRfn430Sl4CreateTests extends SeleniumTestSetup {
         createModal.getManufacturer().setInputValue(manufacturer);
         createModal.getModel().setInputValue("A3K");
 
-        createModal.clickOkAndWait();
+        createModal.clickOkAndWaitForModalToClose();
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL, Optional.of(10));
 

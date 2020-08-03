@@ -12,11 +12,12 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.eaton.elements.Section;
+import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.assets.commchannels.CommChannelDetailPage;
+import com.eaton.pages.assets.commchannels.CommChannelsListPage;
 import com.eaton.pages.assets.commchannels.CommChannelLocalSerialPortDetailPage;
 import com.eaton.rest.api.assets.AssetsCreateRequestAPI;
 import com.eaton.rest.api.drsetup.JsonFileHelper;
@@ -65,16 +66,6 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         String actualPageTitle = detailPage.getPageTitle();
         
         assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);
-    }
-
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsLocalSerialPort_TabTitlesCorrect() {
-        List<String> titles = detailPage.getTabElement().getTitles();
-
-        softly.assertThat(titles.size()).isEqualTo(2);
-        softly.assertThat(titles.get(0)).isEqualTo("Info");
-        softly.assertThat(titles.get(1)).isEqualTo("Configuration");
-        softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
@@ -175,13 +166,29 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
 
         softly.assertAll();
     }
+    
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
+    public void commChannelDeleteLocalSerial_DeleteCommChannelSuccessfully() {
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String deleteCommChannelName = "Local Serial Comm Channel " + timeStamp;
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsLocalSerialPort_PanelTitleCorrect() {
-        String expectedPanelText = "Comm Channel Information";
-        
-        String actualPanelText = detailPage.getCommChannelInfoPanel().getPanelName();
-        
-        assertThat(actualPanelText).isEqualTo(expectedPanelText);
+        // Creating one LocalSerial port comm channel using hard coded json file.
+        String payloadFile = System.getProperty("user.dir")
+                + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelLocalSerialPort.json";
+
+        Object body = JsonFileHelper.parseJSONFile(payloadFile);
+        jo = (JSONObject) body;
+        jo.put("name", deleteCommChannelName);
+        ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
+        Integer deleteCommChannelId = createResponse.path("id");
+        navigate(Urls.Assets.COMM_CHANNEL_DETAIL + deleteCommChannelId);
+        detailPage = new CommChannelLocalSerialPortDetailPage(driverExt, deleteCommChannelId);
+        String expectedMessage = deleteCommChannelName +" deleted successfully.";
+        ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
+        deleteConfirmModal.clickOkAndWaitForModalToClose();;
+        CommChannelsListPage listPage = new CommChannelsListPage(driverExt);
+        String userMsg = listPage.getUserMessage();
+
+        assertThat(userMsg).isEqualTo(expectedMessage);
     }
 }
