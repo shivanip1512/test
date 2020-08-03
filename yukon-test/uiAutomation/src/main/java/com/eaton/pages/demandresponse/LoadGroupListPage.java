@@ -7,12 +7,11 @@ import com.eaton.pages.PageBase;
 import java.util.Optional;
 
 import org.openqa.selenium.By;
-
 import com.eaton.elements.ActionBtnDropDownElement;
 import com.eaton.elements.Button;
+import com.eaton.elements.DropDownMultiSelectElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.WebTable;							
-import com.eaton.elements.modals.CreateCommChannelModal;
 import com.eaton.elements.modals.CreateDRObjectModal;							
 							
 public class LoadGroupListPage extends PageBase {							
@@ -22,8 +21,7 @@ public class LoadGroupListPage extends PageBase {
     public LoadGroupListPage(DriverExtensions driverExt) {							
         super(driverExt);							
         							
-        requiresLogin = true;							
-        pageUrl = Urls.Assets.COMM_CHANNELS_LIST;							
+        requiresLogin = true;													
         actionBtn = new ActionBtnDropDownElement(this.driverExt);							
     }							
 							
@@ -44,6 +42,10 @@ public class LoadGroupListPage extends PageBase {
     
     public Button getSaveBtn() {
         return new Button(this.driverExt, "Filter");
+    }
+    
+    public DropDownMultiSelectElement getTypes() {
+        return new DropDownMultiSelectElement(this.driverExt, "types");
     }
     							
     public CreateDRObjectModal showAndWaitCreateDemandResponseObject() {        							

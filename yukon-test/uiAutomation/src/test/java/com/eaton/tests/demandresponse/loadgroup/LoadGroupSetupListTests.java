@@ -1,7 +1,8 @@
 package com.eaton.tests.demandresponse.loadgroup;					
 					
-import static org.assertj.core.api.Assertions.assertThat;					
-					
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.ArrayList;
 import java.util.Collections;					
 import java.util.List;					
 					
@@ -22,9 +23,7 @@ import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
 import com.eaton.rest.api.drsetup.JsonFileHelper;					
 import io.restassured.response.ExtractableResponse;					
 					
-public class LoadGroupSetupListTests extends SeleniumTestSetup {					
-					
-					
+public class LoadGroupSetupListTests extends SeleniumTestSetup {									
 					
 		private LoadGroupListPage listPage;	
 		private Integer ldGroupId;
@@ -155,5 +154,17 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 	        String actualCreateModelTitle = createModel.getModalTitle();	
 	        
 	        assertThat(actualCreateModelTitle).isEqualTo(EXPECTED_CREATE_MODEL_TITLE);				
-	    }			
+	    }	
+		
+		@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })			
+		public void ldGrpSetupList_FilterByType_CorrectResultsFound() {
+			List<String> expectedTypes = new ArrayList<>(List.of("Itron Group", "Digi SEP Group"));
+			listPage.getTypes().selectItemByText("Itron Group");
+			listPage.getTypes().selectItemByText("Digi SEP Group");
+			
+			List<String> actualTypes = listPage.getTable().getDataRowsTextByCellIndex(2);
+			
+			assertThat(actualTypes).containsOnlyElementsOf(expectedTypes);
+
+		}
 }					
