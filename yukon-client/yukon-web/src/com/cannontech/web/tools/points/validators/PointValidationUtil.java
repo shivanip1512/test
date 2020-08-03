@@ -58,7 +58,7 @@ public class PointValidationUtil extends ValidationUtils {
     public void validatePointOffset(LitePointModel pointModel, String fieldName, Errors errors,
             boolean isCopyOrCreate) {
 
-        if (pointModel.isPhysicalOffset() && !errors.hasFieldErrors("pointBase.point.pointOffset")) {
+        if (pointModel.isPhysicalOffset()) {
             MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
             String physicalPort = messageSourceAccessor.getMessage("yukon.web.modules.tools.point.physicalOffset");
             if (pointModel.getPointType().isCalcPoint()) {
