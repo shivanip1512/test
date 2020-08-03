@@ -1,5 +1,6 @@
 package com.cannontech.web.common.pao.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -13,8 +14,8 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
@@ -29,6 +30,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
 public class YukonPointHelperImpl implements YukonPointHelper {
 
@@ -41,7 +43,7 @@ public class YukonPointHelperImpl implements YukonPointHelper {
     public List<LiteYukonPoint> getYukonPoints(final YukonPao pao, SortingParameters sorting,
             final MessageSourceAccessor accessor) {
         
-        List<LiteYukonPoint> liteYukonPoints = getYukonPointsForSorting(pao);
+        List<LiteYukonPoint> liteYukonPoints = getYukonPointsForSorting(pao, accessor);
         PointSortField sortField = PointSortField.valueOf(sorting.getSort());
         if (sortField != PointSortField.ATTRIBUTE) {
             Collections.sort(liteYukonPoints, LiteYukonPoint.getComparatorForSortField(sortField));
@@ -71,32 +73,49 @@ public class YukonPointHelperImpl implements YukonPointHelper {
     /**
      * Method to get list of YukonPoints for sorting
      */
-    private List<LiteYukonPoint> getYukonPointsForSorting(final YukonPao pao) {
+    private List<LiteYukonPoint> getYukonPointsForSorting(YukonPao pao, MessageSourceAccessor accessor) {
         List<LitePoint> points = pointDao.getLitePointsByPaObjectId(pao.getPaoIdentifier().getPaoId());
+        Multimap<PaoType, Attribute> definedAttributes = paoDefinitionDao.getPaoTypeAttributesMultiMap();
         return points.stream().map(point -> {
             PaoPointIdentifier paoPointIdent = new PaoPointIdentifier(pao.getPaoIdentifier(),
                     new PointIdentifier(point.getPointTypeEnum(), point.getPointOffset()));
-            Set<BuiltInAttribute> attributes = paoDefinitionDao
+            
+            Set<BuiltInAttribute> buildInAttributes = paoDefinitionDao
                     .findAttributeForPaoTypeAndPoint(paoPointIdent.getPaoTypePointIdentifier());
-
-            if (!attributes.isEmpty()) {
-                return LiteYukonPoint.of(paoPointIdent, attributes.iterator().next(), point.getPointName(), point.getLiteID());
-            }
-
             List<CustomAttribute> customAttributes = attributeService
                     .findCustomAttributesForPaoTypeAndPoint(paoPointIdent.getPaoTypePointIdentifier());
-
-            if (!customAttributes.isEmpty()) {
-                return LiteYukonPoint.of(paoPointIdent, customAttributes.iterator().next(), point.getPointName(),
-                        point.getLiteID());
+             
+            //combine all attributes      
+            List<Attribute> attributes = new ArrayList<>();
+            attributes.addAll(buildInAttributes);
+            attributes.addAll(customAttributes);
+            //sort in alphabetical order
+            attributes.sort((Attribute a1, Attribute a2) -> accessor.getMessage(a1).compareToIgnoreCase(
+                    accessor.getMessage(a2)));
+            //no attributes
+            if (attributes.isEmpty()) {
+                return LiteYukonPoint.of(paoPointIdent, null, attributes, point.getPointName(), point.getLiteID());
+            //one attribute
+            } else if (attributes.size() == 1) {
+                return LiteYukonPoint.of(paoPointIdent, attributes.get(0), attributes, point.getPointName(), point.getLiteID());
+            //has at least one Custom attribute, display the first one
+            } else if (buildInAttributes.isEmpty()) {
+                return LiteYukonPoint.of(paoPointIdent, attributes.get(0), attributes, point.getPointName(), point.getLiteID());
+            // has only built in attributes, display the first one from the xml file
+            // <pointInfo name="Delivered kWh" init="true" attributes="USAGE,DELIVERED_KWH"/>
+            } else {
+                Attribute attribute = definedAttributes.get(pao.getPaoIdentifier().getPaoType())
+                        .stream().filter(attr -> buildInAttributes.contains((BuiltInAttribute)attr))
+                        .findFirst()
+                        .orElse(null);
+                return LiteYukonPoint.of(paoPointIdent, attribute, attributes, point.getPointName(), point.getLiteID());
             }
-            return LiteYukonPoint.of(paoPointIdent, null, point.getPointName(), point.getLiteID());
         }).collect(Collectors.toList());
     }
 
     @Override
-    public List<LiteYukonPoint> getYukonPoints(final YukonPao pao) {
-        List<LiteYukonPoint> liteYukonPoints = getYukonPointsForSorting(pao);
+    public List<LiteYukonPoint> getYukonPoints(final YukonPao pao, MessageSourceAccessor accessor) {
+        List<LiteYukonPoint> liteYukonPoints = getYukonPointsForSorting(pao, accessor);
         Collections.sort(liteYukonPoints, LiteYukonPoint.getComparatorForSortField(PointSortField.POINTNAME));
         return liteYukonPoints;
     }
