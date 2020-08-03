@@ -710,6 +710,9 @@
     <entry key="yukon.common.attribute.builtInAttribute.FLUSH_LOG">Flush Log</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SNAP_TO_GOLD">Snap to Gold</entry>
     <entry key="yukon.common.attribute.builtInAttribute.EVENT_RECEIVED">Event Received</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.EVENT_STARTED">Event Started</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.EVENT_CANCELLED">Event Cancelled</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.EVENT_STOPPED">Event Stopped</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOAD_STATUS">Load Status</entry>
 
     

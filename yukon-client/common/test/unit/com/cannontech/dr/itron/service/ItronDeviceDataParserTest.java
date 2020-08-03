@@ -83,6 +83,36 @@ public class ItronDeviceDataParserTest {
     }
     
     @Test
+    public void validateRowParsingForEventStarted() {
+        String[] rowData = rowData("type: 0, log event ID: 14 (0x0e) - Event Started, payload: Event ID (130093) data(0001FC2D00)");
+        Collection<PointData> data = parseRow(BuiltInAttribute.EVENT_STARTED, rowData);
+        Assert.assertEquals(1, data.size());
+        PointData pointData = (PointData) data.toArray()[0];
+        double value = pointData.getValue();
+        Assert.assertEquals(130093, value, .1);
+    }
+
+    @Test
+    public void validateRowParsingForEventStopped() {
+        String[] rowData = rowData("type: 0, log event ID: 15 (0x0F) - Event Stopped, payload: Event ID (130094) data(0001FC2E00)");
+        Collection<PointData> data = parseRow(BuiltInAttribute.EVENT_STOPPED, rowData);
+        Assert.assertEquals(1, data.size());
+        PointData pointData = (PointData) data.toArray()[0];
+        double value = pointData.getValue();
+        Assert.assertEquals(130094, value, .1);
+    }
+
+    @Test
+    public void validateRowParsingForEventCancelled() {
+        String[] rowData = rowData("type: 1, log event ID: 16 (0x10) - Event Cancelled, payload: Event ID (645117902) data(2673B7CE00)");
+        Collection<PointData> data = parseRow(BuiltInAttribute.EVENT_CANCELLED, rowData);
+        Assert.assertEquals(1, data.size());
+        PointData pointData = (PointData) data.toArray()[0];
+        double value = pointData.getValue();
+        Assert.assertEquals(645117902, value, .1);
+    }
+
+    @Test
     public void validateRowParsingForIncrementalEvent() {
         String[] rowData = rowData("type: 1, log event ID: 0 (0x00) - Power Loss, payload:  data(0000000000)");
         Collection<PointData> data = parseRow(BuiltInAttribute.BLINK_COUNT, rowData);
