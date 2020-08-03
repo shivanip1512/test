@@ -37,7 +37,7 @@ import com.cannontech.web.admin.service.impl.CustomAttributeService;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
-@RequestMapping("/attributeAssignment")
+@RequestMapping("/attributeAssignments")
 @CheckPermissionLevel(property = YukonRoleProperty.ADMIN_MANAGE_ATTRIBUTES, level = HierarchyPermissionLevel.OWNER)
 public class CustomAttributeAssignmentApiController {
 
