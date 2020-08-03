@@ -14,7 +14,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.DataDependencyException;
-import com.cannontech.common.exception.DataDependencyException.DependancyType;
+import com.cannontech.common.exception.DataDependencyException.DependencyType;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.dao.AttributeDao;
@@ -169,10 +169,10 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
             jdbcTemplate.update(sql);
         } else {
             DataDependencyException exception = new DataDependencyException(" Attribute " + attributeId + " cannot be deleted");
-            exception.addDependancy(DependancyType.ATTRIBUTE, attributeDao.getCustomAttribute(attributeId));
-            exception.addDependancy(DependancyType.EXPORT_FORMAT_NAMES, new HashSet<>(exceptionDetails));
-            log.debug("attribute:{}", exception.getDependancy(DependancyType.ATTRIBUTE, CustomAttribute.class));
-            log.debug("format names:{}", exception.getDependancy(DependancyType.EXPORT_FORMAT_NAMES, Set.class));
+            exception.addDependency(DependencyType.ATTRIBUTE, attributeDao.getCustomAttribute(attributeId));
+            exception.addDependency(DependencyType.EXPORT_FORMAT_NAMES, new HashSet<>(exceptionDetails));
+            log.debug("attribute:{}", exception.getDependency(DependencyType.ATTRIBUTE, CustomAttribute.class));
+            log.debug("format names:{}", exception.getDependency(DependencyType.EXPORT_FORMAT_NAMES, Set.class));
             throw exception;
         }
     }

@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class DataDependencyException extends Exception {
 
-    public enum DependancyType {
+    public enum DependencyType {
         //CustomAttribute attr = exception.getDependancy(DependancyType.ATTRIBUTE, CustomAttribute.class);
         ATTRIBUTE,
         DEVICE_DATA_MONITOR_NAMES,
@@ -13,7 +13,7 @@ public class DataDependencyException extends Exception {
         EXPORT_FORMAT_NAMES;
     }
     
-    private Map<DependancyType, Object> dependencies = new HashMap<>();
+    private Map<DependencyType, Object> dependencies = new HashMap<>();
 
     private static final long serialVersionUID = 1L;
 
@@ -21,11 +21,11 @@ public class DataDependencyException extends Exception {
         super(message);
     }
     
-    public void addDependancy(DependancyType type, Object dependancy) {
+    public void addDependency(DependencyType type, Object dependancy) {
         dependencies.put(type, dependancy);
     }
     
-    public <T> T getDependancy(DependancyType type, Class<T> to) {
+    public <T> T getDependency(DependencyType type, Class<T> to) {
         return dependencies.get(type) == null ? null : to.cast(dependencies.get(type));
     }
 }
