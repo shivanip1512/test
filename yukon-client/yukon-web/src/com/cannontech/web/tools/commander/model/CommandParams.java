@@ -55,7 +55,7 @@ public class CommandParams {
     }
     
     public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
+        this.serialNumber = serialNumber.trim();
     }
     
     public String getCommand() {
