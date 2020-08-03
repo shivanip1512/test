@@ -48,11 +48,11 @@ dependencies {
 
 test{
 	useTestNG() {
-		//suites 'smoketests.xml'
 		suites 'testng.xml'
-		useDefaultListeners = true
-		outputDirectory = file("$buildDir/testngOutput")
 	}
 	
-	reports.html.enabled = false
+	testLogging {
+        events "PASSED", "FAILED", "SKIPPED"
+    }
+
 }
