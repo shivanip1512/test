@@ -430,10 +430,10 @@ public class AttributesController {
     
     public enum AssignmentSortBy implements DisplayableEnum {
 
-        attributeName(SortBy.ATTRIBUTE_NAME),
-        deviceType(SortBy.DEVICE_TYPE),
-        pointType(SortBy.POINT_TYPE),
-        pointOffset(SortBy.POINT_OFFSET);
+        attributeName(SortBy.attributeName),
+        deviceType(SortBy.paoType),
+        pointType(SortBy.pointType),
+        pointOffset(SortBy.pointOffset);
         
         private final SortBy value;
         

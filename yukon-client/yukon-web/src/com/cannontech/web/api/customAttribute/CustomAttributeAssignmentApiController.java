@@ -78,12 +78,12 @@ public class CustomAttributeAssignmentApiController {
     /**
      * 
      * Example url:
-     * /api/attributeAssignment?attributeIds=1&attributeIds=3&paoTypes=VIRTUAL_SYSTEM&paoTypes=RFN420FL&sort=ATTRIBUTE_NAME&dir=desc
+     * /api/attributeAssignment?attributeIds=1&attributeIds=3&paoTypes=VIRTUAL_SYSTEM&paoTypes=RFN420FL&sort=attributeName&dir=desc
      * 
      */
     @GetMapping("")
     public ResponseEntity<Object> list(Integer[] attributeIds, PaoType[] paoTypes,
-            @DefaultSort(dir = Direction.asc, sort = "ATTRIBUTE_NAME") SortingParameters sorting) {
+            @DefaultSort(dir = Direction.asc, sort = "attributeName") SortingParameters sorting) {
         SortBy sortBy = CustomAttributeDao.SortBy.valueOf(sorting.getSort());
         Direction direction = sorting.getDirection();
         List<Integer> attributeIdList = new ArrayList<>();
