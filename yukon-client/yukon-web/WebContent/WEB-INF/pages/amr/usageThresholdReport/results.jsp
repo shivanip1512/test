@@ -57,7 +57,7 @@
                     <tags:nameValue2 nameKey=".filter.dataAvailability">
                         <div class="button-group stacked">
                             <c:forEach var="availability" items="${dataAvailabilityOptions}">
-                                <tags:check name="availability" key=".dataAvailability.${availability}" classes="M0" value="${availability}" checked="true" buttonTextStyle="color:${availability.color}"></tags:check>
+                                <tags:check name="availability" key=".dataAvailability.${availability}" classes="M0" value="${availability}" checked="true" buttonTextStyle="color:${availability.colorHex}"></tags:check>
                             </c:forEach>
                         </div>
                     </tags:nameValue2>
@@ -87,6 +87,6 @@
     </div>
 
     <cti:includeScript link="/resources/js/pages/yukon.ami.usage.threshold.report.js"/>
-    <cti:includeScript link="/resources/js/pages/yukon.tools.paonotespopup.js"/>    
+    <cti:includeScript link="/resources/js/pages/yukon.tools.paonotespopup.js"/>
 
 </cti:standardPage>

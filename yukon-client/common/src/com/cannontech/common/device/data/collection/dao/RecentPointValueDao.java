@@ -19,21 +19,25 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 public interface RecentPointValueDao {
     
     enum RangeType {
-        AVAILABLE(YukonColorPalette.GREEN.getHexValue()),
-        EXPECTED(YukonColorPalette.BLUE.getHexValue()),
-        OUTDATED(YukonColorPalette.ORANGE.getHexValue()),
-        UNAVAILABLE(YukonColorPalette.GRAY.getHexValue());
+        AVAILABLE(YukonColorPalette.GREEN),
+        EXPECTED(YukonColorPalette.BLUE),
+        OUTDATED(YukonColorPalette.ORANGE),
+        UNAVAILABLE(YukonColorPalette.GRAY);
 
         private final String baseKey = "yukon.web.modules.amr.dataCollection.detail.rangeType.";
 
-        private String color;
+        private YukonColorPalette color;
 
-        private RangeType(String color) {
+        private RangeType(YukonColorPalette color) {
             this.color = color;
         }
 
-        public String getColor() {
+        public YukonColorPalette getColor() {
             return color;
+        }
+        
+        public String getColorHex() {
+            return color.getHexValue();
         }
 
         public String getLabelKey() {

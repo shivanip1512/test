@@ -1,7 +1,6 @@
 package com.cannontech.web.tools.mapping.model;
 
 import java.util.Arrays;
-import com.cannontech.common.YukonColorPalette;
 import java.util.Comparator;
 import java.util.List;
 
@@ -9,6 +8,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.rfn.message.neighbor.NeighborData;
 import com.google.common.collect.Lists;
@@ -81,27 +81,27 @@ public class NetworkMapFilter {
     }
     
     public enum Color {
-        GREEN(YukonColorPalette.GREEN.getHexValue(), 1),
-        BLUE(YukonColorPalette.BLUE.getHexValue(), 2),
-        ORANGE(YukonColorPalette.ORANGE.getHexValue(), 3),
-        YELLOW(YukonColorPalette.YELLOW.getHexValue(), 4),
-        WINE(YukonColorPalette.WINE.getHexValue(), 5),
-        TEAL(YukonColorPalette.TEAL.getHexValue(), 6),
-        LIGHT_GREEN(YukonColorPalette.SAGE.getHexValue(), 7),
-        PURPLE(YukonColorPalette.PURPLE.getHexValue(), 8),
-        SKY(YukonColorPalette.SKY.getHexValue(), 9),
-        GREY(YukonColorPalette.GRAY.getHexValue(), 10);
+        GREEN(YukonColorPalette.GREEN, 1),
+        BLUE(YukonColorPalette.BLUE, 2),
+        ORANGE(YukonColorPalette.ORANGE, 3),
+        YELLOW(YukonColorPalette.YELLOW, 4),
+        WINE(YukonColorPalette.WINE, 5),
+        TEAL(YukonColorPalette.TEAL, 6),
+        LIGHT_GREEN(YukonColorPalette.SAGE, 7),
+        PURPLE(YukonColorPalette.PURPLE, 8),
+        SKY(YukonColorPalette.SKY, 9),
+        GREY(YukonColorPalette.GRAY, 10);
         
-        private Color(String hexColor, int order) {
-            this.hexColor = hexColor;
+        private Color(YukonColorPalette color, int order) {
+            this.color = color;
             this.order = order;
         }
 
-        private final String hexColor;
+        private final YukonColorPalette color;
         private final int order;
         
         public String getHexColor() {
-            return hexColor;
+            return color.getHexValue();
         }
         
         public int getOrder() {
