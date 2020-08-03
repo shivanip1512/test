@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -56,6 +57,8 @@ import com.cannontech.dr.service.impl.DatedShedtimeStatus;
 import com.cannontech.dr.service.impl.DatedStatus;
 import com.cannontech.dr.service.impl.RuntimeStatus;
 import com.cannontech.dr.service.impl.ShedtimeStatus;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -76,18 +79,44 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
     @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
-    private static final int defaultRuntimeCalcInterval = 2;
-    
+    private ScheduledFuture<?> scheduledFuture;
+
     @PostConstruct
     public void init() {
-        Integer runtimeCalcInterval = globalSettingDao.getNullableInteger(GlobalSettingType.RUNTIME_CALCULATION_INTERVAL);
-        runtimeCalcInterval = runtimeCalcInterval == null ? defaultRuntimeCalcInterval : runtimeCalcInterval;
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.GLOBAL_SETTING, this::databaseChangeEvent);
 
-        //Schedule calculateRuntimes() every runtimeCalcInterval hours, with the first run 1 minute after the Itron services init.
-        scheduledExecutor.scheduleAtFixedRate(this::calculateDataLogs, 1, runtimeCalcInterval * 60, TimeUnit.MINUTES);
+        scheduleCalculateDataLogs();
         log.info("Initialized ItronRuntimeCalcService");
     }
-    
+
+    /**
+     * Called when any global setting is updated
+     */
+    private void databaseChangeEvent(DatabaseChangeEvent event) {
+        if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.RUNTIME_CALCULATION_INTERVAL)) {
+            if (scheduledFuture != null) {
+                scheduledFuture.cancel(false);
+            }
+            // RuntimeCalcInterval changed, schedule Calculate DataLogs with the updated interval.
+            scheduleCalculateDataLogs();
+        }
+    }
+
+    /**
+     * Schedule Calculate Runtimes.
+     */
+    private void scheduleCalculateDataLogs() {
+        // Schedule calculateDataLogs() every runtimeCalcInterval hours, with the first run 1 minute after the Itron services init.
+        scheduledFuture = scheduledExecutor.scheduleAtFixedRate(this::calculateDataLogs, 1, getRuntimeCalcInterval() * 60, TimeUnit.MINUTES);
+    }
+
+    /**
+     * Get Runtime Calculation Interval
+     */
+    private Integer getRuntimeCalcInterval() {
+        return globalSettingDao.getInteger(GlobalSettingType.RUNTIME_CALCULATION_INTERVAL);
+    }
+
     @Override
     public void calculateDataLogs() {
         try {

@@ -130,7 +130,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     ITRON_SFTP_USERNAME(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_SFTP_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_SFTP_PRIVATE_KEY_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
-    RUNTIME_CALCULATION_INTERVAL(GlobalSettingSubCategory.DR, integerType(), 2),
+    RUNTIME_CALCULATION_INTERVAL(GlobalSettingSubCategory.DR, integerType(), 2, GlobalSettingTypeValidators.runtimeCalcInterval),
 
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
