@@ -44,7 +44,7 @@
                 </c:forEach>
             </tbody>
         </table>
-        <tags:paginatedResponseControls response="${virtualDevices}" adjustPageCount="true"/>
+        <tags:paginatedResponseControls response="${virtualDevices}" adjustPageCount="true" thousands="true"/>
     </div>
     <c:if test="${empty virtualDevices}">
         <span class="empty-list compact-results-table"><i:inline key="yukon.common.search.noResultsFound"/></span>

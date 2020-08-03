@@ -73,9 +73,9 @@ public class VirtualDeviceController {
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.virtualDeviceUrl);
             URIBuilder ub = new URIBuilder(url);
-            ub.addParameter("sort_by", sortBy.getValue().name());
+            ub.addParameter("sort", sortBy.getValue().name());
             ub.addParameter("direction", dir.name());
-            ub.addParameter("items_per_page", Integer.toString(paging.getItemsPerPage()));
+            ub.addParameter("itemsPerPage", Integer.toString(paging.getItemsPerPage()));
             ub.addParameter("page", Integer.toString(paging.getPage() - 1));
 
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForParameterizedTypeObject(userContext, request, ub.toString(), 
@@ -89,7 +89,7 @@ public class VirtualDeviceController {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
         } catch (RestClientException ex) {
-            log.error("Error retrieving virtual devices. Error: {}", ex.getMessage());
+            log.error("Error retrieving virtual devices. Error: {}", ex.getMessage(), ex);
             String virtualDevicesLabel = accessor.getMessage("yukon.web.modules.operator.virtualDevices.list.pageName");
             flash.setError(new YukonMessageSourceResolvable("yukon.web.api.retrieve.error", virtualDevicesLabel, ex.getMessage()));
         } catch (URISyntaxException e) {
