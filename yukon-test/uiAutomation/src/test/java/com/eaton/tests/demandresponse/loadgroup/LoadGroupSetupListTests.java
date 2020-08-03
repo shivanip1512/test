@@ -11,6 +11,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+
 import com.eaton.elements.WebTableRow;
 import com.eaton.elements.modals.CreateDRObjectModal;
 import com.eaton.framework.DriverExtensions;
@@ -158,9 +159,22 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldGrpSetupList_FilterByType_CorrectResultsFound() {
-		List<String> expectedTypes = new ArrayList<>(List.of("Itron Group", "Digi SEP Group"));
+		List<String> expectedTypes = new ArrayList<>(List.of("Itron Group", "Honeywell Group"));
+		
+		String payloadFile = System.getProperty("user.dir")
+				+ "\\src\\test\\resources\\payload\\payload.loadgroup\\HoneyWell.json";
+		Object bodyLdGroupHoneywell = JsonFileHelper.parseJSONFile(payloadFile);
+
+		ExtractableResponse<?> createResponseLdGrpHoneyWell = DrSetupCreateRequest.createLoadGroup(bodyLdGroupHoneywell);
+		
+		String payloadFileItron = System.getProperty("user.dir")
+				+ "\\src\\test\\resources\\payload\\payload.loadgroup\\HoneyWell.json";
+		Object bodyLdGroupItron = JsonFileHelper.parseJSONFile(payloadFile);
+
+		ExtractableResponse<?> createResponseLdGrpItron = DrSetupCreateRequest.createLoadGroup(bodyLdGroupItron);
+				
 		listPage.getTypes().selectItemByText("Itron Group");
-		listPage.getTypes().selectItemByText("Digi SEP Group");
+		listPage.getTypes().selectItemByText("Honeywell Group");
 
 		List<String> actualTypes = listPage.getTable().getDataRowsTextByCellIndex(2);
 
