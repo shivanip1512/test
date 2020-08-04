@@ -166,21 +166,21 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEcobeeEdit_GeneralSectionTitleCorrect() {
+	public void ldGrpEcobeeEdit_generalSectionTitleCorrect() {
 
 		Section general = editPage.getPageSection("General");
 		assertThat(general.getSection()).isNotNull();
 	}
 
 	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEcobeeEdit_OptionalAttributeSectionTitleCorrect() {
+	public void ldGrpEcobeeEdit_optionalAttributeSectionTitleCorrect() {
 
 		Section optAttr = editPage.getPageSection("Optional Attributes");
 		assertThat(optAttr.getSection()).isNotNull();
 	}
 
 	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEcobeeEdit_GeneralSectionLabelsCorrect() {
+	public void ldGrpEcobeeEdit_generalSectionLabelsCorrect() {
 		String sectionName = "General";
 		List<String> expectedLabels = new ArrayList<>(List.of("Name:", "Type:"));
 
@@ -190,7 +190,7 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEcobeeEdit_OptionalAttrSectionLabelsCorrect() {
+	public void ldGrpEcobeeEdit_optionalAttrSectionLabelsCorrect() {
 		String sectionName = "Optional Attributes";
 		List<String> expectedLabels = new ArrayList<>(List.of("kW Capacity:", "Disable Group:", "Disable Control:"));
 
