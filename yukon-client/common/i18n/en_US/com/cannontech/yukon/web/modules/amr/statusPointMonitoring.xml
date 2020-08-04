@@ -3,6 +3,31 @@
 <properties>
     <!-- breadcrumb placeholder -->
     <entry key="yukon.web.modules.amr.statusPointMonitorProcessing.pageName">Outage Notification</entry>
+    
+    <!-- Common keys -->
+    <entry key="yukon.web.modules.amr.statusPointMonitor.deviceGroup">Device Group</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitor.popupInfo.deviceGroup.title">Device Group Picker Help</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitor.popupInfo.deviceGroup"><![CDATA[
+         <br>
+         The group of devices who's status points will be monitored.
+         <br><br>
+    ]]></entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitor.stateGroup">State Group</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitor.stateActionsTable.title">Outage Event Processors</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitor.stateActionsTable.prevState">Previous State</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitor.stateActionsTable.nextState">Next State</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitor.stateActionsTable.action">MultiSpeak Event Type</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitor.stateActionsTable.helpText"><![CDATA[
+         The outage event processors define the rules that cause a Multispeak Outage Detection Event to be sent to all MultiSpeak vendors supporting the OA_Server.
+         <br><br>
+         Previous State: The last value of a point saved in the database.
+         <br><br>
+         Next State: The next value of a point that comes in from a device.
+         <br><br>
+         Action: The message to be sent to all multispeak vendors supporting ODEventNotification messages.
+         <br><br>
+    ]]></entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitor.monitoring">Monitoring</entry>
 
     <!-- StatusPointMonitorsWidget render.jsp -->
     <entry key="yukon.web.widgets.statusPointMonitorsWidget.noMonitors">No Outage Notification Monitors</entry>
@@ -15,7 +40,6 @@
     <!-- StatusPointMonitorController create.jsp -->
     <entry key="yukon.web.modules.amr.statusPointMonitorCreator.pageName">Outage Notification</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorCreator.pageDescription">New Outage Notification Monitor</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorCreator.title">Outage Notification</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorCreator.setup.title">Setup</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorCreator.selectStateGroup">Select State Group</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorCreator.create.labelBusy">Creating</entry>
@@ -24,65 +48,15 @@
     <!-- StatusPointMonitorController edit.jsp -->
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.pageName">Outage Notification Monitoring</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.title">Outage Notification Monitoring</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.sectionHeader.title">Edit</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.section.editSetup">Edit Setup</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.deviceGroup">Device Group</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.stateGroup">State Group</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.statusPointMonitoring">Outage Notification Monitoring</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.delete.title">Delete Outage Notification Monitor</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.stateActionsTable.title">Outage Event Processors</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.stateActionsTable.prevState">Previous State</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.stateActionsTable.nextState">Next State</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.stateActionsTable.action">MultiSpeak Event Type</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.state.dontCare">Don't Care</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.state.difference">Difference</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.stateActionsTable.helpText"><![CDATA[
-         The outage event processors define the rules that cause a Multispeak Outage Detection Event to be sent to all MultiSpeak vendors supporting the OA_Server.
-         <br><br>
-         Previous State: The last value of a point saved in the database.
-         <br><br>
-         Next State: The next value of a point that comes in from a device.
-         <br><br>
-         MultiSpeak Event Type: The message to be sent to all multispeak vendors supporting ODEventNotification messages.
-         <br><br>
-    ]]></entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.popupInfo.deviceGroup.title">Device Group Picker Help</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.popupInfo.deviceGroup"><![CDATA[
-         <br>
-         The group of devices who's status points will be monitored.
-         <br><br>
-    ]]></entry>
-    
+
     <!-- StatusPointMonitorController view.jsp -->
     <entry key="yukon.web.modules.amr.statusPointMonitorView.pageName">Outage Notification Monitoring</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorView.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorView.title">Outage Notification Monitoring</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorView.sectionHeader.title">Info</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorView.deviceGroup">Device Group</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorView.stateGroup">State Group</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorView.monitoring">Monitoring</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorView.stateActionsTable.title">Outage Event Processors</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorView.stateActionsTable.header.prevState">Previous State</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorView.stateActionsTable.header.nextState">Next State</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorView.stateActionsTable.header.action">MultiSpeak Event Type</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorView.stateActionsTable.noProcessors">No Outage Event Processors Exist (Click Edit button below to Add)</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorView.stateActionsTable.helpText"><![CDATA[
-         The outage event processors define the rules that cause a Multispeak Outage Detection Event to be sent to all MultiSpeak vendors supporting the OA_Server.
-         <br><br>
-         Previous State: The last value of a point saved in the database.
-         <br><br>
-         Next State: The next value of a point that comes in from a device.
-         <br><br>
-         Action: The message to be sent to all multispeak vendors supporting ODEventNotification messages.
-         <br><br>
-    ]]></entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorView.popupInfo.deviceGroup.title">Device Group Picker Help</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorView.popupInfo.deviceGroup"><![CDATA[
-         <br>
-         The group of devices who's status points will be monitored.
-         <br><br>
-    ]]></entry>
     
     <!-- StatusPointMonitorController view.jsp AND edit.jsp (keys generated by MonitorEvaluatorStatus.java and StatusPointMonitorStateType.java)-->
     <entry key="yukon.web.modules.amr.monitor.ENABLED">Enabled</entry>
@@ -93,8 +67,7 @@
     <!-- FlashScope messages -->
     <entry key="yukon.web.modules.amr.statusPointMonitor.created">Outage Notification Monitor Created</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitor.updated">Outage Notification Updated: {0}</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitor.deleted">Outage Notification  Deleted: {0}</entry>
-
+    <entry key="yukon.web.modules.amr.statusPointMonitor.deleted">Outage Notification Deleted: {0}</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitor.monitorNotFound">Outage Notification Monitor Does Not Exist.</entry>
 
 </properties>
