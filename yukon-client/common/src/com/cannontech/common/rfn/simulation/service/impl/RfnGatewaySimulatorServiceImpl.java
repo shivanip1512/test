@@ -263,7 +263,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
      * Return RfnIdentifier instance based on serial and model number.
      */
     private RfnIdentifier createGatewayRfnIdentifier(String serial, String model) {
-        String manufacturer = RfnDeviceCreationService.GW_MANUFACTURER_EATON.equals(model) ? 
+        String manufacturer = RfnDeviceCreationService.GATEWAY_4_MODEL_STRING.equals(model) ? 
                                   RfnDeviceCreationService.GW_MANUFACTURER_EATON : RfnDeviceCreationService.GW_MANUFACTURER_CPS;
         return new RfnIdentifier(serial, manufacturer, model);
     }
