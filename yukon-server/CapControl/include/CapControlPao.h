@@ -71,6 +71,8 @@ protected:
 
 private:
 
+    void syncDisabledStateAndPoint( const int priority ) const;
+
     bool assignCommonPoint( const long pointID, const long pointOffset, const CtiPointType_t pointType );
 
     virtual bool assignSpecializedPoint( const long pointID, const long pointOffset, const CtiPointType_t pointType );

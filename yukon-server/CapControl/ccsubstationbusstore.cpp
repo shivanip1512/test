@@ -2131,34 +2131,45 @@ bool CtiCCSubstationBusStore::UpdatePaoDisableFlagInDB(CapControlPao* pao, bool 
 {
     CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
-    bool updateSuccessful = updateDisableFlag(pao->getPaoId(), disableFlag);
-
-    CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(pao->getPaoId(), ChangePAODb,
-                                                  pao->getPaoCategory(),
-                                                  pao->getPaoType(),
-                                                  ChangeTypeUpdate);
-
-    if (forceFullReload)
+    if ( pao->getDisableFlag() != disableFlag )
     {
-        dbChange->setSource(CAP_CONTROL_RELOAD_DBCHANGE_MSG_SOURCE);
+        CTILOG_DEBUG( dout, pao->getPaoName() << " - Changing state to '"
+                        << ( disableFlag ? "Dis" : "En" ) << "abled'." );
+
+        if ( updateDisableFlag( pao->getPaoId(), disableFlag ) )
+        {
+            auto dbChange =
+                std::make_unique<CtiDBChangeMsg>(
+                    pao->getPaoId(),
+                    ChangePAODb,
+                    pao->getPaoCategory(),
+                    pao->getPaoType(),
+                    ChangeTypeUpdate );
+
+            dbChange->setSource(
+                forceFullReload
+                    ? CAP_CONTROL_RELOAD_DBCHANGE_MSG_SOURCE
+                    : CAP_CONTROL_DBCHANGE_MSG_SOURCE );
+
+            pao->setDisableFlag( disableFlag, disableFlag ? MAXPRIORITY : 7 );
+
+            CTILOG_DEBUG( dout, pao->getPaoName() << " - Issuing database change." );
+
+            CtiCapController::getInstance()->sendMessageToDispatch( dbChange.release(), CALLSITE );
+
+            return true;
+        }
+        else
+        {
+            CTILOG_ERROR( dout, pao->getPaoName() << " - Failed to update state in database." );
+        }
     }
     else
     {
-        dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
+        CTILOG_DEBUG( dout, pao->getPaoName() << " - Ignoring requested state change, the object is already in that state." );
     }
 
-    if (disableFlag)
-    {
-        pao->setDisableFlag(disableFlag, MAXPRIORITY);//high priority, process before DB Change
-        CtiCapController::getInstance()->sendMessageToDispatch(dbChange, CALLSITE);
-    }
-    else
-    {
-        CtiCapController::getInstance()->sendMessageToDispatch(dbChange, CALLSITE);
-        pao->setDisableFlag(disableFlag); //normal priority, DB Change will be processed first
-    }
-
-    return updateSuccessful;
+    return false;
 }
 
 /*---------------------------------------------------------------------------
