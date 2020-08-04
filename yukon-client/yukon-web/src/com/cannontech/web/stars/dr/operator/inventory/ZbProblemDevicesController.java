@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -62,12 +62,12 @@ public class ZbProblemDevicesController {
         for (LiteState state : states.getStatesList()) {
             String colorString;
             int fgColor = state.getFgColor();
-            if (fgColor == Colors.RED_ID) {
+            if (fgColor == YukonColorPalette.WINE.getColorId()) {
                 colorString = "#D14836"; // yukon.css .error
             } else {
-                colorString = Colors.getColorString(fgColor);
+                colorString = YukonColorPalette.getColor(fgColor).getHexValue();
             }
-            stateColorMap.put(new Double(state.getStateRawState()), colorString);
+            stateColorMap.put(Double.valueOf(state.getStateRawState()), colorString);
         }
         model.addAttribute("stateColorMap", stateColorMap);
         return "operator/inventory/zbProblemDevices.jsp";
