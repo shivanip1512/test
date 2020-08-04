@@ -14,55 +14,75 @@ import com.eaton.pages.PageBase;
 
 public class EnergyCompanyCreatePage extends PageBase {
     
+    private TextEditElement name;
+    private TextEditElement email;
+    private DropDownElement defaultRoute;
+    private TextEditElement userName;
+    private TextEditElement password;
+    private TextEditElement confirmPassword;
+    private Button saveBtn;
+    private Button cancelBtn;
+    private PickerElement primaryOperatorGroup;
+    
     public EnergyCompanyCreatePage(DriverExtensions driverExt) {
         super(driverExt);
 
         requiresLogin = true;
         pageUrl = Urls.Admin.CREATE_ENERGY_COMPANY;
+        
+        name = new TextEditElement(this.driverExt, "name");
+        email = new TextEditElement(this.driverExt, "email");
+        defaultRoute = new DropDownElement(this.driverExt, "defaultRouteId");
+        userName = new TextEditElement(this.driverExt, "adminUsername");
+        password = new TextEditElement(this.driverExt, "adminPassword1");
+        confirmPassword = new TextEditElement(this.driverExt, "adminPassword2");
+        saveBtn = new Button(this.driverExt, "Save");
+        cancelBtn = new Button(this.driverExt, "Cancel");
+//TODO fix        primaryOperatorGroup = new PickerElement(this.driverExt, Optional.of("primaryOperatorUserGroupPicker"), Optional.empty());
     }
     
     public TextEditElement getCompanyName() {
-        return new TextEditElement(this.driverExt, "name");
+        return name;
     }
     
     public TextEditElement getEmail() {
-        return new TextEditElement(this.driverExt, "email");
+        return email;
     }
     
     public DropDownElement getDefaultRoute() {
-        return new DropDownElement(this.driverExt, "defaultRouteId");
+        return defaultRoute;
     }
     
     public TextEditElement getUserName() {
-        return new TextEditElement(this.driverExt, "adminUsername");
+        return userName;
     }
     
     public TextEditElement getPassword() {
-        return new TextEditElement(this.driverExt, "adminPassword1");
+        return password;
     }
     
     public TextEditElement getConfirmPassword() {
-        return new TextEditElement(this.driverExt, "adminPassword2");
+        return confirmPassword;
     }
     
     public Button getSaveBtn() {
-        return new Button(this.driverExt, "Save");
+        return saveBtn;
     }
     
     public Button getCancelBtn() {
-        return new Button(this.driverExt, "Cancel");
+        return cancelBtn;
     }   
     
-    private PickerElement getPrimaryOperatorGroup() {
-        return new PickerElement(this.driverExt, "picker-primaryOperatorUserGroupPicker-btn");
-    }
+//    private PickerElement getPrimaryOperatorGroup() {
+//        return primaryOperatorGroup;
+//    }
     
-    public SelectUserGroupModal showAndWaitUserGroupModal() {
-
-        getPrimaryOperatorGroup().clickLink();
-
-        SeleniumTestSetup.waitUntilModalVisibleByTitle("Select User Group");
-
-        return new SelectUserGroupModal(this.driverExt, Optional.empty(), Optional.of("primaryOperatorUserGroupPicker"));
-    }
+//    public SelectUserGroupModal showAndWaitUserGroupModal() {
+//
+//        getPrimaryOperatorGroup().clickLink();
+//
+//        SeleniumTestSetup.waitUntilModalVisibleByTitle("Select User Group");
+//
+//        return new SelectUserGroupModal(this.driverExt, Optional.empty(), Optional.of("primaryOperatorUserGroupPicker"));
+//    }
 }

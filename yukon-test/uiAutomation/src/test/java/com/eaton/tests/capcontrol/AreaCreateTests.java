@@ -14,6 +14,7 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
+import com.eaton.framework.test.annotation.CustomTestNgAnnotations;
 import com.eaton.pages.capcontrol.AreaCreatePage;
 import com.eaton.pages.capcontrol.AreaDetailPage;
 
@@ -42,6 +43,7 @@ public class AreaCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    @CustomTestNgAnnotations(refreshPage = true, urlToRefresh = Urls.CapControl.AREA_CREATE)
     public void areaCreate_RequiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "Area was saved successfully.";
 
@@ -63,6 +65,6 @@ public class AreaCreateTests extends SeleniumTestSetup {
 
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
-        refreshPage(createPage);
+        this.createPage = new AreaCreatePage(driverExt);
     }
 }

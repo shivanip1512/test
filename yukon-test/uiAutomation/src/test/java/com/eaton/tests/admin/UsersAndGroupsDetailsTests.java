@@ -5,8 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Optional;
 
 import org.openqa.selenium.WebDriver;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.eaton.elements.modals.CreateRoleGroupModal;
@@ -16,6 +16,7 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
+import com.eaton.framework.test.annotation.CustomTestNgAnnotations;
 import com.eaton.pages.admin.RoleGroupDetailsPage;
 import com.eaton.pages.admin.UserDetailPage;
 import com.eaton.pages.admin.UserGroupDetailPage;
@@ -46,6 +47,7 @@ public class UsersAndGroupsDetailsTests extends SeleniumTestSetup {
     }
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    @CustomTestNgAnnotations(refreshPage = true, urlToRefresh = Urls.Admin.USERS_AND_GROUPS)
     public void userAndGroupsDetails_CreateUserSuccess() {
         CreateUserModal createModal = page.showAndWaitCreateUserModal();
         
@@ -70,6 +72,7 @@ public class UsersAndGroupsDetailsTests extends SeleniumTestSetup {
     }  
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    @CustomTestNgAnnotations(refreshPage = true, urlToRefresh = Urls.Admin.USERS_AND_GROUPS)
     public void userAndGroupsDetails_CreateRoleGroupSuccess() {
         CreateRoleGroupModal createModal = page.showAndWaitCreateRoleGroupModal();
         
@@ -91,6 +94,7 @@ public class UsersAndGroupsDetailsTests extends SeleniumTestSetup {
     } 
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    @CustomTestNgAnnotations(refreshPage = true, urlToRefresh = Urls.Admin.USERS_AND_GROUPS)
     public void userAndGroupsDetails_CreateUserGroupSuccess() {
         CreateUserGroupModal createModal = page.showAndWaitCreateUserGroupModal();
         
@@ -111,8 +115,8 @@ public class UsersAndGroupsDetailsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo("User Group (" + name + ")");
     }
     
-    @AfterMethod(alwaysRun=true)
-    public void afterTest() {        
-        refreshPage(page);
+    @BeforeMethod(alwaysRun=true)
+    public void beforeTest() {        
+        page = new UsersAndGroupsPage(driverExt);
     }
 }

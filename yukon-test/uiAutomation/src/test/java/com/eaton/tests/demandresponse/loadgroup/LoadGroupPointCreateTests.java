@@ -18,8 +18,9 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.LoadGroupDetailPage;
-import com.eaton.pages.demandresponse.LoadGroupPointCreatePage;
+import com.eaton.framework.test.annotation.CustomTestNgAnnotations;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupPointCreatePage;
 
 public class LoadGroupPointCreateTests extends SeleniumTestSetup {
 
@@ -32,15 +33,18 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         randomNum = getRandomNum();
-    }
 
-    @BeforeMethod(alwaysRun = true)
-    public void beforeTest() {
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
         createPage = new LoadGroupPointCreatePage(driverExt);
     }
 
+    @AfterMethod(alwaysRun = true)
+    public void afterTest() {
+        refreshPage(createPage);
+    }
+
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @CustomTestNgAnnotations(refreshPage = true, urlToRefresh = Urls.DemandResponse.LOAD_GROUP_CREATE)
     public void ldGrpCreatePoint_AllFieldsSuccessfully() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Point " + timeStamp;
@@ -50,7 +54,7 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
 
         final String EXPECTED_MSG = name + " saved successfully.";
 
-        createPage.getType().selectItemByText("Point Group");
+        createPage.getType().selectItemByValue("LM_GROUP_POINT");
 
         waitForLoadingSpinner();
         createPage.getName().setInputValue(name);
@@ -74,8 +78,9 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @CustomTestNgAnnotations(refreshPage = false)
     public void ldGrpCreatePoint_PointGroupSectionTitleCorrect() {
-        createPage.getType().selectItemByText("Point Group");
+        createPage.getType().selectItemByValue("LM_GROUP_POINT");
         waitForLoadingSpinner();
         Section section = createPage.getPageSection("Point Group");
 
@@ -83,10 +88,11 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @CustomTestNgAnnotations(refreshPage = false)
     public void ldGrpCreatePoint_PointGroupSectionLabelsCorrect() {
         String sectionName = "Point Group";
         String expectedLabels = "Control Device Point:";
-        createPage.getType().selectItemByText("Point Group");
+        createPage.getType().selectItemByValue("LM_GROUP_POINT");
         waitForLoadingSpinner();
 
         String actualLabels = createPage.getPageSection(sectionName).getSectionLabels().get(0);
@@ -96,27 +102,29 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @CustomTestNgAnnotations(refreshPage = false)
     public void ldGrpCreatePoint_ControlDevicePointBlankValue() {
-        createPage.getType().selectItemByText("Point Group");
+        createPage.getType().selectItemByValue("LM_GROUP_POINT");
         waitForLoadingSpinner();
 
         createPage.getSaveBtn().click();
 
-        assertThat(createPage.getControlDevicePoint().getValidationError("deviceUsage.id"))
-                .isEqualTo("Control Device Point is required.");
+        assertThat(createPage.getControlDevicePointValidationMsg()).isEqualTo("Control Device Point is required.");
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @CustomTestNgAnnotations(refreshPage = false)
     public void ldGrpCreatePoint_ControlDevicePointLabelDefaultValue() {
-        createPage.getType().selectItemByText("Point Group");
+        createPage.getType().selectItemByValue("LM_GROUP_POINT");
         waitForLoadingSpinner();
 
         assertThat(createPage.getControlDevicePointLabelText()).isEqualTo("(none selected)");
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @CustomTestNgAnnotations(refreshPage = false)
     public void ldGrpCreatePoint_ControlDevicePointLabelValueAfterPointSelection() {
-        createPage.getType().selectItemByText("Point Group");
+        createPage.getType().selectItemByValue("LM_GROUP_POINT");
         waitForLoadingSpinner();
 
         SelectPointModal pointGroupControlDevice = createPage.showAndWaitPointGroupControlDeviceModal("Select Control Device");
@@ -124,11 +132,5 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
         pointGroupControlDevice.clickOkAndWaitForModalToClose();
 
         assertThat(createPage.getControlDevicePointLabelText()).contains("SCADA Override");
-    }
-
-    @AfterMethod(alwaysRun = true)
-    public void afterTest() {
-        refreshPage(createPage);
-        createPage = new LoadGroupPointCreatePage(driverExt);
     }
 }

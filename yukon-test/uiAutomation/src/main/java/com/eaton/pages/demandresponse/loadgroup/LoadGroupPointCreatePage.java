@@ -1,4 +1,4 @@
-package com.eaton.pages.demandresponse;
+package com.eaton.pages.demandresponse.loadgroup;
 
 import java.util.Optional;
 
@@ -9,20 +9,28 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
 
 public class LoadGroupPointCreatePage extends LoadGroupCreatePage {
+    
+    private PickerElement controlDevicePoint;
 
     public LoadGroupPointCreatePage(DriverExtensions driverExt) {
         super(driverExt);
 
         requiresLogin = true;
         pageUrl = Urls.DemandResponse.LOAD_GROUP_CREATE;
+        
+        controlDevicePoint = new PickerElement(this.driverExt, Optional.of("pointGroupControlDevicePicker"), Optional.empty());
     }
 
     public PickerElement getControlDevicePoint() {
-        return new PickerElement(this.driverExt, "picker-pointGroupControlDevicePicker-btn");
+        return controlDevicePoint;
     }
 
     public String getControlDevicePointLabelText() {
         return getControlDevicePoint().getLinkValue();
+    }
+    
+    public String getControlDevicePointValidationMsg() {
+        return getControlDevicePoint().getValidationError("deviceUsage.id");
     }
 
     public SelectPointModal showAndWaitPointGroupControlDeviceModal(String modalTitle) {

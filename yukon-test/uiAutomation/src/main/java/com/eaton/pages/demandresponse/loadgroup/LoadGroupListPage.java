@@ -1,4 +1,4 @@
-package com.eaton.pages.demandresponse;
+package com.eaton.pages.demandresponse.loadgroup;
 
 import com.eaton.elements.WebTable;
 import com.eaton.framework.DriverExtensions;

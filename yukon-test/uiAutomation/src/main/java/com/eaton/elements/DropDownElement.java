@@ -34,7 +34,7 @@ public class DropDownElement {
         this.parentElement = parentElement;
     }
     
-    public void selectItemByText(String text)
+    public void selectItemByValue(String text)
     {
         if (text.isBlank())
         {
@@ -43,8 +43,8 @@ public class DropDownElement {
 
         Select dropDown = new Select(getSelectElement());
         
-        dropDown.selectByVisibleText(text);
-    }
+        dropDown.selectByValue(text);
+    }    
     
     public void selectItemByIndex(int index)
     {

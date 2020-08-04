@@ -168,7 +168,7 @@ public class SeleniumTestSetup {
         return logger;
     }
 
-    public boolean waitForUrlToLoad(String expectedUrl, Optional<Integer> timeOutSeconds) {
+    public static boolean waitForUrlToLoad(String expectedUrl, Optional<Integer> timeOutSeconds) {
         Integer timeOut = timeOutSeconds.orElse(null);
 
         Integer waitTime;
@@ -207,7 +207,7 @@ public class SeleniumTestSetup {
         SeleniumTestSetup.driverExt.getDriverWait(Optional.of(waitTime)).until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".page-heading"), pageTitle));
     }
 
-    public void refreshPage(PageBase page) {
+    public static void refreshPage(PageBase page) {
 
         if (page != null) {
             navigate(page.getPageUrl());
@@ -310,7 +310,7 @@ public class SeleniumTestSetup {
         }        
     }
 
-    public void navigate(String url) {
+    public static void navigate(String url) {
         SeleniumTestSetup.driver.navigate().to(getBaseUrl() + url);
 
         waitForUrlToLoad(url, Optional.empty());

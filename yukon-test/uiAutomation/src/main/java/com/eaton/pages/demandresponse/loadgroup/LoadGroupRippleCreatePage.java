@@ -1,4 +1,4 @@
-package com.eaton.pages.demandresponse;
+package com.eaton.pages.demandresponse.loadgroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,23 +14,37 @@ import com.eaton.framework.Urls;
 
 public class LoadGroupRippleCreatePage extends LoadGroupCreatePage {
 
+    private DropDownElement group;
+    private DropDownElement shedTime;
+    private DropDownElement areaCode;
+    private DropDownElement communicationRoute;
+    
     public LoadGroupRippleCreatePage(DriverExtensions driverExt) {
         super(driverExt);
 
         requiresLogin = true;
         pageUrl = Urls.DemandResponse.LOAD_GROUP_CREATE;
+        
+        shedTime = new DropDownElement(this.driverExt, "shedTime");
+        group = new DropDownElement(this.driverExt, "group");
+        areaCode = new DropDownElement(this.driverExt, "areaCode");
+        communicationRoute = new DropDownElement(this.driverExt, "routeId");
+    }
+    
+    public DropDownElement getCommunicationRoute() {
+        return communicationRoute;
     }
 
     public DropDownElement getShedTime() {
-        return new DropDownElement(this.driverExt, "shedTime");
+        return shedTime;
     }
 
     public DropDownElement getGroup() {
-        return new DropDownElement(this.driverExt, "group");
+        return group;
     }
 
     public DropDownElement getAreaCode() {
-        return new DropDownElement(this.driverExt, "areaCode");
+        return areaCode;
     }
 
     public SwitchBtnMultiSelectElement getControlSwitchElement() {

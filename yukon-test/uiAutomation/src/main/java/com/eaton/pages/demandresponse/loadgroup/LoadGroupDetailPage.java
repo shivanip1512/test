@@ -1,4 +1,4 @@
-package com.eaton.pages.demandresponse;
+package com.eaton.pages.demandresponse.loadgroup;
 
 import java.util.Optional;
 

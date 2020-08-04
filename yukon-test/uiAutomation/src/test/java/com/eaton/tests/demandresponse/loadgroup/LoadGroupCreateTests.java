@@ -2,6 +2,7 @@ package com.eaton.tests.demandresponse.loadgroup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,7 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.LoadGroupCreatePage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupCreatePage;
 import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
 import com.eaton.rest.api.drsetup.JsonFileHelper;
 
@@ -139,20 +140,21 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreate_NameUniqueValidation() {
-
+    public void ldGrpCreate_Name_UniqueValidation() {
         // API test data. Creating Load group using hard coded json file, to be changed when builder pattern is implemented.
-        String payloadFile = System.getProperty("user.dir")
-                + "\\src\\test\\resources\\payload\\payload.loadgroup\\ecobee.json";
+        String payloadFile = System.getProperty("user.dir") + "\\src\\test\\resources\\payload\\payload.loadgroup\\ecobee.json";
+        
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String name = "Unique " + timeStamp;
+        
         JSONObject jo;
-        String name;
         JSONObject body = (JSONObject) JsonFileHelper.parseJSONFile(payloadFile);
         jo = (JSONObject) body.get("LM_GROUP_ECOBEE");
-        name = (String) jo.get("name");
+        jo.put("name", name);
         DrSetupCreateRequest.createLoadGroup(body);
 
         createPage.getName().setInputValue(name);
-        createPage.getType().selectItemByText("ecobee Group");
+        createPage.getType().selectItemByValue("LM_GROUP_ECOBEE");
         createPage.getkWCapacity().setInputValue("22");
         createPage.getSaveBtn().click();
 

@@ -15,8 +15,8 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.LoadGroupDetailPage;
-import com.eaton.pages.demandresponse.LoadGroupEditPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupEditPage;
 
 public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
 
@@ -29,8 +29,7 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpEcobeeEdit_pageTitleCorrect() {        
-        Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty())
-                .create();                 
+        Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();                 
         
         JSONObject response = pair.getValue1();
         
