@@ -3,9 +3,7 @@ package com.cannontech.web.admin.dao.impl;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
@@ -148,8 +146,8 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
         sqlExportJob.append("FROM JobIds j JOIN JobProperty jpAttribute on jpAttribute.JobID = j.JobID JOIN JobProperty jpName on jpName.JobID = j.JobID");
         sqlExportJob.append("WHERE jpAttribute.Name = 'attributes' AND jpName.Name = 'exportFileName'");
 
-        List<String> exceptionDetails = new ArrayList<>();
-        exceptionDetails.addAll(jdbcTemplate.query(sqlExportFormat, TypeRowMapper.STRING)); 
+        List<String> formatDetails = jdbcTemplate.query(sqlExportFormat, TypeRowMapper.STRING);
+        List<String> exportDetails = new ArrayList<>();
         
         jdbcTemplate.query(sqlExportJob, new YukonRowCallbackHandler() {
             @Override
@@ -157,22 +155,28 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
                 String name = rs.getString("Name");
                 String value = rs.getString("Value");
                 if (Arrays.asList(value.split(",")).contains(String.valueOf(attributeId))) {
-                    exceptionDetails.add(name);
+                    exportDetails.add(name);
                 }
             }
         });
         
-        if(exceptionDetails.isEmpty()) {
+        if(formatDetails.isEmpty() && exportDetails.isEmpty()) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("DELETE FROM CustomAttribute");
             sql.append("WHERE AttributeId").eq(attributeId);
             jdbcTemplate.update(sql);
         } else {
             DataDependencyException exception = new DataDependencyException(" Attribute " + attributeId + " cannot be deleted");
-            exception.addDependency(DependencyType.ATTRIBUTE, attributeDao.getCustomAttribute(attributeId));
-            exception.addDependency(DependencyType.EXPORT_FORMAT_NAMES, new HashSet<>(exceptionDetails));
+            exception.addDependency(DependencyType.ATTRIBUTE, attributeDao.getCustomAttribute(attributeId));;
             log.debug("attribute:{}", exception.getDependency(DependencyType.ATTRIBUTE, CustomAttribute.class));
-            log.debug("format names:{}", exception.getDependency(DependencyType.EXPORT_FORMAT_NAMES, Set.class));
+            if(!formatDetails.isEmpty()) {
+                exception.addDependency(DependencyType.EXPORT_FORMAT, formatDetails);
+                log.debug("format names:{}", exception.getDependency(DependencyType.EXPORT_FORMAT, List.class));
+            }
+            if(!exportDetails.isEmpty()) {
+                exception.addDependency(DependencyType.SCHEDULED_EXPORT, exportDetails);
+                log.debug("export names:{}", exception.getDependency(DependencyType.SCHEDULED_EXPORT, List.class));
+            }
             throw exception;
         }
     }

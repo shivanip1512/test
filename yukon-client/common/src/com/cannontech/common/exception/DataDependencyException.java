@@ -8,9 +8,11 @@ public class DataDependencyException extends Exception {
     public enum DependencyType {
         //CustomAttribute attr = exception.getDependancy(DependancyType.ATTRIBUTE, CustomAttribute.class);
         ATTRIBUTE,
-        DEVICE_DATA_MONITOR_NAMES,
-        //Set<String> exports = exception.getDependancy(DependancyType.EXPORT_FORMAT_NAMES, Set.class);
-        EXPORT_FORMAT_NAMES;
+        DEVICE_DATA_MONITOR,
+        //List<String> formats = exception.getDependancy(DependancyType.EXPORT_FORMAT, List .class);
+        EXPORT_FORMAT,
+        //List<String> exports = exception.getDependancy(DependancyType.SCHEDULED_EXPORT, List.class);
+        SCHEDULED_EXPORT;
     }
     
     private Map<DependencyType, Object> dependencies = new HashMap<>();
