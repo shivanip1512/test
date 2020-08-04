@@ -53,13 +53,13 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = name + " saved successfully.";
 
         createPage.getName().setInputValue(name);
-        createPage.getType().selectItemByText("LM Direct Program");
+        createPage.getType().selectItemByValue("LM_DIRECT_PROGRAM");
         waitForLoadingSpinner();
 
         CreateDirectPrgmGearModal modal = createPage.showCreateDirectPrgmGearsModal();
 
         modal.getGearName().setInputValue("TC " + timeStamp);
-        modal.getGearType().selectItemByText("True Cycle");
+        modal.getGearType().selectItemByValue("TrueCycle");
         waitForLoadingSpinner();
         modal.clickOkAndWaitForModalToClose();
 
