@@ -161,22 +161,7 @@ public class GlobalSettingTypeValidators {
             }
         }
     };
-
-    /**
-     * Validate Runtime Interval.
-     */
-
-    public static TypeValidator<Integer> runtimeCalcInterval = new TypeValidator<>() {
-        @Override
-        public void validate(Integer interval, Errors errors, GlobalSettingType globalSettingType) {
-            String field = "values[" + globalSettingType + "]";
-            String key = globalSettingType.getFormatKey();
-            MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
-            String fieldName = messageSourceAccessor.getMessage(key);
-            YukonValidationUtils.checkRange(errors, field, fieldName, interval, Range.inclusive(1, 24), true);
-        }
-    };
-
+    
     public interface TypeValidator<T> {
         public void validate(T value, Errors errors, GlobalSettingType globalSetting);
     }
