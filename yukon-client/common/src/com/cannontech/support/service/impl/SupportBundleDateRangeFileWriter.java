@@ -25,7 +25,9 @@ public class SupportBundleDateRangeFileWriter extends AbstractSupportBundleWrite
         if (dir.isDirectory()) {
             List<File> logFiles = listFilesByDateModified(dir, start, stop);
             for (File file : logFiles) {
-                zipWriter.writeFile(file, zipDirectory);
+                if (!file.getName().endsWith(".lck")) {
+                    zipWriter.writeFile(file, zipDirectory);
+                }
             }
         } else {
             log.warn("Cannot add files in directory '" + dir.getAbsoluteFile() 
