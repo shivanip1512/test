@@ -54,7 +54,7 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
         createModal.getPhysicalPort().selectItemByText(physicalPort);
         createModal.getBaudRate().selectItemByText(baudRate);
 
-        createModal.clickOkAndWait();
+        createModal.clickOkAndWaitForModalToClose();
 
         waitForUrlToLoad(Urls.Assets.COMM_CHANNEL_DETAIL, Optional.of(10));
 
@@ -95,7 +95,7 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
         createModal.getPhysicalPort().selectItemByText(physicalPort);
 
-        createModal.clickOkAndWait();
+        createModal.clickOkAndWaitForModalToClose();
 
         String errorMsg = createModal.getPhysicalPortOther().getValidationError();
 

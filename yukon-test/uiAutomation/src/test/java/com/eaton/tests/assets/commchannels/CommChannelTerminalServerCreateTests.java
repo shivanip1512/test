@@ -58,7 +58,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         createModal.getPortNumber().setInputValue(portNumber);
         createModal.getBaudRate().selectItemByText(baudRate);
 
-        createModal.clickOkAndWait();
+        createModal.clickOkAndWaitForModalToClose();
 
         waitForUrlToLoad(Urls.Assets.COMM_CHANNEL_DETAIL, Optional.of(10));
 
@@ -97,7 +97,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         createModal.getType().selectItemByText(type);
         waitForLoadingSpinner();
 
-        createModal.clickOkAndWait();
+        createModal.clickOkAndWaitForModalToClose();
 
         String errorMsg = createModal.getIpAddress().getValidationError();
 
@@ -116,7 +116,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
         createModal.getIpAddress().setInputValue(ipAddress);
 
-        createModal.clickOkAndWait();
+        createModal.clickOkAndWaitForModalToClose();
 
         String errorMsg = createModal.getIpAddress().getValidationError();
 
@@ -135,7 +135,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
         createModal.getPortNumber().setInputValue(portNumber);
 
-        createModal.clickOkAndWait();
+        createModal.clickOkAndWaitForModalToClose();
 
         String errorMsg = createModal.getPortNumber().getValidationError();
 
@@ -154,7 +154,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
         createModal.getPortNumber().setInputValue(portNumber);
 
-        createModal.clickOkAndWait();
+        createModal.clickOkAndWaitForModalToClose();
 
         String errorMsg = createModal.getPortNumber().getValidationError();
 
@@ -170,7 +170,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         createModal.getType().selectItemByText(type);
         waitForLoadingSpinner();
 
-        createModal.clickOkAndWait();
+        createModal.clickOkAndWaitForModalToClose();
 
         String errorMsg = createModal.getPortNumber().getValidationError();
 

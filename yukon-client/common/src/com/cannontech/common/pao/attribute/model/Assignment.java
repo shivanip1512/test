@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-@JsonIgnoreProperties(value={"attributeAssignmentId"}, allowGetters= true, ignoreUnknown = true)
+@JsonIgnoreProperties(value={"attributeAssignmentId"}, allowGetters = true, allowSetters = true, ignoreUnknown = true)
 @JsonInclude(Include.NON_NULL)
 public class Assignment { 
     private Integer attributeId;

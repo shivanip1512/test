@@ -31,7 +31,7 @@ public class TagsBasePanel extends com.cannontech.common.gui.util.DataInputPanel
 	
     private YukonColorPalette[] tagColors = new YukonColorPalette[] {
             YukonColorPalette.GREEN,
-            YukonColorPalette.WINE,
+            YukonColorPalette.RED,  // do not use WINE in this enum, as it's text will conflict. Both use "Red".
             YukonColorPalette.WHITE,
             YukonColorPalette.YELLOW,
             YukonColorPalette.BLUE,

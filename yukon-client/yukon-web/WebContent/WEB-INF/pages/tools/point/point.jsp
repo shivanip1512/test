@@ -52,6 +52,9 @@
 
         <cti:tabs containerName="yukon:da:point:fields:tab">
             <cti:msg2 var="general" key=".tab.general" />
+            <cti:msg2 var="milliseconds" key="yukon.common.durationFormatting.symbol.MS_SHORT.suffix.singular"/>
+            <cti:msg2 var="seconds" key="yukon.common.durationFormatting.symbol.S_SHORT.suffix.singular"/>
+            <cti:msg2 var="minutes" key="yukon.common.durationFormatting.symbol.M_SHORT.suffix.singular"/>
             <cti:tab title="${general}">
                 <tags:nameValueContainer2 tableClass="${nameValueClass} stacked-md">
 
@@ -314,23 +317,20 @@
                         <tags:nameValue2 nameKey=".close.time1"
                             nameClass="js-status-control-input" valueClass="js-status-control-input">
                             <%-- Specify how long each relay stays energized --%>
-                            <tags:input path="pointBase.pointStatusControl.closeTime1" size="6" maxlength="8" inputClass="js-reset-field"/>
-                            <i:inline key="yukon.common.durationFormatting.symbol.MS_SHORT.suffix.singular"/>
+                            <tags:input path="pointBase.pointStatusControl.closeTime1" size="6" maxlength="8" inputClass="js-reset-field" units="${milliseconds}"/>
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey=".close.time2"
                             nameClass="js-status-control-input" valueClass="js-status-control-input">
                             <%-- Specify how long each relay stays energized --%>
-                            <tags:input path="pointBase.pointStatusControl.closeTime2" size="6" maxlength="8" inputClass="js-reset-field"/>
-                            <i:inline key="yukon.common.durationFormatting.symbol.MS_SHORT.suffix.singular"/>
+                            <tags:input path="pointBase.pointStatusControl.closeTime2" size="6" maxlength="8" inputClass="js-reset-field" units="${milliseconds}"/>
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey=".command.timeout"
                             nameClass="js-status-control-input" valueClass="js-status-control-input">
                             <%-- The length of time to use to scan for a state change following control. 
                                    An alarm is raised if a state change is not detected. --%>
-                            <tags:input path="pointBase.pointStatusControl.commandTimeOut" size="6" maxlength="8" inputClass="js-reset-field"/>
-                            <i:inline key="yukon.common.durationFormatting.symbol.S_SHORT.suffix.singular"/>
+                            <tags:input path="pointBase.pointStatusControl.commandTimeOut" size="6" maxlength="8" inputClass="js-reset-field" units="${seconds}"/>
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey=".command.open"
@@ -394,8 +394,7 @@
 
                         <%-- The number of seconds the limit must be violated before an alarm is generated --%>
                         <tags:nameValue2 nameKey=".limit.duration" rowClass="js-limit-one-input">
-                            <tags:input path="pointBase.pointLimitsMap[1].limitDuration" size="6" maxlength="8" inputClass="js-reset-field"/>
-                            <i:inline key="yukon.common.durationFormatting.symbol.S_SHORT.suffix.singular"/>
+                            <tags:input path="pointBase.pointLimitsMap[1].limitDuration" size="6" maxlength="8" inputClass="js-reset-field" units="${seconds}"/>
                         </tags:nameValue2>
 
                         <%-- The second limit that can be set for this point, used to determine if an alarm condition is active --%>
@@ -417,8 +416,7 @@
 
                         <%-- The number of seconds the limit must be violated before an alarm is generated --%>
                         <tags:nameValue2 nameKey=".limit.duration" rowClass="js-limit-two-input">
-                            <tags:input path="pointBase.pointLimitsMap[2].limitDuration" size="6" maxlength="8" inputClass="js-reset-field"/>
-                            <i:inline key="yukon.common.durationFormatting.symbol.S_SHORT.suffix.singular"/>
+                            <tags:input path="pointBase.pointLimitsMap[2].limitDuration" size="6" maxlength="8" inputClass="js-reset-field" units="${seconds}"/>
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey=".reasonability.high">
@@ -452,8 +450,7 @@
                     </tags:nameValue2>
 
                     <tags:nameValue2 nameKey=".stale.time" rowClass="js-stale-data-input">
-                        <tags:input path="staleData.time" size="6" maxlength="8" inputClass="js-reset-field-time"/>
-                        <i:inline key="yukon.common.durationFormatting.symbol.M_SHORT.suffix.singular"/>
+                        <tags:input path="staleData.time" size="6" maxlength="8" inputClass="js-reset-field-time" units="${minutes}"/>
                     </tags:nameValue2>
 
                     <tags:nameValue2 nameKey=".stale.update" rowClass="js-stale-data-input">
@@ -528,6 +525,7 @@
             <cti:tab title="${fdrTab}">
                 <div class="separated-sections">
                     <c:set var="enabledFdrs" value="0" />
+                    <input type="hidden" class="js-acs-interface-type-enum-val" value="${acsInterfaceTypeEnumVal}"/>
 
                     <c:forEach var="fdrIdx" items="${fdrTranslationNumbers}">
                         <c:set var="fdrTranslation" value="${pointModel.pointBase.pointFDRList[fdrIdx]}" />
