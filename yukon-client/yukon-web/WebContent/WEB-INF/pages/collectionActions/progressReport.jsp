@@ -21,7 +21,6 @@
     <c:forEach var="detail" items="${details}">
         <cti:msg2 var="detailText" key="${detail.formatKey}"/>
         <input type="hidden" id="detail-${detail}" value="${detailText}"/>
-        ===${detail.colorHex}===
         <input type="hidden" id="color-${detail}" value="${detail.colorHex}"/>
     </c:forEach>
     <c:forEach var="executionStatus" items="${status}">
