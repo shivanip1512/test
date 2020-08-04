@@ -394,7 +394,7 @@
 
                         <%-- The number of seconds the limit must be violated before an alarm is generated --%>
                         <tags:nameValue2 nameKey=".limit.duration" rowClass="js-limit-one-input">
-                            <tags:input path="pointBase.pointLimitsMap[1].limitDuration" size="6" maxlength="8" inputClass="js-reset-field" units="${minutes}"/>
+                            <tags:input path="pointBase.pointLimitsMap[1].limitDuration" size="6" maxlength="8" inputClass="js-reset-field" units="${seconds}"/>
                         </tags:nameValue2>
 
                         <%-- The second limit that can be set for this point, used to determine if an alarm condition is active --%>
