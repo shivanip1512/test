@@ -690,6 +690,20 @@ INSERT INTO DBUpdates VALUES ('YUK-22412', '7.5.0', GETDATE());
 UPDATE GRAPHDATASERIES SET Color = 12 WHERE Color = 1;
 INSERT INTO DBUpdates VALUES ('YUK-22578', '7.5.0', GETDATE());
 /* @end YUK-22578 */
+
+/* @start YUK-22518 */
+UPDATE GlobalSetting SET Name = 'ITRON_HCM_DATA_COLLECTION_MINUTES', Value = '15'
+    WHERE Name = 'ITRON_HCM_DATA_COLLECTION_HOURS';
+
+INSERT INTO DBUpdates VALUES ('YUK-22518', '7.5.0', GETDATE());
+/* @end YUK-22518 */
+
+/* @start YUK-22527 */
+ALTER TABLE CCurtProgramType
+    ADD CONSTRAINT AK_CCurtProgramType_Strategy UNIQUE (CCurtProgramTypeStrategy);
+
+INSERT INTO DBUpdates VALUES ('YUK-22527', '7.5.0', GETDATE());
+/* @end YUK-22527 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

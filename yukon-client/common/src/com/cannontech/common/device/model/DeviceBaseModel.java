@@ -17,7 +17,7 @@ public class DeviceBaseModel implements YukonDevice {
         Integer id = pao.getPaoIdentifier().getPaoId();
         PaoType type = pao.getPaoType();
         String name = pao.getPaoName();
-        Boolean enable = (pao.getDisableFlag().equals("N") ? false : true);
+        Boolean enable = (pao.getDisableFlag().equals("N") ? true : false);
         return new DeviceBaseModel(id, type, name, enable);
     }
  

@@ -659,12 +659,15 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     REVERSE_BANDWIDTH("Reverse Bandwidth", AttributeGroup.CAPCONTROL, false),
     REVERSE_SET_POINT("Reverse Set Point", AttributeGroup.CAPCONTROL, false),
     REVERSE_FLOW_INDICATOR("Reverse Flow Indicator", AttributeGroup.CAPCONTROL, false),
-    
+
+    CONFIGURATION_UPDATED_HASH("Configuration Updated Hash", AttributeGroup.ITRON, false),
+    EVENT_CANCELLED("Event Cancelled", AttributeGroup.ITRON, false),
+    EVENT_RECEIVED("Event Received", AttributeGroup.ITRON, false),
+    EVENT_STARTED("Event Started", AttributeGroup.ITRON, false),
+    EVENT_STOPPED("Event Stopped", AttributeGroup.ITRON, false),
     EVENT_SUPERSEDED("Event Superseded", AttributeGroup.ITRON, false),
     MEMORY_MAP_LOST("Memory Map Lost", AttributeGroup.ITRON, false),
-    CONFIGURATION_UPDATED_HASH("Configuration Updated Hash", AttributeGroup.ITRON, false),
     RADIO_LINK_QUALITY("Radio Link Quality", AttributeGroup.ITRON, false),
-    EVENT_RECEIVED("Event Received", AttributeGroup.ITRON, false),
     ;
 
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";
@@ -1006,6 +1009,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                                             FIRMWARE_VERSION, 
                                             RADIO_LINK_QUALITY,
                                             EVENT_RECEIVED,
+                                            EVENT_STARTED,
+                                            EVENT_CANCELLED,
+                                            EVENT_STOPPED,
                                             CONTROL_STATUS,
                                             AVERAGE_VOLTAGE,
                                             SERVICE_STATUS,

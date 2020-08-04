@@ -97,7 +97,7 @@ public class PointValidator extends SimpleValidator<PointModel> {
 
         pointValidationUtil.validatePointName(litePointModel, "pointBase.point.pointName", errors, false);
         pointValidationUtil.validatePointOffset(litePointModel, "pointBase.point.pointOffset", errors, false);
-        
+
         doScalarValidation(pointModel, errors);
         doAnalogValidation(base, errors);
         doAccumulatorValidation(base, errors);
@@ -186,10 +186,6 @@ public class PointValidator extends SimpleValidator<PointModel> {
         
         if (!(base instanceof AnalogPoint)) return;
         AnalogPoint point = (AnalogPoint) base;
-        
-        YukonValidationUtils.checkRange(errors, "pointBase.point.pointOffset", 
-            point.getPoint().getPointOffset(), 0, 99999999, true);
-        
         YukonValidationUtils.checkRange(errors, "pointBase.pointAnalog.deadband", 
             point.getPointAnalog().getDeadband(), -1.0, 99999999.0, true);
         
@@ -207,10 +203,6 @@ public class PointValidator extends SimpleValidator<PointModel> {
         
         if (!(base instanceof AccumulatorPoint)) return;
         AccumulatorPoint point = (AccumulatorPoint) base;
-        
-        YukonValidationUtils.checkRange(errors, "pointBase.point.pointOffset", 
-            point.getPoint().getPointOffset(), 0, 99999999, true);
-        
         YukonValidationUtils.checkRange(errors, "pointBase.pointAccumulator.multiplier", 
             point.getPointAccumulator().getMultiplier(), -99999999.0, 99999999.0, true);
         
@@ -224,10 +216,6 @@ public class PointValidator extends SimpleValidator<PointModel> {
         
         if (!(base instanceof StatusPoint)) return;
         StatusPoint point = (StatusPoint) base;
-        
-        YukonValidationUtils.checkRange(errors, "pointBase.point.pointOffset", 
-            point.getPoint().getPointOffset(), 0, 99999999, true);
-        
         YukonValidationUtils.checkRange(errors, "staleData.time", 
             model.getStaleData().getTime(), 0, 99999999,  model.getStaleData().isEnabled());
         

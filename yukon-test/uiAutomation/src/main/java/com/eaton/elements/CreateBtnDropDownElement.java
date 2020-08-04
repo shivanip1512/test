@@ -19,11 +19,9 @@ public class CreateBtnDropDownElement {
     }
 
     public WebElement getCreateBtn() {
-        List<WebElement> buttons = this.driverExt.findElements(By.cssSelector(".page-actions .dropdown-trigger button"),
-                Optional.empty());
+        List<WebElement> buttons = this.driverExt.findElements(By.cssSelector(".page-actions .dropdown-trigger button"), Optional.of(3));
 
-        return buttons.stream().filter(button -> button.findElement(By.cssSelector(".b-label")).getText().contains("Create"))
-                .findFirst().orElseThrow();
+        return buttons.stream().filter(button -> button.findElement(By.cssSelector(".b-label")).getText().contains("Create")).findFirst().orElseThrow();
     }
 
     public void click() {

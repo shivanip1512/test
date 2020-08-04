@@ -47,7 +47,7 @@ public class ScenarioDetailsTests extends SeleniumTestSetup {
 
         ConfirmModal confirmModal = detailPage.showDeleteControlAreaModal();
 
-        confirmModal.clickOkAndWait();
+        confirmModal.clickOkAndWaitForModalToClose();
 
         waitForPageToLoad("Setup", Optional.empty());
 

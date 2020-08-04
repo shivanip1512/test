@@ -54,7 +54,7 @@ public class CommChannelTcpCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
         createModal.getBaudRate().selectItemByText(baudRate);
 
-        createModal.clickOkAndWait();
+        createModal.clickOkAndWaitForModalToClose();
 
         waitForUrlToLoad(Urls.Assets.COMM_CHANNEL_DETAIL, Optional.of(10));
 
