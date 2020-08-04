@@ -46,7 +46,7 @@ public class CustomAttributeApiController {
     @GetMapping("/{id}")
     public ResponseEntity<Object> retrieve(@PathVariable Integer id) {
         CustomAttribute attribute = attributeDao.getCustomAttribute(id);
-        return new ResponseEntity<>(attribute, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(attribute, HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
