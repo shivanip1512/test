@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
     <highestOffsets>
-        <analog offset="63"/>
+        <analog offset="66"/>
         <status offset="21"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -257,7 +257,25 @@
         <unitofmeasure value="UNDEF"/>
         <decimalplaces value="0"/>        
     </point>
-    
+    <point offset="64" type="Analog">
+        <name>Event Started</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>        
+    </point>
+    <point offset="65" type="Analog">
+        <name>Event Cancelled</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>        
+    </point>
+    <point offset="66" type="Analog">
+        <name>Event Stopped</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>        
+    </point>
+
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="3" type="Status">
         <name>Relay 1 Load State</name>
