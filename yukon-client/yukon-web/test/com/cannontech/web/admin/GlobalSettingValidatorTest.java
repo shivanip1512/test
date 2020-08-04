@@ -171,6 +171,8 @@ public class GlobalSettingValidatorTest {
         service.doValidation(command, errors);
         assertTrue("Incorrect global setting values for category "+GlobalSettingSubCategory.DR ,
             errors.getErrorCount() == 3);
+        
+
 
         // Validation for AUTHENTICATION category
         command.setCategory(GlobalSettingSubCategory.AUTHENTICATION);

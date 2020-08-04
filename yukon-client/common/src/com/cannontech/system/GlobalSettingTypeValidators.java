@@ -81,7 +81,7 @@ public class GlobalSettingTypeValidators {
     /**
      * Validate individual Integer port 
      */
-    
+  
     public static TypeValidator<Integer> portValidator = new TypeValidator<>() {
         @Override
         public void validate(Integer port, Errors errors, GlobalSettingType globalSettingType) {
@@ -95,7 +95,7 @@ public class GlobalSettingTypeValidators {
             }
         }
     };
-
+    
     /**
      * Validates space separated String of numeric ports 
      */
