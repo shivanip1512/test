@@ -92,24 +92,22 @@ public class YukonPointHelperImpl implements YukonPointHelper {
             //sort in alphabetical order
             attributes.sort((Attribute a1, Attribute a2) -> accessor.getMessage(a1).compareToIgnoreCase(
                     accessor.getMessage(a2)));
-            //no attributes
-            if (attributes.isEmpty()) {
-                return LiteYukonPoint.of(paoPointIdent, null, attributes, point.getPointName(), point.getLiteID());
-            //one attribute
-            } else if (attributes.size() == 1) {
-                return LiteYukonPoint.of(paoPointIdent, attributes.get(0), attributes, point.getPointName(), point.getLiteID());
-            //has at least one Custom attribute, display the first one
-            } else if (buildInAttributes.isEmpty()) {
-                return LiteYukonPoint.of(paoPointIdent, attributes.get(0), attributes, point.getPointName(), point.getLiteID());
-            // has only built in attributes, display the first one from the xml file
-            // <pointInfo name="Delivered kWh" init="true" attributes="USAGE,DELIVERED_KWH"/>
-            } else {
-                Attribute attribute = definedAttributes.get(pao.getPaoIdentifier().getPaoType())
+            Attribute attribute = null;
+            if (attributes.size() == 1) {   // exactly one attribute
+                attribute = attributes.get(0);
+            } else if (!customAttributes.isEmpty()) {    // at least one custom attribute
+                // sort the custom attributes, then pick the first one
+                customAttributes.sort((Attribute a1, Attribute a2) -> accessor.getMessage(a1).compareToIgnoreCase(accessor.getMessage(a2)));
+                attribute = customAttributes.get(0);
+             } else if (!buildInAttributes.isEmpty()) {   // at least one built in attribute
+                 // pick the first one from the xml file
+                 // <pointInfo name="Delivered kWh" init="true" attributes="USAGE,DELIVERED_KWH"/> - will return USAGE
+                 attribute = definedAttributes.get(pao.getPaoIdentifier().getPaoType())
                         .stream().filter(attr -> buildInAttributes.contains((BuiltInAttribute)attr))
                         .findFirst()
                         .orElse(null);
-                return LiteYukonPoint.of(paoPointIdent, attribute, attributes, point.getPointName(), point.getLiteID());
             }
+            return LiteYukonPoint.of(paoPointIdent, attribute, attributes, point.getPointName(), point.getLiteID());
         }).collect(Collectors.toList());
     }
 
