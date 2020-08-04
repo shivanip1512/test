@@ -48,7 +48,7 @@ yukon.widget.assetAvailability = (function () {
                 displayPercentage: data.unavailable.percentage < 1 && data.unavailable.percentage != 0 ? '&lt;1%' : yukon.percent(data.unavailable.percentage, 100, 1),
                 y: (data.unavailable.percentage < 1 && data.unavailable.percentage != 0 ? 1 : data.unavailable.percentage),
                 x: data.unavailable.deviceCount,
-                color: '#888'
+                color: '#7b8387'
             }
         ]
     },
