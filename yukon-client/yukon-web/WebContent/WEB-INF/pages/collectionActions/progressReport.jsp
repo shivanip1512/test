@@ -21,7 +21,7 @@
     <c:forEach var="detail" items="${details}">
         <cti:msg2 var="detailText" key="${detail.formatKey}"/>
         <input type="hidden" id="detail-${detail}" value="${detailText}"/>
-        <input type="hidden" id="color-${detail}" value="${detail.color}"/>
+        <input type="hidden" id="color-${detail}" value="${detail.colorHex}"/>
     </c:forEach>
     <c:forEach var="executionStatus" items="${status}">
         <cti:msg2 var="statusText" key="${executionStatus.formatKey}"/>

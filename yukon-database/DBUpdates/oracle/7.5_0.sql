@@ -677,6 +677,13 @@ UPDATE GlobalSetting SET Name = 'ITRON_HCM_DATA_COLLECTION_MINUTES', Value = '15
 
 INSERT INTO DBUpdates VALUES ('YUK-22518', '7.5.0', SYSDATE);
 /* @end YUK-22518 */
+
+/* @start YUK-22527 */
+ALTER TABLE CCurtProgramType
+    ADD CONSTRAINT AK_CCurtProgramType_Strategy UNIQUE (CCurtProgramTypeStrategy);
+
+INSERT INTO DBUpdates VALUES ('YUK-22527', '7.5.0', SYSDATE);
+/* @end YUK-22527 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
