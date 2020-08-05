@@ -63,11 +63,11 @@ public class DropDownSearchElement {
     
     private void setDropDownSearchElement() {
         if (this.parentName != null) {
-            this.searchDropDown = this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] #" + this.elementId ), Optional.empty());
+            this.searchDropDown = this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] #" + this.elementId ), Optional.of(3));
         } else if (this.parentElement != null) {
             this.searchDropDown = this.parentElement.findElement(By.id(this.elementId));
         } else {
-            this.searchDropDown = this.driverExt.findElement(By.id(this.elementId), Optional.empty());   
+            this.searchDropDown = this.driverExt.findElement(By.id(this.elementId), Optional.of(3));   
         }        
     }    
     

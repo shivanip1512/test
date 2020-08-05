@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.eaton.framework.DriverExtensions;
 
@@ -52,6 +53,10 @@ public class TextEditElement extends EditElement {
     }
     
     public String getValidationError() {
-        return this.driverExt.findElement(By.cssSelector("span[id='" + this.elementName + ".errors']"), Optional.empty()).getText();
+        String by = "span[id='" + this.elementName + ".errors']";
+        
+        this.driverExt.waitForElement(by);
+        
+        return this.driverExt.findElement(By.cssSelector(by), Optional.empty()).getText();        
     }
 }

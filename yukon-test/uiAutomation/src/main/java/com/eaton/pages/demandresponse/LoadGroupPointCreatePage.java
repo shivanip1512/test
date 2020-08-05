@@ -31,6 +31,6 @@ public class LoadGroupPointCreatePage extends LoadGroupCreatePage {
 
         SeleniumTestSetup.waitUntilModalVisibleByTitle("Select Control Device");
 
-        return new SelectPointModal(this.driverExt, Optional.of(modalTitle), Optional.of("pointGroupControlDevicePicker"));
+        return new SelectPointModal(this.driverExt, Optional.empty(), Optional.of("pointGroupControlDevicePicker"));
     }
 }

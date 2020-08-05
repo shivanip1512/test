@@ -259,6 +259,9 @@ yukon.tools.point = (function () {
         var hiddenRows = $('[data-fdr-translation]').not(':visible');
         var newRow = hiddenRows.eq(0);
         var number = newRow.data('fdrTranslation');
+        //Reset the value of FDR interface type to ACS so that if user tires to add yet another translation after removing the last translation, 
+        //the value of the interface type drop-down is set to ACS instead of previously selected value.
+        newRow.find('.js-fdr-interface').val($(".js-acs-interface-type-enum-val").val());
         updateFdrInterface(number);
         newRow.removeClass('dn');
 
@@ -277,10 +280,13 @@ yukon.tools.point = (function () {
         var buttonClicked = $(event.currentTarget);
         var row = buttonClicked.closest('[data-fdr-translation]');
         row.find('.js-fdr-translation').val('');
+        row.find("select,input").each(function (index, item) {
+            $(item).removeClass("error");
+        });
+        row.find("span.error").prev("br").remove();
+        row.find("span.error").remove();
         row.addClass('dn');
-
         $('.js-add-fdr').removeClass('dn');
-
         var visibleRows = $('[data-fdr-translation]').filter(':visible');
 
         if (visibleRows.length < 1) {

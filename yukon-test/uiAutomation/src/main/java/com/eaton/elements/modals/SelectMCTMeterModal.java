@@ -8,16 +8,13 @@ import com.eaton.framework.DriverExtensions;
 
 public class SelectMCTMeterModal extends BaseModal {
 
-private WebTable userGroupTable;
-    
     public SelectMCTMeterModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
         super(driverExt, modalTitle, describedBy);
         
-        userGroupTable = new WebTable(driverExt, "compact-results-table.picker-results-table", "mctMeterPicker");  
     }
 
     public WebTable getuserGroupTable() {
-        return userGroupTable;
+        return new WebTable(driverExt, "compact-results-table.picker-results-table", "mctMeterPicker"); 
     } 
     
     public void selectMeter(String meterName) {

@@ -38,6 +38,7 @@ public class SwitchBtnMultiSelectElement {
         }
     }
     
+    //This method should only be used for Load Group of type Ripple
     public void setTrueFalseByBitNo(int bitNo, boolean checked) {
         WebElement switchElement = getSwitchBtn();
         WebElement switchButton = getSwitchBtnByBitNo(bitNo);
@@ -91,7 +92,7 @@ public class SwitchBtnMultiSelectElement {
         if (this.parentElement != null) {
             return this.parentElement.findElement(By.cssSelector("." + this.elementName));
         } else {
-            return this.driverExt.findElement(By.cssSelector("." + this.elementName), Optional.empty());
+            return this.driverExt.findElement(By.cssSelector("." + this.elementName), Optional.of(3));
         }
     }
 
