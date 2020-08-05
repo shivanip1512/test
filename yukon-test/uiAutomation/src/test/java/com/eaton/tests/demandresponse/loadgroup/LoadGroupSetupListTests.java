@@ -66,7 +66,7 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpSetupList_pageTitleCorrect() {
+	public void ldGrpSetupList_PageTitleCorrect() {
 		final String EXPECTED_TITLE = "Setup";
 
 		String actualPageTitle = listPage.getPageTitle();
@@ -75,7 +75,7 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpSetupList_columnHeadersCorrect() {
+	public void ldGrpSetupList_ColumnHeadersCorrect() {
 		final int EXPECTED_COUNT = 2;
 
 		List<String> headers = this.listPage.getTable().getListTableHeaders();
@@ -141,7 +141,7 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpSetupList_ldGroupNameLinkCorrect() {
+	public void ldGrpSetupList_LdGroupNameLinkCorrect() {
 		Pair<JSONObject, JSONObject> ecobeeLdGrp = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
 
 		JSONObject response = ecobeeLdGrp.getValue1();
