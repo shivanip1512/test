@@ -1147,7 +1147,7 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.home.rfPerformance.infoText">
 <![CDATA[Below are the statuses:
         <ul>
-            <li><span class="fwb bg-color-pie-green txt-color-white">Confirmed Success (Green)</span> - 
+            <li><span class="fwb bg-color-green txt-color-white">Confirmed Success (Green)</span> - 
                     The devices in this category have reported receiving the unique RF broadcast performance message for the selected day.</li>
                     <li><span class="fwb bg-color-orange txt-color-white">Confirmed Missed (Orange)</span> - 
                     The devices in this category have reported all available data for the selected day and the analysis has determined the unique broadcast performance message was not received by the device.</li>

@@ -181,7 +181,7 @@ There is also an option to Change the configuration for the device.
         <br><br>
         Data Availability Status:
         <ul>
-            <li><span class="fwb bg-color-pie-green txt-color-white">Available (Green)</span> - 
+            <li><span class="fwb bg-color-green txt-color-white">Available (Green)</span> - 
             Data has been received for these devices within the desired number of days.</li>
             <li><span class="fwb bg-color-pie-blue txt-color-white">Expected (Blue)</span> - 
             Data has been received for these devices within 7 days.</li>
@@ -204,7 +204,7 @@ There is also an option to Change the configuration for the device.
         <br><br>
         Asset Availability Status:
         <ul>
-            <li><span class="fwb bg-color-pie-green txt-color-white">Active (Green)</span> - 
+            <li><span class="fwb bg-color-green txt-color-white">Active (Green)</span> - 
                 Devices have returned a positive value for appliance run time at some point in the previous {0}{1}.</li>
             <li><span class="fwb bg-color-pie-blue txt-color-white">Opted Out (Blue)</span> - 
                 Devices have been taken out of service and are no longer responding to events.</li>
@@ -230,7 +230,7 @@ There is also an option to Change the configuration for the device.
         A summary of the devices with and without warnings will be displayed near the top of the widget with the device type being a link to more detail.
         <ul>
             <li>
-                <span class="fwb bg-color-pie-green txt-color-white">Devices without warnings (Green)</span> - 
+                <span class="fwb bg-color-green txt-color-white">Devices without warnings (Green)</span> - 
                 Number of devices without any of the below mentioned warning types.
             </li>
             <li>

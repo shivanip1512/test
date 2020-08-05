@@ -38,7 +38,7 @@ yukon.da.updaters = (function () {
                 if (result.value.pending) {
                     color = '#f09100';
                 } else if (result.value.enabled) {
-                    color = '#009933';
+                    color = '#2ca618';
                 }
 
                 box.css({

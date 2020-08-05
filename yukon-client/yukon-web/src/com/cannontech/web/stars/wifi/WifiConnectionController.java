@@ -110,7 +110,7 @@ public class WifiConnectionController {
 
         if (includeConnected) {
             List<Integer> connectedList = Arrays.asList(connectedIds);
-            String connectedColor = "#093";
+            String connectedColor = "#2ca618";
             DeviceCollection connectedCollection = producer.createDeviceCollection(connectedList);
             MappingColorCollection mapCollection = new MappingColorCollection(connectedCollection, connectedColor, null);
             Optional <LiteState> connectedState = phaseStateGroup.getStatesList().stream()

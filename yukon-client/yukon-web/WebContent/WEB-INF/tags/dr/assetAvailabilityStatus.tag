@@ -29,7 +29,7 @@
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".active">
                 <cti:msg2 var="numberOfDevices" key=".numberOfDevices" argument="${activeSize}"/>
-                <span class="pie-green">${activeSize} ${numberOfDevices}</span>
+                <span class="green">${activeSize} ${numberOfDevices}</span>
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".optedOut">

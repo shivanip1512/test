@@ -24,10 +24,10 @@
     float: right;
 }
 .cmd-req-resp { margin: 10px 0; }
-.cmd-req { color: #222; }
-.cmd-resp-success { color: #1f4cff; }
+.cmd-req { color: #7b8387; }
+.cmd-resp-success { color: #0088f2; }
 .cmd-resp-fail { color: #d14836; }
-.cmd-resp-warn { color: #fb8521; }
+.cmd-resp-warn { color: #e99012; }
 .cmd-pending { margin-top: 4px; }
 </style>
 
