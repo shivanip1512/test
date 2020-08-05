@@ -51,7 +51,7 @@ public class CustomAttributeAssignmentApiController {
 
     @PostMapping("")
     public ResponseEntity<Object> create(@Valid @RequestBody Assignment assignment) {
-        return new ResponseEntity<>(customAttributeService.createAttributeAssignment(assignment), HttpStatus.OK);
+        return new ResponseEntity<>(customAttributeService.createAttributeAssignment(assignment), HttpStatus.CREATED);
     }
 
     @GetMapping("/{attributeAssignmentId}")

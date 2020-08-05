@@ -115,7 +115,7 @@ public class AttributeAssignmentApiDoc extends DocumentationBase {
     @Override
     protected Get buildGetFields() {
         List<FieldDescriptor> responseFields = getAttributeAssignmentFieldDescriptors();
-        String url = ApiCallHelper.getProperty("attributeAssignmentBaseURL") + "/" + attributeAssignmentId;
+        String url = ApiCallHelper.getProperty("attributeAssignmentsBaseURL") + "/" + attributeAssignmentId;
         return new DocumentationFields.Get(responseFields, url);
     }
 
@@ -124,7 +124,7 @@ public class AttributeAssignmentApiDoc extends DocumentationBase {
     protected Create buildCreateFields() {
         List<FieldDescriptor> requestFields = getAssignmentFieldDescriptors();
         List<FieldDescriptor> responseFields = getAttributeAssignmentFieldDescriptors();
-        String url = ApiCallHelper.getProperty("attributeAssignmentBaseURL");
+        String url = ApiCallHelper.getProperty("attributeAssignmentsBaseURL");
         return new DocumentationFields.Create(requestFields, responseFields, offset, offsetDescription, getMockAssignmentObject(), url);
     }
 
@@ -133,7 +133,7 @@ public class AttributeAssignmentApiDoc extends DocumentationBase {
     protected Update buildUpdateFields() {
         List<FieldDescriptor> requestFields = getAssignmentFieldDescriptors();
         List<FieldDescriptor> responseFields = getAttributeAssignmentFieldDescriptors();
-        String url = ApiCallHelper.getProperty("attributeAssignmentBaseURL") + "/" + attributeAssignmentId;
+        String url = ApiCallHelper.getProperty("attributeAssignmentsBaseURL") + "/" + attributeAssignmentId;
         return new DocumentationFields.Update(requestFields, responseFields, offset, offsetDescription, getMockAssignmentObject(), url);
     }
 

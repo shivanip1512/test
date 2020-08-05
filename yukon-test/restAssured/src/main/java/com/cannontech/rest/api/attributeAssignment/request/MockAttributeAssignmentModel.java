@@ -1,6 +1,6 @@
 package com.cannontech.rest.api.attributeAssignment.request;
 
-import com.cannontech.rest.api.customAtribute.request.MockCustomAttributeModel;
+import com.cannontech.rest.api.customAttribute.request.MockCustomAttribute;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -15,5 +15,5 @@ import lombok.Setter;
 @NoArgsConstructor
 @JsonInclude(Include.NON_NULL)
 public class MockAttributeAssignmentModel extends MockAssignmentModel{
-    private MockCustomAttributeModel customAttribute;
+    private MockCustomAttribute customAttribute;
 }

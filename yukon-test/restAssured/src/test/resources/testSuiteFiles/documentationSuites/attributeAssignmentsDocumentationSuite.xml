@@ -1,0 +1,9 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Attribute Assignments Documentation Suite" preserve-order="true">
+    <test name="Attribute Assignments Documentation Test" >
+        <classes>
+           <class name = "com.cannontech.rest.api.documentation.attributeAssignment.AttributeAssignmentApiDoc" />
+        </classes>
+    </test>
