@@ -58,13 +58,14 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	        createPage.getAddressUsage().setTrueFalseByName("GEO", true);
 	        createPage.getAddressUsage().setTrueFalseByName("Substation", true);
 	        createPage.getAddressUsage().setTrueFalseByName("Feeder", true);
-	        createPage.getAddressUsage().setTrueFalseByName("Zip", true);
+	        createPage.getAddressUsage().setTrueFalseByName("ZIP", true);
 	        createPage.getAddressUsage().setTrueFalseByName("User", true);
 	        
 	        createPage.getGeoAddress().setInputValue("10");
 	        createPage.getSubstationAddress().setInputValue("10");
 	        createPage.getZipAddress().setInputValue("5");
 	        createPage.getUserAddress().setInputValue("6");
+	        createPage.getFeederAddress().setTrueFalseByName("1", true);
 	        
 	        createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
 	        createPage.getProgramLoadAddress().setInputValue("10");
@@ -100,6 +101,7 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	        waitForLoadingSpinner();
 	        createPage.getAddressUsage().setTrueFalseByName("GEO", true);
 	        createPage.getGeoAddress().setInputValue("-1");
+	        createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
 	        createPage.getSaveBtn().click();
 	        assertThat(createPage.getGeoAddress().getValidationError()).isEqualTo("Must be between 1 and 65,534."); 
 		       
@@ -110,6 +112,7 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    	createPage.getType().selectItemByText("RFN Expresscom Group");
 	        waitForLoadingSpinner();
 	        createPage.getAddressUsage().setTrueFalseByName("GEO", true);
+	        createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
 	        createPage.getGeoAddress().setInputValue("65535");
 	        createPage.getSaveBtn().click();
 	        assertThat(createPage.getGeoAddress().getValidationError()).isEqualTo("Must be between 1 and 65,534."); 
@@ -131,6 +134,8 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    	createPage.getType().selectItemByText("RFN Expresscom Group");
 	        waitForLoadingSpinner();
 	        createPage.getAddressUsage().setTrueFalseByName("Substation", true);
+
+	        createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
 	        createPage.getSubstationAddress().setInputValue("-1");
 	        createPage.getSaveBtn().click();
 	        assertThat(createPage.getSubstationAddress().getValidationError()).isEqualTo("Must be between 1 and 65,534."); 
@@ -141,6 +146,7 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    	createPage.getType().selectItemByText("RFN Expresscom Group");
 	        waitForLoadingSpinner();
 	        createPage.getAddressUsage().setTrueFalseByName("Substation", true);
+	        createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
 	        createPage.getSubstationAddress().setInputValue("65535");
 	        createPage.getSaveBtn().click();
 	        assertThat(createPage.getSubstationAddress().getValidationError()).isEqualTo("Must be between 1 and 65,534."); 
@@ -150,7 +156,7 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    public void LoadGroupRfnExpresscom_GeographicalAddressingUser_ZipRequiredWhenProgramSelectedValidation() {
 	    	createPage.getType().selectItemByText("RFN Expresscom Group");
 	        waitForLoadingSpinner();
-	        createPage.getAddressUsage().setTrueFalseByName("Zip", true);
+	        createPage.getAddressUsage().setTrueFalseByName("ZIP", true);
 	        createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
 	        createPage.getSaveBtn().click();
 	        assertThat(createPage.getZipAddress().getValidationError()).isEqualTo("Zip is required."); 
@@ -161,7 +167,7 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    public void LoadGroupRfnExpresscom_GeographicalAddressingZip_ValidMinValueValidation() {
 	    	createPage.getType().selectItemByText("RFN Expresscom Group");
 	        waitForLoadingSpinner();
-	        createPage.getAddressUsage().setTrueFalseByName("Zip", true);
+	        createPage.getAddressUsage().setTrueFalseByName("ZIP", true);
 	        createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
 	        createPage.getZipAddress().setInputValue("-1");
 	        createPage.getSaveBtn().click();
@@ -172,7 +178,7 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    public void LoadGroupRfnExpresscom_GeographicalAddressingZip_ValidMaxValueValidation() {
 	    	createPage.getType().selectItemByText("RFN Expresscom Group");
 	        waitForLoadingSpinner();
-	        createPage.getAddressUsage().setTrueFalseByName("Zip", true);
+	        createPage.getAddressUsage().setTrueFalseByName("ZIP", true);
 	        createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
 	        createPage.getZipAddress().setInputValue("16777216");
 	        createPage.getSaveBtn().click();
@@ -282,7 +288,7 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    createPage.getAddressUsage().setTrueFalseByName("GEO", true);
         createPage.getAddressUsage().setTrueFalseByName("Substation", true);
         createPage.getAddressUsage().setTrueFalseByName("Feeder", true);
-        createPage.getAddressUsage().setTrueFalseByName("Zip", true);
+        createPage.getAddressUsage().setTrueFalseByName("ZIP", true);
         createPage.getAddressUsage().setTrueFalseByName("User", true);
         createPage.getAddressUsage().setTrueFalseByName("Serial", true);
         
@@ -319,10 +325,10 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    public void LoadGroupRfnExpresscom_LoadAddressing_SectionLabelsCorrect() {
 	        String sectionName = "Load Addressing";
 	        createPage.getType().selectItemByText("RFN Expresscom Group");
-
+	        waitForLoadingSpinner();
 	        createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
 	        createPage.getLoadAddressUsage().setTrueFalseByName("Splinter", true);
-	        
+		    
 	        List<String> expectedLabels = new ArrayList<>(
 	                List.of("Send Loads in Control Message:", "Loads:", "Program:", "Splinter:"));
 	        List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();

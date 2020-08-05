@@ -52,13 +52,13 @@ public class LoadGroupRFNExpressCommCreatePage extends LoadGroupCreatePage {
 	    }
 	    
 	    public TextEditElement getSerialAddress() {
-	        return new TextEditElement(this.driverExt, "serial");
+	        return new TextEditElement(this.driverExt, "serialNumber");
 	    }
 	    
 	    public SwitchBtnMultiSelectElement getFeederAddress() {
 	        WebElement section = getPageSection("Geographical Addressing").getSection();
 	        
-	        return new SwitchBtnMultiSelectElement(this.driverExt, "feeder", section);
+	        return new SwitchBtnMultiSelectElement(this.driverExt, "feederChk", section);
 	    }
 
 	    // Load Address
