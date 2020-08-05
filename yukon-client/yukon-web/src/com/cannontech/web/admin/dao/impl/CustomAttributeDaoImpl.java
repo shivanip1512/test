@@ -28,6 +28,8 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.database.vendor.DatabaseVendor;
+import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.jobs.dao.impl.JobDisabledStatus;
 import com.cannontech.web.admin.dao.CustomAttributeDao;
 
@@ -36,6 +38,7 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private AttributeDao attributeDao;
     @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private DatabaseVendorResolver databaseConnectionVendorResolver;
     private static final Logger log = YukonLogManager.getLogger(CustomAttributeDaoImpl.class);
     
     @Override
@@ -127,6 +130,8 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
 
     @Override
     public void deleteCustomAttribute(int attributeId) throws DataDependencyException {
+        DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
+        boolean isOracle = databaseVendor.isOracle();
         SqlStatementBuilder sqlExportFormat = new SqlStatementBuilder();
         sqlExportFormat.append("SELECT FormatName FROM ArchiveValuesExportFormat format");
         sqlExportFormat.append("JOIN ArchiveValuesExportAttribute att on att.FormatId = format.FormatId");
@@ -138,13 +143,21 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
         sqlExportJob.append("        SELECT jp.JobID FROM JobProperty jp ");
         sqlExportJob.append("           JOIN Job j on jp.JobID = j.JobID");
         sqlExportJob.append("           JOIN CustomAttribute ca ON jp.value");
-        sqlExportJob.append("           LIKE CONCAT('%', ca.AttributeId, '%') WHERE jp.name='attributes' AND BeanName = 'scheduledArchivedDataFileExportJobDefinition'");
+        if(isOracle) {
+            sqlExportJob.append("               LIKE ('%' || ca.AttributeId || '%')");
+        } else {
+            sqlExportJob.append("               LIKE CONCAT('%', ca.AttributeId, '%')");
+        }
+        sqlExportJob.append("                   WHERE jp.name='attributes'");
+        sqlExportJob.append("                   AND BeanName = 'scheduledArchivedDataFileExportJobDefinition'");
         sqlExportJob.append("                   AND ca.AttributeId").eq(attributeId);
         sqlExportJob.append("                   AND j.Disabled").neq_k(JobDisabledStatus.D);
         sqlExportJob.append("     )");
         sqlExportJob.append("SELECT jpName.Value as Name, jpAttribute.Value as Value, j.JobID");
-        sqlExportJob.append("FROM JobIds j JOIN JobProperty jpAttribute on jpAttribute.JobID = j.JobID JOIN JobProperty jpName on jpName.JobID = j.JobID");
-        sqlExportJob.append("WHERE jpAttribute.Name = 'attributes' AND jpName.Name = 'exportFileName'");
+        sqlExportJob.append("FROM JobIds j JOIN JobProperty jpAttribute on jpAttribute.JobID = j.JobID");
+        sqlExportJob.append("JOIN JobProperty jpName on jpName.JobID = j.JobID");
+        sqlExportJob.append("WHERE jpAttribute.Name = 'attributes'");
+        sqlExportJob.append("AND jpName.Name = 'exportFileName'");
 
         List<String> formatDetails = jdbcTemplate.query(sqlExportFormat, TypeRowMapper.STRING);
         List<String> exportDetails = new ArrayList<>();
