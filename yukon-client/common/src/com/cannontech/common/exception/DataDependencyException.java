@@ -31,7 +31,7 @@ public class DataDependencyException extends Exception {
         return dependencies.get(type) == null ? null : to.cast(dependencies.get(type));
     }
 
-    public Object getDependentObject() {
+    public String getDependentObject() {
         return dependentObject;
     }
 }
