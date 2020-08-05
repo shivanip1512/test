@@ -93,7 +93,7 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
      * Called when any global setting is updated
      */
     private void databaseChangeEvent(DatabaseChangeEvent event) {
-        if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.RUNTIME_CALCULATION_INTERVAL)) {
+        if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.RUNTIME_CALCULATION_INTERVAL_HOURS)) {
             if (scheduledFuture != null) {
                 scheduledFuture.cancel(false);
             }
@@ -114,7 +114,7 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
      * Get Runtime Calculation Interval
      */
     private Integer getRuntimeCalcInterval() {
-        return globalSettingDao.getInteger(GlobalSettingType.RUNTIME_CALCULATION_INTERVAL);
+        return globalSettingDao.getInteger(GlobalSettingType.RUNTIME_CALCULATION_INTERVAL_HOURS);
     }
 
     @Override

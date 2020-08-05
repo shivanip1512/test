@@ -447,8 +447,8 @@
     <entry key="yukon.common.setting.ITRON_SFTP_PASSWORD.description">Password to authenticate with the Itron SFTP service.</entry>
     <entry key="yukon.common.setting.ITRON_SFTP_PRIVATE_KEY_PASSWORD">Itron SFTP Private Key Password</entry>
     <entry key="yukon.common.setting.ITRON_SFTP_PRIVATE_KEY_PASSWORD.description">Optional password to encrypt the generated SFTP Private Key.</entry>
-    <entry key="yukon.common.setting.RUNTIME_CALCULATION_INTERVAL">Runtime Calculation Interval</entry>
-    <entry key="yukon.common.setting.RUNTIME_CALCULATION_INTERVAL.description">The interval, in hours, at which to calculate run time and shed time for devices that do not directly report it.</entry>
+    <entry key="yukon.common.setting.RUNTIME_CALCULATION_INTERVAL_HOURS">Runtime Calculation Interval</entry>
+    <entry key="yukon.common.setting.RUNTIME_CALCULATION_INTERVAL_HOURS.description">The interval, in hours, at which to calculate run time and shed time for devices that do not directly report it.</entry>
     
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE">Producer Window Size</entry>
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE.description">The size, in kilobytes, of messages that a producer can send before it is blocked to await a ProducerAck from the broker that frees enough memory to allow another message to be sent. (Requires restart to take effect.)</entry>
