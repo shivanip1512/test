@@ -55,6 +55,7 @@ public class LoadGroupRfnExpressCommCreatePage extends LoadGroupCreatePage {
 	        return new TextEditElement(this.driverExt, "serialNumber");
 	    }
 	    
+	    
 	    public SwitchBtnMultiSelectElement getFeederAddress() {
 	        WebElement section = getPageSection("Geographical Addressing").getSection();
 	        
