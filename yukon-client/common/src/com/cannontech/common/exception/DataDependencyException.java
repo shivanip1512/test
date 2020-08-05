@@ -13,12 +13,12 @@ public class DataDependencyException extends Exception {
         SCHEDULED_EXPORT;
     }
 
-    private Object dependentObject;
+    private String dependentObject;
     private Map<DependencyType, Object> dependencies = new HashMap<>();
 
     private static final long serialVersionUID = 1L;
 
-    public DataDependencyException(Object dependentObject, String message) {
+    public DataDependencyException(String dependentObject, String message) {
         super(message);
         this.dependentObject = dependentObject;
     }

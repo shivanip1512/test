@@ -13,6 +13,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.exception.DataDependencyException.DependencyType;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.dao.AttributeDao;
@@ -30,7 +31,9 @@ import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.DatabaseVendorResolver;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.dao.impl.JobDisabledStatus;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.admin.dao.CustomAttributeDao;
 
 public class CustomAttributeDaoImpl implements CustomAttributeDao {
@@ -39,6 +42,7 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
     @Autowired private AttributeDao attributeDao;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private DatabaseVendorResolver databaseConnectionVendorResolver;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     private static final Logger log = YukonLogManager.getLogger(CustomAttributeDaoImpl.class);
     
     @Override
@@ -179,8 +183,11 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
             sql.append("WHERE AttributeId").eq(attributeId);
             jdbcTemplate.update(sql);
         } else {
-            DataDependencyException exception = new DataDependencyException(attributeDao.getCustomAttribute(attributeId),
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+            DataDependencyException exception = new DataDependencyException(
+                    messageSourceAccessor.getMessage(attributeDao.getCustomAttribute(attributeId)),
                     " Attribute " + attributeId + " cannot be deleted");
+            log.debug("dependent object:{}", exception.getDependentObject());
             if (!formatDetails.isEmpty()) {
                 exception.addDependency(DependencyType.EXPORT_FORMAT, formatDetails);
                 log.debug("format names:{}", exception.getDependency(DependencyType.EXPORT_FORMAT, List.class));
