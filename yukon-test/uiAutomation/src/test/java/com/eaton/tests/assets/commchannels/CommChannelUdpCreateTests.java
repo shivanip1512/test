@@ -26,8 +26,6 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
     private DriverExtensions driverExt;
     private SoftAssertions softly;
     private Random randomNum;
-    String modalTitle = "Create Comm Channel";
-    String type = "UDP";
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
@@ -45,20 +43,16 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
         CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
                 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT Comm Channel UDP " + timeStamp;
-        String baudRate = "4800";
+        String name = "AT UDP " + timeStamp;
 
-        String portNumber;
         randomNum = getRandomNum();
-        portNumber = Integer.toString(randomNum.nextInt(65536));
-
         final String EXPECTED_MSG = name + " saved successfully.";
 
         createModal.getName().setInputValue(name); 
-        createModal.getType().selectItemByText(type);
+        createModal.getType().selectItemByValue("UDPPORT");
         waitForLoadingSpinner();
-        createModal.getPortNumber().setInputValue(portNumber);
-        createModal.getBaudRate().selectItemByText(baudRate);
+        createModal.getPortNumber().setInputValue(Integer.toString(randomNum.nextInt(65536)));
+        createModal.getBaudRate().selectItemByValue("BAUD_4800");
 
         createModal.clickOkAndWaitForModalToClose();
 
@@ -75,7 +69,7 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
     public void createCommChannelUdp_LabelsCorrect() {
         CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
 
-        createModal.getType().selectItemByText(type);        
+        createModal.getType().selectItemByValue("UDPPORT");        
         waitForLoadingSpinner();
 
         List<String> labels = createModal.getFieldLabels();
@@ -93,7 +87,7 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
     public void createCommChannelUdp_PortNumberMinValidation() {
         CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
 
-        createModal.getType().selectItemByText(type);
+        createModal.getType().selectItemByValue("UDPPORT");
         waitForLoadingSpinner();
         
         String portNumber = "0";
@@ -112,7 +106,7 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
     public void createCommChannelUdp_PortNumberMaxValidation() {
         CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
 
-        createModal.getType().selectItemByText(type);
+        createModal.getType().selectItemByValue("UDPPORT");
         waitForLoadingSpinner();
         
         String portNumber = "65536";
@@ -134,7 +128,7 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
 
         final String EXPECTED_MSG = "Port Number must be between 1 and 65,535.";
 
-        createModal.getType().selectItemByText(type);
+        createModal.getType().selectItemByValue("UDPPORT");
         waitForLoadingSpinner();
 
         createModal.clickOkAndWaitForModalToClose();
@@ -147,6 +141,5 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
         refreshPage(listPage);
-        listPage = new CommChannelsListPage(driverExt);
     }
 }

@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.assertj.core.api.SoftAssertions;
 import org.json.simple.JSONObject;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.eaton.elements.Section;
@@ -47,12 +47,14 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         jo.put("name", commChannelName);
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
         commChannelId = createResponse.path("id");
-    }
-
-    @BeforeMethod(alwaysRun = true)
-    public void beforeMethod() {
+        
         navigate(Urls.Assets.COMM_CHANNEL_DETAIL + commChannelId);
         detailPage = new CommChannelLocalSerialPortDetailPage(driverExt, commChannelId);
+    }
+
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        refreshPage(detailPage);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
@@ -67,7 +69,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelLocalSerialEdit_NameRequired() {
+    public void commChannelLocalSerialEdit_Name_RequiredValidation() {
         String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_MSG = "Name is required.";
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal(expectedModalTitle);
@@ -79,7 +81,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelLocalSerialEdit_NameInvalidChars() {
+    public void commChannelLocalSerialEdit_Name_InvalidCharsValidation() {
         String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
 
@@ -94,11 +96,10 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_PhysicalPortOther_RequiredValidation() {
         String expectedModalTitle = "Edit " + commChannelName;
-        String physicalPort = "Other";
         String EXPECTED_MSG = "Physical Port is required.";
 
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal(expectedModalTitle);
-        editModal.getPhysicalPort().selectItemByText(physicalPort);
+        editModal.getPhysicalPort().selectItemByValue("Other");
         editModal.clickOkAndWait();
 
         assertThat(editModal.getPhysicalPort().getValidationError()).isEqualTo(EXPECTED_MSG);
@@ -461,13 +462,13 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String expectedModalTitle = "Edit " + commChannelName;
         String commChannelName = "Local Serial Update " + timeStamp;
-        String baudRate = "4800";
+        String baudRate = "BAUD_4800";
         String configFieldsValues[] = { "55", "10", "20", "15", "500" };
         String tabName = "Configuration";
 
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal(expectedModalTitle);
         editModal.getName().setInputValue(commChannelName);
-        editModal.getBaudRate().selectItemByText(baudRate);
+        editModal.getBaudRate().selectItemByValue(baudRate);
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getProtocolWrap().setByValue("None", true);
@@ -487,7 +488,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         softly.assertThat(response.path("name").toString()).isEqualTo(commChannelName);
         softly.assertThat(response.path("protocolWrap").toString()).isEqualTo("None");
         softly.assertThat(response.path("carrierDetectWaitInMilliseconds").toString()).isEqualTo("0");
-        softly.assertThat(response.path("baudRate").toString()).isEqualTo("BAUD_" + baudRate);
+        softly.assertThat(response.path("baudRate").toString()).isEqualTo(baudRate);
         softly.assertThat(response.path("timing.preTxWait").toString()).isEqualTo((configFieldsValues[0]));
         softly.assertThat(response.path("timing.rtsToTxWait").toString()).isEqualTo((configFieldsValues[1]));
         softly.assertThat(response.path("timing.postTxWait").toString()).isEqualTo((configFieldsValues[2]));

@@ -47,12 +47,14 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         jo.put("name", commChannelName);
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
         commChannelId = createResponse.path("id");
+        
+        navigate(Urls.Assets.COMM_CHANNEL_DETAIL + commChannelId);
+        detailPage = new CommChannelTcpDetailPage(driverExt, commChannelId);
     }
 
     @BeforeMethod(alwaysRun = true)
     public void beforeMethod() {
-        navigate(Urls.Assets.COMM_CHANNEL_DETAIL + commChannelId);
-        detailPage = new CommChannelTcpDetailPage(driverExt, commChannelId);
+        refreshPage(detailPage);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
@@ -367,17 +369,31 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTcpEdit_UpdateAllFieldsSuccess() {
+    public void commChannelTcpEdit_EditAllFieldsSuccess() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String expectedModalTitle = "Edit " + commChannelName;
-        String commChannelName = "Edit TCP " + timeStamp;
-        String baudRate = "4800";
+        String name = "TCP Comm Channel " + timeStamp;
+
+        String payloadFile = System.getProperty("user.dir")
+                + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelTCP.json";
+
+        Object body = JsonFileHelper.parseJSONFile(payloadFile);
+        jo = (JSONObject) body;
+        jo.put("name", name);
+        ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
+        Integer id = createResponse.path("id");
+        
+        navigate(Urls.Assets.COMM_CHANNEL_DETAIL + id);
+        CommChannelTcpDetailPage page = new CommChannelTcpDetailPage(driverExt, id);        
+        
+        String expectedModalTitle = "Edit " + name;
+        String editName = "Edit TCP " + timeStamp;
+        String baudRate = "BAUD_4800";
         String configFieldsValues[] = { "55", "10", "20", "15", "500" };
         String tabName = "Configuration";
 
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
-        editModal.getName().setInputValue(commChannelName);
-        editModal.getBaudRate().selectItemByText(baudRate);
+        EditTcpCommChannelModal editModal = page.showTcpCommChannelEditModal(expectedModalTitle);
+        editModal.getName().setInputValue(editName);
+        editModal.getBaudRate().selectItemByValue(baudRate);
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPreTxWait().setInputValue(configFieldsValues[0]);
@@ -389,16 +405,16 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
                        
         String userMsg = detailPage.getUserMessage();        
 
-        ExtractableResponse<?> response = AssetsGetRequestAPI.getCommChannel(commChannelId.toString());
+        ExtractableResponse<?> response = AssetsGetRequestAPI.getCommChannel(id.toString());
         
-        softly.assertThat(userMsg).isEqualTo(commChannelName + " saved successfully.");
-        softly.assertThat(response.path("name").toString()).isEqualTo(commChannelName);
-        softly.assertThat(response.path("baudRate").toString()).isEqualTo("BAUD_" +baudRate);
-        softly.assertThat(response.path("timing.preTxWait").toString()).isEqualTo((configFieldsValues[0]));
-        softly.assertThat(response.path("timing.rtsToTxWait").toString()).isEqualTo((configFieldsValues[1]));
-        softly.assertThat(response.path("timing.postTxWait").toString()).isEqualTo((configFieldsValues[2]));
-        softly.assertThat(response.path("timing.receiveDataWait").toString()).isEqualTo((configFieldsValues[3]));
-        softly.assertThat(response.path("timing.extraTimeOut").toString()).isEqualTo((configFieldsValues[4]));
+        softly.assertThat(userMsg).isEqualTo(editName + " saved successfully.");
+        softly.assertThat(editName).isEqualTo(response.path("name").toString());               
+        softly.assertThat(baudRate).isEqualTo(response.path("baudRate").toString());
+        softly.assertThat(configFieldsValues[0]).isEqualTo(response.path("timing.preTxWait").toString());
+        softly.assertThat(configFieldsValues[1]).isEqualTo(response.path("timing.rtsToTxWait").toString());
+        softly.assertThat(configFieldsValues[2]).isEqualTo(response.path("timing.postTxWait").toString());
+        softly.assertThat(configFieldsValues[3]).isEqualTo(response.path("timing.receiveDataWait").toString());
+        softly.assertThat(configFieldsValues[4]).isEqualTo(response.path("timing.extraTimeOut").toString());
         softly.assertAll();
     }
 }

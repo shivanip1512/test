@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -25,10 +24,7 @@ public class AreaCreateTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        WebDriver driver = getDriver();
-        driverExt = getDriverExt();
-
-        driver.get(getBaseUrl() + Urls.CapControl.AREA_CREATE);
+        navigate(Urls.CapControl.AREA_CREATE);
 
         this.createPage = new AreaCreatePage(driverExt);
     }

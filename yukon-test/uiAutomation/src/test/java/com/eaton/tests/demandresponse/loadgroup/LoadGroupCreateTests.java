@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.json.simple.JSONObject;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.eaton.elements.Section;
@@ -29,12 +29,15 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     public void beforeClass() {
 
         driverExt = getDriverExt();
+        
+        navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
+        
+        createPage = new LoadGroupCreatePage(driverExt);
     }
 
-    @BeforeMethod(alwaysRun = true)
-    public void beforeTest() {
-        navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
-        createPage = new LoadGroupCreatePage(driverExt);
+    @AfterMethod(alwaysRun = true)
+    public void afterTest() {
+        refreshPage(createPage);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
@@ -72,14 +75,11 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_CancelButtonNavigatesToCorrectUrl() {
-        String expectedURL = getBaseUrl() + Urls.DemandResponse.SETUP_FILTER + "LOAD_GROUP";
-        String actualURL;
-
         createPage.getCancelBtn().click();
 
-        actualURL = getCurrentUrl();
+        String actualUrl = getCurrentUrl();
 
-        assertThat(actualURL).isEqualTo(expectedURL);
+        assertThat(actualUrl).contains(Urls.DemandResponse.LOAD_GROUP_SETUP_LIST);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})

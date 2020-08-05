@@ -4,14 +4,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 import org.assertj.core.api.SoftAssertions;
-import org.json.simple.JSONObject;
+import org.javatuples.Pair;
+import org.json.JSONObject;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.eaton.builders.assets.commchannel.CommChannelTypes;
+import com.eaton.builders.assets.commchannel.CommChannelUdpCreateBuilder;
 import com.eaton.elements.Section;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
@@ -43,19 +47,34 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         commChannelName = "UDP Comm Channel " + timeStamp;
+        
+        Pair<JSONObject, JSONObject> pair = new CommChannelUdpCreateBuilder.Builder(Optional.empty())
+                .withEnable(Optional.empty())
+                .withBaudRate(Optional.empty())
+                .withPortNumber(Optional.empty())
+                .withCarrierDetectWaitMs(Optional.empty())
+                .withProtocolWrap(Optional.empty())
+                .withPreTxWait(Optional.empty())
+                .withRtsToTxWait(Optional.empty())
+                .withPostTxWait(Optional.empty())
+                .withReceiveDataWait(Optional.empty())
+                .withExtraTimeOut(Optional.empty())
+                .withSharedPortType(Optional.of(CommChannelTypes.SharedPortType.ACS))
+                .withSharedSocketNumber(Optional.empty())
+                .create();
 
         // Creating one UDP port comm channel using hard coded json file.
-        String payloadFile = System.getProperty("user.dir")
-                + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelUDP.json";
-
-        Object body = JsonFileHelper.parseJSONFile(payloadFile);
-        randomNum = getRandomNum();
-        jo = (JSONObject) body;
-        jo.put("name", commChannelName);
-        portNumber = randomNum.nextInt(65536);
-        jo.put("portNumber", portNumber);
-        ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
-        commChannelId = createResponse.path("id");
+//        String payloadFile = System.getProperty("user.dir")
+//                + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelUDP.json";
+//
+//        Object body = JsonFileHelper.parseJSONFile(payloadFile);
+//        randomNum = getRandomNum();
+//        jo = (JSONObject) body;
+//        jo.put("name", commChannelName);
+//        portNumber = randomNum.nextInt(65536);
+//        jo.put("portNumber", portNumber);
+//        ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
+//        commChannelId = createResponse.path("id");
     }
 
     @BeforeMethod(alwaysRun = true)
@@ -187,6 +206,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         Integer deletePortNumber = randomNum.nextInt(65536);
         jo.put("portNumber", deletePortNumber);
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
+        
         Integer deleteCommChannelId = createResponse.path("id");
         navigate(Urls.Assets.COMM_CHANNEL_DETAIL + deleteCommChannelId);
         detailPage = new CommChannelUdpDetailPage(driverExt, deleteCommChannelId);

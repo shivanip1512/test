@@ -48,7 +48,7 @@ public class EnergyCompanyOperatorUserCreateTests extends SeleniumTestSetup {
         Random rand = new Random();
         
         String userName = "ATOperatorUser" + rand.nextInt(1000);
-        createPage.getOperatorGroup().selectItemByText("QA Admin User Grp");
+        createPage.getOperatorGroup().selectItemByValue("QA Admin User Grp");
         createPage.getUserName().setInputValue(userName);
         createPage.getPassword().setInputValue(PASSWORD);
         createPage.getConfirmPassword().setInputValue(PASSWORD);

@@ -1,6 +1,7 @@
 package com.eaton.elements;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -11,10 +12,17 @@ public class SwitchBtnYesNoElement {
 
     private String elementName;
     private WebElement parentElement;
+    private DriverExtensions driverExt;
 
     public SwitchBtnYesNoElement(DriverExtensions driverExt, String elementName, WebElement parentElement) {
+        this.driverExt = driverExt;
         this.elementName = elementName;
-        this.parentElement = parentElement;
+        this.parentElement = parentElement;        
+    }
+    
+    public SwitchBtnYesNoElement(DriverExtensions driverExt, String elementName) {
+        this.driverExt = driverExt;
+        this.elementName = elementName;
     }
 
     public void setValue(boolean checked) {
@@ -32,15 +40,28 @@ public class SwitchBtnYesNoElement {
     }
 
     private WebElement getSwitchBtn() {
-        List<WebElement> list = parentElement.findElements(By.cssSelector(".switch-btn"));
+        if (parentElement != null) {
+            List<WebElement> list = parentElement.findElements(By.cssSelector(".switch-btn"));
 
-        for (WebElement webElement : list) {
-            List<WebElement> element = webElement.findElements(By.cssSelector("input[name='" + this.elementName + "']"));
+            for (WebElement webElement : list) {
+                List<WebElement> element = webElement.findElements(By.cssSelector("input[name='" + this.elementName + "']"));
 
-            if (!element.isEmpty()) {
-                return webElement;
+                if (!element.isEmpty()) {
+                    return webElement;
+                }
+            }
+        } else {
+            List<WebElement> list = this.driverExt.findElements(By.cssSelector(".switch-btn"), Optional.of(3));
+
+            for (WebElement webElement : list) {
+                List<WebElement> element = webElement.findElements(By.cssSelector("input[name='" + this.elementName + "']"));
+
+                if (!element.isEmpty()) {
+                    return webElement;
+                }
             }
         }
+
 
         return null;
     }

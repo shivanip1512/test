@@ -86,7 +86,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelUdpEdit_Name_InvalidChars() {
+    public void commChannelUdpEdit_Name_InvalidCharsValidation() {
         String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
 
@@ -415,19 +415,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
     }	
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_CancelNavigatesCorrectly() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_TITLE = commChannelName;
-
-        EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal(expectedModalTitle);
-        editModal.clickCancelAndWait();
-
-        String actualPageTitle = detailPage.getPageTitle();
-        assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);
-    }
-
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_NameAlreadyExists() {
+    public void commChannelUdpEdit_NameAlreadyExistsValidation() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String commChannelNameUdp = "UDP Comm Channel " + timeStamp;
         String EXPECTED_MSG = "Name already exists";
@@ -489,13 +477,13 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String expectedModalTitle = "Edit " + commChannelName;	
         String commChannelName = "CommChannel_Udp_Updatepe " + timeStamp;	
-        String baudRate = "4800";	
+        String baudRate = "BAUD_4800";	
         String configFieldsValues[] = { "55", "10", "20", "15", "500" };	
         String tabName = "Configuration";	
 	
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal(expectedModalTitle);	
         editModal.getName().setInputValue(commChannelName);	
-        editModal.getBaudRate().selectItemByText(baudRate);	
+        editModal.getBaudRate().selectItemByValue(baudRate);	
 	
         editModal.getTabs().clickTabAndWait(tabName);
         
@@ -514,7 +502,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         ExtractableResponse<?> response = AssetsGetRequestAPI.getCommChannel(commChannelId.toString());	     	
         softly.assertThat(userMsg).isEqualTo(commChannelName + " saved successfully.");	
         softly.assertThat(response.path("name").toString()).isEqualTo(commChannelName);	
-        softly.assertThat(response.path("baudRate").toString()).isEqualTo("BAUD_"+baudRate);	
+        softly.assertThat(response.path("baudRate").toString()).isEqualTo(baudRate);	
         softly.assertThat(response.path("keyInHex").toString()).isEqualTo("");       	
         softly.assertThat(response.path("carrierDetectWaitInMilliseconds").toString()).isEqualTo("0");	
         softly.assertThat(response.path("timing.preTxWait").toString()).isEqualTo((configFieldsValues[0]));	
@@ -524,6 +512,4 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         softly.assertThat(response.path("timing.extraTimeOut").toString()).isEqualTo((configFieldsValues[4]));	
         softly.assertAll();	
     }	
-
-
 }

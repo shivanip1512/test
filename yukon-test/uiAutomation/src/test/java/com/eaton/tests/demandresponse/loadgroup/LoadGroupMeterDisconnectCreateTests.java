@@ -65,8 +65,7 @@ public class LoadGroupMeterDisconnectCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateMeterDisconnect_AllFieldsDisableFalseTrueSuccessfully() {
-
+    public void ldGrpCreateMeterDisconnect_AllFieldsDisableTrueSuccessfully() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Meter Disconnect " + timeStamp;
         double randomDouble = randomNum.nextDouble();
@@ -80,7 +79,7 @@ public class LoadGroupMeterDisconnectCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
-        createPage.getDisableGroup().setValue(false);
+        createPage.getDisableGroup().setValue(true);
         createPage.getDisableControl().setValue(true);
 
         createPage.getSaveBtn().click();
@@ -93,6 +92,7 @@ public class LoadGroupMeterDisconnectCreateTests extends SeleniumTestSetup {
 
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
+    
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
         refreshPage(createPage);

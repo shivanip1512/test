@@ -23,7 +23,6 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
     private CommChannelsListPage listPage;
     private DriverExtensions driverExt;
     private SoftAssertions softly;
-    String type = "Local Serial Port";
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
@@ -42,17 +41,15 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 
-        String name = "AT Comm Channel Local Serial Port " + timeStamp;
-        String physicalPort = "com3";
-        String baudRate = "9600";
+        String name = "AT Local Serial Port " + timeStamp;
 
         final String EXPECTED_MSG = name + " saved successfully.";
 
         createModal.getName().setInputValue(name);
-        createModal.getType().selectItemByText(type);
+        createModal.getType().selectItemByValue("LOCAL_SHARED");
         waitForLoadingSpinner();
-        createModal.getPhysicalPort().selectItemByText(physicalPort);
-        createModal.getBaudRate().selectItemByText(baudRate);
+        createModal.getPhysicalPort().selectItemByValue("com2");
+        createModal.getBaudRate().selectItemByValue("BAUD_9600");
 
         createModal.clickOkAndWaitForModalToClose();
 
@@ -69,7 +66,7 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
     public void createCommChannelLocalSerialPort_LabelsCorrect() {
         CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
 
-        createModal.getType().selectItemByText(type);
+        createModal.getType().selectItemByValue("LOCAL_SHARED");
         waitForLoadingSpinner();
 
         List<String> labels = createModal.getFieldLabels();
@@ -84,16 +81,14 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannelLocalSerialPort_PhysicalPortOtherRequiredValidation() {
+    public void createCommChannelLocalSerialPort_PhysicalPortOther_RequiredValidation() {
         CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
-
-        String physicalPort = "Other";
 
         final String EXPECTED_MSG = "Physical Port is required.";
 
-        createModal.getType().selectItemByText(type);
+        createModal.getType().selectItemByValue("LOCAL_SHARED");
         waitForLoadingSpinner();
-        createModal.getPhysicalPort().selectItemByText(physicalPort);
+        createModal.getPhysicalPort().selectItemByValue("Other");
 
         createModal.clickOkAndWaitForModalToClose();
 
@@ -105,6 +100,5 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
         refreshPage(listPage);
-        listPage = new CommChannelsListPage(driverExt);
     }
 }

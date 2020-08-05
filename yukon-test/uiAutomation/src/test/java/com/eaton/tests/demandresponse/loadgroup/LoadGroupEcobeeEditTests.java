@@ -29,7 +29,8 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpEcobeeEdit_pageTitleCorrect() {        
-        Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();                 
+        Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty())
+                .create();                 
         
         JSONObject response = pair.getValue1();
         

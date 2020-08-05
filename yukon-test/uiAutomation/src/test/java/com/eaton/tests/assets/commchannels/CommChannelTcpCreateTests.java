@@ -45,14 +45,13 @@ public class CommChannelTcpCreateTests extends SeleniumTestSetup {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 
         String name = "AT Comm Channel TCP " + timeStamp;
-        String baudRate = "2400";
 
         final String EXPECTED_MSG = name + " saved successfully.";
 
         createModal.getName().setInputValue(name);
-        createModal.getType().selectItemByText(type);
+        createModal.getType().selectItemByValue("TCPPORT");
         waitForLoadingSpinner();
-        createModal.getBaudRate().selectItemByText(baudRate);
+        createModal.getBaudRate().selectItemByValue("BAUD_2400");
 
         createModal.clickOkAndWaitForModalToClose();
 
@@ -69,7 +68,7 @@ public class CommChannelTcpCreateTests extends SeleniumTestSetup {
     public void createCommChannelTcp_LabelsCorrect() {
         CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
 
-        createModal.getType().selectItemByText(type);
+        createModal.getType().selectItemByValue("TCPPORT");
         waitForLoadingSpinner();
 
         List<String> labels = createModal.getFieldLabels();
@@ -85,6 +84,5 @@ public class CommChannelTcpCreateTests extends SeleniumTestSetup {
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
         refreshPage(listPage);
-        listPage = new CommChannelsListPage(driverExt);
     }
 }

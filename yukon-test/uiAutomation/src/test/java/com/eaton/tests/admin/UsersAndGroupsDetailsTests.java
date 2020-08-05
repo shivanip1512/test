@@ -57,8 +57,10 @@ public class UsersAndGroupsDetailsTests extends SeleniumTestSetup {
         createModal.getUserName().setInputValue(name);
         createModal.getPassword().setInputValue("At12345!");
         createModal.getConfirmPassword().setInputValue("At12345!");
-        createModal.getUserGroup().selectItemByText("QA Admin User Grp");
-        createModal.getEnergyCompany().selectItemByText("QA_Test");
+        //42 = QA Admin User Grp
+        createModal.getUserGroup().selectItemByValue("42");
+        //64 = QA_Test
+        createModal.getEnergyCompany().selectItemByValue("64");
         
         createModal.clickOk();
         
