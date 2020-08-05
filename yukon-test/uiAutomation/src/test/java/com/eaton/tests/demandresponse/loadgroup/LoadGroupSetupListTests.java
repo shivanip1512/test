@@ -5,13 +5,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.assertj.core.api.SoftAssertions;
+import org.javatuples.Pair;
+import org.json.JSONObject;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-
+import com.eaton.builders.drsetup.loadgroup.LoadGroupEcobeeCreateBuilder;
+import com.eaton.builders.drsetup.loadgroup.LoadGroupItronCreateBuilder;
 import com.eaton.elements.WebTableRow;
 import com.eaton.elements.modals.CreateDRObjectModal;
 import com.eaton.framework.DriverExtensions;
@@ -20,15 +24,10 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 
 import com.eaton.pages.demandresponse.LoadGroupListPage;
-import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
-import com.eaton.rest.api.drsetup.JsonFileHelper;
-import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupSetupListTests extends SeleniumTestSetup {
 
 	private LoadGroupListPage listPage;
-	private Integer ldGroupId;
-	private String ldName;
 	private SoftAssertions softly;
 	private List<String> names;
 	private List<String> types;
@@ -40,13 +39,19 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 		driverExt = getDriverExt();
 		softly = new SoftAssertions();
 
-		String payloadFile = System.getProperty("user.dir")
-				+ "\\src\\test\\resources\\payload\\payload.loadgroup\\ecobee.json";
-		Object bodyLdGroup = JsonFileHelper.parseJSONFile(payloadFile);
+		Pair<JSONObject, JSONObject> ecobeeLdGrpWithNumber = new LoadGroupEcobeeCreateBuilder.Builder(Optional.of("123eco"))
+				.create();
+		Pair<JSONObject, JSONObject> ecobeeLdGrpWithSpecChars = new LoadGroupEcobeeCreateBuilder.Builder(Optional.of("2@$Ecobeegrp"))
+				.create();
+		Pair<JSONObject, JSONObject> ecobeeLdGrpWithLowerCase = new LoadGroupEcobeeCreateBuilder.Builder(Optional.of("ecobeeldgrplower"))
+				.create();
+		Pair<JSONObject, JSONObject> ecobeeLdGrpWithUpperCase = new LoadGroupEcobeeCreateBuilder.Builder(Optional.of("ECOBEELDGRPUPPER"))
+				.create();
+		Pair<JSONObject, JSONObject> itronLdGrpWithNumber = new LoadGroupEcobeeCreateBuilder.Builder(Optional.of("12itron"))
+				.create();
+		Pair<JSONObject, JSONObject> itronLdGrpWithSpecChars = new LoadGroupItronCreateBuilder.Builder(Optional.of("it$ron@group"))
+				.withRelay(Optional.empty()).create();
 
-		ExtractableResponse<?> createResponseLdGrp = DrSetupCreateRequest.createLoadGroup(bodyLdGroup);
-		ldGroupId = createResponseLdGrp.path("groupId");
-		ldName = createResponseLdGrp.path("name");
 		navigate(Urls.DemandResponse.LOAD_GROUP_SETUP_LIST);
 
 		listPage = new LoadGroupListPage(driverExt);
@@ -70,7 +75,7 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpList_columnHeadersCorrect() {
+	public void ldGrpSetupList_columnHeadersCorrect() {
 		final int EXPECTED_COUNT = 2;
 
 		List<String> headers = this.listPage.getTable().getListTableHeaders();
@@ -84,7 +89,7 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpSetupList_SortNamesAscCorrectly() {
+	public void ldGrpSetupList_AscSortNamesCorrectly() {
 		Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
 		navigate(Urls.DemandResponse.LOAD_GROUP_SETUP_NAME_ASC);
 
@@ -93,7 +98,7 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpSetupList_SortNamesDescCorrectly() {
+	public void ldGrpSetupList_DescSortNamesCorrectly() {
 		Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
 		Collections.reverse(names);
 
@@ -104,7 +109,7 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpSetupList_SortTypeAscCorrectly() {
+	public void ldGrpSetupList_AscSortTypeCorrectly() {
 		Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
 
 		navigate(Urls.DemandResponse.LOAD_GROUP_SETUP_TYPE_ASC);
@@ -114,7 +119,7 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpSetupList_SortTypeDescCorrectly() {
+	public void ldGrpSetupList_DescSortTypeCorrectly() {
 		Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
 		Collections.reverse(types);
 
@@ -137,14 +142,20 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldGrpSetupList_ldGroupNameLinkCorrect() {
-		listPage.getName().setInputValue("testt");
+		Pair<JSONObject, JSONObject> ecobeeLdGrp = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
+
+		JSONObject response = ecobeeLdGrp.getValue1();
+		String name = response.getString("name");
+		Integer id = response.getInt("id");
+
+		listPage.getName().setInputValue(name);
 		listPage.getSaveBtn().click();
 
-		WebTableRow row = listPage.getTable().getDataRowByName("testt");
+		WebTableRow row = listPage.getTable().getDataRowByName(name);
 
 		String link = row.getCellLinkByIndex(0);
 
-		assertThat(link).contains(Urls.DemandResponse.LOAD_GROUP_DETAIL.concat("1867"));
+		assertThat(link).contains(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
 	}
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -159,22 +170,15 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldGrpSetupList_FilterByType_CorrectResultsFound() {
-		List<String> expectedTypes = new ArrayList<>(List.of("Itron Group", "Honeywell Group"));
-		
-		String payloadFile = System.getProperty("user.dir")
-				+ "\\src\\test\\resources\\payload\\payload.loadgroup\\HoneyWell.json";
-		Object bodyLdGroupHoneywell = JsonFileHelper.parseJSONFile(payloadFile);
+		List<String> expectedTypes = new ArrayList<>(List.of("Itron Group", "ecobee Group"));
 
-		ExtractableResponse<?> createResponseLdGrpHoneyWell = DrSetupCreateRequest.createLoadGroup(bodyLdGroupHoneywell);
-		
-		String payloadFileItron = System.getProperty("user.dir")
-				+ "\\src\\test\\resources\\payload\\payload.loadgroup\\HoneyWell.json";
-		Object bodyLdGroupItron = JsonFileHelper.parseJSONFile(payloadFile);
+		Pair<JSONObject, JSONObject> itronLdGrp = new LoadGroupItronCreateBuilder.Builder(Optional.empty())
+				.withRelay(Optional.empty()).create();
 
-		ExtractableResponse<?> createResponseLdGrpItron = DrSetupCreateRequest.createLoadGroup(bodyLdGroupItron);
-				
+		Pair<JSONObject, JSONObject> ecobeeLdGrp = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
+
 		listPage.getTypes().selectItemByText("Itron Group");
-		listPage.getTypes().selectItemByText("Honeywell Group");
+		listPage.getTypes().selectItemByText("ecobee Group");
 
 		List<String> actualTypes = listPage.getTable().getDataRowsTextByCellIndex(2);
 
@@ -183,12 +187,16 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldGrpSetupList_FilterByName_CorrectResultsFound() {
+		Pair<JSONObject, JSONObject> ecobeeLdGrp = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
 
-		listPage.getName().setInputValue("AT Versacom 07292020124419");
+		JSONObject response = ecobeeLdGrp.getValue1();
+		String name = response.getString("name");
+
+		listPage.getName().setInputValue(name);
 		listPage.getSaveBtn().click();
-		String expectedTypes = "AT Versacom 07292020124419";
-		List<String> actualTypes = listPage.getTable().getDataRowsTextByCellIndex(1);
 
-		assertThat(actualTypes.get(0)).isEqualTo(expectedTypes);
+		List<String> actual = listPage.getTable().getDataRowsTextByCellIndex(1);
+
+		assertThat(actual.get(0)).isEqualTo(name);
 	}
 }
