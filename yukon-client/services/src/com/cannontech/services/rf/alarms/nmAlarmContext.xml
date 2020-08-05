@@ -7,7 +7,7 @@
     
     <bean id="nmAlarmListener" class="com.cannontech.services.rf.alarms.service.impl.NmAlarmServiceImpl"/>
     <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
-        <property name="destinationName" value="yukon.qr.obj.common.rfn.AlarmArchiveRequest" />
+        <property name="destinationName" value="com.eaton.eas.yukon.networkmanager.alarm.notification" />
         <property name="pubSubDomain" value="false"/>
         <property name="concurrentConsumers" value="1"/>
         <property name="connectionFactory" ref="connectionFactory" />
