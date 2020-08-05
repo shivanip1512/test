@@ -71,6 +71,7 @@ public class LoadGroupRfnExpressCommCreatePage extends LoadGroupCreatePage {
 	        return new TextEditElement(this.driverExt, "program");
 	    }
 	    
+	    
 	    public TextEditElement getSplinterLoadAddress() {
 	        return new TextEditElement(this.driverExt, "splinter");
 	    }

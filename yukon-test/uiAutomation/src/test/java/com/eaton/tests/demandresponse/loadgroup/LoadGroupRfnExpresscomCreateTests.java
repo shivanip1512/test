@@ -20,11 +20,11 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.LoadGroupDetailPage;
-import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
+import com.eaton.pages.demandresponse.LoadGroupRfnExpressCommCreatePage;
 
 	public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup{
 
-	    private LoadGroupRFNExpressCommCreatePage createPage;
+	    private LoadGroupRfnExpressCommCreatePage createPage;
 	    private DriverExtensions driverExt;
 	    private Random randomNum;
 	    @BeforeClass(alwaysRun = true)
@@ -37,7 +37,7 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    @BeforeMethod(alwaysRun = true)
 	    public void beforeTest() {
 	        navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
-	        createPage = new LoadGroupRFNExpressCommCreatePage(driverExt);
+	        createPage = new LoadGroupRfnExpressCommCreatePage(driverExt);
 	        randomNum = getRandomNum();
 	    }
 	    
@@ -425,7 +425,7 @@ import com.eaton.pages.demandresponse.LoadGroupRFNExpressCommCreatePage;
 	    @AfterMethod(alwaysRun = true)
 	    public void afterTest() {
 	        refreshPage(createPage);
-	        createPage = new LoadGroupRFNExpressCommCreatePage(driverExt);
+	        createPage = new LoadGroupRfnExpressCommCreatePage(driverExt);
 	    }
 	    
 	}
