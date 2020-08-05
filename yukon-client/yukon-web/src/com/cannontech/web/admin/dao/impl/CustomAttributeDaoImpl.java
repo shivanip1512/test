@@ -160,20 +160,19 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
             }
         });
         
-        if(formatDetails.isEmpty() && exportDetails.isEmpty()) {
+        if (formatDetails.isEmpty() && exportDetails.isEmpty()) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("DELETE FROM CustomAttribute");
             sql.append("WHERE AttributeId").eq(attributeId);
             jdbcTemplate.update(sql);
         } else {
-            DataDependencyException exception = new DataDependencyException(" Attribute " + attributeId + " cannot be deleted");
-            exception.addDependency(DependencyType.ATTRIBUTE, attributeDao.getCustomAttribute(attributeId));;
-            log.debug("attribute:{}", exception.getDependency(DependencyType.ATTRIBUTE, CustomAttribute.class));
-            if(!formatDetails.isEmpty()) {
+            DataDependencyException exception = new DataDependencyException(attributeDao.getCustomAttribute(attributeId),
+                    " Attribute " + attributeId + " cannot be deleted");
+            if (!formatDetails.isEmpty()) {
                 exception.addDependency(DependencyType.EXPORT_FORMAT, formatDetails);
                 log.debug("format names:{}", exception.getDependency(DependencyType.EXPORT_FORMAT, List.class));
             }
-            if(!exportDetails.isEmpty()) {
+            if (!exportDetails.isEmpty()) {
                 exception.addDependency(DependencyType.SCHEDULED_EXPORT, exportDetails);
                 log.debug("export names:{}", exception.getDependency(DependencyType.SCHEDULED_EXPORT, List.class));
             }
