@@ -3,8 +3,6 @@ package com.eaton.tests.demandresponse.loadgroup;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -14,7 +12,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.eaton.elements.Section;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
@@ -41,7 +38,7 @@ public class LoadGroupHoneywellCreateTests extends SeleniumTestSetup{
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void loadGroupCreateHoneywell_RequiredFieldsOnlySuccessfully() {
+    public void loadGroupCreateHoneywell_AllFieldsDisableFalseSuccess() {
     	 String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());        
          String name = "Honeywell Group " + timeStamp;
          double randomDouble = randomNum.nextDouble();
@@ -67,7 +64,7 @@ public class LoadGroupHoneywellCreateTests extends SeleniumTestSetup{
     }
     
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void loadGroupCreateHoneywell_DisableGroupAndControlOnlySuccessfully() {
+    public void loadGroupCreateHoneywell_AllFieldsDisableTrueSuccess() {
     	 String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());        
          String name = "Honeywell Group " + timeStamp;
          double randomDouble = randomNum.nextDouble();
@@ -93,49 +90,6 @@ public class LoadGroupHoneywellCreateTests extends SeleniumTestSetup{
          String userMsg = detailsPage.getUserMessage();
          
          assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-
-    }
-    
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void loadGroupCreateHoneywell_KWCapacityMinValueValidation() {
-        createPage.getType().selectItemByText("Honeywell Group");
-        waitForLoadingSpinner();
-
-        createPage.getkWCapacity().setInputValue("-1");
-        createPage.getSaveBtn().click();
-
-        assertThat(createPage.getkWCapacity().getValidationError()).isEqualTo("Must be between 0 and 99,999.999.");
-    }
-    
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void loadGroupCreateHoneywell_KWCapacityMaxValueValidation() {
-        createPage.getType().selectItemByText("Honeywell Group");
-        waitForLoadingSpinner();
-
-        createPage.getkWCapacity().setInputValue("100000");
-        createPage.getSaveBtn().click();
-
-        assertThat(createPage.getkWCapacity().getValidationError()).isEqualTo("Must be between 0 and 99,999.999.");
-    }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void loadGroupCreateHoneywell_GeneralSectionTitleCorrect() {
-        createPage.getType().selectItemByText("Honeywell Group");
-        waitForLoadingSpinner();
-        Section generalSection = createPage.getPageSection("General");
-        
-        assertThat(generalSection.getSection()).isNotNull();
-    }
-
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void loadGroupCreateHoneywell_GeneralSectionLabelsCorrect() {
-        String sectionName = "General";
-        createPage.getType().selectItemByText("Honeywell Group");
-        waitForLoadingSpinner();
-        List<String> expectedLabels = new ArrayList<>(List.of("Name:", "Type:"));
-        List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
-
-        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
 
     }
     
