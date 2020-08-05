@@ -8,14 +8,15 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
-import org.joda.time.Hours;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -49,14 +50,18 @@ import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
 import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
 import com.cannontech.dr.itron.ItronDataEventType;
 import com.cannontech.dr.itron.service.ItronRuntimeCalcService;
-import com.cannontech.dr.service.RuntimeCalcService;
 import com.cannontech.dr.service.RelayLogInterval;
+import com.cannontech.dr.service.RuntimeCalcService;
 import com.cannontech.dr.service.impl.DatedRuntimeStatus;
 import com.cannontech.dr.service.impl.DatedShedtimeStatus;
 import com.cannontech.dr.service.impl.DatedStatus;
 import com.cannontech.dr.service.impl.RuntimeStatus;
 import com.cannontech.dr.service.impl.ShedtimeStatus;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -71,14 +76,45 @@ public class ItronRuntimeCalcServiceImpl implements ItronRuntimeCalcService {
     @Autowired private AttributeService attributeService;
     @Autowired private RawPointHistoryDao rphDao;
     @Autowired private RuntimeCalcService runtimeCalcService;
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
     @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
-    
+    private ScheduledFuture<?> scheduledFuture;
+
     @PostConstruct
     public void init() {
-        //Schedule calculateRuntimes() every 6 hours, with the first run 1 minute after the Itron services init.
-        scheduledExecutor.scheduleAtFixedRate(this::calculateDataLogs, 1, Hours.SIX.toStandardMinutes().getMinutes(), TimeUnit.MINUTES);
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.GLOBAL_SETTING, this::databaseChangeEvent);
+
+        scheduleCalculateDataLogs();
         log.info("Initialized ItronRuntimeCalcService");
+    }
+
+    /**
+     * Called when any global setting is updated
+     */
+    private void databaseChangeEvent(DatabaseChangeEvent event) {
+        if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.RUNTIME_CALCULATION_INTERVAL_HOURS)) {
+            if (scheduledFuture != null) {
+                scheduledFuture.cancel(false);
+            }
+            // RuntimeCalcInterval changed, schedule Calculate DataLogs with the updated interval.
+            scheduleCalculateDataLogs();
+        }
+    }
+
+    /**
+     * Schedule Calculate Runtimes.
+     */
+    private void scheduleCalculateDataLogs() {
+        // Schedule calculateDataLogs() every runtimeCalcInterval hours, with the first run 1 minute after the Itron services init.
+        scheduledFuture = scheduledExecutor.scheduleAtFixedRate(this::calculateDataLogs, 1, getRuntimeCalcInterval() * 60, TimeUnit.MINUTES);
+    }
+
+    /**
+     * Get Runtime Calculation Interval
+     */
+    private Integer getRuntimeCalcInterval() {
+        return globalSettingDao.getInteger(GlobalSettingType.RUNTIME_CALCULATION_INTERVAL_HOURS);
     }
     
     @Override
