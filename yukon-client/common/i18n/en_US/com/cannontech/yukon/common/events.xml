@@ -283,6 +283,16 @@
     <entry key="yukon.common.events.system.rfn.unableToCreateDeviceFromTemplate.3">Model</entry>
     <entry key="yukon.common.events.system.rfn.unableToCreateDeviceFromTemplate.4">Serial Number</entry>
     
+    <!-- Wanted to format date so millis displayed but was unable to get DateFormatEnum syntax to work with java MessageSource 
+         Default formatting of Dates in i18n is "MM/dd/yy, hh:mm a"
+         Wanted to do something like the following but couldn't get it to work : start={11,date,BOTH_WITH_MILLIS}
+         So instead, hardcoded it to something that closely matches default, but includes ss.SSS as well: start={11,date,MM/dd/yy, hh:mm:ss.SSS a} 
+    -->
+    <entry key="yukon.common.events.system.rfn.outageEventReceived">Received {2} with state {3} for meter {1}: start={11,date,MM/dd/yy, hh:mm:ss.SSS a} stop={12,date,MM/dd/yy, hh:mm:ss.SSS a}.</entry>
+    <entry key="yukon.common.events.system.rfn.outageEventReceived.1">Serial Number</entry>
+    <entry key="yukon.common.events.system.rfn.outageEventReceived.2">Event Type</entry>
+    <entry key="yukon.common.events.system.rfn.outageEventReceived.3">Event State</entry>
+    
     <entry key="yukon.common.events.system.rfn.gateway.createdGateway">Gateway {2} created with Serial number={3}, IP Address={4}, Admin={5}, Super Admin={6} by {1}.</entry>
     <entry key="yukon.common.events.system.rfn.gateway.createdGateway.5">Admin Username</entry>
     <entry key="yukon.common.events.system.rfn.gateway.createdGateway.6">Super Admin Username</entry>
@@ -847,6 +857,8 @@
     
     <!-- Infrastructure Warnings -->
     <entry key="yukon.common.events.infrastructure.warning.warningGenerated">{3}-severity {2} warning generated for device: {1}. Message: {4}</entry>
+    <entry key="yukon.common.events.infrastructure.warning.warningGenerated.2">Warning Type</entry>
+    <entry key="yukon.common.events.infrastructure.warning.warningGenerated.3">Severity</entry>
     
     <!-- Dashboard Actions -->
     <entry key="yukon.common.events.system.tools.dashboard.dashboardAssigned">Dashboard {2} assigned to {7} user(s) by {1}.</entry>
