@@ -2,8 +2,6 @@ package com.eaton.elements.modals.trend;
 
 import java.util.Optional;
 
-import com.eaton.elements.DropDownElement;
-import com.eaton.elements.PickerElement;
 import com.eaton.elements.RadioButtonElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.modals.BaseModal;

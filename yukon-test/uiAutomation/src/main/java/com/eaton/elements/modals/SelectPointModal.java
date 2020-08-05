@@ -3,6 +3,7 @@ package com.eaton.elements.modals;
 import java.util.Optional;
 
 import com.eaton.elements.WebTable;
+import com.eaton.elements.WebTableRow;
 import com.eaton.framework.DriverExtensions;
 
 public class SelectPointModal extends BaseModal {
@@ -17,5 +18,14 @@ public class SelectPointModal extends BaseModal {
     
     public WebTable getTable() {
         return table;
+    }
+    
+    public void selectPoint(String pointName) {
+        getTable().searchTable(pointName);        
+
+        WebTable table = getTable();
+        WebTableRow row = table.getDataRowByName(pointName);
+
+        row.selectCellByLink();
     }
 }

@@ -27,7 +27,7 @@ public class TrendEditPage extends PageBase {
     public TrendEditPage(DriverExtensions driverExt) {
         super(driverExt);
     }
-    // General
+    
     public TextEditElement getName() {
         return new TextEditElement(this.driverExt, "name");
     }  
@@ -56,8 +56,6 @@ public class TrendEditPage extends PageBase {
     public WebElement getAddMarker() {
         section = new Section(driverExt, "Marker Setup");
         return section.getSection().findElement(By.cssSelector(".action-area .js-add-marker"));
-        
-        //return this.driverExt.findElement(By.cssSelector(".action-area .js-add-marker"),  Optional.empty());
     }
     
     public WebElement getEditPoint() {
@@ -65,11 +63,17 @@ public class TrendEditPage extends PageBase {
     }
     
     public WebElement getRemovePoint() {
-        return this.driverExt.findElement(By.cssSelector(".js-remove-point"),  Optional.empty());
+        section = new Section(driverExt, "Point Setup");
+        return section.getSection().findElement(By.cssSelector(".js-remove"));
     }
     
     public WebElement getEditMarker() {
         return this.driverExt.findElement(By.cssSelector(".js-marker"),  Optional.empty());
+    }
+    
+    public WebElement getRemoveMarker() {
+        section = new Section(driverExt, "Point Setup");
+        return section.getSection().findElement(By.cssSelector(".js-remove"));
     }
     
 }
