@@ -228,7 +228,8 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
         log.info("Creating gateway: " + rfnIdentifier);
         Map<String, PaoType> modelTypes = Map.of(
                 GATEWAY_2_MODEL_STRING.toLowerCase(), PaoType.GWY800,
-                GATEWAY_3_MODEL_STRING.toLowerCase(), PaoType.VIRTUAL_GATEWAY);
+                GATEWAY_3_MODEL_STRING.toLowerCase(), PaoType.VIRTUAL_GATEWAY,
+                GATEWAY_4_MODEL_STRING.toLowerCase(), PaoType.GWY801);
 
         PaoType gatewayType = modelTypes.getOrDefault(rfnIdentifier.getSensorModel().toLowerCase(),
                 PaoType.RFN_GATEWAY);

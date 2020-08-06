@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -48,7 +49,11 @@ import com.cannontech.dr.honeywellWifi.azure.event.EquipmentStatus;
 import com.cannontech.dr.service.RuntimeCalcService;
 import com.cannontech.dr.service.impl.DatedRuntimeStatus;
 import com.cannontech.dr.service.impl.RuntimeStatus;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.collect.ListMultimap;
 
 public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntimeCalcService {
@@ -62,15 +67,48 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
     @Autowired private RuntimeCalcService runtimeCalcService;
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
     @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
+    private ScheduledFuture<?> scheduledFuture;
     private static final int runtimePointOffset = 5;
-    
+
     @PostConstruct
     public void init() {
-        //Schedule calculateRuntimes() every 6 hours, with the first run 1 minute after the honeywell services init.
-        scheduledExecutor.scheduleAtFixedRate(this::calculateRuntimes, 1, 6*60, TimeUnit.MINUTES);
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.GLOBAL_SETTING, this::databaseChangeEvent);
+
+        scheduleCalculateRuntimes();
         log.info("Initialized HoneywellWifiRuntimeCalcService");
     }
-    
+
+    /**
+     * Called when any global setting is updated
+     */
+    private void databaseChangeEvent(DatabaseChangeEvent event) {
+
+        if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.RUNTIME_CALCULATION_INTERVAL_HOURS)) {
+            if (scheduledFuture != null) {
+                scheduledFuture.cancel(false);
+            }
+            // RuntimeCalcInterval changed, schedule Calculate Runtimes with the updated interval.
+            scheduleCalculateRuntimes();
+        }
+
+    }
+
+    /**
+     * Schedule Calculate Runtimes.
+     */
+    private void scheduleCalculateRuntimes() {
+        // Schedule calculateRuntimes() every runtimeCalcInterval hours, with the first run 1 minute after the honeywell services init.
+        scheduledFuture = scheduledExecutor.scheduleAtFixedRate(this::calculateRuntimes, 1, getRuntimeCalcInterval() * 60, TimeUnit.MINUTES);
+    }
+
+    /**
+     * Get Runtime Calculation Interval
+     */
+    private Integer getRuntimeCalcInterval() {
+        return globalSettingDao.getInteger(GlobalSettingType.RUNTIME_CALCULATION_INTERVAL_HOURS);
+    }
+
     @Override
     public void calculateRuntimes() {
         try {

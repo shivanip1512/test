@@ -58,14 +58,14 @@ public class PointValidationUtil extends ValidationUtils {
     public void validatePointOffset(LitePointModel pointModel, String fieldName, Errors errors,
             boolean isCopyOrCreate) {
 
-        if (pointModel.isPhysicalOffset()) {
+        if (pointModel.isPhysicalOffset() && !errors.hasFieldErrors(fieldName)) {
             MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
             String physicalPort = messageSourceAccessor.getMessage("yukon.web.modules.tools.point.physicalOffset");
             if (pointModel.getPointType().isCalcPoint()) {
                 physicalPort = messageSourceAccessor.getMessage("yukon.web.modules.tools.point.offset");
             }
             Range<Integer> range = Range.inclusive(0, 99999999);
-            YukonValidationUtils.checkRange(errors, "pointBase.point.pointOffset", physicalPort,
+            YukonValidationUtils.checkRange(errors, fieldName, physicalPort,
                     pointModel.getPointOffset(), range, true);
         }
 
