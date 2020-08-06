@@ -14,10 +14,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.device.virtualDevice.VirtualDeviceModel;
 import com.cannontech.common.device.virtualDevice.service.VirtualDeviceService;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.pao.LiteYukonPaoSortableField;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.stars.util.ServletUtils;
@@ -55,7 +58,16 @@ public class VirtualDeviceApiController {
         return new ResponseEntity<>(virtualDeviceService.delete(id), HttpStatus.OK);
     }
 
-    @InitBinder("virtualDeviceBase")
+    @GetMapping("")
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.VIEW)
+    public ResponseEntity<Object> getAll(
+            @RequestParam(name = "sort", defaultValue = "PAO_NAME") LiteYukonPaoSortableField sort,
+            @RequestParam(defaultValue = "asc") Direction direction, @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(name = "itemsPerPage", defaultValue = "250") Integer itemsPerPage) {
+        return new ResponseEntity<>(virtualDeviceService.getPage(sort, direction, page, itemsPerPage), HttpStatus.OK);
+    }
+
+    @InitBinder("virtualDeviceModel")
     public void setBinder(WebDataBinder binder) {
         binder.addValidators(virtualDeviceApiValidator);
 

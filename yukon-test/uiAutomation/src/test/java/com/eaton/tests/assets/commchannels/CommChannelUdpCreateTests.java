@@ -60,7 +60,7 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
         createModal.getPortNumber().setInputValue(portNumber);
         createModal.getBaudRate().selectItemByText(baudRate);
 
-        createModal.clickOkAndWait();
+        createModal.clickOkAndWaitForModalToClose();
 
         waitForUrlToLoad(Urls.Assets.COMM_CHANNEL_DETAIL, Optional.of(10));
 
@@ -102,7 +102,7 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
         
         createModal.getPortNumber().setInputValue(portNumber);
 
-        createModal.clickOkAndWait();
+        createModal.clickOkAndWaitForModalToClose();
 
         String errorMsg = createModal.getPortNumber().getValidationError();
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
@@ -121,7 +121,7 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
         
         createModal.getPortNumber().setInputValue(portNumber);
 
-        createModal.clickOkAndWait();
+        createModal.clickOkAndWaitForModalToClose();
 
         String errorMsg = createModal.getPortNumber().getValidationError();
 
@@ -137,7 +137,7 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
         createModal.getType().selectItemByText(type);
         waitForLoadingSpinner();
 
-        createModal.clickOkAndWait();
+        createModal.clickOkAndWaitForModalToClose();
 
         String errorMsg = createModal.getPortNumber().getValidationError();
 

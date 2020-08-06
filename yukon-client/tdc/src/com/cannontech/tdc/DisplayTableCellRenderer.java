@@ -10,10 +10,11 @@ import java.awt.Image;
 
 import javax.swing.ImageIcon;
 
-import com.cannontech.common.gui.util.Colors;
+import org.apache.commons.lang3.StringUtils;
+
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
 import com.cannontech.tdc.custom.CustomDisplay;
-import org.apache.commons.lang3.StringUtils;
 
 public class DisplayTableCellRenderer extends javax.swing.JLabel implements javax.swing.table.TableCellRenderer
 {
@@ -48,7 +49,7 @@ public Component getTableCellRendererComponent(javax.swing.JTable table, Object 
 	Display2WayDataAdapter model = (Display2WayDataAdapter)
 				(((SortTableModelWrapper)table.getModel()).getRealDataModel());
 
-	setBackground( Colors.getColor( model.getRowBackgroundColor( row ) ) );
+	setBackground(YukonColorPalette.getColor(model.getRowBackgroundColor(row)).getAwtColor());
 
 	// do anything that only needs to be assigned once per repainting here
 	if( row == 0 && column == 0 )
@@ -66,7 +67,7 @@ public Component getTableCellRendererComponent(javax.swing.JTable table, Object 
 		else
 			setBorder( javax.swing.BorderFactory.createMatteBorder( 2, 0, 2, 0, borderColor) );
 
-		setForeground( Colors.getColor( model.getRowForegroundColor( row ) ).brighter() );
+		setForeground(YukonColorPalette.getColor(model.getRowForegroundColor(row)).getAwtColor().brighter());
 		setFont( boldFont );
 	}
 	else
@@ -74,7 +75,7 @@ public Component getTableCellRendererComponent(javax.swing.JTable table, Object 
 		// javax.swing.BorderFactory.createEmptyBorder() returns a single instance
 		//   of an empty border, so performance is not degrated by the new operator
 		setBorder( javax.swing.BorderFactory.createEmptyBorder() );
-		setForeground( Colors.getColor( model.getRowForegroundColor( row ) ) );
+		setForeground(YukonColorPalette.getColor(model.getRowForegroundColor(row)).getAwtColor());
 		setFont( plainFont );
 	}
 

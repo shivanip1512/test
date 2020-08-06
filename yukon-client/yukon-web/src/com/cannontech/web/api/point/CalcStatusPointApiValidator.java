@@ -33,6 +33,11 @@ public class CalcStatusPointApiValidator extends StatusPointApiValidator<CalcSta
     private void validateCalcBase(CalculationBase calculationBase, Errors errors) {
         if (calculationBase != null) {
             if (calculationBase.getUpdateType() != null) {
+
+                if (calculationBase.getUpdateType() == CalcUpdateType.CONSTANT) {
+                    errors.rejectValue("calculationBase.updateType", baseKey + ".invalidUpdateType");
+                }
+
                 if (calculationBase.getUpdateType() == CalcUpdateType.ON_TIMER || calculationBase.getUpdateType() == CalcUpdateType.ON_TIMER_AND_CHANGE) {
                     YukonValidationUtils.checkIfFieldRequired("calculationBase.periodicRate", errors, calculationBase.getPeriodicRate(), "calculationBase.periodicRate");
                     if (!errors.hasFieldErrors("calculationBase.periodicRate")) {

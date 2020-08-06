@@ -37,7 +37,7 @@
 
 <c:choose>
 <c:when test="${relays.hitCount > 0}">
-    <div data-url="${dataUrl}" data-static style="width:60%">
+    <div data-url="${dataUrl}" data-static>
         <table class="compact-results-table row-highlighting">
             <thead>
                 <tr>

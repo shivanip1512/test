@@ -6,19 +6,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoUtils;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.points.model.LitePointModel;
 import com.google.common.collect.ImmutableList;
 
 public class PointValidationUtil extends ValidationUtils {
 
     @Autowired private PointDao pointDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     private static final String baseKey = "yukon.web.modules.tools.point.error";
 
@@ -53,8 +58,15 @@ public class PointValidationUtil extends ValidationUtils {
     public void validatePointOffset(LitePointModel pointModel, String fieldName, Errors errors,
             boolean isCopyOrCreate) {
 
-        if (pointModel.isPhysicalOffset()) {
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, fieldName, "yukon.web.error.isBlank");
+        if (pointModel.isPhysicalOffset() && !errors.hasFieldErrors(fieldName)) {
+            MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
+            String physicalPort = messageSourceAccessor.getMessage("yukon.web.modules.tools.point.physicalOffset");
+            if (pointModel.getPointType().isCalcPoint()) {
+                physicalPort = messageSourceAccessor.getMessage("yukon.web.modules.tools.point.offset");
+            }
+            Range<Integer> range = Range.inclusive(0, 99999999);
+            YukonValidationUtils.checkRange(errors, fieldName, physicalPort,
+                    pointModel.getPointOffset(), range, true);
         }
 
         int parentId = pointModel.getPaoId();

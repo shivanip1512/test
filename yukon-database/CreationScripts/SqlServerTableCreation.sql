@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/9/2020 11:22:55 AM                         */
+/* Created on:     8/3/2020 5:37:30 AM                          */
 /*==============================================================*/
 
 
@@ -1356,6 +1356,10 @@ create table CCurtProgramType (
    CCurtProgramTypeName varchar(255)         null,
    constraint PK_CCURTPROGRAMTYPE primary key (CCurtProgramTypeID)
 )
+go
+
+alter table CCurtProgramType
+   add constraint AK_CCurtProgramType_Strategy unique (CCurtProgramTypeStrategy)
 go
 
 /*==============================================================*/

@@ -3,6 +3,8 @@ package com.cannontech.common.pao.attribute.model;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
+
 public class AttributeAssignment extends Assignment {
 
     private CustomAttribute customAttribute;
@@ -27,6 +29,12 @@ public class AttributeAssignment extends Assignment {
         int result = super.hashCode();
         result = prime * result + ((customAttribute == null) ? 0 : customAttribute.hashCode());
         return result;
+    }
+    
+    public boolean isAssignedTo(PaoTypePointIdentifier paoTypePointIdentifier) {
+        return getPaoType() == paoTypePointIdentifier.getPaoType()
+                && getOffset() == paoTypePointIdentifier.getPointIdentifier().getOffset()
+                && getPointType() == paoTypePointIdentifier.getPointIdentifier().getPointType();
     }
 
     @Override

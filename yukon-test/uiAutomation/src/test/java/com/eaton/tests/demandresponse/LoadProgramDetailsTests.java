@@ -54,7 +54,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
 
         modal.getName().setInputValue(name);
 
-        modal.clickOkAndWait();
+        modal.clickOkAndWaitForModalToClose();
 
         waitForPageToLoad("Load Program: " + name, Optional.of(8));
 
@@ -75,7 +75,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
 
         ConfirmModal modal = detailPage.showDeleteLoadProgramModal();
 
-        modal.clickOkAndWait();
+        modal.clickOkAndWaitForModalToClose();
 
         waitForPageToLoad("Setup", Optional.empty());
 

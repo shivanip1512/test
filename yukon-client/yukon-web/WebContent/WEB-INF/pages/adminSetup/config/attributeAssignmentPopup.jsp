@@ -13,7 +13,7 @@
         <cti:url var="saveUrl" value="/admin/config/attributeAssignments/save"/>
         <form:form id="assignment-form" action="${saveUrl}" method="POST" modelAttribute="assignment">
             <cti:csrfToken/>
-    
+            <tags:hidden path="attributeAssignmentId"/>
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".attributeName">
                     <tags:selectWithItems id="attributeId" path="attributeId" items="${attributes}" itemValue="customAttributeId" itemLabel="name"/>

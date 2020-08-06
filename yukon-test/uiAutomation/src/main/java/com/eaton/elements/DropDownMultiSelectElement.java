@@ -55,15 +55,15 @@ public class DropDownMultiSelectElement {
     
     private WebElement getElement() {
         if (this.parentName != null) {
-            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] .chosen-container"), Optional.empty());
+            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] .chosen-container"), Optional.of(3));
         } else if (this.parentElement != null) {
             return this.parentElement.findElement(By.cssSelector(".chosen-container"));
         } else {
-            return this.driverExt.findElement(By.cssSelector(".chosen-container"), Optional.empty());   
+            return this.driverExt.findElement(By.cssSelector(".chosen-container"), Optional.of(3));   
         }        
     } 
 
     public String getValidationError() {
-        return this.driverExt.findElement(By.cssSelector("span[id='" + this.elementName + ".errors']"), Optional.empty()).getText();
+        return this.driverExt.findElement(By.cssSelector("span[id='" + this.elementName + ".errors']"), Optional.of(3)).getText();
      }
 }
