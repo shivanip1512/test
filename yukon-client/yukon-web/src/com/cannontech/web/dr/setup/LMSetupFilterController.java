@@ -67,6 +67,7 @@ public class LMSetupFilterController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private ApiControllerHelper helper;
+    private static final int DEFAULT_PAGE_SIZE = 250;
     
     private static final Logger log = YukonLogManager.getLogger(LMSetupFilterController.class);
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
@@ -80,14 +81,14 @@ public class LMSetupFilterController {
         } else {
             lmSetupFilter = (LMSetupFilter) model.get("lmSetupFilter");
         }
-        filter(lmSetupFilter, SortingParameters.of("NAME", Direction.asc), PagingParameters.EVERYTHING, model,
+        filter(lmSetupFilter, SortingParameters.of("NAME", Direction.asc), PagingParameters.of(DEFAULT_PAGE_SIZE, 1), model,
             userContext, request, flash);
         return "dr/setup/list.jsp";
     }
 
     @GetMapping("/filter")
     public String filter(@ModelAttribute LMSetupFilter lmSetupFilter, @DefaultSort(dir = Direction.asc, sort = "NAME") SortingParameters sorting,
-            @DefaultItemsPerPage(value = 250) PagingParameters paging, ModelMap model, YukonUserContext userContext, HttpServletRequest request,
+            @DefaultItemsPerPage(value = DEFAULT_PAGE_SIZE) PagingParameters paging, ModelMap model, YukonUserContext userContext, HttpServletRequest request,
             FlashScope flash) {
 
         FilterCriteria<LMSetupFilter> filterCriteria = getFilterCriteria(lmSetupFilter, sorting, paging);
