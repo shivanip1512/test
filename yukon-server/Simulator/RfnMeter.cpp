@@ -186,7 +186,7 @@ using ReplySender = std::function<void(PayloadOrStatus&&)>;
 using DelayedReplySender = std::function<void(Bytes&&)>;
 
 void processGetRequest(const ReplySender sendReply, const DelayedReplySender sendDelayedReply, const Bytes& request, const RfnIdentifier rfnIdentifier, const ASIDs applicationServiceId);
-void processPostRequest(const E2eRequestSender e2eRequestSender, const ReplySender e2eReplySender, const e2edt_request_packet& post_request, const RfnIdentifier rfnIdentifier, const ASIDs applicationServiceId);
+void processPostRequest(const E2eRequestSender e2eRequestSender, const ReplySender e2eReplySender, const Bytes& request, const unsigned token, const RfnIdentifier rfnIdentifier, const ASIDs applicationServiceId);
 
 void RfnMeter::processRequest(const E2eRequestSender e2eRequestSender, const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const RfnIdentifier rfnIdentifier, const ASIDs applicationServiceId)
 {
@@ -244,7 +244,7 @@ void RfnMeter::processRequest(const E2eRequestSender e2eRequestSender, const E2e
         }
         case Protocols::Coap::RequestMethod::Post:
         {
-            processPostRequest(e2eRequestSender, sendReply, request, rfnIdentifier, applicationServiceId);
+            processPostRequest(e2eRequestSender, sendReply, request.payload, request.token, rfnIdentifier, applicationServiceId);
         }
     }
 }
@@ -675,7 +675,7 @@ auto GetConfigNotification(const Bytes& payload, const RfnIdentifier& rfnId) -> 
 
 auto ParseSetMeterProgram(const Bytes& payload, const RfnIdentifier & rfnId) -> std::optional<std::tuple<std::string, unsigned>>;
 
-void processPostRequest(const E2eRequestSender e2eRequestSender, const ReplySender sendReply, const e2edt_request_packet& post_request, const RfnIdentifier rfnIdentifier, const ASIDs applicationServiceId)
+void processPostRequest(const E2eRequestSender e2eRequestSender, const ReplySender sendReply, const Bytes& request, const unsigned token, const RfnIdentifier rfnIdentifier, const ASIDs applicationServiceId)
 {
     //  The only POST we process at present is the Set Meter Configuration request, which results in a GET request back to Yukon.
     if( applicationServiceId != ASIDs::ChannelManager )
@@ -685,13 +685,13 @@ void processPostRequest(const E2eRequestSender e2eRequestSender, const ReplySend
         return;
     }
 
-    if( post_request.payload.empty() )
+    if( request.empty() )
     {
         sendReply(Coap::ResponseCode::BadRequest);
         return;
     }
 
-    switch( post_request.payload[0] )
+    switch( request[0] )
     {
         default:
         {
@@ -700,7 +700,7 @@ void processPostRequest(const E2eRequestSender e2eRequestSender, const ReplySend
         }
         case 0x90:
         {
-            if( const auto pathSize = ParseSetMeterProgram(post_request.payload, rfnIdentifier) )
+            if( const auto pathSize = ParseSetMeterProgram(request, rfnIdentifier) )
             {
                 const auto [path, size] = *pathSize;
 
@@ -723,7 +723,7 @@ void processPostRequest(const E2eRequestSender e2eRequestSender, const ReplySend
                         "New path", path));
 
                     itr->second.path = path;
-                    itr->second.initialToken = post_request.token;
+                    itr->second.initialToken = token;
                 }
 
                 e2edt_request_packet newRequest;
