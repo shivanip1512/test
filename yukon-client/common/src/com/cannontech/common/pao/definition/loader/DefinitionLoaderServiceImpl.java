@@ -2,6 +2,7 @@ package com.cannontech.common.pao.definition.loader;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +106,7 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
         for (Pao pao : fileLoader.getPaos()) {
             PaoType paoType = PaoType.valueOf(pao.getPaoType());
             if (paoAttributeAttrDefinitionMap.get(paoType) == null) {
-                paoAttributeAttrDefinitionMap.put(paoType, new HashMap<>());
+                paoAttributeAttrDefinitionMap.put(paoType, new LinkedHashMap<>());
             }
             Map<Attribute, AttributeDefinition> attrDefMap = paoAttributeAttrDefinitionMap.get(paoType);
             if (pao.getPointInfos() != null) {
