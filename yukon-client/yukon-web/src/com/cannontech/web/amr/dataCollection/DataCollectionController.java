@@ -224,9 +224,9 @@ public class DataCollectionController {
                     .map(d -> d.getPaoIdentifier().getPaoId())
                     .collect(Collectors.toList());
                 DeviceCollection rangeCollection = producer.createDeviceCollection(deviceIds);
-                MappingColorCollection mapCollection = new MappingColorCollection(rangeCollection, range.getColor(), range.getLabelKey());
+                MappingColorCollection mapCollection = new MappingColorCollection(rangeCollection, range.getColorHex(), range.getLabelKey());
                 colorCollections.add(mapCollection);
-                mappingMap.put(range.getColor(), deviceIds);
+                mappingMap.put(range.getColorHex(), deviceIds);
             }
             attrs.addFlashAttribute("mappingColors", mappingMap);
             attrs.addFlashAttribute("colorCollections", colorCollections);
