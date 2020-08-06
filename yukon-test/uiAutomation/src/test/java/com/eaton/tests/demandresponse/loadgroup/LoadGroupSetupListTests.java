@@ -32,6 +32,8 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 	private List<String> names;
 	private List<String> types;
 	private DriverExtensions driverExt;
+	private String name;
+	private Integer id;
 
 	@BeforeClass(alwaysRun = true)
 	public void beforeClass() {
@@ -39,18 +41,23 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 		driverExt = getDriverExt();
 		softly = new SoftAssertions();
 
-		Pair<JSONObject, JSONObject> ecobeeLdGrpWithNumber = new LoadGroupEcobeeCreateBuilder.Builder(Optional.of("123eco"))
-				.create();
-		Pair<JSONObject, JSONObject> ecobeeLdGrpWithSpecChars = new LoadGroupEcobeeCreateBuilder.Builder(Optional.of("2@$Ecobeegrp"))
-				.create();
-		Pair<JSONObject, JSONObject> ecobeeLdGrpWithLowerCase = new LoadGroupEcobeeCreateBuilder.Builder(Optional.of("ecobeeldgrplower"))
-				.create();
-		Pair<JSONObject, JSONObject> ecobeeLdGrpWithUpperCase = new LoadGroupEcobeeCreateBuilder.Builder(Optional.of("ECOBEELDGRPUPPER"))
-				.create();
-		Pair<JSONObject, JSONObject> itronLdGrpWithNumber = new LoadGroupEcobeeCreateBuilder.Builder(Optional.of("12itron"))
-				.create();
-		Pair<JSONObject, JSONObject> itronLdGrpWithSpecChars = new LoadGroupItronCreateBuilder.Builder(Optional.of("it$ron@group"))
-				.withRelay(Optional.empty()).create();
+		String[] ecobeeLdGrpName = { "123ecobee", "2@$Ecobeegrp", "ecobeeldgrplower", "ECOBEELDGRPUPPER" };
+		String[] itronLdGrpName = { "12itron", "it$ron@group" };
+
+		for (int i = 0; i < ecobeeLdGrpName.length; i++) {
+			Pair<JSONObject, JSONObject> ecobeeLdGrpCreate = new LoadGroupEcobeeCreateBuilder.Builder(
+					Optional.of(ecobeeLdGrpName[i])).create();
+		}
+
+		for (int i = 0; i < itronLdGrpName.length; i++) {
+			Pair<JSONObject, JSONObject> itronLdGrpCreate = new LoadGroupItronCreateBuilder.Builder(
+					Optional.of(itronLdGrpName[i])).withRelay(Optional.empty()).create();
+	        JSONObject response = itronLdGrpCreate.getValue1();
+	        
+	        name = response.getString("name");
+	        id = response.getInt("id");
+			
+		}
 
 		navigate(Urls.DemandResponse.LOAD_GROUP_SETUP_LIST);
 
@@ -142,11 +149,11 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldGrpSetupList_LdGroupNameLinkCorrect() {
-		Pair<JSONObject, JSONObject> ecobeeLdGrp = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
+/*		Pair<JSONObject, JSONObject> ecobeeLdGrp = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
 
 		JSONObject response = ecobeeLdGrp.getValue1();
 		String name = response.getString("name");
-		Integer id = response.getInt("id");
+		Integer id = response.getInt("id");*/
 
 		listPage.getName().setInputValue(name);
 		listPage.getSaveBtn().click();
@@ -171,11 +178,6 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldGrpSetupList_FilterByType_CorrectResultsFound() {
 		List<String> expectedTypes = new ArrayList<>(List.of("Itron Group", "ecobee Group"));
-
-		Pair<JSONObject, JSONObject> itronLdGrp = new LoadGroupItronCreateBuilder.Builder(Optional.empty())
-				.withRelay(Optional.empty()).create();
-
-		Pair<JSONObject, JSONObject> ecobeeLdGrp = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
 
 		listPage.getTypes().selectItemByText("Itron Group");
 		listPage.getTypes().selectItemByText("ecobee Group");
