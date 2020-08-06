@@ -7,9 +7,9 @@ import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.Urls;
 
-public class LoadGroupRfnExpressCommCreatePage extends LoadGroupCreatePage {
+public class LoadGroupRfnExpresscomCreatePage extends LoadGroupCreatePage {
 
-    public LoadGroupRfnExpressCommCreatePage(DriverExtensions driverExt) {
+    public LoadGroupRfnExpresscomCreatePage(DriverExtensions driverExt) {
         super(driverExt);
         requiresLogin = true;
         pageUrl = Urls.DemandResponse.LOAD_GROUP_CREATE;
