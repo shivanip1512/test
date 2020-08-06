@@ -2,9 +2,6 @@ package com.eaton.framework;
 
 public final class Urls {
 
-    private Urls() {
-    }
-
     public static final String LOGIN = "/login.jsp";
     public static final String LOGOUT = "/servlet/LoginController/logout";
     public static final String HOME = "/dashboards/-1/view?dashboardPageType=MAIN";
@@ -15,7 +12,6 @@ public final class Urls {
     public static final String SEARCH_PARAM = "?q=";
 
     public static final class Ami {
-
         public static final String AMI = "/dashboards/-2/view?dashboardPageType=AMI";
         public static final String ARCHIVE_DATA_ANALYSIS = "/bulk/archiveDataAnalysis/list/view";
         public static final String DASHBOARD = "/meter/start";
@@ -38,12 +34,10 @@ public final class Urls {
     }
 
     public static final class Meter {
-
         public static final String DETAIL = "/meter/home?deviceId=";
     }
 
     public static final class DemandResponse {
-
         public static final String DASHBOARD = "/dr/home";
         public static final String SCENARIOS = "/dr/scenario/list";
         public static final String CONTROL_AREA = "/dr/controlArea/list";
@@ -103,7 +97,6 @@ public final class Urls {
     }
 
     public static final class CapControl {
-
         public static final String DASHBOARD = "/capcontrol/tier/areas";
         public static final String SCHEDULES = "/capcontrol/schedules";
         public static final String STRATEGIES = "/capcontrol/strategies";
@@ -163,7 +156,6 @@ public final class Urls {
     }
 
     public static final class Assets {
-
         public static final String DASHBOARD = "/stars/operator/inventory/home";
         public static final String GATEWAYS = "/stars/gateways";
         public static final String RELAYS = "/stars/relay";
@@ -195,7 +187,6 @@ public final class Urls {
     }
 
     public static final class Tools {
-
         public static final String COLLECTION_ACTIONS = "/collectionActions/home";
         public static final String COMMANDER = "/tools/commander";
         public static final String DATA_EXPORTER = "/tools/data-exporter/view";
@@ -218,7 +209,6 @@ public final class Urls {
     }
 
     public static final class Admin {
-
         public static final String CONFIGURATION = "/admin/config/view";
         public static final String ENERGY_COMPANY = "/admin/energyCompany/home";
         public static final String MAINTENANCE = "/admin/maintenance/view";

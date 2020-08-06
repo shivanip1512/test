@@ -13,7 +13,6 @@ import com.eaton.framework.SeleniumTestSetup;
 public class CreateCommChannelModal extends BaseModal {
 
     private String modalName; 
-    private WebElement modal;
     
     private static final String modalAriaDescribedBy = "js-create-comm-channel-popup";
     
@@ -50,20 +49,22 @@ public class CreateCommChannelModal extends BaseModal {
     }    
 
     public void clickClose() {
-        modal.findElement(By.cssSelector(".ui-dialog-titlebar-close")).click();
+        getModal().findElement(By.cssSelector(".ui-dialog-titlebar-close")).click();
         
         SeleniumTestSetup.waitUntilModalClosedByTitle(this.modalName);
     }
 
     // TODO need a unique way to select the save button
     public void clickSave() {
-        modal.findElement(By.cssSelector(".ui-dialog-buttonset .primary")).click();
+        getModal().findElement(By.cssSelector(".ui-dialog-buttonset .primary")).click();
+        
+        SeleniumTestSetup.waitUntilModalClosedByTitle(this.modalName);
     }
 
     ///TODO need a unique way to select the cancel button
     public void clickCancel() {
-        modal.findElement(By.cssSelector(".ui-dialog-buttonset .js-secondary-action")).click();
-    }
-    
-   
+        getModal().findElement(By.cssSelector(".ui-dialog-buttonset .js-secondary-action")).click();
+        
+        SeleniumTestSetup.waitUntilModalClosedByTitle(this.modalName);
+    }       
 }
