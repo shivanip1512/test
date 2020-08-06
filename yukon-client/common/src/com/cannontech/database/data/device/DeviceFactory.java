@@ -517,6 +517,9 @@ public final class DeviceFactory {
         case GWY800:
             returnDevice = new RfnGwy800();
             break;
+        case GWY801:
+            returnDevice = new RfnGwy801();
+            break;
         case RFN_RELAY:
             returnDevice = new RfnRelay();
             break;

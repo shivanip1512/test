@@ -19,7 +19,6 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.model.DisconnectDeviceState;
 import com.cannontech.amr.meter.model.PlcMeter;
-import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
@@ -891,6 +890,10 @@ public class DevEventLogCreationService {
                 rfnDeviceEventLogService.createdNewDeviceAutomatically(rfnIdentifier, templateName,  templateName);
                 rfnDeviceEventLogService.receivedDataForUnkownDeviceTemplate(templateName);
                 rfnDeviceEventLogService.unableToCreateDeviceFromTemplate(templateName, sensorManufacturer, sensorModel, sensorSerialNumber);
+                rfnDeviceEventLogService.outageEventReceived(sensorSerialNumber, "RfnEvent", "Outage", new Instant(), null);
+                rfnDeviceEventLogService.outageEventReceived(sensorSerialNumber, "RfnEvent", "Restore", new Instant(), new Instant());
+                rfnDeviceEventLogService.outageEventReceived(sensorSerialNumber, "RfnAlarm", "Outage", new Instant(), null);
+                rfnDeviceEventLogService.outageEventReceived(sensorSerialNumber, "RfnAlarm", "Restore", null, new Instant());
             }
         });
         executables.put(LogType.STARS, new DevEventLogExecutable() {
@@ -1295,7 +1298,7 @@ public class DevEventLogCreationService {
         OUTAGE(OutageEventLogService.class, 10),
         POINT(PointEventLogService.class, 15),
         POWER_QUALITY_RESPONSE(PqrEventLogService.class, 1),
-        RFN_DEVICE(RfnDeviceEventLogService.class, 3),
+        RFN_DEVICE(RfnDeviceEventLogService.class, 4),
         STARS(StarsEventLogService.class, 26),
         SYSTEM(SystemEventLogService.class, 35),
         TOOLS(ToolsEventLogService.class, 32),
