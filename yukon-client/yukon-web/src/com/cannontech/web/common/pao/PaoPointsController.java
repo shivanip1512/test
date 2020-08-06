@@ -131,9 +131,9 @@ public class PaoPointsController {
             UpdateValue quality = registrationService.getLatestValue(point.getPointId(), Format.QUALITY.toString(), context);
             String[] dataRow = new String[8];
             if (!point.getAllAttributes().isEmpty()) {
-                dataRow[0] = StringEscapeUtils.escapeCsv(point.getAllAttributes().stream()
+                dataRow[0] = point.getAllAttributes().stream()
                         .map(attribute -> accessor.getMessage(attribute))
-                        .collect(Collectors.joining(",")));
+                        .collect(Collectors.joining(","));
             }
             dataRow[1] = point.getPointName();
             dataRow[2] = value.getValue();
