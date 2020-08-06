@@ -251,6 +251,7 @@ void RfnMeter::processRequest(const E2eRequestSender e2eRequestSender, const E2e
 
 void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySender sendDelayedReply, const Bytes& request, const RfnIdentifier rfnIdentifier);
 void doBulkMessageRequest(const ReplySender sendReply, const Bytes& request, const RfnIdentifier rfnIdentifier);
+void doEventManagerRequest(const ReplySender sendReply, const Bytes& request, const RfnIdentifier rfnIdentifier);
 void doHubMeterRequest(const ReplySender sendReply, const Bytes& request, const RfnIdentifier rfnIdentifier);
 
 void processGetRequest(const ReplySender sendReply, const DelayedReplySender sendDelayedReply, const Bytes& request, const RfnIdentifier rfnIdentifier, const ASIDs applicationServiceId)
@@ -266,6 +267,11 @@ void processGetRequest(const ReplySender sendReply, const DelayedReplySender sen
         case ASIDs::BulkMessageHandler:
         {
             doBulkMessageRequest(sendReply, request, rfnIdentifier);
+            return;
+        }
+        case ASIDs::EventManager:
+        {
+            doEventManagerRequest(sendReply, request, rfnIdentifier);
             return;
         }
         case ASIDs::ChannelManager:
@@ -373,6 +379,94 @@ void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySend
         {
             sendReply(Coap::ResponseCode::BadRequest);
             return;
+        }
+        case 0x55:
+        {
+            /*
+            55 02 00
+
+            56 00 00 00 00
+            */
+        }
+        case 0x60:
+        {
+            /*
+            60 01 00 
+                OR
+            60 04 0a 01 03 02 00 64 02 0a 01 68 01 68 00 f0
+            01 e0 00 00 03 0a 01 68 01 68 01 68 01 68 00 00
+            04 0a 02 d0 02 d0 00 00 00 00 00 00 05 0a 05 a0
+            00 00 00 00 00 00 00 00 06 03 88 06 00 07 03 88
+            02 00 08 03 08 00 00 09 03 00 00 00 0a 01 00
+
+            61 00 00 00 01 00 
+            */
+        }
+        case 0x62:
+        {
+            /*
+            62 0f 
+
+            63 00 
+            */
+        }
+        case 0x68:
+        {
+            /*
+            68 00 01 01 00 02 04 05 
+            
+            69 00 00 00
+
+                OR
+
+            68 06 00
+
+            69 06 00 00
+            */
+        }
+        case 0x70:
+        {
+            /*
+            70 00 1d 00 05 01 04 02 06 03 0b 04 0f 05 10 06
+            11 07 08 08 09 09 07 0a 00 0b 00 0c 00 0d 00 0e
+            00 0f 00 10 00 11 00 12 00 13 00 14 00 15 00 16
+            00 17 00 18 00 19 00 fd 06 fe 04 ff 00 
+    
+            71 00 00 
+            */
+        }
+        case 0x78:
+        {
+            /*
+            78 00 01 01 00 43 21 00 01 00 03 00 04 00 05 00
+            07 00 09 00 29 00 31 00 33 00 70 00 72 00 73 00
+            f0 03 e9 03 eb 03 ec 03 ef 03 f1 07 d1 07 d3 07
+            d4 07 d7 07 d9 0b b9 0b bb 0b bc 0b bf 0b c1 0f
+            a1 0f a3 0f a4 0f a7 0f a9
+
+            79 00 00 01 02 00 ad 2b 00 01 00 00 00 03 00 00 
+            00 04 00 00 00 29 00 00 00 05 00 00 00 07 00 00 
+            01 00 00 08 00 09 00 00 01 00 00 08 00 f0 00 00 
+            01 00 00 08 00 31 00 00 00 33 00 00 01 00 00 08 
+            00 73 00 07 03 e9 00 00 03 eb 00 00 03 ec 00 00 
+            03 ef 00 00 04 e8 00 08 03 f1 00 00 04 e8 00 08 
+            07 d1 00 00 07 d3 00 00 07 d4 00 00 07 d7 00 00 
+            08 d0 00 08 07 d9 00 00 08 d0 00 08 0b b9 00 00 
+            0b bb 00 00 0b bc 00 00 0b bf 00 00 0c b8 00 08 
+            0b c1 00 00 0c b8 00 08 0f a1 00 00 0f a3 00 00 
+            0f a4 00 00 0f a7 00 00 10 a0 00 08 0f a9 00 00 
+            10 a0 00 08 
+            */
+        }
+        case 0x7a:
+        {
+            /*
+            7a 00 01 01 15 00 00 0e 10 00 00 54 60 06 00 01
+            00 03 00 04 00 29 00 31 00 73 
+    
+            7b 00 00 01 02 19 06 00 01 00 00 00 03 00 00 00
+            04 00 00 00 29 00 00 00 31 00 00 00 73 00 07 
+            */
         }
         case 0x84:
         {
@@ -509,6 +603,74 @@ Bytes processAggregateRequests(const Bytes& payload, const RfnIdentifier rfnIden
 }
 
 auto GetConfigNotification(const Bytes& payload, const RfnIdentifier& rfnId) -> std::optional<Bytes>;
+
+void doEventManagerRequest(const ReplySender sendReply, const Bytes& request, const RfnIdentifier rfnIdentifier)
+{
+    if( request.empty() )
+    {
+        sendReply(Coap::ResponseCode::BadRequest);
+        return;
+    }
+
+    switch( request[0] )
+    {
+        default:
+        {
+            sendReply(Coap::ResponseCode::BadRequest);
+            return;
+        }
+        case 0x24:
+        {
+            /*
+            24 01
+
+            29 01
+            */
+        }
+        case 0x25:
+        {
+            /*
+            25 04 07 e6 00 01 f4 00 10 80 00 01 c0 
+                OR
+            25 04 07 e7 00 01 e8 48 10 80 00 01 c0
+
+            29 01
+            */
+        }
+        case 0x26:
+        {
+            /*
+            26 0f
+
+            29 01
+            */
+        }
+        case 0x27:
+        {
+            /*
+            27 3c 
+
+            29 01
+            */
+        }
+        case 0x28:
+        {
+            /*
+            28 02
+
+            29 01
+            */
+        }
+        case 0x88:
+        {
+            /*
+            88 00 01 01 07 01 00 23 00 19 0f 03 
+            
+            89 00 00 01 01 07 01 00 23 00 19 0f 03
+            */
+        }
+    }
+}
 
 void doHubMeterRequest(const ReplySender sendReply, const Bytes& request, const RfnIdentifier rfnIdentifier)
 {
