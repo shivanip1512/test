@@ -1,5 +1,7 @@
 package com.cannontech.common.events.loggers;
 
+import org.joda.time.Instant;
+
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -17,5 +19,9 @@ public interface RfnDeviceEventLogService {
 
     @YukonEventLog(transactionality=ExecutorTransactionality.ASYNCHRONOUS, category="system.rfn")
     public void unableToCreateDeviceFromTemplate(String templateName, String sensorManufacturer,
-            String sensorModel, String sensorSerialNumber);    
+            String sensorModel, String sensorSerialNumber);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.ASYNCHRONOUS, category="system.rfn")
+    public void outageEventReceived(String sensorSerialNumber, String eventType, String eventState,
+            @Arg(ArgEnum.startDate) Instant eventStart, @Arg(ArgEnum.endDate) Instant eventEnd);
 }

@@ -51,11 +51,11 @@
             </div>
             <div class="column two nogutter">
 
+                <cti:msg2 var="warningsTitle" key="yukon.web.widgets.infrastructureWarningsWidget"/>
+                <tags:widget bean="deviceInfrastructureWarningsWidget" title="${warningsTitle}" deviceId="${deviceId}"/>
                 <cti:msg2 var="eventsTitle" key=".relayDetail.relayEvents"/>
                 <tags:widget bean="meterEventsWidget" title="${eventsTitle}"/>
                 <tags:widget bean="rfnOutagesWidget"/>
-                <cti:msg2 var="warningsTitle" key="yukon.web.widgets.infrastructureWarningsWidget"/>
-                <tags:widget bean="deviceInfrastructureWarningsWidget" title="${warningsTitle}" deviceId="${deviceId}"/>
                 <!-- Including deviceGroupWidget's resources here since this particular
                      widget is being added to the page via ajax  -->
                 <cti:includeScript link="JQUERY_TREE"/>

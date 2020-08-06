@@ -36,6 +36,7 @@ import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.ProgramConstraint;
+import com.cannontech.common.model.PaginatedResponse;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.search.result.SearchResults;
@@ -122,6 +123,8 @@ public class ApiRequestHelper {
         paramTypeObjectRefMap.put(ProgramConstraint.class, new ParameterizedTypeReference<SearchResults<ProgramConstraint>>() {
         });
         paramTypeObjectRefMap.put(ProgramGear.class, new ParameterizedTypeReference<ProgramGear>() {
+        });
+        paramTypeObjectRefMap.put(DeviceBaseModel.class, new ParameterizedTypeReference<PaginatedResponse<DeviceBaseModel>>() {
         });
     }
 

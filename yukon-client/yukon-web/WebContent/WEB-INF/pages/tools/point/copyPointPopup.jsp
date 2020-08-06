@@ -45,7 +45,7 @@
                      </tags:nameValue2>
                  </c:when>
                 <c:otherwise>
-                    <tags:nameValue2 nameKey=".physicalOffset" rowClass="filter-section">
+                    <tags:nameValue2 nameKey=".offset" rowClass="filter-section">
                         <tags:input path="pointOffset" size="6" displayValidationToRight="true"/>
                     </tags:nameValue2>
                 </c:otherwise>

@@ -43,6 +43,7 @@ import com.cannontech.common.exception.TypeNotSupportedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.HoneywellProcessingException;
 import com.cannontech.core.dao.MacroLoadGroupProcessingException;
 import com.cannontech.core.dao.NotFoundException;
@@ -140,7 +141,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                         IllegalUseOfAttribute.class,
                         InvalidFilteringParametersException.class,
                         InvalidSortingParametersException.class,
-                        InvalidPagingParametersException.class })
+                        InvalidPagingParametersException.class,
+                        DuplicateException.class})
     public ResponseEntity<Object> handleBadRequestException(final Exception ex, final WebRequest request) {
 
         String uniqueKey = CtiUtilities.getYKUniqueKey();

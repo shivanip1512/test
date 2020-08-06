@@ -656,11 +656,14 @@ INIT_ATTRIBUTE( ReverseBandwidth,                                   "REVERSE_BAN
 INIT_ATTRIBUTE( ReverseSetPoint,                                    "REVERSE_SET_POINT" );
 INIT_ATTRIBUTE( ReverseFlowIndicator,                               "REVERSE_FLOW_INDICATOR" );
 
+INIT_ATTRIBUTE( ConfigurationUpdatedHash,                           "CONFIGURATION_UPDATED_HASH" );
+INIT_ATTRIBUTE( EventCancelled,                                     "EVENT_CANCELLED" );
+INIT_ATTRIBUTE( EventReceived,                                      "EVENT_RECEIVED" );
+INIT_ATTRIBUTE( EventStarted,                                       "EVENT_STARTED" );
+INIT_ATTRIBUTE( EventStopped,                                       "EVENT_STOPPED" );
 INIT_ATTRIBUTE( EventSuperseded,                                    "EVENT_SUPERSEDED" );
 INIT_ATTRIBUTE( MemoryMapLost,                                      "MEMORY_MAP_LOST" );
-INIT_ATTRIBUTE( ConfigurationUpdatedHash,                           "CONFIGURATION_UPDATED_HASH" );
 INIT_ATTRIBUTE( RadioLinkQuality,                                   "RADIO_LINK_QUALITY" );
-INIT_ATTRIBUTE( EventReceived,                                      "EVENT_RECEIVED" );
 
 AttributeNotFound::AttributeNotFound(const std::string &name)
 {
