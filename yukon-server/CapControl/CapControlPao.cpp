@@ -125,7 +125,7 @@ void CapControlPao::setDisableFlag(bool disableFlag, int priority)
     {
         _disableFlag = disableFlag;
         
-        syncDisabledStateAndPoint( priority );
+        syncDisabledPoint( priority );
     }
 }
 
@@ -154,7 +154,7 @@ void CapControlPao::setDisabledStatePointId( const long newId, bool sendDisableP
 
     if ( sendDisablePointMessage )
     {
-        syncDisabledStateAndPoint( 7 );     // default priority
+        syncDisabledPoint( Cti::CapControl::DisableMsgPriority );
     }
 }
 
@@ -163,19 +163,17 @@ long CapControlPao::getDisabledStatePointId() const
     return _disabledStatePointId;
 }
 
-void CapControlPao::syncDisabledStateAndPoint( const int priority ) const
+void CapControlPao::syncDisabledPoint( const int priority ) const
 {
-    if ( getDisabledStatePointId() )
+    if ( const auto pointID = getDisabledStatePointId() )
     {
-        CTILOG_DEBUG( dout, getPaoName() << " - Syncing disabled state point [PID: " << getDisabledStatePointId()
+        CTILOG_DEBUG( dout, getPaoName() << " - Syncing disabled state point [PID: " << pointID
                         << ", O: " << Cti::CapControl::Offset_PaoIsDisabled << "]." );
 
         auto pointSync =
             std::make_unique<CtiPointDataMsg>(
-                getDisabledStatePointId(),
-                getDisableFlag()
-                    ? 1.0
-                    : 0.0 );    // NormalQuality, StatusPointType
+                pointID,
+                getDisableFlag() );    // NormalQuality, StatusPointType
 
         pointSync->setMessagePriority( priority );
         pointSync->setSource( CAPCONTROL_APPLICATION_NAME "-sourced" );
@@ -384,7 +382,7 @@ void CapControlPao::handlePointData( const CtiPointDataMsg & message )
 
     if ( pointID == getDisabledStatePointId() )
     {
-        CTILOG_DEBUG( dout, getPaoName() << " - Incoming point data for the disabled state point [PID: " << getDisabledStatePointId()
+        CTILOG_DEBUG( dout, getPaoName() << " - Incoming point data for the disabled state point [PID: " << pointID
                         << ", O: " << Cti::CapControl::Offset_PaoIsDisabled << "]." );
 
         const bool disabled = value;

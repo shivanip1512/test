@@ -43,7 +43,7 @@ public:
     void setPaoDescription(const std::string& description);
 
     bool getDisableFlag() const;
-    void setDisableFlag(bool disableFlag, int priority = 7);
+    void setDisableFlag(bool disableFlag, int priority = Cti::CapControl::DisableMsgPriority);
 
     void setDisabledStatePointId( const long newId, bool sendDisablePointMessage = false );
     long getDisabledStatePointId() const;
@@ -71,7 +71,7 @@ protected:
 
 private:
 
-    void syncDisabledStateAndPoint( const int priority ) const;
+    void syncDisabledPoint( const int priority ) const;
 
     bool assignCommonPoint( const long pointID, const long pointOffset, const CtiPointType_t pointType );
 

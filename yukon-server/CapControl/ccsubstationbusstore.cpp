@@ -2131,45 +2131,45 @@ bool CtiCCSubstationBusStore::UpdatePaoDisableFlagInDB(CapControlPao* pao, bool 
 {
     CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
-    if ( pao->getDisableFlag() != disableFlag )
-    {
-        CTILOG_DEBUG( dout, pao->getPaoName() << " - Changing state to '"
-                        << ( disableFlag ? "Dis" : "En" ) << "abled'." );
-
-        if ( updateDisableFlag( pao->getPaoId(), disableFlag ) )
-        {
-            auto dbChange =
-                std::make_unique<CtiDBChangeMsg>(
-                    pao->getPaoId(),
-                    ChangePAODb,
-                    pao->getPaoCategory(),
-                    pao->getPaoType(),
-                    ChangeTypeUpdate );
-
-            dbChange->setSource(
-                forceFullReload
-                    ? CAP_CONTROL_RELOAD_DBCHANGE_MSG_SOURCE
-                    : CAP_CONTROL_DBCHANGE_MSG_SOURCE );
-
-            pao->setDisableFlag( disableFlag, disableFlag ? MAXPRIORITY : 7 );
-
-            CTILOG_DEBUG( dout, pao->getPaoName() << " - Issuing database change." );
-
-            CtiCapController::getInstance()->sendMessageToDispatch( dbChange.release(), CALLSITE );
-
-            return true;
-        }
-        else
-        {
-            CTILOG_ERROR( dout, pao->getPaoName() << " - Failed to update state in database." );
-        }
-    }
-    else
+    if ( pao->getDisableFlag() == disableFlag )
     {
         CTILOG_DEBUG( dout, pao->getPaoName() << " - Ignoring requested state change, the object is already in that state." );
+        return false;
     }
 
-    return false;
+    CTILOG_DEBUG( dout, pao->getPaoName() << " - Changing state to '"
+                    << ( disableFlag ? "Dis" : "En" ) << "abled'." );
+
+    if ( ! updateDisableFlag( pao->getPaoId(), disableFlag ) )
+    {
+        CTILOG_ERROR( dout, pao->getPaoName() << " - Failed to update state in database." );
+        return false;
+    }
+
+    auto dbChange =
+        std::make_unique<CtiDBChangeMsg>(
+            pao->getPaoId(),
+            ChangePAODb,
+            pao->getPaoCategory(),
+            pao->getPaoType(),
+            ChangeTypeUpdate );
+
+    dbChange->setSource(
+        forceFullReload
+            ? CAP_CONTROL_RELOAD_DBCHANGE_MSG_SOURCE
+            : CAP_CONTROL_DBCHANGE_MSG_SOURCE );
+
+    pao->setDisableFlag(
+        disableFlag,
+        disableFlag
+            ? MAXPRIORITY
+            : Cti::CapControl::DisableMsgPriority );
+
+    CTILOG_DEBUG( dout, pao->getPaoName() << " - Issuing database change." );
+
+    CtiCapController::getInstance()->sendMessageToDispatch( dbChange.release(), CALLSITE );
+
+    return true;
 }
 
 /*---------------------------------------------------------------------------
