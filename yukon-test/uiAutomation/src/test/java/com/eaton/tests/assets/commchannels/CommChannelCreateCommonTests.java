@@ -57,7 +57,7 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
 
         final String EXPECTED_MSG = "Name is required.";
 
-        createModal.clickOkAndWait();
+        createModal.clickOkAndWaitForModalToClose();
 
         String errorMsg = createModal.getName().getValidationError();
 
@@ -76,7 +76,7 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
 
         createModal.getName().setInputValue(name);
 
-        createModal.clickOkAndWait();
+        createModal.clickOkAndWaitForModalToClose();
 
         String errorMsg = createModal.getName().getValidationError();
 
@@ -93,7 +93,7 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
 
         createModal.getName().setInputValue(commChannelName);
 
-        createModal.clickOkAndWait();
+        createModal.clickOkAndWaitForModalToClose();
 
         String errorMsg = createModal.getName().getValidationError();
 

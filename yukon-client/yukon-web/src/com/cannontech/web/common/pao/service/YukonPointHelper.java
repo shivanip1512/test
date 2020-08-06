@@ -25,7 +25,7 @@ public interface YukonPointHelper {
      * @param pao the yukon PAO whose points are to be sorted.
      * @return the List of yukon points
      */
-    public List<LiteYukonPoint> getYukonPoints(YukonPao pao);
+    public List<LiteYukonPoint> getYukonPoints(YukonPao pao, MessageSourceAccessor accessor);
 
     /**
      * Checks if the user has either the DB Editor Role, or the Cap Control Editor role

@@ -3,6 +3,7 @@ package com.cannontech.common.device.model;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class DeviceBaseModel implements YukonDevice {
@@ -11,6 +12,14 @@ public class DeviceBaseModel implements YukonDevice {
     private PaoType type;
     private String name;
     private Boolean enable;
+
+    public static DeviceBaseModel of(LiteYukonPAObject pao) {
+        Integer id = pao.getPaoIdentifier().getPaoId();
+        PaoType type = pao.getPaoType();
+        String name = pao.getPaoName();
+        Boolean enable = (pao.getDisableFlag().equals("N") ? true : false);
+        return new DeviceBaseModel(id, type, name, enable);
+    }
  
     public DeviceBaseModel(Integer id, PaoType type, String name, Boolean enable) {
         this.id = id;

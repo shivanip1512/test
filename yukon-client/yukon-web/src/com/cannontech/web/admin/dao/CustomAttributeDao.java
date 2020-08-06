@@ -12,10 +12,10 @@ import com.cannontech.common.pao.attribute.model.CustomAttribute;
 public interface CustomAttributeDao {
 
     public enum SortBy {
-        ATTRIBUTE_NAME("AttributeName"),
-        DEVICE_TYPE("DeviceType"),
-        POINT_TYPE("PointType"),
-        POINT_OFFSET("PointOffset");
+        attributeName("AttributeName"),
+        paoType("PaoType"),
+        pointType("PointType"),
+        pointOffset("PointOffset");
 
         private SortBy(String dbString) {
             this.dbString = dbString;

@@ -8,9 +8,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,8 +46,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ImmutableListMultimap.Builder;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Iterables;
@@ -89,13 +87,12 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         typesBySupportedTag = new HashMap<>();
         paoAndPointToAttribute =  HashMultimap.create();
         creatablePaoDefinitions = new HashSet<>();
+        paoTypeAttributesMultiMap = LinkedListMultimap.create();
         
         paoAttributeAttrDefinitionMap = definitionLoaderService.getPaoAttributeAttrDefinitionMap();
-        Builder<PaoType, Attribute> builder = ImmutableListMultimap.builder();
         for (Map.Entry<PaoType, Map<Attribute, AttributeDefinition>> entry : paoAttributeAttrDefinitionMap.entrySet()) {
-            builder.putAll(entry.getKey(), entry.getValue().keySet());
+            paoTypeAttributesMultiMap.putAll(entry.getKey(), entry.getValue().keySet());
         }
-        paoTypeAttributesMultiMap = builder.build();
         paoAllPointTemplateMap = definitionLoaderService.getPointTemplateMap(false);
         paoInitPointTemplateMap =  definitionLoaderService.getPointTemplateMap(true);
         paoCategoryMap = definitionLoaderService.getPaoCategoryMap();

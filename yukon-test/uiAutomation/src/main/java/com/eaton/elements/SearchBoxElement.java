@@ -29,9 +29,9 @@ public class SearchBoxElement {
     
     private WebElement getSearchBoxElement() {
     	if (this.parentElement != null) {
-            return this.driverExt.findElement(By.cssSelector("." + this.parentElement + " input[name='" + this.childElementName + "']"), Optional.empty());    
+            return this.driverExt.findElement(By.cssSelector("." + this.parentElement + " input[name='" + this.childElementName + "']"), Optional.of(3));    
         } else {
-            return this.driverExt.findElement(By.cssSelector(" input[name='" + this.childElementName + "']"), Optional.empty());
+            return this.driverExt.findElement(By.cssSelector(" input[name='" + this.childElementName + "']"), Optional.of(3));
         }         
     }
     
@@ -57,7 +57,7 @@ public class SearchBoxElement {
     }    
 
     public List<String> getSearchResults() {
-        List<WebElement> list = this.driverExt.findElements(By.cssSelector(".ui-menu .ui-menu-item"), Optional.empty());
+        List<WebElement> list = this.driverExt.findElements(By.cssSelector(".ui-menu .ui-menu-item"), Optional.of(3));
         
         List<String> results = new ArrayList<>();
         for (WebElement webElement : list) {
@@ -70,7 +70,7 @@ public class SearchBoxElement {
     public void setSearchValueAndClickResult(String searchValue) {        
         setSearchValue(searchValue);
         
-        List<WebElement> list = this.driverExt.findElements(By.cssSelector(".ui-menu .ui-menu-item"), Optional.empty());
+        List<WebElement> list = this.driverExt.findElements(By.cssSelector(".ui-menu .ui-menu-item"), Optional.of(3));
         
         WebElement value = list.stream().filter(element -> element.getText().contains(searchValue)).findFirst().orElseThrow();
         

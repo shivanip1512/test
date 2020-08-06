@@ -7,18 +7,18 @@ import com.eaton.rest.api.common.ApiCallHelper;
 import io.restassured.response.ExtractableResponse;
 
 public class TrendRequest {
-    
+
     public static ExtractableResponse<?> createTrend(Object body) {
 
-        String pathParam = APIs.Trend.createTrend;
+        String pathParam = APIs.Trend.CREATE_TREND;
         ExtractableResponse<?> response = ApiCallHelper.post(pathParam, body);
         assertThat(response.statusCode()).isEqualTo(200);
         return response;
     }
-    
+
     public static ExtractableResponse<?> getTrend(String trendId) {
 
-        String pathParam = APIs.Trend.getTrend + trendId;
+        String pathParam = APIs.Trend.GET_TREND + trendId;
         ExtractableResponse<?> response = ApiCallHelper.get(pathParam);
         assertThat(response.statusCode()).isEqualTo(200);
         return response;
@@ -26,22 +26,23 @@ public class TrendRequest {
 
     public static ExtractableResponse<?> updateTrend(String trendId, Object body) {
 
-        String pathParam = APIs.Trend.updateTrend + trendId;
+        String pathParam = APIs.Trend.UPDATE_TREND + trendId;
         ExtractableResponse<?> response = ApiCallHelper.put(pathParam, body);
         assertThat(response.statusCode()).isEqualTo(200);
         return response;
     }
-    
+
     public static ExtractableResponse<?> deleteTrend(String trendId) {
 
-        String pathParam = APIs.Trend.deleteTrend + trendId;
+        String pathParam = APIs.Trend.DELETE_TREND + trendId;
         ExtractableResponse<?> response = ApiCallHelper.delete(pathParam, trendId);
         assertThat(response.statusCode()).isEqualTo(200);
         return response;
     }
+
     public static ExtractableResponse<?> resetPeak(String trendId, Object body) {
 
-        String pathParam = APIs.Trend.updateTrend + trendId + "resetPeak";
+        String pathParam = APIs.Trend.UPDATE_TREND + trendId + "resetPeak";
         ExtractableResponse<?> response = ApiCallHelper.post(pathParam, body);
         assertThat(response.statusCode()).isEqualTo(200);
         return response;

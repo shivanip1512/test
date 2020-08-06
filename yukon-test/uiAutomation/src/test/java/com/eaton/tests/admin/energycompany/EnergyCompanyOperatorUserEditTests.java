@@ -52,7 +52,7 @@ public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
 
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
         
-        modal.clickOkAndWait();
+        modal.clickOkAndWaitForModalToClose();
 
         waitForUrlToLoad(Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_LIST + "64", Optional.empty());
 

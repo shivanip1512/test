@@ -73,7 +73,7 @@ public class AreaEditTests extends SeleniumTestSetup {
 
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
 
-        modal.clickOkAndWait();
+        modal.clickOkAndWaitForModalToClose();
 
         waitForUrlToLoad(Urls.CapControl.DASHBOARD, Optional.empty());
 

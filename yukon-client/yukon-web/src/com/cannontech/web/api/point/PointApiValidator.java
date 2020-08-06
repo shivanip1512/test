@@ -25,6 +25,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.AlarmCatDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
@@ -45,6 +46,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
     @Autowired private IDatabaseCache serverDatabaseCache;
     @Autowired protected StateGroupDao stateGroupDao;
     @Autowired private AlarmCatDao alarmCatDao;
+    @Autowired private PointDao pointDao;
     protected static final String baseKey = "yukon.web.api.error";
     public static final int maxFdrInterfaceTranslations = 5;
 
@@ -82,8 +84,12 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                 }
 
                 if (target.getPointOffset() != null) {
-                    pointValidationUtil.validatePointOffset(target, "pointOffset", errors, isCreationOperation);
+                    YukonValidationUtils.checkRange(errors, "pointOffset", target.getPointOffset(), 0, 99999999, true);
+                    if (!errors.hasFieldErrors("pointOffset")) {
+                        pointValidationUtil.validatePointOffset(target, "pointOffset", errors, isCreationOperation);
+                    }
                 }
+
             }
         }
 
@@ -94,14 +100,14 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
         validateArchiveSettings(target, pointType, errors);
         validateStateGroupId(target, errors);
         validateStaleDataSettings(target, errors);
-        validateAlarming(target.getAlarming(), pointType, errors, target.getStateGroupId());
+        validateAlarming(target.getAlarming(), pointType, errors, target.getStateGroupId(), target.getPointId());
         validateFdrTranslation(target.getFdrList(), errors);
     }
 
     /**
      * validate Alarming fields.
      */
-    private void validateAlarming(PointAlarming pointAlarming, PointType pointType, Errors errors, Integer stateGroupID) {
+    private void validateAlarming(PointAlarming pointAlarming, PointType pointType, Errors errors, Integer stateGroupID, Integer pointId) {
         if (pointAlarming != null) {
             // Validate notificationGroupId.
             Integer notificationGroupId = pointAlarming.getNotificationGroupId();
@@ -125,6 +131,13 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                 if (pointType == PointType.Status || pointType == PointType.CalcStatus) {
                     alarmStates = new ArrayList<String>(Arrays.asList(IAlarmDefs.STATUS_ALARM_STATES));
                     // Add all state present in the State Group
+
+                    if (pointId != null && stateGroupID == null) {
+                        stateGroupID = pointDao.getLitePoint(pointId).getStateGroupID();
+                    } else if (pointId == null && stateGroupID == null) {
+                        stateGroupID = -1;
+                    }
+
                     if (!errors.hasFieldErrors("stateGroupId")) {
                         List<String> rawStates = stateGroupDao.getStateGroup(stateGroupID).getStatesList()
                                                                                           .stream()

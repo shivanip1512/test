@@ -13,7 +13,7 @@ public class SelectBoxElement {
     private DriverExtensions driverExt;
     private WebElement parentElement;
     private String parentName;
-    private static String AVAILABLE = "Available";
+    private static String available = "Available";
 
     public SelectBoxElement(DriverExtensions driverExt, WebElement parentElement) {
         this.driverExt = driverExt;
@@ -29,7 +29,7 @@ public class SelectBoxElement {
         if (parentElement != null) {
             return this.parentElement.findElement(By.cssSelector(".select-box"));
         } else {
-            return this.driverExt.findElement(By.cssSelector(parentName + " .select-box"), Optional.empty());
+            return this.driverExt.findElement(By.cssSelector(parentName + " .select-box"), Optional.of(3));
         }
     }
 
@@ -42,7 +42,7 @@ public class SelectBoxElement {
 
     public void selectAllAvailable() {
 
-        this.driverExt.findElement(By.id("picker-js-avaliable-groups-picker-select-all"), Optional.empty()).click();
+        this.driverExt.findElement(By.id("picker-js-avaliable-groups-picker-select-all"), Optional.of(3)).click();
 
         clickAdd();
     }
@@ -51,7 +51,7 @@ public class SelectBoxElement {
 
         WebTable availableTable = getAvailabeTable();
 
-        WebElement column = getColumnByColumnName(AVAILABLE);
+        WebElement column = getColumnByColumnName(available);
         availableTable.searchTable(value, column);
         
         availableTable = getAvailabeTable();
@@ -66,7 +66,7 @@ public class SelectBoxElement {
         for (String value : values) {
             WebTable availableTable = getAvailabeTable();
 
-            WebElement column = getColumnByColumnName(AVAILABLE);
+            WebElement column = getColumnByColumnName(available);
             availableTable.searchTable(value, column);
             
             WebTableRow row = availableTable.getDataRowByName(value);
@@ -80,12 +80,12 @@ public class SelectBoxElement {
     }
 
     private WebTable getAvailabeTable() {
-        WebElement column = getColumnByColumnName(AVAILABLE);
+        WebElement column = getColumnByColumnName(available);
 
         return new WebTable(this.driverExt, "compact-results-table", column);
     }
 
     private void clickAdd() {
-        getColumnByColumnName(AVAILABLE).findElement(By.cssSelector("[aria-label='Add']")).click();
+        getColumnByColumnName(available).findElement(By.cssSelector("[aria-label='Add']")).click();
     }
 }

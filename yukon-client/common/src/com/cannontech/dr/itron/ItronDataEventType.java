@@ -55,6 +55,9 @@ public enum ItronDataEventType {
     FIRMWARE_UPDATE(0x0009, BuiltInAttribute.FIRMWARE_VERSION, 0, 2, null),
     RADIO_LINK_QUALITY(0x808B, BuiltInAttribute.RADIO_LINK_QUALITY, 0, 1, null),
     EVENT_RECEIVED(0x8097, BuiltInAttribute.EVENT_RECEIVED, 0, 4, null),
+    EVENT_STARTED (0x000E, BuiltInAttribute.EVENT_STARTED, 0, 4, null),
+    EVENT_CANCELLED (0x0010, BuiltInAttribute.EVENT_CANCELLED, 0, 4, null),
+    EVENT_STOPPED (0x000F, BuiltInAttribute.EVENT_STOPPED, 0, 4, null),
 
     //Events where the values increment current count
     POWER_FAIL(0x0000, BuiltInAttribute.BLINK_COUNT, 0, 1, null),
