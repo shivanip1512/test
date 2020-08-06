@@ -2,9 +2,11 @@ package com.cannontech.web.common.pao;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -105,6 +107,7 @@ public class PaoPointsController {
     public void download(HttpServletResponse resp, YukonUserContext context, @PathVariable int paoId) throws IOException {
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+        String naText = accessor.getMessage("yukon.common.na");
 
         String[] headerRow = new String[8];
         
@@ -119,7 +122,7 @@ public class PaoPointsController {
         
         LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
         
-        List<LiteYukonPoint> points = yukonPointHelper.getYukonPoints(pao);
+        List<LiteYukonPoint> points = yukonPointHelper.getYukonPoints(pao, accessor);
         
         List<String[]> dataRows = Lists.newArrayList();
         for (LiteYukonPoint point: points) {
@@ -128,8 +131,12 @@ public class PaoPointsController {
             UpdateValue date = registrationService.getLatestValue(point.getPointId(), Format.DATE.toString(), context);
             UpdateValue quality = registrationService.getLatestValue(point.getPointId(), Format.QUALITY.toString(), context);
             String[] dataRow = new String[8];
-            if (point.getAttribute() != null) {
-                dataRow[0] = accessor.getMessage(point.getAttribute().getMessage());
+            if (!point.getAllAttributes().isEmpty()) {
+                dataRow[0] = point.getAllAttributes().stream()
+                        .map(attribute -> accessor.getMessage(attribute))
+                        .collect(Collectors.joining(","));
+            } else {
+                dataRow[0] = naText;
             }
             dataRow[1] = point.getPointName();
             dataRow[2] = value.getValue();
