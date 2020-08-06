@@ -107,6 +107,7 @@ public class PaoPointsController {
     public void download(HttpServletResponse resp, YukonUserContext context, @PathVariable int paoId) throws IOException {
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+        String naText = accessor.getMessage("yukon.common.na");
 
         String[] headerRow = new String[8];
         
@@ -134,6 +135,8 @@ public class PaoPointsController {
                 dataRow[0] = point.getAllAttributes().stream()
                         .map(attribute -> accessor.getMessage(attribute))
                         .collect(Collectors.joining(","));
+            } else {
+                dataRow[0] = naText;
             }
             dataRow[1] = point.getPointName();
             dataRow[2] = value.getValue();
