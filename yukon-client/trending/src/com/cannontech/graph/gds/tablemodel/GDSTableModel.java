@@ -178,7 +178,7 @@ public Object getGDSAttribute(int index, GraphDataSeries gds) {
 			return gds.getLabel();
 			
 		case COLOR_NAME_COLUMN:	
-		    return YukonColorPalette.getColor(gds.getColor().intValue());
+		    return YukonColorPalette.getColor(gds.getColor().intValue()).toDefaultText();
 		
 		
 		case AXIS_NAME_COLUMN:
