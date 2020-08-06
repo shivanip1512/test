@@ -30,6 +30,7 @@ public final class TestConstants {
     
     public static final class Tools {
         public static final String TOOLS = "Tools";
+        public static final String TRENDS = "Trends";
     }
     
     public static final class Admin {
