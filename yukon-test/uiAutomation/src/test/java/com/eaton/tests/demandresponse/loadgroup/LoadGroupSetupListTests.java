@@ -49,9 +49,9 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 					Optional.of(ecobeeLdGrpName[i])).create();
 		}
 
-		for (int i = 0; i < itronLdGrpName.length; i++) {
+		for (int j = 0; j < itronLdGrpName.length; j++) {
 			Pair<JSONObject, JSONObject> itronLdGrpCreate = new LoadGroupItronCreateBuilder.Builder(
-					Optional.of(itronLdGrpName[i])).withRelay(Optional.empty()).create();
+					Optional.of(itronLdGrpName[j])).withRelay(Optional.empty()).create();
 	        JSONObject response = itronLdGrpCreate.getValue1();
 	        
 	        name = response.getString("name");
@@ -96,7 +96,7 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpSetupList_AscSortNamesCorrectly() {
+	public void ldGrpSetupList_AscSort_NamesCorrectly() {
 		Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
 		navigate(Urls.DemandResponse.LOAD_GROUP_SETUP_NAME_ASC);
 
@@ -105,7 +105,7 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpSetupList_DescSortNamesCorrectly() {
+	public void ldGrpSetupList_DescSort_NamesCorrectly() {
 		Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
 		Collections.reverse(names);
 
@@ -116,7 +116,7 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpSetupList_AscSortTypeCorrectly() {
+	public void ldGrpSetupList_AscSort_TypeCorrectly() {
 		Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
 
 		navigate(Urls.DemandResponse.LOAD_GROUP_SETUP_TYPE_ASC);
@@ -126,7 +126,7 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpSetupList_DescSortTypeCorrectly() {
+	public void ldGrpSetupList_DescSort_TypeCorrectly() {
 		Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
 		Collections.reverse(types);
 
@@ -149,11 +149,6 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldGrpSetupList_LdGroupNameLinkCorrect() {
-/*		Pair<JSONObject, JSONObject> ecobeeLdGrp = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
-
-		JSONObject response = ecobeeLdGrp.getValue1();
-		String name = response.getString("name");
-		Integer id = response.getInt("id");*/
 
 		listPage.getName().setInputValue(name);
 		listPage.getSaveBtn().click();
