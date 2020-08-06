@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -36,6 +37,8 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.DataDependencyException;
+import com.cannontech.common.exception.DataDependencyException.DependencyType;
 import com.cannontech.common.exception.LMObjectDeletionFailureException;
 import com.cannontech.common.exception.LoadProgramProcessingException;
 import com.cannontech.common.exception.NotAuthorizedException;
@@ -149,6 +152,31 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         logApiException(request, ex, uniqueKey);
 
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
+        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+    
+    @ExceptionHandler({ DataDependencyException.class })
+    public ResponseEntity<Object> handleDataDependencyException(final Exception ex, final WebRequest request) {
+    
+        String uniqueKey = CtiUtilities.getYKUniqueKey();
+        logApiException(request, ex, uniqueKey);
+        
+        DataDependencyException dde = (DataDependencyException) ex;
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+        final String dependencyKey = "yukon.web.api.error.dataDependencyException";
+        final StringBuilder sb = new StringBuilder();
+        for (DependencyType type : DependencyType.values()) {
+            List<String> dependencies = dde.getDependency(type, List.class);
+            if (dependencies != null && !dependencies.isEmpty()) {
+                if (sb.length() > 0) {
+                    sb.append("; ");
+                }
+                sb.append(messageSourceAccessor.getMessage(dependencyKey + ".type." + type, StringUtils.join(dependencies, ", ")));
+            }
+        }
+        String errorMsg = messageSourceAccessor.getMessage(dependencyKey, dde.getDependentObject(), sb.toString());
+
+        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), errorMsg, uniqueKey);
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
