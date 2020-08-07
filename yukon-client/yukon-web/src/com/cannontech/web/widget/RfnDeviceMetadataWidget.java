@@ -157,8 +157,8 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
                     metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "NODE_NAMES"),
                             String.join(", ", info.getNodeNames())));
                 }
-                metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "IPV6_ADDRESS"), info.getIpv6Address()));
-                metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "HOSTNAME"), info.getHostname()));
+                //metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "IPV6_ADDRESS"), info.getIpv6Address()));
+                //metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "HOSTNAME"), info.getHostname()));
             } else {
                 log.info("NODE_NETWORK_INFO not found for {}", device);
             }
