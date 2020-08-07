@@ -8,23 +8,22 @@
 #define STR(x) STR_EXPAND(x)
 
 
-VS_VERSION_INFO VERSIONINFO
+VS_VERSION_INFO    VERSIONINFO
 FILEVERSION    	D_FILE_VERSION
-PRODUCTVERSION 	D_PRODUCT_VERSION
+PRODUCTVERSION 	D_FILE_VERSION
 
 FILEOS         	VOS__WINDOWS32
 FILETYPE       	VFT_APP
+
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
         BLOCK "040904E4"
         BEGIN
-			/* VALUE "CompanyName",      "My Company.\0" */
             VALUE "FileDescription",  STR(D_FILE_NAME)
-            VALUE "FileVersion",      STR(D_FILE_VERSION_STR)
             VALUE "ProductName",      "Yukon\0"
-			VALUE "ProductVersion",   STR(D_PRODUCT_VERSION_STR)
-            VALUE "LegalCopyright",   "© 2002-2015 Eaton. All rights reserved.\0"
+            VALUE "ProductVersion",   STR(D_PRODUCT_VERSION_STR)
+            VALUE "LegalCopyright",   "ï¿½ 2002-2019 Eaton. All rights reserved.\0"
         END
     END
 
