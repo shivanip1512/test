@@ -1,7 +1,6 @@
 package com.cannontech.web.admin;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -97,6 +96,7 @@ public class GlobalSettingValidatorTest {
         globalSettings.put(GlobalSettingType.LAST_COMMUNICATION_HOURS, 60);
         globalSettings.put(GlobalSettingType.LAST_RUNTIME_HOURS, 60);
         globalSettings.put(GlobalSettingType.ITRON_HCM_DATA_COLLECTION_MINUTES, 15);
+        globalSettings.put(GlobalSettingType.ITRON_HCM_RESPONSE_TIMEOUT_SECONDS, 120);
         globalSettings.put(GlobalSettingType.RUNTIME_CALCULATION_INTERVAL_HOURS, 2);
         command.setValues(globalSettings);
 
