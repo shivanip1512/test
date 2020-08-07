@@ -84,8 +84,12 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                 }
 
                 if (target.getPointOffset() != null) {
-                    pointValidationUtil.validatePointOffset(target, "pointOffset", errors, isCreationOperation);
+                    YukonValidationUtils.checkRange(errors, "pointOffset", target.getPointOffset(), 0, 99999999, true);
+                    if (!errors.hasFieldErrors("pointOffset")) {
+                        pointValidationUtil.validatePointOffset(target, "pointOffset", errors, isCreationOperation);
+                    }
                 }
+
             }
         }
 

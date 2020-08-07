@@ -1,5 +1,6 @@
 package com.cannontech.web.api.customAttribute;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +37,7 @@ import com.cannontech.web.admin.service.impl.CustomAttributeService;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
-@RequestMapping("/attributeAssignment")
+@RequestMapping("/attributeAssignments")
 @CheckPermissionLevel(property = YukonRoleProperty.ADMIN_MANAGE_ATTRIBUTES, level = HierarchyPermissionLevel.OWNER)
 public class CustomAttributeAssignmentApiController {
 
@@ -60,7 +61,7 @@ public class CustomAttributeAssignmentApiController {
 
     @PatchMapping("/{attributeAssignmentId}")
     public ResponseEntity<Object> update(@PathVariable int attributeAssignmentId, @Valid @RequestBody Assignment assignment) {
-        assignment.setAttributeId(attributeAssignmentId);
+        assignment.setAttributeAssignmentId(attributeAssignmentId);
         return new ResponseEntity<>(customAttributeService.updateAttributeAssignment(assignment), HttpStatus.OK);
     }
 
@@ -77,7 +78,7 @@ public class CustomAttributeAssignmentApiController {
     /**
      * 
      * Example url:
-     * /api/attributeAssignment?attributeIds=1&attributeIds=3&paoTypes=VIRTUAL_SYSTEM&paoTypes=RFN420FL&sort=ATTRIBUTE_NAME&dir=desc
+     * /api/attributeAssignment?attributeIds=1&attributeIds=3&paoTypes=VIRTUAL_SYSTEM&paoTypes=RFN420FL&sort=attributeName&dir=desc
      * 
      */
     @GetMapping("")
@@ -85,8 +86,14 @@ public class CustomAttributeAssignmentApiController {
             @DefaultSort(dir = Direction.asc, sort = "attributeName") SortingParameters sorting) {
         SortBy sortBy = CustomAttributeDao.SortBy.valueOf(sorting.getSort());
         Direction direction = sorting.getDirection();
-        List<Integer> attributeIdList = Arrays.asList(attributeIds);
-        List<PaoType> paoTypeList = Arrays.asList(paoTypes);
+        List<Integer> attributeIdList = new ArrayList<>();
+        if (attributeIds != null) {
+            attributeIdList = Arrays.asList(attributeIds);
+        }
+        List<PaoType> paoTypeList = new ArrayList<>();
+        if (paoTypes != null) {
+            paoTypeList = Arrays.asList(paoTypes);
+        }
 
         return new ResponseEntity<>(customAttributeDao.getCustomAttributeDetails(attributeIdList, paoTypeList, sortBy, direction),
                 HttpStatus.OK);
