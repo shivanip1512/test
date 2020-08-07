@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-	implementation group: 'com.google.inject', name: 'guice', version: '4.0'
+	//implementation group: 'com.google.inject', name: 'guice', version: '4.0'
 
     implementation group: 'org.testng', name: 'testng', version: '6.14.3'
     
