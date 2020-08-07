@@ -19,8 +19,9 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.rfn.dao.GatewayCertificateUpdateDao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
@@ -52,6 +53,7 @@ public class GatewayDataTopicListener implements MessageListener {
     @Autowired private ConfigurationSource configSource;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private NmSyncServiceImpl nmSyncService;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     
     private boolean isDataStreamingEnabled;
     private Map<PaoIdentifier, Instant> deviceReadyNodeLastArchiveTimes = new HashMap<>();
@@ -94,8 +96,8 @@ public class GatewayDataTopicListener implements MessageListener {
             
             // Archive data streaming point values only if data streaming is enabled and gateway supports it
             if (isDataStreamingEnabled) {
-                if (rfnDevice.getPaoIdentifier().getPaoType() == PaoType.GWY800
-                        || rfnDevice.getPaoIdentifier().getPaoType() == PaoType.VIRTUAL_GATEWAY) {
+                boolean deviceSupported = paoDefinitionDao.isTagSupported(rfnDevice.getPaoIdentifier().getPaoType(), PaoTag.DATA_STREAMING);
+                if (deviceSupported) {
                     rfnGatewayService.generatePointData(rfnDevice, BuiltInAttribute.DATA_STREAMING_LOAD,
                             data.getDataStreamingLoadingPercent(), false);
                 }

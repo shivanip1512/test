@@ -48,6 +48,14 @@ public class CbcCreatePage extends PageBase {
     public DropDownElement getCommChannel() {
         return new DropDownElement(this.driverExt, "deviceDirectCommSettings.portID");
     }
+    
+    public TextEditElement getIpAddress() {
+        return new TextEditElement(this.driverExt, "ipAddress");                
+    }
+    
+    public TextEditElement getPort() {
+        return new TextEditElement(this.driverExt, "port");
+    }
 
     public TextEditElement getPostCommWait() {
         return new TextEditElement(this.driverExt, "deviceAddress.postCommWait");

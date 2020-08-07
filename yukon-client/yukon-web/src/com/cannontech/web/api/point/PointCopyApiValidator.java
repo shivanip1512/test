@@ -69,7 +69,9 @@ public class PointCopyApiValidator extends SimpleValidator<PointCopy> {
                 if (!errors.hasFieldErrors("pointName")) {
                     pointValidationUtil.validatePointName(pointModel, "pointName", errors, true);
                 }
-
+                
+                // Check pointOffset range
+                YukonValidationUtils.checkRange(errors, "pointOffset", copyPoint.getPointOffset(), 0, 99999999, true);
                 if (!errors.hasFieldErrors("pointOffset")) {
                     pointModel.setPointOffset(copyPoint.getPointOffset());
                     boolean physicalPointOffset = pointModel.getPointOffset() > 0 ? true : false;

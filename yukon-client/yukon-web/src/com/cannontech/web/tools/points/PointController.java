@@ -296,6 +296,7 @@ public class PointController {
         model.addAttribute("updateRate", TimeIntervals.getUpdateAndScanRate());
         model.addAttribute("fdrTranslationNumbers", ImmutableList.of(0, 1, 2, 3, 4));
         model.addAttribute("fdrInterfaceTypes", interfaceTypes);
+        model.addAttribute("acsInterfaceTypeEnumVal", FdrInterfaceType.ACS);
         model.addAttribute("fdrDirections", FdrDirection.values());
         model.addAttribute("statusControlTypes", StatusControlType.values());
         model.addAttribute("unitMeasures", UnitOfMeasure.allValidValues());
@@ -310,7 +311,7 @@ public class PointController {
         model.addAttribute("analogControlTypes", AnalogControlType.values());
         model.addAttribute("staleDataUpdateStyles", StaleData.UpdateStyle.values());
         model.addAttribute("alarmNotificationTypes", AlarmNotificationTypes.values());
-        if (calcAnalog) {
+        if (isCalcType) {
             model.addAttribute("baseLines", dbCache.getAllBaselines());
         }
         List<LiteNotificationGroup> notificationGroups = new ArrayList<>();

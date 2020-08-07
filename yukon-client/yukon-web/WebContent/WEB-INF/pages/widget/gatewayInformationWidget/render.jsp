@@ -85,9 +85,9 @@
 	            </c:choose>
 	        </tags:nameValue2>
         </cti:checkLicenseKey>
-        <c:if test="${not empty gateway.data.ipv6Prefix}">
+        <%-- <c:if test="${not empty gateway.data.ipv6Prefix}">
             <tags:nameValue2 nameKey=".gateways.ipv6prefix" valueClass="js-gw-ipv6">${fn:escapeXml(gateway.data.ipv6Prefix)}</tags:nameValue2>
-        </c:if>
+        </c:if> --%>
     </tags:nameValueContainer2>
     
     <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE">
@@ -95,10 +95,10 @@
             <c:set var="clazz" value="${empty gateway.data ? 'dn' : ''}"/>
             <cti:button nameKey="edit" icon="icon-pencil" data-popup="#gateway-edit-popup" 
                 classes="${clazz} js-edit"/>
-            <c:if test="${gateway.ipv6Supported}">
+            <%-- <c:if test="${gateway.ipv6Supported}">
                 <cti:button nameKey="configure" icon="icon-cog-edit" data-popup="#gateway-configure-popup" 
                     classes="${clazz}"/>
-            </c:if>
+            </c:if> --%>
         </div>
     </cti:checkRolesAndProperties>
     
