@@ -5,6 +5,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +39,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.DataDependencyException;
-import com.cannontech.common.exception.DataDependencyException.DependencyType;
 import com.cannontech.common.exception.LMObjectDeletionFailureException;
 import com.cannontech.common.exception.LoadProgramProcessingException;
 import com.cannontech.common.exception.NotAuthorizedException;
@@ -164,17 +164,10 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         DataDependencyException dde = (DataDependencyException) ex;
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
         final String dependencyKey = "yukon.web.api.error.dataDependencyException";
-        final StringBuilder sb = new StringBuilder();
-        for (DependencyType type : DependencyType.values()) {
-            List<String> dependencies = dde.getDependency(type, List.class);
-            if (dependencies != null && !dependencies.isEmpty()) {
-                if (sb.length() > 0) {
-                    sb.append("; ");
-                }
-                sb.append(messageSourceAccessor.getMessage(dependencyKey + ".type." + type, StringUtils.join(dependencies, ", ")));
-            }
-        }
-        String errorMsg = messageSourceAccessor.getMessage(dependencyKey, dde.getDependentObject(), sb.toString());
+        
+        List<String> dependencies = new ArrayList<>();
+        dde.getDependencies().forEach((k,v) -> dependencies.add(messageSourceAccessor.getMessage(dependencyKey + ".type." + k, StringUtils.join(v, ", "))));
+        String errorMsg = messageSourceAccessor.getMessage(dependencyKey, dde.getDependentObject(), StringUtils.join(dependencies, "; "));
 
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), errorMsg, uniqueKey);
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);

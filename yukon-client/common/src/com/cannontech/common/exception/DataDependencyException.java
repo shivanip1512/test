@@ -1,20 +1,19 @@
 package com.cannontech.common.exception;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DataDependencyException extends Exception {
 
     public enum DependencyType {
         DEVICE_DATA_MONITOR,
-        // List<String> formats = exception.getDependancy(DependancyType.EXPORT_FORMAT, List .class);
         EXPORT_FORMAT,
-        // List<String> exports = exception.getDependancy(DependancyType.SCHEDULED_EXPORT, List.class);
         SCHEDULED_EXPORT;
     }
 
     private String dependentObject;
-    private Map<DependencyType, Object> dependencies = new HashMap<>();
+    private Map<DependencyType, List<String>> dependencies = new HashMap<>();
 
     private static final long serialVersionUID = 1L;
 
@@ -23,15 +22,19 @@ public class DataDependencyException extends Exception {
         this.dependentObject = dependentObject;
     }
 
-    public void addDependency(DependencyType type, Object dependancy) {
+    public void addDependency(DependencyType type, List<String> dependancy) {
         dependencies.put(type, dependancy);
-    }
-
-    public <T> T getDependency(DependencyType type, Class<T> to) {
-        return dependencies.get(type) == null ? null : to.cast(dependencies.get(type));
     }
 
     public String getDependentObject() {
         return dependentObject;
+    }
+    
+    public Map<DependencyType, List<String>> getDependencies(){
+        return dependencies;
+    }
+    
+    public List<String> getDependency(DependencyType type) {
+        return dependencies.get(type) == null ? null : dependencies.get(type);
     }
 }
