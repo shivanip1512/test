@@ -41,7 +41,7 @@ public final class MyChromeDriver {
             //driver = new RemoteWebDriver(options);
         	URL url;
         	try {
-				url = new URL("http://host.docker.internal:4444/wd/hub");
+				url = new URL("http://127.0.0.1:4444/wd/hub");
 			} catch (MalformedURLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
