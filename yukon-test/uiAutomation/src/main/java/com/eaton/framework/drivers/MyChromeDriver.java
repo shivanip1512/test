@@ -38,16 +38,16 @@ public final class MyChromeDriver {
             options.addArguments("headless");
 
         if (useRemoteDriver) {
-            driver = new RemoteWebDriver(options);
-//        	URL url;
-//        	try {
-//				url = new URL("http://host.docker.internal:4444/wd/hub");
-//			} catch (MalformedURLException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//				throw new RuntimeException(e);
-//			}
-//        	driver = new RemoteWebDriver(url, options);
+            //driver = new RemoteWebDriver(options);
+        	URL url;
+        	try {
+				url = new URL("http://host.docker.internal:4444/wd/hub");
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}
+        	driver = new RemoteWebDriver(url, options);
         } else {
             driver = new ChromeDriver(options);
         }
