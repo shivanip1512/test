@@ -183,7 +183,7 @@ There is also an option to Change the configuration for the device.
         <ul>
             <li><span class="fwb bg-color-green txt-color-white">Available (Green)</span> - 
             Data has been received for these devices within the desired number of days.</li>
-            <li><span class="fwb bg-color-pie-blue txt-color-white">Expected (Blue)</span> - 
+            <li><span class="fwb bg-color-blue txt-color-white">Expected (Blue)</span> - 
             Data has been received for these devices within 7 days.</li>
             <li><span class="fwb bg-color-orange txt-color-white">Outdated (Orange)</span> - 
             Data has been received for these devices within 14 days.</li>
@@ -206,7 +206,7 @@ There is also an option to Change the configuration for the device.
         <ul>
             <li><span class="fwb bg-color-green txt-color-white">Active (Green)</span> - 
                 Devices have returned a positive value for appliance run time at some point in the previous {0}{1}.</li>
-            <li><span class="fwb bg-color-pie-blue txt-color-white">Opted Out (Blue)</span> - 
+            <li><span class="fwb bg-color-blue txt-color-white">Opted Out (Blue)</span> - 
                 Devices have been taken out of service and are no longer responding to events.</li>
             <li><span class="fwb bg-color-orange txt-color-white">Inactive (Orange)</span> - 
                 Devices have returned the value zero for every appliance run time interval in the previous {0}{1}.</li>

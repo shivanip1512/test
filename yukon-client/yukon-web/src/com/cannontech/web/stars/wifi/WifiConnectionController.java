@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.bulk.collection.DeviceMemoryCollectionProducer;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionUrl;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -36,8 +37,8 @@ import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -110,7 +111,7 @@ public class WifiConnectionController {
 
         if (includeConnected) {
             List<Integer> connectedList = Arrays.asList(connectedIds);
-            String connectedColor = "#2ca618";
+            String connectedColor = YukonColorPalette.GREEN.getHexValue();;
             DeviceCollection connectedCollection = producer.createDeviceCollection(connectedList);
             MappingColorCollection mapCollection = new MappingColorCollection(connectedCollection, connectedColor, null);
             Optional <LiteState> connectedState = phaseStateGroup.getStatesList().stream()

@@ -34,7 +34,7 @@
             
             <tags:nameValue2 nameKey=".optedOut">
                 <cti:msg2 var="numberOfDevices" key=".numberOfDevices" argument="${optedOutSize}"/>
-                <span class="pie-blue">${optedOutSize} ${numberOfDevices}</span>
+                <span class="blue">${optedOutSize} ${numberOfDevices}</span>
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".inactive">
