@@ -40,13 +40,6 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
 		name = response.getString("name");
 		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
 		editPage = new LoadGroupEditPage(driverExt, id);
-
-	}
-
-	@AfterTest
-	public void afterTest() {
-		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-		editPage = new LoadGroupEditPage(driverExt, id);
 	}
 
 	@AfterMethod
@@ -69,13 +62,12 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
 		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 		String name = "AT Edited Ecobee Ldgrp " + timeStamp;
 		final String EXPECTED_MSG = name + " saved successfully.";
-		
-		Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty())
-				.create();
+
+		Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
 		JSONObject response = pair.getValue1();
 		id = response.getInt("id");
 		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-		
+
 		editPage.getName().setInputValue(name);
 
 		editPage.getSaveBtn().click();
@@ -167,7 +159,7 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
 		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 		String name = "AT Edited Ecobee Ldgrp " + timeStamp;
 		final String EXPECTED_MSG = name + " saved successfully.";
-		
+
 		Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
 		JSONObject response = pair.getValue1();
 		id = response.getInt("id");
