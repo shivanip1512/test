@@ -39,7 +39,7 @@
                             <i:inline key="yukon.common.na"/>
                         </c:when> 
                         <c:otherwise>
-                            <i:inline key="${pointResultRow.attribute}"/>
+                            <i:inline key="${pointResultRow.attribute}" htmlEscape="true"/>
                             <c:if test="${pointResultRow.displayPopup}">
                                 <cti:msg2 var="moreAttributes" key="yukon.common.plusMore" argument="${pointResultRow.allAttributes.size() - 1}"/>
                                 <a href="javascript:void(0);" data-popup="#attributes-popup-${pointResultRow.pointId}">

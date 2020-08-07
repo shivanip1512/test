@@ -9,7 +9,7 @@
     </thead>
     <c:forEach var="attribute" items="${point.allAttributes}">
         <tr>
-            <td><i:inline key="${attribute}"/></td>
+            <td><i:inline key="${attribute}" htmlEscape="true"/></td>
         </tr>
     </c:forEach>
 </table>
