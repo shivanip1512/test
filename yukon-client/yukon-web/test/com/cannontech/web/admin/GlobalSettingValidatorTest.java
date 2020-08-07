@@ -97,6 +97,7 @@ public class GlobalSettingValidatorTest {
         globalSettings.put(GlobalSettingType.LAST_RUNTIME_HOURS, 60);
         globalSettings.put(GlobalSettingType.ITRON_HCM_DATA_COLLECTION_MINUTES, 15);
         globalSettings.put(GlobalSettingType.ITRON_HCM_RESPONSE_TIMEOUT_SECONDS, 120);
+        globalSettings.put(GlobalSettingType.RUNTIME_CALCULATION_INTERVAL_HOURS, 2);
         command.setValues(globalSettings);
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
@@ -320,6 +321,25 @@ public class GlobalSettingValidatorTest {
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
         service.doValidation(command, errors);
         assertFalse(errors.hasErrors());
+        
+
+        // InValid Runtime Calculation Value
+        command = new GlobalSettingsEditorBean();
+        command.setCategory(GlobalSettingSubCategory.DR);
+        globalSettings.put(GlobalSettingType.RUNTIME_CALCULATION_INTERVAL_HOURS, 0);
+        command.setValues(globalSettings);
+        errors = new BeanPropertyBindingResult(command, "ValidationResult");
+        service.doValidation(command, errors);
+        assertTrue(errors.hasErrors());
+
+        // InValid Runtime Calculation Value
+        command = new GlobalSettingsEditorBean();
+        command.setCategory(GlobalSettingSubCategory.DR);
+        globalSettings.put(GlobalSettingType.RUNTIME_CALCULATION_INTERVAL_HOURS, 25);
+        command.setValues(globalSettings);
+        errors = new BeanPropertyBindingResult(command, "ValidationResult");
+        service.doValidation(command, errors);
+        assertTrue(errors.hasErrors());
 
     }
 }
