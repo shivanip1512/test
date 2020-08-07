@@ -5,6 +5,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -36,6 +38,7 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.exception.LMObjectDeletionFailureException;
 import com.cannontech.common.exception.LoadProgramProcessingException;
 import com.cannontech.common.exception.NotAuthorizedException;
@@ -149,6 +152,24 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         logApiException(request, ex, uniqueKey);
 
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
+        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+    
+    @ExceptionHandler({ DataDependencyException.class })
+    public ResponseEntity<Object> handleDataDependencyException(final Exception ex, final WebRequest request) {
+    
+        String uniqueKey = CtiUtilities.getYKUniqueKey();
+        logApiException(request, ex, uniqueKey);
+        
+        DataDependencyException dde = (DataDependencyException) ex;
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+        final String dependencyKey = "yukon.web.api.error.dataDependencyException";
+        
+        List<String> dependencies = new ArrayList<>();
+        dde.getDependencies().forEach((k,v) -> dependencies.add(messageSourceAccessor.getMessage(dependencyKey + ".type." + k, StringUtils.join(v, ", "))));
+        String errorMsg = messageSourceAccessor.getMessage(dependencyKey, dde.getDependentObject(), StringUtils.join(dependencies, "; "));
+
+        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), errorMsg, uniqueKey);
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 

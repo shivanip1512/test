@@ -50,6 +50,12 @@ dependencies {
 
 test{
 	useTestNG(){
-	suites 'smoketests.xml'
+		useDefaultListeners = true
+		outputDirectory = file("c:/selenium_results/" + getDate())
+		suites 'smoketests.xml'
 	}
+}
+
+def getDate() {
+    return new Date().format('yyyy_MM_dd_HHmm')
 }
