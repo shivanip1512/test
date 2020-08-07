@@ -28,172 +28,166 @@ import com.eaton.pages.demandresponse.LoadGroupListPage;
 
 public class LoadGroupSetupListTests extends SeleniumTestSetup {
 
-	private LoadGroupListPage listPage;
-	private SoftAssertions softly;
-	private List<String> names;
-	private List<String> types;
-	private DriverExtensions driverExt;
-	private String name;
-	private Integer id;
-	private String filterName;
+    private LoadGroupListPage listPage;
+    private SoftAssertions softly;
+    private List<String> names;
+    private List<String> types;
+    private DriverExtensions driverExt;
+    private String name;
+    private Integer id;
+    private String filterName;
 
-	@BeforeClass(alwaysRun = true)
-	public void beforeClass() {
+    @BeforeClass(alwaysRun = true)
+    public void beforeClass() {
+        driverExt = getDriverExt();
+        softly = new SoftAssertions();
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        filterName = "LoadGroup " + timeStamp;
+        String[] ecobeeLdGrpName = { "123ecobee" + timeStamp, "2@$Ecobeegrp" + timeStamp, "ecobeeldgrplower" + timeStamp, "ECOBEELDGRPUPPER" + timeStamp, filterName };
+        String[] itronLdGrpName = { "12itron" + timeStamp, "it$ron@group" + timeStamp };
 
-		driverExt = getDriverExt();
-		softly = new SoftAssertions();
-		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		filterName = "LoadGroup " + timeStamp;
-		String[] ecobeeLdGrpName = { "123ecobee", "2@$Ecobeegrp", "ecobeeldgrplower", "ECOBEELDGRPUPPER", filterName };
-		String[] itronLdGrpName = { "12itron", "it$ron@group" };
-		
-		
-		for (int i = 0; i < ecobeeLdGrpName.length; i++) {
-			Pair<JSONObject, JSONObject> ecobeeLdGrpCreate = new LoadGroupEcobeeCreateBuilder.Builder(
-					Optional.of(ecobeeLdGrpName[i])).create();
-		}
+        for (int i = 0; i < ecobeeLdGrpName.length; i++) {
+            new LoadGroupEcobeeCreateBuilder.Builder(Optional.of(ecobeeLdGrpName[i]))
+                .create();
+        }
 
-		for (int j = 0; j < itronLdGrpName.length; j++) {
-			Pair<JSONObject, JSONObject> itronLdGrpCreate = new LoadGroupItronCreateBuilder.Builder(
-					Optional.of(itronLdGrpName[j])).withRelay(Optional.empty()).create();
-	        JSONObject response = itronLdGrpCreate.getValue1();
-	        
-	        name = response.getString("name");
-	        id = response.getInt("id");
-			
-		}
+        for (int j = 0; j < itronLdGrpName.length; j++) {
+            Pair<JSONObject, JSONObject> itronLdGrpCreate = new LoadGroupItronCreateBuilder.Builder(Optional.of(itronLdGrpName[j]))
+                    .withRelay(Optional.empty())
+                    .create();
+            
+            JSONObject response = itronLdGrpCreate.getValue1();
 
-		navigate(Urls.DemandResponse.LOAD_GROUP_SETUP_LIST);
+            name = response.getString("name");
+            id = response.getInt("id");
+        }
 
-		listPage = new LoadGroupListPage(driverExt);
-		names = listPage.getTable().getDataRowsTextByCellIndex(1);
-		types = listPage.getTable().getDataRowsTextByCellIndex(2);
-	}
+        navigate(Urls.DemandResponse.LOAD_GROUP_SETUP_LIST);
 
-	@AfterMethod
-	public void afterMethod() {
-		navigate(Urls.DemandResponse.LOAD_GROUP_SETUP_LIST);
-		listPage = new LoadGroupListPage(driverExt);
-	}
+        listPage = new LoadGroupListPage(driverExt);
+        names = listPage.getTable().getDataRowsTextByCellIndex(1);
+        types = listPage.getTable().getDataRowsTextByCellIndex(2);
+    }
+    
+    @AfterMethod
+    public void afterMethod() {
+        refreshPage(listPage);
+    }
 
-	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpSetupList_PageTitleCorrect() {
-		final String EXPECTED_TITLE = "Setup";
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpSetupList_PageTitleCorrect() {
+        final String EXPECTED_TITLE = "Setup";
 
-		String actualPageTitle = listPage.getPageTitle();
+        String actualPageTitle = listPage.getPageTitle();
 
-		assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
-	}
+        assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);
+    }
 
-	@Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpSetupList_ColumnHeadersCorrect() {
-		final int EXPECTED_COUNT = 2;
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpSetupList_ColumnHeadersCorrect() {
+        final int EXPECTED_COUNT = 2;
 
-		List<String> headers = this.listPage.getTable().getListTableHeaders();
+        List<String> headers = this.listPage.getTable().getListTableHeaders();
 
-		int actualCount = headers.size();
+        int actualCount = headers.size();
 
-		softly.assertThat(actualCount).isEqualTo(EXPECTED_COUNT);
-		softly.assertThat(headers.get(0)).isEqualTo("Name");
-		softly.assertThat(headers.get(1)).isEqualTo("Type");
-		softly.assertAll();
-	}
-	
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpSetupList_SortNamesAscCorrectly() {
-		Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
-		navigate(Urls.DemandResponse.LOAD_GROUP_SETUP_NAME_ASC);
+        softly.assertThat(actualCount).isEqualTo(EXPECTED_COUNT);
+        softly.assertThat("Name").isEqualTo(headers.get(0));
+        softly.assertThat("Type").isEqualTo(headers.get(1));
+        softly.assertAll();
+    }
 
-		List<String> namesList = listPage.getTable().getDataRowsTextByCellIndex(1);
-		assertThat(names).isEqualTo(namesList);
-	}
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpSetupList_SortNamesAscCorrectly() {
+        Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
+        navigate(Urls.DemandResponse.LOAD_GROUP_SETUP_NAME_ASC);
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpSetupList_SortNamesDescCorrectly() {
-		Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
-		Collections.reverse(names);
+        List<String> namesList = listPage.getTable().getDataRowsTextByCellIndex(1);
+        assertThat(names).isEqualTo(namesList);
+    }
 
-		navigate(Urls.DemandResponse.LOAD_GROUP_SETUP_NAME_DESC);
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpSetupList_SortNamesDescCorrectly() {
+        Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
+        Collections.reverse(names);
 
-		List<String> namesList = listPage.getTable().getDataRowsTextByCellIndex(1);
-		assertThat(names).isEqualTo(namesList);
-	}
+        navigate(Urls.DemandResponse.LOAD_GROUP_SETUP_NAME_DESC);
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpSetupList_SortTypesAscCorrectly() {
-		Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
+        List<String> namesList = listPage.getTable().getDataRowsTextByCellIndex(1);
+        assertThat(names).isEqualTo(namesList);
+    }
 
-		navigate(Urls.DemandResponse.LOAD_GROUP_SETUP_TYPE_ASC);
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpSetupList_SortTypesAscCorrectly() {
+        Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
 
-		List<String> typesList = listPage.getTable().getDataRowsTextByCellIndex(2);
-		assertThat(types).isEqualTo(typesList);
-	}
+        navigate(Urls.DemandResponse.LOAD_GROUP_SETUP_TYPE_ASC);
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpSetupList_SortTypesDescCorrectly() {
-		Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
-		Collections.reverse(types);
+        List<String> typesList = listPage.getTable().getDataRowsTextByCellIndex(2);
+        assertThat(types).isEqualTo(typesList);
+    }
 
-		navigate(Urls.DemandResponse.LOAD_GROUP_SETUP_TYPE_DESC);
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpSetupList_SortTypesDescCorrectly() {
+        Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
+        Collections.reverse(types);
 
-		List<String> typesList = listPage.getTable().getDataRowsTextByCellIndex(2);
-		assertThat(types).isEqualTo(typesList);
-	}
+        navigate(Urls.DemandResponse.LOAD_GROUP_SETUP_TYPE_DESC);
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpSetupList_FilterByName_DoesNotExist_NoResultsFound() {
-		final String EXPECTED_MSG = "No results found.";
+        List<String> typesList = listPage.getTable().getDataRowsTextByCellIndex(2);
+        
+        assertThat(types).isEqualTo(typesList);
+    }
 
-		listPage.getName().setInputValue("dsdddadadadadadada");
-		listPage.getSaveBtn().click();
-		String userMsg = listPage.getUserMessage();
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpSetupList_FilterByName_DoesNotExist_NoResultsFound() {
+        final String EXPECTED_MSG = "No results found.";
 
-		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-	}
+        listPage.getName().setInputValue("dsdddadadadadadada");
+        listPage.getSaveBtn().click();
+        String userMsg = listPage.getUserMessage();
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpSetupList_LdGroupNameLinkCorrect() {
+        assertThat(EXPECTED_MSG).isEqualTo(userMsg);
+    }
 
-		listPage.getName().setInputValue(name);
-		listPage.getSaveBtn().click();
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpSetupList_LdGroupNameLinkCorrect() {
+        listPage.getName().setInputValue(name);
+        listPage.getSaveBtn().click();
 
-		WebTableRow row = listPage.getTable().getDataRowByName(name);
+        WebTableRow row = listPage.getTable().getDataRowByName(name);
 
-		String link = row.getCellLinkByIndex(0);
+        String link = row.getCellLinkByIndex(0);
 
-		assertThat(link).contains(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
-	}
+        assertThat(link).contains(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
+    }
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpSetupList_CreateOpensPopupCorrect() {
-		String EXPECTED_CREATE_MODEL_TITLE = "Create Demand Response Object";
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpSetupList_CreateOpens_CorrectModal() {
+        String EXPECTED_CREATE_MODEL_TITLE = "Create Demand Response Object";
 
-		CreateDRObjectModal createModel = listPage.showAndWaitCreateDemandResponseObject();
-		String actualCreateModelTitle = createModel.getModalTitle();
+        CreateDRObjectModal createModel = listPage.showAndWaitCreateDemandResponseObject();
+        String actualCreateModelTitle = createModel.getModalTitle();
 
-		assertThat(actualCreateModelTitle).isEqualTo(EXPECTED_CREATE_MODEL_TITLE);
-	}
+        assertThat(EXPECTED_CREATE_MODEL_TITLE).isEqualTo(actualCreateModelTitle);
+    }
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpSetupList_FilterByType_CorrectResultsFound() {
-		List<String> expectedTypes = new ArrayList<>(List.of("Itron Group", "ecobee Group"));
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpSetupList_FilterByType_CorrectResultsFound() {
+        listPage.getTypes().selectItemByText("Itron Group");
 
-		listPage.getTypes().selectItemByText("Itron Group");
-		listPage.getTypes().selectItemByText("ecobee Group");
+        List<String> actualTypes = listPage.getTable().getDataRowsTextByCellIndex(2);
 
-		List<String> actualTypes = listPage.getTable().getDataRowsTextByCellIndex(2);
+        assertThat(actualTypes).isNotEmpty().allMatch(e -> e.contains("Itron Group"));
+    }
 
-		assertThat(actualTypes).containsOnlyElementsOf(expectedTypes);
-	}
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpSetupList_FilterByName_CorrectResultsFound() {
+        listPage.getName().setInputValue(filterName);
+        listPage.getSaveBtn().click();
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpSetupList_FilterByName_CorrectResultsFound() {
+        List<String> actual = listPage.getTable().getDataRowsTextByCellIndex(1);
 
-		listPage.getName().setInputValue(filterName);
-		listPage.getSaveBtn().click();
-
-		List<String> actual = listPage.getTable().getDataRowsTextByCellIndex(1);
-
-		assertThat(actual.get(0)).isEqualTo(filterName);
-	}
+        assertThat(filterName).isEqualTo(actual.get(0));
+    }
 }

@@ -21,7 +21,8 @@ public class LoadGroupListPage extends PageBase {
     public LoadGroupListPage(DriverExtensions driverExt) {							
         super(driverExt);							
         							
-        requiresLogin = true;													
+        requiresLogin = true;		
+        pageUrl = Urls.DemandResponse.LOAD_GROUP_SETUP_LIST;
         actionBtn = new ActionBtnDropDownElement(this.driverExt);							
     }							
 							
