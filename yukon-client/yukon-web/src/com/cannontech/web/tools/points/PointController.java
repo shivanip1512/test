@@ -473,9 +473,12 @@ public class PointController {
         }
         
         int id = pointEditorService.save(pointModel.getPointBase(), 
-                                         pointModel.getStaleData(), 
                                          pointModel.getAlarmTableEntries(), 
                                          userContext.getYukonUser());
+        
+        /* This one must be done AFTER for create */
+        pointModel.getStaleData().setPointId(id);
+        pointEditorService.saveStaleData(pointModel.getStaleData());
 
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".saveSuccess"));
         
