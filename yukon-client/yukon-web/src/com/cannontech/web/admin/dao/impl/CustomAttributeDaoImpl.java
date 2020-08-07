@@ -190,11 +190,11 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
             log.debug("dependent object:{}", exception.getDependentObject());
             if (!formatDetails.isEmpty()) {
                 exception.addDependency(DependencyType.EXPORT_FORMAT, formatDetails);
-                log.debug("format names:{}", exception.getDependency(DependencyType.EXPORT_FORMAT, List.class));
+                log.debug("format names:{}", exception.getDependency(DependencyType.EXPORT_FORMAT));
             }
             if (!exportDetails.isEmpty()) {
                 exception.addDependency(DependencyType.SCHEDULED_EXPORT, exportDetails);
-                log.debug("export names:{}", exception.getDependency(DependencyType.SCHEDULED_EXPORT, List.class));
+                log.debug("export names:{}", exception.getDependency(DependencyType.SCHEDULED_EXPORT));
             }
             throw exception;
         }
