@@ -33,7 +33,6 @@ public class AssignmentValidator extends SimpleValidator<Assignment> {
     protected void doValidation(Assignment assignment, Errors errors) {
         if (!errors.hasFieldErrors("offset")) {
             String pointOffsetLabel = accessor.getMessage("yukon.common.pointOffset");
-            //YukonValidationUtils.checkIfFieldRequired("offset", errors, assignment.getOffset(), pointOffsetLabel);
             Range<Integer> range = Range.inclusive(0, 99999999);
             YukonValidationUtils.checkRange(errors, "offset", pointOffsetLabel, assignment.getOffset(), range, true);
         }
