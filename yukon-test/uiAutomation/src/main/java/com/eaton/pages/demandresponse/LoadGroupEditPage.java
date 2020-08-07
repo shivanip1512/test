@@ -19,7 +19,7 @@ public class LoadGroupEditPage extends PageBase {
         super(driverExt);
 
         requiresLogin = true;
-        pageUrl = Urls.DemandResponse.LOAD_PROGRAM_EDIT + id + Urls.EDIT;
+        pageUrl = Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT;
 
         name = new TextEditElement(this.driverExt, "name");
         kWCapacity = new TextEditElement(this.driverExt, "kWCapacity");

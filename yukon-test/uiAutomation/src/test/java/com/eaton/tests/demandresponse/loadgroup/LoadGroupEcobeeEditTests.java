@@ -9,8 +9,9 @@ import java.util.Optional;
 
 import org.javatuples.Pair;
 import org.json.JSONObject;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.eaton.builders.drsetup.loadgroup.LoadGroupEcobeeCreateBuilder;
@@ -35,14 +36,22 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
 		driverExt = getDriverExt();
 		Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
 		JSONObject response = pair.getValue1();
-		name = response.getString("name");
 		id = response.getInt("id");
-	}
-
-	@BeforeMethod
-	public void beforeTest() {
+		name = response.getString("name");
 		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
 		editPage = new LoadGroupEditPage(driverExt, id);
+
+	}
+
+	@AfterTest
+	public void afterTest() {
+		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+		editPage = new LoadGroupEditPage(driverExt, id);
+	}
+
+	@AfterMethod
+	public void afterMethod() {
+		refreshPage(editPage);
 	}
 
 	@Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -60,7 +69,13 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
 		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 		String name = "AT Edited Ecobee Ldgrp " + timeStamp;
 		final String EXPECTED_MSG = name + " saved successfully.";
-
+		
+		Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty())
+				.create();
+		JSONObject response = pair.getValue1();
+		id = response.getInt("id");
+		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+		
 		editPage.getName().setInputValue(name);
 
 		editPage.getSaveBtn().click();
@@ -152,6 +167,11 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
 		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 		String name = "AT Edited Ecobee Ldgrp " + timeStamp;
 		final String EXPECTED_MSG = name + " saved successfully.";
+		
+		Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
+		JSONObject response = pair.getValue1();
+		id = response.getInt("id");
+		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
 
 		editPage.getName().setInputValue(name);
 		editPage.getkWCapacity().setInputValue("2345");
