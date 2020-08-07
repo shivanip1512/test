@@ -129,6 +129,7 @@ public class DriverExtensions {
     public void waitForElement(String by) {
         driverWait.withTimeout(Duration.ofSeconds(8));
         
-        driverWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(by)));
+        //driverWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(by)));
+        driverWait.until(ExpectedConditions.visibilityOf(getDriver().findElement(By.cssSelector(by))));
     }
 }
