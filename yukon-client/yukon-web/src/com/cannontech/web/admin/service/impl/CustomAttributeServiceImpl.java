@@ -40,7 +40,8 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
 
     @Override
     public AttributeAssignment updateAttributeAssignment(Assignment assignment) {
-        if (!attributeService.isValidAttributeId(assignment.getAttributeId())) {
+        Integer attributeId = assignment.getAttributeId();
+        if (attributeId != null && !attributeService.isValidAttributeId(attributeId)) {
             throw new NotFoundException("Attribute id:" + assignment.getAttributeId() + " is not in the database.");
         }
         if (!attributeService.isValidAssignmentId(assignment.getAttributeAssignmentId())) {

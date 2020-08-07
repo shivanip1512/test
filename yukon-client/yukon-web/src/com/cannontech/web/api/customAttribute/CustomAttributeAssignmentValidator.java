@@ -21,15 +21,6 @@ public class CustomAttributeAssignmentValidator extends SimpleValidator<Assignme
         Integer attributeAssignmentId = Integer.valueOf(ServletUtils.getPathVariable("attributeAssignmentId"));
 
         YukonValidationUtils.checkIsPositiveInt(errors, "attributeAssignmentId", attributeAssignmentId);
-
-        if (assignment.getAttributeId() == null && assignment.getPaoType() == null && assignment.getPointType() == null
-                && assignment.getOffset() == null) {
-            String fieldsList = "attributeId, paoType, offset, pointType";
-            errors.rejectValue("attributeId", "yukon.web.error.noFieldsProvided", new Object[] { fieldsList }, "");
-            errors.rejectValue("paoType", "yukon.web.error.noFieldsProvided", new Object[] { fieldsList }, "");
-            errors.rejectValue("offset", "yukon.web.error.noFieldsProvided", new Object[] { fieldsList }, "");
-            errors.rejectValue("pointType", "yukon.web.error.noFieldsProvided", new Object[] { fieldsList }, "");
-        }
     }
 
 }

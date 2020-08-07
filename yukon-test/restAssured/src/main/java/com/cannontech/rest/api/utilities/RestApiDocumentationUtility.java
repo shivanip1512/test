@@ -193,7 +193,7 @@ public class RestApiDocumentationUtility {
      * @param response
      */
     public static void validateStatusCode(Response response) {
-        assertTrue("Status code should be 200", response.statusCode() == 200);
+        assertTrue("Status code should be 200 or 201; Was " + response.statusCode(), (response.statusCode() == 200 || response.statusCode() == 201));
     }
     
     /**
