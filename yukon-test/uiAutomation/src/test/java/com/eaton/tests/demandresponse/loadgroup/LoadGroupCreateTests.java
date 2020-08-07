@@ -142,8 +142,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     public void ldGrpCreate_NameUniqueValidation() {
 
         // API test data. Creating Load group using hard coded json file, to be changed when builder pattern is implemented.
-        String payloadFile = System.getProperty("user.dir")
-                + "\\src\\test\\resources\\payload\\payload.loadgroup\\ecobee.json";
+        String payloadFile = System.getProperty("user.dir") + "\\src\\test\\resources\\payload\\payload.loadgroup\\ecobee.json";
         JSONObject jo;
         String name;
         JSONObject body = (JSONObject) JsonFileHelper.parseJSONFile(payloadFile);

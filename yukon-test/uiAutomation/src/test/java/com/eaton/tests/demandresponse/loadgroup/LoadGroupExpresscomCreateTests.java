@@ -9,8 +9,8 @@ import java.util.Optional;
 import java.util.Random;
 
 import org.openqa.selenium.WebDriver;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.eaton.elements.Section;
@@ -20,11 +20,11 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.LoadGroupDetailPage;
-import com.eaton.pages.demandresponse.LoadGroupExpresscomCreatePage;
+import com.eaton.pages.demandresponse.LoadGroupExpresscomPage;
 
 public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
 
-    private LoadGroupExpresscomCreatePage createPage;
+    private LoadGroupExpresscomPage createPage;
     WebDriver driver;
     private DriverExtensions driverExt;
     private Random randomNum;
@@ -33,50 +33,29 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         randomNum = getRandomNum();
-    }
-
-    @BeforeMethod(alwaysRun = true)
-    public void beforeTest() {
+        
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
-        createPage = new LoadGroupExpresscomCreatePage(driverExt);
+        createPage = new LoadGroupExpresscomPage(driverExt, Urls.DemandResponse.LOAD_GROUP_CREATE);
     }
 
+    @AfterMethod(alwaysRun = true)
+    public void afterTest() {
+        refreshPage(createPage);
+    }
+    
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_AllFieldsSuccessfullyWithSerialAddress() {
+    public void ldGrpCreateExpresscom_RequiredFieldsOnly_Successfully() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT Expresscom " + timeStamp;
-        double randomDouble = randomNum.nextDouble();
-        int randomInt = randomNum.nextInt(9999);
-        double capacity = randomDouble + randomInt;
+        String name = "AT Expresscom Required" + timeStamp;
 
         final String EXPECTED_MSG = name + " saved successfully.";
 
         createPage.getName().setInputValue(name);
         createPage.getType().selectItemByText("Expresscom Group");
-
         waitForLoadingSpinner();
-        createPage.getCommunicationRoute().selectItemByText("a_REPEATER-801");
-
-        createPage.getGeographicalAddress().setTrueFalseByName("Serial", true);
-
-        createPage.getSerial().setInputValue(String.valueOf(randomNum.nextInt(999999999)));
-
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
-        createPage.getLoadAddress().setTrueFalseByName("Program", true);
-        ConfirmModal confirmModal = new ConfirmModal(driverExt,
-                Optional.of("Load level group addressing vs. load number addressing"), Optional.of("addressing-popup"));
-        confirmModal.clickCancelAndWait();
-        createPage.getLoadAddress().setTrueFalseByName("Splinter", true);
-        confirmModal.clickCancelAndWait();
-
-        createPage.getLoads().setTrueFalseByName("Load 8", true);
-        createPage.getProgram().setInputValue(String.valueOf(randomNum.nextInt(254)));
+        
+        createPage.getUsage().setTrueFalseByName("Splinter", true);
         createPage.getSplinter().setInputValue(String.valueOf(randomNum.nextInt(254)));
-
-        createPage.getControlPriority().selectItemByText("Medium");
-        createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
-        createPage.getDisableGroup().setValue(true);
-        createPage.getDisableControl().setValue(false);
 
         createPage.getSaveBtn().click();
 
@@ -89,9 +68,36 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_AllFieldsSuccessfullyWithoutSerialAddress() {
+    public void ldGrpCreateExpresscom_WithSerialAddress_Successfully() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT Expresscom " + timeStamp;
+        String name = "AT Expresscom with Serial" + timeStamp;
+
+        final String EXPECTED_MSG = name + " saved successfully.";
+
+        createPage.getName().setInputValue(name);
+        createPage.getType().selectItemByText("Expresscom Group");
+        waitForLoadingSpinner();
+        
+        createPage.getCommunicationRoute().selectItemByText("a_REPEATER-801");
+        createPage.getGeographicalAddress().setTrueFalseByName("Serial", true);
+        createPage.getSerial().setInputValue(String.valueOf(randomNum.nextInt(999999999)));
+        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getLoads().setTrueFalseByName("Load 8", true);
+
+        createPage.getSaveBtn().click();
+
+        waitForPageToLoad("Load Group: " + name, Optional.empty());
+
+        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
+        String userMsg = detailsPage.getUserMessage();
+
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+    }
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpCreateExpresscom_AllFieldsWithoutSerialAddress_Successfully() {
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String name = "AT Expresscom without Serial" + timeStamp;
         double randomDouble = randomNum.nextDouble();
         int randomInt = randomNum.nextInt(9999);
         double capacity = randomDouble + randomInt;
@@ -100,10 +106,10 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
 
         createPage.getName().setInputValue(name);
         createPage.getType().selectItemByText("Expresscom Group");
-
         waitForLoadingSpinner();
+        
         createPage.getCommunicationRoute().selectItemByText("a_RTC");
-
+        
         createPage.getGeographicalAddress().setTrueFalseByName("GEO", true);
         createPage.getGeographicalAddress().setTrueFalseByName("Substation", true);
         createPage.getGeographicalAddress().setTrueFalseByName("Feeder", true);
@@ -117,13 +123,11 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getZip().setInputValue(String.valueOf(randomNum.nextInt(65534)));
         createPage.getUser().setInputValue(String.valueOf(randomNum.nextInt(65534)));
 
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
-        createPage.getLoadAddress().setTrueFalseByName("Program", true);
-        ConfirmModal confirmModal = new ConfirmModal(driverExt,
-                Optional.of("Load level group addressing vs. load number addressing"), Optional.of("addressing-popup"));
-        confirmModal.clickCancelAndWait();
-        createPage.getLoadAddress().setTrueFalseByName("Splinter", true);
-        confirmModal.clickCancelAndWait();
+        createPage.getUsage().setTrueFalseByName("Program", true);
+        createPage.getUsage().setTrueFalseByName("Splinter", true);
+        createPage.getUsage().setTrueFalseByName("Load", true);
+        ConfirmModal confirmModal = new ConfirmModal(driverExt, Optional.empty(), Optional.of("addressing-popup"));
+        confirmModal.clickOkAndWait();        
 
         createPage.getLoads().setTrueFalseByName("Load 8", true);
         createPage.getProgram().setInputValue(String.valueOf(randomNum.nextInt(254)));
@@ -132,6 +136,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getControlPriority().selectItemByText("Medium");
         createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
         createPage.getDisableGroup().setValue(true);
+        SeleniumTestSetup.moveToElement(createPage.getDisableControl().getSwitchBtn());
         createPage.getDisableControl().setValue(true);
 
         createPage.getSaveBtn().click();
@@ -162,11 +167,10 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
-
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_GeographicalAddressSectionTitleCorrect() {
+    public void ldGrpCreateExpresscom_GeographicalAddress_SectionTitleCorrect() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
         Section generalSection = createPage.getPageSection("Geographical Address");
@@ -182,12 +186,11 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         String actualLabels = createPage.getPageSection(sectionName).getSectionLabels().get(0);
-        assertThat(actualLabels.contains(expectedLabels)).withFailMessage("Assertion failed for label : " + expectedLabels)
-                .isTrue();
+        assertThat(actualLabels.contains(expectedLabels)).withFailMessage("Assertion failed for label : " + expectedLabels).isTrue();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_GeographicalAddressingSectionTitleCorrect() {
+    public void ldGrpCreateExpresscom_GeographicalAddressing_SectionTitleCorrect() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
@@ -197,7 +200,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_GeographicalAddressingSectionLabelsCorrect() {
+    public void ldGrpCreateExpresscom_GeographicalAddressing_SectionLabelsCorrect() {
         String sectionName = "Geographical Addressing";
         createPage.getType().selectItemByText("Expresscom Group");
 
@@ -216,7 +219,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_LoadAddressSectionTitleCorrect() {
+    public void ldGrpCreateExpresscom_LoadAddress_SectionTitleCorrect() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
@@ -232,8 +235,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
 
         String expectedLabels = "Usage:";
         String actualLabels = createPage.getPageSection(sectionName).getSectionLabels().get(0);
-        assertThat(actualLabels.contains(expectedLabels)).withFailMessage("Assertion failed for label : " + expectedLabels)
-                .isTrue();
+        assertThat(actualLabels.contains(expectedLabels)).withFailMessage("Assertion failed for label : " + expectedLabels).isTrue();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -250,16 +252,10 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         String sectionName = "Load Addressing";
         createPage.getType().selectItemByText("Expresscom Group");
 
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
-        createPage.getLoadAddress().setTrueFalseByName("Program", true);
-        ConfirmModal confirmModal = new ConfirmModal(driverExt,
-                Optional.of("Load level group addressing vs. load number addressing"), Optional.of("addressing-popup"));
-        confirmModal.clickCancelAndWait();
-        createPage.getLoadAddress().setTrueFalseByName("Splinter", true);
-        confirmModal.clickCancelAndWait();
+        createPage.getUsage().setTrueFalseByName("Program", true);
+        createPage.getUsage().setTrueFalseByName("Splinter", true);
 
-        List<String> expectedLabels = new ArrayList<>(
-                List.of("Send Loads in Control Message:", "Loads:", "Program:", "Splinter:"));
+        List<String> expectedLabels = new ArrayList<>(List.of("Send Loads in Control Message:", "Loads:", "Program:", "Splinter:"));
         List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
@@ -288,18 +284,18 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_SpidAddressBlankValue() {
+    public void ldGrpCreateExpresscom_Spid_RequiredValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
-        createPage.getSpid().setInputValue("");
+        createPage.getSpid().clearInputValue();
         createPage.getSaveBtn().click();
 
         assertThat(createPage.getSpid().getValidationError()).isEqualTo("SPID is required.");
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_SpidMaxRangeValidation() {
+    public void ldGrpCreateExpresscom_Spid_MaxRangeValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
@@ -310,7 +306,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_SpidMinRangeValidation() {
+    public void ldGrpCreateExpresscom_Spid_MinRangeValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
@@ -321,7 +317,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_SpidDefaultValueValidation() {
+    public void ldGrpCreateExpresscom_Spid_DefaultValueCorrect() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
@@ -329,25 +325,25 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_GeoBlankValue() {
+    public void ldGrpCreateExpresscom_Geo_RequiredValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("GEO", true);
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
-        createPage.getGeo().setInputValue("");
+        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getGeo().clearInputValue();
         createPage.getSaveBtn().click();
 
         assertThat(createPage.getGeo().getValidationError()).isEqualTo("Geo is required.");
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_GeoMaxRangeValidation() {
+    public void ldGrpCreateExpresscom_Geo_MaxRangeValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("GEO", true);
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseByName("Load", true);
         createPage.getGeo().setInputValue("65535");
         createPage.getSaveBtn().click();
 
@@ -355,12 +351,12 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_GeoMinRangeValidation() {
+    public void ldGrpCreateExpresscom_Geo_MinRangeValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("GEO", true);
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseByName("Load", true);
         createPage.getGeo().setInputValue("0");
         createPage.getSaveBtn().click();
 
@@ -368,25 +364,25 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_SubstationBlankValue() {
+    public void ldGrpCreateExpresscom_Substation_RequiredValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("Substation", true);
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
-        createPage.getSubstation().setInputValue("");
+        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getSubstation().clearInputValue();
         createPage.getSaveBtn().click();
 
         assertThat(createPage.getSubstation().getValidationError()).isEqualTo("Substation is required.");
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_SubstationMaxRangeValidation() {
+    public void ldGrpCreateExpresscom_Substation_MaxRangeValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("Substation", true);
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseByName("Load", true);
         createPage.getSubstation().setInputValue("65535");
         createPage.getSaveBtn().click();
 
@@ -394,12 +390,12 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_SubstationMinRangeValidation() {
+    public void ldGrpCreateExpresscom_Substation_MinRangeValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("Substation", true);
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseByName("Load", true);
         createPage.getSubstation().setInputValue("0");
         createPage.getSaveBtn().click();
 
@@ -407,7 +403,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_FeederField16Switches() {
+    public void ldGrpCreateExpresscom_Feeder_ValuesCorrect() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
@@ -416,7 +412,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_LoadsField8Switches() {
+    public void ldGrpCreateExpresscom_Loads_ValuesCorrect() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
@@ -424,25 +420,25 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_ZipBlankValue() {
+    public void ldGrpCreateExpresscom_Zip_RequiredValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("ZIP", true);
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
-        createPage.getZip().setInputValue("");
+        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getZip().clearInputValue();
         createPage.getSaveBtn().click();
 
         assertThat(createPage.getZip().getValidationError()).isEqualTo("Zip is required.");
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_ZipMaxRangeValidation() {
+    public void ldGrpCreateExpresscom_Zip_MaxRangeValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("ZIP", true);
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseByName("Load", true);
         createPage.getZip().setInputValue("16777219");
         createPage.getSaveBtn().click();
 
@@ -450,12 +446,12 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_ZipMinRangeValidation() {
+    public void ldGrpCreateExpresscom_Zip_MinRangeValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("ZIP", true);
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseByName("Load", true);
         createPage.getZip().setInputValue("0");
         createPage.getSaveBtn().click();
 
@@ -463,25 +459,25 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_UserBlankValue() {
+    public void ldGrpCreateExpresscom_User_RequiredValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("User", true);
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
-        createPage.getUser().setInputValue("");
+        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getUser().clearInputValue();
         createPage.getSaveBtn().click();
 
         assertThat(createPage.getUser().getValidationError()).isEqualTo("User is required.");
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_UserMaxRangeValidation() {
+    public void ldGrpCreateExpresscom_User_MaxRangeValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("User", true);
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseByName("Load", true);
         createPage.getUser().setInputValue("65535");
         createPage.getSaveBtn().click();
 
@@ -489,12 +485,12 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_UserMinRangeValidation() {
+    public void ldGrpCreateExpresscom_User_MinRangeValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("User", true);
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseByName("Load", true);
         createPage.getUser().setInputValue("0");
         createPage.getSaveBtn().click();
 
@@ -502,25 +498,25 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_SerialBlankValue() {
+    public void ldGrpCreateExpresscom_Serial_RequiredValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("Serial", true);
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
-        createPage.getSerial().setInputValue("");
+        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getSerial().clearInputValue();
         createPage.getSaveBtn().click();
 
         assertThat(createPage.getSerial().getValidationError()).isEqualTo("Serial Number is required.");
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_SerialMaxRangeValidation() {
+    public void ldGrpCreateExpresscom_Serial_MaxRangeValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("Serial", true);
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseByName("Load", true);
         createPage.getSerial().setInputValue("1000000000");
         createPage.getSaveBtn().click();
 
@@ -528,12 +524,12 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_SerialMinRangeValidation() {
+    public void ldGrpCreateExpresscom_Serial_MinRangeValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("Serial", true);
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseByName("Load", true);
         createPage.getSerial().setInputValue("-1");
         createPage.getSaveBtn().click();
 
@@ -541,110 +537,107 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_LoadAddressingUsageLoadValidateErrorAtTop() {
+    public void ldGrpCreateExpresscom_AddressUsage_RequiredValidation() {
         final String EXPECTED_MSG = "At least 1 load group must be selected when LOAD usage is checked.";
         createPage.getType().selectItemByText("Expresscom Group");
 
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseByName("Load", true);
 
         createPage.getSaveBtn().click();
 
-        waitForPageToLoad("Create Load Group", Optional.empty());
-
-        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
-        String userMsg = detailsPage.getUserMessage();
-
+        String userMsg = createPage.getUserMessage();
+        
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_ValidateSendLoadsInControlMessageValueForLoadAddressUsageLoadSelected() {
+    public void ldGrpCreateExpresscom_UsageLoadSelected_SendLoadsYes() {
         createPage.getType().selectItemByText("Expresscom Group");
 
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseByName("Load", true);
         assertThat(createPage.getSendLoadsInControlMessageText()).isEqualTo("Yes");
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_ValidateSendLoadsInControlMessageValueForLoadAddressUsageLoadNotSelected() {
+    public void ldGrpCreateExpresscom_UsageLoadNotSelected_SendLoadsNo() {
         createPage.getType().selectItemByText("Expresscom Group");
 
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
-        createPage.getLoadAddress().setTrueFalseByName("Load", false);
+        assertThat(createPage.getUsage().isValueSelectedByName("Load")).isFalse();
         assertThat(createPage.getSendLoadsInControlMessageText()).isEqualTo("No");
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_LoadAddressUsageLoadProgramSelectedClickedYesInModal() {
+    public void ldGrpCreateExpresscom_UsageLoadAndProgramSelected_SelectYes_SendLoadsYes() {
         createPage.getType().selectItemByText("Expresscom Group");
 
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
-        createPage.getLoadAddress().setTrueFalseByName("Program", true);
-        ConfirmModal confirmModal = new ConfirmModal(driverExt,
-                Optional.of("Load level group addressing vs. load number addressing"), Optional.of("addressing-popup"));
+        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseByName("Program", true);
+        ConfirmModal confirmModal = new ConfirmModal(driverExt, Optional.empty(), Optional.of("addressing-popup"));
         confirmModal.clickCancelAndWait();
         assertThat(createPage.getSendLoadsInControlMessageText()).isEqualTo("Yes");
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_LoadAddressUsageLoadProgramSelectedClickedNoInModal() {
+    public void ldGrpCreateExpresscom_UsageLoadAndProgramSelected_SelectNo_LoadUnselectedSendLoadsNo() {
         createPage.getType().selectItemByText("Expresscom Group");
 
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
-        createPage.getLoadAddress().setTrueFalseByName("Program", true);
-        ConfirmModal confirmModal = new ConfirmModal(driverExt,
-                Optional.of("Load level group addressing vs. load number addressing"), Optional.of("addressing-popup"));
+        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseByName("Program", true);
+        ConfirmModal confirmModal = new ConfirmModal(driverExt, Optional.empty(), Optional.of("addressing-popup"));
         confirmModal.clickOkAndWait();
+        
+        assertThat(createPage.getUsage().isValueSelectedByName("Load")).isFalse();
         assertThat(createPage.getSendLoadsInControlMessageText()).isEqualTo("No");
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_LoadAddressUsageLoadProgramSplinterSelectedClickedYesInModal() {
+    public void ldGrpCreateExpresscom_UsageLoadAndSplinterSelected_SelectYes_sendLoadsYes() {
         createPage.getType().selectItemByText("Expresscom Group");
 
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
-        createPage.getLoadAddress().setTrueFalseByName("Program", true);
+        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseByName("Program", true);
 
-        ConfirmModal confirmModal = new ConfirmModal(driverExt,
-                Optional.of("Load level group addressing vs. load number addressing"), Optional.of("addressing-popup"));
+        ConfirmModal confirmModal = new ConfirmModal(driverExt, Optional.empty(), Optional.of("addressing-popup"));
         confirmModal.clickCancelAndWait();
-        createPage.getLoadAddress().setTrueFalseByName("Splinter", true);
+        createPage.getUsage().setTrueFalseByName("Splinter", true);
         confirmModal.clickCancelAndWait();
+        
         assertThat(createPage.getSendLoadsInControlMessageText()).isEqualTo("Yes");
     }
-
+    
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_LoadAddressUsageLoadProgramSplinterSelectedClickedNoInModal() {
+    public void ldGrpCreateExpresscom_UsageLoadAndSplinterSelected_SelectNo_LoadUnselectedSendLoadNo() {
         createPage.getType().selectItemByText("Expresscom Group");
 
-        createPage.getLoadAddress().setTrueFalseByName("Load", true);
-        createPage.getLoadAddress().setTrueFalseByName("Program", true);
-        ConfirmModal confirmModal = new ConfirmModal(driverExt,
-                Optional.of("Load level group addressing vs. load number addressing"), Optional.of("addressing-popup"));
+        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseByName("Program", true);
+        ConfirmModal confirmModal = new ConfirmModal(driverExt, Optional.empty(), Optional.of("addressing-popup"));
         confirmModal.clickCancelAndWait();
-        createPage.getLoadAddress().setTrueFalseByName("Splinter", true);
+        createPage.getUsage().setTrueFalseByName("Splinter", true);
         confirmModal.clickOkAndWait();
+        
+        assertThat(createPage.getUsage().isValueSelectedByName("Load")).isFalse();
         assertThat(createPage.getSendLoadsInControlMessageText()).isEqualTo("No");
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_ProgramBlankValue() {
+    public void ldGrpCreateExpresscom_Program_RequiredValdiation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
-        createPage.getLoadAddress().setTrueFalseByName("Program", true);
-        createPage.getProgram().setInputValue("");
+        createPage.getUsage().setTrueFalseByName("Program", true);
+        createPage.getProgram().clearInputValue();
         createPage.getSaveBtn().click();
 
         assertThat(createPage.getProgram().getValidationError()).isEqualTo("Program is required.");
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_ProgramMaxRangeValidation() {
+    public void ldGrpCreateExpresscom_Program_MaxRangeValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
-        createPage.getLoadAddress().setTrueFalseByName("Program", true);
+        createPage.getUsage().setTrueFalseByName("Program", true);
         createPage.getProgram().setInputValue("300");
         createPage.getSaveBtn().click();
 
@@ -652,11 +645,11 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_ProgramMinRangeValidation() {
+    public void ldGrpCreateExpresscom_Program_MinRangeValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
-        createPage.getLoadAddress().setTrueFalseByName("Program", true);
+        createPage.getUsage().setTrueFalseByName("Program", true);
         createPage.getProgram().setInputValue("-1");
         createPage.getSaveBtn().click();
 
@@ -664,23 +657,23 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_SplinterBlankValue() {
+    public void ldGrpCreateExpresscom_Splinter_RequiredValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
-        createPage.getLoadAddress().setTrueFalseByName("Splinter", true);
-        createPage.getSplinter().setInputValue("");
+        createPage.getUsage().setTrueFalseByName("Splinter", true);
+        createPage.getSplinter().clearInputValue();
         createPage.getSaveBtn().click();
 
         assertThat(createPage.getSplinter().getValidationError()).isEqualTo("Splinter is required.");
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_SplinterMaxRangeValidation() {
+    public void ldGrpCreateExpresscom_Splinter_MaxRangeValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
-        createPage.getLoadAddress().setTrueFalseByName("Splinter", true);
+        createPage.getUsage().setTrueFalseByName("Splinter", true);
         createPage.getSplinter().setInputValue("16777219");
         createPage.getSaveBtn().click();
 
@@ -688,11 +681,11 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_SplinterMinRangeValidation() {
+    public void ldGrpCreateExpresscom_Splinter_MinRangeValidation() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
 
-        createPage.getLoadAddress().setTrueFalseByName("Splinter", true);
+        createPage.getUsage().setTrueFalseByName("Splinter", true);
         createPage.getSplinter().setInputValue("0");
         createPage.getSaveBtn().click();
 
@@ -700,7 +693,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_ControlPriorityDropDownContainsAllExpectedValues() {
+    public void ldGrpCreateExpresscom_ControlPriority_ValuesCorrect() {
         createPage.getType().selectItemByText("Expresscom Group");
         waitForLoadingSpinner();
         createPage.getControlPriority().selectItemByText("Medium");
