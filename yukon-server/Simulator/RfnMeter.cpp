@@ -175,6 +175,8 @@ RFN_530S4RR(PaoType.RFN530S4ERXR, "LGYR", "S4-RR"),
 
 using Bytes = std::vector<unsigned char>;
 
+Bytes asBytes(const char* hex_string);
+
 NodeInfo getNodeInfo(const RfnIdentifier& rfnId)
 {
     return mapFindOrCompute(nodeInfo, rfnId, NodeInfo::of);
@@ -387,6 +389,9 @@ void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySend
 
             56 00 00 00 00
             */
+            sendReply(asBytes(
+                "56 00 00 00 00"));
+            return;
         }
         case 0x60:
         {
@@ -401,6 +406,9 @@ void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySend
 
             61 00 00 00 01 00 
             */
+            sendReply(asBytes(
+                "61 00 00 00 01 00"));
+            return;
         }
         case 0x62:
         {
@@ -409,6 +417,9 @@ void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySend
 
             63 00 
             */
+            sendReply(asBytes(
+                "63 00"));
+            return;
         }
         case 0x68:
         {
@@ -423,6 +434,17 @@ void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySend
 
             69 06 00 00
             */
+            if( request.size() > 3 )
+            {
+                sendReply(asBytes(
+                    "69 00 00 00"));
+            }
+            else
+            {
+                sendReply(asBytes(
+                    "69 06 00 00"));
+            }
+            return;
         }
         case 0x70:
         {
@@ -434,6 +456,9 @@ void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySend
     
             71 00 00 
             */
+            sendReply(asBytes(
+                "71 00 00"));
+            return;
         }
         case 0x78:
         {
@@ -457,6 +482,20 @@ void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySend
             0f a4 00 00 0f a7 00 00 10 a0 00 08 0f a9 00 00 
             10 a0 00 08 
             */
+            sendReply(asBytes(
+                "79 00 00 01 02 00 ad 2b 00 01 00 00 00 03 00 00 "
+                "00 04 00 00 00 29 00 00 00 05 00 00 00 07 00 00 "
+                "01 00 00 08 00 09 00 00 01 00 00 08 00 f0 00 00 "
+                "01 00 00 08 00 31 00 00 00 33 00 00 01 00 00 08 "
+                "00 73 00 07 03 e9 00 00 03 eb 00 00 03 ec 00 00 "
+                "03 ef 00 00 04 e8 00 08 03 f1 00 00 04 e8 00 08 "
+                "07 d1 00 00 07 d3 00 00 07 d4 00 00 07 d7 00 00 "
+                "08 d0 00 08 07 d9 00 00 08 d0 00 08 0b b9 00 00 "
+                "0b bb 00 00 0b bc 00 00 0b bf 00 00 0c b8 00 08 "
+                "0b c1 00 00 0c b8 00 08 0f a1 00 00 0f a3 00 00 "
+                "0f a4 00 00 0f a7 00 00 10 a0 00 08 0f a9 00 00 "
+                "10 a0 00 08"));
+            return;
         }
         case 0x7a:
         {
@@ -467,6 +506,10 @@ void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySend
             7b 00 00 01 02 19 06 00 01 00 00 00 03 00 00 00
             04 00 00 00 29 00 00 00 31 00 00 00 73 00 07 
             */
+            sendReply(asBytes(
+                "7b 00 00 01 02 19 06 00 01 00 00 00 03 00 00 00 "
+                "04 00 00 00 29 00 00 00 31 00 00 00 73 00 07"));
+            return;
         }
         case 0x84:
         {
@@ -626,6 +669,9 @@ void doEventManagerRequest(const ReplySender sendReply, const Bytes& request, co
 
             29 01
             */
+            sendReply(asBytes(
+                "29 01"));
+            return;
         }
         case 0x25:
         {
@@ -636,6 +682,9 @@ void doEventManagerRequest(const ReplySender sendReply, const Bytes& request, co
 
             29 01
             */
+            sendReply(asBytes(
+                "29 01"));
+            return;
         }
         case 0x26:
         {
@@ -644,6 +693,9 @@ void doEventManagerRequest(const ReplySender sendReply, const Bytes& request, co
 
             29 01
             */
+            sendReply(asBytes(
+                "29 01"));
+            return;
         }
         case 0x27:
         {
@@ -652,6 +704,9 @@ void doEventManagerRequest(const ReplySender sendReply, const Bytes& request, co
 
             29 01
             */
+            sendReply(asBytes(
+                "29 01"));
+            return;
         }
         case 0x28:
         {
@@ -660,6 +715,9 @@ void doEventManagerRequest(const ReplySender sendReply, const Bytes& request, co
 
             29 01
             */
+            sendReply(asBytes(
+                "29 01"));
+            return;
         }
         case 0x88:
         {
@@ -668,6 +726,9 @@ void doEventManagerRequest(const ReplySender sendReply, const Bytes& request, co
             
             89 00 00 01 01 07 01 00 23 00 19 0f 03
             */
+            sendReply(asBytes(
+                "89 00 00 01 01 07 01 00 23 00 19 0f 03"));
+            return;
         }
     }
 }
