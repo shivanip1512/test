@@ -75,7 +75,6 @@ public class YukonPointHelperImpl implements YukonPointHelper {
      */
     private List<LiteYukonPoint> getYukonPointsForSorting(YukonPao pao, MessageSourceAccessor accessor) {
         List<LitePoint> points = pointDao.getLitePointsByPaObjectId(pao.getPaoIdentifier().getPaoId());
-        Multimap<PaoType, Attribute> definedAttributes = paoDefinitionDao.getPaoTypeAttributesMultiMap();
         return points.stream().map(point -> {
             PaoPointIdentifier paoPointIdent = new PaoPointIdentifier(pao.getPaoIdentifier(),
                     new PointIdentifier(point.getPointTypeEnum(), point.getPointOffset()));
@@ -92,25 +91,36 @@ public class YukonPointHelperImpl implements YukonPointHelper {
             //sort in alphabetical order
             attributes.sort((Attribute a1, Attribute a2) -> accessor.getMessage(a1).compareToIgnoreCase(
                     accessor.getMessage(a2)));
-            Attribute attribute = null;
-            if (attributes.size() == 1) {   // exactly one attribute
-                attribute = attributes.get(0);
-            } else if (!customAttributes.isEmpty()) {    // at least one custom attribute
-                // sort the custom attributes, then pick the first one
-                customAttributes.sort((Attribute a1, Attribute a2) -> accessor.getMessage(a1).compareToIgnoreCase(accessor.getMessage(a2)));
-                attribute = customAttributes.get(0);
-             } else if (!buildInAttributes.isEmpty()) {   // at least one built in attribute
-                 // pick the first one from the xml file
-                 // <pointInfo name="Delivered kWh" init="true" attributes="USAGE,DELIVERED_KWH"/> - will return USAGE
-                 attribute = definedAttributes.get(pao.getPaoIdentifier().getPaoType())
-                        .stream().filter(attr -> buildInAttributes.contains((BuiltInAttribute)attr))
-                        .findFirst()
-                        .orElse(null);
-            }
+            Attribute attribute = getFirstAttribute(pao.getPaoIdentifier().getPaoType(),
+                                                    accessor,
+                                                    buildInAttributes,
+                                                    customAttributes,
+                                                    attributes);
             return LiteYukonPoint.of(paoPointIdent, attribute, attributes, point.getPointName(), point.getLiteID());
         }).collect(Collectors.toList());
     }
 
+    private Attribute getFirstAttribute(PaoType paoType, MessageSourceAccessor accessor,
+            Set<BuiltInAttribute> buildInAttributes, List<CustomAttribute> customAttributes, List<Attribute> attributes) {
+        Attribute attribute = null;
+        if (attributes.size() == 1) {   // exactly one attribute
+            attribute = attributes.get(0);
+        } else if (!customAttributes.isEmpty()) {    // at least one custom attribute
+            // sort the custom attributes, then pick the first one
+            customAttributes.sort((Attribute a1, Attribute a2) -> accessor.getMessage(a1).compareToIgnoreCase(accessor.getMessage(a2)));
+            attribute = customAttributes.get(0);
+         } else if (!buildInAttributes.isEmpty()) {   // at least one built in attribute
+             // pick the first one from the xml file
+             // <pointInfo name="Delivered kWh" init="true" attributes="USAGE,DELIVERED_KWH"/> - will return USAGE
+             Multimap<PaoType, Attribute> definedAttributes = paoDefinitionDao.getPaoTypeAttributesMultiMap();
+             attribute = definedAttributes.get(paoType)
+                    .stream().filter(attr -> buildInAttributes.contains((BuiltInAttribute)attr))
+                    .findFirst()
+                    .orElse(null);
+        }
+        return attribute;
+    }
+    
     @Override
     public List<LiteYukonPoint> getYukonPoints(final YukonPao pao, MessageSourceAccessor accessor) {
         List<LiteYukonPoint> liteYukonPoints = getYukonPointsForSorting(pao, accessor);
