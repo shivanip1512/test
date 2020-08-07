@@ -19,10 +19,11 @@ public class PagingParametersHandlerMethodArgumentResolverTest {
         ReflectionTestUtils.invokeMethod(pagingResolver, "getValidItemsPerPage", itemsPerPage);
     }
 
-    @Test(expected = InvalidPagingParametersException.class)
+    @Test
     public void testGetValidItemsPerPageForNullValue() {
         String itemsPerPage = null;
-        ReflectionTestUtils.invokeMethod(pagingResolver, "getValidItemsPerPage", itemsPerPage);
+        var result = ReflectionTestUtils.invokeMethod(pagingResolver, "getValidItemsPerPage", itemsPerPage);
+        assertTrue("Is Valid Items Per Page ", result.equals(25));
     }
 
     @Test(expected = InvalidPagingParametersException.class)

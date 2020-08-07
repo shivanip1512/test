@@ -3,8 +3,8 @@ package com.cannontech.tdc.roweditor;
 import java.awt.Color;
 
 import com.cannontech.clientutils.commonutils.ModifiedDate;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.gui.table.ICTITableRenderer;
-import com.cannontech.common.gui.util.Colors;
 import com.cannontech.core.dao.TagDao;
 import com.cannontech.database.data.lite.LiteTag;
 import com.cannontech.spring.YukonSpringHook;
@@ -99,7 +99,7 @@ public class TagTableModel extends javax.swing.table.AbstractTableModel implemen
 		LiteTag tagGrp = YukonSpringHook.getBean(TagDao.class).getLiteTag( 
 				getRowAt(row).getTagID() );
 
-		return Colors.getColor( tagGrp.getColorId() );
+		return YukonColorPalette.getColor(tagGrp.getColorId()).getAwtColor();
 	}
 	
 	

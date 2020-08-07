@@ -73,7 +73,7 @@ public class FeederEditTests extends SeleniumTestSetup {
 
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
 
-        modal.clickOkAndWait();
+        modal.clickOkAndWaitForModalToClose();
 
         waitForPageToLoad("Orphans", Optional.empty());
 

@@ -61,7 +61,7 @@ public class DropDownElement {
         List<String> optionValues = new ArrayList<>();
         List<WebElement> options = getSelectElement().findElements(By.tagName("option"));
         for(WebElement option : options) {
-            optionValues.add(option.getText());
+            optionValues.add(option.getText().trim().replaceAll("\n", ""));
         }
         
         return optionValues;
@@ -69,16 +69,16 @@ public class DropDownElement {
     
     private WebElement getSelectElement() {
         if (this.parentName != null) {
-            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] select[name='" + this.elementName + "']"), Optional.empty());
+            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] select[name='" + this.elementName + "']"), Optional.of(3));
         } else if (this.parentElement != null) {
             return this.parentElement.findElement(By.cssSelector("select[name='" + this.elementName + "']"));
         } else {
-            return this.driverExt.findElement(By.cssSelector("select[name='" + this.elementName + "']"), Optional.empty());   
+            return this.driverExt.findElement(By.cssSelector("select[name='" + this.elementName + "']"), Optional.of(3));   
         }        
     }  
     
     public String getValidationError() {
-        return this.driverExt.findElement(By.cssSelector("span[id='" + this.elementName + ".errors']"), Optional.empty()).getText();
+        return this.driverExt.findElement(By.cssSelector("span[id='" + this.elementName + ".errors']"), Optional.of(3)).getText();
      }
     
     public String getSelectedValue() {

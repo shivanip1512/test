@@ -51,7 +51,9 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
         }
 
         YukonPao yukonPao = (YukonPao) parser.getCodec().treeToValue(node, getYukonPaoFromModelFactory(paoType, id).getClass());
-        ((DeviceBaseModel) yukonPao).setId(id);
+        if (yukonPao != null) {
+            ((DeviceBaseModel) yukonPao).setId(id);
+        }
         return yukonPao;
     }
 

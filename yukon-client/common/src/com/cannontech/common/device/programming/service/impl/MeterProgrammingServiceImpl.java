@@ -1,6 +1,7 @@
 package com.cannontech.common.device.programming.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -132,6 +133,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
         MeterProgram program = meterProgrammingDao.getProgramByDeviceId(device.getDeviceId());
 
         if (program != null && program.getGuid().equals(assignedGuid) && status != null && failures.contains(status.getStatus())) {
+            setProgramStatusToInitiating(program.getGuid(), Collections.singletonList(device));
             return sendCommandToPorter(device, context, DeviceRequestType.METER_PROGRAM_UPLOAD_INITIATE);
         }
         return createFailureResult(DeviceRequestType.METER_PROGRAM_UPLOAD_INITIATE, device, context);
