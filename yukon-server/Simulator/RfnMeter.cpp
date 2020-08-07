@@ -16,6 +16,8 @@
 
 #include "NodeInfo.h"
 
+#include <boost/range/algorithm_ext/insert.hpp>
+
 #include <map>
 #include <random>
 #include <optional>
@@ -589,8 +591,9 @@ Bytes processAggregateRequests(const Bytes& payload, const RfnIdentifier rfnIden
 
     for( auto index = 1; itr + RequestHeaderLength < request_end; ++index )
     {
-        const uint16_t contextId = *itr++ << 8 
-                                 | *itr++;
+        const auto contextId_first  = *itr++;
+        const auto contextId_second = *itr++;
+
         const auto applicationServiceId = ASIDs{ *itr++ };
         
         const auto payloadLength = *itr++ << 8
@@ -611,35 +614,42 @@ Bytes processAggregateRequests(const Bytes& payload, const RfnIdentifier rfnIden
         }
 
         Bytes payload { itr, itr + payloadLength };
-
-        Bytes reply;
+        
+        itr += payloadLength;
 
         if( applicationServiceId == ASIDs::BulkMessageHandler )
         {
             CTILOG_WARN(dout, "Discarding nested BulkMessageHandler request for " << rfnIdentifier);
+            continue;
         }
-        else
-        {
-            processGetRequest(
-                [&reply, rfnIdentifier](PayloadOrStatus&& result) {
-                    if( const auto payload = std::get_if<Bytes>(&result) ) {
-                        reply = std::move(*payload);
-                    }
-                    else {
-                        CTILOG_WARN(dout, std::get<Coap::ResponseCode>(result) << " returned while processing component request for " << rfnIdentifier);
-                    }
-                }, 
-                [rfnIdentifier](Bytes&& delayed) {
-                    CTILOG_WARN(dout, "Discarding delayed response generated for " << rfnIdentifier)
-                },
-                payload, 
-                rfnIdentifier, 
-                applicationServiceId);
 
-            //  TODO - append contextId, ASID, length, and reply to result vector
+        Bytes reply;
+
+        processGetRequest(
+            [&reply, rfnIdentifier](PayloadOrStatus&& result) {
+                if( const auto payload = std::get_if<Bytes>(&result) ) {
+                    reply = std::move(*payload);
+                }
+                else {
+                    CTILOG_WARN(dout, std::get<Coap::ResponseCode>(result) << " returned while processing component request for " << rfnIdentifier);
+                }
+            }, 
+            [rfnIdentifier](Bytes&& delayed) {
+                CTILOG_WARN(dout, "Discarding delayed response generated for " << rfnIdentifier)
+            },
+            payload, 
+            rfnIdentifier, 
+            applicationServiceId);
+
+        if( ! reply.empty() )
+        {
+            result.push_back(contextId_first);
+            result.push_back(contextId_second);
+            result.push_back(static_cast<unsigned char>(applicationServiceId));
+            result.push_back(reply.size() >> 8);
+            result.push_back(reply.size());
+            boost::insert(result, result.end(), reply);
         }
-        
-        itr += payloadLength;
     }
 
     return {};
