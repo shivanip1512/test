@@ -33,7 +33,13 @@ public interface PointEditorService {
      * 
      * @return the id of the point
      */
-    int save(PointBase base, StaleData staleData, List<AlarmTableEntry> alarmTableEntries, LiteYukonUser liteYukonUser);
+    int save(PointBase base, List<AlarmTableEntry> alarmTableEntries, LiteYukonUser liteYukonUser);
+
+    /**
+     * Save staleData
+     * @param staleData
+     */
+    public void saveStaleData(StaleData staleData);
 
     /**
      * @param interfaceType
