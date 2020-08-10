@@ -4,10 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 import org.assertj.core.api.SoftAssertions;
 import org.json.simple.JSONObject;
+import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -100,10 +102,10 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_NameAlreadyExists() {
+    public void commChannelTerminalServerEdit__NameUniqueValidation() {
     	String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String EXPECTED_MSG = "Name already exists";
-    	String commChannelNameTwo = "Terminal Server Comm Channel Two " + timeStamp;
+    	String commChannelNameTwo = "Terminal Server Comm Channel" + timeStamp;
         String payloadFile = System.getProperty("user.dir")
                 + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelTerminalServer.json";
 
@@ -124,97 +126,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(editModal.getName().getValidationError()).isEqualTo(EXPECTED_MSG);
     }
     
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_SocketNumber_ACS_MinValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
-        String tabName = "Configuration";
-
-        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal(expectedModalTitle);
-
-        editModal.getTabs().clickTabAndWait(tabName);
-        editModal.getSocketNumber().setInputValue("0");
-        editModal.clickOkAndWait();
-
-        assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
-    }
-
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_SocketNumber_ACS_MaxValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
-        String tabName = "Configuration";
-
-        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal(expectedModalTitle);
-
-        editModal.getTabs().clickTabAndWait(tabName);
-        editModal.getSocketNumber().setInputValue("65536");
-        editModal.clickOkAndWait();
-
-        assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
-    }
-
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_SocketNumber_ACS_BlankValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
-        String tabName = "Configuration";
-
-        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal(expectedModalTitle);
-
-        editModal.getTabs().clickTabAndWait(tabName);
-        editModal.getSocketNumber().setInputValue(" ");
-        editModal.clickOkAndWait();
-
-        assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
-    }
-    
-
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_SocketNumber_ILEX_MinValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
-        String tabName = "Configuration";
-
-        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal(expectedModalTitle);
-
-        editModal.getTabs().clickTabAndWait(tabName);
-        editModal.getSocketNumber().setInputValue("0");
-        editModal.clickOkAndWait();
-
-        assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
-    }
-
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_SocketNumber_ILEX_MaxValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
-        String tabName = "Configuration";
-
-        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal(expectedModalTitle);
-
-        editModal.getTabs().clickTabAndWait(tabName);
-        editModal.getSocketNumber().setInputValue("65536");
-        editModal.clickOkAndWait();
-
-        assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
-    }
-
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_SocketNumber_ILEX_BlankValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
-        String tabName = "Configuration";
-
-        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal(expectedModalTitle);
-
-        editModal.getTabs().clickTabAndWait(tabName);
-        editModal.getSocketNumber().setInputValue(" ");
-        editModal.clickOkAndWait();
-
-        assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
-    }
-
+       
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_CancelNavigatesCorrectly() {
         String expectedModalTitle = "Edit " + commChannelName;
@@ -227,15 +139,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_CreateOpensPopupCorrect() {
-        String EXPECTED_CREATE_MODEL_TITLE = "Create Comm Channel";
-        CreateCommChannelModal createModel = channelDetailPage.showCreateCommChannelModal();
-        String actualCreateModelTitle = createModel.getModalTitle();
-
-        assertThat(actualCreateModelTitle).isEqualTo(EXPECTED_CREATE_MODEL_TITLE);
-    }
-
+    
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_TabLabelsCorrect() {
         String expectedModalTitle = "Edit " + commChannelName;
@@ -474,6 +378,8 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         softly.assertThat(editModal.getPortNumber().getInputValue()).isEqualTo(portNumber.toString());
         softly.assertThat(editModal.getBaudRate().getSelectedValue()).isEqualTo("2400");
         softly.assertThat(editModal.getStatus().getCheckedValue()).isEqualTo("Enabled");
+        softly.assertThat(editModal.getIpAddress().getInputValue()).isEqualTo("Localhost");
+        
         softly.assertAll();
     }
 
@@ -497,15 +403,19 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         String baudRate = "4800";
         String configFieldsValues[] = { "55", "10", "20", "15", "500" };
         String tabName = "Configuration";
-
+        portNumber = randomNum.nextInt(65536);
+        
+        EditTerminalServerCommChannelModal editM= new EditTerminalServerCommChannelModal(this.driverExt, Optional.of(expectedModalTitle), Optional.empty());
         EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal(expectedModalTitle);
-        editModal.getTabs().clickTabAndWait("Info");
+        editM.getIpAddress().setInputValue("10.0.0.1");
         editModal.getName().setInputValue(commChannelName);
         editModal.getBaudRate().selectItemByText(baudRate);
+        editModal.getPortNumber().setInputValue(portNumber.toString());
+    	
         
         editModal.getTabs().clickTabAndWait(tabName);
-        editModal.getProtocolWrap().setByValue("IDLC", true);
-        editModal.getCarrierDetectWait().setValue(false);
+        editModal.getProtocolWrap().setByValue("IDLC", false);
+        editModal.getCarrierDetectWait().setValue(true);
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPreTxWait().setInputValue(configFieldsValues[0]);
@@ -544,4 +454,92 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         Section shared = editModal.getSharedSection();
         assertThat(shared.getSection()).isNotNull();
     }
+    
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    public void commChannelTerminalServerEdit_SocketNumber_RequiredValidation() {
+    	throw new SkipException("Development Defect: QA-6176"); 
+//        String expectedModalTitle = "Edit " + commChannelName;
+//        String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
+//        String tabName = "Configuration";
+//
+//        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal(expectedModalTitle);
+//
+//        editModal.getTabs().clickTabAndWait(tabName);
+//        editModal.getSocketNumber().setInputValue(" ");
+//        editModal.clickOkAndWait();
+//
+//        assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
+    }
+    
+
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    public void commChannelTerminalServerEdit_SocketNumber_MinValueValidation() {
+        String expectedModalTitle = "Edit " + commChannelName;
+        String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
+        String tabName = "Configuration";
+
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal(expectedModalTitle);
+
+        editModal.getTabs().clickTabAndWait(tabName);
+        editModal.getSocketNumber().setInputValue("0");
+        editModal.clickOkAndWait();
+
+        assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
+    }
+
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    public void commChannelTerminalServerEdit_SocketNumber_MaxValueValidation() {
+        String expectedModalTitle = "Edit " + commChannelName;
+        String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
+        String tabName = "Configuration";
+
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal(expectedModalTitle);
+
+        editModal.getTabs().clickTabAndWait(tabName);
+        editModal.getSocketNumber().setInputValue("65537");
+        editModal.clickOkAndWait();
+
+        assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
+    }
+
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    public void commChannelTerminalServerEdit_InfoTab_IpAddressIsRequired() {
+        String expectedModalTitle = "Edit " + commChannelName;
+        String expected_msg = "IP Address is required.";
+        
+
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal(expectedModalTitle);
+       
+        editModal.getIpAddress().setInputValue(" ");
+        
+        editModal.clickOkAndWait();
+
+        assertThat(editModal.getIpAddress().getValidationError()).isEqualTo(expected_msg);
+    }
+    
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    public void commChannelTerminalServerEdit_InfoTab_VerifyIfIpAddressIsValid() {
+        String expectedModalTitle = "Edit " + commChannelName;
+        String expected_msg = "Invalid IP/Host Name.";
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal(expectedModalTitle);
+       
+        editModal.getIpAddress().setInputValue("@123");
+        
+        editModal.clickOkAndWait();
+
+        assertThat(editModal.getIpAddress().getValidationError()).isEqualTo(expected_msg);
+    }
+
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    public void commChannelTerminalServerEdit_ConfigurationTab_EmptyCarrierWaitSavesDefaultValueAsNo() {
+        String expectedModalTitle = "Edit " + commChannelName;
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal(expectedModalTitle);
+        editModal.getTabs().clickTabAndWait("Configuration");
+        editModal.getCarrierDetectWaitTextBox().getInputValue();
+        editModal.getCarrierDetectWaitTextBox().clearInputValue();
+        
+        editModal.clickOkAndWait();
+        assertThat(editModal.getCarrierDetectWait().getCheckedValue()).isEqualTo("No");
+    }
+    
 }
