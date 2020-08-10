@@ -212,7 +212,7 @@ public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
     public void siteMapAmiDetails_pageTrendsLinkCorrect() {
         final String EXPECTED_ANCHOR = "Trends";
-        final String EXPECTED_LINK = Urls.Tools.TRENDS;
+        final String EXPECTED_LINK = Urls.Tools.TRENDS_LIST;
         final int POSITION = 13;
 
         softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))

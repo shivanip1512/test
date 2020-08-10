@@ -1,4 +1,4 @@
-package com.eaton.pages.trends;
+package com.eaton.pages.tools.trends;
 
 import java.util.Optional;
 
@@ -10,20 +10,16 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
-public class TrendsDetailPage extends PageBase {
+public class TrendsListPage extends PageBase {
 
     private ActionBtnDropDownElement actionBtn;
 
-    public TrendsDetailPage(DriverExtensions driverExt, int id) {
+    public TrendsListPage(DriverExtensions driverExt) {
         super(driverExt);
 
         requiresLogin = true;
-        pageUrl = Urls.Tools.TRENDS_DETAIL + id;
+        pageUrl = Urls.Tools.TRENDS_LIST;
         actionBtn = new ActionBtnDropDownElement(this.driverExt);
-    }
-
-    public TrendsDetailPage(DriverExtensions driverExt) {
-        super(driverExt);
     }
 
     public WebTable getTable() {

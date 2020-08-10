@@ -7,21 +7,23 @@ import java.util.Optional;
 import org.javatuples.Pair;
 import org.json.JSONObject;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.eaton.builders.tools.webtrends.WebTrendCreateBuilder;
+import com.eaton.builders.tools.webtrends.TrendCreateBuilder;
+import com.eaton.builders.tools.webtrends.TrendMarkerBuilder;
+import com.eaton.builders.tools.webtrends.TrendPointBuilder;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.trends.TrendsDetailPage;
-import com.eaton.pages.trends.TrendsListPage;
+import com.eaton.pages.tools.trends.TrendsListPage;
+
+import io.restassured.response.ExtractableResponse;
 
 public class TrendsDeleteTests extends SeleniumTestSetup {
 
-    private TrendsDetailPage detailPage;
+    private TrendsListPage listPage;
     private DriverExtensions driverExt;
     private Integer trendId;
     String trendName;
@@ -29,34 +31,25 @@ public class TrendsDeleteTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        Pair<JSONObject, JSONObject> pair = new WebTrendCreateBuilder.Builder(Optional.empty())
-                .withAxis(Optional.empty())
-                .withColor(Optional.empty())
-                .withDate(Optional.empty())
-                .withLabel(Optional.empty())
-                .withMultiplier(Optional.empty())
-                .withPointId(Optional.empty())
-                .withType(Optional.empty())
+        Pair<JSONObject, ExtractableResponse<?>> pair = new TrendCreateBuilder.Builder(Optional.empty())
                 .create();
 
-        JSONObject response = pair.getValue1();
+        ExtractableResponse<?> response = pair.getValue1();
+        
+        trendId = response.path("trendId");
+        trendName = response.path("name").toString();
 
-        trendName = response.getString("name");
-        trendId = response.getInt("trendId");
-
-    }
-
-    @BeforeMethod(alwaysRun = true)
-    public void beforeMethod() {
-        navigate(Urls.Tools.TRENDS_DETAIL + trendId);
-        detailPage = new TrendsDetailPage(driverExt, trendId);
+        navigate(Urls.Tools.TRENDS_LIST);
+        listPage = new TrendsListPage(driverExt);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDeleteTcp_DeleteConfirmMessageCorrect() {
+    public void trendsDelete_DeleteConfirmMessageCorrect() {
         String expectedModalMessage = "Are you sure you want to delete \"" + trendName + "\"?";
+        
+        navigate(Urls.Tools.TRENDS_LIST + "/" + trendId);
 
-        ConfirmModal deleteConfirmModal = detailPage.showDeleteTrendModal();
+        ConfirmModal deleteConfirmModal = listPage.showDeleteTrendModal();
 
         String actualModalMessage = deleteConfirmModal.getConfirmMsg();
 
@@ -64,26 +57,36 @@ public class TrendsDeleteTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDeleteTcp_DeleteSuccessfully() {
-        Pair<JSONObject, JSONObject> pair = new WebTrendCreateBuilder.Builder(Optional.empty())
-                .withAxis(Optional.empty())
-                .withColor(Optional.empty())
-                .withDate(Optional.empty())
-                .withLabel(Optional.empty())
-                .withMultiplier(Optional.empty())
-                .withPointId(Optional.empty())
-                .withType(Optional.empty())
+    public void trendsDelete_AllFields_DeleteSuccessfully() {                
+        Pair<JSONObject, ExtractableResponse<?>> pair = new TrendCreateBuilder.Builder(Optional.empty())
+                .withMarkers(new JSONObject[] { new TrendMarkerBuilder.Builder()
+                    .withMultiplier(Optional.empty())
+                    .withLabel(Optional.empty())
+                    .withColor(Optional.empty())
+                    .withAxis(Optional.empty())
+                    .build()})
+                .withPoints(new JSONObject[] {new TrendPointBuilder.Builder()
+                        .withpointId(4999)
+                        .withLabel(Optional.empty())
+                        .withColor(Optional.empty())
+                        .withStyle(Optional.empty())
+                        .withType(Optional.empty())
+                        .withAxis(Optional.empty())
+                        .withMultiplier(Optional.empty())
+                        .withDate(Optional.empty())
+                        .build()})
                 .create();
 
-        JSONObject response = pair.getValue1();
-
-        String deleteTrendName = response.getString("name");
-        Integer deleteTrendId = response.getInt("trendId");
-        navigate(Urls.Tools.TRENDS_DETAIL + deleteTrendId);
-        detailPage = new TrendsDetailPage(driverExt, deleteTrendId);
+        ExtractableResponse<?> response = pair.getValue1();
+        
+        Integer deleteTrendId = response.path("trendId");
+        String deleteTrendName = response.path("name").toString();
+        
+        navigate(Urls.Tools.TRENDS_LIST + "/" + deleteTrendId);
+        listPage = new TrendsListPage(driverExt);
 
         String expectedMessage = deleteTrendName + " deleted successfully.";
-        ConfirmModal deleteConfirmModal = detailPage.showDeleteTrendModal();
+        ConfirmModal deleteConfirmModal = listPage.showDeleteTrendModal();
         deleteConfirmModal.clickOkAndWaitForModalToClose();
         TrendsListPage listPage = new TrendsListPage(driverExt);
         String userMsg = listPage.getUserMessage();

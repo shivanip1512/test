@@ -1,6 +1,8 @@
 package com.eaton.builders.tools.webtrends;
 
-public class WebTrendEnums {
+import java.util.Random;
+
+public class TrendTypes {
 
     public enum Type {
         BASIC_TYPE("BASIC_TYPE"),
@@ -20,18 +22,23 @@ public class WebTrendEnums {
             return this.type;
         }
 
+        public static Type getRandomType() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
     }
-
+    
+    //TODO Defect YUK-22671: Update with all colors once API documentation has been updated.  If use MAGENTA, CYAN, GREY, or PINK you get 400 malformed json 
     public enum Color {
         BLACK("BLACK"),
         BLUE("BLUE"),
-        CYAN("CYAN"),
-        GREY("GREY"),
+        TEAL("TEAL"),
+        GRAY("GRAY"),        
         GREEN("GREEN"),
-        MAGENTA("MAGENTA"),
+        SAGE("SAGE"),
         ORANGE("ORANGE"),
-        PINK("PINK"),
-        RED("RED"),
+        PURPLE("PURPLE"),
+        WINE("WINE"),
         YELLOW("YELLOW");
 
         private final String color;
@@ -44,6 +51,10 @@ public class WebTrendEnums {
             return this.color;
         }
 
+        public static Color getRandomColor() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
     }
 
     enum Axis {
@@ -59,12 +70,17 @@ public class WebTrendEnums {
         public String getAxis() {
             return this.axis;
         }
+        
+        public static Axis getRandomAxis() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
     }
 
     enum Style {
         LINE("LINE"),
-        STEP("LINE"),
-        BAR("LINE");
+        STEP("STEP"),
+        BAR("BAR");
 
         private final String style;
 
@@ -74,6 +90,11 @@ public class WebTrendEnums {
 
         public String getStyle() {
             return this.style;
+        }
+        
+        public static Style getRandomStyle() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
         }
     }
 }
