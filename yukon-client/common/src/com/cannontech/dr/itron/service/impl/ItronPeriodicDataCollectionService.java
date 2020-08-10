@@ -1,6 +1,7 @@
 package com.cannontech.dr.itron.service.impl;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -176,12 +177,17 @@ public class ItronPeriodicDataCollectionService {
     private void updateSecondaryMacAddresses() {
         List<PaoMacAddress> devicesWithNoSecondaryMac = deviceDao.findAllDevicesWithNoSecondaryMacAddress();
         log.info("{} devices with no secondary mac.", devicesWithNoSecondaryMac.size());
+        List<String> macsWithNoSecondary = new ArrayList<>();
         for (PaoMacAddress paoMacAddress : devicesWithNoSecondaryMac) {
             log.debug("Requesting secondary mac for device ID {}", paoMacAddress.getPaoId());
-            itronCommunicationService.saveSecondaryMacAddress(paoMacAddress.getPaoType(), 
-                                                              paoMacAddress.getPaoId(), 
-                                                              paoMacAddress.getMacAddress());
+            boolean secondaryMacFound = itronCommunicationService.findAndSaveSecondaryMacAddress(
+                    paoMacAddress.getPaoType(), paoMacAddress.getPaoId(), paoMacAddress.getMacAddress());
+            if (!secondaryMacFound) {
+                macsWithNoSecondary.add(paoMacAddress.getMacAddress());
+            }
         }
+        log.info(() -> "A secondary mac could not be retrieved for " + macsWithNoSecondary.size() + 
+                " devices: [" + String.join(",", macsWithNoSecondary) + "]");
     }
     
     private static String format(Duration d) {

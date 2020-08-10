@@ -7,7 +7,6 @@ import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPConstants;
 
 import org.apache.logging.log4j.Logger;
-import org.joda.time.Duration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.WebServiceClientException;
 import org.springframework.ws.client.core.WebServiceTemplate;
@@ -18,6 +17,7 @@ import org.springframework.ws.soap.SoapMessageFactory;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.transport.context.TransportContext;
 import org.springframework.ws.transport.context.TransportContextHolder;
+import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 import org.springframework.ws.transport.http.HttpUrlConnection;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -31,6 +31,7 @@ public enum ItronEndpointManager {
     SERVICE_POINT("ServicePointManagerPort", "com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3"),
     REPORT("ReportManagerPort", "com.cannontech.dr.itron.model.jaxb.reportManagerTypes_v1_2");
 
+    private int itronTimeoutSeconds = 120;
     private WebServiceTemplate template;
     private String port;
     private Jaxb2Marshaller marshaller;
@@ -53,6 +54,15 @@ public enum ItronEndpointManager {
     }
 
     public WebServiceTemplate getTemplate(GlobalSettingDao settingDao) {
+        int timeoutSecondsSetting = settingDao.getInteger(GlobalSettingType.ITRON_HCM_RESPONSE_TIMEOUT_SECONDS);
+        // Only update the template if the timeout setting has changed
+        if (itronTimeoutSeconds != timeoutSecondsSetting) {
+            itronTimeoutSeconds = timeoutSecondsSetting;
+            HttpComponentsMessageSender messageSender = new HttpComponentsMessageSender();
+            messageSender.setReadTimeout(itronTimeoutSeconds * 1000); //timeout set in milliseconds
+            template.setMessageSender(messageSender);
+        }
+        
         String userName = settingDao.getString(GlobalSettingType.ITRON_HCM_USERNAME);
         String password = settingDao.getString(GlobalSettingType.ITRON_HCM_PASSWORD);
         ClientInterceptor[] interceptors = { new ItronCommunicationInterceptor(userName, password) };

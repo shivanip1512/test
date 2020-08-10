@@ -439,6 +439,8 @@
     <entry key="yukon.common.setting.ITRON_HCM_PASSWORD.description">Password to authenticate with the Itron HCM service.</entry>
     <entry key="yukon.common.setting.ITRON_HCM_DATA_COLLECTION_MINUTES">Itron HCM Data Collection Interval</entry>
     <entry key="yukon.common.setting.ITRON_HCM_DATA_COLLECTION_MINUTES.description">The interval, in minutes, at which to request data from the Itron HCM service if there are Itron devices created in Yukon.</entry>
+    <entry key="yukon.common.setting.ITRON_HCM_RESPONSE_TIMEOUT_SECONDS">Itron HCM Response Timeout</entry>
+    <entry key="yukon.common.setting.ITRON_HCM_RESPONSE_TIMEOUT_SECONDS.description">The number of seconds Yukon will wait for a response from the Itron HCM service after making a request.</entry>
     <entry key="yukon.common.setting.ITRON_SFTP_URL">Itron SFTP URL Base</entry>
     <entry key="yukon.common.setting.ITRON_SFTP_URL.description">Domain (and port, if non-standard) to connect to the Itron SFTP service.</entry>
     <entry key="yukon.common.setting.ITRON_SFTP_USERNAME">Itron SFTP Username</entry>
