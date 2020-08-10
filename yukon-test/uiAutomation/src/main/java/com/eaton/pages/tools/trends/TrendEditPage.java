@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.openqa.selenium.WebElement;
 
 import com.eaton.elements.Button;
+import com.eaton.elements.ButtonByClass;
 import com.eaton.elements.Section;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.WebTable;
@@ -78,6 +79,22 @@ public class TrendEditPage extends PageBase {
     
     public Button getMarkerSetupAdd() {
         return new Button(this.driverExt, "Add", getMarkerSetupSection().getSection());
+    }
+    
+    public ButtonByClass getMarkerSetupEditMarker() {
+        return new ButtonByClass(this.driverExt, "js-marker", getMarkerSetupSection().getSection());
+    }
+    
+    public ButtonByClass getPointSetupEditPoint() {
+        return new ButtonByClass(this.driverExt, "js-edit-point", getPointSetupSection().getSection());
+    }
+    
+    public ButtonByClass getMarkerSetupRemoveMarker() {
+        return new ButtonByClass(this.driverExt, "js-remove", getMarkerSetupSection().getSection());
+    }
+    
+    public ButtonByClass getPointSetupRemovePoint() {
+        return new ButtonByClass(this.driverExt, "js-remove", getPointSetupSection().getSection());
     }
     
     public PointModal showAndWaitPointSetupAddModal() {
