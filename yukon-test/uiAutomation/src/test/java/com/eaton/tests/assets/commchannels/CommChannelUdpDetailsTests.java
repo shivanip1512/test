@@ -184,11 +184,13 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         Object body = JsonFileHelper.parseJSONFile(payloadFile);
         jo = (JSONObject) body;
         jo.put("name", deleteCommChannelName);
-        Integer deletePortNumber = randomNum.nextInt(65536);
-        jo.put("portNumber", deletePortNumber);
+        jo.put("portNumber", randomNum.nextInt(65534));
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
+        
         Integer deleteCommChannelId = createResponse.path("id");
+        
         navigate(Urls.Assets.COMM_CHANNEL_DETAIL + deleteCommChannelId);
+        
         detailPage = new CommChannelUdpDetailPage(driverExt, deleteCommChannelId);
         String expectedMessage = deleteCommChannelName +" deleted successfully.";
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();

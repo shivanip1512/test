@@ -415,7 +415,7 @@ yukon.ui.util = (function () {
          * Jquery (and plain old javascript) returns color values in rgb format:
          *  rgb(0, 153, 51)
          * This function will convert it to this format:
-         *  #009933
+         *  #2ca618
          */
         rgbToHex: function (rgb) {
             var compositeRgb,

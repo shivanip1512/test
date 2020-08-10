@@ -37,40 +37,6 @@ public class LoadGroupCreatePage extends PageBase {
         return new DropDownElement(this.driverExt, "routeId");
     }
 
-    // Geographical Address
-    public SwitchBtnMultiSelectElement getGeographicalAddressUsage() {
-        return new SwitchBtnMultiSelectElement(this.driverExt, "addressUsage");
-    }
-
-    // Geographical Addressing
-    public TextEditElement getSpid() {
-        return new TextEditElement(this.driverExt, "serviceProvider");
-    }
-    
-    public TextEditElement getGeo() {
-        return new TextEditElement(this.driverExt, "geo");
-    }
-
-    public TextEditElement getSubstation() {
-        return new TextEditElement(this.driverExt, "substation");
-    }
-
-    public RadioButtonElement getFeeder() {
-        return new RadioButtonElement(this.driverExt, "feeder");
-    }
-
-    public TextEditElement getZip() {
-        return new TextEditElement(this.driverExt, "zip");
-    }
-
-    public TextEditElement getUser() {
-        return new TextEditElement(this.driverExt, "user");
-    }
-
-    public TextEditElement getSerial() {
-        return new TextEditElement(this.driverExt, "serialNumber");
-    }
-
     // Addressing
     public TextEditElement getGoldAddress() {
         return new TextEditElement(this.driverExt, "goldAddress");
@@ -95,10 +61,10 @@ public class LoadGroupCreatePage extends PageBase {
     public List<String> getAddressToUseValues() {
         return getAddressToUse().getValues();
     }
-    
+
     public SwitchBtnMultiSelectElement getRelayUsage() {
         WebElement section = getPageSection("Relay Usage").getSection();
-        
+
         return new SwitchBtnMultiSelectElement(this.driverExt, "button-group", section);
     }
 
@@ -122,23 +88,19 @@ public class LoadGroupCreatePage extends PageBase {
     }
 
     // Optional Attributes
-    public DropDownElement getControlPriority() {
-        return new DropDownElement(this.driverExt, "protocolPriority");
-    }
-
     public TextEditElement getkWCapacity() {
         return new TextEditElement(this.driverExt, "kWCapacity");
     }
 
     public SwitchBtnYesNoElement getDisableGroup() {
         WebElement section = getPageSection("Optional Attributes").getSection();
-        
+
         return new SwitchBtnYesNoElement(this.driverExt, "disableGroup", section);
     }
 
     public SwitchBtnYesNoElement getDisableControl() {
         WebElement section = getPageSection("Optional Attributes").getSection();
-        
+
         return new SwitchBtnYesNoElement(this.driverExt, "disableControl", section);
     }
 
@@ -153,8 +115,8 @@ public class LoadGroupCreatePage extends PageBase {
     public Section getPageSection(String sectionName) {
         return new Section(this.driverExt, sectionName);
     }
-    
+
     public DropDownElement getRelay() {
-    	return new DropDownElement(this.driverExt, "virtualRelayId");
+        return new DropDownElement(this.driverExt, "virtualRelayId");
     }
 }

@@ -31,7 +31,7 @@ public class SwitchBtnYesNoElement {
         }
     }
 
-    private WebElement getSwitchBtn() {
+    public WebElement getSwitchBtn() {
         List<WebElement> list = parentElement.findElements(By.cssSelector(".switch-btn"));
 
         for (WebElement webElement : list) {

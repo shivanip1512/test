@@ -10,7 +10,11 @@ extern "C" {
 
 namespace Cti::Protocols::Coap {
 
-scoped_pdu_ptr::scoped_pdu_ptr(coap_pdu_t* pdu_) 
+StreamBufferSink& operator<<(StreamBufferSink& s, const ResponseCode r) {
+    return s << "[CoAP error " << static_cast<int>(r) << "]";
+}
+    
+scoped_pdu_ptr::scoped_pdu_ptr(coap_pdu_t* pdu_)
     : pdu { pdu_ } 
 {
 }

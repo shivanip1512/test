@@ -136,14 +136,14 @@ public class PointEditorServiceImpl implements PointEditorService {
     /**
      * Retrieves the StaleData part of the model for a given point id from the database
      */
-    private StaleData getStaleData(int id) {
+    private StaleData getStaleData(int pointId) {
         
-        StaleData staleData = new StaleData();
+        StaleData staleData = new StaleData(Integer.valueOf(pointId));
         
         try {
-            PointPropertyValue timeProperty = pointPropertyValueDao.getByIdAndPropertyId(id, StaleData.TIME_PROPERTY);
-            PointPropertyValue updateProperty = pointPropertyValueDao.getByIdAndPropertyId(id, StaleData.UPDATE_PROPERTY);
-
+            PointPropertyValue timeProperty = pointPropertyValueDao.getByIdAndPropertyId(pointId, StaleData.TIME_PROPERTY);
+            PointPropertyValue updateProperty = pointPropertyValueDao.getByIdAndPropertyId(pointId, StaleData.UPDATE_PROPERTY);
+            
             staleData.setEnabled(true);
             staleData.setTime((int) timeProperty.getFloatValue());
             staleData.setUpdateStyle((int) updateProperty.getFloatValue());
@@ -234,8 +234,8 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
     
     @Override
-    public int save(PointBase base, StaleData staleData, List<AlarmTableEntry> alarmTableEntries, LiteYukonUser liteYukonUser) {
-
+    public int save(PointBase base, List<AlarmTableEntry> alarmTableEntries, LiteYukonUser liteYukonUser) {
+        
         Integer pointId = base.getPoint().getPointID();
         
         TransactionType type = TransactionType.UPDATE;
@@ -260,8 +260,6 @@ public class PointEditorServiceImpl implements PointEditorService {
 
         dbChangeManager.processDbChange(dbChange);
 
-        /* This one must be done AFTER for create */
-        saveStaleData(pointId, staleData);
         LiteYukonPAObject pao = cache.getAllPaosMap().get(base.getPoint().getPaoID());
         eventLog.pointUpdated(pao.getPaoName(), base.getPoint().getPointName(), base.getPoint().getPointTypeEnum(),
             base.getPoint().getPointOffset(), liteYukonUser);
@@ -271,12 +269,12 @@ public class PointEditorServiceImpl implements PointEditorService {
     /**
      * Save the StaleData from the model object to the database
      */
-    private void saveStaleData(int pointId, StaleData staleData) {
+    public void saveStaleData(StaleData staleData) {
         
         if (staleData != null) {
-            PointPropertyValue timeProperty = new PointPropertyValue(pointId, StaleData.TIME_PROPERTY, staleData.getTime());
-            PointPropertyValue updateProperty = new PointPropertyValue(pointId, StaleData.UPDATE_PROPERTY, staleData.getUpdateStyle());
-            
+            PointPropertyValue timeProperty = new PointPropertyValue(staleData.getPointId(), StaleData.TIME_PROPERTY, staleData.getTime());
+            PointPropertyValue updateProperty = new PointPropertyValue(staleData.getPointId(), StaleData.UPDATE_PROPERTY, staleData.getUpdateStyle());
+                         
             pointPropertyValueDao.remove(timeProperty);
             pointPropertyValueDao.remove(updateProperty);
     
@@ -470,13 +468,13 @@ public class PointEditorServiceImpl implements PointEditorService {
         // copy the StaleData
         StaleData stateDataToCopy = getStaleData(pointModel.getPointId());
         StaleData newStaleData = populateStaleDataObjectToCopy(stateDataToCopy);
-        saveStaleData(newPoint.getPoint().getPointID(), newStaleData);
+        saveStaleData(newStaleData);
 
         return newPoint.getPoint().getPointID();
     }
     
     private StaleData populateStaleDataObjectToCopy(StaleData stateDataToCopy) {
-        StaleData staleData = new StaleData();
+        StaleData staleData = new StaleData(stateDataToCopy.getPointId());
         staleData.setEnabled(stateDataToCopy.isEnabled());
         staleData.setTime(stateDataToCopy.getTime());
         staleData.setUpdateStyle(stateDataToCopy.getUpdateStyle());
@@ -502,17 +500,20 @@ public class PointEditorServiceImpl implements PointEditorService {
 
         PointBase pointBase = PointModelFactory.createPoint(pointBaseModel);
         pointBaseModel.buildDBPersistent(pointBase);
-        StaleData staleData = null;
+
+        List<AlarmTableEntry> alarmTableEntries = buildOrderedAlarmTable(pointBaseModel.getAlarming().getAlarmTableList(),
+                pointBaseModel.getPointType());
+        int pointId = save(pointBase, alarmTableEntries, userContext.getYukonUser());
+        // When Stale data object is not passed in Request, then with default values Stale data object  will be created
+        StaleData staleData = new StaleData(Integer.valueOf(pointId));
+
         if (pointBaseModel.getStaleData() != null) {
-            staleData = pointBaseModel.getStaleData().overwriteWith(new StaleData());
+            staleData = pointBaseModel.getStaleData().overwriteWith(new StaleData(Integer.valueOf(pointId)));
         }
-    
-        List<AlarmTableEntry> alarmTableEntries = buildOrderedAlarmTable(pointBaseModel.getAlarming().getAlarmTableList(), pointBaseModel.getPointType());
-        save(pointBase, staleData, alarmTableEntries, userContext.getYukonUser());
+        saveStaleData(staleData);
 
-        buildPointBaseModel(pointBase, pointBaseModel, staleData);
+        buildPointBaseModel(pointBase, pointBaseModel,  getStaleData(pointId));
         return pointBaseModel;
-
     }
 
     @Override
@@ -522,15 +523,18 @@ public class PointEditorServiceImpl implements PointEditorService {
 
         pointBaseModel.buildDBPersistent(pointBase);
 
+        PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
+
+        List<AlarmTableEntry> alarmTableEntries = updateExistingAlarmTableEntries(pointBase, pointBaseModel, ptType);
+        
+        save(pointBase, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
+
         StaleData staleData = getStaleData(pointId);
         if (pointBaseModel.getStaleData() != null) {
             staleData = pointBaseModel.getStaleData().overwriteWith(staleData);
         }
-        PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
-
-        List<AlarmTableEntry> alarmTableEntries = updateExistingAlarmTableEntries(pointBase, pointBaseModel, ptType);
-
-        save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
+        saveStaleData(staleData);
+        
         buildPointBaseModel(pointBase, pointBaseModel, staleData);
         return pointBaseModel;
     }
@@ -563,7 +567,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         // copy the StaleData
         StaleData stateDataToCopy = getStaleData(pointId);
         StaleData newStaleData = populateStaleDataObjectToCopy(stateDataToCopy);
-        saveStaleData(pointBaseModel.getPointId(), newStaleData);
+        saveStaleData(newStaleData);
 
         buildPointBaseModel(pointBase, pointBaseModel, newStaleData);
         return pointBaseModel;

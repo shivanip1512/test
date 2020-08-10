@@ -178,8 +178,10 @@ public class PointValidator extends SimpleValidator<PointModel> {
                 YukonValidationUtils.checkRange(errors, "pointBase.pointUnit.lowReasonabilityLimit",
                     lowReasonabilityLimit, -999999.999999, 999999.999999, true);
         }
-        YukonValidationUtils.checkRange(errors, "staleData.time", 
-            model.getStaleData().getTime(), 0, 99999999, model.getStaleData().isEnabled());
+        if (!errors.hasFieldErrors("staleData.time")) {
+            YukonValidationUtils.checkRange(errors, "staleData.time",
+                    model.getStaleData().getTime(), 0, 99999999, model.getStaleData().isEnabled());
+        }
     }
     
     private void doAnalogValidation(PointBase base, Errors errors) {

@@ -60,6 +60,12 @@ public final class Urls {
         public static final String LOAD_GROUP_DETAIL = "/dr/setup/loadGroup/";
         public static final String LOAD_GROUP_EDIT = "/dr/setup/loadGroup/";
         public static final String LOAD_GROUP_SETUP_LIST = "/dr/setup/filter?filterByType=LOAD_GROUP";
+       
+        public static final String LOAD_GROUP_SETUP_NAME_ASC = "/dr/setup/filter?name=&filterByType=LOAD_GROUP&sort=NAME&dir=asc&itemsPerPage=250&page=1";
+        public static final String LOAD_GROUP_SETUP_NAME_DESC = "/dr/setup/filter?name=&filterByType=LOAD_GROUP&sort=NAME&dir=desc&itemsPerPage=250&page=1";
+        public static final String LOAD_GROUP_SETUP_TYPE_ASC ="/dr/setup/filter?name=&filterByType=LOAD_GROUP&sort=TYPE&dir=asc&itemsPerPage=250&page=1";
+        public static final String LOAD_GROUP_SETUP_TYPE_DESC ="/dr/setup/filter?name=&filterByType=LOAD_GROUP&sort=TYPE&dir=desc&itemsPerPage=250&page=1";
+        
 
         public static final String LOAD_PROGRAM_CREATE = "/dr/setup/loadProgram/create";
         public static final String LOAD_PROGRAM_DETAILS = "/dr/setup/loadProgram/";

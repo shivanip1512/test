@@ -125,13 +125,7 @@ void CapControlPao::setDisableFlag(bool disableFlag, int priority)
     {
         _disableFlag = disableFlag;
         
-        if ( _disabledStatePointId != 0 )
-        {
-            auto pMsg = std::make_unique<CtiPointDataMsg>( _disabledStatePointId, _disableFlag ? 1.0 : 0.0 );   // NormalQuality, StatusPointType
-            pMsg->setMessagePriority( priority );
-
-            CtiCapController::getInstance()->sendMessageToDispatch( pMsg.release(), CALLSITE );
-        }
+        syncDisabledPoint( priority );
     }
 }
 
@@ -157,17 +151,35 @@ CapControlPao& CapControlPao::operator=(const CapControlPao& right)
 void CapControlPao::setDisabledStatePointId( const long newId, bool sendDisablePointMessage )
 {
     _disabledStatePointId = newId;
+
     if ( sendDisablePointMessage )
     {
-        auto pMsg = std::make_unique<CtiPointDataMsg>( _disabledStatePointId, _disableFlag ? 1.0 : 0.0 );   // NormalQuality, StatusPointType
-
-        CtiCapController::getInstance()->sendMessageToDispatch( pMsg.release(), CALLSITE );
+        syncDisabledPoint( Cti::CapControl::DisableMsgPriority );
     }
 }
 
 long CapControlPao::getDisabledStatePointId() const
 {
     return _disabledStatePointId;
+}
+
+void CapControlPao::syncDisabledPoint( const int priority ) const
+{
+    if ( const auto pointID = getDisabledStatePointId() )
+    {
+        CTILOG_DEBUG( dout, getPaoName() << " - Syncing disabled state point [PID: " << pointID
+                        << ", O: " << Cti::CapControl::Offset_PaoIsDisabled << "]." );
+
+        auto pointSync =
+            std::make_unique<CtiPointDataMsg>(
+                pointID,
+                getDisableFlag() );    // NormalQuality, StatusPointType
+
+        pointSync->setMessagePriority( priority );
+        pointSync->setSource( CAPCONTROL_APPLICATION_NAME "-sourced" );
+
+        CtiCapController::getInstance()->sendMessageToDispatch( pointSync.release(), CALLSITE );
+    }
 }
 
 Cti::CapControl::PointIdVector* CapControlPao::getPointIds()
@@ -370,6 +382,9 @@ void CapControlPao::handlePointData( const CtiPointDataMsg & message )
 
     if ( pointID == getDisabledStatePointId() )
     {
+        CTILOG_DEBUG( dout, getPaoName() << " - Incoming point data for the disabled state point [PID: " << pointID
+                        << ", O: " << Cti::CapControl::Offset_PaoIsDisabled << "]." );
+
         const bool disabled = value;
 
         if ( disabled != getDisableFlag() )
