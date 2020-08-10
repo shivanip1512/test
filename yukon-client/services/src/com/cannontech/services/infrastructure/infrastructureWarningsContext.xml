@@ -36,5 +36,6 @@
     <bean class="com.cannontech.services.infrastructure.service.impl.GatewayRadioFailureEvaluator"/>
     <bean class="com.cannontech.services.infrastructure.service.impl.GatewayDoorOpenEvaluator"/>
     <bean class="com.cannontech.services.infrastructure.service.impl.GatewayNodeCountExceededEvaluator"/>
-    
+    <bean class="com.cannontech.services.infrastructure.service.impl.GatewayCertificateExpirationEvaluator"/>
+    <bean class="com.cannontech.services.infrastructure.service.impl.GatewayUpsBatteryLowVoltageEvaluator"/>
 </beans>
