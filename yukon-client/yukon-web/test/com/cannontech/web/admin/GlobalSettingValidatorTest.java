@@ -1,7 +1,6 @@
 package com.cannontech.web.admin;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -45,6 +44,7 @@ public class GlobalSettingValidatorTest {
             messageSource.addMessage("yukon.common.setting.RFN_INCOMING_DATA_TIMESTAMP_LIMIT", Locale.US, "RFN Incoming Data Timestamp Limit");
             messageSource.addMessage("yukon.common.setting.DATA_AVAILABILITY_WINDOW_IN_DAYS", Locale.US, "Data Collection: Data Availability Window");
             messageSource.addMessage("yukon.common.setting.ITRON_HCM_DATA_COLLECTION_MINUTES", Locale.US, "Itron HCM Data Collection Interval");
+            messageSource.addMessage("yukon.common.setting.ITRON_HCM_RESPONSE_TIMEOUT_SECONDS", Locale.US, "Itron HCM Response Timeout");
             messageSource.addMessage("yukon.common.setting.RUNTIME_CALCULATION_INTERVAL_HOURS", Locale.US, "Runtime Calculation Interval");
         }
         YukonUserContextMessageSourceResolverMock messageResolver = new YukonUserContextMessageSourceResolverMock();
@@ -123,6 +123,7 @@ public class GlobalSettingValidatorTest {
         globalSettings.put(GlobalSettingType.LAST_COMMUNICATION_HOURS, 60);
         globalSettings.put(GlobalSettingType.LAST_RUNTIME_HOURS, 60);
         globalSettings.put(GlobalSettingType.ITRON_HCM_DATA_COLLECTION_MINUTES, 15);
+        globalSettings.put(GlobalSettingType.ITRON_HCM_RESPONSE_TIMEOUT_SECONDS, 120);
         globalSettings.put(GlobalSettingType.RUNTIME_CALCULATION_INTERVAL_HOURS, 2);
         command.setValues(globalSettings);
 

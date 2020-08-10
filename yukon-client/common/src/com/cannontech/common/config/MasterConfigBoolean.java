@@ -24,6 +24,7 @@ public enum MasterConfigBoolean {
     ENABLE_WEB_DEBUG_PAGES,
     HONEYWELL_SUPPORT_ENABLED,
     I18N_DESIGN_MODE,
+    ITRON_UPDATE_DEVICE_LOGS_BEFORE_EXPORT, // YUK-22621 Issue UpdateDeviceEventLogsRequest prior to periodic all-device ExportDeviceLogRequest.
     MAINTENANCE_DUPLICATE_POINT_DATA_NOLOCK_REQUIRED,
     MAP_DEVICES_DEV_MODE,  //If true, use Dev Key for Mapping, If false, use Prod key.  If key is not found, check for DEVELOPMENT_MODE OR DISABLE_ANALYTICS.  If either are true, use Dev Key otherwise Prod key
     MSP_ENABLE_ALTGROUP_EXTENSION, // YUK-10787

@@ -91,16 +91,18 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
     
     @Override
     public AttributeAssignment updateAttributeAssignment(Assignment assignment) {
-        try {
-            SqlStatementBuilder updateSql = new SqlStatementBuilder();
-            SqlParameterSink params = updateSql.update("AttributeAssignment");
-            addAssignmentParameters(params, assignment);
-            updateSql.append("WHERE AttributeAssignmentId").eq(assignment.getAttributeAssignmentId());
-            jdbcTemplate.update(updateSql);
-            return attributeDao.getAssignmentById(assignment.getAttributeAssignmentId());
-        } catch (DataIntegrityViolationException e) {
-            throw new DuplicateException("Unable to update Attribute Assignment.", e);
+        if (!isEmptyAssignment(assignment)) {
+            try {
+                SqlStatementBuilder updateSql = new SqlStatementBuilder();
+                SqlParameterSink params = updateSql.update("AttributeAssignment");
+                addAssignmentParameters(params, assignment);
+                updateSql.append("WHERE AttributeAssignmentId").eq(assignment.getAttributeAssignmentId());
+                jdbcTemplate.update(updateSql);
+            } catch (DataIntegrityViolationException e) {
+                throw new DuplicateException("Unable to update Attribute Assignment.", e);
+            }
         }
+        return attributeDao.getAssignmentById(assignment.getAttributeAssignmentId());
     }
     
     @Override
@@ -190,11 +192,11 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
             log.debug("dependent object:{}", exception.getDependentObject());
             if (!formatDetails.isEmpty()) {
                 exception.addDependency(DependencyType.EXPORT_FORMAT, formatDetails);
-                log.debug("format names:{}", exception.getDependency(DependencyType.EXPORT_FORMAT, List.class));
+                log.debug("format names:{}", exception.getDependency(DependencyType.EXPORT_FORMAT));
             }
             if (!exportDetails.isEmpty()) {
                 exception.addDependency(DependencyType.SCHEDULED_EXPORT, exportDetails);
-                log.debug("export names:{}", exception.getDependency(DependencyType.SCHEDULED_EXPORT, List.class));
+                log.debug("export names:{}", exception.getDependency(DependencyType.SCHEDULED_EXPORT));
             }
             throw exception;
         }
@@ -220,6 +222,15 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
         }
         if (assignment.getOffset() != null) {
             params.addValue("PointOffset", assignment.getOffset());
+        }
+    }
+
+    private boolean isEmptyAssignment(Assignment assignment) {
+        if (assignment.getAttributeId() == null && assignment.getPaoType() == null && assignment.getPointType() == null
+                && assignment.getOffset() == null) {
+            return true;
+        } else {
+            return false;
         }
     }
 }

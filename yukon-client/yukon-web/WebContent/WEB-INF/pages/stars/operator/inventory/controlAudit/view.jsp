@@ -13,10 +13,10 @@
 <cti:includeScript link="/resources/js/pages/yukon.assets.control.audit.js"/>
 
 <style>
-.badge-controlled { background-color: #093; }
-.badge-uncontrolled { background-color: #fb8521; }
-.badge-unknown { background-color: #4d90fe; }
-.badge-unsupported { background-color: #888; }
+.badge-controlled { background-color: #2ca618; }
+.badge-uncontrolled { background-color: #e99012; }
+.badge-unknown { background-color: #0088f2; }
+.badge-unsupported { background-color: #7b8387; }
 </style>
 
 <c:set var="auditId" value="${not empty audit ? audit.taskId : ''}"/>

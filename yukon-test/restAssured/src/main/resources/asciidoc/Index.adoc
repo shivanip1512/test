@@ -43,3 +43,6 @@ include::Point.adoc[]
 == Virtual Device
 include::VirtualDevice.adoc[]
 
+== Custom Attribute
+include::CustomAttribute.adoc[]
+

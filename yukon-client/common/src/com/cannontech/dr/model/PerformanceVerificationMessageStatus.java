@@ -1,21 +1,26 @@
 package com.cannontech.dr.model;
 
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.YukonColorPalette;
 
 public enum PerformanceVerificationMessageStatus implements DisplayableEnum {
-    SUCCESS("#093"),
-    SUCCESS_UNENROLLED("#093"),
-    FAILURE("#ec971f"),
-    UNKNOWN("#888");
+    SUCCESS(YukonColorPalette.GREEN),
+    SUCCESS_UNENROLLED(YukonColorPalette.GREEN),
+    FAILURE(YukonColorPalette.ORANGE),
+    UNKNOWN(YukonColorPalette.GRAY);
 
-    private final String color;
+    private final YukonColorPalette color;
     
-    private PerformanceVerificationMessageStatus(String color) {
+    private PerformanceVerificationMessageStatus(YukonColorPalette color) {
         this.color = color;
     }
     
-    public String getColor() {
+    public YukonColorPalette getColor() {
         return color;
+    }
+    
+    public String getHexColor() {
+        return color.getHexValue();
     }
 
     @Override

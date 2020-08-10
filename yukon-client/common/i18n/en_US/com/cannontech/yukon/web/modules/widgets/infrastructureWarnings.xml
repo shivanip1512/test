@@ -77,7 +77,7 @@
         A summary of the devices with and without warnings will be displayed in the top left corner of the page, along with an option to download all infrastructure warnings.
         <ul>
             <li>
-                <span class="fwb bg-color-pie-green txt-color-white">Devices without warnings (Green)</span> - 
+                <span class="fwb bg-color-green txt-color-white">Devices without warnings (Green)</span> - 
                 Number of devices without any of the below mentioned warning types.
             </li>
             <li>
