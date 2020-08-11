@@ -305,7 +305,7 @@ public class AttributesController {
         try {
             HttpMethod method = assignment.getAttributeAssignmentId() != null ? HttpMethod.PATCH : HttpMethod.POST;
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, 
-                                                                                          method, AttributeAssignment.class, assignment);
+                                                                                          method, Object.class, assignment);
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(assignment, "assignment");
                 helper.populateBindingError(result, error, response);
