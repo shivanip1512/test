@@ -31,7 +31,6 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImpl;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImplTest;
 import com.cannontech.common.pao.definition.loader.DefinitionLoaderServiceImpl;
 import com.cannontech.common.pao.service.impl.PointCreationServiceImpl;
 import com.cannontech.core.dao.PointDao;
