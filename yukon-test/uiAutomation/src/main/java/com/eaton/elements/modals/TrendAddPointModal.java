@@ -2,8 +2,6 @@ package com.eaton.elements.modals;
 
 import java.util.Optional;
 
-import org.openqa.selenium.By;
-
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.PickerElement;
 import com.eaton.elements.RadioButtonElement;
@@ -11,12 +9,12 @@ import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 
-public class PointModal extends BaseModal {   
+public class TrendAddPointModal extends BaseModal {   
 
     private String modalTitle;
     private String desrcibedBy;
     
-    public PointModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
+    public TrendAddPointModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
         super(driverExt, modalTitle, describedBy);
         
         if (modalTitle.isPresent()) {
@@ -52,31 +50,11 @@ public class PointModal extends BaseModal {
         return new TextEditElement(this.driverExt, "multiplier", getModal());
     }
     
-    public void clickClose() {
-        getModal().findElement(By.cssSelector(".ui-dialog-titlebar-close")).click();
+    public SelectPointModal showAndWaitAddPointModal() {
+        getPoint().clickLinkWithDynamicId();
         
-        SeleniumTestSetup.waitUntilModalClosedByTitle(this.modalTitle);
-    }
-
-    // TODO need a unique way to select the save button
-    public void clickSave() {
-        getModal().findElement(By.cssSelector(".ui-dialog-buttonset .primary")).click();
+        SeleniumTestSetup.waitUntilModalVisibleByTitle("Select Point");
         
-        SeleniumTestSetup.waitUntilModalClosedByTitle(this.modalTitle);
-    }
-
-    ///TODO need a unique way to select the cancel button
-    public void clickCancel() {
-        getModal().findElement(By.cssSelector(".ui-dialog-buttonset .js-secondary-action")).click();
-        
-        SeleniumTestSetup.waitUntilModalClosedByTitle(this.modalTitle);
-    } 
-    
-    public PointModal showAndWaitAddPointModal() {
-        getPoint().clickLink();
-        
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-add-point-dialog");
-        
-        return new PointModal(this.driverExt, Optional.empty(), Optional.of("js-add-point-dialog"));
+        return new SelectPointModal(this.driverExt, Optional.of("Select Point"), Optional.empty());
     }
 }

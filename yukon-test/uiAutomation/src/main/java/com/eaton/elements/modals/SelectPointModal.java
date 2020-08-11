@@ -16,8 +16,17 @@ public class SelectPointModal extends BaseModal {
         return new WebTable(driverExt, "compact-results-table", getModal());
     }
     
-    public void selectPoint(String pointName) {
-        getPointTable().searchTable(pointName);        
+
+    /**
+     * @param pointName = pass in the name of the point
+     * @param id = optional field, use if name is not unique, otherwise pass in Optional.empty()
+     */
+    public void selectPoint(String pointName, Optional<String> id) {
+        if(id.isPresent()) {
+            getPointTable().searchTable(id.get());
+        } else {
+            getPointTable().searchTable(pointName);    
+        }                
 
         WebTable table = getPointTable();
         WebTableRow row = table.getDataRowByName(pointName);
