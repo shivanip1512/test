@@ -26,4 +26,25 @@ public class WebTableRow{
         List<WebElement> cells = this.row.findElements(By.cssSelector("td"));
         return cells.get(index).findElement(By.cssSelector("a")).getAttribute("href");
     }
+    
+    public void clickIcon(Icon icon) {
+        this.row.findElement(By.cssSelector("." +icon.getIcon())).click();
+    }    
+    
+    public enum Icon {
+        COG("icon-cog"),
+        PENCIL("icon-pencil"),
+        REMOVE("icon-cross"),
+        NOTES("icon-notes-pin");
+
+        private final String icon;
+
+        Icon(String icon) {
+            this.icon = icon;
+        }
+
+        public String getIcon() {
+            return this.icon;
+        }
+    }
 }
