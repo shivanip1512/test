@@ -13,6 +13,7 @@ import com.eaton.builders.tools.webtrends.TrendMarkerBuilder;
 import com.eaton.builders.tools.webtrends.TrendPointBuilder;
 import com.eaton.builders.tools.webtrends.TrendTypes;
 import com.eaton.elements.modals.ConfirmModal;
+import com.eaton.elements.modals.ResetPeakModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
@@ -39,8 +40,6 @@ public class TrendsListTests extends SeleniumTestSetup {
 		trendId = response.path("trendId");
 		trendName = response.path("name").toString();
 
-		navigate(Urls.Tools.TRENDS_LIST);
-		listPage = new TrendsListPage(driverExt);
 	}
 
 	@BeforeMethod(alwaysRun = true)
@@ -49,7 +48,7 @@ public class TrendsListTests extends SeleniumTestSetup {
 		listPage = new TrendsListPage(driverExt);
 	}
 
-	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TOOLS, TestConstants.Tools.TRENDS })
 	public void trendsList_CreateNavigatesToCorrectUrl() {
 		final String EXPECTED_TITLE = "Create Trend";
 
@@ -59,7 +58,7 @@ public class TrendsListTests extends SeleniumTestSetup {
 		assertThat(actualTitle).isEqualTo(EXPECTED_TITLE);
 	}
 
-	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TOOLS, TestConstants.Tools.TRENDS })
 	public void trendsList_EditNavigatesToCorrectUrl() {
 
 		Pair<JSONObject, ExtractableResponse<?>> pair = new TrendCreateBuilder.Builder(Optional.empty()).create();
@@ -79,7 +78,7 @@ public class TrendsListTests extends SeleniumTestSetup {
 		assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
 	}
 
-	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TOOLS, TestConstants.Tools.TRENDS })
 	public void trendsList_DeleteOpensCorrectModal() {
 		String expectedModalTitle = "Confirm Delete";
 		navigate(Urls.Tools.TRENDS_EDIT + trendId);
@@ -91,7 +90,21 @@ public class TrendsListTests extends SeleniumTestSetup {
 		assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
 	}
 
-	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TOOLS, TestConstants.Tools.TRENDS })
+    public void trendsList_DeleteConfirmMessageCorrect() {
+        String expectedModalMessage = "Are you sure you want to delete \"" + trendName + "\"?";
+        
+        navigate(Urls.Tools.TRENDS_EDIT + trendId);
+
+        ConfirmModal deleteConfirmModal = listPage.showDeleteTrendModal();
+
+        String actualModalMessage = deleteConfirmModal.getConfirmMsg();
+
+        assertThat(actualModalMessage).isEqualTo(expectedModalMessage);
+    }
+    
+	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TOOLS, TestConstants.Tools.TRENDS })
 	public void trendsList_DeleteTrend_DeleteSuccess() {
 		String expectedMessage = trendName + " deleted successfully.";
 
@@ -108,7 +121,7 @@ public class TrendsListTests extends SeleniumTestSetup {
 
 	}
 
-	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TOOLS, TestConstants.Tools.TRENDS })
 	public void trendsList_ResetPeakOpensCorrectModal() {
 		Pair<JSONObject, ExtractableResponse<?>> pair = new TrendCreateBuilder.Builder(Optional.empty())
 				.withMarkers(new JSONObject[] { new TrendMarkerBuilder.Builder().withMultiplier(Optional.empty())
@@ -125,16 +138,10 @@ public class TrendsListTests extends SeleniumTestSetup {
 
 		navigate(Urls.Tools.TRENDS_EDIT + trendId);
 
-		final String EXPECTED_MODAL_TITLE = "Reset Peak";
+		final String expectedModalTitle = "Reset Peak";
 
-		listPage.getActionBtn().clickAndSelectOptionByText("Reset Peak");
-		
-		waitForLoadingSpinner();
-
-		ConfirmModal confirmModal = new ConfirmModal(driverExt, Optional.of("Reset Peak"), Optional.of("ui-id-3"));
-		String actualModalTitle = confirmModal.getModalTitle();
-
-		assertThat(actualModalTitle).isEqualTo(EXPECTED_MODAL_TITLE);
-
+		ResetPeakModal editReset = listPage.showResetPeakTrendModal();
+		String actualModalTitle = editReset.getModalTitle();
+		assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
 	}
 }
