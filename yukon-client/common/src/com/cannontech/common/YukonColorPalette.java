@@ -9,25 +9,28 @@ import com.google.common.collect.ImmutableMap.Builder;
 
 public enum YukonColorPalette implements DatabaseRepresentationSource, DisplayableEnum {
 
-    // next colorId to use: 14
+    // next colorId to use: 16
     BLACK("#000000", 6),
-    BLUE("#0088f2", 4),
-    GREEN("#2ca618", 0),
-    GRAY("#7b8387", 9),
-    LIGHT_GRAY("#d5d8da", 13),
-    ORANGE("#e99012", 7),
-    PURPLE("#b779f4", 10),
-    RED("#d14836", 1),
-    SAGE("#b2c98d", 8),
-    SKY("#abd7e1", 11),
-    TEAL("#00b2a9", 5),
+    BLUE("#0088f2", 4, true),
+    BLUE_LIGHT("#4d8ec4", 15),
+    GREEN("#2ca618", 0, true),
+    GREEN_LIGHT("#74cc63", 16),
+    GRAY("#7b8387", 9, true),
+    GRAY_LIGHT("#d5d8da", 13),
+    ORANGE("#e99012", 7, true),
+    PURPLE("#b779f4", 10, true),
+    RED("#c53637", 1),
+    RED_LIGHT("#da7777", 14),
+    SAGE("#b2c98d", 8, true),
+    SKY("#abd7e1", 11, true),
+    TEAL("#00b2a9", 5, true),
     WHITE("#ffffff", 2),
-    WINE("#ce8799", 12),
-    YELLOW("#f0cb2f", 3);
+    WINE("#ce8799", 12, true),
+    YELLOW("#f0cb2f", 3, true);
 
     private final String hexValue;
     private final int colorId;  //database id
-
+    private boolean primary;
     
     private final static ImmutableMap<Integer, YukonColorPalette> lookupById;
     private final static ImmutableMap<String, YukonColorPalette> lookupByHexColorValue;
@@ -49,6 +52,13 @@ public enum YukonColorPalette implements DatabaseRepresentationSource, Displayab
     private YukonColorPalette(String hexValue, int colorId) {
         this.hexValue = hexValue;
         this.colorId = colorId;
+        this.primary = false;
+    }
+    
+    private YukonColorPalette(String hexValue, int colorId, boolean primary) {
+        this.hexValue = hexValue;
+        this.colorId = colorId;
+        this.primary = primary;
     }
     
     
@@ -82,6 +92,10 @@ public enum YukonColorPalette implements DatabaseRepresentationSource, Displayab
         return java.awt.Color.decode(this.hexValue);
     }
     
+    public boolean isPrimary() {
+        return primary;
+    }
+
     /** 
      * Returns next color in values, loops around to the beginning of the values if index > values.length
      */
