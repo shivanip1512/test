@@ -52,7 +52,7 @@
                                 </c:forEach>
                                 <c:set var="buttonText" value="green"/>
                                 <c:if test="${range eq 'EXPECTED'}">
-                                    <c:set var="buttonText" value="pie-blue"/>
+                                    <c:set var="buttonText" value="blue"/>
                                 </c:if> 
                                 <c:if test="${range eq 'OUTDATED'}">
                                     <c:set var="buttonText" value="orange"/>

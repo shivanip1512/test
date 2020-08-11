@@ -2,7 +2,7 @@ package com.cannontech.common.chart.model;
 
 public enum ChartColorsEnum {
 
-	GREEN("#009933"), 
+    GREEN("#2ca618"), 
     BLUE("#0000FF"), 
     LIGHT_BLUE("#6587AA"), 
     RED("#FF0000"), 

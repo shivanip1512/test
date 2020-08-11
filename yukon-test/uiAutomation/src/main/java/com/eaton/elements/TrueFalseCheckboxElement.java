@@ -55,11 +55,11 @@ public class TrueFalseCheckboxElement {
     
     private void setCheckbox() {
         if(this.parentName != null) {
-            this.checkbox = this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] input[name = '" + this.elementName + "']"), Optional.empty());
+            this.checkbox = this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] input[name = '" + this.elementName + "']"), Optional.of(3));
         } else if (this.parentElement != null) {
             this.checkbox = this.parentElement.findElement(By.cssSelector("input[name = '" + this.elementName + "']"));
         } else {
-            this.checkbox = this.driverExt.findElement(By.cssSelector("input[name = '" + this.elementName + "']"), Optional.empty());   
+            this.checkbox = this.driverExt.findElement(By.cssSelector("input[name = '" + this.elementName + "']"), Optional.of(3));   
         }        
     }
     

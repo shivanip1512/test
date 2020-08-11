@@ -296,6 +296,7 @@ public class PointController {
         model.addAttribute("updateRate", TimeIntervals.getUpdateAndScanRate());
         model.addAttribute("fdrTranslationNumbers", ImmutableList.of(0, 1, 2, 3, 4));
         model.addAttribute("fdrInterfaceTypes", interfaceTypes);
+        model.addAttribute("acsInterfaceTypeEnumVal", FdrInterfaceType.ACS);
         model.addAttribute("fdrDirections", FdrDirection.values());
         model.addAttribute("statusControlTypes", StatusControlType.values());
         model.addAttribute("unitMeasures", UnitOfMeasure.allValidValues());
@@ -310,7 +311,7 @@ public class PointController {
         model.addAttribute("analogControlTypes", AnalogControlType.values());
         model.addAttribute("staleDataUpdateStyles", StaleData.UpdateStyle.values());
         model.addAttribute("alarmNotificationTypes", AlarmNotificationTypes.values());
-        if (calcAnalog) {
+        if (isCalcType) {
             model.addAttribute("baseLines", dbCache.getAllBaselines());
         }
         List<LiteNotificationGroup> notificationGroups = new ArrayList<>();
@@ -473,9 +474,12 @@ public class PointController {
         }
         
         int id = pointEditorService.save(pointModel.getPointBase(), 
-                                         pointModel.getStaleData(), 
                                          pointModel.getAlarmTableEntries(), 
                                          userContext.getYukonUser());
+        
+        /* This one must be done AFTER for create */
+        pointModel.getStaleData().setPointId(id);
+        pointEditorService.saveStaleData(pointModel.getStaleData());
 
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".saveSuccess"));
         

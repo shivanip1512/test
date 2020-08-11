@@ -44,7 +44,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage = new LoadGroupVersacomCreatePage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_RequiredFieldsOnlySuccessfully() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Versacom " + timeStamp;
@@ -61,26 +61,26 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
 
         LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
         String userMsg = detailsPage.getUserMessage();
-        
+
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreateVersacom_AllFieldsSuccessfullyWithSerialAddress() {        
-        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());        
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpCreateVersacom_AllFieldsSuccessfullyWithSerialAddress() {
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Versacom " + timeStamp;
         double randomDouble = randomNum.nextDouble();
         int randomInt = randomNum.nextInt(9999);
-        double capacity = randomDouble + randomInt;       
+        double capacity = randomDouble + randomInt;
 
         final String EXPECTED_MSG = name + " saved successfully.";
-        
+
         createPage.getType().selectItemByText("Versacom Group");
 
         waitForLoadingSpinner();
-        createPage.getCommunicationRoute().selectItemByText("a_CCU-711"); 
+        createPage.getCommunicationRoute().selectItemByText("a_CCU-711");
         createPage.getAddressUsage().setTrueFalseByName("Serial", true);
-        createPage.getName().setInputValue(name);      
+        createPage.getName().setInputValue(name);
         createPage.getSerialAddress().setInputValue(String.valueOf("40"));
         createPage.getRelayUsage().setTrueFalseByName("Relay 2", true);
         createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
@@ -94,11 +94,11 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
 
         LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
         String userMsg = detailsPage.getUserMessage();
-        
+
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_AllFieldsSuccessfullyWithoutSerialAddress() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Versacom " + timeStamp;
@@ -117,13 +117,13 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getAddressUsage().setTrueFalseByName("Section", true);
         createPage.getAddressUsage().setTrueFalseByName("Class", true);
         createPage.getAddressUsage().setTrueFalseByName("Division", true);
-        
+
         createPage.getUtilityAddress().setInputValue(String.valueOf(randomNum.nextInt(254)));
         createPage.getSectionAddress().setInputValue(String.valueOf(randomNum.nextInt(255)));
 
         createPage.getClassAddress().setTrueFalseByName("1", true);
         createPage.getDivisionAddress().setTrueFalseByName("11", true);
-        
+
         createPage.getRelayUsage().setTrueFalseByName("Relay 3", true);
 
         createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
@@ -134,20 +134,20 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
 
         LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
         String userMsg = detailsPage.getUserMessage();
-        
+
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_GeneralSectionTitleCorrect() {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
         Section generalSection = createPage.getPageSection("General");
-        
+
         assertThat(generalSection.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_GeneralSectionLabelsCorrect() {
         String sectionName = "General";
         createPage.getType().selectItemByText("Versacom Group");
@@ -159,16 +159,16 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
 
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_AddressUsageSectionTitleCorrect() {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
         Section generalSection = createPage.getPageSection("Address Usage");
-        
+
         assertThat(generalSection.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_AddressUsageSectionLabelsCorrect() {
         String sectionName = "Address Usage";
         String expectedLabels = "Usage:";
@@ -176,22 +176,21 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         String actualLabels = createPage.getPageSection(sectionName).getSectionLabels().get(0);
-        
         assertThat(actualLabels.contains(expectedLabels)).withFailMessage("Assertion failed for label : " + expectedLabels)
                 .isTrue();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_AddressingSectionTitleCorrect() {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
         Section generalSection = createPage.getPageSection("Addressing");
-        
+
         assertThat(generalSection.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_AddressingSectionLabelsCorrect() {
         String sectionName = "Addressing";
         createPage.getType().selectItemByText("Versacom Group");
@@ -208,7 +207,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_RelayUsageSectionTitleCorrect() {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
@@ -217,7 +216,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         assertThat(generalSection.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_RelayUsageSectionLabelsCorrect() {
         String sectionName = "Relay Usage";
         createPage.getType().selectItemByText("Versacom Group");
@@ -229,7 +228,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
                 .isTrue();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_OptionalAttributesSectionTitleCorrect() {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
@@ -238,7 +237,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         assertThat(generalSection.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_OptionalAttributesSectionLabelsCorrect() {
         String sectionName = "Optional Attributes";
         createPage.getType().selectItemByText("Versacom Group");
@@ -250,7 +249,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_UtilityAddressBlankValue() {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
@@ -261,7 +260,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getUtilityAddress().getValidationError()).isEqualTo("Utility Address is required.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_UtilityAddressMaxRangeValidation() {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
@@ -272,7 +271,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getUtilityAddress().getValidationError()).isEqualTo("Must be between 1 and 254.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_UtilityAddressMinRangeValidation() {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
@@ -283,7 +282,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getUtilityAddress().getValidationError()).isEqualTo("Must be between 1 and 254.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_UtilityAddressDefaultValueValidation() {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
@@ -291,7 +290,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getUtilityAddress().getInputValue()).isEqualTo("1");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_SerialAddressBlankValue() {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
@@ -303,7 +302,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getSerialAddress().getValidationError()).isEqualTo("Serial Address is required.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_SerialAddressMaxRangeValidation() {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
@@ -315,7 +314,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getSerialAddress().getValidationError()).isEqualTo("Must be between 1 and 99,999.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_SerialAddressMinRangeValidation() {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
@@ -327,7 +326,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getSerialAddress().getValidationError()).isEqualTo("Must be between 1 and 99,999.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_SectionAddressBlankValue() {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
@@ -339,7 +338,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getSectionAddress().getValidationError()).isEqualTo("Section Address is required.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_SectionAddressMaxRangeValidation() {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
@@ -351,7 +350,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getSectionAddress().getValidationError()).isEqualTo("Must be between 0 and 256.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_SectionAddressMinRangeValidation() {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
@@ -363,20 +362,20 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getSectionAddress().getValidationError()).isEqualTo("Must be between 0 and 256.");
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_WhenUsageSerialThenAddressUsageSectionDivisionClassDisabled() {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();
 
         createPage.getAddressUsage().setTrueFalseByName("Serial", true);
-              
+
         softly.assertThat(createPage.getAddressUsage().isValueDisabled("Section")).isTrue();
         softly.assertThat(createPage.getAddressUsage().isValueDisabled("Class")).isTrue();
-        softly.assertThat(createPage.getAddressUsage().isValueDisabled("Division")).isTrue();        
+        softly.assertThat(createPage.getAddressUsage().isValueDisabled("Division")).isTrue();
         softly.assertAll();
     }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateVersacom_WhenUsageSectionDivisionClassAndSerialSelectedThenAddressingSectionClassDivisionDisabled() {
         createPage.getType().selectItemByText("Versacom Group");
         waitForLoadingSpinner();

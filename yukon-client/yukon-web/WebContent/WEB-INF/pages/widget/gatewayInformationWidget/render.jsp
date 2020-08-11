@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<cti:msgScope paths="modules.operator.gateways.detail,modules.operator.gateways,modules.operator">
+<cti:msgScope paths="modules.operator.gateways.detail,modules.operator.gateways,modules.operator,yukon.common">
 
 <%-- Edit Popup --%>
 <cti:url var="editUrl" value="/widget/gatewayInformationWidget/edit">
@@ -35,6 +35,9 @@
 
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".name" valueClass="js-gw-name">${fn:escapeXml(gateway.name)}</tags:nameValue2>
+        <tags:nameValue2 nameKey=".type">
+            <tags:paoType yukonPao="${gateway}" showLink="false"/>
+        </tags:nameValue2>
         <tags:nameValue2 nameKey=".serialNumber" valueClass="js-gw-sn">${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</tags:nameValue2>
         <tags:nameValue2 nameKey=".hardwareVersion" valueClass="js-gw-hw-version">${gateway.data.hardwareVersion}</tags:nameValue2>
         <tags:nameValue2 nameKey=".softwareVersion" valueClass="js-gw-sw-version">${gateway.data.softwareVersion}</tags:nameValue2>
@@ -85,9 +88,9 @@
 	            </c:choose>
 	        </tags:nameValue2>
         </cti:checkLicenseKey>
-        <c:if test="${not empty gateway.data.ipv6Prefix}">
+        <%-- <c:if test="${not empty gateway.data.ipv6Prefix}">
             <tags:nameValue2 nameKey=".gateways.ipv6prefix" valueClass="js-gw-ipv6">${fn:escapeXml(gateway.data.ipv6Prefix)}</tags:nameValue2>
-        </c:if>
+        </c:if> --%>
     </tags:nameValueContainer2>
     
     <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE">
@@ -95,10 +98,10 @@
             <c:set var="clazz" value="${empty gateway.data ? 'dn' : ''}"/>
             <cti:button nameKey="edit" icon="icon-pencil" data-popup="#gateway-edit-popup" 
                 classes="${clazz} js-edit"/>
-            <c:if test="${gateway.ipv6Supported}">
+            <%-- <c:if test="${gateway.ipv6Supported}">
                 <cti:button nameKey="configure" icon="icon-cog-edit" data-popup="#gateway-configure-popup" 
                     classes="${clazz}"/>
-            </c:if>
+            </c:if> --%>
         </div>
     </cti:checkRolesAndProperties>
     
