@@ -208,11 +208,16 @@ public class SeleniumTestSetup {
     }
 
     public void refreshPage(PageBase page) {
-
-        if (page != null) {
-            navigate(page.getPageUrl());
-        } else {
+//        if (page != null) {
+//            navigate(page.getPageUrl());
+//        } else {
+//            driver.navigate().refresh();
+//        }        
+        
+        if (getCurrentUrl().equals(getBaseUrl() + page.getPageUrl())) {            
             driver.navigate().refresh();
+        } else {
+            navigate(page.getPageUrl());
         }
     }
 
