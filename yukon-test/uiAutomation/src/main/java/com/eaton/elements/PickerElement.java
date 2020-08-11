@@ -32,10 +32,6 @@ public class PickerElement {
         return this.driverExt.findElement(By.cssSelector("button[id*= '" + this.id + "']"), Optional.of(3)).getText();
     }
     
-    public void clickButtonWithDynamicId() {
-    	this.driverExt.findElement(By.cssSelector("button[id*= '" + this.id + "']"), Optional.of(3)).click();
-    }
-    
     public String getValidationError(String deviceId) {
         return this.driverExt.findElement(By.cssSelector("span[id='" + deviceId + ".errors']"), Optional.of(3)).getText();
     }

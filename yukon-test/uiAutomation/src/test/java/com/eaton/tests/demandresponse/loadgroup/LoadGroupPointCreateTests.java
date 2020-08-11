@@ -54,8 +54,8 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
 
         waitForLoadingSpinner();
         createPage.getName().setInputValue(name);
-        SelectPointModal pointGroupControlDevice = createPage.showAndWaitPointGroupControlDeviceModal("Select Control Device");
-        pointGroupControlDevice.selectPointGroupControlDeviceTable("SCADA Override");
+        SelectPointModal pointGroupControlDevice = createPage.showAndWaitPointGroupControlDeviceModal();
+        pointGroupControlDevice.selectPoint("SCADA Override");
         pointGroupControlDevice.clickOkAndWaitForModalToClose();
         ;
         createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
@@ -119,8 +119,8 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByText("Point Group");
         waitForLoadingSpinner();
 
-        SelectPointModal pointGroupControlDevice = createPage.showAndWaitPointGroupControlDeviceModal("Select Control Device");
-        pointGroupControlDevice.selectPointGroupControlDeviceTable("SCADA Override");
+        SelectPointModal pointGroupControlDevice = createPage.showAndWaitPointGroupControlDeviceModal();
+        pointGroupControlDevice.selectPoint("SCADA Override");
         pointGroupControlDevice.clickOkAndWaitForModalToClose();
 
         assertThat(createPage.getControlDevicePointLabelText()).contains("SCADA Override");

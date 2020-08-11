@@ -34,7 +34,7 @@ public class TrendEditPage extends PageBase {
     }        
     
     public TabElement getTabElement() {
-        return new TabElement(this.driverExt);
+        return tab;
     }
     
     public Button getSave() {
@@ -97,7 +97,7 @@ public class TrendEditPage extends PageBase {
         return new ButtonByClass(this.driverExt, "js-remove", getPointSetupSection().getSection());
     }
     
-    public PointModal showAndWaitPointSetupAddModal() {
+    public PointModal showAndWaitAddPointModal() {
         getpointSetupAdd().click();
         
         SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-add-point-dialog");
@@ -105,7 +105,7 @@ public class TrendEditPage extends PageBase {
         return new PointModal(this.driverExt, Optional.empty(), Optional.of("js-add-point-dialog"));
     }
     
-    public MarkerModal showAndWaitMarkerSetupAddModal() {
+    public MarkerModal showAndWaitAddMarkerModal() {
         getMarkerSetupAdd().click();
         
         SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-add-marker-dialog");

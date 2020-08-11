@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.openqa.selenium.By;
 
-import com.eaton.elements.Button;
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.PickerElement;
 import com.eaton.elements.RadioButtonElement;
@@ -72,4 +71,12 @@ public class PointModal extends BaseModal {
         
         SeleniumTestSetup.waitUntilModalClosedByTitle(this.modalTitle);
     } 
+    
+    public PointModal showAndWaitAddPointModal() {
+        getPoint().clickLink();
+        
+        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-add-point-dialog");
+        
+        return new PointModal(this.driverExt, Optional.empty(), Optional.of("js-add-point-dialog"));
+    }
 }
