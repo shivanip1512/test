@@ -35,9 +35,10 @@
                 <cti:dataUpdaterValue type="METER_PROGRAMMING" identifier="${result.device.id}/LAST_UPDATED"/>
             </c:when>
             <c:otherwise>
-                <cti:formatDate type="BOTH" value="${result.lastUpdate}"/></td>
+                <cti:formatDate type="BOTH" value="${result.lastUpdate}"/>
             </c:otherwise>
         </c:choose>
+    </td>
     <td>
         <c:if test="${result.displayCancel() || result.displayRead() || result.displaySend() || result.displayAccept()}">
             <cm:dropdown icon="icon-cog">
