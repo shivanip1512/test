@@ -15,7 +15,6 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -24,7 +23,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.mock.MockPointDao;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -32,7 +30,6 @@ import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImpl;
 import com.cannontech.common.pao.definition.loader.DefinitionLoaderServiceImpl;
-import com.cannontech.common.pao.service.impl.PointCreationServiceImpl;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LiteState;
@@ -182,13 +179,13 @@ public class YukonPointHelperImplTest {
     }
     
     public static PaoDefinitionDao getTestPaoDefinitionDao() {
-        ApplicationContext ctx = new ClassPathXmlApplicationContext();
+        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext();
         PaoDefinitionDaoImpl paoDefinitionDaoImpl = new PaoDefinitionDaoImpl();
         DefinitionLoaderServiceImpl definitionLoaderService = new DefinitionLoaderServiceImpl();
         Resource paoXsd = ctx.getResource("classpath:pao/definition/pao.xsd");
         Resource pointsXsd = ctx.getResource("classpath:pao/definition/points.xsd");
         Resource overrideXsd = ctx.getResource("classpath:pao/definition/override.xsd");
-
+        
         StateGroupDao stateGroupDao = createNiceMock(StateGroupDao.class);
         stateGroupDao.getStateGroup(anyObject(String.class));
         expectLastCall().andAnswer(() -> {
@@ -200,9 +197,7 @@ public class YukonPointHelperImplTest {
         stateGroupDao.getStateGroup(anyInt());
         expectLastCall().andAnswer(() -> new LiteStateGroup(0, "state0")).anyTimes();
 
-        PointDao pointDao = new MockPointDao();
-        PointCreationServiceImpl pointCreationServiceImpl = new PointCreationServiceImpl();
-        ReflectionTestUtils.setField(pointDao, "pointCreationService", pointCreationServiceImpl);
+        PointDao pointDao = createNiceMock(PointDao.class);
         ReflectionTestUtils.setField(definitionLoaderService, "paoXsd", paoXsd);
         ReflectionTestUtils.setField(definitionLoaderService, "pointsXsd", pointsXsd);
         ReflectionTestUtils.setField(definitionLoaderService, "overrideXsd", overrideXsd);
@@ -212,6 +207,7 @@ public class YukonPointHelperImplTest {
         ReflectionTestUtils.setField(paoDefinitionDaoImpl, "definitionLoaderService", definitionLoaderService);
         definitionLoaderService.load();
         paoDefinitionDaoImpl.initialize();
+        ctx.close();
         return paoDefinitionDaoImpl;
     }
 }
