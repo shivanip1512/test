@@ -37,9 +37,9 @@ public class SwitchBtnYesNoElement {
         } else if (isChecked != null && !checked) {
             switchBtn.findElement(By.cssSelector(".button.no")).click();
         }
-    }
-
-    private WebElement getSwitchBtn() {
+    }   
+    
+    public WebElement getSwitchBtn() {                
         if (parentElement != null) {
             List<WebElement> list = parentElement.findElements(By.cssSelector(".switch-btn"));
 
@@ -65,6 +65,7 @@ public class SwitchBtnYesNoElement {
 
         return null;
     }
+    
 
     public String getCheckedValue() {
         WebElement switchBtn = getSwitchBtn();

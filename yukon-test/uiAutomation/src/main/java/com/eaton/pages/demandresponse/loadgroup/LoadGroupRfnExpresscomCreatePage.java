@@ -1,4 +1,4 @@
-package com.eaton.pages.demandresponse;
+package com.eaton.pages.demandresponse.loadgroup;
 
 import org.openqa.selenium.WebElement;
 import com.eaton.elements.DropDownElement;

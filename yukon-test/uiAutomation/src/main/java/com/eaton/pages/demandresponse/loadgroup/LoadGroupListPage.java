@@ -1,4 +1,4 @@
-package com.eaton.pages.demandresponse;							
+package com.eaton.pages.demandresponse.loadgroup;							
 							
 import com.eaton.framework.DriverExtensions;							
 import com.eaton.framework.SeleniumTestSetup;							
@@ -6,7 +6,6 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;							
 import java.util.Optional;
 
-import org.openqa.selenium.By;
 import com.eaton.elements.ActionBtnDropDownElement;
 import com.eaton.elements.Button;
 import com.eaton.elements.DropDownMultiSelectElement;
@@ -36,10 +35,7 @@ public class LoadGroupListPage extends PageBase {
     
     public TextEditElement getName() {
         return new TextEditElement(this.driverExt, "name");
-    }
-    public String getUserMessage() {
-        return this.driverExt.findElement(By.cssSelector("span.empty-list"), Optional.of(2)).getText();
-    }
+    }   
     
     public Button getSaveBtn() {
         return new Button(this.driverExt, "Filter");

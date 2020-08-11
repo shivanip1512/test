@@ -18,8 +18,8 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.LoadGroupDetailPage;
-import com.eaton.pages.demandresponse.LoadGroupRfnExpresscomCreatePage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupRfnExpresscomCreatePage;
 
 public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
@@ -53,7 +53,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = name + " saved successfully.";
 
         createPage.getName().setInputValue(name);
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
 
         waitForLoadingSpinner();
         createPage.getAddressUsage().setTrueFalseByName("GEO", true);
@@ -85,7 +85,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingGeo_ValidIntegerValidation() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getAddressUsage().setTrueFalseByName("GEO", true);
         createPage.getGeoAddress().setInputValue("aaa");
@@ -96,7 +96,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingGeo_MinValueValidation() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getAddressUsage().setTrueFalseByName("GEO", true);
         createPage.getGeoAddress().setInputValue("-1");
@@ -108,7 +108,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingGeo_MaxValueValidation() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getAddressUsage().setTrueFalseByName("GEO", true);
         createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
@@ -120,7 +120,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingSubstation_ValidIntegerValidation() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getAddressUsage().setTrueFalseByName("Substation", true);
         createPage.getSubstationAddress().setInputValue("aaa");
@@ -131,7 +131,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingSubstation_MinValueValidation() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getAddressUsage().setTrueFalseByName("Substation", true);
 
@@ -144,7 +144,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingSubstation_MaxValueValidation() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getAddressUsage().setTrueFalseByName("Substation", true);
         createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
@@ -156,7 +156,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingZip_RequiredValidation() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getAddressUsage().setTrueFalseByName("ZIP", true);
         createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
@@ -167,7 +167,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingZip_MinValueValidation() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getAddressUsage().setTrueFalseByName("ZIP", true);
         createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
@@ -179,7 +179,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingZip_MaxValueValidation() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getAddressUsage().setTrueFalseByName("ZIP", true);
         createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
@@ -191,7 +191,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingUser_RequiredValidation() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getAddressUsage().setTrueFalseByName("User", true);
         createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
@@ -202,7 +202,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingUser_MinValueValidation() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getAddressUsage().setTrueFalseByName("User", true);
         createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
@@ -214,7 +214,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingUser_MaxValueValidation() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getAddressUsage().setTrueFalseByName("User", true);
         createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
@@ -226,7 +226,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingSerial_RequiredValidation() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getAddressUsage().setTrueFalseByName("Serial", true);
         createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
@@ -237,7 +237,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddress_SectionTitleCorrect() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         Section generalSection = createPage.getPageSection("Geographical Address");
 
@@ -248,7 +248,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
     public void LoadGroupRfnExpresscom_GeographicalAddress_SectionLabelsCorrect() {
         String sectionName = "Geographical Address";
         String expectedLabels = "Address Usage:";
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
 
         String actualLabels = createPage.getPageSection(sectionName).getSectionLabels().get(0);
@@ -258,7 +258,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressing_SectionTitleCorrect() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         Section generalSection = createPage.getPageSection("Geographical Addressing");
 
@@ -268,7 +268,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressing_SectionLabelsCorrect() {
         String sectionName = "Geographical Addressing";
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getAddressUsage().setTrueFalseByName("GEO", true);
         createPage.getAddressUsage().setTrueFalseByName("Substation", true);
@@ -286,7 +286,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_LoadAddress_SectionTitleCorrect() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         Section generalSection = createPage.getPageSection("Load Address");
 
@@ -297,7 +297,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
     public void LoadGroupRfnExpresscom_LoadAddress_SectionLabelsCorrect() {
         String sectionName = "Load Address";
         String expectedLabels = "Usage:";
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
 
         String actualLabels = createPage.getPageSection(sectionName).getSectionLabels().get(0);
@@ -309,7 +309,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_LoadAddressing_SectionLabelsCorrect() {
         String sectionName = "Load Addressing";
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
         createPage.getLoadAddressUsage().setTrueFalseByName("Splinter", true);
@@ -323,7 +323,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_LoadAddressing_SectionTitleCorrect() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
 
         Section generalSection = createPage.getPageSection("Load Addressing");
@@ -334,7 +334,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_OptionalAttributes_SectionLabelsCorrect() {
         String sectionName = "Optional Attributes";
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
 
         List<String> expectedLabels = new ArrayList<>(
@@ -346,7 +346,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_LoadAddressingProgram_MinRangeValidation() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
         createPage.getProgramLoadAddress().setInputValue("0");
@@ -357,7 +357,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_LoadAddressingProgram_MaxRangeValidation() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
         createPage.getProgramLoadAddress().setInputValue("255");
@@ -368,7 +368,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_LoadAddressingProgram_RequiredFieldValidation() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
         createPage.getSaveBtn().click();
@@ -378,7 +378,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_LoadAddressingSplinter_MinRangeValidation() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getLoadAddressUsage().setTrueFalseByName("Splinter", true);
         createPage.getSplinterLoadAddress().setInputValue("0");
@@ -389,7 +389,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_LoadAddressingSplinter_MaxRangeValidation() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getLoadAddressUsage().setTrueFalseByName("Splinter", true);
         createPage.getSplinterLoadAddress().setInputValue("255");
@@ -400,7 +400,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_LoadAddressingSplinter_RequiredFieldValidation() {
-        createPage.getType().selectItemByText("RFN Expresscom Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getLoadAddressUsage().setTrueFalseByName("Splinter", true);
         createPage.getSaveBtn().click();

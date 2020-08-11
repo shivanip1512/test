@@ -184,4 +184,8 @@ public class WebTable {
             this.columnHeaders.add(new WebTableColumnHeader(element));
         }
     }
+    
+    public String getTableMessage() {
+        return this.driverExt.findElement(By.cssSelector(".empty-list"), Optional.of(2)).getText();
+    }
 }
