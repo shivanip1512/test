@@ -132,4 +132,10 @@ public class DriverExtensions {
         //driverWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(by)));
         driverWait.until(ExpectedConditions.visibilityOf(getDriver().findElement(By.cssSelector(by))));
     }
+    
+    public void waitUntilClickable(WebElement element) {
+        driverWait.withTimeout(Duration.ofSeconds(8));
+        
+        driverWait.until(ExpectedConditions.elementToBeClickable(element));
+    }
 }

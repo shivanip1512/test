@@ -16,13 +16,11 @@ public class TabElement {
 
     public TabElement(DriverExtensions driverExt, WebElement parentElement) {
         this.driverExt = driverExt;
-
         this.parentElement = parentElement;
     }
 
     public TabElement(DriverExtensions driverExt) {
         this.driverExt = driverExt;
-
     }
 
     private WebElement getTabContainer() {
