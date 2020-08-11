@@ -38,16 +38,13 @@ public class MeterRfn420flEditTests extends SeleniumTestSetup {
         EditMeterModal editModal = meterDetailsPage.showMeterEditModal();
 
         editModal.getdeviceName().setInputValue(name);
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForModalToClose();
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL + 492, Optional.of(10));
 
         MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, 492);
 
         String userMsg = detailPage.getUserMessage();
-
-//        Assert.assertEquals(userMsg, METER + name + UPDATED,
-//                "Expected User Msg: '" + METER + name + UPDATED + "' but found " + userMsg);
 
         assertThat(userMsg).isEqualTo(METER + name + UPDATED);
     }

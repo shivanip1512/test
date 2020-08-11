@@ -20,6 +20,7 @@ import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.model.PreviousReadings;
 import com.cannontech.common.events.loggers.MeteringEventLogService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -28,6 +29,7 @@ import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionServi
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.pao.service.LiteYukonPoint;
@@ -50,6 +52,7 @@ public class MeterReadingsWidget extends AdvancedWidgetControllerBase {
     @Autowired private PointService pointService;
     @Autowired private YukonPointHelper yukonPointHelper;
     @Autowired private MeterDao meterDao;
+    @Autowired private YukonUserContextMessageSourceResolver resolver;
     
     private List<? extends Attribute> attributesToShow;
     private Attribute previousReadingsAttributeToShow;
@@ -125,7 +128,8 @@ public class MeterReadingsWidget extends AdvancedWidgetControllerBase {
 				userContext.getYukonUser());
         model.addAttribute("readable", readable);
         
-        List<LiteYukonPoint> points = yukonPointHelper.getYukonPoints(meter);
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
+        List<LiteYukonPoint> points = yukonPointHelper.getYukonPoints(meter, accessor);
         model.addAttribute("points", points);
         model.addAttribute("deviceName", paoLoadingService.getDisplayablePao(meter).getName());
         

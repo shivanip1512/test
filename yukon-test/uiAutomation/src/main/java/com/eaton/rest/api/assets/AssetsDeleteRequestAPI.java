@@ -9,7 +9,7 @@ import io.restassured.response.ExtractableResponse;
 
 public class AssetsDeleteRequestAPI {
     public static ExtractableResponse<?> deleteCommChannelTCP(String id) {
-        String pathParam = APIs.CommChannel.deleteCommChannel;
+        String pathParam = APIs.CommChannel.DELETE_COMM_CHANNEL;
         ExtractableResponse<?> updateResponse = ApiCallHelper.delete(pathParam, id);
         assertTrue("Error in create Comm Channel TCP", updateResponse.statusCode() == 200);
         return updateResponse;

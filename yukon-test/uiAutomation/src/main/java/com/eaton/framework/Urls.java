@@ -54,6 +54,11 @@ public final class Urls {
         public static final String LOAD_GROUP_DETAIL = "/dr/setup/loadGroup/";
         public static final String LOAD_GROUP_EDIT = "/dr/setup/loadGroup/";
         public static final String LOAD_GROUP_SETUP_LIST = "/dr/setup/filter?filterByType=LOAD_GROUP";
+       
+        public static final String LOAD_GROUP_SETUP_NAME_ASC = "/dr/setup/filter?name=&filterByType=LOAD_GROUP&sort=NAME&dir=asc&itemsPerPage=250&page=1";
+        public static final String LOAD_GROUP_SETUP_NAME_DESC = "/dr/setup/filter?name=&filterByType=LOAD_GROUP&sort=NAME&dir=desc&itemsPerPage=250&page=1";
+        public static final String LOAD_GROUP_SETUP_TYPE_ASC ="/dr/setup/filter?name=&filterByType=LOAD_GROUP&sort=TYPE&dir=asc&itemsPerPage=250&page=1";
+        public static final String LOAD_GROUP_SETUP_TYPE_DESC ="/dr/setup/filter?name=&filterByType=LOAD_GROUP&sort=TYPE&dir=desc&itemsPerPage=250&page=1";       
 
         public static final String LOAD_PROGRAM_CREATE = "/dr/setup/loadProgram/create";
         public static final String LOAD_PROGRAM_DETAILS = "/dr/setup/loadProgram/";
@@ -195,8 +200,7 @@ public final class Urls {
         public static final String DEVICE_GROUP = "/group/editor/home";
         public static final String SCHEDULES = "/group/scheduledGroupRequestExecutionResults/jobs";
         public static final String SCRIPTS = "/macsscheduler/schedules/view";
-        public static final String TRENDS = "/tools/trends";
-        public static final String TREND = "/tools/trend/";
+        public static final String TRENDS_LIST = "/tools/trends";
         public static final String REPORTS = "/analysis/Reports.jsp";
         public static final String CREATE_SCHEDULE = "/group/scheduledGroupRequestExecution/home";
         public static final String DEVICE_CONFIGURATION_SUMMARY = "/deviceConfiguration/summary/view";
@@ -271,26 +275,26 @@ public final class Urls {
         public static final String DATA_STREAMING_DEVICE_ATTRIBUTES = "/support/dataStreamingSupport";
         
         public static final String LOGGING_VIEW = "/support/logging/view?file=";
-    	public static final String LOGGING_MENU = "/support/logging/menu?file=";
-    	public static final String CALC_LOG = "%2Fcalc_";
-    	public static final String CAPCONTROL_LOG = "%2Fcapcontrol_";
-    	public static final String DISPATCH_LOG = "%2Fdispatch_";
-    	public static final String FDR_LOG = "%2Ffdr_";
-    	public static final String LOADMANGEMENT_LOG = "%2Floadmanagement_";
-    	public static final String MACS_LOG = "%2Fmacs_";
-    	public static final String MESSAGE_BROKER_LOG = "%2FMessageBroker_";
-    	public static final String NOTIFICATION_SERVER_LOG = "%2FNotificationServer_";
-    	public static final String PORTER_LOG = "%2Fporter_";
-    	public static final String SCANNER_LOG = "%2Fscanner_";
-    	public static final String SERVICE_MANAGER_LOG = "%2FServiceManager_";
-    	public static final String WATCHDOG_LOG = "%2FWatchdog_";
-    	public static final String WEBSERVER_LOG = "%2FWebserver_";
-    	public static final String VIEW_ALL_LOGS = "/&amp;sortType=date";
-    	
-    	public static final String SUPPORT_BUNDLE = "/support/viewBundleProgress";
+        public static final String LOGGING_MENU = "/support/logging/menu?file=";
+        public static final String CALC_LOG = "%2Fcalc_";
+        public static final String CAPCONTROL_LOG = "%2Fcapcontrol_";
+        public static final String DISPATCH_LOG = "%2Fdispatch_";
+        public static final String FDR_LOG = "%2Ffdr_";
+        public static final String LOADMANGEMENT_LOG = "%2Floadmanagement_";
+        public static final String MACS_LOG = "%2Fmacs_";
+        public static final String MESSAGE_BROKER_LOG = "%2FMessageBroker_";
+        public static final String NOTIFICATION_SERVER_LOG = "%2FNotificationServer_";
+        public static final String PORTER_LOG = "%2Fporter_";
+        public static final String SCANNER_LOG = "%2Fscanner_";
+        public static final String SERVICE_MANAGER_LOG = "%2FServiceManager_";
+        public static final String WATCHDOG_LOG = "%2FWatchdog_";
+        public static final String WEBSERVER_LOG = "%2FWebserver_";
+        public static final String VIEW_ALL_LOGS = "/&sortType=date";
+        
+        public static final String SUPPORT_BUNDLE = "/support/viewBundleProgress";
     }
     
     public static final class Manuals {
-    	public static final String YUKON_MANUALS = "https://my.eaton.com/extranet/faces/myeaton/Tools/productDocumentation/productDocumentationDe/YUKON";
+        public static final String YUKON_MANUALS = "https://my.eaton.com/extranet/faces/myeaton/Tools/productDocumentation/productDocumentationDe/YUKON";
     }
 }

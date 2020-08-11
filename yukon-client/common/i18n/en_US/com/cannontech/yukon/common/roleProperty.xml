@@ -500,8 +500,8 @@
 <entry key="yukon.common.roleProperty.PHASE_DETECT.description">Controls access to Phase Detection.</entry>
 <entry key="yukon.common.roleProperty.VALIDATION_ENGINE">Validation Engine</entry>
 <entry key="yukon.common.roleProperty.VALIDATION_ENGINE.description">Controls access to Validation Processing.</entry>
-<entry key="yukon.common.roleProperty.STATUS_POINT_MONITORING">Status Point Monitor</entry>
-<entry key="yukon.common.roleProperty.STATUS_POINT_MONITORING.description">Controls access to the Status Point Monitor.</entry>
+<entry key="yukon.common.roleProperty.STATUS_POINT_MONITORING">Outage Notification Monitor</entry>
+<entry key="yukon.common.roleProperty.STATUS_POINT_MONITORING.description">Controls access to the Outage Notification Monitor.</entry>
 <entry key="yukon.common.roleProperty.PORTER_RESPONSE_MONITORING">Porter Response Monitor</entry>
 <entry key="yukon.common.roleProperty.PORTER_RESPONSE_MONITORING.description">Controls access to the Porter Response Monitor.</entry>
 <entry key="yukon.common.roleProperty.METER_EVENTS">Meter Events</entry>

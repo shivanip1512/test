@@ -71,11 +71,11 @@ public class RadioButtonElement {
         if (this.parentName != null) {
             return this.driverExt.findElements(
                     By.cssSelector("[aria-describedby='" + this.parentName + "'] input[name = '" + this.elementName + "']"),
-                    Optional.empty());
+                    Optional.of(3));
         } else if (this.parentElement != null) {
             return this.parentElement.findElements(By.cssSelector("input[name = '" + this.elementName + "']"));
         } else {
-            return this.driverExt.findElements(By.cssSelector("input[name = '" + this.elementName + "']"), Optional.empty());
+            return this.driverExt.findElements(By.cssSelector("input[name = '" + this.elementName + "']"), Optional.of(3));
         }
     }
 

@@ -33,10 +33,10 @@ public class EventLogUIServiceImpl implements EventLogUIService {
     @Autowired private FilterDao filterDao;
 
     @Override
-    public List<List<String>> getDataGridRowByType(SearchResults<EventLog> searchResult, YukonUserContext userContext) {
+    public List<List<String>> getDataGridRowByType(SearchResults<EventLog> searchResult, List<Integer> argumentIndexes, 
+            YukonUserContext userContext) {
         
         List<EventLog> resultList = searchResult.getResultList();
-        
         List<List<String>> dataGrid = Lists.newArrayList();
         for (EventLog eventLog : resultList) {
             DateFormatEnum dateDisplayFormat = DateFormatEnum.BOTH_WITH_MILLIS;
@@ -46,6 +46,7 @@ public class EventLogUIServiceImpl implements EventLogUIService {
             dataRow.add(eventLog.getEventType());
             dataRow.add(dateFormattingService.format(eventLog.getDateTime(), dateDisplayFormat, userContext));
 
+            int i = 1;
             for (Object argument : eventLog.getArguments()) {
                 if (argument != null) { 
                   if (argument instanceof Date) {
@@ -53,7 +54,13 @@ public class EventLogUIServiceImpl implements EventLogUIService {
                   } else {
                     dataRow.add(argument.toString());
                   }
+                } else {
+                    if (argumentIndexes.contains(Integer.valueOf(i))) {
+                        // add empty string for expected/valid arguments with null value
+                        dataRow.add(StringUtils.EMPTY);
+                    }
                 }
+                i++;
             }
             dataGrid.add(dataRow);
        }

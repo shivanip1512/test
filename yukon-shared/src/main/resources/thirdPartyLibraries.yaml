@@ -4797,6 +4797,20 @@ Network Manager :
     jira : NM-706 NM-1575
     notes : Apache Log4j API
 
+  - filename : log4j-appserver-2.13.1.jar
+    yukon group : Log4j
+    project : Apache Log4j
+    version : 2.13.1
+    project URL : "https://logging.apache.org/log4j/2.x/"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-appserver/2.13.1"
+    md5 : 43975072226ea1cff91598cb05e70b1d
+    sha1 : ce9c964f7355ac11528278f19c8e8b9b1d9ebdbc
+    updated : 2020-06-09
+    jira : NM-1674
+    notes : Provide Log4j as the logging implementation for application servers
+
   - filename : log4j-core-2.13.1.jar
     yukon group : Log4j
     project : Apache Log4j
@@ -4824,6 +4838,20 @@ Network Manager :
     updated : 2020-02-29
     jira : NM-706 NM-1575
     notes : Apache Commons Logging Bridge for Log4j
+
+  - filename : log4j-slf4j-impl-2.13.1.jar
+    yukon group : Log4j
+    project : Apache Log4j
+    version : 2.13.1
+    project URL : "https://logging.apache.org/log4j/2.x/"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl/2.13.1"
+    md5 : f84462cbd50370f984992a25cf3f6dc0
+    sha1 : 79e92fe5b6c30cc4c8a52893378d4d130e298c65
+    updated : 2020-08-06
+    jira : NM-1696
+    notes : The Apache Log4j SLF4J API binding to Log4j 2 Core
 
   - filename : looks.jar
     yukon group : IzPack

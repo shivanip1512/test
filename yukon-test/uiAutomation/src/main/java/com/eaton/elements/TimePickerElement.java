@@ -29,6 +29,6 @@ public class TimePickerElement {
     }
  
     public WebElement getNumericPicker() {
-        return this.driverExt.findElement(By.cssSelector("input[name='" + elementName + "']"), Optional.empty());
+        return this.driverExt.findElement(By.cssSelector("input[name='" + elementName + "']"), Optional.of(3));
     }
 }

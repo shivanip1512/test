@@ -29,7 +29,46 @@ public class SwitchBtnMultiSelectElement {
         WebElement switchElement = getSwitchBtn();
         String name = buttonName.replace(" ", "_");
         WebElement switchButton = getSwitchBtnByName(buttonName);
-        WebElement switchBtn = switchElement.findElement(By.cssSelector("input[id='" + name.toUpperCase() + "_chk']"));
+        WebElement switchBtn;
+        if(name.contains("Load_")) {
+            switchBtn= switchElement.findElement(By.cssSelector("input[id='" + name + "_chk']"));
+        } else {
+            switchBtn = switchElement.findElement(By.cssSelector("input[id='" + name.toUpperCase() + "_chk']"));
+        }
+        
+        String isChecked = switchBtn.getAttribute("checked");
+
+        if ((isChecked == null && checked) || (isChecked != null && !checked)) {
+            switchButton.click();
+        }
+    }
+    
+    public boolean isValueSelectedByName(String name) {
+        WebElement element = getSwitchBtn();
+
+        WebElement switchBtn = element.findElement(By.cssSelector("input[value='" + name.toUpperCase() + "']"));
+        
+        String isChecked = switchBtn.getAttribute("checked");
+        
+        if (isChecked == null) {
+            return false;
+        } else {
+            return true;
+        }        
+    }
+
+    // This method should only be used for Load Group of type Ripple
+    public void setTrueFalseByBitNo(int bitNo, boolean checked) {
+        WebElement switchElement = getSwitchBtn();
+        WebElement switchButton = getSwitchBtnByBitNo(bitNo);
+        int switchButtonIdIndex = 0;
+        if (bitNo >= 17 && bitNo < 33) {
+            switchButtonIdIndex = (bitNo - 17) * 2 + 1;
+        } else if (bitNo >= 1 && bitNo < 16) {
+            switchButtonIdIndex = bitNo * 2;
+        } else
+            switchButtonIdIndex = bitNo - 1;
+        WebElement switchBtn = switchElement.findElement(By.cssSelector("input[id='" + elementName + "-chkbx_" + switchButtonIdIndex + "']"));
 
         String isChecked = switchBtn.getAttribute("checked");
 
@@ -41,14 +80,15 @@ public class SwitchBtnMultiSelectElement {
     public boolean isValueDisabled(String name) {
         WebElement element = getSwitchBtn();
 
-        WebElement switchBtn = element.findElement(By.cssSelector("input[id='" + name.toUpperCase() + "_chk']"));
+        //WebElement switchBtn = element.findElement(By.cssSelector("input[id='" + name.toUpperCase() + "_chk']"));
+        WebElement switchBtn = element.findElement(By.cssSelector("input[value='" + name.toUpperCase() + "']"));
 
         String disabled = switchBtn.getAttribute("disabled");
-
+        
         if (disabled == null) {
             return false;
         } else
-            return true;
+            return true;        
     }
 
     public boolean allValuesDisabled() {
@@ -72,14 +112,28 @@ public class SwitchBtnMultiSelectElement {
         if (this.parentElement != null) {
             return this.parentElement.findElement(By.cssSelector("." + this.elementName));
         } else {
-            return this.driverExt.findElement(By.cssSelector("." + this.elementName), Optional.empty());
+            return this.driverExt.findElement(By.cssSelector("." + this.elementName), Optional.of(3));
         }
     }
 
     private WebElement getSwitchBtnByName(String switchName) {
         WebElement switchbtn = getSwitchBtn();
         List<WebElement> switchElements = switchbtn.findElements(By.cssSelector(".button .b-label"));
-        
+
         return switchElements.stream().filter(x -> x.getText().contains(switchName)).findFirst().orElseThrow();
+    }
+
+    private WebElement getSwitchBtnByBitNo(int bitNo) {
+        WebElement switchbtn = getSwitchBtn();
+        List<WebElement> switchElements = switchbtn.findElements(By.cssSelector(".button .b-label"));
+
+        return switchElements.get(bitNo - 1);
+    }
+
+    public int getSwitchCount() {
+        WebElement switchbtn = getSwitchBtn();
+        List<WebElement> switchElements = switchbtn.findElements(By.cssSelector(".button .b-label"));
+
+        return switchElements.size();
     }
 }

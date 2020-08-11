@@ -13,7 +13,7 @@
                         <cti:msg2 var="allTypesLabel" key=".allTypes"/>
                         ${allTypesLabel}:&nbsp;&nbsp;
                         <cti:msg2 var="hoverText" key=".noWarning.hoverText" argument="${allTypesLabel}"/>
-                        <span class="label bg-color-pie-green" title="${hoverText}">${summary.devicesWithoutWarningsCount}</span>
+                        <span class="label bg-color-green" title="${hoverText}">${summary.devicesWithoutWarningsCount}</span>
                         <cti:msg2 var="hoverText" key=".warning.hoverText" argument="${allTypesLabel}"/>
                         <span class="label bg-color-orange" title="${hoverText}">${summary.devicesWithWarningsCount}</span>
                     </span>
@@ -38,7 +38,7 @@
                     </td>
                     <td>
                         <cti:msg2 var="hoverText" key=".noWarning.hoverText" argument="${gatewayLabel}"/>
-                        <span class="label bg-color-pie-green" title="${hoverText}">${summary.totalGateways - summary.warningGateways}</span>
+                        <span class="label bg-color-green" title="${hoverText}">${summary.totalGateways - summary.warningGateways}</span>
                         <cti:msg2 var="hoverText" key=".warning.hoverText" argument="${gatewayLabel}"/>
                         <span class="label bg-color-orange" title="${hoverText}">${summary.warningGateways}</span>
                     </td>
@@ -59,7 +59,7 @@
                     </td>
                     <td>
                         <cti:msg2 var="hoverText" key=".noWarning.hoverText" argument="${relayLabel}"/>
-                        <span class="label bg-color-pie-green" title="${hoverText}">${summary.totalRelays - summary.warningRelays}</span>
+                        <span class="label bg-color-green" title="${hoverText}">${summary.totalRelays - summary.warningRelays}</span>
                         <cti:msg2 var="hoverText" key=".warning.hoverText" argument="${relayLabel}"/>
                         <span class="label bg-color-orange" title="${hoverText}">${summary.warningRelays}</span>
                     </td>
@@ -82,7 +82,7 @@
                     </td>
                     <td>
                         <cti:msg2 var="hoverText" key=".noWarning.hoverText" argument="${ccuLabel}"/>
-                        <span class="label bg-color-pie-green" title="${hoverText}">${summary.totalCcus - summary.warningCcus}</span>
+                        <span class="label bg-color-green" title="${hoverText}">${summary.totalCcus - summary.warningCcus}</span>
                         <cti:msg2 var="hoverText" key=".warning.hoverText" argument="${ccuLabel}"/>
                         <span class="label bg-color-orange" title="${hoverText}">${summary.warningCcus}</span>
                     </td>
@@ -103,7 +103,7 @@
                     </td>
                     <td>
                         <cti:msg2 var="hoverText" key=".noWarning.hoverText" argument="${repeaterLabel}"/>
-                        <span class="label bg-color-pie-green" title="${hoverText}">${summary.totalRepeaters - summary.warningRepeaters}</span>
+                        <span class="label bg-color-green" title="${hoverText}">${summary.totalRepeaters - summary.warningRepeaters}</span>
                         <cti:msg2 var="hoverText" key=".warning.hoverText" argument="${repeaterLabel}"/>
                         <span class="label bg-color-orange" title="${hoverText}">${summary.warningRepeaters}</span>
                     </td>

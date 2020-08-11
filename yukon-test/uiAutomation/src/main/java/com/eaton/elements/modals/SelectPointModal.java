@@ -8,16 +8,25 @@ import com.eaton.framework.DriverExtensions;
 
 public class SelectPointModal extends BaseModal {
     
-    private WebTable table;
+    private WebTable pointGroupControlDeviceTable;
 
     public SelectPointModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
         super(driverExt, modalTitle, describedBy);
         
-        table = new WebTable(driverExt, "compact-results-table");
+        pointGroupControlDeviceTable = new WebTable(driverExt, "compact-results-table", "pointGroupControlDevicePicker");
     }
     
-    public WebTable getTable() {
-        return table;
+    public WebTable getPointGroupControlDeviceTable() {
+        return pointGroupControlDeviceTable;
+    }
+    
+    public void selectPointGroupControlDeviceTable(String pointGroupName) {
+        getPointGroupControlDeviceTable().searchTable(pointGroupName);        
+
+        WebTable table = getPointGroupControlDeviceTable();
+        WebTableRow row = table.getDataRowByName(pointGroupName);
+
+        row.selectCellByLink();
     }
     
     public void selectPoint(String pointName) {

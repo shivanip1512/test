@@ -17,7 +17,7 @@ public class PickerElement {
     }
     
     public void clickLink() {
-        this.driverExt.findElement(By.cssSelector("#" + this.id + " .b-label"), Optional.empty()).click();
+        this.driverExt.findElement(By.cssSelector("#" + this.id + " .b-label"), Optional.of(3)).click();
     }  
     
     public void clickLinkWithDynamicId() {
@@ -25,6 +25,19 @@ public class PickerElement {
     }
     
     public String getLinkValue() {
-        return this.driverExt.findElement(By.cssSelector(this.id + ".b-label"), Optional.empty()).getText();
+        return this.driverExt.findElement(By.cssSelector("#" +this.id + " .b-label"), Optional.of(3)).getText();
+    }
+    
+    public String getLinkValueDynamic() {
+        return this.driverExt.findElement(By.cssSelector("button[id*= '" + this.id + "']"), Optional.of(3)).getText();
+    }
+    
+    public void clickButtonWithDynamicId() {
+    	this.driverExt.findElement(By.cssSelector("button[id*= '" + this.id + "']"), Optional.of(3)).click();
+    }
+    
+    public String getValidationError(String deviceId) {
+        return this.driverExt.findElement(By.cssSelector("span[id='" + deviceId + ".errors']"), Optional.of(3)).getText();
     }
 }
+

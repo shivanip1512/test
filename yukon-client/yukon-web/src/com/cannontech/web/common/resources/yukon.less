@@ -42,14 +42,10 @@
 @visited-color: #04a;
 
 @red: #d14836;
-@green: #093;
-@light-green: #5cb85c;
-@blue: #1f4cff;
-@light-blue: #849ddf;
-@orange: #ec971f;
-@grey: #888;
-@pie-blue: #4d90fe;
-@pie-green: #009933;
+@green: #2ca618;
+@orange: #e99012;
+@grey: #7b8387;
+@blue: #0088f2;
 @white: #ffffff;
 
 @border-radius: 2px;
@@ -149,9 +145,9 @@ a,
 }
 .alert { background-color: #ffcccc !important; }
 .txt-color-white { color: @white; }
-.bg-color-pie-green { background-color: @pie-green; }
+.bg-color-green { background-color: @green; }
 .bg-color-orange { background-color: @orange; }
-.bg-color-pie-blue { background-color: @pie-blue; }
+.bg-color-blue { background-color: @blue; }
 .bg-color-grey { background-color: @grey; }
 
 
@@ -987,12 +983,9 @@ a.pipe-selector.selected {color: @font-color; cursor: default;}
 ol.error{ list-style-type: none; }
 .green, 
 .success { color: @green !important; }
-.light-blue { color: @light-blue; }
 .blue { color: @blue !important; }
 .orange, 
 .warning { color: @orange !important; }
-.pie-blue { color: @pie-blue !important; }
-.pie-green { color: @pie-green !important; }
 
 .gray, 
 .grey, 
@@ -1012,7 +1005,7 @@ ol.error{ list-style-type: none; }
 /* CIRCLES */
 .small-circle { border-radius: 50%; width: 12px; height: 12px; }
 .green-background { background: @green; }
-.blue-background { background: @pie-blue; }
+.blue-background { background: @blue; }
 .orange-background { background: @orange; }
 .grey-background { background: @grey; }
 
@@ -1124,17 +1117,20 @@ textarea.error {
     border: 1px solid white;
     margin: 1px 0 0 0;
     
+    /* These match the YukonColorPalette.name strings and hex color*/
     &.green {background-color: @green;}
-    &.red {background-color: @red;}
-    &.white {background-color: white;}
-    &.yellow {background-color: yellow;}
-    &.blue {background-color: blue;}
-    &.cyan {background-color: cyan;}
-    &.black {background-color: black;}
+    &.red {background-color: @red;}         /* this isn't a valid color, but we may not have found all the hard-coded text in code*/
+    &.wine {background-color: #ce8799;}
+    &.white {background-color: #ffffff;}
+    &.yellow {background-color: #f0cb2f;}
+    &.blue {background-color: #0088f2;}
+    &.teal{background-color: #00b2a9;}
+    &.black {background-color: #000000;}
     &.orange {background-color: @orange;}
-    &.magenta {background-color: magenta;}
-    &.gray {background-color: gray;}
-    &.pink {background-color: pink;}
+    &.sage {background-color: #b2c98d;}
+    &.gray {background-color: #7b8387;}
+    &.purple {background-color: #b779f4;}
+    &.sky{background-color: #abd7e1;}
 }
 .ie .state-box { outline: 1px solid #bbb; }
 .no-ie .state-box { box-shadow: 0px 0px 0px 1px #bbb; }

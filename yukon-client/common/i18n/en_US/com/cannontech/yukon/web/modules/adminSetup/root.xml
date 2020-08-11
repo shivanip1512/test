@@ -343,10 +343,6 @@
     
     <entry key="yukon.web.modules.adminSetup.config.attributes.attributeAssignmentSuccess">Attribute: {0} has been successfully assigned to the following device types: {1}.</entry>
     <entry key="yukon.web.modules.adminSetup.config.attributes.attributeAssignmentFailed">There was an error assigning Attribute: {0} to the following device types: {1}. Please see logs for more detail.</entry>
-    
-    
-    <entry key="yukon.web.modules.adminSetup.config.attributes.deletion">Attribute {0} cannot be deleted, it is currently being used by: {1}.</entry>
-    <entry key="yukon.web.modules.adminSetup.config.attributes.deletion.export">Data Export(s) {0}</entry>
-    <entry key="yukon.web.modules.adminSetup.config.attributes.deletion.ddm">Device Data Monitor(s) {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.config.attributes.attributeAssignmentDeleteSuccess">Assignment for attribute: {0} has been successfully deleted.</entry>
     
 </properties>

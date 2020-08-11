@@ -40,11 +40,13 @@ public class EditElement {
 
     public WebElement getEditElement() {
         if (this.parentName != null) {
-            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] input[name='" + this.elementName + "']"), Optional.of(5));
+            this.driverExt.waitForElement("[aria-describedby='" + this.parentName + "'] input[name='" + this.elementName + "']");
+            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] input[name='" + this.elementName + "']"), Optional.of(3));
         } else if (this.parentElement != null) {
             return this.parentElement.findElement(By.cssSelector("input[name='" + this.elementName + "']"));
         } else {
-            return this.driverExt.findElement(By.cssSelector("input[name='" + this.elementName + "']"), Optional.of(5));
+            this.driverExt.waitForElement("input[name='" + this.elementName + "']");
+            return this.driverExt.findElement(By.cssSelector("input[name='" + this.elementName + "']"), Optional.of(3));
         }        
     }    
 }
