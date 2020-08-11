@@ -37,5 +37,11 @@ public class TrendsListPage extends PageBase {
 
         return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of("yukon_dialog_confirm"));
     }
+    public ConfirmModal showResetPeakTrendModal() {
+        getActionBtn().clickAndSelectOptionByText("Reset Peak");
 
+        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("ui-id-3");
+
+        return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of("ui-id-3"));
+    }
 }
