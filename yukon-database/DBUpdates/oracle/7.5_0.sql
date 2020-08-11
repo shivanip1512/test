@@ -684,6 +684,19 @@ ALTER TABLE CCurtProgramType
 
 INSERT INTO DBUpdates VALUES ('YUK-22527', '7.5.0', SYSDATE);
 /* @end YUK-22527 */
+
+/* @start YUK-22665 */
+UPDATE RfnAddress SET Manufacturer = 'EATON'
+WHERE Manufacturer = 'CPS' AND Model = 'RFGateway';
+
+UPDATE RfnAddress SET Manufacturer = 'EATON', Model = 'GWY800'
+WHERE Manufacturer = 'CPS' AND Model = 'RFGateway2';
+
+UPDATE RfnAddress SET Manufacturer = 'EATON'
+WHERE Manufacturer = 'CPS' AND Model = 'VGW';
+
+INSERT INTO DBUpdates VALUES ('YUK-22665', '7.5.0', SYSDATE);
+/* @end YUK-22665 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
