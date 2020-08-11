@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 
 public enum YukonColorPalette implements DatabaseRepresentationSource, DisplayableEnum {
 
-    // next colorId to use: 16
+    // next colorId to use: 17
     BLACK("#000000", 6),
     BLUE("#0088f2", 4, true),
     BLUE_LIGHT("#4d8ec4", 15),
