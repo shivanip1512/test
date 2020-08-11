@@ -468,6 +468,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         // copy the StaleData
         StaleData stateDataToCopy = getStaleData(pointModel.getPointId());
         StaleData newStaleData = populateStaleDataObjectToCopy(stateDataToCopy);
+        newStaleData.setPointId(newPoint.getPoint().getPointID());
         saveStaleData(newStaleData);
 
         return newPoint.getPoint().getPointID();
@@ -567,6 +568,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         // copy the StaleData
         StaleData stateDataToCopy = getStaleData(pointId);
         StaleData newStaleData = populateStaleDataObjectToCopy(stateDataToCopy);
+        newStaleData.setPointId(pointBase.getPoint().getPointID());
         saveStaleData(newStaleData);
 
         buildPointBaseModel(pointBase, pointBaseModel, newStaleData);
