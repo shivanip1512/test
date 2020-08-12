@@ -61,7 +61,7 @@
                 <c:set var="endIndex" value="${response.totalItems}"/>
             </c:if>
             <cti:list var="arguments">
-                <cti:item value="${startIndex}"/>
+                <cti:item value="${response.totalItems > 0 ? startIndex : 0}"/>
                 <cti:item value="${endIndex}"/>
                 <cti:item value="${response.totalItems}"/>
             </cti:list>
