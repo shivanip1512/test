@@ -10,7 +10,7 @@ public class AlarmData implements Serializable {
     private static final long serialVersionUID = 1L;
 
     // Extend RfnIdentifier to cover Network Manager.
-    //         Gateway:                GATEWAY.gwSN,   "CPS", "RFGateway" or "RFGateway2"
+    //         Gateway:                GATEWAY.gwSN,   "EATON", "RFGateway" or "GWY800"
     // Network Manager: NETWORK_INSTANCE.instanceSN, "EATON", "NetworkManager"
     // For GW alarms, raisedBy and appliedTo are the same so far.
     // For NM alarms, they may be different, for example,
