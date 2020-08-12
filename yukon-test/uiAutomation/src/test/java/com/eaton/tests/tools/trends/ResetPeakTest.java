@@ -98,7 +98,7 @@ public class ResetPeakTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
-    public void trendResetPeak_SetResetPeakpeNotPeak_ResetPeakDisabled() {
+    public void trendResetPeak_TypeNotPeak_ResetPeakDisabled() {
 
         Pair<JSONObject, ExtractableResponse<?>> pair = new TrendCreateBuilder.Builder(Optional.empty())
                 .create();
