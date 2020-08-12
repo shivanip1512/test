@@ -466,20 +466,19 @@ public class PointEditorServiceImpl implements PointEditorService {
         PointUtil.insertIntoDB(newPoint);
 
         // copy the StaleData
-        StaleData stateDataToCopy = getStaleData(pointModel.getPointId());
-        StaleData newStaleData = populateStaleDataObjectToCopy(stateDataToCopy);
-        newStaleData.setPointId(newPoint.getPoint().getPointID());
+        StaleData newStaleData = populateStaleDataObjectToCopy(pointModel.getPointId(), newPoint.getPoint().getPointID());
         saveStaleData(newStaleData);
 
         return newPoint.getPoint().getPointID();
     }
-    
-    private StaleData populateStaleDataObjectToCopy(StaleData stateDataToCopy) {
-        StaleData staleData = new StaleData(stateDataToCopy.getPointId());
-        staleData.setEnabled(stateDataToCopy.isEnabled());
-        staleData.setTime(stateDataToCopy.getTime());
-        staleData.setUpdateStyle(stateDataToCopy.getUpdateStyle());
-        return staleData;
+
+    private StaleData populateStaleDataObjectToCopy(int pointIdToCopy, int newPointId) {
+        StaleData stateDataToCopy = getStaleData(pointIdToCopy);
+        StaleData newStaleData = new StaleData(Integer.valueOf(newPointId));
+        newStaleData.setEnabled(stateDataToCopy.isEnabled());
+        newStaleData.setTime(stateDataToCopy.getTime());
+        newStaleData.setUpdateStyle(stateDataToCopy.getUpdateStyle());
+        return newStaleData;
     }
 
     @Override
@@ -566,9 +565,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType);
 
         // copy the StaleData
-        StaleData stateDataToCopy = getStaleData(pointId);
-        StaleData newStaleData = populateStaleDataObjectToCopy(stateDataToCopy);
-        newStaleData.setPointId(pointBase.getPoint().getPointID());
+        StaleData newStaleData = populateStaleDataObjectToCopy(pointId, pointBase.getPoint().getPointID());
         saveStaleData(newStaleData);
 
         buildPointBaseModel(pointBase, pointBaseModel, newStaleData);
