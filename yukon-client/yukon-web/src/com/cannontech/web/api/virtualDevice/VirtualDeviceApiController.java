@@ -62,7 +62,7 @@ public class VirtualDeviceApiController {
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.VIEW)
     public ResponseEntity<Object> getAll(
             @RequestParam(name = "sort", defaultValue = "PAO_NAME") LiteYukonPaoSortableField sort,
-            @RequestParam(defaultValue = "asc") Direction direction, @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "asc") Direction direction, @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(name = "itemsPerPage", defaultValue = "250") Integer itemsPerPage) {
         return new ResponseEntity<>(virtualDeviceService.getPage(sort, direction, page, itemsPerPage), HttpStatus.OK);
     }
