@@ -13,9 +13,9 @@ public class ActionBtnDropDownElement {
     private DriverExtensions driverExt;
 
     public ActionBtnDropDownElement(DriverExtensions driverExt) {
-        this.driverExt = driverExt;    
+        this.driverExt = driverExt;
     }
-    
+
     public WebElement getActionBtn() {
         return this.driverExt.findElement(By.cssSelector(".page-actions #b-page-actions button"), Optional.empty());
     }
@@ -27,24 +27,24 @@ public class ActionBtnDropDownElement {
     public Boolean isDisplayed() {
         return getActionBtn().isDisplayed();
     }
-    
+
     public Boolean isEnabled() {
         return getActionBtn().isEnabled();
     }
-    
+
     public void clickAndSelectOptionByText(String value) {
-        click();                
-        
+        click();
+
         WebElement element = null;
-        //long startTime = System.currentTimeMillis();
-        //while (element == null && System.currentTimeMillis() - startTime < 3000) {
-            element = this.driverExt.findElement(By.cssSelector(".dropdown-menu[style*='display: block;']"), Optional.of(3));
-        //}
-        
+        // long startTime = System.currentTimeMillis();
+        // while (element == null && System.currentTimeMillis() - startTime < 3000) {
+        element = this.driverExt.findElement(By.cssSelector(".dropdown-menu[style*='display: block;']"), Optional.of(3));
+        // }
+
         if (element != null) {
-            
+
             List<WebElement> options = element.findElements(By.cssSelector(".dropdown-option-label"));
-            
+
             for (WebElement option : options) {
                 String optionText = option.getText();
                 if (optionText.equals(value)) {
@@ -52,6 +52,31 @@ public class ActionBtnDropDownElement {
                     return;
                 }
             }
-        }  //TODO add an exception stating did not find dropdown
+        }
+    }// TODO add an exception stating did not find dropdown
+
+    public Boolean checkOptionIsEnabledByText(String value) {
+        click();
+
+        WebElement element = null;
+        element = this.driverExt.findElement(By.cssSelector(".dropdown-menu[style*='display: block;']"), Optional.of(3));
+
+        Boolean flag = true;
+        if (element != null) {
+
+            List<WebElement> options = element.findElements(By.cssSelector(".dropdown-option-label"));
+
+            for (WebElement option : options) {
+                String optionText = option.getText();
+                if (optionText.equals(value)) {
+                    if (option.getAttribute("class").contains("disabled")) {
+                        flag = false;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return flag;
     }
 }
