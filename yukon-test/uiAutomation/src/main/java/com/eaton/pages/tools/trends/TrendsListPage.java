@@ -40,7 +40,7 @@ public class TrendsListPage extends PageBase {
     }
     public ResetPeakModal showResetPeakTrendModal(String modalTitle) {
         getActionBtn().clickAndSelectOptionByText("Reset Peak");
-
+        SeleniumTestSetup.waitForLoadingSpinner();
         SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("ui-id-3");
 
         return new ResetPeakModal(this.driverExt, Optional.of(modalTitle), Optional.of("ui-id-3"));

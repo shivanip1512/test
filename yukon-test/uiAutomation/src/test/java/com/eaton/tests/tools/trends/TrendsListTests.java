@@ -128,7 +128,8 @@ public class TrendsListTests extends SeleniumTestSetup {
 						.withLabel(Optional.empty())
 						.withColor(Optional.empty())
 						.withAxis(Optional.empty()).build() })
-				.withPoints(new JSONObject[] { new TrendPointBuilder.Builder().withpointId(4999)
+				.withPoints(new JSONObject[] { new TrendPointBuilder.Builder()
+						.withpointId(4999)
 						.withLabel(Optional.empty())
 						.withColor(Optional.empty())
 						.withStyle(Optional.empty())
@@ -147,9 +148,8 @@ public class TrendsListTests extends SeleniumTestSetup {
 
 		final String expectedModalTitle = "Reset Peak";
 
-		ResetPeakModal ResetModal = listPage.showResetPeakTrendModal(expectedModalTitle);
-		waitForLoadingSpinner();
-		String actualModalTitle = ResetModal.getModalTitle();
+		ResetPeakModal ResetPeakModal = listPage.showResetPeakTrendModal(expectedModalTitle);
+		String actualModalTitle = ResetPeakModal.getModalTitle();
 		assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
 	}
 }
