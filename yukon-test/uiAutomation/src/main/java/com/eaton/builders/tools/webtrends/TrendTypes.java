@@ -9,7 +9,6 @@ public class TrendTypes {
         USAGE_TYPE("USAGE_TYPE"),
         PEAK_TYPE("PEAK_TYPE"),
         YESTERDAY_TYPE("YESTERDAY_TYPE"),
-        MARKER_TYPE("MARKER_TYPE"),
         DATE_TYPE("DATE_TYPE");
 
         private final String type;
@@ -28,7 +27,6 @@ public class TrendTypes {
         }
     }
     
-    //TODO Defect YUK-22671: Update with all colors once API documentation has been updated.  If use MAGENTA, CYAN, GREY, or PINK you get 400 malformed json 
     public enum Color {
         BLACK("BLACK"),
         BLUE("BLUE"),
