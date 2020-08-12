@@ -1,5 +1,11 @@
 package com.cannontech.web.common.pao.service;
 
+import static org.easymock.EasyMock.anyInt;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,7 +17,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.StaticMessageSource;
+import org.springframework.core.io.Resource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -20,7 +28,12 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImplTest;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImpl;
+import com.cannontech.common.pao.definition.loader.DefinitionLoaderServiceImpl;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateGroupDao;
+import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
@@ -67,7 +80,7 @@ public class YukonPointHelperImplTest {
     public void setUp() {
         yukonPointHelperImpl = new YukonPointHelperImpl();
         
-        PaoDefinitionDao paoDefinitionDao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao();
+        PaoDefinitionDao paoDefinitionDao = getTestPaoDefinitionDao();
         ReflectionTestUtils.setField(yukonPointHelperImpl, "paoDefinitionDao", paoDefinitionDao);
     }
     
@@ -163,5 +176,38 @@ public class YukonPointHelperImplTest {
                                                                                customAttributes,
                                                                                attributes);
         return attribute;
+    }
+    
+    public static PaoDefinitionDao getTestPaoDefinitionDao() {
+        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext();
+        PaoDefinitionDaoImpl paoDefinitionDaoImpl = new PaoDefinitionDaoImpl();
+        DefinitionLoaderServiceImpl definitionLoaderService = new DefinitionLoaderServiceImpl();
+        Resource paoXsd = ctx.getResource("classpath:pao/definition/pao.xsd");
+        Resource pointsXsd = ctx.getResource("classpath:pao/definition/points.xsd");
+        Resource overrideXsd = ctx.getResource("classpath:pao/definition/override.xsd");
+        
+        StateGroupDao stateGroupDao = createNiceMock(StateGroupDao.class);
+        stateGroupDao.getStateGroup(anyObject(String.class));
+        expectLastCall().andAnswer(() -> {
+            ArrayList<LiteState> states = new ArrayList<>();
+            states.add(new LiteState(0, "Decommissioned", 0, 0, 0));
+            return new LiteStateGroup(0, "state0", states);
+        }).anyTimes();
+
+        stateGroupDao.getStateGroup(anyInt());
+        expectLastCall().andAnswer(() -> new LiteStateGroup(0, "state0")).anyTimes();
+
+        PointDao pointDao = createNiceMock(PointDao.class);
+        ReflectionTestUtils.setField(definitionLoaderService, "paoXsd", paoXsd);
+        ReflectionTestUtils.setField(definitionLoaderService, "pointsXsd", pointsXsd);
+        ReflectionTestUtils.setField(definitionLoaderService, "overrideXsd", overrideXsd);
+        ReflectionTestUtils.setField(definitionLoaderService, "stateGroupDao", stateGroupDao);
+        replay(stateGroupDao);
+        ReflectionTestUtils.setField(definitionLoaderService, "pointDao", pointDao);
+        ReflectionTestUtils.setField(paoDefinitionDaoImpl, "definitionLoaderService", definitionLoaderService);
+        definitionLoaderService.load();
+        paoDefinitionDaoImpl.initialize();
+        ctx.close();
+        return paoDefinitionDaoImpl;
     }
 }

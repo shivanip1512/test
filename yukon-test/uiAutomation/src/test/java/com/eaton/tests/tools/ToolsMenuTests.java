@@ -94,7 +94,7 @@ public class ToolsMenuTests extends SeleniumTestSetup {
     public void toolsMenu_trendsUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(TOOLS_INDEX, 9);
 
-        assertThat(url).contains(Urls.Tools.TRENDS);
+        assertThat(url).contains(Urls.Tools.TRENDS_LIST);
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TOOLS })

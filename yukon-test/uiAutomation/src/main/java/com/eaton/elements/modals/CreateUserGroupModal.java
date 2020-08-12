@@ -11,7 +11,7 @@ import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 
-public class CreateUserGroupModal{
+public class CreateUserGroupModal {
 
     private DriverExtensions driverExt;
     private TextEditElement name;

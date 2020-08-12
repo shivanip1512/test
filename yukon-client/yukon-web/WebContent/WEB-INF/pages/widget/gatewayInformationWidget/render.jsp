@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<cti:msgScope paths="modules.operator.gateways.detail,modules.operator.gateways,modules.operator">
+<cti:msgScope paths="modules.operator.gateways.detail,modules.operator.gateways,modules.operator,yukon.common">
 
 <%-- Edit Popup --%>
 <cti:url var="editUrl" value="/widget/gatewayInformationWidget/edit">
@@ -35,6 +35,9 @@
 
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".name" valueClass="js-gw-name">${fn:escapeXml(gateway.name)}</tags:nameValue2>
+        <tags:nameValue2 nameKey=".type">
+            <tags:paoType yukonPao="${gateway}" showLink="false"/>
+        </tags:nameValue2>
         <tags:nameValue2 nameKey=".serialNumber" valueClass="js-gw-sn">${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</tags:nameValue2>
         <tags:nameValue2 nameKey=".hardwareVersion" valueClass="js-gw-hw-version">${gateway.data.hardwareVersion}</tags:nameValue2>
         <tags:nameValue2 nameKey=".softwareVersion" valueClass="js-gw-sw-version">${gateway.data.softwareVersion}</tags:nameValue2>

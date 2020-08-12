@@ -2,9 +2,6 @@ package com.eaton.framework;
 
 public final class Urls {
 
-    private Urls() {
-    }
-
     public static final String LOGIN = "/login.jsp";
     public static final String LOGOUT = "/servlet/LoginController/logout";
     public static final String HOME = "/dashboards/-1/view?dashboardPageType=MAIN";
@@ -15,7 +12,6 @@ public final class Urls {
     public static final String SEARCH_PARAM = "?q=";
 
     public static final class Ami {
-
         public static final String AMI = "/dashboards/-2/view?dashboardPageType=AMI";
         public static final String ARCHIVE_DATA_ANALYSIS = "/bulk/archiveDataAnalysis/list/view";
         public static final String DASHBOARD = "/meter/start";
@@ -38,12 +34,10 @@ public final class Urls {
     }
 
     public static final class Meter {
-
         public static final String DETAIL = "/meter/home?deviceId=";
     }
 
     public static final class DemandResponse {
-
         public static final String DASHBOARD = "/dr/home";
         public static final String SCENARIOS = "/dr/scenario/list";
         public static final String CONTROL_AREA = "/dr/controlArea/list";
@@ -64,8 +58,7 @@ public final class Urls {
         public static final String LOAD_GROUP_SETUP_NAME_ASC = "/dr/setup/filter?name=&filterByType=LOAD_GROUP&sort=NAME&dir=asc&itemsPerPage=250&page=1";
         public static final String LOAD_GROUP_SETUP_NAME_DESC = "/dr/setup/filter?name=&filterByType=LOAD_GROUP&sort=NAME&dir=desc&itemsPerPage=250&page=1";
         public static final String LOAD_GROUP_SETUP_TYPE_ASC ="/dr/setup/filter?name=&filterByType=LOAD_GROUP&sort=TYPE&dir=asc&itemsPerPage=250&page=1";
-        public static final String LOAD_GROUP_SETUP_TYPE_DESC ="/dr/setup/filter?name=&filterByType=LOAD_GROUP&sort=TYPE&dir=desc&itemsPerPage=250&page=1";
-        
+        public static final String LOAD_GROUP_SETUP_TYPE_DESC ="/dr/setup/filter?name=&filterByType=LOAD_GROUP&sort=TYPE&dir=desc&itemsPerPage=250&page=1";       
 
         public static final String LOAD_PROGRAM_CREATE = "/dr/setup/loadProgram/create";
         public static final String LOAD_PROGRAM_DETAILS = "/dr/setup/loadProgram/";
@@ -109,7 +102,6 @@ public final class Urls {
     }
 
     public static final class CapControl {
-
         public static final String DASHBOARD = "/capcontrol/tier/areas";
         public static final String SCHEDULES = "/capcontrol/schedules";
         public static final String STRATEGIES = "/capcontrol/strategies";
@@ -169,7 +161,6 @@ public final class Urls {
     }
 
     public static final class Assets {
-
         public static final String DASHBOARD = "/stars/operator/inventory/home";
         public static final String GATEWAYS = "/stars/gateways";
         public static final String RELAYS = "/stars/relay";
@@ -201,7 +192,6 @@ public final class Urls {
     }
 
     public static final class Tools {
-
         public static final String COLLECTION_ACTIONS = "/collectionActions/home";
         public static final String COMMANDER = "/tools/commander";
         public static final String DATA_EXPORTER = "/tools/data-exporter/view";
@@ -210,7 +200,9 @@ public final class Urls {
         public static final String DEVICE_GROUP = "/group/editor/home";
         public static final String SCHEDULES = "/group/scheduledGroupRequestExecutionResults/jobs";
         public static final String SCRIPTS = "/macsscheduler/schedules/view";
-        public static final String TRENDS = "/tools/trends";
+        public static final String TRENDS_LIST = "/tools/trends";
+        public static final String TREND_CREATE = "/tools/trend/create";
+        public static final String TREND = "/tools/trend/";
         public static final String REPORTS = "/analysis/Reports.jsp";
         public static final String CREATE_SCHEDULE = "/group/scheduledGroupRequestExecution/home";
         public static final String DEVICE_CONFIGURATION_SUMMARY = "/deviceConfiguration/summary/view";
@@ -223,7 +215,6 @@ public final class Urls {
     }
 
     public static final class Admin {
-
         public static final String CONFIGURATION = "/admin/config/view";
         public static final String ENERGY_COMPANY = "/admin/energyCompany/home";
         public static final String MAINTENANCE = "/admin/maintenance/view";
@@ -286,26 +277,26 @@ public final class Urls {
         public static final String DATA_STREAMING_DEVICE_ATTRIBUTES = "/support/dataStreamingSupport";
         
         public static final String LOGGING_VIEW = "/support/logging/view?file=";
-    	public static final String LOGGING_MENU = "/support/logging/menu?file=";
-    	public static final String CALC_LOG = "%2Fcalc_";
-    	public static final String CAPCONTROL_LOG = "%2Fcapcontrol_";
-    	public static final String DISPATCH_LOG = "%2Fdispatch_";
-    	public static final String FDR_LOG = "%2Ffdr_";
-    	public static final String LOADMANGEMENT_LOG = "%2Floadmanagement_";
-    	public static final String MACS_LOG = "%2Fmacs_";
-    	public static final String MESSAGE_BROKER_LOG = "%2FMessageBroker_";
-    	public static final String NOTIFICATION_SERVER_LOG = "%2FNotificationServer_";
-    	public static final String PORTER_LOG = "%2Fporter_";
-    	public static final String SCANNER_LOG = "%2Fscanner_";
-    	public static final String SERVICE_MANAGER_LOG = "%2FServiceManager_";
-    	public static final String WATCHDOG_LOG = "%2FWatchdog_";
-    	public static final String WEBSERVER_LOG = "%2FWebserver_";
-    	public static final String VIEW_ALL_LOGS = "/&sortType=date";
-    	
-    	public static final String SUPPORT_BUNDLE = "/support/viewBundleProgress";
+        public static final String LOGGING_MENU = "/support/logging/menu?file=";
+        public static final String CALC_LOG = "%2Fcalc_";
+        public static final String CAPCONTROL_LOG = "%2Fcapcontrol_";
+        public static final String DISPATCH_LOG = "%2Fdispatch_";
+        public static final String FDR_LOG = "%2Ffdr_";
+        public static final String LOADMANGEMENT_LOG = "%2Floadmanagement_";
+        public static final String MACS_LOG = "%2Fmacs_";
+        public static final String MESSAGE_BROKER_LOG = "%2FMessageBroker_";
+        public static final String NOTIFICATION_SERVER_LOG = "%2FNotificationServer_";
+        public static final String PORTER_LOG = "%2Fporter_";
+        public static final String SCANNER_LOG = "%2Fscanner_";
+        public static final String SERVICE_MANAGER_LOG = "%2FServiceManager_";
+        public static final String WATCHDOG_LOG = "%2FWatchdog_";
+        public static final String WEBSERVER_LOG = "%2FWebserver_";
+        public static final String VIEW_ALL_LOGS = "/&sortType=date";
+        
+        public static final String SUPPORT_BUNDLE = "/support/viewBundleProgress";
     }
     
     public static final class Manuals {
-    	public static final String YUKON_MANUALS = "https://my.eaton.com/extranet/faces/myeaton/Tools/productDocumentation/productDocumentationDe/YUKON";
+        public static final String YUKON_MANUALS = "https://my.eaton.com/extranet/faces/myeaton/Tools/productDocumentation/productDocumentationDe/YUKON";
     }
 }

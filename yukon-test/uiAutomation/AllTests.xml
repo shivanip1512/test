@@ -24,6 +24,7 @@
     	<package name="com.eaton.tests.demandresponse.loadgroup"/>
     	<package name="com.eaton.tests.support"/>
     	<package name="com.eaton.tests.tools"/>
+    	<package name="com.eaton.tests.tools.trends"/>
     </packages>
   </test>
 </suite>
