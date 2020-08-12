@@ -12,24 +12,32 @@ import com.eaton.framework.DriverExtensions;
 public class ResetPeakModal extends BaseModal {
 
     private DriverExtensions driverExt;
+    
+    private DropDownElement resetPeakTo;
+    private DatePickerElement date;
+    private RadioButtonElement resetPeakForAllTrends;
 
     public ResetPeakModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
         super(driverExt, modalTitle, describedBy);
 
         this.driverExt = driverExt;
+        
+        resetPeakTo = new DropDownElement(this.driverExt, "resetPeakDuration");
+        date = new DatePickerElement(this.driverExt, "startDate");
+        resetPeakForAllTrends = new RadioButtonElement(this.driverExt, "resetPeakForAllTrends", getModal());
     }
 
     // Trend
     public DropDownElement getResetPeakTo() {
-        return new DropDownElement(this.driverExt, "resetPeakDuration");
+        return resetPeakTo;
     }
 
     public DatePickerElement getDate() {
-        return new DatePickerElement(this.driverExt, "startDate");
+        return date;
     }
 
     public RadioButtonElement getResetPeakForAllTrends() {
-        return new RadioButtonElement(this.driverExt, "resetPeakForAllTrends", getModal());
+        return resetPeakForAllTrends;
     }
 
     public void clickHelpIcon() {
@@ -44,12 +52,9 @@ public class ResetPeakModal extends BaseModal {
         return this.driverExt.findElement(By.cssSelector(".js-help-text-message"), Optional.empty()).getText();
     }
 
-    public Boolean helpTextMessageClosed() {
+    public Boolean isHelpClosed() {
         String classAttribute = getModal().findElement(By.cssSelector(".js-help-text-message")).getAttribute("class");
-        Boolean flag = false;
-        if (classAttribute.contains("dn")) {
-            flag = true;
-        }
-        return flag;
-    }
+        
+        return classAttribute.contains("dn");
+    }    
 }

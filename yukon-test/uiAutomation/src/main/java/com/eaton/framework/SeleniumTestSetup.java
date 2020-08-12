@@ -207,13 +207,7 @@ public class SeleniumTestSetup {
         SeleniumTestSetup.driverExt.getDriverWait(Optional.of(waitTime)).until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".page-heading"), pageTitle));
     }
 
-    public void refreshPage(PageBase page) {
-//        if (page != null) {
-//            navigate(page.getPageUrl());
-//        } else {
-//            driver.navigate().refresh();
-//        }        
-        
+    public void refreshPage(PageBase page) {               
         if (getCurrentUrl().equals(getBaseUrl() + page.getPageUrl())) {            
             driver.navigate().refresh();
         } else {

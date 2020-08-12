@@ -18,17 +18,31 @@ public class DatePickerElement {
     }
 
     public void setValue(String value) {
-        WebElement picker = getNumericPicker();
+        WebElement picker = getPicker();
 
         picker.clear();
         picker.sendKeys(value);
     }
 
     public void clearValue() {
-        getNumericPicker().clear();
+        getPicker().clear();
     }
 
-    public WebElement getNumericPicker() {
+    public WebElement getPicker() {
         return this.driverExt.findElement(By.cssSelector("input[name='" + elementName + "']"), Optional.of(3));
+    }
+    
+    public boolean isPickerEnabled() {
+        String disabled = getPicker().getAttribute("disabled");
+        
+        if(disabled != null) {
+            return false;
+        } else {
+            return true;
+        }        
+    }
+    
+    public String getValue() {
+        return getPicker().getAttribute("value");
     }
 }
