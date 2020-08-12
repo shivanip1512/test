@@ -231,8 +231,7 @@ public class SeleniumTestSetup {
             }
             catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {               
             }  
-        }
-
+        }                
     }
 
     public static void waitUntilModalVisibleByDescribedBy(String describedBy) {
