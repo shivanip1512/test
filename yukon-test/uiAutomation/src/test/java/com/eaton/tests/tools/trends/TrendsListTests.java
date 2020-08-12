@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Optional;
 import org.assertj.core.api.SoftAssertions;
 import org.javatuples.Pair;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.json.JSONObject;
 import com.eaton.builders.tools.webtrends.TrendCreateBuilder;
@@ -39,16 +39,16 @@ public class TrendsListTests extends SeleniumTestSetup {
 
 		trendId = response.path("trendId");
 		trendName = response.path("name").toString();
-
-	}
-
-	@BeforeMethod(alwaysRun = true)
-	public void beforeMethod() {
 		navigate(Urls.Tools.TRENDS_LIST);
 		listPage = new TrendsListPage(driverExt);
 	}
 
-	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TOOLS, TestConstants.Tools.TRENDS })
+	@AfterMethod
+	public void afterMethod() {
+		refreshPage(listPage);
+	}
+
+	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
 	public void trendsList_CreateNavigatesToCorrectUrl() {
 		final String EXPECTED_TITLE = "Create Trend";
 
@@ -58,7 +58,7 @@ public class TrendsListTests extends SeleniumTestSetup {
 		assertThat(actualTitle).isEqualTo(EXPECTED_TITLE);
 	}
 
-	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TOOLS, TestConstants.Tools.TRENDS })
+	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
 	public void trendsList_EditNavigatesToCorrectUrl() {
 
 		Pair<JSONObject, ExtractableResponse<?>> pair = new TrendCreateBuilder.Builder(Optional.empty()).create();
@@ -78,7 +78,7 @@ public class TrendsListTests extends SeleniumTestSetup {
 		assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
 	}
 
-	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TOOLS, TestConstants.Tools.TRENDS })
+	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
 	public void trendsList_DeleteOpensCorrectModal() {
 		String expectedModalTitle = "Confirm Delete";
 		navigate(Urls.Tools.TRENDS_EDIT + trendId);
@@ -90,20 +90,19 @@ public class TrendsListTests extends SeleniumTestSetup {
 		assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
 	}
 
+	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
+	public void trendsList_DeleteConfirmMessageCorrect() {
+		String expectedModalMessage = "Are you sure you want to delete \"" + trendName + "\"?";
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TOOLS, TestConstants.Tools.TRENDS })
-    public void trendsList_DeleteConfirmMessageCorrect() {
-        String expectedModalMessage = "Are you sure you want to delete \"" + trendName + "\"?";
-        
-        navigate(Urls.Tools.TRENDS_EDIT + trendId);
+		navigate(Urls.Tools.TRENDS_EDIT + trendId);
 
-        ConfirmModal deleteConfirmModal = listPage.showDeleteTrendModal();
+		ConfirmModal deleteConfirmModal = listPage.showDeleteTrendModal();
 
-        String actualModalMessage = deleteConfirmModal.getConfirmMsg();
+		String actualModalMessage = deleteConfirmModal.getConfirmMsg();
 
-        assertThat(actualModalMessage).isEqualTo(expectedModalMessage);
-    }
-    
+		assertThat(actualModalMessage).isEqualTo(expectedModalMessage);
+	}
+
 	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TOOLS, TestConstants.Tools.TRENDS })
 	public void trendsList_DeleteTrend_DeleteSuccess() {
 		String expectedMessage = trendName + " deleted successfully.";
@@ -121,18 +120,26 @@ public class TrendsListTests extends SeleniumTestSetup {
 
 	}
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TOOLS, TestConstants.Tools.TRENDS })
+	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
 	public void trendsList_ResetPeakOpensCorrectModal() {
 		Pair<JSONObject, ExtractableResponse<?>> pair = new TrendCreateBuilder.Builder(Optional.empty())
-				.withMarkers(new JSONObject[] { new TrendMarkerBuilder.Builder().withMultiplier(Optional.empty())
-						.withLabel(Optional.empty()).withColor(Optional.empty()).withAxis(Optional.empty()).build() })
+				.withMarkers(new JSONObject[] { new TrendMarkerBuilder.Builder()
+						.withMultiplier(Optional.empty())
+						.withLabel(Optional.empty())
+						.withColor(Optional.empty())
+						.withAxis(Optional.empty()).build() })
 				.withPoints(new JSONObject[] { new TrendPointBuilder.Builder().withpointId(4999)
-						.withLabel(Optional.empty()).withColor(Optional.empty()).withStyle(Optional.empty())
-						.withType(Optional.of(TrendTypes.Type.PEAK_TYPE)).withAxis(Optional.empty())
-						.withMultiplier(Optional.empty()).withDate(Optional.empty()).build() })
+						.withLabel(Optional.empty())
+						.withColor(Optional.empty())
+						.withStyle(Optional.empty())
+						.withType(Optional.of(TrendTypes.Type.PEAK_TYPE))
+						.withAxis(Optional.empty())
+						.withMultiplier(Optional.empty())
+						.withDate(Optional.empty()).build() })
 				.create();
 
 		ExtractableResponse<?> response = pair.getValue1();
+		
 		trendId = response.path("trendId");
 		trendName = response.path("name").toString();
 
@@ -140,8 +147,9 @@ public class TrendsListTests extends SeleniumTestSetup {
 
 		final String expectedModalTitle = "Reset Peak";
 
-		ResetPeakModal editReset = listPage.showResetPeakTrendModal();
-		String actualModalTitle = editReset.getModalTitle();
+		ResetPeakModal ResetModal = listPage.showResetPeakTrendModal(expectedModalTitle);
+		waitForLoadingSpinner();
+		String actualModalTitle = ResetModal.getModalTitle();
 		assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
 	}
 }
