@@ -9,24 +9,23 @@ import com.google.common.collect.ImmutableMap.Builder;
 
 public enum YukonColorPalette implements DatabaseRepresentationSource, DisplayableEnum {
 
-    // next colorId to use: 17
-    BLACK("#000000", 6),
-    BLUE("#0088f2", 4, true),
-    BLUE_LIGHT("#4d8ec4", 15),
-    GREEN("#2ca618", 0, true),
-    GREEN_LIGHT("#74cc63", 16),
-    GRAY("#7b8387", 9, true),
-    GRAY_LIGHT("#d5d8da", 13),
-    ORANGE("#e99012", 7, true),
-    PURPLE("#b779f4", 10, true),
-    RED("#c53637", 1),
-    RED_LIGHT("#da7777", 14),
-    SAGE("#b2c98d", 8, true),
-    SKY("#abd7e1", 11, true),
-    TEAL("#00b2a9", 5, true),
-    WHITE("#ffffff", 2),
-    WINE("#ce8799", 12, true),
-    YELLOW("#f0cb2f", 3, true);
+    BLACK("#000000", ColorId.BLACK_ID),
+    BLUE("#0088f2", ColorId.BLUE_ID, true),
+    BLUE_LIGHT("#4d8ec4", ColorId.BLUE_LIGHT_ID),
+    GREEN("#2ca618", ColorId.GREEN_ID, true),
+    GREEN_LIGHT("#74cc63", ColorId.GREEN_LIGHT_ID),
+    GRAY("#7b8387", ColorId.GRAY_ID, true),
+    GRAY_LIGHT("#d5d8da", ColorId.GRAY_LIGHT_ID),
+    ORANGE("#e99012", ColorId.ORANGE_ID, true),
+    PURPLE("#b779f4", ColorId.PURPLE_ID, true),
+    RED("#c53637", ColorId.RED_ID),
+    RED_LIGHT("#da7777", ColorId.RED_LIGHT_ID),
+    SAGE("#b2c98d", ColorId.SAGE_ID, true),
+    SKY("#abd7e1", ColorId.SKY_ID, true),
+    TEAL("#00b2a9", ColorId.TEAL_ID, true),
+    WHITE("#ffffff", ColorId.WHITE_ID),
+    WINE("#ce8799", ColorId.WINE_ID, true),
+    YELLOW("#f0cb2f", ColorId.YELLOW_ID, true);
 
     private final String hexValue;
     private final int colorId;  //database id
@@ -48,6 +47,26 @@ public enum YukonColorPalette implements DatabaseRepresentationSource, Displayab
         }
         lookupByHexColorValue = hexColorLookupBuilder.build();
     }
+    
+    class ColorId {
+        static final int GREEN_ID = 0;
+        static final int RED_ID = 1;
+        static final int WHITE_ID = 2;
+        static final int YELLOW_ID = 3;
+        static final int BLUE_ID = 4;
+        static final int TEAL_ID = 5;
+        static final int BLACK_ID = 6;
+        static final int ORANGE_ID = 7;
+        static final int SAGE_ID = 8;
+        static final int GRAY_ID = 9;
+        static final int PURPLE_ID = 10;
+        static final int SKY_ID = 11;
+        static final int WINE_ID = 12;
+        static final int GRAY_LIGHT_ID = 13;
+        static final int RED_LIGHT_ID = 14;
+        static final int BLUE_LIGHT_ID = 15;
+        static final int GREEN_LIGHT_ID = 16;
+    };
     
     private YukonColorPalette(String hexValue, int colorId) {
         this.hexValue = hexValue;
