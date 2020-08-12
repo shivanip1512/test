@@ -56,7 +56,6 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -212,11 +211,7 @@ public class DataCollectionController {
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
         SearchResults<DeviceCollectionDetail> allDetail = dataCollectionWidgetService.getDeviceCollectionResult(group, subGroups, includeDisabled,
                                                                   selectedGatewayIds, Lists.newArrayList(ranges), PagingParameters.EVERYTHING, SortBy.DEVICE_NAME, Direction.asc);
-
-        List<YukonPao> devices = allDetail.getResultList()
-                .stream()
-                .map(d -> new LiteYukonPAObject(d.getPaoIdentifier().getPaoId(), null, d.getPaoIdentifier().getPaoType(), null, null))
-                .collect(Collectors.toList());
+        List<YukonPao> devices = allDetail.getResultList().stream().map(d -> d.getPaoIdentifier()).collect(Collectors.toList());
 
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
         deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
