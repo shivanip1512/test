@@ -12,7 +12,7 @@ public class TrendMarkerBuilder {
 
         private Faker faker = new Faker();
 
-        private final String type = TrendTypes.Type.BASIC_TYPE.getType();
+        private final String type = "MARKER_TYPE";
         private String color;
         private String axis;
         private final Integer pointId = -110;

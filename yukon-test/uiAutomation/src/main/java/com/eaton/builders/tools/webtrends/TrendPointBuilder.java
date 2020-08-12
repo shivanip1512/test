@@ -42,11 +42,9 @@ public class TrendPointBuilder {
         }
 
         public Builder withColor(Optional<TrendTypes.Color> color) {
-//            TrendTypes.Color randomColor = color.orElse(TrendTypes.Color.getRandomColor());
-//
-//            this.color = randomColor.getColor();  
-            
-            this.color = "SKY";
+            TrendTypes.Color randomColor = color.orElse(TrendTypes.Color.getRandomColor());
+
+            this.color = randomColor.getColor();  
             
             return this;
         }

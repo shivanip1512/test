@@ -8,6 +8,7 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.Assignment;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -30,7 +31,10 @@ public class AssignmentValidator extends SimpleValidator<Assignment> {
 
     @Override
     protected void doValidation(Assignment assignment, Errors errors) {
-        String pointOffsetLabel = accessor.getMessage("yukon.common.pointOffset");
-        YukonValidationUtils.checkIfFieldRequired("offset", errors, assignment.getOffset(), pointOffsetLabel);
+        if (!errors.hasFieldErrors("offset")) {
+            String pointOffsetLabel = accessor.getMessage("yukon.common.pointOffset");
+            Range<Integer> range = Range.inclusive(0, 99999999);
+            YukonValidationUtils.checkRange(errors, "offset", pointOffsetLabel, assignment.getOffset(), range, true);
+        }
     }
 }
