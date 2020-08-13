@@ -1,5 +1,8 @@
 package com.cannontech.web.api.virtualDevice;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,8 +57,11 @@ public class VirtualDeviceApiController {
 
     @DeleteMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.OWNER)
-    public ResponseEntity<Object> delete(@PathVariable int id) {
-        return new ResponseEntity<>(virtualDeviceService.delete(id), HttpStatus.OK);
+    public ResponseEntity<Map<String, Integer>> delete(@PathVariable int id) {
+        int virtualDeviceId = virtualDeviceService.delete(id);
+        Map<String, Integer> virtualDeviceIdMap = new HashMap<>();
+        virtualDeviceIdMap.put("id", virtualDeviceId);
+        return new ResponseEntity<>(virtualDeviceIdMap, HttpStatus.OK);
     }
 
     @GetMapping("")
