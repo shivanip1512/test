@@ -517,8 +517,7 @@ public class NmIntegrationController {
 
     @RequestMapping("viewEventArchiveRequest")
     public String viewEventArchiveRequest(ModelMap model) {
-        model.addAttribute("restoreOutageEvent", new RfnTestOutageRestoreEvent());
-        return setupEventAlarmAttributes(model, new RfnTestEvent());
+        return setupEventAlarmAttributes(model, new RfnTestEvent(), new RfnTestOutageRestoreEvent());
     }
 
     @RequestMapping("viewLcrReadArchiveRequest")
@@ -797,7 +796,7 @@ public class NmIntegrationController {
     }
 
 
-    private String setupEventAlarmAttributes(ModelMap model, RfnTestEvent event) {
+    private String setupEventAlarmAttributes(ModelMap model, RfnTestEvent event, RfnTestOutageRestoreEvent restoreOutageEvent) {
         var rfnConditionTypes = Lists.newArrayList(RfnConditionType.values());
         var meterStatusCodes = IntStream.range(0, 5)
                                         .mapToObj(i -> new MeterStatusCode((short)i))
@@ -812,6 +811,7 @@ public class NmIntegrationController {
         model.addAttribute("meterStatusDetails", meterStatusDetails);
         model.addAttribute("dataTypes", dataTypes);
         model.addAttribute("event", event);
+        model.addAttribute("restoreOutageEvent", restoreOutageEvent);
         model.addAttribute("outageRestoreEventTypes", ImmutableList.of(RfnConditionType.OUTAGE, RfnConditionType.RESTORE));
         return "rfn/viewEventArchive.jsp";
     }
@@ -855,16 +855,14 @@ public class NmIntegrationController {
     public String sendEvent(@ModelAttribute RfnTestEvent event, ModelMap model, FlashScope flashScope) {
         int numEventsSent = rfnEventTestingService.sendEventsAndAlarms(event);
         addNumEventsSend(flashScope, numEventsSent);
-        model.addAttribute("restoreOutageEvent", new RfnTestOutageRestoreEvent());
-        return setupEventAlarmAttributes(model, event);
+        return setupEventAlarmAttributes(model, event, new RfnTestOutageRestoreEvent());
     }
 
     @RequestMapping("sendOutageRestore")
     public String sendOutageRestore(@ModelAttribute RfnTestOutageRestoreEvent event, ModelMap model, FlashScope flashScope) {
         int numEventsSent = rfnEventTestingService.sendOutageAndRestoreEvents(event);
         addNumEventsSend(flashScope, numEventsSent);
-        model.addAttribute("restoreOutageEvent", event);
-        return setupEventAlarmAttributes(model, new RfnTestEvent());
+        return setupEventAlarmAttributes(model, new RfnTestEvent(), event);
     }
     
     /**

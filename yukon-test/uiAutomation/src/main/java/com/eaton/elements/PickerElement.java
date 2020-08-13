@@ -42,6 +42,6 @@ public class PickerElement {
         } else {
             return this.driverExt.findElement(By.cssSelector("[data-picker-id='" + dataPickerId + "']"), Optional.of(3));
         }
-    }
+    }    
 }
 

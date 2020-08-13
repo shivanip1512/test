@@ -1,19 +1,14 @@
 package com.eaton.pages.admin.energycompany;
 
-import java.util.Optional;
-
 import com.eaton.elements.Button;
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.PickerElement;
 import com.eaton.elements.TextEditElement;
-import com.eaton.elements.modals.SelectUserGroupModal;
 import com.eaton.framework.DriverExtensions;
-import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
-public class EnergyCompanyCreatePage extends PageBase {
-    
+public class EnergyCompanyCreatePage extends PageBase {    
     private TextEditElement name;
     private TextEditElement email;
     private DropDownElement defaultRoute;

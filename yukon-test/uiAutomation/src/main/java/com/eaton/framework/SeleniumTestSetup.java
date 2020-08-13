@@ -45,7 +45,6 @@ public class SeleniumTestSetup {
 
     @BeforeSuite(alwaysRun = true)
     public static void beforeSuite() {
-
         try {
             setRandomNum(new Random());
             logger = setupLogger();
@@ -58,7 +57,6 @@ public class SeleniumTestSetup {
     }
 
     public static void initialSetup() {
-
         try {
             ConfigFileReader configFileReader = new ConfigFileReader();
 
@@ -91,7 +89,6 @@ public class SeleniumTestSetup {
     }
 
     public static Logger setupLogger() {
-
         Logger newLogger = Logger.getLogger("selenium.logger");
         newLogger.setLevel(Level.ALL);
         ConsoleHandler handler = new ConsoleHandler();
@@ -218,13 +215,14 @@ public class SeleniumTestSetup {
         String display = "";
 
         long startTime = System.currentTimeMillis();
-        while (!display.equals("display: none;") && System.currentTimeMillis() - startTime < 2000) {
+
+        while (!display.equals("display: none;") || System.currentTimeMillis() - startTime < 2000) {            
             try {
                 display = driverExt.findElement(By.id("modal-glass"), Optional.empty()).getAttribute("style");
-            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
             }
-        }
-
+            catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {               
+            }  
+        }                
     }
 
     public static void waitUntilModalVisibleByDescribedBy(String describedBy) {
@@ -232,7 +230,7 @@ public class SeleniumTestSetup {
 
         long startTime = System.currentTimeMillis();
 
-        while (!displayed && System.currentTimeMillis() - startTime < 300) {
+        while (!displayed || System.currentTimeMillis() - startTime < 300) {
             try {
                 displayed = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0))
                         .isDisplayed();
@@ -246,7 +244,7 @@ public class SeleniumTestSetup {
 
         long startTime = System.currentTimeMillis();
 
-        while (displayed && System.currentTimeMillis() - startTime < 300) {
+        while (displayed || System.currentTimeMillis() - startTime < 300) {
             try {
                 displayed = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0))
                         .isDisplayed();
@@ -262,7 +260,7 @@ public class SeleniumTestSetup {
 
         long startTime = System.currentTimeMillis();
 
-        while (!found && System.currentTimeMillis() - startTime < 300) {
+        while (!found || System.currentTimeMillis() - startTime < 300) {
             try {
                 elements = driverExt.findElements(By.cssSelector(".ui-dialog .ui-dialog-title"), Optional.of(0));
 
@@ -280,7 +278,7 @@ public class SeleniumTestSetup {
 
         long startTime = System.currentTimeMillis();
 
-        while (found && System.currentTimeMillis() - startTime < 100) {
+        while (found || System.currentTimeMillis() - startTime < 100) {
             try {
                 elements = driverExt.findElements(By.cssSelector(".ui-dialog .ui-dialog-title"), Optional.empty());
 
@@ -299,7 +297,7 @@ public class SeleniumTestSetup {
         String display = "";
 
         long startTime = System.currentTimeMillis();
-        while (!display.equals("display: none;") && System.currentTimeMillis() - startTime < 100) {
+        while (!display.equals("display: none;") || System.currentTimeMillis() - startTime < 100) {
             try {
                 display = modal.getAttribute("style");
             } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {

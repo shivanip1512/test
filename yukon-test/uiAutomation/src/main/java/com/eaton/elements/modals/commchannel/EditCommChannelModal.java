@@ -45,22 +45,22 @@ public class EditCommChannelModal extends BaseModal {
         
     //Configuration Tab - Timing Section    
     public TextEditElement getPreTxWait() {
-        return new TextEditElement(this.driverExt, "timing.preTxWait", getTimingSection().getSection());
+        return new TextEditElement(this.driverExt, "timing.preTxWait", getModal());
     }
            
     public TextEditElement getRtsToTxWait() {
-        return new TextEditElement(this.driverExt, "timing.rtsToTxWait", getTimingSection().getSection());
+        return new TextEditElement(this.driverExt, "timing.rtsToTxWait", getModal());
     }
         
     public TextEditElement getPostTxWait() {
-        return new TextEditElement(this.driverExt, "timing.postTxWait", getTimingSection().getSection());
+        return new TextEditElement(this.driverExt, "timing.postTxWait", getModal());
     }
         
     public TextEditElement getReceiveDataWait() {
-        return new TextEditElement(this.driverExt, "timing.receiveDataWait", getTimingSection().getSection());
+        return new TextEditElement(this.driverExt, "timing.receiveDataWait", getModal());
     }
     
     public TextEditElement getAdditionalTimeOut() {
-        return new TextEditElement(this.driverExt, "timing.extraTimeOut", getTimingSection().getSection());
+        return new TextEditElement(this.driverExt, "timing.extraTimeOut", getModal());
     }       
 }
