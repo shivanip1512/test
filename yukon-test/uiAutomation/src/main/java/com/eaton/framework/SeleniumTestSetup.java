@@ -219,14 +219,13 @@ public class SeleniumTestSetup {
         String display = "";
 
         long startTime = System.currentTimeMillis();
-        while (!display.equals("display: none;") && System.currentTimeMillis() - startTime < 2000) {            
+        while (!display.equals("display: none;") || System.currentTimeMillis() - startTime < 2000) {            
             try {
                 display = driverExt.findElement(By.id("modal-glass"), Optional.empty()).getAttribute("style");
             }
             catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {               
             }  
-        }
-
+        }                
     }
 
     public static void waitUntilModalVisibleByDescribedBy(String describedBy) {

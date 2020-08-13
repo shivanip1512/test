@@ -202,8 +202,10 @@ public final class Urls {
         public static final String SCRIPTS = "/macsscheduler/schedules/view";
         public static final String TRENDS_LIST = "/tools/trends";
         public static final String TRENDS_DETAIL = "/tools/trends/";
+        public static final String TRENDS_EDIT = "/tools/trends/";
         public static final String TREND_CREATE = "/tools/trend/create";
         public static final String TREND = "/tools/trend/";
+
         public static final String REPORTS = "/analysis/Reports.jsp";
         public static final String CREATE_SCHEDULE = "/group/scheduledGroupRequestExecution/home";
         public static final String DEVICE_CONFIGURATION_SUMMARY = "/deviceConfiguration/summary/view";
