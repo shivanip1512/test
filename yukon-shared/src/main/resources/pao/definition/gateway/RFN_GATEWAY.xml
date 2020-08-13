@@ -14,7 +14,7 @@
         <pointInfo name="Certificate Expiration" attributes="CERTIFICATE_EXPIRATION"/>
         <pointInfo name="Node Count Exceeded" attributes="NODE_COUNT_EXCEEDED"/>
         <pointInfo name="Radio Failure" attributes="RADIO_FAILURE"/>
-        <pointInfo name="Ready Nodes" init="true" attributes="READY_NODES" />
+        <pointInfo name="Ready Nodes" init="true" attributes="READY_NODES"/>
         <pointInfo name="Security Alarm" attributes="SECURITY_ALARM"/>
         <pointInfo name="Time Sync Failed" attributes="TIME_SYNC_FAILED"/>
     </pointInfos>
