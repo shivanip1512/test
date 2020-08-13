@@ -103,7 +103,12 @@ public class VirtualDeviceApiDoc extends DocumentationBase {
 
     @Override
     protected Delete buildDeleteFields() {
+        FieldDescriptor[] VirtualDeviceIdFieldDescriptor = new FieldDescriptor[] {
+                fieldWithPath("id")
+                        .type(JsonFieldType.NUMBER)
+                        .description(idStr) };
+        List<FieldDescriptor> responseFields = Arrays.asList(VirtualDeviceIdFieldDescriptor);
         String url = ApiCallHelper.getProperty("virtualDeviceBaseURL") + "/" + virtualDeviceId;
-        return new DocumentationFields.Delete(url);
+        return new DocumentationFields.DeleteWithBody(null, responseFields, null, url);
     }
 }

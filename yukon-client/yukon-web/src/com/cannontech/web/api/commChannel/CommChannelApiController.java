@@ -61,10 +61,10 @@ public class CommChannelApiController {
     //Delete port
     @DeleteMapping("/{portId}")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
-    public ResponseEntity<Map<String, Integer>> delete(@PathVariable int id) {
-        int portId = portService.delete(id);
+    public ResponseEntity<Map<String, Integer>> delete(@PathVariable int portId) {
+        int id = portService.delete(portId);
         Map<String, Integer> portIdMap = new HashMap<>();
-        portIdMap.put("id", portId);
+        portIdMap.put("id", id);
         return new ResponseEntity<>(portIdMap, HttpStatus.OK);
     }
 

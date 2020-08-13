@@ -2,6 +2,7 @@ package com.cannontech.rest.api.documentation.commChannel;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.restdocs.payload.FieldDescriptor;
@@ -97,8 +98,13 @@ public abstract class CommChannelApiDocBase extends DocumentationBase {
     
     @Override
     protected Delete buildDeleteFields() {
+        FieldDescriptor[] CommChannelIdFieldDescriptor = new FieldDescriptor[] {
+                fieldWithPath("id")
+                        .type(JsonFieldType.NUMBER)
+                        .description(idStr) };
+        List<FieldDescriptor> responseFields = Arrays.asList(CommChannelIdFieldDescriptor);
         String url = ApiCallHelper.getProperty("deletePort") + getPortId();
-        return new DocumentationFields.Delete(url);
+        return new DocumentationFields.DeleteWithBody(null,responseFields,null, url);
     }
     
     @Override

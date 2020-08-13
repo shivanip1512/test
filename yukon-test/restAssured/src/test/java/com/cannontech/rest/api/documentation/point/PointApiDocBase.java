@@ -2,6 +2,7 @@ package com.cannontech.rest.api.documentation.point;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.restdocs.payload.FieldDescriptor;
@@ -161,8 +162,13 @@ public abstract class PointApiDocBase extends DocumentationBase {
 
     @Override
     protected Delete buildDeleteFields() {
+        FieldDescriptor[] VirtualDeviceFieldDescriptor = new FieldDescriptor[] {
+                fieldWithPath("id")
+                        .type(JsonFieldType.NUMBER)
+                        .description(idStr) };
+        List<FieldDescriptor> responseFields = Arrays.asList(VirtualDeviceFieldDescriptor);;
         String url = ApiCallHelper.getProperty("pointBaseUrl") + getPointId();
-        return new DocumentationFields.Delete(url);
+        return new DocumentationFields.DeleteWithBody(null,responseFields,null, url);
     }
 
     @Override

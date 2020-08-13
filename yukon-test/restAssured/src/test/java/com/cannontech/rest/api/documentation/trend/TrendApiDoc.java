@@ -175,8 +175,13 @@ public class TrendApiDoc extends DocumentationBase {
 
     @Override
     protected Delete buildDeleteFields() {
+        FieldDescriptor[] TrenIdFieldDescriptor = new FieldDescriptor[] {
+                fieldWithPath("id")
+                        .type(JsonFieldType.NUMBER)
+                        .description(idStr) };
+        List<FieldDescriptor> responseFields = Arrays.asList(TrenIdFieldDescriptor);
         String url = ApiCallHelper.getProperty("deleteTrend") + trendId;
-        return new DocumentationFields.Delete(url);
+        return new DocumentationFields.DeleteWithBody(null, responseFields, null, url);
     }
 }
 
