@@ -85,7 +85,8 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
             jdbcTemplate.update(createSql);
             return attributeDao.getAssignmentById(assignment.getAttributeAssignmentId());
         } catch (DataIntegrityViolationException e) {
-            throw new DuplicateException("Unable to create Attribute Assignment.", e);
+            throw new DuplicateException("An attribute assignment already exists for Device Type:" + assignment.getPaoType() + ", PointType:"
+                    + assignment.getPointType() + ", Offset:" + assignment.getOffset() + ".", e);
         }
     }
     
@@ -99,7 +100,8 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
                 updateSql.append("WHERE AttributeAssignmentId").eq(assignment.getAttributeAssignmentId());
                 jdbcTemplate.update(updateSql);
             } catch (DataIntegrityViolationException e) {
-                throw new DuplicateException("Unable to update Attribute Assignment.", e);
+                throw new DuplicateException("An attribute assignment already exists for Device Type:" + assignment.getPaoType() + ", PointType:"
+                        + assignment.getPointType() + ", Offset:" + assignment.getOffset() + ".", e);
             }
         }
         return attributeDao.getAssignmentById(assignment.getAttributeAssignmentId());
