@@ -6,8 +6,10 @@ import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.BadAuthenticationException;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.system.DREncryption;
 import com.cannontech.system.GlobalSettingType;
 
@@ -154,5 +156,28 @@ public interface SystemEventLogService {
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
     public void certificateGenerationFailed(@Arg(ArgEnum.username) LiteYukonUser user,
             @Arg(ArgEnum.drEncryption) DREncryption drEncryption);
+
+    /* Attributes and Attribute Assignments */
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
+    public void attributeCreated(@Arg(ArgEnum.username) LiteYukonUser user,
+            @Arg(ArgEnum.attributeId) String attributeId, @Arg(ArgEnum.attributeName) String attributeName);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
+    public void attributeUpdated(@Arg(ArgEnum.username) LiteYukonUser user,
+            @Arg(ArgEnum.attributeName) String attributeName, @Arg(ArgEnum.newAttributeName) String newAttributeName);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
+    public void attributeDeleted(@Arg(ArgEnum.username) LiteYukonUser user,
+            @Arg(ArgEnum.attributeName) String attributeName);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
+    public void attributeAssigned(@Arg(ArgEnum.username) LiteYukonUser user,
+            @Arg(ArgEnum.attributeName) String attributeName, @Arg(ArgEnum.paoType) PaoType paoType,
+            @Arg(ArgEnum.pointType) PointType pointType, @Arg(ArgEnum.pointOffset) String PointOffset);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
+    public void attributeAssignmentDeleted(@Arg(ArgEnum.username) LiteYukonUser user,
+            @Arg(ArgEnum.attributeName) String attributeName, @Arg(ArgEnum.paoType) PaoType paoType,
+            @Arg(ArgEnum.pointType) PointType pointType, @Arg(ArgEnum.pointOffset) String PointOffset);
 
 }
