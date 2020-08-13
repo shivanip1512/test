@@ -235,7 +235,7 @@ public class RfnGatewayDataCacheTest {
         @Override
         protected <Q extends Serializable> GatewayDataResponse buildResponse(Q request) {
             GatewayDataResponse response = new GatewayDataResponse();
-            response.setRfnIdentifier(new RfnIdentifier("10000", "EATON", "RFN_GATEWAY"));
+            response.setRfnIdentifier(new RfnIdentifier("10000", "EATON", "RFGateway"));
             return response;
         }
     }
