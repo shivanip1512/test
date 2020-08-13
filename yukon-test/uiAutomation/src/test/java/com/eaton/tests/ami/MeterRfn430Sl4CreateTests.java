@@ -35,7 +35,7 @@ public class MeterRfn430Sl4CreateTests extends SeleniumTestSetup {
         WebDriver driver = getDriver();
         driverExt = getDriverExt();
 
-        driver.get(getBaseUrl() + Urls.Ami.AMI);
+        driver.get(getBaseUrl() + Urls.Ami.AMI_DASHBOARD);
 
         amiDashboardPage = new AmiDashboardPage(driverExt);
         randomNum = getRandomNum();
@@ -66,7 +66,7 @@ public class MeterRfn430Sl4CreateTests extends SeleniumTestSetup {
 
         String userMsg = detailPage.getUserMessage();
 
-        assertThat(userMsg).isEqualTo(METER + name + CREATED);
+        assertThat(METER + name + CREATED).isEqualTo(userMsg);
     }       
 
     private String randomString(int length) {
@@ -80,7 +80,7 @@ public class MeterRfn430Sl4CreateTests extends SeleniumTestSetup {
     }
 
     @AfterMethod(alwaysRun=true)
-    public void afterTest() {
+    public void afterMethod() {
         refreshPage(amiDashboardPage);
     }
 }

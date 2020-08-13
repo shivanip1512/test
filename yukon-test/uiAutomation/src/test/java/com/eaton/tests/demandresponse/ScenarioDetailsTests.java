@@ -51,7 +51,7 @@ public class ScenarioDetailsTests extends SeleniumTestSetup {
 
         waitForPageToLoad("Setup", Optional.empty());
 
-        DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.CONTROl_SCENARIO);
+        DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.CONTROL_SCENARIO);
 
         String userMsg = setupPage.getUserMessage();
 

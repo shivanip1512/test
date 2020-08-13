@@ -39,13 +39,13 @@ public class TrendEditTests extends SeleniumTestSetup {
         trendId = response.path("trendId");
         trendName = response.path("name").toString();
         
-        navigate(Urls.Tools.TREND + trendId + Urls.EDIT);
-        editPage = new TrendEditPage(driverExt, Urls.Tools.TREND, trendId);
+        navigate(Urls.Tools.TREND_EDIT + trendId + Urls.EDIT);
+        editPage = new TrendEditPage(driverExt, Urls.Tools.TREND_EDIT, trendId);
     }    
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
     public void trendEdit_pageTitleCorrect() {
-        navigate(Urls.Tools.TREND + trendId + Urls.EDIT);
+        navigate(editPage.getPageUrl());
         
         final String EXPECTED_TITLE = "Edit Trend: " + trendName;
 
@@ -73,7 +73,7 @@ public class TrendEditTests extends SeleniumTestSetup {
         
         Integer editTrendId = response.path("trendId");
         
-        navigate(Urls.Tools.TREND + editTrendId + Urls.EDIT);
+        navigate(Urls.Tools.TREND_EDIT + editTrendId + Urls.EDIT);
 
         editPage.getSetupTab().click();
         WebTableRow row = editPage.getPointSetupTable().getDataRowByIndex(0);
