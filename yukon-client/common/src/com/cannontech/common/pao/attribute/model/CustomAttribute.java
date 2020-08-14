@@ -43,7 +43,7 @@ public class CustomAttribute implements Attribute {
     }
 
     public boolean isEmpty() {
-        return name == null ? false : true;
+        return name == null ? true : false;
     }
 
     @Override
