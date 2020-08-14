@@ -106,7 +106,7 @@ public class VirtualDeviceApiDoc extends DocumentationBase {
         FieldDescriptor[] VirtualDeviceIdFieldDescriptor = new FieldDescriptor[] {
                 fieldWithPath("id")
                         .type(JsonFieldType.NUMBER)
-                        .description(idStr) };
+                        .description(idDescStr) };
         List<FieldDescriptor> responseFields = Arrays.asList(VirtualDeviceIdFieldDescriptor);
         String url = ApiCallHelper.getProperty("virtualDeviceBaseURL") + "/" + virtualDeviceId;
         return new DocumentationFields.DeleteWithBody(null, responseFields, null, url);

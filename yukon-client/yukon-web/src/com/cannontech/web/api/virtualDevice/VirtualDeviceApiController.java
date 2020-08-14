@@ -57,9 +57,9 @@ public class VirtualDeviceApiController {
 
     @DeleteMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.OWNER)
-    public ResponseEntity<Map<String, Integer>> delete(@PathVariable int id) {
+    public ResponseEntity<Object> delete(@PathVariable int id) {
         int virtualDeviceId = virtualDeviceService.delete(id);
-        Map<String, Integer> virtualDeviceIdMap = new HashMap<>();
+        HashMap<String, Integer> virtualDeviceIdMap = new HashMap<>();
         virtualDeviceIdMap.put("id", virtualDeviceId);
         return new ResponseEntity<>(virtualDeviceIdMap, HttpStatus.OK);
     }

@@ -76,10 +76,10 @@ public class PointApiController <T extends PointBaseModel<?>> {
     }
 
     @DeleteMapping("/points/{id}")
-    public ResponseEntity<Map<String, Integer>> delete(@PathVariable int id, HttpServletRequest request) throws AttachedException {
+    public ResponseEntity<Object> delete(@PathVariable int id, HttpServletRequest request) throws AttachedException {
         pointHelper.verifyRoles(getYukonUserContext(request).getYukonUser(), HierarchyPermissionLevel.OWNER);
         int pointId = pointEditorService.delete(id, getYukonUserContext(request));
-        Map<String, Integer> pointIdMap = new HashMap<>();
+        HashMap<String, Integer> pointIdMap = new HashMap<>();
         pointIdMap.put("id", pointId);
         return new ResponseEntity<>(pointIdMap, HttpStatus.OK);
     }

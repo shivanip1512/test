@@ -162,13 +162,13 @@ public abstract class PointApiDocBase extends DocumentationBase {
 
     @Override
     protected Delete buildDeleteFields() {
-        FieldDescriptor[] VirtualDeviceFieldDescriptor = new FieldDescriptor[] {
+        FieldDescriptor[] PointIdFieldDescriptor = new FieldDescriptor[] {
                 fieldWithPath("id")
                         .type(JsonFieldType.NUMBER)
-                        .description(idStr) };
-        List<FieldDescriptor> responseFields = Arrays.asList(VirtualDeviceFieldDescriptor);;
+                        .description(idDescStr) };
+        List<FieldDescriptor> responseFields = Arrays.asList(PointIdFieldDescriptor);;
         String url = ApiCallHelper.getProperty("pointBaseUrl") + getPointId();
-        return new DocumentationFields.DeleteWithBody(null,responseFields,null, url);
+        return new DocumentationFields.DeleteWithBody(null, responseFields, null, url);
     }
 
     @Override

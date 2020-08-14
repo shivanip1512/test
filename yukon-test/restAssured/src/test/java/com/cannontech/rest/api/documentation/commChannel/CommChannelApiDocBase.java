@@ -101,10 +101,10 @@ public abstract class CommChannelApiDocBase extends DocumentationBase {
         FieldDescriptor[] CommChannelIdFieldDescriptor = new FieldDescriptor[] {
                 fieldWithPath("id")
                         .type(JsonFieldType.NUMBER)
-                        .description(idStr) };
+                        .description(idDescStr) };
         List<FieldDescriptor> responseFields = Arrays.asList(CommChannelIdFieldDescriptor);
         String url = ApiCallHelper.getProperty("deletePort") + getPortId();
-        return new DocumentationFields.DeleteWithBody(null,responseFields,null, url);
+        return new DocumentationFields.DeleteWithBody(null, responseFields, null, url);
     }
     
     @Override
