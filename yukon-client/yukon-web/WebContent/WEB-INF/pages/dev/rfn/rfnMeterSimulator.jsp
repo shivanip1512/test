@@ -3,7 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage module="dev" page="rfnTest.viewDataSimulator">
+<cti:standardPage module="dev" page="rfnTest.rfnMeterSimulator">
     <cti:tabs>
         <cti:tab title="RFN Meter Simulator">
             <div class="column-12-12 clearfix">
