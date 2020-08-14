@@ -50,16 +50,20 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
 
     @Override
     public AttributeAssignment updateAttributeAssignment(Assignment assignment, YukonUserContext userContext) {
+        if (assignment.isEmpty()) {
+            return attributeDao.getAssignmentById(assignment.getAttributeAssignmentId());
+        }
+        
         // Gather information for logging
         Assignment originalAssignment = attributeDao.getAssignmentById(assignment.getAttributeId());
         String originalAttributeName = attributeService.getCustomAttribute(originalAssignment.getAttributeId()).getName();
-
-        Integer attributeId = assignment.getAttributeId();
-        if (attributeId != null && !attributeService.isValidAttributeId(attributeId)) {
+        
+        if (!attributeService.isValidAttributeId(assignment.getAttributeId())) {
             throw new NotFoundException("Attribute id:" + assignment.getAttributeId() + " is not in the database.");
         }
         if (!attributeService.isValidAssignmentId(assignment.getAttributeAssignmentId())) {
-            throw new NotFoundException("Attribute Assignment id:" + assignment.getAttributeAssignmentId() + " is not in the database.");
+            throw new NotFoundException(
+                    "Attribute Assignment id:" + assignment.getAttributeAssignmentId() + " is not in the database.");
         }
         AttributeAssignment updatedAssignment = customAttributeDao.updateAttributeAssignment(assignment);
         dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.ATTRIBUTE_ASSIGNMENT,
@@ -74,6 +78,9 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
 
     @Override
     public CustomAttribute updateCustomAttribute(CustomAttribute attribute, YukonUserContext userContext) {
+        if (attribute.isEmpty()) {
+            return attributeDao.getCustomAttribute(attribute.getCustomAttributeId());
+        }
         if (!attributeService.isValidAttributeId(attribute.getCustomAttributeId())) {
             throw new NotFoundException("Attribute id:" + attribute.getCustomAttributeId() + " is not in the database.");
         }

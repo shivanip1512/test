@@ -16,8 +16,17 @@ public class BaseModal {
     private String modalTitle;
     private String describedBy;
 
-    public BaseModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
-        this.driverExt = driverExt;
+    /**
+     * @param driverExt
+     * @param modalTitle - This is an optional field that is used to find the modal by it's title. 
+     *                     Use this only if the modal does NOT have an aria-describedby, or if the
+     *                     aria-describedby is dynamically generated.  When using send in Optional.empty() for describedBy.
+     *                     
+     * @param describedBy - This is an optional field that is used to find the modal by aria-describedby.  
+     *                      Use this first if the modal uses aria-describedby that is not dynamically generated.  
+     *                      When Using send in Optional.empty() for modal title.
+     */
+    public BaseModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) { this.driverExt = driverExt;
 
         if (modalTitle.isPresent())
             this.modalTitle = modalTitle.get();

@@ -85,26 +85,28 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
             jdbcTemplate.update(createSql);
             return attributeDao.getAssignmentById(assignment.getAttributeAssignmentId());
         } catch (DataIntegrityViolationException e) {
-            throw new DuplicateException("Unable to create Attribute Assignment.", e);
+            throw new DuplicateException("An attribute assignment already exists for Device Type:" + assignment.getPaoType() + ", PointType:"
+                    + assignment.getPointType() + ", Offset:" + assignment.getOffset() + ".", e);
         }
     }
     
     @Override
     public AttributeAssignment updateAttributeAssignment(Assignment assignment) {
-        if (!isEmptyAssignment(assignment)) {
-            try {
-                SqlStatementBuilder updateSql = new SqlStatementBuilder();
-                SqlParameterSink params = updateSql.update("AttributeAssignment");
-                addAssignmentParameters(params, assignment);
-                updateSql.append("WHERE AttributeAssignmentId").eq(assignment.getAttributeAssignmentId());
-                jdbcTemplate.update(updateSql);
-            } catch (DataIntegrityViolationException e) {
-                throw new DuplicateException("Unable to update Attribute Assignment.", e);
-            }
+        try {
+            SqlStatementBuilder updateSql = new SqlStatementBuilder();
+            SqlParameterSink params = updateSql.update("AttributeAssignment");
+            addAssignmentParameters(params, assignment);
+            updateSql.append("WHERE AttributeAssignmentId").eq(assignment.getAttributeAssignmentId());
+            jdbcTemplate.update(updateSql);
+            return attributeDao.getAssignmentById(assignment.getAttributeAssignmentId());
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateException(
+                    "An attribute assignment already exists for Device Type:" + assignment.getPaoType() + ", PointType:"
+                            + assignment.getPointType() + ", Offset:" + assignment.getOffset() + ".",
+                    e);
         }
-        return attributeDao.getAssignmentById(assignment.getAttributeAssignmentId());
     }
-    
+
     @Override
     public CustomAttribute createCustomAttribute(CustomAttribute attribute) {
         try {
@@ -222,15 +224,6 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
         }
         if (assignment.getOffset() != null) {
             params.addValue("PointOffset", assignment.getOffset());
-        }
-    }
-
-    private boolean isEmptyAssignment(Assignment assignment) {
-        if (assignment.getAttributeId() == null && assignment.getPaoType() == null && assignment.getPointType() == null
-                && assignment.getOffset() == null) {
-            return true;
-        } else {
-            return false;
         }
     }
 }

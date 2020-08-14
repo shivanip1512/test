@@ -172,7 +172,13 @@ public class WebTable {
         }
         
         return null;
-    }    
+    }   
+    
+    public WebTableRow getDataRowByIndex(Integer index) {
+        List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody tr"));
+        
+        return new WebTableRow(rowList.get(index));
+    }
 
     private void findColumnHeaders() {
 

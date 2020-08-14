@@ -25,11 +25,11 @@ public class EditTerminalServerCommChannelModal extends EditCommChannelModal{
     
     //Info
     public TextEditElement getIpAddress() {
-        return new TextEditElement(this.driverExt, "ipAddress");
+        return new TextEditElement(this.driverExt, "ipAddress", getModal());
     }
     
     public TextEditElement getPortNumber() {
-        return new TextEditElement(this.driverExt, "portNumber");
+        return new TextEditElement(this.driverExt, "portNumber", getModal());
     }
     
     public DropDownElement getBaudRate() {
@@ -38,15 +38,24 @@ public class EditTerminalServerCommChannelModal extends EditCommChannelModal{
     
     //Configuration - General Section    
     public RadioButtonElement getProtocolWrap() {
-        return new RadioButtonElement(this.driverExt, "protocolWrap", getGeneralSection().getSection());
+        return new RadioButtonElement(this.driverExt, "protocolWrap", getModal());
     }
     
     public SwitchBtnYesNoElement getCarrierDetectWait() {
-        return new SwitchBtnYesNoElement(this.driverExt, "carrierDetectWait", getGeneralSection().getSection());
+        return new SwitchBtnYesNoElement(this.driverExt, "carrierDetectWait", getModal());
     }
+    
+    public TextEditElement getCarrierDetectWaitTextBox() {
+        return new TextEditElement(this.driverExt, "carrierDetectWaitInMilliseconds", getModal());
+    }
+    
     
     //Configuration - Shared Section
     public RadioButtonElement getSharedPortType() {
         return new RadioButtonElement(this.driverExt, "sharing.sharedPortType");
     }
+    
+    public TextEditElement getSocketNumber() {
+       return new TextEditElement(this.driverExt, "sharing.sharedSocketNumber", getModal());
+    }  
 }

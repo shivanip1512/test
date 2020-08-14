@@ -263,8 +263,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
      * Return RfnIdentifier instance based on serial and model number.
      */
     private RfnIdentifier createGatewayRfnIdentifier(String serial, String model) {
-        String manufacturer = RfnDeviceCreationService.GATEWAY_4_MODEL_STRING.equals(model) ? 
-                                  RfnDeviceCreationService.GW_MANUFACTURER_EATON : RfnDeviceCreationService.GW_MANUFACTURER_CPS;
+        String manufacturer = RfnDeviceCreationService.GW_MANUFACTURER_EATON;
         return new RfnIdentifier(serial, manufacturer, model);
     }
 
@@ -623,7 +622,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         GatewayUpdateResponse response = new GatewayUpdateResponse();
         if (request instanceof GatewayCreateRequest) {
             GatewayCreateRequest createRequest = (GatewayCreateRequest) request;
-            RfnIdentifier rfnId = new RfnIdentifier(generateGatewaySerial(), RfnDeviceCreationService.GW_MANUFACTURER_CPS, RfnDeviceCreationService.GATEWAY_1_MODEL_STRING);
+            RfnIdentifier rfnId = new RfnIdentifier(generateGatewaySerial(), RfnDeviceCreationService.GW_MANUFACTURER_EATON, RfnDeviceCreationService.GATEWAY_1_MODEL_STRING);
             // Cache the data so that it can be used to respond to data requests
             if (settings.getCreateResult() == GatewayUpdateResult.SUCCESSFUL) {
                 cacheGatewayData(rfnId, createRequest.getData());

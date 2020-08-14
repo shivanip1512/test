@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Optional;
 
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -37,13 +36,12 @@ public class MeterRfn530S4xDetailTests extends SeleniumTestSetup {
 
         modal.clickOkAndWaitForModalToClose();
 
-        waitForUrlToLoad(Urls.Ami.AMI, Optional.of(10));
+        waitForUrlToLoad(Urls.Ami.AMI_DASHBOARD, Optional.of(10));
 
         AmiDashboardPage dashboardPage = new AmiDashboardPage(driverExt);
 
         String userMsg = dashboardPage.getUserMessage();
 
-//        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg '" + EXPECTED_MSG + "' but found " + userMsg);
-        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(userMsg);
     }
 }
