@@ -110,7 +110,6 @@ public class HoneywellProgramApiDoc {
     public void Test_HoneywellProgram_Create(ITestContext context) {
         List<MockGearControlMethod> gearTypes = new ArrayList<>();
         gearTypes.add(MockGearControlMethod.HoneywellCycle);
-        gearTypes.add(MockGearControlMethod.HoneywellSetpoint);
         MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_HONEYWELL_PROGRAM,
                                                                                  (List<MockLoadGroupBase>) context.getAttribute("loadGroups"),
                                                                                  gearTypes,
