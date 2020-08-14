@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.user.YukonUserContext;
@@ -35,6 +36,7 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 public class CustomAttributeApiController {
 
     @Autowired private AttributeDao attributeDao;
+    @Autowired private AttributeService attributeService;
     @Autowired private CustomAttributeService customAttributeService;
     @Autowired private AttributeValidator customAttributeValidator;
 
@@ -45,7 +47,7 @@ public class CustomAttributeApiController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> retrieve(@PathVariable Integer id) {
-        CustomAttribute attribute = attributeDao.getCustomAttribute(id);
+        CustomAttribute attribute = attributeService.getCustomAttribute(id);
         return new ResponseEntity<>(attribute, HttpStatus.OK);
     }
 
