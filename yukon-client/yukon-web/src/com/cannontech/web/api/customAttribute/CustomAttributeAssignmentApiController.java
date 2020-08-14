@@ -33,6 +33,7 @@ import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.admin.dao.CustomAttributeDao;
 import com.cannontech.web.admin.dao.CustomAttributeDao.SortBy;
 import com.cannontech.web.admin.service.impl.CustomAttributeService;
@@ -53,11 +54,8 @@ public class CustomAttributeAssignmentApiController {
 
 
     @PostMapping("")
-    public ResponseEntity<Object> create(@Valid @RequestBody Assignment assignment, LiteYukonUser user) {
-        Assignment newAssignment = customAttributeService.createAttributeAssignment(assignment);
-        String attributeName = attributeDao.getCustomAttribute(assignment.getAttributeId()).getName();
-        systemEventLogService.attributeAssigned(user, attributeName, assignment.getPaoType(), assignment.getPointType(), assignment.getOffset().toString());
-        return new ResponseEntity<>(newAssignment, HttpStatus.OK);
+    public ResponseEntity<Object> create(@Valid @RequestBody Assignment assignment, YukonUserContext userContext) {
+        return new ResponseEntity<>(customAttributeService.createAttributeAssignment(assignment, userContext), HttpStatus.OK);
     }
 
     @GetMapping("/{attributeAssignmentId}")
@@ -66,28 +64,14 @@ public class CustomAttributeAssignmentApiController {
     }
 
     @PatchMapping("/{attributeAssignmentId}")
-    public ResponseEntity<Object> update(@PathVariable int attributeAssignmentId, @Valid @RequestBody Assignment assignment, LiteYukonUser user) {
-        Assignment originalAssignment = attributeDao.getAssignmentById(attributeAssignmentId);
-        String originalAttributeName = attributeDao.getCustomAttribute(originalAssignment.getAttributeId()).getName();
-        String newAttributeName = attributeDao.getCustomAttribute(assignment.getAttributeId()).getName();
-
-        Assignment updatedAssignment = customAttributeService.updateAttributeAssignment(assignment);
-
-        systemEventLogService.attributeAssignmentDeleted(user, originalAttributeName, originalAssignment.getPaoType(), originalAssignment.getPointType(), originalAssignment.getOffset().toString());
-        systemEventLogService.attributeAssigned(user, newAttributeName, assignment.getPaoType(), assignment.getPointType(), assignment.getOffset().toString());
-
+    public ResponseEntity<Object> update(@PathVariable int attributeAssignmentId, @Valid @RequestBody Assignment assignment, YukonUserContext userContext) {
         assignment.setAttributeAssignmentId(attributeAssignmentId);
-        return new ResponseEntity<>(updatedAssignment, HttpStatus.OK);
+        return new ResponseEntity<>(customAttributeService.updateAttributeAssignment(assignment, userContext), HttpStatus.OK);
     }
 
     @DeleteMapping("/{attributeAssignmentId}")
-    public ResponseEntity<Object> delete(@PathVariable int attributeAssignmentId, LiteYukonUser user) {
-        Assignment assignment = attributeDao.getAssignmentById(attributeAssignmentId);
-        String attributeName = attributeDao.getCustomAttribute(assignment.getAttributeId()).getName();
-        customAttributeService.deleteAttributeAssignment(attributeAssignmentId);
-
-        systemEventLogService.attributeAssignmentDeleted(user, attributeName, assignment.getPaoType(), assignment.getPointType(), assignment.getOffset().toString());
-
+    public ResponseEntity<Object> delete(@PathVariable int attributeAssignmentId, YukonUserContext userContext) {
+        customAttributeService.deleteAttributeAssignment(attributeAssignmentId, userContext);
         Map<String, Object> jsonResponse = new HashMap<String, Object>();
         jsonResponse.put("id", attributeAssignmentId);
 

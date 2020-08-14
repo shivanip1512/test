@@ -19,13 +19,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.admin.AttributeValidator;
 import com.cannontech.web.admin.service.impl.CustomAttributeService;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
@@ -38,13 +37,10 @@ public class CustomAttributeApiController {
     @Autowired private AttributeDao attributeDao;
     @Autowired private CustomAttributeService customAttributeService;
     @Autowired private AttributeValidator customAttributeValidator;
-    @Autowired private SystemEventLogService systemEventLogService;
 
     @PostMapping("")
-    public ResponseEntity<Object> create(@Valid @RequestBody CustomAttribute customAttribute, LiteYukonUser user) {
-        CustomAttribute newCustomAttribute = customAttributeService.createCustomAttribute(customAttribute);
-        systemEventLogService.attributeCreated(user, newCustomAttribute.getCustomAttributeId().toString(), newCustomAttribute.getName());
-        return new ResponseEntity<>(newCustomAttribute, HttpStatus.CREATED);
+    public ResponseEntity<Object> create(@Valid @RequestBody CustomAttribute customAttribute, YukonUserContext userContext) {
+        return new ResponseEntity<>(customAttributeService.createCustomAttribute(customAttribute, userContext), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
@@ -54,19 +50,14 @@ public class CustomAttributeApiController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable Integer id, @Valid @RequestBody CustomAttribute customAttribute, LiteYukonUser user) {
-        CustomAttribute originalAttribute = attributeDao.getCustomAttribute(id);
+    public ResponseEntity<Object> update(@PathVariable Integer id, @Valid @RequestBody CustomAttribute customAttribute, YukonUserContext userContext) {
         customAttribute.setCustomAttributeId(id);
-        customAttribute = customAttributeService.updateCustomAttribute(customAttribute);
-        systemEventLogService.attributeUpdated(user, originalAttribute.getName(), customAttribute.getName());
-        return new ResponseEntity<>(customAttribute, HttpStatus.OK);
+        return new ResponseEntity<>(customAttributeService.updateCustomAttribute(customAttribute, userContext), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> delete(@PathVariable Integer id, LiteYukonUser user) throws DataDependencyException {
-        CustomAttribute originalAttribute = attributeDao.getCustomAttribute(id);
-        customAttributeService.deleteCustomAttribute(id);
-        systemEventLogService.attributeDeleted(user, originalAttribute.getName());
+    public ResponseEntity<Object> delete(@PathVariable Integer id, YukonUserContext userContext) throws DataDependencyException {
+        customAttributeService.deleteCustomAttribute(id, userContext);
         Map<String, Integer> jsonResponse = new HashMap<String, Integer>();
         jsonResponse.put("id", id);
         return new ResponseEntity<>(jsonResponse, HttpStatus.OK);

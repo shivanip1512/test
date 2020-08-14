@@ -160,11 +160,11 @@ public interface SystemEventLogService {
     /* Attributes and Attribute Assignments */
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
     public void attributeCreated(@Arg(ArgEnum.username) LiteYukonUser user,
-            @Arg(ArgEnum.attributeId) String attributeId, @Arg(ArgEnum.attributeName) String attributeName);
+            @Arg(ArgEnum.attributeId) Integer attributeId, @Arg(ArgEnum.attributeName) String attributeName);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
     public void attributeUpdated(@Arg(ArgEnum.username) LiteYukonUser user,
-            @Arg(ArgEnum.attributeName) String attributeName, @Arg(ArgEnum.newAttributeName) String newAttributeName);
+            @Arg(ArgEnum.attributeName) String attributeName, String newAttributeName);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
     public void attributeDeleted(@Arg(ArgEnum.username) LiteYukonUser user,
@@ -173,11 +173,11 @@ public interface SystemEventLogService {
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
     public void attributeAssigned(@Arg(ArgEnum.username) LiteYukonUser user,
             @Arg(ArgEnum.attributeName) String attributeName, @Arg(ArgEnum.paoType) PaoType paoType,
-            @Arg(ArgEnum.pointType) PointType pointType, @Arg(ArgEnum.pointOffset) String PointOffset);
+            @Arg(ArgEnum.pointType) PointType pointType, @Arg(ArgEnum.pointOffset) Integer PointOffset);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
     public void attributeAssignmentDeleted(@Arg(ArgEnum.username) LiteYukonUser user,
             @Arg(ArgEnum.attributeName) String attributeName, @Arg(ArgEnum.paoType) PaoType paoType,
-            @Arg(ArgEnum.pointType) PointType pointType, @Arg(ArgEnum.pointOffset) String PointOffset);
+            @Arg(ArgEnum.pointType) PointType pointType, @Arg(ArgEnum.pointOffset) Integer PointOffset);
 
 }
