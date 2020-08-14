@@ -56,7 +56,7 @@ public class HoneywellProgramApiDoc {
                 fieldWithPath("gears[].fields.rampInOut").type(JsonFieldType.BOOLEAN).description("RampInOut").optional(),
                 fieldWithPath("gears[].fields.controlPercent").type(JsonFieldType.NUMBER).description("Control Percent. Min Value: 5, Max Value: 100").optional(),
                 fieldWithPath("gears[].fields.cyclePeriodInMinutes").type(JsonFieldType.NUMBER).description("Cycle Period").optional(),
-                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).ignored().description("How To Stop Control"),
+                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).description("How To Stop Control"),
                 fieldWithPath("gears[].fields.capacityReduction").type(JsonFieldType.NUMBER).description("Capacity Reduction. Min Value: 0, Max Value: 100"),
                 fieldWithPath("gears[].fields.whenToChangeFields").type(JsonFieldType.OBJECT).description("Consists of When to change fields"),
                 fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)

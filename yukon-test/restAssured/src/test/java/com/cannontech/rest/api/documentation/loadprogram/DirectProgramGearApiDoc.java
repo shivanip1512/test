@@ -479,7 +479,7 @@ public class DirectProgramGearApiDoc {
                                                                .description("Send Rate in minutes. Min Value: 0, Max Value: 1000"),
                 fieldWithPath("gears[].fields.groupSelectionMethod").type(JsonFieldType.STRING)
                                                                .description("Group selection method. Expected: 'LastControlled', 'AlwaysFirstGroup', 'LeastControlTime'"),
-                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).description("How to stop control. Expected: 'Time In', 'Restore' "),
+                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).description("How to stop control"),
                 fieldWithPath("gears[].fields.capacityReduction").type(JsonFieldType.NUMBER)
                                                                .description("Group Capacity reduction. Min Value: 0, Max Value: 100"),
                 fieldWithPath("gears[].fields.whenToChangeFields").type(JsonFieldType.OBJECT).description("Consists of When to change fields"),

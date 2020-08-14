@@ -21,11 +21,10 @@ public class EmetconLoadGroupApiDoc extends LoadGroupApiDocBase {
             fieldWithPath("LM_GROUP_EMETCON.disableGroup").type(JsonFieldType.BOOLEAN).description("Flag to disable Group"),
             fieldWithPath("LM_GROUP_EMETCON.disableControl").type(JsonFieldType.BOOLEAN).description("Flag to disable Control"),
             fieldWithPath("LM_GROUP_EMETCON.routeId").type(JsonFieldType.NUMBER).description("Route Id"),
-            fieldWithPath("LM_GROUP_EMETCON.routeName").type(JsonFieldType.STRING).description("Route Name").optional(),
             fieldWithPath("LM_GROUP_EMETCON.addressUsage").type(JsonFieldType.STRING)
-                    .description("Address Usage. Must have G (for gold address), S (For silver address)"),
+                    .description("Address Usage. Must have GOLD (for gold address), SILVER (For silver address)"),
             fieldWithPath("LM_GROUP_EMETCON.relayUsage").type(JsonFieldType.STRING)
-                    .description("Relay Usgae. Must have A, B, C or S (for All)"),
+                    .description("Relay Usgae. Must have RELAY_1, RELAY_2, RELAY_3 or RELAY_4 (for All)"),
             fieldWithPath("LM_GROUP_EMETCON.goldAddress").type(JsonFieldType.NUMBER).description("Gold address value."),
             fieldWithPath("LM_GROUP_EMETCON.silverAddress").type(JsonFieldType.NUMBER).description("Silver address value.")
     };

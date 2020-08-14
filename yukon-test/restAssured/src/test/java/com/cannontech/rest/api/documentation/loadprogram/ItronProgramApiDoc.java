@@ -59,7 +59,7 @@ public class ItronProgramApiDoc {
                 fieldWithPath("gears[].fields.dutyCyclePeriodInMinutes").type(JsonFieldType.NUMBER).description("Duty Cycle Period."),
                 fieldWithPath("gears[].fields.criticality").type(JsonFieldType.NUMBER).description("Criticality. Min Value: 0, Max Value: 255"),
                 fieldWithPath("gears[].fields.capacityReduction").type(JsonFieldType.NUMBER).description("Capacity Reduction. Min Value: 0, Max Value: 100"),
-                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).ignored().description("How To Stop Control"),
+                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).description("How To Stop Control"),
                 fieldWithPath("gears[].fields.whenToChangeFields").type(JsonFieldType.OBJECT).description("Consists of When to change fields"),
                 fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)
                                                                                .description("When to change field Expected : None, Duration, Priority, TriggerOffset") };
