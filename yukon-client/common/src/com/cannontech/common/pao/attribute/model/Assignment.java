@@ -58,6 +58,11 @@ public class Assignment {
         this.offset = offset;
     }
     
+    public boolean isEmpty() {
+        return attributeId == null && paoType == null && pointType == null
+                && offset == null ? true : false;
+    }
+    
     @Override
     public int hashCode() {
         final int prime = 31;

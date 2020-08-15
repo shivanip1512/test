@@ -42,6 +42,10 @@ public class CustomAttribute implements Attribute {
         return String.valueOf(customAttributeId);
     }
 
+    public boolean isEmpty() {
+        return name == null;
+    }
+
     @Override
     @JsonIgnore
     public MessageSourceResolvable getMessage() {

@@ -17,7 +17,7 @@ public class AmiDashboardPage extends PageBase {
         super(driverExt);
         
         requiresLogin = true;
-        pageUrl = Urls.Ami.AMI;
+        pageUrl = Urls.Ami.AMI_DASHBOARD;
 
         actionBtn = new ActionBtnDropDownElement(this.driverExt);
     }
