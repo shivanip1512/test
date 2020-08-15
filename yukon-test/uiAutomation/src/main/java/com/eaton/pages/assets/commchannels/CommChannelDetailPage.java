@@ -16,8 +16,6 @@ import com.eaton.pages.PageBase;
 
 public class CommChannelDetailPage extends PageBase {
 
-    private static final String CONFIRM_DIALOG = "yukon_dialog_confirm";
-
     public CommChannelDetailPage(DriverExtensions driverExt, int id) {
         super(driverExt);
 
@@ -43,14 +41,6 @@ public class CommChannelDetailPage extends PageBase {
 
     public Section getTimingSection() {
         return new Section(this.driverExt, "Timing");
-    }
-
-    public Section getGeneralSection() {
-        return new Section(this.driverExt, "General");
-    }
-
-    public Section getSharedSection() {
-        return new Section(this.driverExt, "Shared");
     }
 
     public EditCommChannelModal showCommChannelEditModal(String modalTitle) {

@@ -36,7 +36,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        driverExt = getDriverExt();        
+        driverExt = getDriverExt();
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         commChannelName = "TCP Comm Channel " + timeStamp;
@@ -70,42 +70,42 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         softly = new SoftAssertions();
         List<String> titles = detailPage.getTabElement().getTitles();
 
-        softly.assertThat(titles.size()).isEqualTo(2);
-        softly.assertThat(titles.get(0)).isEqualTo("Info");
-        softly.assertThat(titles.get(1)).isEqualTo("Configuration");
+        softly.assertThat(2).isEqualTo(titles.size());
+        softly.assertThat("Info").isEqualTo(titles.get(0));
+        softly.assertThat("Configuration").isEqualTo(titles.get(1));
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTcp_InfoTabLabelsCorrect() {
+    public void commChannelDetailsTcp_InfoTab_LabelsCorrect() {
         softly = new SoftAssertions();
         String infoTitle = "Info";
         detailPage.getTabElement().clickTabAndWait(infoTitle);
         List<String> labels = detailPage.getTabElement().getTabLabels(infoTitle);
 
-        softly.assertThat(labels.size()).isEqualTo(4);
-        softly.assertThat(labels.get(0)).isEqualTo("Name:");
-        softly.assertThat(labels.get(1)).contains("Type:");
-        softly.assertThat(labels.get(2)).contains("Baud Rate:");
-        softly.assertThat(labels.get(3)).contains("Status:");
+        softly.assertThat(4).isEqualTo(labels.size());
+        softly.assertThat("Name:").isEqualTo(labels.get(0));
+        softly.assertThat("Type:").contains(labels.get(1));
+        softly.assertThat("Baud Rate:").contains(labels.get(2));
+        softly.assertThat("Status:").contains(labels.get(3));
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTcp_InfoTabValuesCorrect() {
+    public void commChannelDetailsTcp_InfoTab_ValuesCorrect() {
         softly = new SoftAssertions();
         List<String> values = detailPage.getTabElement().getTabValues("Info");
 
         softly.assertThat(values.size()).isEqualTo(4);
-        softly.assertThat(values).contains(commChannelName);
-        softly.assertThat(values).contains("TCP");
-        softly.assertThat(values).contains("1200");
-        softly.assertThat(values).contains("Enabled");
+        softly.assertThat(commChannelName).isEqualTo(values.get(0));
+        softly.assertThat("TCP").isEqualTo(values.get(1));
+        softly.assertThat("1200").isEqualTo(values.get(2));
+        softly.assertThat("Enabled").isEqualTo(values.get(3));
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTcp_ConfigTabTimingSectionDisplayed() {
+    public void commChannelDetailsTcp_ConfigTab_TimingSectionDisplayed() {
         String infoTitle = "Configuration";
 
         detailPage.getTabElement().clickTabAndWait(infoTitle);
@@ -116,7 +116,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTcp_ConfigTabLabelsCorrect() {
+    public void commChannelDetailsTcp_ConfigTab_LabelsCorrect() {
         softly = new SoftAssertions();
         String infoTitle = "Configuration";
 
@@ -124,28 +124,28 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
 
         List<String> labels = detailPage.getTabElement().getTabLabels(infoTitle);
 
-        softly.assertThat(labels.size()).isEqualTo(5);
-        softly.assertThat(labels.get(0)).isEqualTo("Pre Tx Wait:");
-        softly.assertThat(labels.get(1)).isEqualTo("RTS To Tx Wait:");
-        softly.assertThat(labels.get(2)).isEqualTo("Post Tx Wait:");
-        softly.assertThat(labels.get(3)).isEqualTo("Receive Data Wait:");
-        softly.assertThat(labels.get(4)).isEqualTo("Additional Time Out:");
+        softly.assertThat(5).isEqualTo(labels.size());
+        softly.assertThat("Pre Tx Wait:").isEqualTo(labels.get(0));
+        softly.assertThat("RTS To Tx Wait:").isEqualTo(labels.get(1));
+        softly.assertThat("Post Tx Wait:").isEqualTo(labels.get(2));
+        softly.assertThat("Receive Data Wait:").isEqualTo(labels.get(3));
+        softly.assertThat("Additional Time Out:").isEqualTo(labels.get(4));
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTcp_ConfigTabValuesCorrect() {
+    public void commChannelDetailsTcp_ConfigTab_ValuesCorrect() {
         softly = new SoftAssertions();
         detailPage.getTabElement().clickTabAndWait("Configuration");
 
         List<String> values = detailPage.getTabElement().getTabValues("Configuration");
 
-        softly.assertThat(values.size()).isEqualTo(5);
-        softly.assertThat(values.get(0)).isEqualTo("25  ms");
-        softly.assertThat(values.get(1)).isEqualTo("0  ms");
-        softly.assertThat(values.get(2)).isEqualTo("10  ms");
-        softly.assertThat(values.get(3)).isEqualTo("0  ms");
-        softly.assertThat(values.get(4)).isEqualTo("0  sec");
+        softly.assertThat(5).isEqualTo(values.size());
+        softly.assertThat("25  ms").isEqualTo(values.get(0));
+        softly.assertThat("0  ms").isEqualTo(values.get(1));
+        softly.assertThat("10  ms").isEqualTo(values.get(2));
+        softly.assertThat("0  ms").isEqualTo(values.get(3));
+        softly.assertThat("0  sec").isEqualTo(values.get(4));
         softly.assertAll();
     }
 
@@ -155,7 +155,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
 
         String actualPanelText = detailPage.getCommChannelInfoPanel().getPanelName();
 
-        assertThat(actualPanelText).isEqualTo(expectedPanelText);
+        assertThat(expectedPanelText).isEqualTo(actualPanelText);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
@@ -166,10 +166,10 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
 
         String actualModalTitle = editModal.getModalTitle();
 
-        assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
+        assertThat(expectedModalTitle).isEqualTo(actualModalTitle);
     }
 
-    //TODO This only needs to be tested once in the context of Comm Channels??
+    // TODO This only needs to be tested once in the context of Comm Channels??
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTCP_Create_NavigatesCorrectly() {
         String expectedModalTitle = "Create Comm Channel";
@@ -177,46 +177,46 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         CreateCommChannelModal createModal = detailPage.showCreateCommChannelModal();
         String actualModalTitle = createModal.getModalTitle();
 
-        assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
+        assertThat(expectedModalTitle).isEqualTo(actualModalTitle);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDeleteTcp_DeleteTitleCorrect() {
         String expectedModalTitle = "Confirm Delete";
-        
+
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
-        
+
         String actualModalTitle = deleteConfirmModal.getModalTitle();
 
-        assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
+        assertThat(expectedModalTitle).isEqualTo(actualModalTitle);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDeleteTcp_DeleteConfirmMessageCorrect() {
         String expectedModalMessage = "Are you sure you want to delete \"" + commChannelName + "\"?";
-        
+
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
-        
+
         String actualModalMessage = deleteConfirmModal.getConfirmMsg();
 
-        assertThat(actualModalMessage).isEqualTo(expectedModalMessage);
+        assertThat(expectedModalMessage).isEqualTo(actualModalMessage);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDeleteTcp_CancelDeleteNavigatesCorrectly() {
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
-        
+
         deleteConfirmModal.clickCancelBtnByNameAndWait();
-        
+
         assertThat(deleteConfirmModal.isModalAvailable()).isFalse();
     }
-    
+
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDeleteTcp_CloseDeleteNavigatesCorrectly() {
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
-        
+
         deleteConfirmModal.clickCloseAndWait();
-        
+
         assertThat(deleteConfirmModal.isModalDisplayed()).isFalse();
     }
 
@@ -234,16 +234,16 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         jo.put("name", name);
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
         Integer deleteCommChannelId = createResponse.path("id");
-        
+
         navigate(Urls.Assets.COMM_CHANNEL_DETAIL + deleteCommChannelId);
         detailPage = new CommChannelTcpDetailPage(driverExt, deleteCommChannelId);
-        
+
         String expectedMessage = name + " deleted successfully.";
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
         deleteConfirmModal.clickOkAndWaitForModalToClose();
         CommChannelsListPage listPage = new CommChannelsListPage(driverExt);
         String userMsg = listPage.getUserMessage();
 
-        assertThat(userMsg).isEqualTo(expectedMessage);
+        assertThat(expectedMessage).isEqualTo(userMsg);
     }
 }

@@ -41,16 +41,18 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
         jo = (JSONObject) body;
         jo.put("name", commChannelName);
         AssetsCreateRequestAPI.createCommChannel(body);
-    }
-
-    @BeforeMethod(alwaysRun = true)
-    public void beforeMethod() {
+        
         navigate(Urls.Assets.COMM_CHANNELS_LIST);
         listPage = new CommChannelsListPage(driverExt);
     }
 
+    @BeforeMethod(alwaysRun = true)
+    public void beforeMethod() {
+        refreshPage(listPage);
+    }
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannel_NameRequiredValidation() {
+    public void createCommChannel_Name_RequiredValidation() {
         CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
 
         final String EXPECTED_MSG = "Name is required.";
@@ -59,11 +61,11 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
 
         String errorMsg = createModal.getName().getValidationError();
 
-        assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannel_NameInvalidCharValidation() {
+    public void createCommChannel_Name_InvalidCharValidation() {
         CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
 
         final String name = "Comm Channel / \\ , ' ";
@@ -76,11 +78,11 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
 
         String errorMsg = createModal.getName().getValidationError();
 
-        assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannel_UniqueNameValidation() {
+    public void createCommChannel_Name_AlreadyExistsValidation() {
         CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
 
         final String EXPECTED_MSG = "Name already exists";
@@ -91,11 +93,11 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
 
         String errorMsg = createModal.getName().getValidationError();
 
-        assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannel_CancelNavigatesToCorrectUrl() {
+    public void createCommChannel_Cancel_NavigatesToCorrectUrl() {
         String EXPECTED_TITLE = "Comm Channels";
         CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
 

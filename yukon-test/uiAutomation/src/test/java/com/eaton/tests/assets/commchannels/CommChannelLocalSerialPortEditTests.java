@@ -65,7 +65,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         
         String actualModalTitle = editModal.getModalTitle();
         
-        assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
+        assertThat(expectedModalTitle).isEqualTo(actualModalTitle);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -75,8 +75,10 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
 
         editModal.getName().clearInputValue();
         editModal.clickOk();
+        
+        String errorMsg = editModal.getName().getValidationError();
 
-        assertThat(editModal.getName().getValidationError()).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
@@ -87,8 +89,10 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
 
         editModal.getName().setInputValue("/,LocalSerial|");
         editModal.clickOk();
+        
+        String errorMsg = editModal.getName().getValidationError();
 
-        assertThat(editModal.getName().getValidationError()).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -98,8 +102,10 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal();
         editModal.getPhysicalPort().selectItemByValue("Other");
         editModal.clickOk();
-
-        assertThat(editModal.getPhysicalPort().getValidationError()).isEqualTo(EXPECTED_MSG);
+        
+        String errorMsg = editModal.getPhysicalPort().getValidationError();
+        
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -113,7 +119,9 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         editModal.getPreTxWait().setInputValue("-1");
         editModal.clickOk();
 
-        assertThat(editModal.getPreTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getPreTxWait().getValidationError();
+        
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -126,8 +134,10 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPreTxWait().setInputValue("10000001");
         editModal.clickOk();
+        
+        String errorMsg = editModal.getPreTxWait().getValidationError();
 
-        assertThat(editModal.getPreTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -140,8 +150,10 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getRtsToTxWait().setInputValue("-1");
         editModal.clickOk();
-
-        assertThat(editModal.getRtsToTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        
+        String errorMsg = editModal.getRtsToTxWait().getValidationError();
+        
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -155,7 +167,9 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         editModal.getRtsToTxWait().setInputValue("10000001");
         editModal.clickOk();
 
-        assertThat(editModal.getRtsToTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getRtsToTxWait().getValidationError(); 
+        
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -167,8 +181,10 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         editModal.getTabs().clickTabAndWait("Configuration");
         editModal.getPostTxWait().setInputValue("-1");
         editModal.clickOk();
+        
+        String errorMsg = editModal.getPostTxWait().getValidationError();
 
-        assertThat(editModal.getPostTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -182,7 +198,9 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         editModal.getPostTxWait().setInputValue("10000001");
         editModal.clickOk();
 
-        assertThat(editModal.getPostTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getPostTxWait().getValidationError();
+        
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -195,8 +213,10 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getReceiveDataWait().setInputValue("-1");
         editModal.clickOk();
+        
+        String errorMsg = editModal.getReceiveDataWait().getValidationError();
 
-        assertThat(editModal.getReceiveDataWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -210,7 +230,9 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         editModal.getReceiveDataWait().setInputValue("1001");
         editModal.clickOk();
 
-        assertThat(editModal.getReceiveDataWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getReceiveDataWait().getValidationError();
+        
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -224,7 +246,9 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         editModal.getAdditionalTimeOut().setInputValue("-1");
         editModal.clickOk();
 
-        assertThat(editModal.getAdditionalTimeOut().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getAdditionalTimeOut().getValidationError();
+        
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -237,8 +261,10 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getAdditionalTimeOut().setInputValue("1000");
         editModal.clickOk();
+        
+        String errorMsg = editModal.getAdditionalTimeOut().getValidationError();
 
-        assertThat(editModal.getAdditionalTimeOut().getValidationError()).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -252,7 +278,9 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         editModal.getSocketNumber().setInputValue("0");
         editModal.clickOk();
 
-        assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getSocketNumber().getValidationError();
+        
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -265,8 +293,10 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getSocketNumber().setInputValue("65536");
         editModal.clickOk();
+        
+        String errorMsg = editModal.getSocketNumber().getValidationError();
 
-        assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -280,8 +310,10 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         SeleniumTestSetup.moveToElement(editModal.getSocketNumber().getEditElement());
         editModal.getSocketNumber().clearInputValue();
         editModal.clickOk();
+        
+        String errorMsg = editModal.getSocketNumber().getValidationError();
 
-        assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
@@ -290,14 +322,14 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
 
         List<String> titles = editModal.getTabs().getTitles();
 
-        softly.assertThat(titles.size()).isEqualTo(2);
-        softly.assertThat(titles.get(0)).isEqualTo("Info");
-        softly.assertThat(titles.get(1)).isEqualTo("Configuration");
+        softly.assertThat(2).isEqualTo(titles.size());
+        softly.assertThat("Info").isEqualTo(titles.get(0));
+        softly.assertThat("Configuration").isEqualTo(titles.get(1));
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelLocalSerialEdit_ConfigurationLabelsCorrect() {
+    public void commChannelLocalSerialEdit_ConfigTab_LabelsCorrect() {
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal();
 
         String tabName = "Configuration";
@@ -306,82 +338,84 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         List<String> labels = editModal.getTabs().getTabLabels("Configuration");
         softly.assertThat(labels.size()).isEqualTo(9);
 
-        softly.assertThat(labels.get(0)).isEqualTo("Protocol Wrap:");
-        softly.assertThat(labels.get(1)).isEqualTo("Carrier Detect Wait:");
-        softly.assertThat(labels.get(2)).isEqualTo("Pre Tx Wait:");
-        softly.assertThat(labels.get(3)).isEqualTo("RTS To Tx Wait:");
-        softly.assertThat(labels.get(4)).isEqualTo("Post Tx Wait:");
-        softly.assertThat(labels.get(5)).isEqualTo("Receive Data Wait:");
-        softly.assertThat(labels.get(6)).isEqualTo("Additional Time Out:");
-        softly.assertThat(labels.get(7)).isEqualTo("Shared Port Type:");
-        softly.assertThat(labels.get(8)).isEqualTo("Socket Number:");
+        softly.assertThat("Protocol Wrap:").isEqualTo(labels.get(0));
+        softly.assertThat("Carrier Detect Wait:").isEqualTo(labels.get(1));
+        softly.assertThat("Pre Tx Wait:").isEqualTo(labels.get(2));
+        softly.assertThat("RTS To Tx Wait:").isEqualTo(labels.get(3));
+        softly.assertThat("Post Tx Wait:").isEqualTo(labels.get(4));
+        softly.assertThat("Receive Data Wait:").isEqualTo(labels.get(5));
+        softly.assertThat("Additional Time Out:").isEqualTo(labels.get(6));
+        softly.assertThat("Shared Port Type:").isEqualTo(labels.get(7));
+        softly.assertThat("Socket Number:").isEqualTo(labels.get(8));
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelLocalSerialEdit_InfoTabLabelsCorrect() {
+    public void commChannelLocalSerialEdit_InfoTab_LabelsCorrect() {
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal();
 
         String tabName = "Info";
         editModal.getTabs().clickTabAndWait(tabName);
 
         List<String> labels = editModal.getTabs().getTabLabels(tabName);
-        softly.assertThat(labels.size()).isEqualTo(5);
-        softly.assertThat(labels.get(0)).isEqualTo("Name:");
-        softly.assertThat(labels.get(1)).isEqualTo("Type:");
-        softly.assertThat(labels.get(2)).isEqualTo("Physical Port:");
-        softly.assertThat(labels.get(3)).isEqualTo("Baud Rate:");
-        softly.assertThat(labels.get(4)).isEqualTo("Status:");
+
+        softly.assertThat(5).isEqualTo(labels.size());
+        softly.assertThat("Name:").isEqualTo(labels.get(0));
+        softly.assertThat("Type:").isEqualTo(labels.get(1));
+        softly.assertThat("Physical Port:").isEqualTo(labels.get(2));
+        softly.assertThat("Baud Rate:").isEqualTo(labels.get(3));
+        softly.assertThat("Status:").isEqualTo(labels.get(4));
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelLocalSerialEdit_InfoFieldsValuesCorrect() {
+    public void commChannelLocalSerialEdit_InfoTab_FieldsValuesCorrect() {
         String tabName = "Info";
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
 
-        softly.assertThat(editModal.getName().getInputValue()).isEqualTo(commChannelName);
-        softly.assertThat(editModal.getPhysicalPort().getSelectedValue()).isEqualTo("com1");
-        softly.assertThat(editModal.getBaudRate().getSelectedValue()).contains("2400");
+        softly.assertThat(commChannelName).isEqualTo(editModal.getName().getInputValue());
+        softly.assertThat("com1").isEqualTo(editModal.getPhysicalPort().getSelectedValue());
+        softly.assertThat("2400").contains(editModal.getBaudRate().getSelectedValue());
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelLocalSerialEdit_ConfigurationFieldsValuesCorrect() {
+    public void commChannelLocalSerialEdit_ConfigTab_FieldsValuesCorrect() {
         String tabName = "Configuration";
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
 
-        softly.assertThat(editModal.getProtocolWrap().getValueChecked()).isEqualTo("IDLC");
-        softly.assertThat(editModal.getCarrierDetectWait().getCheckedValue()).isEqualTo("Yes");
-        softly.assertThat(editModal.getCarrierDetectWaitTextBox().getInputValue()).isEqualTo("123");
+        softly.assertThat("IDLC").isEqualTo(editModal.getProtocolWrap().getValueChecked());
+        softly.assertThat("Yes").isEqualTo(editModal.getCarrierDetectWait().getCheckedValue());
+        softly.assertThat("123").isEqualTo(editModal.getCarrierDetectWaitTextBox().getInputValue());
 
-        softly.assertThat(editModal.getPreTxWait().getInputValue()).isEqualTo("87");
-        softly.assertThat(editModal.getRtsToTxWait().getInputValue()).isEqualTo("82");
-        softly.assertThat(editModal.getPostTxWait().getInputValue()).isEqualTo("89");
-        softly.assertThat(editModal.getReceiveDataWait().getInputValue()).isEqualTo("76");
-        softly.assertThat(editModal.getAdditionalTimeOut().getInputValue()).isEqualTo("98");
-        softly.assertThat(editModal.getSocketNumber().getInputValue()).isEqualTo("100");
-        softly.assertThat(editModal.getSharedPortType().getValueChecked()).isEqualTo("ACS");
+        softly.assertThat("87").isEqualTo(editModal.getPreTxWait().getInputValue());
+        softly.assertThat("82").isEqualTo(editModal.getRtsToTxWait().getInputValue());
+        softly.assertThat("89").isEqualTo(editModal.getPostTxWait().getInputValue());
+        softly.assertThat("76").isEqualTo(editModal.getReceiveDataWait().getInputValue());
+        softly.assertThat("98").isEqualTo(editModal.getAdditionalTimeOut().getInputValue());
+        softly.assertThat("100").isEqualTo(editModal.getSocketNumber().getInputValue());
+        softly.assertThat("ACS").isEqualTo(editModal.getSharedPortType().getValueChecked());
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelLocalSerialEdit_CancelNavigatesCorrectly() {
+    public void commChannelLocalSerialEdit_Cancel_NavigatesCorrectly() {
         String EXPECTED_TITLE = commChannelName;
 
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal();
         editModal.clickCancelAndWait();
 
         String actualPageTitle = detailPage.getPageTitle();
+        
         assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelLocalSerialEdit_NameAlreadyExists() {
+    public void commChannelLocalSerialEdit_Name_AlreadyExistsValidation() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String commChannelNameLocalSerial = "LocalSerial Comm Channel " + timeStamp;
         String EXPECTED_MSG = "Name already exists";
@@ -397,53 +431,70 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
 
         editModal.getName().setInputValue(commChannelNameLocalSerial);
         editModal.clickOk();
+        
+        String errorMsg = editModal.getName().getValidationError();
 
-        assertThat(editModal.getName().getValidationError()).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelLocalSerialEdit_CreateOpensPopupCorrect() {
+    public void commChannelLocalSerialEdit_Create_OpensPopupCorrect() {
         String EXPECTED_CREATE_MODEL_TITLE = "Create Comm Channel";
         
         CreateCommChannelModal createModel = detailPage.showCreateCommChannelModal();
         
         String actualCreateModelTitle = createModel.getModalTitle();
 
-        assertThat(actualCreateModelTitle).isEqualTo(EXPECTED_CREATE_MODEL_TITLE);
+        assertThat(EXPECTED_CREATE_MODEL_TITLE).isEqualTo(actualCreateModelTitle);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelLocalSerialEdit_ConfigTabTimingSectionDisplayed() {
+    public void commChannelLocalSerialEdit_ConfigTab_TimingSectionDisplayed() {
         String tabName = "Configuration";
 
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal();
         editModal.getTabs().clickTabAndWait(tabName);
 
         Section timing = editModal.getTimingSection();
+        
         assertThat(timing.getSection()).isNotNull();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelLocalSerialEdit_ConfigTabSharingSectionDisplayed() {
+    public void commChannelLocalSerialEdit_ConfigTab_SharingSectionDisplayed() {
         String tabName = "Configuration";
 
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal();
         editModal.getTabs().clickTabAndWait(tabName);
 
         Section sharing = editModal.getSharedSection();
+        
         assertThat(sharing.getSection()).isNotNull();
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelLocalSerialEdit_UpdateAllFieldsSuccess() {
+    public void commChannelLocalSerialEdit_AllFieldsSuccess() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String commChannelName = "Local Serial Update " + timeStamp;
+        String name = "Local Serial " + timeStamp;
+        String updateName = "Update Local Serial " + timeStamp;
+
+        String payloadFile = System.getProperty("user.dir")
+                + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelLocalSerialPort.json";
+
+        Object body = JsonFileHelper.parseJSONFile(payloadFile);
+        jo = (JSONObject) body;
+        jo.put("name", name);
+        ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
+        Integer id = createResponse.path("id");
+        
+        navigate(Urls.Assets.COMM_CHANNEL_DETAIL + id);
+        
         String baudRate = "BAUD_4800";
         String configFieldsValues[] = { "55", "10", "20", "15", "500" };
         String tabName = "Configuration";
 
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal();
-        editModal.getName().setInputValue(commChannelName);
+        editModal.getName().setInputValue(updateName);
         editModal.getBaudRate().selectItemByValue(baudRate);
 
         editModal.getTabs().clickTabAndWait(tabName);
@@ -458,18 +509,18 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
 
         String userMsg = detailPage.getUserMessage();
 
-        ExtractableResponse<?> response = AssetsGetRequestAPI.getCommChannel(commChannelId.toString());
+        ExtractableResponse<?> response = AssetsGetRequestAPI.getCommChannel(id.toString());
 
-        softly.assertThat(userMsg).isEqualTo(commChannelName + " saved successfully.");
-        softly.assertThat(response.path("name").toString()).isEqualTo(commChannelName);
-        softly.assertThat(response.path("protocolWrap").toString()).isEqualTo("None");
-        softly.assertThat(response.path("carrierDetectWaitInMilliseconds").toString()).isEqualTo("0");
-        softly.assertThat(response.path("baudRate").toString()).isEqualTo(baudRate);
-        softly.assertThat(response.path("timing.preTxWait").toString()).isEqualTo((configFieldsValues[0]));
-        softly.assertThat(response.path("timing.rtsToTxWait").toString()).isEqualTo((configFieldsValues[1]));
-        softly.assertThat(response.path("timing.postTxWait").toString()).isEqualTo((configFieldsValues[2]));
-        softly.assertThat(response.path("timing.receiveDataWait").toString()).isEqualTo((configFieldsValues[3]));
-        softly.assertThat(response.path("timing.extraTimeOut").toString()).isEqualTo((configFieldsValues[4]));
+        softly.assertThat(userMsg).isEqualTo(updateName + " saved successfully.");
+        softly.assertThat(updateName).isEqualTo(response.path("name").toString());
+        softly.assertThat("None").isEqualTo(response.path("protocolWrap").toString());
+        softly.assertThat("0").isEqualTo(response.path("carrierDetectWaitInMilliseconds").toString());
+        softly.assertThat(baudRate).isEqualTo(response.path("baudRate").toString());
+        softly.assertThat(configFieldsValues[0]).isEqualTo(response.path("timing.preTxWait").toString());
+        softly.assertThat(configFieldsValues[1]).isEqualTo(response.path("timing.rtsToTxWait").toString());
+        softly.assertThat(configFieldsValues[2]).isEqualTo(response.path("timing.postTxWait").toString());
+        softly.assertThat(configFieldsValues[3]).isEqualTo(response.path("timing.receiveDataWait").toString());
+        softly.assertThat(configFieldsValues[4]).isEqualTo(response.path("timing.extraTimeOut").toString());
         softly.assertAll();
     }
 }

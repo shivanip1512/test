@@ -8,7 +8,7 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
 
-public class CommChannelLocalSerialPortDetailPage extends CommChannelDetailPage{
+public class CommChannelLocalSerialPortDetailPage extends CommChannelDetailPage {
 
     public CommChannelLocalSerialPortDetailPage(DriverExtensions driverExt, int id) {
         super(driverExt);

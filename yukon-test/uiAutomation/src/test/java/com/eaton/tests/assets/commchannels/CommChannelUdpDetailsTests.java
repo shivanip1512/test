@@ -75,12 +75,14 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
 //        jo.put("portNumber", portNumber);
 //        ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
 //        commChannelId = createResponse.path("id");
+        
+        navigate(Urls.Assets.COMM_CHANNEL_DETAIL + commChannelId);
+        detailPage = new CommChannelUdpDetailPage(driverExt, commChannelId);
     }
 
     @BeforeMethod(alwaysRun = true)
     public void beforeMethod() {
-        navigate(Urls.Assets.COMM_CHANNEL_DETAIL + commChannelId);
-        detailPage = new CommChannelUdpDetailPage(driverExt, commChannelId);
+        refreshPage(detailPage);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
@@ -93,35 +95,35 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDetailsUdp_InfoTabLabelsCorrect() {
+    public void commChannelDetailsUdp_InfoTab_LabelsCorrect() {
         String infoTitle = "Info";
         detailPage.getTabElement().clickTabAndWait(infoTitle);
         List<String> labels = detailPage.getTabElement().getTabLabels(infoTitle);
 
-        softly.assertThat(labels.size()).isEqualTo(5);
-        softly.assertThat(labels.get(0)).isEqualTo("Name:");
-        softly.assertThat(labels.get(1)).contains("Type:");
-        softly.assertThat(labels.get(2)).contains("Port Number:");
-        softly.assertThat(labels.get(3)).contains("Baud Rate:");
-        softly.assertThat(labels.get(4)).contains("Status:");
+        softly.assertThat(5).isEqualTo(labels.size());
+        softly.assertThat("Name:").isEqualTo(labels.get(0));
+        softly.assertThat("Type:").isEqualTo(labels.get(1));
+        softly.assertThat("Port Number:").isEqualTo(labels.get(2));
+        softly.assertThat("Baud Rate:").isEqualTo(labels.get(3));
+        softly.assertThat("Status:").isEqualTo(labels.get(4));
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDetailsUdp_InfoTabValuesCorrect() {        
+    public void commChannelDetailsUdp_InfoTab_ValuesCorrect() {        
         List<String> values = detailPage.getTabElement().getTabValues("Info");        
         
-        softly.assertThat(values.size()).isEqualTo(5);
-        softly.assertThat(values.get(0)).isEqualTo(commChannelName);
-        softly.assertThat(values.get(1)).isEqualTo("UDP");
-        softly.assertThat(values.get(2).toString()).isEqualTo(portNumber.toString());
-        softly.assertThat(values.get(3)).isEqualTo("2400");
-        softly.assertThat(values.get(4)).isEqualTo("Enabled");
+        softly.assertThat(5).isEqualTo(values.size());
+        softly.assertThat(commChannelName).isEqualTo(values.get(0));
+        softly.assertThat("UDP").isEqualTo(values.get(1));
+        softly.assertThat(portNumber.toString()).isEqualTo(values.get(2).toString());
+        softly.assertThat("2400").isEqualTo(values.get(3));
+        softly.assertThat("Enabled").isEqualTo(values.get(4));
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDetailsUdp_ConfigTabTimingSectionDisplayed() {
+    public void commChannelDetailsUdp_ConfigTab_TimingSectionDisplayed() {
         String infoTitle = "Configuration";
         
         detailPage.getTabElement().clickTabAndWait(infoTitle);
@@ -131,7 +133,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDetailsUdp_ConfigTabGeneralSectionDisplayed() {
+    public void commChannelDetailsUdp_ConfigTab_GeneralSectionDisplayed() {
         String infoTitle = "Configuration";
         
         detailPage.getTabElement().clickTabAndWait(infoTitle);
@@ -139,55 +141,55 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         
         assertThat(general.getSection()).isNotNull();
     }
+    
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDetailsUdp_ConfigTabSharedSectionDisplayed() {
+    public void commChannelDetailsUdp_ConfigTab_SharedSectionDisplayed() {
         String infoTitle = "Configuration";
         
         detailPage.getTabElement().clickTabAndWait(infoTitle);
-        Section timing = detailPage.getTimingSection();
+        Section shared = detailPage.getTimingSection();
         
-        assertThat(timing.getSection()).isNotNull();
+        assertThat(shared.getSection()).isNotNull();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDetailsUdp_ConfigTabLabelsCorrect() {
+    public void commChannelDetailsUdp_ConfigTab_LabelsCorrect() {
         String infoTitle = "Configuration";
 
         detailPage.getTabElement().clickTabAndWait(infoTitle);
         List<String> labels = detailPage.getTabElement().getTabLabels(infoTitle);
 
-        softly.assertThat(labels.size()).isEqualTo(10);
-
-        softly.assertThat(labels.get(0)).isEqualTo("Protocol Wrap:");
-        softly.assertThat(labels.get(1)).isEqualTo("Carrier Detect Wait:");
-        softly.assertThat(labels.get(2)).isEqualTo("Encryption key:");
-        softly.assertThat(labels.get(3)).isEqualTo("Pre Tx Wait:");
-        softly.assertThat(labels.get(4)).isEqualTo("RTS To Tx Wait:");
-        softly.assertThat(labels.get(5)).isEqualTo("Post Tx Wait:");
-        softly.assertThat(labels.get(6)).isEqualTo("Receive Data Wait:");
-        softly.assertThat(labels.get(7)).isEqualTo("Additional Time Out:");
-        softly.assertThat(labels.get(8)).isEqualTo("Shared Port Type:");
-        softly.assertThat(labels.get(9)).isEqualTo("Socket Number:");
+        softly.assertThat(10).isEqualTo(labels.size());
+        softly.assertThat("Protocol Wrap:").isEqualTo(labels.get(0));
+        softly.assertThat("Carrier Detect Wait:").isEqualTo(labels.get(1));
+        softly.assertThat("Encryption key:").isEqualTo(labels.get(2));
+        softly.assertThat("Pre Tx Wait:").isEqualTo(labels.get(3));
+        softly.assertThat("RTS To Tx Wait:").isEqualTo(labels.get(4));
+        softly.assertThat("Post Tx Wait:").isEqualTo(labels.get(5));
+        softly.assertThat("Receive Data Wait:").isEqualTo(labels.get(6));
+        softly.assertThat("Additional Time Out:").isEqualTo(labels.get(7));
+        softly.assertThat("Shared Port Type:").isEqualTo(labels.get(8));
+        softly.assertThat("Socket Number:").isEqualTo(labels.get(9));
         softly.assertAll();
     }
+    
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDetailsUdp_ConfigTabValuesCorrect() {
+    public void commChannelDetailsUdp_ConfigTab_ValuesCorrect() {
         detailPage.getTabElement().clickTabAndWait("Configuration");
 
         List<String> values = detailPage.getTabElement().getTabValues("Configuration");
 
-        softly.assertThat(values.size()).isEqualTo(10);
-        softly.assertThat(values.get(0)).isEqualTo("IDLC");
-        softly.assertThat(values.get(1)).isEqualTo("544 ms");
-        softly.assertThat(values.get(2)).isEqualTo("00112233445566778899aabbccddeeff");
-        softly.assertThat(values.get(3)).isEqualTo("87  ms");
-        softly.assertThat(values.get(4)).isEqualTo("823  ms");
-        softly.assertThat(values.get(5)).isEqualTo("89  ms");
-        softly.assertThat(values.get(6)).isEqualTo("76  ms");
-        softly.assertThat(values.get(7)).isEqualTo("98  sec");
-        softly.assertThat(values.get(8)).isEqualTo("ACS");
-        softly.assertThat(values.get(9)).isEqualTo("100");
-
+        softly.assertThat(10).isEqualTo(values.size());
+        softly.assertThat("IDLC").isEqualTo(values.get(0));
+        softly.assertThat("544 ms").isEqualTo(values.get(1));
+        softly.assertThat("00112233445566778899aabbccddeeff").isEqualTo(values.get(2));
+        softly.assertThat("87  ms").isEqualTo(values.get(3));
+        softly.assertThat("823  ms").isEqualTo(values.get(4));
+        softly.assertThat("89  ms").isEqualTo(values.get(5));
+        softly.assertThat("76  ms").isEqualTo(values.get(6));
+        softly.assertThat("98  sec").isEqualTo(values.get(7));
+        softly.assertThat("ACS").isEqualTo(values.get(8));
+        softly.assertThat("100").isEqualTo(values.get(9));
         softly.assertAll();
     }
         
@@ -210,13 +212,12 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         
         navigate(Urls.Assets.COMM_CHANNEL_DETAIL + deleteCommChannelId);
         
-        detailPage = new CommChannelUdpDetailPage(driverExt, deleteCommChannelId);
         String expectedMessage = deleteCommChannelName +" deleted successfully.";
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
         deleteConfirmModal.clickOkAndWaitForModalToClose();
         CommChannelsListPage listPage = new CommChannelsListPage(driverExt);
         String userMsg = listPage.getUserMessage();
 
-        assertThat(userMsg).isEqualTo(expectedMessage);
+        assertThat(expectedMessage).isEqualTo(userMsg);
     }
 }

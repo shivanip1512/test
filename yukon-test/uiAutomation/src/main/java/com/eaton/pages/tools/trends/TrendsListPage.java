@@ -40,10 +40,11 @@ public class TrendsListPage extends PageBase {
     }
     
     public ResetPeakModal showResetPeakTrendModal() {
-        getActionBtn().clickAndSelectOptionByText("Reset Peak");
+        String modalTitle = "Reset Peak";
+        getActionBtn().clickAndSelectOptionByText(modalTitle);
         
-        SeleniumTestSetup.waitUntilModalOpenByTitle("Reset Peak");
+        SeleniumTestSetup.waitUntilModalOpenByTitle(modalTitle);
 
-        return new ResetPeakModal(this.driverExt, Optional.of("Reset Peak"), Optional.empty());
+        return new ResetPeakModal(this.driverExt, Optional.of(modalTitle), Optional.empty());
     }
 }

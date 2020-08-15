@@ -37,6 +37,11 @@ public class CommChannelTcpCreateTests extends SeleniumTestSetup {
         
         listPage = new CommChannelsListPage(driverExt);
     }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        refreshPage(listPage);
+    }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
     public void createCommChannelTcp_AllFieldsSuccess() {
@@ -61,7 +66,7 @@ public class CommChannelTcpCreateTests extends SeleniumTestSetup {
 
         String userMsg = detailPage.getUserMessage();
 
-        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(userMsg);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
@@ -73,16 +78,11 @@ public class CommChannelTcpCreateTests extends SeleniumTestSetup {
 
         List<String> labels = createModal.getFieldLabels();
 
-        softly.assertThat(labels.size()).isEqualTo(4);
-        softly.assertThat(labels.get(0)).isEqualTo("Name:");
-        softly.assertThat(labels.get(1)).contains("Type:");
-        softly.assertThat(labels.get(2)).contains("Baud Rate:");
-        softly.assertThat(labels.get(3)).contains("Status:");
+        softly.assertThat(4).isEqualTo(labels.size());
+        softly.assertThat("Name:").isEqualTo(labels.get(0));
+        softly.assertThat("Type:").isEqualTo(labels.get(1));
+        softly.assertThat("Baud Rate:").isEqualTo(labels.get(2));
+        softly.assertThat("Status:").isEqualTo(labels.get(3));
         softly.assertAll();
-    }
-    
-    @AfterMethod(alwaysRun = true)
-    public void afterTest() {
-        refreshPage(listPage);
-    }
+    }    
 }

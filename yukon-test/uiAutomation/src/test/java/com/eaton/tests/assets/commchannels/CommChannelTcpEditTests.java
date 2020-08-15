@@ -63,7 +63,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
         String actualModalTitle = editModal.getModalTitle();
         
-        assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
+        assertThat(expectedModalTitle).isEqualTo(actualModalTitle);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -72,9 +72,11 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         editModal.getName().clearInputValue();
-        editModal.clickOkAndWait();
+        editModal.clickOk();
+        
+        String errorMsg = editModal.getName().getValidationError(); 
 
-        assertThat(editModal.getName().getValidationError()).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -85,8 +87,10 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
         editModal.getName().setInputValue("/,tcp|");
         editModal.clickOkAndWait();
+        
+        String errorMsg = editModal.getName().getValidationError(); 
 
-        assertThat(editModal.getName().getValidationError()).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -106,8 +110,10 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
         editModal.getName().setInputValue(commChannelNameTcp);
         editModal.clickOkAndWait();
+        
+        String errorMsg = editModal.getName().getValidationError();
 
-        assertThat(editModal.getName().getValidationError()).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -128,57 +134,59 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
         List<String> titles = editModal.getTabs().getTitles();
 
-        softly.assertThat(titles.size()).isEqualTo(2);
-        softly.assertThat(titles.get(0)).isEqualTo("Info");
-        softly.assertThat(titles.get(1)).isEqualTo("Configuration");
+        softly.assertThat(2).isEqualTo(titles.size());
+        softly.assertThat("Info").isEqualTo(titles.get(0));
+        softly.assertThat("Configuration").isEqualTo(titles.get(1));
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTcpEdit_InfoTabLabelsCorrect() {
+    public void commChannelTcpEdit_InfoTab_LabelsCorrect() {
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         String tabName = "Info";
         editModal.getTabs().clickTabAndWait(tabName);
 
         List<String> labels = editModal.getTabs().getTabLabels(tabName);
-        softly.assertThat(labels.size()).isEqualTo(4);
-        softly.assertThat(labels.get(0)).isEqualTo("Name:");
-        softly.assertThat(labels.get(1)).contains("Type:");
-        softly.assertThat(labels.get(2)).contains("Baud Rate:");
-        softly.assertThat(labels.get(3)).contains("Status:");
+
+        softly.assertThat(4).isEqualTo(labels.size());
+        softly.assertThat("Name:").isEqualTo(labels.get(0));
+        softly.assertThat("Type:").isEqualTo(labels.get(1));
+        softly.assertThat("Baud Rate:").isEqualTo(labels.get(2));
+        softly.assertThat("Status:").isEqualTo(labels.get(3));
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTcpEdit_ConfigurationLabelsCorrect() {
+    public void commChannelTcpEdit_ConfigTab_LabelsCorrect() {
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         String tabName = "Configuration";
         editModal.getTabs().clickTabAndWait(tabName);
 
         List<String> labels = editModal.getTabs().getTabLabels("Configuration");
-        softly.assertThat(labels.size()).isEqualTo(5);
-        softly.assertThat(labels.get(0)).isEqualTo("Pre Tx Wait:");
-        softly.assertThat(labels.get(1)).isEqualTo("RTS To Tx Wait:");
-        softly.assertThat(labels.get(2)).isEqualTo("Post Tx Wait:");
-        softly.assertThat(labels.get(3)).isEqualTo("Receive Data Wait:");
-        softly.assertThat(labels.get(4)).isEqualTo("Additional Time Out:");
+
+        softly.assertThat(5).isEqualTo(labels.size());
+        softly.assertThat("Pre Tx Wait:").isEqualTo(labels.get(0));
+        softly.assertThat("RTS To Tx Wait:").isEqualTo(labels.get(1));
+        softly.assertThat("Post Tx Wait:").isEqualTo(labels.get(2));
+        softly.assertThat("Receive Data Wait:").isEqualTo(labels.get(3));
+        softly.assertThat("Additional Time Out:").isEqualTo(labels.get(4));
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTcpEdit_ConfigurationsValuesCorrect() {
+    public void commChannelTcpEdit_ConfigTab_ValuesCorrect() {
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         String tabName = "Configuration";
         editModal.getTabs().clickTabAndWait(tabName);
         
-        softly.assertThat(editModal.getPreTxWait().getInputValue()).isEqualTo("25");
-        softly.assertThat(editModal.getRtsToTxWait().getInputValue()).isEqualTo("0");
-        softly.assertThat(editModal.getPostTxWait().getInputValue()).isEqualTo("10");
-        softly.assertThat(editModal.getReceiveDataWait().getInputValue()).isEqualTo("0");
-        softly.assertThat(editModal.getAdditionalTimeOut().getInputValue()).isEqualTo("0");
+        softly.assertThat("25").isEqualTo(editModal.getPreTxWait().getInputValue());
+        softly.assertThat("0").isEqualTo(editModal.getRtsToTxWait().getInputValue());
+        softly.assertThat("10").isEqualTo(editModal.getPostTxWait().getInputValue());
+        softly.assertThat("0").isEqualTo(editModal.getReceiveDataWait().getInputValue());
+        softly.assertThat("0").isEqualTo(editModal.getAdditionalTimeOut().getInputValue());
         softly.assertAll();       
     }
 
@@ -191,9 +199,11 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPreTxWait().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getPreTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getPreTxWait().getValidationError();
+        
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -205,9 +215,11 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPreTxWait().setInputValue("10000001");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getPreTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getPreTxWait().getValidationError();
+                
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -219,9 +231,11 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getRtsToTxWait().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
+        
+        String errorMsg = editModal.getRtsToTxWait().getValidationError(); 
 
-        assertThat(editModal.getRtsToTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -233,9 +247,11 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getRtsToTxWait().setInputValue("10000001");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getRtsToTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getRtsToTxWait().getValidationError();
+        
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -247,9 +263,11 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPostTxWait().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
+        
+        String errorMsg = editModal.getPostTxWait().getValidationError();
 
-        assertThat(editModal.getPostTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -261,9 +279,11 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPostTxWait().setInputValue("10000001");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
+        
+        String errorMsg = editModal.getPostTxWait().getValidationError(); 
 
-        assertThat(editModal.getPostTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -275,9 +295,11 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getReceiveDataWait().setInputValue("-1");
-        editModal.clickOkAndWait();
-
-        assertThat(editModal.getReceiveDataWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        editModal.clickOk();
+        
+        String errorMsg = editModal.getReceiveDataWait().getValidationError();
+                
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -289,9 +311,11 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getReceiveDataWait().setInputValue("1001");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getReceiveDataWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getReceiveDataWait().getValidationError();
+                
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -303,9 +327,11 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getAdditionalTimeOut().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getAdditionalTimeOut().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getAdditionalTimeOut().getValidationError();
+                
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -317,26 +343,28 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getAdditionalTimeOut().setInputValue("1000");
-        editModal.clickOkAndWait();
+        editModal.clickOk();;
 
-        assertThat(editModal.getAdditionalTimeOut().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getAdditionalTimeOut().getValidationError(); 
+                
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTcpEdit_InfoFieldsValuesCorrect() {
+    public void commChannelTcpEdit_InfoTab_ValuesCorrect() {
         String tabName = "Info";
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
 
-        softly.assertThat(editModal.getName().getInputValue()).isEqualTo(commChannelName);
-        softly.assertThat(editModal.getBaudRate().getSelectedValue()).isEqualTo("1200");
-        softly.assertThat(editModal.getStatus().getCheckedValue()).isEqualTo("Enabled");
+        softly.assertThat(commChannelName).isEqualTo(editModal.getName().getInputValue());
+        softly.assertThat("1200").isEqualTo(editModal.getBaudRate().getSelectedValue());
+        softly.assertThat("Enabled").isEqualTo(editModal.getStatus().getCheckedValue());
         softly.assertAll();        
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTcpEdit_ConfigTabTimingSectionDisplayed() {
+    public void commChannelTcpEdit_ConfigTab_TimingSectionDisplayed() {
         String tabName = "Configuration";
 
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
@@ -348,9 +376,9 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTcpEdit_EditAllFieldsSuccess() {
+    public void commChannelTcpEdit_AllFieldsSuccess() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "TCP Comm Channel " + timeStamp;
+        String name = "TCP  " + timeStamp;
 
         String payloadFile = System.getProperty("user.dir")
                 + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelTCP.json";
@@ -362,14 +390,13 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         Integer id = createResponse.path("id");
         
         navigate(Urls.Assets.COMM_CHANNEL_DETAIL + id);
-        CommChannelTcpDetailPage page = new CommChannelTcpDetailPage(driverExt, id);        
         
         String editName = "Edit TCP " + timeStamp;
         String baudRate = "BAUD_4800";
         String configFieldsValues[] = { "55", "10", "20", "15", "500" };
         String tabName = "Configuration";
 
-        EditTcpCommChannelModal editModal = page.showTcpCommChannelEditModal();
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
         editModal.getName().setInputValue(editName);
         editModal.getBaudRate().selectItemByValue(baudRate);
 
@@ -385,7 +412,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
         ExtractableResponse<?> response = AssetsGetRequestAPI.getCommChannel(id.toString());
         
-        softly.assertThat(userMsg).isEqualTo(editName + " saved successfully.");
+        softly.assertThat(editName + " saved successfully.").isEqualTo(userMsg);
         softly.assertThat(editName).isEqualTo(response.path("name").toString());               
         softly.assertThat(baudRate).isEqualTo(response.path("baudRate").toString());
         softly.assertThat(configFieldsValues[0]).isEqualTo(response.path("timing.preTxWait").toString());

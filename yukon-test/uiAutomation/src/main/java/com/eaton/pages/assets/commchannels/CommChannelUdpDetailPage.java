@@ -24,7 +24,7 @@ public class CommChannelUdpDetailPage extends CommChannelDetailPage {
     public Section getSharedSection() {
         return new Section(this.driverExt, "Shared");
     }
-
+    
     public EditUdpCommChannelModal showUdpCommChannelEditModal(String modalTitle) {
         getCommChannelInfoPanel().getEdit().click();
 

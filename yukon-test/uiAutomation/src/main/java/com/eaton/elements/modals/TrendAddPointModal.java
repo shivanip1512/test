@@ -11,18 +11,15 @@ import com.eaton.framework.SeleniumTestSetup;
 
 public class TrendAddPointModal extends BaseModal {   
 
-    private String modalTitle;
-    private String desrcibedBy;
-    
     public TrendAddPointModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
         super(driverExt, modalTitle, describedBy);
         
         if (modalTitle.isPresent()) {
-            this.modalTitle = modalTitle.get();
+            modalTitle = Optional.of(modalTitle.get());
         }
         
         if (describedBy.isPresent()) {
-            this.desrcibedBy = describedBy.get();
+            describedBy = Optional.of(describedBy.get());
         }
     }   
     
@@ -53,7 +50,7 @@ public class TrendAddPointModal extends BaseModal {
     public SelectPointModal showAndWaitAddPointModal() {
         getPoint().clickLink();
         
-        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-add-point-dialog");;
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-add-point-dialog");
         
         return new SelectPointModal(this.driverExt, Optional.empty(), Optional.of("js-add-point-dialog"));
     }

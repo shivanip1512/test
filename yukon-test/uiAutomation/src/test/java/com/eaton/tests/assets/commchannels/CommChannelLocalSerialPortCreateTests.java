@@ -34,6 +34,11 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
         
         listPage = new CommChannelsListPage(driverExt);
     }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        refreshPage(listPage);
+    }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
     public void createCommChannelLocalSerialPort_AllFieldsSuccess() {
@@ -53,13 +58,13 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
 
         createModal.clickOkAndWaitForModalToClose();
 
-        waitForUrlToLoad(Urls.Assets.COMM_CHANNEL_DETAIL, Optional.of(10));
+        waitForUrlToLoad(Urls.Assets.COMM_CHANNEL_DETAIL, Optional.empty());
 
         CommChannelDetailPage detailPage = new CommChannelDetailPage(driverExt);
 
         String userMsg = detailPage.getUserMessage();
 
-        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(userMsg);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
@@ -71,12 +76,12 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
 
         List<String> labels = createModal.getFieldLabels();
 
-        softly.assertThat(labels.size()).isEqualTo(5);
-        softly.assertThat(labels.get(0)).isEqualTo("Name:");
-        softly.assertThat(labels.get(1)).contains("Type:");
-        softly.assertThat(labels.get(2)).contains("Physical Port:");
-        softly.assertThat(labels.get(3)).contains("Baud Rate:");
-        softly.assertThat(labels.get(4)).contains("Status:");
+        softly.assertThat(5).isEqualTo(labels.size());
+        softly.assertThat("Name:").isEqualTo(labels.get(0));
+        softly.assertThat("Type:").isEqualTo(labels.get(1));
+        softly.assertThat("Physical Port:").isEqualTo(labels.get(2));
+        softly.assertThat("Baud Rate:").isEqualTo(labels.get(3));
+        softly.assertThat("Status:").isEqualTo(labels.get(4));
         softly.assertAll();
     }
 
@@ -94,11 +99,6 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
 
         String errorMsg = createModal.getPhysicalPortOther().getValidationError();
 
-        assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
-    }
-    
-    @AfterMethod(alwaysRun = true)
-    public void afterTest() {
-        refreshPage(listPage);
-    }
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
+    }    
 }

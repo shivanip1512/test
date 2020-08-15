@@ -54,12 +54,14 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         jo.put("portNumber", portNumber);
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
         commChannelId = createResponse.path("id");
+        
+        navigate(Urls.Assets.COMM_CHANNEL_DETAIL + commChannelId);
+        detailPage = new CommChannelUdpDetailPage(driverExt, commChannelId);
     }
 
     @BeforeMethod(alwaysRun = true)
     public void beforeMethod() {
-        navigate(Urls.Assets.COMM_CHANNEL_DETAIL + commChannelId);
-        detailPage = new CommChannelUdpDetailPage(driverExt, commChannelId);
+        refreshPage(detailPage);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
@@ -70,7 +72,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         
         String actualModalTitle = editModal.getModalTitle();
         
-        assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
+        assertThat(expectedModalTitle).isEqualTo(actualModalTitle);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -80,9 +82,11 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal(expectedModalTitle);
 
         editModal.getName().clearInputValue();
-        editModal.clickOkAndWait();
+        editModal.clickOk();
+        
+        String errorMsg = editModal.getName().getValidationError();
 
-        assertThat(editModal.getName().getValidationError()).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
@@ -93,9 +97,11 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal(expectedModalTitle);
 
         editModal.getName().setInputValue("/,udp|");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getName().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getName().getValidationError();
+
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -106,9 +112,11 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal(expectedModalTitle);
 
         editModal.getPortNumber().setInputValue(portNumber);
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getPortNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getPortNumber().getValidationError();
+
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -119,9 +127,11 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal(expectedModalTitle);
 
         editModal.getPortNumber().setInputValue(portNumber);
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getPortNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getPortNumber().getValidationError();
+
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -135,9 +145,11 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         editModal.getTabs().clickTabAndWait(tabName);
         
         editModal.getPreTxWait().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getPreTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getPreTxWait().getValidationError();
+
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -150,9 +162,11 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPreTxWait().setInputValue("10000001");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getPreTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getPreTxWait().getValidationError();
+
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -165,9 +179,11 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getRtsToTxWait().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getRtsToTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getRtsToTxWait().getValidationError();
+
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -180,9 +196,11 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getRtsToTxWait().setInputValue("10000001");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getRtsToTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getRtsToTxWait().getValidationError();
+
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -195,9 +213,11 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPostTxWait().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getPostTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getPostTxWait().getValidationError();
+
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -210,9 +230,11 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPostTxWait().setInputValue("10000001");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getPostTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getPostTxWait().getValidationError();
+
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -225,9 +247,11 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getReceiveDataWait().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getReceiveDataWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getReceiveDataWait().getValidationError();
+
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -240,9 +264,11 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getReceiveDataWait().setInputValue("1001");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getReceiveDataWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getReceiveDataWait().getValidationError();
+
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -255,9 +281,11 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getAdditionalTimeOut().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getAdditionalTimeOut().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getAdditionalTimeOut().getValidationError();
+
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -270,9 +298,11 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getAdditionalTimeOut().setInputValue("1000");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getAdditionalTimeOut().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getAdditionalTimeOut().getValidationError();
+
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }       
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -285,9 +315,11 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getSocketNumber().setInputValue("0");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getSocketNumber().getValidationError();
+
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -300,9 +332,11 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getSocketNumber().setInputValue("65536");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getSocketNumber().getValidationError();
+
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -315,26 +349,30 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getSocketNumber().clearInputValue();
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getSocketNumber().getValidationError();
+
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelUdpEdit_TabLabelsCorrect() {
+        softly = new SoftAssertions();
         String expectedModalTitle = "Edit " + commChannelName;
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal(expectedModalTitle);
 
         List<String> titles = editModal.getTabs().getTitles();
 
-        softly.assertThat(titles.size()).isEqualTo(2);
-        softly.assertThat(titles.get(0)).isEqualTo("Info");
-        softly.assertThat(titles.get(1)).isEqualTo("Configuration");
+        softly.assertThat(2).isEqualTo(titles.size());
+        softly.assertThat("Info").isEqualTo(titles.get(0));
+        softly.assertThat("Configuration").isEqualTo(titles.get(1));
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelUdpEdit_ConfigurationLabelsCorrect() {
+        softly = new SoftAssertions();
         String expectedModalTitle = "Edit " + commChannelName;
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal(expectedModalTitle);
 
@@ -344,21 +382,22 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         List<String> labels = editModal.getTabs().getTabLabels("Configuration");
         softly.assertThat(labels.size()).isEqualTo(10);
 
-        softly.assertThat(labels.get(0)).isEqualTo("Protocol Wrap:");
-        softly.assertThat(labels.get(1)).isEqualTo("Carrier Detect Wait:");
-        softly.assertThat(labels.get(2)).isEqualTo("Encryption key:");
-        softly.assertThat(labels.get(3)).isEqualTo("Pre Tx Wait:");
-        softly.assertThat(labels.get(4)).isEqualTo("RTS To Tx Wait:");
-        softly.assertThat(labels.get(5)).isEqualTo("Post Tx Wait:");
-        softly.assertThat(labels.get(6)).isEqualTo("Receive Data Wait:");
-        softly.assertThat(labels.get(7)).isEqualTo("Additional Time Out:");
-        softly.assertThat(labels.get(8)).isEqualTo("Shared Port Type:");
-        softly.assertThat(labels.get(9)).isEqualTo("Socket Number:");
+        softly.assertThat("Protocol Wrap:").isEqualTo(labels.get(0));
+        softly.assertThat("Carrier Detect Wait:").isEqualTo(labels.get(1));
+        softly.assertThat("Encryption key:").isEqualTo(labels.get(2));
+        softly.assertThat("Pre Tx Wait:").isEqualTo(labels.get(3));
+        softly.assertThat("RTS To Tx Wait:").isEqualTo(labels.get(4));
+        softly.assertThat("Post Tx Wait:").isEqualTo(labels.get(5));
+        softly.assertThat("Receive Data Wait:").isEqualTo(labels.get(6));
+        softly.assertThat("Additional Time Out:").isEqualTo(labels.get(7));
+        softly.assertThat("Shared Port Type:").isEqualTo(labels.get(8));
+        softly.assertThat("Socket Number:").isEqualTo(labels.get(9));
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelUdpEdit_InfoTabLabelsCorrect() {
+        softly = new SoftAssertions();
         String expectedModalTitle = "Edit " + commChannelName;
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal(expectedModalTitle);
 
@@ -366,51 +405,53 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         editModal.getTabs().clickTabAndWait(tabName);
 
         List<String> labels = editModal.getTabs().getTabLabels(tabName);
-        softly.assertThat(labels.size()).isEqualTo(5);
-        softly.assertThat(labels.get(0)).isEqualTo("Name:");
-        softly.assertThat(labels.get(1)).isEqualTo("Type:");
-        softly.assertThat(labels.get(2)).isEqualTo("Port Number:");
-        softly.assertThat(labels.get(3)).isEqualTo("Baud Rate:");
 
-        softly.assertThat(labels.get(4)).isEqualTo("Status:");
+        softly.assertThat(5).isEqualTo(labels.size());
+        softly.assertThat("Name:").isEqualTo(labels.get(0));
+        softly.assertThat("Type:").isEqualTo(labels.get(1));
+        softly.assertThat("Port Number:").isEqualTo(labels.get(2));
+        softly.assertThat("Baud Rate:").isEqualTo(labels.get(3));
+        softly.assertThat("Status:").isEqualTo(labels.get(4));
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelUdpEdit_InfoFieldsValuesCorrect() {
+        softly = new SoftAssertions();
         String expectedModalTitle = "Edit " + commChannelName;
         String tabName = "Info";
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal(expectedModalTitle);
 
         editModal.getTabs().clickTabAndWait(tabName);
 
-        softly.assertThat(editModal.getName().getInputValue()).isEqualTo(commChannelName);
-        softly.assertThat(editModal.getPortNumber().getInputValue()).isEqualTo(portNumber.toString());
-        softly.assertThat(editModal.getBaudRate().getSelectedValue()).isEqualTo("2400");
-        softly.assertThat(editModal.getStatus().getCheckedValue()).isEqualTo("Enabled");
+        softly.assertThat(commChannelName).isEqualTo(editModal.getName().getInputValue());
+        softly.assertThat(portNumber.toString()).isEqualTo(editModal.getPortNumber().getInputValue());
+        softly.assertThat("2400").isEqualTo(editModal.getBaudRate().getSelectedValue());
+        softly.assertThat("Enabled").isEqualTo(editModal.getStatus().getCheckedValue());
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })	
     public void commChannelUdpEdit_ConfigurationFieldsValuesCorrect() {	
+        softly = new SoftAssertions();
         String expectedModalTitle = "Edit " + commChannelName;	
         String tabName = "Configuration";	
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal(expectedModalTitle);	
 	
         editModal.getTabs().clickTabAndWait(tabName);	
 	   
-        softly.assertThat(editModal.getProtocolWrap().getValueChecked()).isEqualTo("IDLC"); 	
-        softly.assertThat(editModal.getCarrierDetectWait().getCheckedValue()).isEqualTo("Yes");	
-        softly.assertThat(editModal.getCarrierDetectWaitTextBox().getInputValue()).isEqualTo("544");	
-        softly.assertThat(editModal.getEncryptionKey().getCheckedValue()).isEqualTo("Yes");	
-        softly.assertThat(editModal.getEncryptionKeyTextBox().getInputValue()).isEqualTo("00112233445566778899aabbccddeeff");	
-        softly.assertThat(editModal.getPreTxWait().getInputValue()).isEqualTo("87");	
-        softly.assertThat(editModal.getRtsToTxWait().getInputValue()).isEqualTo("823");	
-        softly.assertThat(editModal.getPostTxWait().getInputValue()).isEqualTo("89");	
-        softly.assertThat(editModal.getReceiveDataWait().getInputValue()).isEqualTo("76");	
-        softly.assertThat(editModal.getAdditionalTimeOut().getInputValue()).isEqualTo("98");	
-        softly.assertThat(editModal.getSocketNumber().getInputValue()).isEqualTo("100");       	
-        softly.assertThat(editModal.getSharedPortType().getValueChecked()).isEqualTo("ACS");	
+        softly.assertThat("IDLC").isEqualTo(editModal.getProtocolWrap().getValueChecked()); 	
+        softly.assertThat("Yes").isEqualTo(editModal.getCarrierDetectWait().getCheckedValue());	
+        softly.assertThat("544").isEqualTo(editModal.getCarrierDetectWaitTextBox().getInputValue());	
+        softly.assertThat("Yes").isEqualTo(editModal.getEncryptionKey().getCheckedValue());	
+        softly.assertThat("00112233445566778899aabbccddeeff").isEqualTo(editModal.getEncryptionKeyTextBox().getInputValue());	
+        softly.assertThat("87").isEqualTo(editModal.getPreTxWait().getInputValue());	
+        softly.assertThat("823").isEqualTo(editModal.getRtsToTxWait().getInputValue());	
+        softly.assertThat("89").isEqualTo(editModal.getPostTxWait().getInputValue());	
+        softly.assertThat("76").isEqualTo(editModal.getReceiveDataWait().getInputValue());	
+        softly.assertThat("98").isEqualTo(editModal.getAdditionalTimeOut().getInputValue());	
+        softly.assertThat("100").isEqualTo(editModal.getSocketNumber().getInputValue());       	
+        softly.assertThat("ACS").isEqualTo(editModal.getSharedPortType().getValueChecked());	
         softly.assertAll();	
     }	
 
@@ -432,13 +473,15 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal(expectedModalTitle);
 
         editModal.getName().setInputValue(commChannelNameUdp);
-        editModal.clickOkAndWait();
+        editModal.clickOk();
+        
+        String errorMsg = editModal.getName().getValidationError();
 
-        assertThat(EXPECTED_MSG).isEqualTo(editModal.getName().getValidationError());
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_CreateOpensCorrectModal() {
+    public void commChannelUdpEdit_Create_OpensCorrectModal() {
         String EXPECTED_CREATE_MODEL_TITLE = "Create Comm Channel";
         CreateCommChannelModal createModel = detailPage.showCreateCommChannelModal();
         String actualCreateModelTitle = createModel.getModalTitle();
@@ -447,7 +490,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_ConfigTabTimingSectionDisplayed() {
+    public void commChannelUdpEdit_ConfigTab_TimingSectionDisplayed() {
         String expectedModalTitle = "Edit " + commChannelName;
         String tabName = "Configuration";
 
@@ -459,7 +502,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_ConfigTabSharingSectionDisplayed() {
+    public void commChannelUdpEdit_ConfigTab_SharingSectionDisplayed() {
         String expectedModalTitle = "Edit " + commChannelName;
         String tabName = "Configuration";
 
@@ -473,17 +516,36 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })	
-    public void commChannelUdpEdit_UpdateAllFieldsSuccess() {	
+    public void commChannelUdpEdit_AllFieldsSuccess() {	
+        softly = new SoftAssertions();
+        randomNum = getRandomNum();
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String expectedModalTitle = "Edit " + commChannelName;	
-        String commChannelName = "CommChannel_Udp_Updatepe " + timeStamp;	
+        String name = "UDP " + timeStamp;
+        String updateName = "Update UPD " + timeStamp;
+
+        String payloadFile = System.getProperty("user.dir")
+                + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelUDP.json";
+
+        Integer portNum = randomNum.nextInt(65534);
+        Object body = JsonFileHelper.parseJSONFile(payloadFile);
+        jo = (JSONObject) body;
+        jo.put("name", name);
+        jo.put("portNumber", portNum);
+        ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
+        Integer id = createResponse.path("id");
+        
+        navigate(Urls.Assets.COMM_CHANNEL_DETAIL + id);
+        
+        String expectedModalTitle = "Edit " + name;	
         String baudRate = "BAUD_4800";	
         String configFieldsValues[] = { "55", "10", "20", "15", "500" };	
         String tabName = "Configuration";	
 	
+        portNum = randomNum.nextInt(65534);
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal(expectedModalTitle);	
-        editModal.getName().setInputValue(commChannelName);	
+        editModal.getName().setInputValue(updateName);	
         editModal.getBaudRate().selectItemByValue(baudRate);	
+        editModal.getPortNumber().setInputValue(portNum.toString());
 	
         editModal.getTabs().clickTabAndWait(tabName);
         
@@ -499,17 +561,19 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
                        	
         String userMsg = detailPage.getUserMessage();        	
 	
-        ExtractableResponse<?> response = AssetsGetRequestAPI.getCommChannel(commChannelId.toString());	     	
-        softly.assertThat(userMsg).isEqualTo(commChannelName + " saved successfully.");	
-        softly.assertThat(response.path("name").toString()).isEqualTo(commChannelName);	
-        softly.assertThat(response.path("baudRate").toString()).isEqualTo(baudRate);	
+        ExtractableResponse<?> response = AssetsGetRequestAPI.getCommChannel(id.toString());	
+        
+        softly.assertThat(updateName + " saved successfully.").isEqualTo(userMsg);	
+        softly.assertThat(updateName).isEqualTo(response.path("name").toString());
+        softly.assertThat(portNum.toString()).isEqualTo(response.path("portNumber").toString());
+        softly.assertThat(baudRate.toString()).isEqualTo(response.path("baudRate").toString());	
         softly.assertThat(response.path("keyInHex").toString()).isEqualTo("");       	
-        softly.assertThat(response.path("carrierDetectWaitInMilliseconds").toString()).isEqualTo("0");	
-        softly.assertThat(response.path("timing.preTxWait").toString()).isEqualTo((configFieldsValues[0]));	
-        softly.assertThat(response.path("timing.rtsToTxWait").toString()).isEqualTo((configFieldsValues[1]));	
-        softly.assertThat(response.path("timing.postTxWait").toString()).isEqualTo((configFieldsValues[2]));	
-        softly.assertThat(response.path("timing.receiveDataWait").toString()).isEqualTo((configFieldsValues[3]));	
-        softly.assertThat(response.path("timing.extraTimeOut").toString()).isEqualTo((configFieldsValues[4]));	
+        softly.assertThat("0").isEqualTo(response.path("carrierDetectWaitInMilliseconds").toString());	
+        softly.assertThat(configFieldsValues[0]).isEqualTo(response.path("timing.preTxWait").toString());	
+        softly.assertThat(configFieldsValues[1]).isEqualTo(response.path("timing.rtsToTxWait").toString());	
+        softly.assertThat(configFieldsValues[2]).isEqualTo(response.path("timing.postTxWait").toString());	
+        softly.assertThat(configFieldsValues[3]).isEqualTo(response.path("timing.receiveDataWait").toString());	
+        softly.assertThat(configFieldsValues[4]).isEqualTo(response.path("timing.extraTimeOut").toString());	
         softly.assertAll();	
     }	
 }

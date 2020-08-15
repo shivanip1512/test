@@ -35,13 +35,18 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         
         listPage = new CommChannelsListPage(driverExt);
     }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        refreshPage(listPage);
+    }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannelTerminalServer_RequiredFieldsOnlySuccess() {
+    public void createCommChannelTerminalServer_AllFieldsSuccess() {
         CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT Comm Channel Terminal Server " + timeStamp;
+        String name = "AT Terminal Server " + timeStamp;
 
         final String EXPECTED_MSG = name + " saved successfully.";
 
@@ -60,7 +65,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
 
         String userMsg = detailPage.getUserMessage();
 
-        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(userMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -72,13 +77,13 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
 
         List<String> labels = createModal.getFieldLabels();
 
-        softly.assertThat(labels.size()).isEqualTo(6);
-        softly.assertThat(labels.get(0)).isEqualTo("Name:");
-        softly.assertThat(labels.get(1)).contains("Type:");
-        softly.assertThat(labels.get(2)).contains("IP Address:");
-        softly.assertThat(labels.get(3)).contains("Port Number:");
-        softly.assertThat(labels.get(4)).contains("Baud Rate:");
-        softly.assertThat(labels.get(5)).contains("Status:");
+        softly.assertThat(6).isEqualTo(labels.size());
+        softly.assertThat("Name:").isEqualTo(labels.get(0));
+        softly.assertThat("Type:").isEqualTo(labels.get(1));
+        softly.assertThat("IP Address:").isEqualTo(labels.get(2));
+        softly.assertThat("Port Number:").isEqualTo(labels.get(3));
+        softly.assertThat("Baud Rate:").isEqualTo(labels.get(4));
+        softly.assertThat("Status:").isEqualTo(labels.get(5));
         softly.assertAll();
     }
 
@@ -91,11 +96,11 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         createModal.getType().selectItemByValue("TSERVER_SHARED");
         waitForLoadingSpinner();
 
-        createModal.clickOkAndWaitForModalToClose();
+        createModal.clickOk();
 
         String errorMsg = createModal.getIpAddress().getValidationError();
 
-        assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -110,11 +115,11 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
         createModal.getIpAddress().setInputValue(ipAddress);
 
-        createModal.clickOkAndWaitForModalToClose();
+        createModal.clickOk();
 
         String errorMsg = createModal.getIpAddress().getValidationError();
 
-        assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -127,11 +132,11 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
         createModal.getPortNumber().setInputValue("0");
 
-        createModal.clickOkAndWaitForModalToClose();
+        createModal.clickOk();
 
         String errorMsg = createModal.getPortNumber().getValidationError();
 
-        assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -144,11 +149,11 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
         createModal.getPortNumber().setInputValue("65536");
 
-        createModal.clickOkAndWaitForModalToClose();
+        createModal.clickOk();;
 
         String errorMsg = createModal.getPortNumber().getValidationError();
 
-        assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -160,15 +165,10 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         createModal.getType().selectItemByValue("TSERVER_SHARED");
         waitForLoadingSpinner();
 
-        createModal.clickOkAndWaitForModalToClose();
+        createModal.clickOk();
 
         String errorMsg = createModal.getPortNumber().getValidationError();
 
-        assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
-    }
-    
-    @AfterMethod(alwaysRun = true)
-    public void afterTest() {
-        refreshPage(listPage);
-    }
+        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
+    }    
 }
