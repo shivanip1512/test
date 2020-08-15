@@ -63,16 +63,19 @@ public class BaseModal {
         getModal().findElement(By.cssSelector(".ui-dialog-titlebar-close")).click();
 
         if (describedBy != null) {
-            SeleniumTestSetup.waitUntilModalClosedByDescribedBy(describedBy);
+            SeleniumTestSetup.waitUntilModalInvisibleByDescribedBy(describedBy);
         } else if (modalTitle != null) {
             SeleniumTestSetup.waitUntilModalClosedByTitle(modalTitle);
         }
+    }
+    
+    public void clickOk() {
+        getModal().findElement(By.cssSelector(".ui-dialog-buttonset .primary")).click();
     }
 
     // TODO need a unique way to select the save button
     public void clickOkAndWaitForModalToClose() {
         getModal().findElement(By.cssSelector(".ui-dialog-buttonset .primary")).click();
-
         if (describedBy != null) {
             SeleniumTestSetup.waitUntilModalClosedByDescribedBy(describedBy);
         } else if (modalTitle != null) {
@@ -91,13 +94,16 @@ public class BaseModal {
         getModal().findElement(By.cssSelector(".ui-dialog-buttonset .js-secondary-action")).click();
 
         if (describedBy != null) {
-            SeleniumTestSetup.waitUntilModalClosedByDescribedBy(describedBy);
+            SeleniumTestSetup.waitUntilModalInvisibleByDescribedBy(describedBy);
         } else if (modalTitle != null) {
             SeleniumTestSetup.waitUntilModalClosedByTitle(modalTitle);
         }
     }
     
-    public void clickCancelByNameAndWait() {
+    /**
+     * This method is used on the Confirm Delete Modal in Comm Channel TCP
+     */
+    public void clickCancelBtnByNameAndWait() {
         List<WebElement> list = getModal().findElements(By.cssSelector(".ui-dialog-buttonset button"));
 
         list.stream().filter(x -> x.getText().contains("Cancel")).findFirst().orElseThrow().click();

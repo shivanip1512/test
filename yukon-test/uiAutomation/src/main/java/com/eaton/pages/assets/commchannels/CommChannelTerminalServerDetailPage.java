@@ -2,7 +2,6 @@ package com.eaton.pages.assets.commchannels;
 
 import java.util.Optional;
 
-import com.eaton.elements.Section;
 import com.eaton.elements.modals.commchannel.EditTerminalServerCommChannelModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
@@ -17,19 +16,11 @@ public class CommChannelTerminalServerDetailPage extends CommChannelDetailPage {
         pageUrl = Urls.Assets.COMM_CHANNEL_DETAIL + id;
     }
 
-    public Section getGeneralSection() {
-        return new Section(this.driverExt, "General");
-    }
-
-    public Section getSharedSection() {
-        return new Section(this.driverExt, "Shared");
-    }
-
-    public EditTerminalServerCommChannelModal showTerminalServerCommChannelEditModal(String modalTitle) {
+    public EditTerminalServerCommChannelModal showTerminalServerCommChannelEditModal() {
         getCommChannelInfoPanel().getEdit().click();
 
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-edit-comm-channel-popup");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-edit-comm-channel-popup");
 
-        return new EditTerminalServerCommChannelModal(this.driverExt, Optional.of(modalTitle), Optional.empty());
+        return new EditTerminalServerCommChannelModal(this.driverExt, Optional.empty(), Optional.of("js-edit-comm-channel-popup"));
     }
 }

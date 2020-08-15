@@ -37,6 +37,11 @@ public class LoadGroupEcobeeCreateTests extends SeleniumTestSetup {
         randomNum = getRandomNum();
     }
 
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        refreshPage(createPage);
+    }
+
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateEcobee_AllFieldsDisableFalseSuccessfully() {
 
@@ -62,7 +67,7 @@ public class LoadGroupEcobeeCreateTests extends SeleniumTestSetup {
 
         String userMsg = detailsPage.getUserMessage();
 
-        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(userMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -81,8 +86,8 @@ public class LoadGroupEcobeeCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
-        createPage.getDisableGroup().setValue(true);
-        createPage.getDisableControl().setValue(true);
+        createPage.getDisableGroup().selectValue("Yes");
+        createPage.getDisableControl().selectValue("Yes");
 
         createPage.getSaveBtn().click();
 
@@ -92,10 +97,6 @@ public class LoadGroupEcobeeCreateTests extends SeleniumTestSetup {
 
         String userMsg = detailsPage.getUserMessage();
 
-        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }
-    @AfterMethod(alwaysRun = true)
-    public void afterTest() {
-        refreshPage(createPage);
+        assertThat(EXPECTED_MSG).isEqualTo(userMsg);
     }
 }

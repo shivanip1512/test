@@ -169,17 +169,15 @@ public class SeleniumTestSetup {
         Integer waitTime;
 
         if (timeOut == null) {
-            waitTime = 5000;
-        } else if (timeOut < 5) {
-            waitTime = 5000;
+            waitTime = 3000;
         } else {
-            waitTime = timeOut * 1000;
+            waitTime = timeOut;
         }
 
         long startTime = System.currentTimeMillis();
 
         boolean expectedUrlLoaded = false;
-        while (!expectedUrlLoaded && System.currentTimeMillis() - startTime < waitTime) {
+        while (!expectedUrlLoaded && (System.currentTimeMillis() - startTime) < waitTime) {
             String currentUrl = driver.getCurrentUrl();
 
             expectedUrlLoaded = currentUrl.contains(expectedUrl);
@@ -199,8 +197,7 @@ public class SeleniumTestSetup {
             waitTime = timeOut;
         }
 
-        SeleniumTestSetup.driverExt.getDriverWait(Optional.of(waitTime))
-                .until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".page-heading"), pageTitle));
+        SeleniumTestSetup.driverExt.getDriverWait(Optional.of(waitTime)).until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".page-heading"), pageTitle));
     }
 
     public void refreshPage(PageBase page) {
@@ -216,7 +213,7 @@ public class SeleniumTestSetup {
 
         long startTime = System.currentTimeMillis();
 
-        while (!display.equals("display: none;") || System.currentTimeMillis() - startTime < 2000) {            
+        while (!display.equals("display: none;") || (System.currentTimeMillis() - startTime) < 1000) {            
             try {
                 display = driverExt.findElement(By.id("modal-glass"), Optional.empty()).getAttribute("style");
             }
@@ -224,84 +221,84 @@ public class SeleniumTestSetup {
             }  
         }                
     }
-
-    public static void waitUntilModalVisibleByDescribedBy(String describedBy) {
-        boolean displayed = false;
-
+    
+    public static void waitUntilModalOpenByDescribedBy(String describedBy) {
+        Integer count = 0;
+        
         long startTime = System.currentTimeMillis();
 
-        while (!displayed || System.currentTimeMillis() - startTime < 300) {
-            try {
-                displayed = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0))
-                        .isDisplayed();
-            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
-            }
-        }
+        while (count.equals(0) || (System.currentTimeMillis() - startTime) < 1000) {
+            count = driverExt.findElements(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.empty()).size();    
+        }                
     }
-
+    
     public static void waitUntilModalClosedByDescribedBy(String describedBy) {
-        boolean displayed = true;
-
+        Integer count = 1;
+        
         long startTime = System.currentTimeMillis();
 
-        while (displayed || System.currentTimeMillis() - startTime < 300) {
-            try {
-                displayed = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0))
-                        .isDisplayed();
-            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
-            }
-        }
+        while (count.equals(1) || (System.currentTimeMillis() - startTime) < 1000) {
+            count = driverExt.findElements(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).size();    
+        } 
     }
-
-    public static void waitUntilModalVisibleByTitle(String modalTitle) {
-        List<WebElement> elements;
-        Optional<WebElement> el;
-        boolean found = false;
-
-        long startTime = System.currentTimeMillis();
-
-        while (!found || System.currentTimeMillis() - startTime < 300) {
-            try {
-                elements = driverExt.findElements(By.cssSelector(".ui-dialog .ui-dialog-title"), Optional.of(0));
-
-                el = elements.stream().filter(element -> element.getText().equals(modalTitle)).findFirst();
-                found = el.isPresent();
-            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
-            }
-        }
-    }
-
-    public static void waitUntilModalClosedByTitle(String modalTitle) {
-        List<WebElement> elements;
-        Optional<WebElement> el;
+    
+    public static void waitUntilModalClosedDisplayNone(String describedBy) {
         boolean found = true;
-
         long startTime = System.currentTimeMillis();
-
-        while (found || System.currentTimeMillis() - startTime < 100) {
-            try {
-                elements = driverExt.findElements(By.cssSelector(".ui-dialog .ui-dialog-title"), Optional.empty());
-
-                el = elements.stream().filter(element -> element.getText().equals(modalTitle)).findFirst();
-                found = el.isPresent();
-                if (!found) {
-                    return;
-                }
-            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
+        
+        while(found || (System.currentTimeMillis() - startTime) < 1000) {
+            
+            String style = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).getAttribute("style");
+            
+            if(style.contains("display: none")) {
                 found = false;
             }
         }
     }
 
-    public static void waitUntilModalClosed(WebElement modal) {
-        String display = "";
-
+    public static void waitUntilModalInvisibleByDescribedBy(String describedBy) {
+        driverExt.waitUntilElementInvisibleByCssLocator("[aria-describedby='" + describedBy + "']");
+    }        
+    
+    /**
+     * @param modalTitle title of the modal
+     * 
+     * only use this method if area-describedby uses a dynamic id and
+     * can not use method waitUntilModalVisibleByDescribedBy
+     */
+    public static void waitUntilModalOpenByTitle(String modalTitle) {
+        boolean found = false;
         long startTime = System.currentTimeMillis();
-        while (!display.equals("display: none;") || System.currentTimeMillis() - startTime < 100) {
-            try {
-                display = modal.getAttribute("style");
-            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
-            }
+
+        while (!found || (System.currentTimeMillis() - startTime) < 1000) {
+            List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-labelledby^='ui-id']"), Optional.empty());
+            
+            Optional<WebElement> el = list.stream().filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle)).findFirst();
+            
+            if(el.isPresent()) {
+                return;
+            } 
+        }
+    }
+
+    /**
+     * @param modalTitle title of the modal
+     * 
+     * only use this method if area-describedby uses a dynamic id and
+     * can not use method waitUntilModalClosedByDescribedBy
+     */
+    public static void waitUntilModalClosedByTitle(String modalTitle) {
+        boolean found = true;
+        long startTime = System.currentTimeMillis();
+
+        while (found || (System.currentTimeMillis() - startTime) < 1000) {
+            List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-labelledby^='ui-id']"), Optional.empty());
+            
+            Optional<WebElement> el = list.stream().filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle)).findFirst();
+            
+            if(el.isPresent()) {
+                return;
+            } 
         }
     }
 

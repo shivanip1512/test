@@ -33,8 +33,7 @@ public class Button {
 
     public WebElement getButton() {
         if (this.parentName != null) {
-            return this.driverExt.findElement(
-                    By.cssSelector("[aria-describedby='" + this.parentName + "'] [aria-label='" + this.elementName + "']"), Optional.of(5));
+            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] [aria-label='" + this.elementName + "']"), Optional.of(5));
         } else if (this.parentElement != null) {
             return parentElement.findElement(By.cssSelector("[aria-label='" + this.elementName + "']"));
         } else {
@@ -43,7 +42,8 @@ public class Button {
     }
 
     public void click() {
-        this.driverExt.waitUntilClickable(getButton());
+        //WebElement button = getButton();
+        //this.driverExt.waitUntilElementClickable(button);
         getButton().click();
     }
 }

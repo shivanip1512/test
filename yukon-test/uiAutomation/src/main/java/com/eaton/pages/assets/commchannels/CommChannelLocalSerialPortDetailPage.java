@@ -25,11 +25,11 @@ public class CommChannelLocalSerialPortDetailPage extends CommChannelDetailPage{
         return new Section(this.driverExt, "Shared");
     }
 
-    public EditLocalSerialPortCommChannelModal showLocalSerialPortCommChannelEditModal(String modalTitle) {
+    public EditLocalSerialPortCommChannelModal showLocalSerialPortCommChannelEditModal() {
         getCommChannelInfoPanel().getEdit().click();
 
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-edit-comm-channel-popup");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-edit-comm-channel-popup");
 
-        return new EditLocalSerialPortCommChannelModal(this.driverExt, Optional.of(modalTitle), Optional.empty());
+        return new EditLocalSerialPortCommChannelModal(this.driverExt, Optional.empty(), Optional.of("js-edit-comm-channel-popup"));
     }
 }

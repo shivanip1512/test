@@ -82,7 +82,7 @@ public class TrendPage extends PageBase {
     public TrendAddPointModal showAndWaitAddPointModal() {
         getpointSetupAdd().click();
         
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-add-point-dialog");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-add-point-dialog");
         
         return new TrendAddPointModal(this.driverExt, Optional.empty(), Optional.of("js-add-point-dialog"));
     }
@@ -90,7 +90,7 @@ public class TrendPage extends PageBase {
     public TrendAddMarkerModal showAndWaitAddMarkerModal() {
         getMarkerSetupAdd().click();
         
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-add-marker-dialog");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-add-marker-dialog");
         
         return new TrendAddMarkerModal(this.driverExt, Optional.empty(), Optional.of("js-add-marker-dialog"));
     }

@@ -48,8 +48,8 @@ public class LoadGroupListPage extends PageBase {
     public CreateDRObjectModal showAndWaitCreateDemandResponseObject() {        							
     	actionBtn.clickAndSelectOptionByText("Create");						
     							
-    	SeleniumTestSetup.waitUntilModalVisibleByTitle("Create Demand Response Object");						
+    	SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-create-dr-objects-popup");						
     							
-    	return new CreateDRObjectModal(this.driverExt, Optional.of("Create Demand Response Object"), Optional.empty());						
+    	return new CreateDRObjectModal(this.driverExt, Optional.empty(), Optional.of("js-create-dr-objects-popup"));						
     }      							
 }							

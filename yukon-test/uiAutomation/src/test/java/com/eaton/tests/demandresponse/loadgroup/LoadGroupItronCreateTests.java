@@ -54,10 +54,20 @@ public class LoadGroupItronCreateTests extends SeleniumTestSetup {
 
         waitForLoadingSpinner();
 
+        String disableGroup = "Yes";
+        if (jo.getJSONObject(TYPE).getBoolean("disableGroup")) {
+            disableGroup = "Yes";
+        } else { disableGroup = "No"; }
+        
+        String disableControl = "Yes";
+        if (jo.getJSONObject(TYPE).getBoolean("disableControl")) {
+            disableGroup = "Yes";
+        } else { disableGroup = "No"; }
+            
         createPage.getRelay().selectItemByValue(String.valueOf(jo.getJSONObject(TYPE).getInt("virtualRelayId")));
         createPage.getkWCapacity().setInputValue(String.valueOf(jo.getJSONObject(TYPE).getDouble("kWCapacity")));
-        createPage.getDisableGroup().setValue(jo.getJSONObject(TYPE).getBoolean("disableGroup"));
-        createPage.getDisableControl().setValue(jo.getJSONObject(TYPE).getBoolean("disableControl"));
+        createPage.getDisableGroup().selectValue(disableGroup);
+        createPage.getDisableControl().selectValue(disableControl);
 
         createPage.getSaveBtn().click();
 

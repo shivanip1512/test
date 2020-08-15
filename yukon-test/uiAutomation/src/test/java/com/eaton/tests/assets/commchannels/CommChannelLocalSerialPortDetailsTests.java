@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Optional;
 
 import org.assertj.core.api.SoftAssertions;
 import org.json.simple.JSONObject;
@@ -173,8 +174,7 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         String deleteCommChannelName = "Local Serial Comm Channel " + timeStamp;
 
         // Creating one LocalSerial port comm channel using hard coded json file.
-        String payloadFile = System.getProperty("user.dir")
-                + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelLocalSerialPort.json";
+        String payloadFile = System.getProperty("user.dir") + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelLocalSerialPort.json";
 
         Object body = JsonFileHelper.parseJSONFile(payloadFile);
         jo = (JSONObject) body;
@@ -182,10 +182,17 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
         Integer deleteCommChannelId = createResponse.path("id");
         navigate(Urls.Assets.COMM_CHANNEL_DETAIL + deleteCommChannelId);
+        
         detailPage = new CommChannelLocalSerialPortDetailPage(driverExt, deleteCommChannelId);
-        String expectedMessage = deleteCommChannelName +" deleted successfully.";
+        
+        String expectedMessage = deleteCommChannelName + " deleted successfully.";
+        
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
-        deleteConfirmModal.clickOkAndWaitForModalToClose();;
+        
+        deleteConfirmModal.clickOk();
+        
+        waitForUrlToLoad(Urls.Assets.COMM_CHANNELS_LIST, Optional.empty());
+        
         CommChannelsListPage listPage = new CommChannelsListPage(driverExt);
         String userMsg = listPage.getUserMessage();
 

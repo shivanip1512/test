@@ -53,11 +53,9 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
     public void createCommChannel_NameRequiredValidation() {
         CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
 
-        waitForLoadingSpinner();
-
         final String EXPECTED_MSG = "Name is required.";
 
-        createModal.clickOkAndWaitForModalToClose();
+        createModal.clickOk();
 
         String errorMsg = createModal.getName().getValidationError();
 
@@ -68,15 +66,13 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
     public void createCommChannel_NameInvalidCharValidation() {
         CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
 
-        waitForLoadingSpinner();
-
         final String name = "Comm Channel / \\ , ' ";
 
         final String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
 
         createModal.getName().setInputValue(name);
 
-        createModal.clickOkAndWaitForModalToClose();
+        createModal.clickOk();
 
         String errorMsg = createModal.getName().getValidationError();
 
@@ -87,13 +83,11 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
     public void createCommChannel_UniqueNameValidation() {
         CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
 
-        waitForLoadingSpinner();
-
         final String EXPECTED_MSG = "Name already exists";
 
         createModal.getName().setInputValue(commChannelName);
 
-        createModal.clickOkAndWaitForModalToClose();
+        createModal.clickOk();
 
         String errorMsg = createModal.getName().getValidationError();
 
@@ -102,13 +96,11 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void createCommChannel_CancelNavigatesToCorrectUrl() {
+        String EXPECTED_TITLE = "Comm Channels";
         CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
 
-        waitForLoadingSpinner();
-
-        createModal.clickCancelAndWait();
-
-        String EXPECTED_TITLE = "Comm Channels";
+        createModal.commChannelClickCancelAndWait();
+        
         String actualPageTitle = listPage.getPageTitle();
 
         assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);

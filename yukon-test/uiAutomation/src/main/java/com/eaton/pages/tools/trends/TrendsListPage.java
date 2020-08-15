@@ -34,14 +34,15 @@ public class TrendsListPage extends PageBase {
     public ConfirmModal showDeleteTrendModal() {
         getActionBtn().clickAndSelectOptionByText("Delete");
 
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("yukon_dialog_confirm");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("yukon_dialog_confirm");
 
         return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of("yukon_dialog_confirm"));
     }
+    
     public ResetPeakModal showResetPeakTrendModal() {
         getActionBtn().clickAndSelectOptionByText("Reset Peak");
         
-        SeleniumTestSetup.waitUntilModalVisibleByTitle("Reset Peak");
+        SeleniumTestSetup.waitUntilModalOpenByTitle("Reset Peak");
 
         return new ResetPeakModal(this.driverExt, Optional.of("Reset Peak"), Optional.empty());
     }

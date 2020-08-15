@@ -53,8 +53,8 @@ public class TrendAddPointModal extends BaseModal {
     public SelectPointModal showAndWaitAddPointModal() {
         getPoint().clickLink();
         
-        SeleniumTestSetup.waitUntilModalVisibleByTitle("Select Point");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-add-point-dialog");;
         
-        return new SelectPointModal(this.driverExt, Optional.of("Select Point"), Optional.empty());
+        return new SelectPointModal(this.driverExt, Optional.empty(), Optional.of("js-add-point-dialog"));
     }
 }

@@ -30,7 +30,7 @@ public class UsersAndGroupsPage extends PageBase {
         
         getCreateBtn().clickAndSelectOptionByText("User");        
                       
-        SeleniumTestSetup.waitUntilModalVisibleByTitle("New User");
+        SeleniumTestSetup.waitUntilModalOpenByTitle("New User");
         
         return new CreateUserModal(this.driverExt, "New User");        
     }
@@ -39,7 +39,7 @@ public class UsersAndGroupsPage extends PageBase {
         
         getCreateBtn().clickAndSelectOptionByText("User Group");        
                       
-        SeleniumTestSetup.waitUntilModalVisibleByTitle("New User Group");
+        SeleniumTestSetup.waitUntilModalOpenByTitle("New User Group");
         
         return new CreateUserGroupModal(this.driverExt, "New User Group");        
     }
@@ -48,7 +48,7 @@ public class UsersAndGroupsPage extends PageBase {
         
         getCreateBtn().clickAndSelectOptionByText("Role Group");        
                       
-        SeleniumTestSetup.waitUntilModalVisibleByTitle("New Role Group");
+        SeleniumTestSetup.waitUntilModalOpenByTitle("New Role Group");
         
         return new CreateRoleGroupModal(this.driverExt, "New Role Group");        
     }

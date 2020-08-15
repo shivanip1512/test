@@ -137,9 +137,9 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
 
         createPage.getControlPriority().selectItemByValue("MEDIUM");
         createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
-        createPage.getDisableGroup().setValue(true);
+        createPage.getDisableGroup().selectValue("Yes");
         SeleniumTestSetup.moveToElement(createPage.getDisableControl().getSwitchBtn());
-        createPage.getDisableControl().setValue(true);
+        createPage.getDisableControl().selectValue("Yes");
 
         createPage.getSaveBtn().click();
 
@@ -148,7 +148,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
         String userMsg = detailsPage.getUserMessage();
 
-        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(userMsg);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -168,7 +168,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         List<String> expectedLabels = new ArrayList<>(List.of("Name:", "Type:", "Communication Route:"));
         List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
-        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
+        assertThat(expectedLabels).containsExactlyElementsOf(actualLabels);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -188,7 +188,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         String actualLabels = createPage.getPageSection(sectionName).getSectionLabels().get(0);
-        assertThat(actualLabels.contains(expectedLabels)).withFailMessage("Assertion failed for label : " + expectedLabels).isTrue();
+        assertThat(expectedLabels).contains(actualLabels);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -217,7 +217,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
                 List.of("SPID:", "GEO:", "Substation:", "Feeder:", "ZIP:", "User:", "Serial:"));
         List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
-        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
+        assertThat(expectedLabels).containsExactlyElementsOf(actualLabels);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -237,7 +237,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
 
         String expectedLabels = "Usage:";
         String actualLabels = createPage.getPageSection(sectionName).getSectionLabels().get(0);
-        assertThat(actualLabels.contains(expectedLabels)).withFailMessage("Assertion failed for label : " + expectedLabels).isTrue();
+        assertThat(expectedLabels).contains(actualLabels);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -260,7 +260,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         List<String> expectedLabels = new ArrayList<>(List.of("Send Loads in Control Message:", "Loads:", "Program:", "Splinter:"));
         List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
-        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
+        assertThat(expectedLabels).containsExactlyElementsOf(actualLabels);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -282,7 +282,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
                 List.of("Control Priority:", "kW Capacity:", "Disable Group:", "Disable Control:"));
         List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
-        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
+        assertThat(expectedLabels).containsExactlyElementsOf(actualLabels);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -549,7 +549,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
 
         String userMsg = createPage.getUserMessage();
         
-        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(userMsg);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -702,6 +702,6 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         List<String> expectedDropDownValues = new ArrayList<>(List.of("Default", "Medium", "High", "Highest"));
         List<String> actualDropDownValues = createPage.getControlPriority().getOptionValues();
 
-        assertThat(actualDropDownValues).containsExactlyElementsOf(expectedDropDownValues);
+        assertThat(expectedDropDownValues).containsExactlyElementsOf(actualDropDownValues);
     }
 }

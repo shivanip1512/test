@@ -82,8 +82,8 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getRelayUsage().setTrueFalseByName("Relay 2", true);
         createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
 
-        createPage.getDisableGroup().setValue(true);
-        createPage.getDisableControl().setValue(true);
+        createPage.getDisableGroup().selectValue("Yes");
+        createPage.getDisableControl().selectValue("Yes");
 
         createPage.getSaveBtn().click();
 

@@ -30,6 +30,11 @@ public class EnergyCompanyOperatorUserCreateTests extends SeleniumTestSetup {
 
         createPage = new EnergyCompanyOperatorUserCreatePage(driverExt, 64);
     }
+    
+    @AfterMethod
+    public void afterMethod() {
+        refreshPage(createPage);
+    }
 
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
     public void energyCompanyOperatorUserCreate_pageTitleCorrect() {
@@ -37,7 +42,7 @@ public class EnergyCompanyOperatorUserCreateTests extends SeleniumTestSetup {
         
         String actualPageTitle = createPage.getPageTitle();
         
-        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
+        assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);
     }
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
@@ -61,11 +66,6 @@ public class EnergyCompanyOperatorUserCreateTests extends SeleniumTestSetup {
         
         String actualUserMsg = listPage.getUserMessage();
         
-        assertThat(actualUserMsg).isEqualTo(EXPECTED_USER_MSG);
-    }        
-    
-    @AfterMethod(alwaysRun=true)
-    public void afterTest() {        
-        refreshPage(createPage);
-    }
+        assertThat(EXPECTED_USER_MSG).isEqualTo(actualUserMsg);
+    }            
 }

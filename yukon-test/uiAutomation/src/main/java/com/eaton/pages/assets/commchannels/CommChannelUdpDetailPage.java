@@ -28,7 +28,7 @@ public class CommChannelUdpDetailPage extends CommChannelDetailPage {
     public EditUdpCommChannelModal showUdpCommChannelEditModal(String modalTitle) {
         getCommChannelInfoPanel().getEdit().click();
 
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-edit-comm-channel-popup");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-edit-comm-channel-popup");
 
         return new EditUdpCommChannelModal(this.driverExt, Optional.of(modalTitle), Optional.empty());
     }

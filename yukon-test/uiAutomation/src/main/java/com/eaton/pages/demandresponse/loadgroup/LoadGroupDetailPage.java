@@ -31,7 +31,7 @@ public class LoadGroupDetailPage extends PageBase {
     public ConfirmModal showDeleteLoadGroupModal() {
         getActionBtn().clickAndSelectOptionByText("Delete"); 
         
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("yukon_dialog_confirm");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("yukon_dialog_confirm");
         
         return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of("yukon_dialog_confirm"));        
     }

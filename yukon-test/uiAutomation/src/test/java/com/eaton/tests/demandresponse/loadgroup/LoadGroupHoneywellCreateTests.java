@@ -58,7 +58,7 @@ public class LoadGroupHoneywellCreateTests extends SeleniumTestSetup {
         LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
         String userMsg = detailsPage.getUserMessage();
 
-        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(userMsg);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -77,8 +77,8 @@ public class LoadGroupHoneywellCreateTests extends SeleniumTestSetup {
         createPage.getName().setInputValue(name);
         createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
 
-        createPage.getDisableGroup().setValue(true);
-        createPage.getDisableControl().setValue(true);
+        createPage.getDisableGroup().selectValue("Yes");
+        createPage.getDisableControl().selectValue("Yes");
 
         createPage.getSaveBtn().click();
 
@@ -87,7 +87,6 @@ public class LoadGroupHoneywellCreateTests extends SeleniumTestSetup {
         LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
         String userMsg = detailsPage.getUserMessage();
 
-        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-
+        assertThat(EXPECTED_MSG).isEqualTo(userMsg);
     }
 }

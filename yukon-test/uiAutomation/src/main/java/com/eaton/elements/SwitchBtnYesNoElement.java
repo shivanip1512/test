@@ -24,20 +24,14 @@ public class SwitchBtnYesNoElement {
         this.driverExt = driverExt;
         this.elementName = elementName;
     }
-
-    public void setValue(boolean checked) {
-        WebElement switchBtn = getSwitchBtn();
-
-        WebElement btn = switchBtn.findElement(By.cssSelector("input[name='" + this.elementName + "']"));
-
-        String isChecked = btn.getAttribute("checked");
-
-        if (isChecked == null && checked) {
-            switchBtn.findElement(By.cssSelector(".button.yes")).click();
-        } else if (isChecked != null && !checked) {
-            switchBtn.findElement(By.cssSelector(".button.no")).click();
-        }
-    }   
+    
+    public void selectValue(String value) {
+        List<WebElement> list = this.driverExt.findElements(By.cssSelector(".switch-btn .b-label"), Optional.of(0));
+        
+        WebElement el = list.stream().filter(x -> x.getText().contains(value)).findFirst().orElseThrow();
+        
+        el.click();
+    }
     
     public WebElement getSwitchBtn() {                
         if (parentElement != null) {
@@ -64,20 +58,31 @@ public class SwitchBtnYesNoElement {
 
 
         return null;
-    }
-    
+    }    
 
-    public String getCheckedValue() {
-        WebElement switchBtn = getSwitchBtn();
+    public String getCheckedValue() {        
+        if(parentElement != null) {
+            WebElement btn = parentElement.findElement(By.cssSelector("input[name='" + this.elementName + "']"));
 
-        WebElement btn = switchBtn.findElement(By.cssSelector("input[name='" + this.elementName + "']"));
-
-        String isChecked = btn.getAttribute("checked");
-        
-        if(isChecked == null) {
-            return switchBtn.findElement(By.cssSelector(".button.no .b-label")).getText();
+            String id = btn.getAttribute("id");
+            String isChecked = btn.getAttribute("checked");
+            
+            if(isChecked == null) {
+                return parentElement.findElement(By.cssSelector("label[for='" + id + "'].button.no")).getText();
+            } else {
+                return parentElement.findElement(By.cssSelector("label[for='" + id + "'].button.yes")).getText();
+            }
         } else {
-            return switchBtn.findElement(By.cssSelector(".button.yes .b-label")).getText();
+            WebElement btn = this.driverExt.findElement(By.cssSelector("input[name='" + this.elementName + "']"), Optional.of(3));
+
+            String id = btn.getAttribute("id");
+            String isChecked = btn.getAttribute("checked");
+            
+            if(isChecked == null) {
+                return this.driverExt.findElement(By.cssSelector("label[for='" + id + "'].button.no"), Optional.empty()).getText();
+            } else {
+                return this.driverExt.findElement(By.cssSelector("label[for='" + id + "'].button.yes"), Optional.empty()).getText();
+            }
         }
     }
 }

@@ -38,7 +38,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
     }
 
     @AfterMethod(alwaysRun = true)
-    public void afterTest() {
+    public void afterMethod() {
         refreshPage(createPage);
     }
 
@@ -63,8 +63,8 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
 
         createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
 
-        createPage.getDisableGroup().setValue(true);
-        createPage.getDisableControl().setValue(false);
+        createPage.getDisableGroup().selectValue("Yes");
+        createPage.getDisableControl().selectValue("No");
 
         createPage.getSaveBtn().click();
 
@@ -73,7 +73,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
         String userMsg = detailsPage.getUserMessage();
 
-        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(userMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -201,7 +201,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         List<String> expectedLabels = new ArrayList<>(List.of("Name:", "Type:"));
         List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
-        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
+        assertThat(expectedLabels).containsExactlyElementsOf(actualLabels);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -221,7 +221,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         List<String> expectedLabels = new ArrayList<>(List.of("Device Class:"));
         List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
-        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
+        assertThat(expectedLabels).containsExactlyElementsOf(actualLabels);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -241,7 +241,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         List<String> expectedLabels = new ArrayList<>(List.of("Utility Enrollment Group:"));
         List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
-        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
+        assertThat(expectedLabels).containsExactlyElementsOf(actualLabels);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -261,6 +261,6 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         List<String> expectedLabels = new ArrayList<>(List.of("Ramp In Time:", "Ramp Out Time:"));
         List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
-        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
+        assertThat(expectedLabels).containsExactlyElementsOf(actualLabels);
     }
 }

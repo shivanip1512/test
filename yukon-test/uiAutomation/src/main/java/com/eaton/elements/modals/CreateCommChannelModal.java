@@ -1,10 +1,15 @@
 package com.eaton.elements.modals;
 
+import java.util.List;
 import java.util.Optional;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
 
 public class CreateCommChannelModal extends BaseModal {
 
@@ -40,5 +45,13 @@ public class CreateCommChannelModal extends BaseModal {
     
     public TextEditElement getPhysicalPortOther() {
     	return new TextEditElement(this.driverExt, "physicalPort", modalAriaDescribedBy);
-    }        
+    }  
+    
+    public void commChannelClickCancelAndWait() {
+        List<WebElement> list = getModal().findElements(By.cssSelector(".ui-dialog-buttonset button"));
+
+        list.stream().filter(x -> x.getText().contains("Cancel")).findFirst().orElseThrow().click();
+        
+        SeleniumTestSetup.waitUntilModalClosedDisplayNone(modalAriaDescribedBy);
+    }
 }

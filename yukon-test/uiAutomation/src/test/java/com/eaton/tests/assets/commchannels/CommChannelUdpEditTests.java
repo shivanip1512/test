@@ -434,7 +434,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         editModal.getName().setInputValue(commChannelNameUdp);
         editModal.clickOkAndWait();
 
-        assertThat(editModal.getName().getValidationError()).isEqualTo(EXPECTED_MSG);
+        assertThat(EXPECTED_MSG).isEqualTo(editModal.getName().getValidationError());
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
@@ -443,7 +443,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         CreateCommChannelModal createModel = detailPage.showCreateCommChannelModal();
         String actualCreateModelTitle = createModel.getModalTitle();
 
-        assertThat(actualCreateModelTitle).isEqualTo(EXPECTED_CREATE_MODEL_TITLE);
+        assertThat(EXPECTED_CREATE_MODEL_TITLE).isEqualTo(actualCreateModelTitle);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
@@ -487,9 +487,9 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 	
         editModal.getTabs().clickTabAndWait(tabName);
         
-        editModal.getProtocolWrap().setByValue("IDLC", true);
-        editModal.getCarrierDetectWait().setValue(false);	
-        editModal.getEncryptionKey().setValue(false);	
+        editModal.getProtocolWrap().selectByValue("IDLC");
+        editModal.getCarrierDetectWait().selectValue("No");	
+        editModal.getEncryptionKey().selectValue("No");	
         editModal.getPreTxWait().setInputValue(configFieldsValues[0]);
         editModal.getRtsToTxWait().setInputValue(configFieldsValues[1]);	
         editModal.getPostTxWait().setInputValue(configFieldsValues[2]);	

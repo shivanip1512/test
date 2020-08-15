@@ -60,8 +60,8 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         createPage.getRelayUsage().setTrueFalseByName("Relay 2", true);
 
         createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
-        createPage.getDisableGroup().setValue(true);
-        createPage.getDisableControl().setValue(false);
+        createPage.getDisableGroup().selectValue("Yes");
+        createPage.getDisableControl().selectValue("No");
         createPage.getSaveBtn().click();
 
         waitForPageToLoad("Load Group: " + name, Optional.empty());

@@ -79,8 +79,8 @@ public class LoadGroupMeterDisconnectCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
-        createPage.getDisableGroup().setValue(true);
-        createPage.getDisableControl().setValue(true);
+        createPage.getDisableGroup().selectValue("Yes");
+        createPage.getDisableControl().selectValue("Yes");
 
         createPage.getSaveBtn().click();
 

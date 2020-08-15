@@ -248,6 +248,7 @@ public final class Urls {
         public static final String ENERGY_COMPANY_OPERATOR_USER_LIST = "/admin/energyCompany/operatorLogin/home?ecId=";
         public static final String ENERGY_COMPANY_OPERATOR_USER_EDIT = "/admin/energyCompany/operatorLogin/edit?ecId=";
         public static final String ENERGY_COMPANY_OPERATOR_USER_DETAILS = "/admin/energyCompany/operatorLogin/view?ecId=";
+        public static final String ENERGY_COMPANY_OPERATOR_USER_AFTER_DELETE_OR_EDIT = "/admin/energyCompany/operatorLogin/home?";
         public static final String ENERGY_COMPANY_OPERATOR_LOGIN_ID = "&operatorLoginId=";
 
         public static final String ACTIVE_JOBS = "/admin/jobsscheduler/active";

@@ -25,11 +25,11 @@ public class CommChannelTcpDetailPage extends CommChannelDetailPage {
         return new Section(this.driverExt, "Shared");
     }
 
-    public EditTcpCommChannelModal showTcpCommChannelEditModal(String modalTitle) {
+    public EditTcpCommChannelModal showTcpCommChannelEditModal() {
         getCommChannelInfoPanel().getEdit().click();
 
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-edit-comm-channel-popup");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-edit-comm-channel-popup");
 
-        return new EditTcpCommChannelModal(this.driverExt, Optional.of(modalTitle), Optional.empty());
+        return new EditTcpCommChannelModal(this.driverExt, Optional.empty(), Optional.of("js-edit-comm-channel-popup"));
     }
 }

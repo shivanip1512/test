@@ -60,7 +60,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_ModalTitleCorrect() {
         String expectedModalTitle = "Edit " + commChannelName;
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
         String actualModalTitle = editModal.getModalTitle();
         
         assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
@@ -68,9 +68,8 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_Name_RequiredValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_MSG = "Name is required.";
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         editModal.getName().clearInputValue();
         editModal.clickOkAndWait();
@@ -80,10 +79,9 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_Name_InvalidChars() {
-        String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
 
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         editModal.getName().setInputValue("/,tcp|");
         editModal.clickOkAndWait();
@@ -104,8 +102,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         jo.put("name", commChannelNameTcp);
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
 
-        String expectedModalTitle = "Edit " + commChannelName;
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         editModal.getName().setInputValue(commChannelNameTcp);
         editModal.clickOkAndWait();
@@ -115,10 +112,9 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_CancelNavigatesCorrectly() {
-        String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_TITLE = commChannelName;
 
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
         editModal.clickCancelAndWait();
 
         String actualPageTitle = detailPage.getPageTitle();
@@ -128,9 +124,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_TabLabelsCorrect() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         List<String> titles = editModal.getTabs().getTitles();
 
@@ -142,8 +136,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_InfoTabLabelsCorrect() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         String tabName = "Info";
         editModal.getTabs().clickTabAndWait(tabName);
@@ -159,8 +152,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_ConfigurationLabelsCorrect() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         String tabName = "Configuration";
         editModal.getTabs().clickTabAndWait(tabName);
@@ -177,8 +169,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_ConfigurationsValuesCorrect() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         String tabName = "Configuration";
         editModal.getTabs().clickTabAndWait(tabName);
@@ -193,11 +184,10 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_PreTxWait_MinValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_MSG = "Pre Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
 
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPreTxWait().setInputValue("-1");
@@ -208,11 +198,10 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_PreTxWait_MaxValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_MSG = "Pre Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
 
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPreTxWait().setInputValue("10000001");
@@ -223,11 +212,10 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_RtsToTxWait_MinValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_MSG = "RTS To Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
 
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getRtsToTxWait().setInputValue("-1");
@@ -238,11 +226,10 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_RtsToTxWait_MaxValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_MSG = "RTS To Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
 
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getRtsToTxWait().setInputValue("10000001");
@@ -253,11 +240,10 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_PostTxWai_MinValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_MSG = "Post Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
 
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPostTxWait().setInputValue("-1");
@@ -268,11 +254,10 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_PostTxWait_MaxValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_MSG = "Post Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
 
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPostTxWait().setInputValue("10000001");
@@ -283,11 +268,10 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_ReceiveDataWait_MinValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_MSG = "Receive Data Wait must be between 0 and 1,000.";
         String tabName = "Configuration";
 
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getReceiveDataWait().setInputValue("-1");
@@ -298,11 +282,10 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_ReceiveDataWait_MaxValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_MSG = "Receive Data Wait must be between 0 and 1,000.";
         String tabName = "Configuration";
 
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getReceiveDataWait().setInputValue("1001");
@@ -313,11 +296,10 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_AdditionalTimeOut_MinValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_MSG = "Additional Time Out must be between 0 and 999.";
         String tabName = "Configuration";
 
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getAdditionalTimeOut().setInputValue("-1");
@@ -328,11 +310,10 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_AdditionalTimeOut_MaxValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
         String EXPECTED_MSG = "Additional Time Out must be between 0 and 999.";
         String tabName = "Configuration";
 
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getAdditionalTimeOut().setInputValue("1000");
@@ -343,9 +324,8 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_InfoFieldsValuesCorrect() {
-        String expectedModalTitle = "Edit " + commChannelName;
         String tabName = "Info";
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
 
@@ -357,10 +337,9 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_ConfigTabTimingSectionDisplayed() {
-        String expectedModalTitle = "Edit " + commChannelName;
         String tabName = "Configuration";
 
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
         editModal.getTabs().clickTabAndWait(tabName);
 
         Section timing = editModal.getTimingSection();
@@ -385,13 +364,12 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         navigate(Urls.Assets.COMM_CHANNEL_DETAIL + id);
         CommChannelTcpDetailPage page = new CommChannelTcpDetailPage(driverExt, id);        
         
-        String expectedModalTitle = "Edit " + name;
         String editName = "Edit TCP " + timeStamp;
         String baudRate = "BAUD_4800";
         String configFieldsValues[] = { "55", "10", "20", "15", "500" };
         String tabName = "Configuration";
 
-        EditTcpCommChannelModal editModal = page.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = page.showTcpCommChannelEditModal();
         editModal.getName().setInputValue(editName);
         editModal.getBaudRate().selectItemByValue(baudRate);
 

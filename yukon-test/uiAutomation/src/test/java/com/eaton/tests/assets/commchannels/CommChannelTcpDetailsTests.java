@@ -162,7 +162,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     public void commChannelDetailsTcp_Edit_NavigatesCorrectly() {
         String expectedModalTitle = "Edit " + commChannelName;
 
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         String actualModalTitle = editModal.getModalTitle();
 
@@ -171,7 +171,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
 
     //TODO This only needs to be tested once in the context of Comm Channels??
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTCP_CreateNavigatesCorrectly() {
+    public void commChannelDetailsTCP_Create_NavigatesCorrectly() {
         String expectedModalTitle = "Create Comm Channel";
 
         CreateCommChannelModal createModal = detailPage.showCreateCommChannelModal();
@@ -206,7 +206,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     public void commChannelDeleteTcp_CancelDeleteNavigatesCorrectly() {
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
         
-        deleteConfirmModal.clickCancelByNameAndWait();
+        deleteConfirmModal.clickCancelBtnByNameAndWait();
         
         assertThat(deleteConfirmModal.isModalAvailable()).isFalse();
     }
