@@ -208,11 +208,16 @@ public class SeleniumTestSetup {
     }
 
     public void refreshPage(PageBase page) {
-
-        if (page != null) {
-            navigate(page.getPageUrl());
-        } else {
+//        if (page != null) {
+//            navigate(page.getPageUrl());
+//        } else {
+//            driver.navigate().refresh();
+//        }        
+        
+        if (getCurrentUrl().equals(getBaseUrl() + page.getPageUrl())) {            
             driver.navigate().refresh();
+        } else {
+            navigate(page.getPageUrl());
         }
     }
 
@@ -220,14 +225,13 @@ public class SeleniumTestSetup {
         String display = "";
 
         long startTime = System.currentTimeMillis();
-        while (!display.equals("display: none;") && System.currentTimeMillis() - startTime < 2000) {            
+        while (!display.equals("display: none;") || System.currentTimeMillis() - startTime < 2000) {            
             try {
                 display = driverExt.findElement(By.id("modal-glass"), Optional.empty()).getAttribute("style");
             }
             catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {               
             }  
-        }
-
+        }                
     }
 
     public static void waitUntilModalVisibleByDescribedBy(String describedBy) {

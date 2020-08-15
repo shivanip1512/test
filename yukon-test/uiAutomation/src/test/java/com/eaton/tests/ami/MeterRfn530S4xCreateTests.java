@@ -35,7 +35,7 @@ public class MeterRfn530S4xCreateTests extends SeleniumTestSetup {
         WebDriver driver = getDriver();
         driverExt = getDriverExt();
 
-        driver.get(getBaseUrl() + Urls.Ami.AMI);
+        driver.get(getBaseUrl() + Urls.Ami.AMI_DASHBOARD);
 
         amiDashboardPage = new AmiDashboardPage(driverExt);
         randomNum = getRandomNum();

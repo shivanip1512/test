@@ -1776,15 +1776,22 @@
           <page name="rfnTest" type="BASIC">
             <link>/dev/rfn/viewBase</link>
             <pages>
-              <page name="rfnTest.viewMeterReadArchive" type="DETAIL"/>
-              <page name="rfnTest.viewEventArchive" type="DETAIL"/>
-              <page name="rfnTest.viewAlarmArchive" type="DETAIL"/>
-              <page name="rfnTest.viewDataSimulator" type="BASIC"/>
+              <page name="rfnTest.viewMeterReadArchive" type="BASIC"/>
+              <page name="rfnTest.viewEventArchive" type="BASIC"/>
+              <page name="rfnTest.viewAlarmArchive" type="BASIC"/>
+              <page name="rfnTest.viewLcrDataSimulator" type="BASIC"/>
               <page name="rfnTest.viewGatewayDataSimulator" type="BASIC"/>
               <page name="rfnTest.viewDataStreamingSimulator" type="BASIC"/>
               <page name="rfnTest.viewMappingSimulator" type="BASIC"/>
               <page name="rfnTest.statusArchiveRequest" type="BASIC"/>
-            </pages>            
+              <page name="rfnTest.pointMappingDecipher" type="BASIC"/>
+              <page name="rfnTest.pointMappingIcd" type="BASIC"/>
+              <page name="rfnTest.lcrReadArchiveRequest" type="BASIC"/>
+              <page name="rfnTest.rfnMeterSimulator" type="BASIC"/>
+              <page name="rfnTest.deviceArchive" type="BASIC"/>
+              <page name="rfnTest.rfLocationArchiveRequest" type="BASIC"/>
+              <page name="rfnTest.rfnConfigNotification" type="BASIC"/>
+            </pages>
           </page>
           <page name="ecobee.mockTest" type="BASIC"/>
           <page name="i18nDemo" type="BASIC"/>

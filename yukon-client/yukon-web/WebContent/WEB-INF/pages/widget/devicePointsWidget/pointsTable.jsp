@@ -39,7 +39,17 @@
                             <i:inline key="yukon.common.na"/>
                         </c:when>
                         <c:otherwise>
-                            ${point.attribute}
+                            <i:inline key="${point.attribute}" htmlEscape="true"/>
+                            <c:if test="${point.displayPopup}">
+                                <cti:msg2 var="moreAttributes" key="yukon.common.plusMore" argument="${point.allAttributes.size() - 1}"/>
+                                <a href="javascript:void(0);" data-popup="#attributes-popup-${point.pointId}">
+                                    ${moreAttributes}
+                                </a>
+                                <div id="attributes-popup-${point.pointId}" class="dn" data-width="300"
+                                    data-title="<cti:msg2 key="yukon.common.attributes"/>">
+                                    <%@ include file="/WEB-INF/pages/common/pao/attributesTable.jsp" %>
+                                </div>
+                            </c:if>
                         </c:otherwise>
                     </c:choose>
                 </td>

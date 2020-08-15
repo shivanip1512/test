@@ -16,13 +16,11 @@ public class TabElement {
 
     public TabElement(DriverExtensions driverExt, WebElement parentElement) {
         this.driverExt = driverExt;
-
         this.parentElement = parentElement;
     }
 
     public TabElement(DriverExtensions driverExt) {
         this.driverExt = driverExt;
-
     }
 
     private WebElement getTabContainer() {
@@ -49,10 +47,6 @@ public class TabElement {
         return isSelected;
     }
 
-    private List<WebElement> getTabs() {
-        return getTabContainer().findElements(By.cssSelector(".ui-tabs-tab"));
-    }
-
     public List<String> getTitles() {
         List<WebElement> elements = getTabs();
 
@@ -63,21 +57,7 @@ public class TabElement {
 
         return titles;
     }
-
-    public WebElement getTabPanelByName(String tabName) {
-        WebElement tab = getTabByName(tabName);
-
-        String attribute = tab.getAttribute("aria-labelledby");
-
-        return getTabPanelByAriaLabel(attribute);
-    }
-
-    public WebElement getTabPanelByAriaLabel(String label) {
-        WebElement tabContainer = getTabContainer();
-
-        return tabContainer.findElement(By.cssSelector(".ui-tabs-panel[aria-labelledby='" + label + "']"));
-    }
-
+    
     public void clickTabAndWait(String tabName) {
         getTabByName(tabName).click();
         
@@ -87,6 +67,14 @@ public class TabElement {
         while (!tabSelected && System.currentTimeMillis() - startTime < 2000) {
             tabSelected = isTabSelected(tabName);
         }
+    }
+
+    public WebElement getTabPanelByName(String tabName) {
+        WebElement tab = getTabByName(tabName);
+
+        String attribute = tab.getAttribute("aria-labelledby");
+
+        return getTabPanelByAriaLabel(attribute);
     }
 
     public List<String> getTabLabels(String tabName) {
@@ -122,10 +110,20 @@ public class TabElement {
 
         return values;
     }
+    
+    private List<WebElement> getTabs() {
+        return getTabContainer().findElements(By.cssSelector(".ui-tabs-tab"));
+    }
 
     private WebElement getTabByName(String tabName) {
         List<WebElement> list = getTabs();
 
         return list.stream().filter(e -> e.findElement(By.cssSelector("a")).getText().contains(tabName)).findFirst().orElseThrow();
+    }
+    
+    private WebElement getTabPanelByAriaLabel(String label) {
+        WebElement tabContainer = getTabContainer();
+
+        return tabContainer.findElement(By.cssSelector(".ui-tabs-panel[aria-labelledby='" + label + "']"));
     }
 }

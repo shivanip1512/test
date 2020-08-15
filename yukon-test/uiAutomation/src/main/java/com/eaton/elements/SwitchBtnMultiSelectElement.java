@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.testng.util.Strings;
 
 import com.eaton.framework.DriverExtensions;
 
@@ -43,18 +44,14 @@ public class SwitchBtnMultiSelectElement {
         }
     }
     
-    public boolean isValueSelectedByName(String name) {
+    public boolean isValueSelected(String name) {
         WebElement element = getSwitchBtn();
 
         WebElement switchBtn = element.findElement(By.cssSelector("input[value='" + name.toUpperCase() + "']"));
         
         String isChecked = switchBtn.getAttribute("checked");
         
-        if (isChecked == null) {
-            return false;
-        } else {
-            return true;
-        }        
+        return !Strings.isNullOrEmpty(isChecked);               
     }
 
     // This method should only be used for Load Group of type Ripple
@@ -80,22 +77,18 @@ public class SwitchBtnMultiSelectElement {
     public boolean isValueDisabled(String name) {
         WebElement element = getSwitchBtn();
 
-        //WebElement switchBtn = element.findElement(By.cssSelector("input[id='" + name.toUpperCase() + "_chk']"));
         WebElement switchBtn = element.findElement(By.cssSelector("input[value='" + name.toUpperCase() + "']"));
 
         String disabled = switchBtn.getAttribute("disabled");
         
-        if (disabled == null) {
-            return false;
-        } else
-            return true;        
+        return !Strings.isNullOrEmpty(disabled);                
     }
 
     public boolean allValuesDisabled() {
         WebElement element = getSwitchBtn();
 
         List<WebElement> list = element.findElements(By.cssSelector("label .switch-btn-checkbox"));
-
+        
         boolean allDisabled = true;
         for (WebElement webElement : list) {
             String disabled = webElement.getAttribute("disabled");

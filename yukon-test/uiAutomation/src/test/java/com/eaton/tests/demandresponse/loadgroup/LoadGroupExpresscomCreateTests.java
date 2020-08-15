@@ -562,7 +562,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     public void ldGrpCreateExpresscom_UsageLoadNotSelected_SendLoadsNo() {
         createPage.getType().selectItemByText("Expresscom Group");
 
-        assertThat(createPage.getUsage().isValueSelectedByName("Load")).isFalse();
+        assertThat(createPage.getUsage().isValueSelected("Load")).isFalse();
         assertThat(createPage.getSendLoadsInControlMessageText()).isEqualTo("No");
     }
 
@@ -586,7 +586,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         ConfirmModal confirmModal = new ConfirmModal(driverExt, Optional.empty(), Optional.of("addressing-popup"));
         confirmModal.clickOkAndWait();
         
-        assertThat(createPage.getUsage().isValueSelectedByName("Load")).isFalse();
+        assertThat(createPage.getUsage().isValueSelected("Load")).isFalse();
         assertThat(createPage.getSendLoadsInControlMessageText()).isEqualTo("No");
     }
 
@@ -616,7 +616,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getUsage().setTrueFalseByName("Splinter", true);
         confirmModal.clickOkAndWait();
         
-        assertThat(createPage.getUsage().isValueSelectedByName("Load")).isFalse();
+        assertThat(createPage.getUsage().isValueSelected("Load")).isFalse();
         assertThat(createPage.getSendLoadsInControlMessageText()).isEqualTo("No");
     }
 
