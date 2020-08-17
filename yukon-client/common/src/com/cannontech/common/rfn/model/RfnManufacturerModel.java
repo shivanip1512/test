@@ -112,11 +112,11 @@ public enum RfnManufacturerModel {
     RFN_RELAY(PaoType.RFN_RELAY, "EATON", "RFRelay")
     
     /* For documentation only */
-    // RFN_GATEWAY(PaoType.RFN_GATEWAY, "CPS", "RFGateway"),
-    // GWY_800(PaoType.GWY800, "CPS", "RFGateway2"),
+    // RFN_GATEWAY(PaoType.RFN_GATEWAY, "EATON", "RFGateway"),
+    // GWY_800(PaoType.GWY800, "EATON", "GWY800"),
     // GWY_801(PaoType.GWY801, "EATON", "GWY801"),
     // NETWORK_MANAGER(null, "Eaton", "NetworkManager"),
-    // VIRTUAL_GATEWAY(PaoType.VIRTUAL_GATEWAY, "CPS", "VGW"),
+    // VIRTUAL_GATEWAY(PaoType.VIRTUAL_GATEWAY, "EATON", "VGW"),
     
     ;
     
