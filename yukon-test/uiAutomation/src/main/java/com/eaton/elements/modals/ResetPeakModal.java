@@ -33,7 +33,7 @@ public class ResetPeakModal extends BaseModal {
     }
     
     public DatePickerElement getDate() {
-        return new DatePickerElement(this.driverExt, "startDate");
+        return date;
     }
 
     public RadioButtonElement getResetPeakForAllTrends() {
