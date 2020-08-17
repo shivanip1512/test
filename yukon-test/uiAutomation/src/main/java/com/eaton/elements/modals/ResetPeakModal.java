@@ -12,7 +12,7 @@ import com.eaton.framework.DriverExtensions;
 public class ResetPeakModal extends BaseModal {
 
     private DriverExtensions driverExt;
-    
+
     private DropDownElement resetPeakTo;
     private DatePickerElement date;
     private RadioButtonElement resetPeakForAllTrends;
@@ -31,9 +31,10 @@ public class ResetPeakModal extends BaseModal {
     public DropDownElement getResetPeakTo() {
         return resetPeakTo;
     }
-
+    
     public DatePickerElement getDate() {
-        return date;
+        return new DatePickerElement(this.driverExt, "startDate");
+>>>>>>> master
     }
 
     public RadioButtonElement getResetPeakForAllTrends() {
@@ -54,7 +55,7 @@ public class ResetPeakModal extends BaseModal {
 
     public Boolean isHelpClosed() {
         String classAttribute = getModal().findElement(By.cssSelector(".js-help-text-message")).getAttribute("class");
-        
+
         return classAttribute.contains("dn");
-    }    
+    }
 }

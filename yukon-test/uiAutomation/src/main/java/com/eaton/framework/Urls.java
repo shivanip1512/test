@@ -12,7 +12,7 @@ public final class Urls {
     public static final String SEARCH_PARAM = "?q=";
 
     public static final class Ami {
-        public static final String AMI = "/dashboards/-2/view?dashboardPageType=AMI";
+        public static final String AMI_DASHBOARD = "/dashboards/-2/view?dashboardPageType=AMI";
         public static final String ARCHIVE_DATA_ANALYSIS = "/bulk/archiveDataAnalysis/list/view";
         public static final String DASHBOARD = "/meter/start";
         public static final String BILLING = "/billing/home";
@@ -98,7 +98,7 @@ public final class Urls {
         public static final String LOAD_GROUP = "LOAD_GROUP";
         public static final String LOAD_PROGRAM = "LOAD_PROGRAM";
         public static final String CONTROL_AREA = "CONTROL_AREA";
-        public static final String CONTROl_SCENARIO = "CONTROL_SCENARIO";
+        public static final String CONTROL_SCENARIO = "CONTROL_SCENARIO";
     }
 
     public static final class CapControl {
@@ -200,11 +200,12 @@ public final class Urls {
         public static final String DEVICE_GROUP = "/group/editor/home";
         public static final String SCHEDULES = "/group/scheduledGroupRequestExecutionResults/jobs";
         public static final String SCRIPTS = "/macsscheduler/schedules/view";
+        
         public static final String TRENDS_LIST = "/tools/trends";
         public static final String TRENDS_DETAIL = "/tools/trends/";
-        public static final String TRENDS_EDIT = "/tools/trends/";
+        public static final String TREND_EDIT = "/tools/trends/";
         public static final String TREND_CREATE = "/tools/trend/create";
-        public static final String TREND = "/tools/trend/";
+        public static final String TREND_DETAILS = "/tools/trends/";
 
         public static final String REPORTS = "/analysis/Reports.jsp";
         public static final String CREATE_SCHEDULE = "/group/scheduledGroupRequestExecution/home";

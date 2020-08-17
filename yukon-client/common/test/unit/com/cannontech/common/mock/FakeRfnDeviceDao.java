@@ -40,7 +40,7 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
                 return new PaoIdentifier(1, PaoType.RFN_GATEWAY);
             }
         };
-        RfnIdentifier rfnId = new RfnIdentifier("10000", "CPS", "RF_GATEWAY");
+        RfnIdentifier rfnId = new RfnIdentifier("10000", "EATON", "RFGateway");
         return new RfnDevice("10000", pao, rfnId);
     }
 

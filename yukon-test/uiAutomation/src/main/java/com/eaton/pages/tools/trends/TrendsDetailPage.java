@@ -9,6 +9,6 @@ public class TrendsDetailPage extends TrendsListPage {
         super(driverExt);
 
         requiresLogin = true;
-        pageUrl = Urls.Tools.TRENDS_DETAIL + id;
+        pageUrl = Urls.Tools.TREND_DETAILS + id;
     }
 }
