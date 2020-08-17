@@ -190,11 +190,9 @@ private Faker faker = new Faker();
         
         List<String> expectedLabels = new ArrayList<>(List.of("Label", "Color", "Axis", "Value", ""));
         
-        //returning empty list
         List<String> actualLabels = createPage.getMarkerSetupTable().getListTableHeaders();
         		
-
-       assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
+        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS})
@@ -228,8 +226,7 @@ private Faker faker = new Faker();
      	
 		 String errorMsg = createPage.getName().getValidationError();	
 
-         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
-        
+         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);  
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS})
