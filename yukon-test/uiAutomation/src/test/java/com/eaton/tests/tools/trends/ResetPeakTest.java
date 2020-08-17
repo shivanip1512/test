@@ -58,7 +58,7 @@ public class ResetPeakTest extends SeleniumTestSetup {
         trendId = response.path("trendId");
         trendName = response.path("name").toString();
 
-        navigate(Urls.Tools.TRENDS_DETAIL + trendId);
+        navigate(Urls.Tools.TREND_DETAILS + trendId);
         detailsPage = new TrendsDetailPage(driverExt, trendId);
     }
 
@@ -99,7 +99,7 @@ public class ResetPeakTest extends SeleniumTestSetup {
 
         Integer trendIdTypeNotPeak = response.path("trendId");
 
-        navigate(Urls.Tools.TRENDS_DETAIL + trendIdTypeNotPeak);
+        navigate(Urls.Tools.TREND_DETAILS + trendIdTypeNotPeak);
 
         detailsPage.getActionBtn().click();
 
@@ -125,7 +125,7 @@ public class ResetPeakTest extends SeleniumTestSetup {
 
         Integer id = response.path("trendId");
 
-        navigate(Urls.Tools.TRENDS_DETAIL + id);
+        navigate(Urls.Tools.TREND_DETAILS + id);
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
         resetPeakModal.getResetPeakForAllTrends().setByValue("true", true);
@@ -193,6 +193,7 @@ public class ResetPeakTest extends SeleniumTestSetup {
 
         resetPeakModal.getDate().setValue(LocalDate.now().minusDays(10).format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
         resetPeakModal.clickOkAndWaitForModalToClose();
+        waitUntilSuccessMessageDisplayed();
 
         assertThat(detailsPage.getUserMessage()).contains("Reset peak performed successfully for " + trendName + ".");
     }
