@@ -649,7 +649,7 @@
                                         <span class="js-constant <c:if test="${calcComponent.componentType != 'Constant'}"> dn</c:if>"><tags:input path="pointBase.calcComponents[${status.index}].constant" inputClass="js-constant-value"/></span>
                                         <span class="js-point-picker <c:if test="${calcComponent.componentType == 'Constant'}"> dn</c:if>">
                                             <form:hidden id="calc-component-point-${status.index}-input"
-                                                path="pointBase.calcComponents[${status.index}].componentPointID" />
+                                                path="pointBase.calcComponents[${status.index}].componentPointID" cssClass="js-calc-point-comp"/>
                                             <tags:pickerDialog
                                                 id="calcPoint${status.index}Picker"
                                                 type="notSystemPointPicker"
