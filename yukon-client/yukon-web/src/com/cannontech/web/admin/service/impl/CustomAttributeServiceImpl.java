@@ -33,8 +33,7 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
         dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.ATTRIBUTE_ASSIGNMENT,
                 createdAssignment.getAttributeAssignmentId());
 
-        String attributeName = attributeDao.getCustomAttribute(createdAssignment.getAttributeId()).getName();
-        systemEventLogService.attributeAssigned(userContext.getYukonUser(), attributeName, assignment.getPaoType(), assignment.getPointType(), assignment.getOffset());
+        systemEventLogService.attributeAssigned(userContext.getYukonUser(), createdAssignment.getCustomAttribute().getName(), assignment.getPaoType(), assignment.getPointType(), assignment.getOffset());
 
         return createdAssignment;
     }
@@ -54,10 +53,6 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
             return attributeDao.getAssignmentById(assignment.getAttributeAssignmentId());
         }
         
-        // Gather information for logging
-        Assignment originalAssignment = attributeDao.getAssignmentById(assignment.getAttributeId());
-        String originalAttributeName = attributeService.getCustomAttribute(originalAssignment.getAttributeId()).getName();
-        
         if (!attributeService.isValidAttributeId(assignment.getAttributeId())) {
             throw new NotFoundException("Attribute id:" + assignment.getAttributeId() + " is not in the database.");
         }
@@ -65,13 +60,17 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
             throw new NotFoundException(
                     "Attribute Assignment id:" + assignment.getAttributeAssignmentId() + " is not in the database.");
         }
+
+        // Gather information for logging
+        Assignment originalAssignment = attributeDao.getAssignmentById(assignment.getAttributeId());
+        String originalAttributeName = attributeService.getCustomAttribute(originalAssignment.getAttributeId()).getName();
+
         AttributeAssignment updatedAssignment = customAttributeDao.updateAttributeAssignment(assignment);
         dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.ATTRIBUTE_ASSIGNMENT,
                 updatedAssignment.getAttributeAssignmentId());
 
-        String newAttributeName = attributeService.getCustomAttribute(updatedAssignment.getAttributeId()).getName();
         systemEventLogService.attributeAssignmentDeleted(userContext.getYukonUser(), originalAttributeName, originalAssignment.getPaoType(), originalAssignment.getPointType(), originalAssignment.getOffset());
-        systemEventLogService.attributeAssigned(userContext.getYukonUser(), newAttributeName, updatedAssignment.getPaoType(), updatedAssignment.getPointType(), updatedAssignment.getOffset());
+        systemEventLogService.attributeAssigned(userContext.getYukonUser(), updatedAssignment.getCustomAttribute().getName(), updatedAssignment.getPaoType(), updatedAssignment.getPointType(), updatedAssignment.getOffset());
 
         return updatedAssignment;
     }
@@ -98,18 +97,19 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
         }
         String attributeName = attributeService.getCustomAttribute(attributeId).getName();
         customAttributeDao.deleteCustomAttribute(attributeId);
-        systemEventLogService.attributeDeleted(userContext.getYukonUser(), attributeName);
         dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.ATTRIBUTE, attributeId);
+        systemEventLogService.attributeDeleted(userContext.getYukonUser(), attributeName);
     }
 
     @Override
     public void deleteAttributeAssignment(int attributeAssignmentId, YukonUserContext userContext) {
-        Assignment assignment = attributeDao.getAssignmentById(attributeAssignmentId);
-        String attributeName = attributeDao.getCustomAttribute(assignment.getAttributeId()).getName();
-
         if (!attributeService.isValidAssignmentId(attributeAssignmentId)) {
             throw new NotFoundException("Attribute Assignment id:" + attributeAssignmentId + " is not in the database.");
         }
+
+        Assignment assignment = attributeDao.getAssignmentById(attributeAssignmentId);
+        String attributeName = attributeDao.getCustomAttribute(assignment.getAttributeId()).getName();
+
         customAttributeDao.deleteAttributeAssignment(attributeAssignmentId);
         dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.ATTRIBUTE_ASSIGNMENT, attributeAssignmentId);
         systemEventLogService.attributeAssignmentDeleted(userContext.getYukonUser(), attributeName, assignment.getPaoType(), assignment.getPointType(), assignment.getOffset());
