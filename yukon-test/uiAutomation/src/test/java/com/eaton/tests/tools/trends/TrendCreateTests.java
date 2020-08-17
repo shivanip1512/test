@@ -44,7 +44,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
         page.getName().setInputValue(name);
         TrendAddPointModal addPointModal = page.showAndWaitAddPointModal();
 
-        SelectPointModal pointModal = addPointModal.showAndWaitAddPointModal();
+        SelectPointModal pointModal = addPointModal.showAndWaitSelectPointModal();
         pointModal.selectPoint("Month History", Optional.of("4999"));
         pointModal.clickOkAndWait();
 
