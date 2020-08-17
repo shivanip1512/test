@@ -68,6 +68,7 @@ public class TabElement {
         String attribute = tab.getAttribute("aria-labelledby");
 
         return getTabPanelByAriaLabel(attribute);
+       // return tab;
     }
 
     public WebElement getTabPanelByAriaLabel(String label) {
@@ -121,7 +122,7 @@ public class TabElement {
         return values;
     }
 
-    private WebElement getTabByName(String tabName) {
+    public WebElement getTabByName(String tabName) {
         List<WebElement> list = getTabs();
 
         return list.stream().filter(e -> e.findElement(By.cssSelector("a")).getText().contains(tabName)).findFirst().orElseThrow();
