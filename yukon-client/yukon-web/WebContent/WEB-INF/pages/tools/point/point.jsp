@@ -336,13 +336,13 @@
                         <tags:nameValue2 nameKey=".command.open"
                             nameClass="js-status-control-input" valueClass="js-status-control-input">
                             <%-- The OPEN command string sent out when Yukon controls this point --%>
-                            <tags:input path="pointBase.pointStatusControl.stateZeroControl"/>
+                            <tags:input path="pointBase.pointStatusControl.stateZeroControl" maxlength="100" inputClass="w300 wrbw dib"/>
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey=".command.close"
                             nameClass="js-status-control-input" valueClass="js-status-control-input">
                             <%-- The CLOSE command string sent out when Yukon controls this point --%>
-                            <tags:input path="pointBase.pointStatusControl.stateOneControl"/>
+                            <tags:input path="pointBase.pointStatusControl.stateOneControl" maxlength="100" inputClass="w300 wrbw dib"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </c:if>
@@ -658,13 +658,14 @@
                                                 buttonStyleClass="M0"
                                                 destinationFieldId="calc-component-point-${status.index}-input"
                                                 viewOnlyMode="${mode == 'VIEW'}"
-                                                includeRemoveButton="${true}"
-                                                removeValue="0" />
+                                                includeRemoveButton="${true}"/>
                                             <cti:displayForPageEditModes modes="VIEW">
                                                 <c:if test="${calcComponent.componentPointID == 0}">
                                                     <span class="empty-list"><i:inline key="yukon.web.components.button.selectionPicker.label"/></span>
                                                 </c:if>
                                             </cti:displayForPageEditModes>
+                                            <br>
+                                            <form:errors path="pointBase.calcComponents[${status.index}].componentPointID" cssClass="error"/>
                                         </span>
                                     </td>
                                     <td>
