@@ -68,7 +68,6 @@ public class TabElement {
         String attribute = tab.getAttribute("aria-labelledby");
 
         return getTabPanelByAriaLabel(attribute);
-       // return tab;
     }
 
     public WebElement getTabPanelByAriaLabel(String label) {
