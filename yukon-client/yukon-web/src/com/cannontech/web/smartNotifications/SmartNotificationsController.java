@@ -1,10 +1,12 @@
 package com.cannontech.web.smartNotifications;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +14,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
@@ -102,8 +106,35 @@ public class SmartNotificationsController {
     @RequestMapping(value="events/{type}", method=RequestMethod.GET)
     public String eventDetailByType(@PathVariable String type, @DefaultSort(dir=Direction.desc, sort="timestamp") SortingParameters sorting, 
                                @DefaultItemsPerPage(value=250) PagingParameters paging, ModelMap model, 
-                               YukonUserContext userContext, @ModelAttribute("filter") SmartNotificationEventFilter filter) {
-        return retrieveEventDetail(type, null, sorting, paging, userContext, model, filter);
+                               YukonUserContext userContext,
+                               @RequestParam(required=false) String startDate,
+                               @RequestParam(required=false) String endDate,
+                               @RequestParam(required=false) List<InfrastructureWarningDeviceCategory> categories) throws ParseException {
+        Date to;
+        Date from;
+        SmartNotificationEventFilter notificationFilter = new SmartNotificationEventFilter();
+
+        if (StringUtils.isEmpty(startDate)) {
+            to = new Date();
+        } else {
+            to = dateFormattingService.flexibleDateParser(startDate, userContext);
+        }
+
+        if (StringUtils.isEmpty(endDate)) {
+            from = new Date();
+        } else {
+            from = dateFormattingService.flexibleDateParser(endDate, userContext);
+        }
+        notificationFilter.setStartDate(to);
+        notificationFilter.setEndDate(from);
+        notificationFilter.setCategories(categories);
+        model.addAttribute("filter",notificationFilter);
+
+        // Checks weather start date is greater than end date or not
+        if (to.compareTo(from) > 0) {
+            model.addAttribute("errorMsg", "Start date should always be less than end date");
+        }
+        return retrieveEventDetail(type, null, sorting, paging, userContext, model, notificationFilter);
     }
     
     @RequestMapping(value="events/{type}/{parameter}", method=RequestMethod.GET)
@@ -162,7 +193,7 @@ public class SmartNotificationsController {
             addDeviceCollectionToModelMap(allDetail, model);
         } else if (eventType == SmartNotificationEventType.INFRASTRUCTURE_WARNING) {
             InfrastructureWarningDeviceCategory[] categories = InfrastructureWarningDeviceCategory.values();   
-            if (filter.getCategories().isEmpty()) {
+            if (CollectionUtils.isEmpty(filter.getCategories())) {
                 filter.setCategories(Arrays.asList(categories));
             }
             model.addAttribute("types", categories);
