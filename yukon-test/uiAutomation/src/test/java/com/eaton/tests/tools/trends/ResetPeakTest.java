@@ -130,11 +130,11 @@ public class ResetPeakTest extends SeleniumTestSetup {
 
         resetPeakModal.getResetPeakForAllTrends().setByValue("true", true);
 
-        resetPeakModal.clickOkAndWaitForModalToClose();
-        waitUntilSuccessMessageDisplayed();
-        String actualUserMessage = detailsPage.getUserMessage();
-        assertThat(actualUserMessage).contains("Reset peak performed successfully for ");
-        assertThat(actualUserMessage).contains(trendName);
+        resetPeakModal.clickOkAndWaitForModalToClose();        
+        String actualUserMessage = detailsPage.getResetPeakMessage();
+        softly.assertThat(actualUserMessage).contains("Reset peak performed successfully for ");
+        softly.assertThat(actualUserMessage).contains(trendName);
+        softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
@@ -193,9 +193,8 @@ public class ResetPeakTest extends SeleniumTestSetup {
 
         resetPeakModal.getDate().setValue(LocalDate.now().minusDays(10).format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
         resetPeakModal.clickOkAndWaitForModalToClose();
-        waitUntilSuccessMessageDisplayed();
 
-        assertThat(detailsPage.getUserMessage()).contains("Reset peak performed successfully for " + trendName + ".");
+        assertThat(detailsPage.getResetPeakMessage()).contains("Reset peak performed successfully for " + trendName + ".");
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })

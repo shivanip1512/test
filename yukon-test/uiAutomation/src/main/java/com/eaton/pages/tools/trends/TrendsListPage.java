@@ -2,6 +2,8 @@ package com.eaton.pages.tools.trends;
 
 import java.util.Optional;
 
+import org.openqa.selenium.By;
+
 import com.eaton.elements.ActionBtnDropDownElement;
 import com.eaton.elements.WebTable;
 import com.eaton.elements.modals.ConfirmModal;
@@ -29,6 +31,10 @@ public class TrendsListPage extends PageBase {
 
     public ActionBtnDropDownElement getActionBtn() {
         return actionBtn;
+    }
+    
+    public String getResetPeakMessage() {
+        return this.driverExt.findElement(By.cssSelector("#reset-peak-success-message .user-message"), Optional.of(3)).getText();
     }
 
     public ConfirmModal showDeleteTrendModal() {
