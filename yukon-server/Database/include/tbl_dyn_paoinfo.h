@@ -389,7 +389,7 @@ public:
         Key_RFN_MeterProgrammingProgress,
         Key_RFN_MeterProgrammingConfigID,
 
-        Key_RFN_MetrologyLibraryIsEnabled,
+        Key_RFN_MetrologyLibraryEnabled,
     };
 
 protected:

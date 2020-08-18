@@ -993,7 +993,7 @@ YukonError_t RfnMeterDevice::executePutConfigMetrology(CtiRequestMsg *pReq, CtiC
             = getConfigData<bool>( deviceConfig, Config::RfnStrings::MetrologyLibraryEnabled );
 
         const boost::optional<bool> paoMetrologyLibraryEnabled
-            = findDynamicInfo<bool>( CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryIsEnabled );
+            = findDynamicInfo<bool>( CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled );
 
         if ( configMetrologyLibraryEnabled != paoMetrologyLibraryEnabled
              || parse.isKeyValid("force") )
@@ -1045,7 +1045,7 @@ YukonError_t RfnMeterDevice::executeGetConfigMetrology(CtiRequestMsg *pReq, CtiC
         return ClientErrors::NoMethod;
     }
 
-    rfnRequests.push_back( std::make_unique<Commands::RfnMetrologyGetConfigurationCommand>() );
+    rfnRequests.push_back( std::make_unique<RfnMetrologyGetConfigurationCommand>() );
 
     return ClientErrors::None;
 }
@@ -1056,7 +1056,7 @@ void RfnMeterDevice::handleCommandResult( const Commands::RfnMetrologyGetConfigu
 
     if ( const auto state = cmd.getMetrologyState() )
     {
-        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryIsEnabled,
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled,
                         state == RfnMetrologyCommand::Enable );
     }
 }

@@ -576,6 +576,11 @@
     <entry key="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatValue.description">The value to send to the device for its heartbeat countdown</entry>
     <entry key="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatValue.unassigned">Heartbeat category unassigned.</entry>
 
+    <entry key="yukon.web.modules.tools.configs.category.rfnMetrologyConfiguration.title">RFN Metrology Library Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnMetrologyConfiguration.definition">Configuration parameters for the metrology library feature for RFN devices.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnMetrologyConfiguration.metrologyLibEnabled">Metrology Library Enabled</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnMetrologyConfiguration.metrologyLibEnabled.description">When true, the metrology library is enabled for the RFN device. Else, it is disabled.</entry>
+
     <!-- help text used by all categories using attribute mapping inputs -->
     <entry key="yukon.web.modules.tools.configs.category.attributeMapping.helpText">The name of the point that will be associated with the specified attribute.  Overrides existing device attribute assignments.</entry>
 

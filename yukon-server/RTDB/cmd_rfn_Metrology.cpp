@@ -40,50 +40,12 @@ static const std::map<unsigned char, States>  stateDecoder
 
 static const std::set<DeviceTypes>  supportedDeviceTypes
 {
-    //  TO DO -- need to trim this list down to the actual supported devices and update unit test
-
-    //  RFN Focus
-    TYPE_RFN410FL,
-    TYPE_RFN410FX,
-    TYPE_RFN410FD,
-    TYPE_RFN420FL,
-    TYPE_RFN420FX,
-    TYPE_RFN420FD,
-    TYPE_RFN420FRX,
-    TYPE_RFN420FRD,
-    TYPE_RFN510FL,
+    // Supported by the L+G Focus 520AX/530AX
     TYPE_RFN520FAX,
-    TYPE_RFN520FRX,
     TYPE_RFN520FAXD,
-    TYPE_RFN520FRXD,
     TYPE_RFN530FAX,
-    TYPE_RFN530FRX,
-    //  RFN Centron
-    TYPE_RFN410CL,
-    TYPE_RFN420CL,
-    TYPE_WRL420CL,
-    TYPE_RFN420CD,
-    TYPE_WRL420CD,
-    //  RFN A3
-    TYPE_RFN430A3D,
-    TYPE_RFN430A3T,
-    TYPE_RFN430A3K,
-    TYPE_RFN430A3R,
-    //  RFN KV
-    TYPE_RFN430KV,
-    //  RFN Sentinel
-    TYPE_RFN430SL0,
-    TYPE_RFN430SL1,
-    TYPE_RFN430SL2,
-    TYPE_RFN430SL3,
-    TYPE_RFN430SL4,
-    //   RFN Focus S4
-    TYPE_RFN530S4X,
     TYPE_RFN530S4EAX,
     TYPE_RFN530S4EAXR,
-    TYPE_RFN530S4ERX,
-    TYPE_RFN530S4ERXR,
-
 };
 
 }   // -- anon
