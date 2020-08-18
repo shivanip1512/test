@@ -861,18 +861,18 @@ Java :
     jira : YUK-10008
     notes : 
   
-  - filename : ecj-4.13.jar
+  - filename : ecj-4.15.jar
     yukon group : Tomcat
     project : Eclipse JDT Core Batch Compiler
-    version : 4.13
+    version : 4.15
     project URL : "http://www.eclipse.org/jdt/"
     license : EPL 1.0
     license URLs : "http://www.eclipse.org/org/documents/epl-v10.php"
     maven URL : "https://mvnrepository.com/artifact/org.eclipse.jdt.core.compiler/ecj"
-    md5 : 861e6f96eae48fdd1296097e71780786
-    sha1 : 99ccdf7b2a75afb720270ab888bb21d6159ee631
-    updated : 2020-03-11
-    jira : YUK-21375
+    md5 : 4d1404f81be38fdf9186c9556c4ad3e9
+    sha1 : d06974eec06892e5594bdb8fbbc95cd81f1c57b2
+    updated : 2020-08-18
+    jira : YUK-22661
     notes : Included in Tomcat install, not typically available or installed from Maven
   
   - filename : ecs-1.4.2.jar

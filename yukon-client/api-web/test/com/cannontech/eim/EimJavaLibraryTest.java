@@ -44,6 +44,7 @@ public class EimJavaLibraryTest {
         "bsh.jar",
         "catalina-ant.jar",
         "catalina-ha.jar",
+        "catalina-ssi.jar",
         "catalina-storeconfig.jar",
         "catalina-tribes.jar",
         "catalina.jar",
