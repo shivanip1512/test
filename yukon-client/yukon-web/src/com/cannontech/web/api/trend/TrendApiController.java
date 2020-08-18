@@ -1,6 +1,7 @@
 package com.cannontech.web.api.trend;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -46,10 +47,14 @@ public class TrendApiController {
         return new ResponseEntity<>(createdTrend, HttpStatus.OK);
     }
 
+    //Delete Trend
     @DeleteMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.OWNER)
     public ResponseEntity<Object> delete(@PathVariable int id) {
-        return new ResponseEntity<>(trendService.delete(id), HttpStatus.OK);
+        int trendId = trendService.delete(id);
+        Map<String, Integer> trendIdMap = new HashMap<>();
+        trendIdMap.put("id", trendId);
+        return new ResponseEntity<>(trendIdMap, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")

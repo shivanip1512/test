@@ -80,7 +80,7 @@ public class ChartController {
         graphDetail.setPoints(flotPointOptions);
         // Set details for bar type chart style
         if (graphType == GraphType.COLUMN) {
-            FlotBarOptions flotBarOptions = new FlotBarOptions(true, "center", true, ChartColorsEnum.GREEN_FILL.getRgb());
+            FlotBarOptions flotBarOptions = new FlotBarOptions(true, "center", true, ChartColorsEnum.GREEN_FILL.getColorHex());
             graphDetail.setBars(flotBarOptions);
         }
         graphDetails.add(graphDetail);
