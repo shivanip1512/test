@@ -2,6 +2,7 @@ package com.eaton.builders.drsetup.loadgroup;
 
 import java.util.Random;
 public class LoadGroupEnums {
+	
 	public enum RelayUsage{
 		RELAY_A("RELAY_A"),
 		RELAY_B("RELAY_B"),
