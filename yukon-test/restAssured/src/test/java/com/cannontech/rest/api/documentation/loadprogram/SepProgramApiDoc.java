@@ -45,6 +45,7 @@ public class SepProgramApiDoc {
     private Integer copyProgramId = null;
     private FieldDescriptor[] sepCycleGearFieldDescriptor = null;
     private List<FieldDescriptor> sepCycleProgramFieldDescriptor = null;
+    private MockLoadProgram subOrdinateLoadProgram = null;
 
     @BeforeMethod
     public void setUp(Method method) {
@@ -155,12 +156,15 @@ public class SepProgramApiDoc {
     public void Test_SepProgram_Update(ITestContext context) {
         List<MockGearControlMethod> gearTypes = new ArrayList<>();
         gearTypes.add(MockGearControlMethod.SepCycle);
-        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_SEP_PROGRAM,
+        subOrdinateLoadProgram = LoadProgramSetupHelper.getMemberControlLoadProgram(context, gearTypes, MockPaoType.LM_SEP_PROGRAM);
+
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramUpdateRequest(MockPaoType.LM_SEP_PROGRAM,
                                                                                  (List<MockLoadGroupBase>) context.getAttribute("loadGroups"),
                                                                                  gearTypes,
-                                                                                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
+                                                                                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID),
+                                                                                 subOrdinateLoadProgram);
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
-                                                                     requestFields(sepCycleProgramFieldDescriptor),
+                                                                     requestFields(LoadProgramSetupHelper.createFieldDescriptorForUpdate(sepCycleGearFieldDescriptor)),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
@@ -225,6 +229,7 @@ public class SepProgramApiDoc {
                                                     .response();
 
         assertTrue("Status code should be 200", response.statusCode() == 200);
+        ApiCallHelper.delete(subOrdinateLoadProgram.getProgramId(), subOrdinateLoadProgram.getName(), "deleteLoadProgram");
     }
 
     /**
