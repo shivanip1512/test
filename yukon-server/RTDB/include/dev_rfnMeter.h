@@ -26,6 +26,7 @@ protected:
         static const std::string channelconfig;
         static const std::string voltageprofile;
         static const std::string demand;
+        static const std::string metlib;
     };
 
     typedef boost::container::flat_map<std::string, ConfigMethod> ConfigMap;
@@ -72,12 +73,17 @@ protected:
     YukonError_t executePutConfigInstallChannels          (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
     YukonError_t executeGetConfigInstallChannels          (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
 
+    virtual YukonError_t executePutConfigMetrology(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
+    virtual YukonError_t executeGetConfigMetrology(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
+
     void handleCommandResult( const Commands::RfnConfigNotificationCommand & cmd ) override;
     void handleCommandResult( const Commands::RfnTemperatureAlarmCommand   & cmd ) override;
     void handleCommandResult( const Commands::RfnChannelSelectionCommand   & cmd ) override;
     void handleCommandResult( const Commands::RfnChannelIntervalRecording::GetConfigurationCommand       & cmd ) override;
     void handleCommandResult( const Commands::RfnChannelIntervalRecording::GetActiveConfigurationCommand & cmd ) override;
     void handleCommandResult( const Commands::RfnChannelIntervalRecording::SetConfigurationCommand       & cmd ) override;
+
+    void handleCommandResult( const Commands::RfnMetrologyGetConfigurationCommand & cmd ) override;
 
 private:
     typedef Commands::RfnChannelConfigurationCommand::MetricIds MetricIds;
