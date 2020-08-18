@@ -12,6 +12,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.eaton.builders.drsetup.loadgroup.LoadGroupEmetconCreateBuilder;
+import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
@@ -22,9 +23,8 @@ import com.eaton.pages.demandresponse.LoadGroupEmetconEditPage;
 public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
 	private DriverExtensions driverExt;
 	private Integer id;
-	private String name;
 	private LoadGroupEmetconEditPage editPage;
-	private int routeId= 12345;
+	private int routeId= 51;
 
 	@BeforeClass(alwaysRun = true)
 	public void beforeClass() {
@@ -35,13 +35,12 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
 													.withDisableGroup(Optional.empty())
 													.withGoldAddress(Optional.empty())
 													.withKwCapacity(Optional.empty())
-													.withRelayUsage(Optional.of(LoadGroupEmetconCreateBuilder.RelayUsage.getRandomRelayUsage()))
-													.withAddressUsage(Optional.of(LoadGroupEmetconCreateBuilder.AddressUsage.getRandomAddressUsage()))
+													.withRelayUsage(Optional.of(LoadGroupEnums.RelayUsage.getRandomRelayUsage()))
+													.withAddressUsage(Optional.of(LoadGroupEnums.AddressUsage.getRandomAddressUsage()))
 													.withSilverAddress(Optional.empty())
 													.create();
 		JSONObject response = pair.getValue1();
 		id = response.getInt("id");
-		name = response.getString("name");
 		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
 		editPage = new LoadGroupEmetconEditPage(driverExt, id);
 	}
@@ -52,7 +51,7 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEmetconEdit_ValidateRequiredFieldsOnlySuccess() {
+	public void ldGrpEmetconEdit_RequiredFieldsOnlySuccess() {
 		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 		String name = "AT Edited Emetcon Ldgrp " + timeStamp;
 		final String EXPECTED_MSG = name + " saved successfully.";
@@ -63,8 +62,8 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
 														.withDisableGroup(Optional.empty())
 														.withGoldAddress(Optional.empty())
 														.withKwCapacity(Optional.empty())
-														.withRelayUsage(Optional.of(LoadGroupEmetconCreateBuilder.RelayUsage.getRandomRelayUsage()))
-														.withAddressUsage(Optional.of(LoadGroupEmetconCreateBuilder.AddressUsage.getRandomAddressUsage()))
+														.withRelayUsage(Optional.of(LoadGroupEnums.RelayUsage.getRandomRelayUsage()))
+														.withAddressUsage(Optional.of(LoadGroupEnums.AddressUsage.getRandomAddressUsage()))
 														.withSilverAddress(Optional.empty())
 														.create();
 		JSONObject response = pair.getValue1();
@@ -85,10 +84,10 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEmetconEdit_Name_NameRequiredValidation() {
+	public void ldGrpEmetconEdit_Name_NameRequired() {
 		final String EXPECTED_MSG = "Name is required.";
 
-		editPage.getName().setInputValue(" ");
+		editPage.getName().clearInputValue();
 		editPage.getSaveBtn().click();
 
 		String actualMsg = editPage.getName().getValidationError();
@@ -96,15 +95,15 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEmetconEdit_Name_UniqueNameValidation() {
+	public void ldGrpEmetconEdit_Name_UniqueName() {
 		Pair<JSONObject, JSONObject> pair = new LoadGroupEmetconCreateBuilder.Builder(Optional.empty())
 													    .withCommunicationRoute(routeId)
 														.withDisableControl(Optional.empty())
 														.withDisableGroup(Optional.empty())
 														.withGoldAddress(Optional.empty())
 														.withKwCapacity(Optional.empty())
-														.withRelayUsage(Optional.of(LoadGroupEmetconCreateBuilder.RelayUsage.getRandomRelayUsage()))
-														.withAddressUsage(Optional.of(LoadGroupEmetconCreateBuilder.AddressUsage.getRandomAddressUsage()))
+														.withRelayUsage(Optional.of(LoadGroupEnums.RelayUsage.getRandomRelayUsage()))
+														.withAddressUsage(Optional.of(LoadGroupEnums.AddressUsage.getRandomAddressUsage()))
 														.withSilverAddress(Optional.empty())
 														.create();
 		JSONObject response = pair.getValue1();
@@ -121,8 +120,8 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEmetconEdit_Name_ValidateInvalidCharsNotAllowed() {
-		final String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
+	public void ldGrpEmetconEdit_name_invalidChars() {
+		final String EXPECTED_MSG = "Cannot be blank or include any of the following characters: / \\ , ' \" |";
 
 		editPage.getName().setInputValue("/emetcon,|group ");
 		editPage.getSaveBtn().click();
@@ -142,8 +141,8 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
 														.withDisableGroup(Optional.empty())
 														.withGoldAddress(Optional.empty())
 														.withKwCapacity(Optional.empty())
-														.withRelayUsage(Optional.of(LoadGroupEmetconCreateBuilder.RelayUsage.RELAY_C))
-														.withAddressUsage(Optional.of(LoadGroupEmetconCreateBuilder.AddressUsage.GOLD))
+														.withRelayUsage(Optional.of(LoadGroupEnums.RelayUsage.RELAY_C))
+														.withAddressUsage(Optional.of(LoadGroupEnums.AddressUsage.GOLD))
 														.withSilverAddress(Optional.empty())
 														.create();
 		JSONObject response = pair.getValue1();
@@ -151,6 +150,7 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
 		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
 
 		editPage.getName().setInputValue(name);
+		editPage.getCommuncationRoute().selectItemByText("a_CCU-721");
 		editPage.getaddressUsage().setByValue("SILVER", true);
 		editPage.getGoldAddress().setInputValue("2");
 		editPage.getSilverAddress().setInputValue("30");

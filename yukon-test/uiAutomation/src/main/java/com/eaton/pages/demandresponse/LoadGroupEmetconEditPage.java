@@ -1,4 +1,5 @@
 package com.eaton.pages.demandresponse;
+import com.eaton.elements.DropDownElement;
 import com.eaton.elements.RadioButtonElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
@@ -10,6 +11,7 @@ public class LoadGroupEmetconEditPage extends LoadGroupEditPage{
 	private TextEditElement silverAddress;
 	private RadioButtonElement addressUsage;
 	private RadioButtonElement relayUsage;
+	private DropDownElement communicationRoute;
 	
 	public LoadGroupEmetconEditPage(DriverExtensions driverExt, int id) {
 		  super(driverExt, id);
@@ -21,7 +23,7 @@ public class LoadGroupEmetconEditPage extends LoadGroupEditPage{
 	        silverAddress= new TextEditElement(this.driverExt, "silverAddress");
 	        addressUsage= new RadioButtonElement(this.driverExt, "addressUsage", getPageSection("Addressing").getSection());
 	        relayUsage= new RadioButtonElement(this.driverExt, "relayUsage", getPageSection("Addressing").getSection());
-	        
+	        communicationRoute = new DropDownElement(this.driverExt, "routeId");
 	}
 	
 	public TextEditElement getGoldAddress() {
@@ -38,6 +40,10 @@ public class LoadGroupEmetconEditPage extends LoadGroupEditPage{
 	
 	public RadioButtonElement getaddressrelayUsage() {
 		return relayUsage;
+	}
+	
+	public DropDownElement getCommuncationRoute() {
+		return communicationRoute;
 	}
 
 
