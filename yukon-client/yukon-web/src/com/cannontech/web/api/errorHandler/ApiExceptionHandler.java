@@ -270,8 +270,12 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         String uniqueKey = CtiUtilities.getYKUniqueKey();
         logApiException(request, ex, uniqueKey);
 
-        String error = "Malformed JSON request";
-        return new ResponseEntity<Object>(new ApiError(HttpStatus.BAD_REQUEST.value(), error, uniqueKey),
+        String errorMessage = "Malformed JSON request";
+        if(ex.getRootCause().toString().contains("com.cannontech.common.exception.TypeNotSupportedException")) {
+            errorMessage = ex.getRootCause().getMessage();
+        }
+
+        return new ResponseEntity<Object>(new ApiError(HttpStatus.BAD_REQUEST.value(), errorMessage, uniqueKey),
             new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 

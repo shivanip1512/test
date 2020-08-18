@@ -5,15 +5,12 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.jsonDeserializer.JsonDeserializeAssignment;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonIgnoreProperties(value={"attributeAssignmentId"}, allowGetters = true, allowSetters = true, ignoreUnknown = true)
 @JsonInclude(Include.NON_NULL)
-@JsonDeserialize(using = JsonDeserializeAssignment.class)
 public class Assignment { 
     private Integer attributeId;
     private Integer attributeAssignmentId;
