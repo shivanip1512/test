@@ -3,9 +3,10 @@ package com.eaton.pages.assets.commchannels;
 import java.util.Optional;
 
 import com.eaton.elements.ActionBtnDropDownElement;
+import com.eaton.elements.Button;
 import com.eaton.elements.Section;
 import com.eaton.elements.modals.ConfirmModal;
-import com.eaton.elements.modals.CreateCommChannelModal;
+import com.eaton.elements.modals.commchannel.CreateCommChannelModal;
 import com.eaton.elements.modals.commchannel.EditCommChannelModal;
 import com.eaton.elements.panels.CommChannelInfoPanel;
 import com.eaton.elements.tabs.TabElement;
@@ -15,7 +16,7 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class CommChannelDetailPage extends PageBase {
-
+    
     public CommChannelDetailPage(DriverExtensions driverExt, int id) {
         super(driverExt);
 
@@ -29,6 +30,10 @@ public class CommChannelDetailPage extends PageBase {
 
     public ActionBtnDropDownElement getActionBtn() {
         return new ActionBtnDropDownElement(this.driverExt);
+    }
+    
+    public Button getEditBtn() {
+        return new Button(this.driverExt, "Edit", "action-area");
     }
 
     public CommChannelInfoPanel getCommChannelInfoPanel() {
@@ -44,7 +49,7 @@ public class CommChannelDetailPage extends PageBase {
     }
 
     public EditCommChannelModal showCommChannelEditModal(String modalTitle) {
-        getCommChannelInfoPanel().getEdit().click();
+        getEditBtn().getButton().click();      
 
         SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-edit-comm-channel-popup");
 

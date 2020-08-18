@@ -27,7 +27,6 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
     private CommChannelTcpDetailPage detailPage;
     private DriverExtensions driverExt;
-    private SoftAssertions softly;
     private Integer commChannelId;
     private String commChannelName;
     private JSONObject jo;
@@ -35,7 +34,6 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        softly = new SoftAssertions();
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         commChannelName = "TCP Comm Channel " + timeStamp;
 
@@ -63,7 +61,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
         String actualModalTitle = editModal.getModalTitle();
         
-        assertThat(expectedModalTitle).isEqualTo(actualModalTitle);
+        assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
@@ -76,11 +74,11 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         
         String errorMsg = editModal.getName().getValidationError(); 
 
-        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
+        assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTcpEdit_Name_InvalidChars() {
+    public void commChannelTcpEdit_Name_InvalidCharsValidation() {
         String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
 
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
@@ -90,11 +88,11 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         
         String errorMsg = editModal.getName().getValidationError(); 
 
-        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
+        assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTcpEdit_Name_AlreadyExists() {
+    public void commChannelTcpEdit_Name_AlreadyExistsValidation() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String commChannelNameTcp = "TCP Comm Channel " + timeStamp;
         String EXPECTED_MSG = "Name already exists";
@@ -113,11 +111,11 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         
         String errorMsg = editModal.getName().getValidationError();
 
-        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
+        assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTcpEdit_CancelNavigatesCorrectly() {
+    public void commChannelTcpEdit_Cancel_NavigatesCorrectly() {
         String EXPECTED_TITLE = commChannelName;
 
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
@@ -125,23 +123,25 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
         String actualPageTitle = detailPage.getPageTitle();
         
-        assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTcpEdit_TabLabelsCorrect() {
+    public void commChannelTcpEdit_TabTitlesCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         List<String> titles = editModal.getTabs().getTitles();
 
-        softly.assertThat(2).isEqualTo(titles.size());
-        softly.assertThat("Info").isEqualTo(titles.get(0));
-        softly.assertThat("Configuration").isEqualTo(titles.get(1));
+        softly.assertThat(titles.size()).isEqualTo(2);
+        softly.assertThat(titles.get(0)).isEqualTo("Info");
+        softly.assertThat(titles.get(1)).isEqualTo("Configuration");
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_InfoTab_LabelsCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         String tabName = "Info";
@@ -149,16 +149,17 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
         List<String> labels = editModal.getTabs().getTabLabels(tabName);
 
-        softly.assertThat(4).isEqualTo(labels.size());
-        softly.assertThat("Name:").isEqualTo(labels.get(0));
-        softly.assertThat("Type:").isEqualTo(labels.get(1));
-        softly.assertThat("Baud Rate:").isEqualTo(labels.get(2));
-        softly.assertThat("Status:").isEqualTo(labels.get(3));
+        softly.assertThat(labels.size()).isEqualTo(4);
+        softly.assertThat(labels.get(0)).isEqualTo("Name:");
+        softly.assertThat(labels.get(1)).isEqualTo("Type:");
+        softly.assertThat(labels.get(2)).isEqualTo("Baud Rate:");
+        softly.assertThat(labels.get(3)).isEqualTo("Status:");
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_ConfigTab_LabelsCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         String tabName = "Configuration";
@@ -166,27 +167,28 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
         List<String> labels = editModal.getTabs().getTabLabels("Configuration");
 
-        softly.assertThat(5).isEqualTo(labels.size());
-        softly.assertThat("Pre Tx Wait:").isEqualTo(labels.get(0));
-        softly.assertThat("RTS To Tx Wait:").isEqualTo(labels.get(1));
-        softly.assertThat("Post Tx Wait:").isEqualTo(labels.get(2));
-        softly.assertThat("Receive Data Wait:").isEqualTo(labels.get(3));
-        softly.assertThat("Additional Time Out:").isEqualTo(labels.get(4));
+        softly.assertThat(labels.size()).isEqualTo(5);
+        softly.assertThat(labels.get(0)).isEqualTo("Pre Tx Wait:");
+        softly.assertThat(labels.get(1)).isEqualTo("RTS To Tx Wait:");
+        softly.assertThat(labels.get(2)).isEqualTo("Post Tx Wait:");
+        softly.assertThat(labels.get(3)).isEqualTo("Receive Data Wait:");
+        softly.assertThat(labels.get(4)).isEqualTo("Additional Time Out:");
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_ConfigTab_ValuesCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         String tabName = "Configuration";
         editModal.getTabs().clickTabAndWait(tabName);
         
-        softly.assertThat("25").isEqualTo(editModal.getPreTxWait().getInputValue());
-        softly.assertThat("0").isEqualTo(editModal.getRtsToTxWait().getInputValue());
-        softly.assertThat("10").isEqualTo(editModal.getPostTxWait().getInputValue());
-        softly.assertThat("0").isEqualTo(editModal.getReceiveDataWait().getInputValue());
-        softly.assertThat("0").isEqualTo(editModal.getAdditionalTimeOut().getInputValue());
+        softly.assertThat(editModal.getPreTxWait().getInputValue()).isEqualTo("25");
+        softly.assertThat(editModal.getRtsToTxWait().getInputValue()).isEqualTo("0");
+        softly.assertThat(editModal.getPostTxWait().getInputValue()).isEqualTo("10");
+        softly.assertThat(editModal.getReceiveDataWait().getInputValue()).isEqualTo("0");
+        softly.assertThat(editModal.getAdditionalTimeOut().getInputValue()).isEqualTo("0");
         softly.assertAll();       
     }
 
@@ -255,7 +257,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTcpEdit_PostTxWai_MinValueValidation() {
+    public void commChannelTcpEdit_PostTxWait_MinValueValidation() {
         String EXPECTED_MSG = "Post Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
 
@@ -352,14 +354,15 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_InfoTab_ValuesCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         String tabName = "Info";
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
 
-        softly.assertThat(commChannelName).isEqualTo(editModal.getName().getInputValue());
-        softly.assertThat("1200").isEqualTo(editModal.getBaudRate().getSelectedValue());
-        softly.assertThat("Enabled").isEqualTo(editModal.getStatus().getCheckedValue());
+        softly.assertThat(editModal.getName().getInputValue()).isEqualTo(commChannelName);
+        softly.assertThat(editModal.getBaudRate().getSelectedValue()).isEqualTo("1200");
+        softly.assertThat(editModal.getStatus().getCheckedValue()).isEqualTo("Enabled");
         softly.assertAll();        
     }
 
@@ -377,6 +380,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTcpEdit_AllFieldsSuccess() {
+        SoftAssertions softly = new SoftAssertions();
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "TCP  " + timeStamp;
 

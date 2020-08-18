@@ -26,10 +26,11 @@ public class CommChannelTerminalServerDetailPage extends CommChannelDetailPage {
     }
 
     public EditTerminalServerCommChannelModal showTerminalServerCommChannelEditModal() {
-        getCommChannelInfoPanel().getEdit().click();
+        String describedBy = "js-edit-comm-channel-popup";
+        getEditBtn().getButton().click();
 
-        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-edit-comm-channel-popup");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy(describedBy);
 
-        return new EditTerminalServerCommChannelModal(this.driverExt, Optional.empty(), Optional.of("js-edit-comm-channel-popup"));
+        return new EditTerminalServerCommChannelModal(this.driverExt, Optional.empty(), Optional.of(describedBy));
     }
 }

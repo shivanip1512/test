@@ -29,7 +29,6 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
 
     private CommChannelTerminalServerDetailPage detailPage;
     private DriverExtensions driverExt;
-    private SoftAssertions softly;
     private Integer commChannelId;
     private String commChannelName;
     private JSONObject jo;
@@ -39,7 +38,6 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        softly = new SoftAssertions();
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         commChannelName = "Terminal Server Comm Channel " + timeStamp;
@@ -72,46 +70,38 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
         
         String actualPageTitle = detailPage.getPageTitle();
         
-        assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);
-    }
-
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTerminalServer_TabTitlesCorrect() {
-        List<String> titles = detailPage.getTabElement().getTitles();
-
-        softly.assertThat(2).isEqualTo(titles.size());
-        softly.assertThat("Info").isEqualTo(titles.get(0));
-        softly.assertThat("Configuration").isEqualTo(titles.get(1));
-        softly.assertAll();
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTerminalServer_InfoTab_LabelsCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         String infoTitle = "Info";
         detailPage.getTabElement().clickTabAndWait(infoTitle);
         List<String> labels = detailPage.getTabElement().getTabLabels(infoTitle);
 
-        softly.assertThat(6).isEqualTo(labels.size());
-        softly.assertThat("Name:").isEqualTo(labels.get(0));
-        softly.assertThat("Type:").isEqualTo(labels.get(1));
-        softly.assertThat("IP Address:").isEqualTo(labels.get(2));
-        softly.assertThat("Port Number:").isEqualTo(labels.get(3));
-        softly.assertThat("Baud Rate:").isEqualTo(labels.get(4));
-        softly.assertThat("Status:").isEqualTo(labels.get(5));
+        softly.assertThat(labels.size()).isEqualTo(6);
+        softly.assertThat(labels.get(0)).isEqualTo("Name:");
+        softly.assertThat(labels.get(1)).contains("Type:");
+        softly.assertThat(labels.get(2)).contains("IP Address:");
+        softly.assertThat(labels.get(3)).contains("Port Number:");
+        softly.assertThat(labels.get(4)).contains("Baud Rate:");
+        softly.assertThat(labels.get(5)).contains("Status:");
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTerminalServer_InfoTab_ValuesCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         List<String> values = detailPage.getTabElement().getTabValues("Info");
 
-        softly.assertThat(6).isEqualTo(values.size());
-        softly.assertThat(commChannelName).isEqualTo(values.get(0));
-        softly.assertThat("Terminal Server").isEqualTo(values.get(1));
-        softly.assertThat("Localhost").isEqualTo(values.get(2));
-        softly.assertThat(portNumber.toString()).isEqualTo(values.get(3).toString());
-        softly.assertThat("2400").isEqualTo(values.get(4));
-        softly.assertThat("Enabled").isEqualTo(values.get(5));
+        softly.assertThat(values.size()).isEqualTo(6);
+        softly.assertThat(values.get(0)).isEqualTo(commChannelName);
+        softly.assertThat(values.get(1)).isEqualTo("Terminal Server");
+        softly.assertThat(values.get(2)).isEqualTo("Localhost");
+        softly.assertThat(values.get(3).toString()).isEqualTo(portNumber.toString());
+        softly.assertThat(values.get(4)).isEqualTo("2400");
+        softly.assertThat(values.get(5)).isEqualTo("Enabled");
         softly.assertAll();
     }
 
@@ -147,50 +137,43 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTerminalServer_ConfigTab_LabelsCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         String infoTitle = "Configuration";
 
         detailPage.getTabElement().clickTabAndWait(infoTitle);
         List<String> labels = detailPage.getTabElement().getTabLabels(infoTitle);
 
         softly.assertThat(labels.size()).isEqualTo(9);
-
-        softly.assertThat("Protocol Wrap:").isEqualTo(labels.get(0));
-        softly.assertThat("Carrier Detect Wait:").isEqualTo(labels.get(1));
-        softly.assertThat("Pre Tx Wait:").isEqualTo(labels.get(2));
-        softly.assertThat("RTS To Tx Wait:").isEqualTo(labels.get(3));
-        softly.assertThat("Post Tx Wait:").isEqualTo(labels.get(4));
-        softly.assertThat("Receive Data Wait:").isEqualTo(labels.get(5));
-        softly.assertThat("Additional Time Out:").isEqualTo(labels.get(6));
-        softly.assertThat("Shared Port Type:").isEqualTo(labels.get(7));
-        softly.assertThat("Socket Number:").isEqualTo(labels.get(8));
+        softly.assertThat(labels.get(0)).isEqualTo("Protocol Wrap:");
+        softly.assertThat(labels.get(1)).isEqualTo("Carrier Detect Wait:");
+        softly.assertThat(labels.get(2)).isEqualTo("Pre Tx Wait:");
+        softly.assertThat(labels.get(3)).isEqualTo("RTS To Tx Wait:");
+        softly.assertThat(labels.get(4)).isEqualTo("Post Tx Wait:");
+        softly.assertThat(labels.get(5)).isEqualTo("Receive Data Wait:");
+        softly.assertThat(labels.get(6)).isEqualTo("Additional Time Out:");
+        softly.assertThat(labels.get(7)).isEqualTo("Shared Port Type:");
+        softly.assertThat(labels.get(8)).isEqualTo("Socket Number:");
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTerminalServer_ConfigTab_ValuesCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         detailPage.getTabElement().clickTabAndWait("Configuration");
 
         List<String> values = detailPage.getTabElement().getTabValues("Configuration");
 
-        softly.assertThat(9).isEqualTo(values.size());
-        softly.assertThat("IDLC").isEqualTo(values.get(0));
-        softly.assertThat("123 ms").isEqualTo(values.get(1));
-        softly.assertThat("87  ms").isEqualTo(values.get(2));
-        softly.assertThat("823  ms").isEqualTo(values.get(3));
-        softly.assertThat("89  ms").isEqualTo(values.get(4));
-        softly.assertThat("76  ms").isEqualTo(values.get(5));
-        softly.assertThat("98  sec").isEqualTo(values.get(6));
-        softly.assertThat("ACS").isEqualTo(values.get(7));
-        softly.assertThat("100").isEqualTo(values.get(8));
+        softly.assertThat(values.size()).isEqualTo(9);
+        softly.assertThat(values.get(0)).isEqualTo("IDLC");
+        softly.assertThat(values.get(1)).isEqualTo("123 ms");
+        softly.assertThat(values.get(2)).isEqualTo("87  ms");
+        softly.assertThat(values.get(3)).isEqualTo("823  ms");
+        softly.assertThat(values.get(4)).isEqualTo("89  ms");
+        softly.assertThat(values.get(5)).isEqualTo("76  ms");
+        softly.assertThat(values.get(6)).isEqualTo("98  sec");
+        softly.assertThat(values.get(7)).isEqualTo("ACS");
+        softly.assertThat(values.get(8)).isEqualTo("100");
         softly.assertAll();
-    }
-
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTerminalServer_PanelTitleCorrect() {
-        String expectedPanelText = "Comm Channel Information";
-        String actualPanelText = detailPage.getCommChannelInfoPanel().getPanelName();
-        
-        assertThat(expectedPanelText).isEqualTo(actualPanelText);
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
@@ -210,6 +193,7 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
         jo.put("portNumber", deletePortNumber);
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
         Integer deleteCommChannelId = createResponse.path("id");
+        
         navigate(Urls.Assets.COMM_CHANNEL_DETAIL + deleteCommChannelId);        
         
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
@@ -219,6 +203,6 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
         CommChannelsListPage listPage = new CommChannelsListPage(driverExt);
         String userMsg = listPage.getUserMessage();
 
-        assertThat(expectedMessage).isEqualTo(userMsg);
+        assertThat(userMsg).isEqualTo(expectedMessage);
     }
 }

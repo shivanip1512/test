@@ -25,11 +25,12 @@ public class CommChannelUdpDetailPage extends CommChannelDetailPage {
         return new Section(this.driverExt, "Shared");
     }
     
-    public EditUdpCommChannelModal showUdpCommChannelEditModal(String modalTitle) {
-        getCommChannelInfoPanel().getEdit().click();
+    public EditUdpCommChannelModal showUdpCommChannelEditModal() {
+        String describedBy = "js-edit-comm-channel-popup";
+        getEditBtn().getButton().click();
 
-        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-edit-comm-channel-popup");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy(describedBy);
 
-        return new EditUdpCommChannelModal(this.driverExt, Optional.of(modalTitle), Optional.empty());
+        return new EditUdpCommChannelModal(this.driverExt, Optional.empty(), Optional.of(describedBy));
     }
 }

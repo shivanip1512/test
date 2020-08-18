@@ -15,7 +15,7 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.admin.GlobalSearchPage;
 
-public class CommChannelGlobalSearchTest extends SeleniumTestSetup {
+public class CommChannelGlobalSearchTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
     private GlobalSearchPage globalSearchPage;
@@ -31,7 +31,7 @@ public class CommChannelGlobalSearchTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelGlobalSearch_SearchCommChannelAndEnterNavigatesToSearchPage() {
+    public void commChannelGlobalSearch_SearchCommChannelAndEnter_NavigatesToSearchPage() {
         globalSearchPage.getSearchBoxElement().setSearchValueAndEnter("Comm Channels");
         
         boolean pageLoaded = waitForUrlToLoad(Urls.SEARCH + Urls.SEARCH_PARAM + "Comm+Channels", Optional.empty());
@@ -40,7 +40,7 @@ public class CommChannelGlobalSearchTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelGlobalSearch_ResultNavigatesToCommChannelListPage() {
+    public void commChannelGlobalSearch_ResultNavigatesTo_CommChannelListPage() {
         globalSearchPage.getSearchBoxElement().setSearchValueAndClickResult("Comm Channels");
         
         boolean pageLoaded = waitForUrlToLoad(Urls.Assets.COMM_CHANNELS_LIST, Optional.empty());
@@ -49,7 +49,7 @@ public class CommChannelGlobalSearchTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelGlobalSearch_SearchCommResultsContainCommChannel() {
+    public void commChannelGlobalSearch_SearchCommResults_ContainsCommChannel() {
         SearchBoxElement searchBox = globalSearchPage.getSearchBoxElement();
         
         searchBox.setSearchValue("Comm Chann");

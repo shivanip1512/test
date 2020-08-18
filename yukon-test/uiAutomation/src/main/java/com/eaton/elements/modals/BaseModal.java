@@ -17,6 +17,9 @@ public class BaseModal {
     private String describedBy;
 
     /**
+     * This is the base modal and it should be inherited from.  It gets the modal and has the methods
+     * that are used commonly on all modals.
+     * 
      * @param driverExt
      * @param modalTitle - This is an optional field that is used to find the modal by it's title. 
      *                     Use this only if the modal does NOT have an aria-describedby, or if the
@@ -26,7 +29,9 @@ public class BaseModal {
      *                      Use this first if the modal uses aria-describedby that is not dynamically generated.  
      *                      When Using send in Optional.empty() for modal title.
      */
-    public BaseModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) { this.driverExt = driverExt;
+    public BaseModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) 
+    { 
+        this.driverExt = driverExt;
 
         if (modalTitle.isPresent())
             this.modalTitle = modalTitle.get();
@@ -34,6 +39,11 @@ public class BaseModal {
             this.describedBy = describedBy.get();
     }    
 
+    /**
+     * Use this method to get the modal
+     * 
+     * @return - returns out a WebElement representing the modal
+     */
     public WebElement getModal() {
         if (describedBy != null) {
             return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.describedBy + "']"), Optional.of(2));
@@ -43,7 +53,7 @@ public class BaseModal {
 
         long startTime = System.currentTimeMillis();
 
-        while (found.isEmpty() && System.currentTimeMillis() - startTime < 3000) {
+        while (found.isEmpty() && (System.currentTimeMillis() - startTime) < 3000) {
 
             List<WebElement> elements = this.driverExt.findElements(By.cssSelector(".ui-dialog"), Optional.of(5));
 

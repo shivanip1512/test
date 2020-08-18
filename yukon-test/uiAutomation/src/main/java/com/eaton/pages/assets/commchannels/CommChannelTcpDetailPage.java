@@ -12,15 +12,16 @@ public class CommChannelTcpDetailPage extends CommChannelDetailPage {
     public CommChannelTcpDetailPage(DriverExtensions driverExt, int id) {
         super(driverExt);
 
-    requiresLogin = true;
-    pageUrl = Urls.Assets.COMM_CHANNEL_DETAIL + id;
+        requiresLogin = true;
+        pageUrl = Urls.Assets.COMM_CHANNEL_DETAIL + id;
     }
 
     public EditTcpCommChannelModal showTcpCommChannelEditModal() {
-        getCommChannelInfoPanel().getEdit().click();
+        String describedBy = "js-edit-comm-channel-popup";
+        getEditBtn().getButton().click();
 
-        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-edit-comm-channel-popup");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy(describedBy);
 
-        return new EditTcpCommChannelModal(this.driverExt, Optional.empty(), Optional.of("js-edit-comm-channel-popup"));
+        return new EditTcpCommChannelModal(this.driverExt, Optional.empty(), Optional.of(describedBy));
     }
 }

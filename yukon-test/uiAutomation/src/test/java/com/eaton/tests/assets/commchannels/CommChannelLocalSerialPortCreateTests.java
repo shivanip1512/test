@@ -11,7 +11,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.eaton.elements.modals.CreateCommChannelModal;
+import com.eaton.elements.modals.commchannel.CreateLocalSerialPortCommChannelModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
@@ -22,13 +22,11 @@ import com.eaton.pages.assets.commchannels.CommChannelsListPage;
 public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
     private CommChannelsListPage listPage;
     private DriverExtensions driverExt;
-    private SoftAssertions softly;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         WebDriver driver = getDriver();
-        driverExt = getDriverExt();
-        softly = new SoftAssertions();
+        driverExt = getDriverExt();        
         
         driver.get(getBaseUrl() + Urls.Assets.COMM_CHANNELS_LIST);
         
@@ -42,7 +40,7 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
     public void createCommChannelLocalSerialPort_AllFieldsSuccess() {
-        CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
+        CreateLocalSerialPortCommChannelModal createModal = listPage.showAndWaitCreateLocalSerialPortCommChannelModal();
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 
@@ -64,30 +62,31 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
 
         String userMsg = detailPage.getUserMessage();
 
-        assertThat(EXPECTED_MSG).isEqualTo(userMsg);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void createCommChannelLocalSerialPort_LabelsCorrect() {
-        CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
+        SoftAssertions softly = new SoftAssertions();
+        CreateLocalSerialPortCommChannelModal createModal = listPage.showAndWaitCreateLocalSerialPortCommChannelModal();
 
         createModal.getType().selectItemByValue("LOCAL_SHARED");
         waitForLoadingSpinner();
 
         List<String> labels = createModal.getFieldLabels();
 
-        softly.assertThat(5).isEqualTo(labels.size());
-        softly.assertThat("Name:").isEqualTo(labels.get(0));
-        softly.assertThat("Type:").isEqualTo(labels.get(1));
-        softly.assertThat("Physical Port:").isEqualTo(labels.get(2));
-        softly.assertThat("Baud Rate:").isEqualTo(labels.get(3));
-        softly.assertThat("Status:").isEqualTo(labels.get(4));
+        softly.assertThat(labels.size()).isEqualTo(5);
+        softly.assertThat(labels.get(0)).isEqualTo("Name:");
+        softly.assertThat(labels.get(1)).isEqualTo("Type:");
+        softly.assertThat(labels.get(2)).isEqualTo("Physical Port:");
+        softly.assertThat(labels.get(3)).isEqualTo("Baud Rate:");
+        softly.assertThat(labels.get(4)).isEqualTo("Status:");
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void createCommChannelLocalSerialPort_PhysicalPortOther_RequiredValidation() {
-        CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
+        CreateLocalSerialPortCommChannelModal createModal = listPage.showAndWaitCreateLocalSerialPortCommChannelModal();
 
         final String EXPECTED_MSG = "Physical Port is required.";
 
@@ -99,6 +98,6 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
 
         String errorMsg = createModal.getPhysicalPortOther().getValidationError();
 
-        assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
+        assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }    
 }

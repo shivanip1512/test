@@ -12,7 +12,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.eaton.elements.modals.CreateCommChannelModal;
+import com.eaton.elements.modals.commchannel.CreateTcpCommChannelModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
@@ -23,15 +23,13 @@ import com.eaton.pages.assets.commchannels.CommChannelDetailPage;
 public class CommChannelTcpCreateTests extends SeleniumTestSetup {
     private CommChannelsListPage listPage;
     private DriverExtensions driverExt;
-    private SoftAssertions softly;
     String modalTitle = "Create Comm Channel";
     String type = "TCP";
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         WebDriver driver = getDriver();
-        driverExt = getDriverExt();
-        softly = new SoftAssertions();
+        driverExt = getDriverExt();        
         
         driver.get(getBaseUrl() + Urls.Assets.COMM_CHANNELS_LIST);
         
@@ -45,7 +43,7 @@ public class CommChannelTcpCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
     public void createCommChannelTcp_AllFieldsSuccess() {
-        CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
+        CreateTcpCommChannelModal createModal = listPage.showAndWaitCreateTcpCommChannelModal();
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 
@@ -66,23 +64,24 @@ public class CommChannelTcpCreateTests extends SeleniumTestSetup {
 
         String userMsg = detailPage.getUserMessage();
 
-        assertThat(EXPECTED_MSG).isEqualTo(userMsg);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void createCommChannelTcp_LabelsCorrect() {
-        CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
+        SoftAssertions softly = new SoftAssertions();
+        CreateTcpCommChannelModal createModal = listPage.showAndWaitCreateTcpCommChannelModal();
 
         createModal.getType().selectItemByValue("TCPPORT");
         waitForLoadingSpinner();
 
         List<String> labels = createModal.getFieldLabels();
 
-        softly.assertThat(4).isEqualTo(labels.size());
-        softly.assertThat("Name:").isEqualTo(labels.get(0));
-        softly.assertThat("Type:").isEqualTo(labels.get(1));
-        softly.assertThat("Baud Rate:").isEqualTo(labels.get(2));
-        softly.assertThat("Status:").isEqualTo(labels.get(3));
+        softly.assertThat(labels.size()).isEqualTo(4);
+        softly.assertThat(labels.get(0)).isEqualTo("Name:");
+        softly.assertThat(labels.get(1)).isEqualTo("Type:");
+        softly.assertThat(labels.get(2)).isEqualTo("Baud Rate:");
+        softly.assertThat(labels.get(3)).isEqualTo("Status:");
         softly.assertAll();
     }    
 }

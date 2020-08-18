@@ -11,7 +11,7 @@ public class Button {
 
     private DriverExtensions driverExt;
     private String elementName;
-    private String parentName;
+    private String parrentClass;
     private WebElement parentElement;
 
     public Button(DriverExtensions driverExt, String elementName) {
@@ -19,10 +19,10 @@ public class Button {
         this.elementName = elementName;
     }
 
-    public Button(DriverExtensions driverExt, String elementName, String parentName) {
+    public Button(DriverExtensions driverExt, String elementName, String parrentClass) {
         this.driverExt = driverExt;
         this.elementName = elementName;
-        this.parentName = parentName;
+        this.parrentClass = parrentClass;
     }
 
     public Button(DriverExtensions driverExt, String elementName, WebElement parentElement) {
@@ -32,8 +32,8 @@ public class Button {
     }
 
     public WebElement getButton() {
-        if (this.parentName != null) {
-            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] [aria-label='" + this.elementName + "']"), Optional.of(5));
+        if (this.parrentClass != null) {
+            return this.driverExt.findElement(By.cssSelector("." + this.parrentClass + " [aria-label='" + this.elementName + "']"), Optional.of(5));
         } else if (this.parentElement != null) {
             return parentElement.findElement(By.cssSelector("[aria-label='" + this.elementName + "']"));
         } else {

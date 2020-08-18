@@ -36,10 +36,7 @@ public class ActionBtnDropDownElement {
         click();                
         
         WebElement element = null;
-        //long startTime = System.currentTimeMillis();
-        //while (element == null && System.currentTimeMillis() - startTime < 3000) {
-            element = this.driverExt.findElement(By.cssSelector(".dropdown-menu[style*='display: block;']"), Optional.of(3));
-        //}
+        element = this.driverExt.findElement(By.cssSelector(".dropdown-menu[style*='display: block;']"), Optional.of(3));
         
         if (element != null) {
             
