@@ -43,30 +43,22 @@ public class TrendEditTests extends SeleniumTestSetup {
         trendName = response.path("name").toString();
         timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 
-        navigate(Urls.Tools.TREND + trendId + Urls.EDIT);
-        editPage = new TrendEditPage(driverExt, Urls.Tools.TREND, trendId);
-    }
-
-    @Test
-    public void editTrend_PageTitleCorrect() {
-        
         navigate(Urls.Tools.TREND_EDIT + trendId + Urls.EDIT);
         editPage = new TrendEditPage(driverExt, Urls.Tools.TREND_EDIT, trendId);
-    }    
+    }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendEdit_pageTitleCorrect() {
-        navigate(editPage.getPageUrl());
-        
+    public void editTrend_PageTitleCorrect() {
+
         final String EXPECTED_TITLE = "Edit Trend: " + trendName;
         String actualPageTitle;
 
-        navigate(Urls.Tools.TREND + trendId + Urls.EDIT);
+        navigate(Urls.Tools.TREND_EDIT + trendId + Urls.EDIT);
         actualPageTitle = editPage.getPageTitle();
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
-    }
-
-    @Test
+    }    
+    
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
     public void editTrend_AllFields_Success() {
 
         String editTrendName = "EditTrendTest " + timeStamp;
@@ -76,9 +68,9 @@ public class TrendEditTests extends SeleniumTestSetup {
         ExtractableResponse<?> response = pair.getValue1();
         editTrendId = response.path("trendId");
 
-        navigate(Urls.Tools.TREND + editTrendId + Urls.EDIT);
+        navigate(Urls.Tools.TREND_EDIT + editTrendId + Urls.EDIT);
         
-        Integer editTrendId = response.path("trendId");
+        editTrendId = response.path("trendId");
         
         navigate(Urls.Tools.TREND_EDIT + editTrendId + Urls.EDIT);
 
@@ -87,16 +79,16 @@ public class TrendEditTests extends SeleniumTestSetup {
         assertThat(editPage.getUserMessage()).isEqualTo(editTrendName + " saved successfully.");
     }
 
-    @Test
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_Name_RequiredValidation() {
 
-        navigate(Urls.Tools.TREND + trendId + Urls.EDIT);
+        navigate(Urls.Tools.TREND_EDIT + trendId + Urls.EDIT);
         editPage.getName().setInputValue("");
         editPage.getSave().click();
         assertThat(editPage.getName().getValidationError()).isEqualTo("Name is required.");
     }
 
-    @Test
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_Name_AlreadyExistsValidation() {
 
         timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -104,17 +96,17 @@ public class TrendEditTests extends SeleniumTestSetup {
 
         builder.withName(Optional.of(existingTrendName)).create();
 
-        navigate(Urls.Tools.TREND + trendId + Urls.EDIT);
+        navigate(Urls.Tools.TREND_EDIT + trendId + Urls.EDIT);
         editPage.getName().setInputValue(existingTrendName);
         editPage.getSave().click();
         assertThat(editPage.getName().getValidationError()).isEqualTo("Name already exists");
 
     }
 
-    @Test
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_RemovePoint_Success() {
 
-        navigate(Urls.Tools.TREND + trendId + Urls.EDIT);
+        navigate(Urls.Tools.TREND_EDIT + trendId + Urls.EDIT);
         editPage.getSetupTab().click();
         WebTableRow row = editPage.getPointSetupTable().getDataRowByIndex(0);
         row.clickIcon(Icon.REMOVE);
@@ -122,22 +114,22 @@ public class TrendEditTests extends SeleniumTestSetup {
         assertThat(editPage.getUserMessage()).isEqualTo(trendName + " saved successfully.");
     }
 
-    @Test
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_RemoveMarker_Success() {
 
-        navigate(Urls.Tools.TREND + trendId + Urls.EDIT);
+        navigate(Urls.Tools.TREND_EDIT + trendId + Urls.EDIT);
         editPage.getAdditionalOptionsTab().click();
-        ;
+        
         WebTableRow row = editPage.getMarkerSetupTable().getDataRowByIndex(0);
         row.clickIcon(Icon.REMOVE);
         editPage.getSave().click();
         assertThat(editPage.getUserMessage()).isEqualTo(trendName + " saved successfully.");
     }
 
-    @Test
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_AddPoint_Success() {
 
-        navigate(Urls.Tools.TREND + trendId + Urls.EDIT);
+        navigate(Urls.Tools.TREND_EDIT + trendId + Urls.EDIT);
 
         TrendAddPointModal modal = editPage.showAndWaitAddPointModal();
         SelectPointModal pointModal = modal.showAndWaitSelectPointModal();
@@ -149,15 +141,13 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     }
 
-    @Test
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_AddMarker_Success() {
 
-        navigate(Urls.Tools.TREND + trendId + Urls.EDIT);
+        navigate(Urls.Tools.TREND_EDIT + trendId + Urls.EDIT);
         editPage.getAdditionalOptionsTab().click();
-        ;
 
         TrendAddMarkerModal modal = editPage.showAndWaitAddMarkerModal();
-
         modal.getLabel().setInputValue("Test label");
         modal.clickOkAndWait();
 
@@ -165,15 +155,14 @@ public class TrendEditTests extends SeleniumTestSetup {
         assertThat(editPage.getUserMessage()).isEqualTo(trendName + " saved successfully.");
     }
 
-    @Test
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_EditPoint_Success() {
 
         String editTrendName = "TrendEditPointTest " + timeStamp;
         Pair<JSONObject, ExtractableResponse<?>> pair = builder.withName(Optional.of(editTrendName)).create();
         ExtractableResponse<?> response = pair.getValue1();
         int editTrendId = response.path("trendId");
-        // String editTrendName = response.path("name");
-        navigate(Urls.Tools.TREND + editTrendId + Urls.EDIT);
+        navigate(Urls.Tools.TREND_EDIT + editTrendId + Urls.EDIT);
 
         editPage.getSetupTab().click();
         WebTableRow row = editPage.getPointSetupTable().getDataRowByIndex(0);
@@ -187,7 +176,7 @@ public class TrendEditTests extends SeleniumTestSetup {
         assertThat(editPage.getUserMessage()).isEqualTo(editTrendName + " saved successfully.");
     }
 
-    @Test
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_EditMarker_Success() {
 
         String editTrendName = "TrendEditMarkerTest " + timeStamp;
@@ -196,7 +185,7 @@ public class TrendEditTests extends SeleniumTestSetup {
         ExtractableResponse<?> response = pair.getValue1();
         int editTrendId = response.path("trendId");
         String markerLabel = response.path("trendSeries[0].label");
-        navigate(Urls.Tools.TREND + editTrendId + Urls.EDIT);
+        navigate(Urls.Tools.TREND_EDIT + editTrendId + Urls.EDIT);
 
         editPage.getAdditionalOptionsTab().click();
         WebTableRow row = editPage.getMarkerSetupTable().getDataRowByIndex(0);
@@ -210,12 +199,12 @@ public class TrendEditTests extends SeleniumTestSetup {
         assertThat(editPage.getUserMessage()).isEqualTo(editTrendName + " saved successfully.");
     }
 
-    @Test
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
     public void editTrend_Cancel_NavigatesToCorrectUrl() {
         String expectedURL = getBaseUrl() + Urls.Tools.TRENDS_LIST;
         String actualURL;
 
-        navigate(Urls.Tools.TREND + trendId + Urls.EDIT);
+        navigate(Urls.Tools.TREND_EDIT + trendId + Urls.EDIT);
         editPage.getCancel().click();
         actualURL = getCurrentUrl();
 
