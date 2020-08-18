@@ -305,10 +305,10 @@ public interface AttributeService {
     /**
      * Returns true if the attribute is cached 
      */
-    boolean isValidAttributeId(int attributeId);
+    boolean isValidAttributeId(Integer attributeId);
     
     /**
      * Returns true if the assignment is cached 
      */
-    boolean isValidAssignmentId(int assignmentId);
+    boolean isValidAssignmentId(Integer assignmentId);
 }

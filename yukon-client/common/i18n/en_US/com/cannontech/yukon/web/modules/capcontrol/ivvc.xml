@@ -131,6 +131,7 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.zoneType">Zone Type</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.zonePhase">Zone Phase</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.regulator">Regulator</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.regulator.ALL">All Regulators</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.regulator.A">Regulator A</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.regulator.B">Regulator B</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.regulator.C">Regulator C</entry>

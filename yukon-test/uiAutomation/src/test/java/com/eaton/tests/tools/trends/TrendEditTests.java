@@ -49,6 +49,15 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     @Test
     public void editTrend_PageTitleCorrect() {
+        
+        navigate(Urls.Tools.TREND_EDIT + trendId + Urls.EDIT);
+        editPage = new TrendEditPage(driverExt, Urls.Tools.TREND_EDIT, trendId);
+    }    
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    public void trendEdit_pageTitleCorrect() {
+        navigate(editPage.getPageUrl());
+        
         final String EXPECTED_TITLE = "Edit Trend: " + trendName;
         String actualPageTitle;
 
@@ -68,6 +77,10 @@ public class TrendEditTests extends SeleniumTestSetup {
         editTrendId = response.path("trendId");
 
         navigate(Urls.Tools.TREND + editTrendId + Urls.EDIT);
+        
+        Integer editTrendId = response.path("trendId");
+        
+        navigate(Urls.Tools.TREND_EDIT + editTrendId + Urls.EDIT);
 
         editPage.getName().setInputValue(editTrendName);
         editPage.getSave().click();
