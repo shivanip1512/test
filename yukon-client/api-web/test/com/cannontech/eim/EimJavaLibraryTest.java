@@ -57,7 +57,7 @@ public class EimJavaLibraryTest {
         "commons-validator-1.4.0.jar",
         "commons-vfs2-2.2.jar",
         "easymock-3.0.jar",
-        "ecj-4.13.jar",
+        "ecj-4.15.jar",
         "el-api.jar",
         "geojson-jackson-1.1.jar",
         "groovy-2.5.7.jar",
