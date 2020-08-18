@@ -1,7 +1,9 @@
 
 package com.cannontech.web.api.point;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -76,7 +78,10 @@ public class PointApiController <T extends PointBaseModel<?>> {
     @DeleteMapping("/points/{id}")
     public ResponseEntity<Object> delete(@PathVariable int id, HttpServletRequest request) throws AttachedException {
         pointHelper.verifyRoles(getYukonUserContext(request).getYukonUser(), HierarchyPermissionLevel.OWNER);
-        return new ResponseEntity<>(pointEditorService.delete(id, getYukonUserContext(request)), HttpStatus.OK);
+        int pointId = pointEditorService.delete(id, getYukonUserContext(request));
+        HashMap<String, Integer> pointIdMap = new HashMap<>();
+        pointIdMap.put("id", pointId);
+        return new ResponseEntity<>(pointIdMap, HttpStatus.OK);
     }
 
     @PostMapping("/points/{id}/copy")
