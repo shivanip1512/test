@@ -27,7 +27,10 @@ public class TrendCreateBuilder {
         }
         
         public Builder withName(Optional<String> name) {
-            this.name = name.orElse(this.name);
+            String u = UUID.randomUUID().toString();
+            String uuid = u.replace("-", "");
+
+            this.name = name.orElse("Trend" + uuid);
             return this;
         }
 
