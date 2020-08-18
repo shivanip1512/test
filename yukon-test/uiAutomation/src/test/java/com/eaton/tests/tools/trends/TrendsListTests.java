@@ -54,7 +54,7 @@ public class TrendsListTests extends SeleniumTestSetup {
     public void trendsList_Edit_NavigatesToCorrectUrl() {
         final String EXPECTED_TITLE = "Edit Trend: " + trendName;
 
-        navigate(Urls.Tools.TRENDS_EDIT + trendId);
+        navigate(Urls.Tools.TREND_EDIT + trendId);
 
         listPage.getActionBtn().clickAndSelectOptionByText("Edit");
 
@@ -67,7 +67,7 @@ public class TrendsListTests extends SeleniumTestSetup {
     public void trendsList_Delete_OpensCorrectModal() {
         String expectedModalTitle = "Confirm Delete";
         
-        navigate(Urls.Tools.TRENDS_EDIT + trendId);
+        navigate(Urls.Tools.TREND_EDIT + trendId);
 
         ConfirmModal deleteConfirmModal = listPage.showDeleteTrendModal();
 
@@ -80,7 +80,7 @@ public class TrendsListTests extends SeleniumTestSetup {
     public void trendsList_Delete_ConfirmMessageCorrect() {
         String expectedModalMessage = "Are you sure you want to delete \"" + trendName + "\"?";
 
-        navigate(Urls.Tools.TRENDS_EDIT + trendId);
+        navigate(Urls.Tools.TREND_EDIT + trendId);
 
         ConfirmModal deleteConfirmModal = listPage.showDeleteTrendModal();
 
@@ -100,7 +100,7 @@ public class TrendsListTests extends SeleniumTestSetup {
         
         String expectedMessage = deleteTrendName + " deleted successfully.";
 
-        navigate(Urls.Tools.TRENDS_EDIT + deleteTrendId);
+        navigate(Urls.Tools.TREND_EDIT + deleteTrendId);
 
         ConfirmModal deleteConfirmModal = listPage.showDeleteTrendModal();
         deleteConfirmModal.clickOkAndWaitForModalToClose();
@@ -132,7 +132,7 @@ public class TrendsListTests extends SeleniumTestSetup {
         trendId = response.path("trendId");
         trendName = response.path("name").toString();
 
-        navigate(Urls.Tools.TRENDS_EDIT + trendId);
+        navigate(Urls.Tools.TREND_EDIT + trendId);
 
         final String expectedModalTitle = "Reset Peak";
 
