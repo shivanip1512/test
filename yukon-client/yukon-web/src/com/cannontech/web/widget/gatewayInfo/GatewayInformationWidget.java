@@ -14,7 +14,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
@@ -29,7 +28,6 @@ import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
-import com.cannontech.common.rfn.model.TimeoutExecutionException;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
@@ -296,31 +294,4 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
             return "gatewayInformationWidget/settings.jsp";
         }
     }
-    
-    /** Test the connection, return result as json. */
-    @RequestMapping("test-connection")
-    public @ResponseBody Map<String, Object> testConnection(YukonUserContext userContext, 
-            int id, String ip, String username, String password) {
-        
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        
-        Map<String, Object> json = new HashMap<>();
-        try {
-            boolean success = false;
-            if (ip == null || username == null || password == null) {
-                success = rfnGatewayService.testConnection(id);
-            } else {
-                success = rfnGatewayService.testConnection(id, ip, username, password);
-            }
-            json.put("success", success);
-        } catch (NmCommunicationException e) {
-            json.put("success", false);
-            if (e.getCause() instanceof TimeoutExecutionException) {
-                json.put("message", accessor.getMessage(baseKey + "login.failed.timeout"));
-            }
-        }
-        
-        return json;
-    }
-
 }

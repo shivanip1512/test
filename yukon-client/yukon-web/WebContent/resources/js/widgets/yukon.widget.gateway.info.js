@@ -113,47 +113,6 @@ yukon.widget.gatewayInfo = (function () {
                 });
             });
             
-            /** Test a connection for username and password. */
-            $(document).on('click', '.js-conn-test-btn', function (ev) {
-                
-                var btn = $(this),
-                    row = btn.closest('tr'),
-                    otherRow = row.is('.js-gateway-edit-admin')
-                        ? $('.js-gateway-edit-super-admin') : $('.js-gateway-edit-admin'),
-                    ip = $('#gateway-settings-form .js-gateway-edit-ip').val(),
-                    username = row.find('.js-gateway-edit-username').val(),
-                    password = row.find('.js-gateway-edit-password').val();
-                        
-               // Disable test buttons until test is over
-                yukon.ui.busy(btn);
-                otherRow.find('.js-conn-test-btn').prop('disabled', true);
-                $('.js-test-results').removeClass('success error').text('');
-                
-                $.ajax({
-                    url: yukon.url('/widget/gatewayInformationWidget/test-connection'),
-                    data: {
-                        ip: ip,
-                        username: username,
-                        password: password,
-                        id: $('#gateway-edit-popup').data('id')
-                    }
-                }).done(function (result) {
-                    if (result.success) {
-                        $('.js-test-results').addClass('success').text(_text['login.successful']);
-                    } else {
-                        if (result.message) {
-                            $('.js-test-results').addClass('error').text(result.message);
-                        } else {
-                            $('.js-test-results').addClass('error').text(_text['login.failed']);
-                        }
-                    }
-                }).always(function () {
-                    yukon.ui.unbusy(btn);
-                    otherRow.find('.js-conn-test-btn').prop('disabled', false);
-                });
-                
-            });
-            
             $(document).on('input', '.js-ipv6-update', function (ev) {
                 $('#ipv6-1').val($('#ipv6-1').val().replace(/[^a-fA-F0-9]+/g,''));
                 $('#ipv6-2').val($('#ipv6-2').val().replace(/[^a-fA-F0-9]+/g,''));
