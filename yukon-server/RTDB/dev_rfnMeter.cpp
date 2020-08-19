@@ -302,17 +302,25 @@ RfnMeterDevice::ConfigMap RfnMeterDevice::getConfigMethods(InstallType installTy
 {
     ConfigMap m;
 
+    const bool metlibSupported = Commands::RfnMetrologyCommand::isSupportedByDeviceType( getDeviceType() );
+
     if( installType == InstallType::GetConfig )
     {
         m.emplace(ConfigPart::channelconfig,    bindConfigMethod( &RfnMeterDevice::executeGetConfigInstallChannels,     this ) );
         m.emplace(ConfigPart::temperaturealarm, bindConfigMethod( &RfnMeterDevice::executeGetConfigTemperatureAlarm,    this ) );
-  //      m.emplace(ConfigPart::metlib,           bindConfigMethod( &RfnMeterDevice::executeGetConfigMetrology,           this ) );
+        if ( metlibSupported )
+        {
+            m.emplace(ConfigPart::metlib,           bindConfigMethod(&RfnMeterDevice::executeGetConfigMetrology,           this));
+        }
     }
     else
     {
         m.emplace(ConfigPart::channelconfig,    bindConfigMethod( &RfnMeterDevice::executePutConfigInstallChannels,     this ) );
         m.emplace(ConfigPart::temperaturealarm, bindConfigMethod( &RfnMeterDevice::executePutConfigTemperatureAlarm,    this ) );
-  //      m.emplace(ConfigPart::metlib,           bindConfigMethod( &RfnMeterDevice::executePutConfigMetrology,           this ) );
+        if ( metlibSupported )
+        {
+            m.emplace(ConfigPart::metlib,           bindConfigMethod(&RfnMeterDevice::executePutConfigMetrology,           this));
+        }
     }
 
     return m;
@@ -989,19 +997,25 @@ YukonError_t RfnMeterDevice::executePutConfigMetrology(CtiRequestMsg *pReq, CtiC
             return reportConfigErrorDetails( ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs );
         }
 
-        const bool configMetrologyLibraryEnabled 
-            = getConfigData<bool>( deviceConfig, Config::RfnStrings::MetrologyLibraryEnabled );
+        const auto configMetrologyLibraryEnabled 
+            = deviceConfig->findValue<bool>( Config::RfnStrings::MetrologyLibraryEnabled );
+
+        //  This is an optional config, so don't throw an error if it's missing
+        if ( ! configMetrologyLibraryEnabled.is_initialized() )
+        {
+            return ClientErrors::None;
+        }
 
         const boost::optional<bool> paoMetrologyLibraryEnabled
             = findDynamicInfo<bool>( CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled );
 
-        if ( configMetrologyLibraryEnabled != paoMetrologyLibraryEnabled
+        if ( *configMetrologyLibraryEnabled != paoMetrologyLibraryEnabled
              || parse.isKeyValid("force") )
         {
             if ( parse.isKeyValid("verify") )
             {
                 reportConfigMismatchDetails<>( "Metrology Library Enabled",
-                    configMetrologyLibraryEnabled, paoMetrologyLibraryEnabled,
+                    *configMetrologyLibraryEnabled, paoMetrologyLibraryEnabled,
                     pReq, returnMsgs );
 
                 ret = ClientErrors::ConfigNotCurrent;
@@ -1009,7 +1023,7 @@ YukonError_t RfnMeterDevice::executePutConfigMetrology(CtiRequestMsg *pReq, CtiC
             else
             {
                 RfnMetrologyCommand::State  metrologyLibraryState
-                    = configMetrologyLibraryEnabled
+                    = *configMetrologyLibraryEnabled
                         ? RfnMetrologyCommand::Enable
                         : RfnMetrologyCommand::Disable;
 

@@ -22,6 +22,7 @@
     <configuration>
         <category type="rfnChannelConfiguration"/>
         <category type="rfnTempAlarm"/>
+        <category type="rfnMetrologyConfiguration" optional="true"/>
     </configuration>
     <pointInfos>
         <pointInfo name="Bad Upgrade Security Param" attributes="BAD_UPGRADE_SECURITY_PARAM"/>

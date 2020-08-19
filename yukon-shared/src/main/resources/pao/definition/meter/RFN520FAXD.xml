@@ -27,6 +27,7 @@
         <category type="rfnTempAlarm"/>
         <category type="rfnVoltage"/>
         <category type="tou"/>
+        <category type="rfnMetrologyConfiguration" optional="true"/>
     </configuration>
     <pointInfos>
         <pointInfo name="Avg Voltage" attributes="AVERAGE_VOLTAGE,AVERAGE_VOLTAGE_PHASE_A"/>
