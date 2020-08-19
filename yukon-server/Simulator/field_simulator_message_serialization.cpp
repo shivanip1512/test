@@ -37,7 +37,25 @@ FieldSimulator::Settings populateSettings(Thrift::FieldSimulator::FieldSimulator
 
 }
     
+using StatusRequestMsg = FieldSimulator::StatusRequestMsg;
 using StatusResponseMsg = FieldSimulator::StatusResponseMsg;
+
+template<>
+boost::optional<StatusRequestMsg> MessageSerializer<StatusRequestMsg>::deserialize(const ActiveMQConnectionManager::SerializedMessage& msg)
+{
+    try
+    {
+        auto tmsg = DeserializeThriftBytes<Thrift::FieldSimulator::FieldSimulatorStatusRequest>(msg);
+
+        return StatusRequestMsg {};
+    }
+    catch( apache::thrift::TException& e )
+    {
+        CTILOG_EXCEPTION_ERROR(dout, e, "Failed to deserialize a \"" << typeid(StatusRequestMsg).name() << "\"");
+    }
+
+    return boost::none;
+}
 
 template<>
 ActiveMQConnectionManager::SerializedMessage MessageSerializer<StatusResponseMsg>::serialize(const StatusResponseMsg& msg)

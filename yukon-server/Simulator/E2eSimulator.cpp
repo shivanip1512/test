@@ -11,6 +11,7 @@
 #include "RfnE2eDataConfirmMsg.h"
 #include "RfnE2eDataIndicationMsg.h"
 #include "NetworkManagerRequest.h"
+#include "FieldSimulatorMsg.h"
 
 #include "prot_e2eDataTransfer.h"
 #include "coap_helper.h"
@@ -35,8 +36,11 @@ extern "C" {
 using namespace Cti::Messaging::ActiveMQ;
 using namespace Cti::Messaging::Rfn;
 
+using Cti::Messaging::ActiveMQConnectionManager;
+
 using Cti::Messaging::Serialization::MessageFactory;
 using Cti::Messaging::Serialization::MessagePtr;
+using Cti::Messaging::Serialization::MessageSerializer;
 
 using Cti::Logging::Vector::Hex::operator<<;
 using Cti::Logging::Range::Hex::operator<<;
@@ -93,6 +97,18 @@ E2eSimulator::E2eSimulator()
                     });
 
     requestConsumer->setMessageListener(requestListener.get());
+
+    Messaging::ActiveMQConnectionManager::registerReplyHandler(
+        Queues::InboundQueue::FieldSimulatorStatusRequest,
+        [this](const Messaging::ActiveMQConnectionManager::MessageDescriptor& md) {
+            return handleStatusRequest(md);
+        });
+
+    Messaging::ActiveMQConnectionManager::registerReplyHandler(
+        Queues::InboundQueue::FieldSimulatorModifyConfiguration,
+        [this](const Messaging::ActiveMQConnectionManager::MessageDescriptor& md) {
+            return handleConfigurationRequest(md);
+        });
 
     CTILOG_INFO(dout, "E2EDT listener registered");
 }
@@ -455,6 +471,48 @@ void E2eSimulator::sendE2eDataIndication(const E2eDataRequestMsg &requestMsg, co
     bytesMsg->writeBytes(indicationBytes);
 
     indicationProducer->send(bytesMsg.get());
+}
+
+auto E2eSimulator::handleStatusRequest(const ActiveMQConnectionManager::MessageDescriptor& md)
+        -> std::unique_ptr<ActiveMQConnectionManager::SerializedMessage>
+{
+    CTILOG_INFO(dout, "Received message on Status queue, attempting to decode as FieldSimulatorStatusRequest");
+
+    auto request = MessageSerializer<Messaging::FieldSimulator::StatusRequestMsg>::deserialize(md.msg); 
+
+    if( ! request )
+    {
+        return nullptr;
+    }
+
+    Messaging::FieldSimulator::StatusResponseMsg response;
+
+    response.settings.deviceConfigFailureRate = 99;
+    response.settings.deviceGroup = "/Jimmy";
+
+    return std::make_unique<ActiveMQConnectionManager::SerializedMessage>(
+        Messaging::Serialization::serialize(response));
+}
+
+auto E2eSimulator::handleConfigurationRequest(const ActiveMQConnectionManager::MessageDescriptor& md)
+        -> std::unique_ptr<ActiveMQConnectionManager::SerializedMessage>
+{
+    CTILOG_INFO(dout, "Received message on Configuration queue");
+
+    auto request = MessageSerializer<Messaging::FieldSimulator::ModifyConfigurationRequestMsg>::deserialize(md.msg);
+
+    if( ! request )
+    {
+        return nullptr;
+    }
+
+    Messaging::FieldSimulator::ModifyConfigurationResponseMsg response;
+
+    response.success = true;
+    response.settings = request->settings;
+
+    return std::make_unique<ActiveMQConnectionManager::SerializedMessage>(
+        Messaging::Serialization::serialize(response));
 }
 
 }

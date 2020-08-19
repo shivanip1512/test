@@ -10,6 +10,11 @@ struct Settings
     int deviceConfigFailureRate;
 };
 
+struct StatusRequestMsg
+{
+    //  empty
+};
+
 struct StatusResponseMsg
 {
     Settings settings;
