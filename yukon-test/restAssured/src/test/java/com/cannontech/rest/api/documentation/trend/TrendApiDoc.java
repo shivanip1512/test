@@ -184,4 +184,3 @@ public class TrendApiDoc extends DocumentationBase {
         return new DocumentationFields.DeleteWithBody(null, responseFields, null, url);
     }
 }
-
