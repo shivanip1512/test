@@ -362,7 +362,7 @@ const string RfnStrings::WaterNodeConfiguration::ReportingIntervalSeconds = "rep
 const string RfnStrings::WaterNodeConfiguration::RecordingIntervalSeconds = "recordingIntervalSeconds";
 
 // Metrology Library configuration
-const string RfnStrings::MetrologyLibraryEnabled = "metrologyLibEnabled";
+const string RfnStrings::MetrologyLibraryEnabled = "metrologyLibraryEnabled";
 
 // Regulators
 const string RegulatorStrings::voltageControlMode  = "voltageControlMode";

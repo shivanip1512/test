@@ -403,7 +403,7 @@
     </category>
 
     <category type="rfnMetrologyConfiguration">
-        <boolean field="metrologyLibEnabled" default="false"/>
+        <boolean field="metrologyLibraryEnabled" default="false"/>
     </category>
 
 </deviceConfigurationCategories>

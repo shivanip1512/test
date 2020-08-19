@@ -19,6 +19,16 @@ namespace std   {
 }
 // ---
 
+namespace
+{
+    struct Response
+    {
+        Cti::Test::byte_str payload;
+        YukonError_t        status;
+        std::string         description;
+    };
+}
+
 BOOST_AUTO_TEST_SUITE( test_cmd_rfn_Metrology )
 
 const CtiTime execute_time( CtiDate( 12, 8, 2020 ) , 17 );
@@ -115,73 +125,51 @@ BOOST_AUTO_TEST_CASE( SetConfiguration_Disable_request )
 
     // decode -- non-exceptional non-zero status returns
     {
-        const std::vector<std::vector<unsigned char>> responses
+        const std::vector<Response> responses
         {
-            {   0x58,   0x00,   0x01,   0x01 },
-            {   0x58,   0x00,   0x05,   0x01 },
-            {   0x58,   0x00,   0x06,   0x01 },
-            {   0x58,   0x00,   0x08,   0x01 }
+            {   "58 00 01 01",  ClientErrors::Abnormal, "Status: No Change in Key Value (1)"
+                                                        "\nValue: Disable (1)"                  },
+            {   "58 00 05 01",  ClientErrors::Abnormal, "Status: Illegal Request (5)"
+                                                        "\nValue: Disable (1)"                  },
+            {   "58 00 06 01",  ClientErrors::Abnormal, "Status: Aborted (6)"
+                                                        "\nValue: Disable (1)"                  },
+            {   "58 00 08 01",  ClientErrors::Abnormal, "Status: Configuration not present (8)"
+                                                        "\nValue: Disable (1)"                  }
         };
 
-        const std::vector<std::pair<YukonError_t, std::string>> results
+        for ( const auto & response : responses )
         {
-            { ClientErrors::Abnormal, "Status: No Change in Key Value (1)"
-                                      "\nValue: Disable (1)"                    },
-            { ClientErrors::Abnormal, "Status: Illegal Request (5)"
-                                      "\nValue: Disable (1)"                    },
-            { ClientErrors::Abnormal, "Status: Aborted (6)"
-                                      "\nValue: Disable (1)"                    },
-            { ClientErrors::Abnormal, "Status: Configuration not present (8)"
-                                      "\nValue: Disable (1)"                    }
-        };
+            RfnCommandResult rcv = command.decodeCommand( execute_time, response.payload.bytes );
 
-        BOOST_REQUIRE_EQUAL( responses.size(), results.size() );
-
-        for ( int i = 0; i < responses.size(); ++i )
-        {
-            RfnCommandResult rcv = command.decodeCommand( execute_time, responses[i] );
-
-            BOOST_CHECK_EQUAL( rcv.status, results[i].first );
-            BOOST_CHECK_EQUAL( rcv.description,  results[i].second  );
+            BOOST_CHECK_EQUAL( rcv.status,      response.status );
+            BOOST_CHECK_EQUAL( rcv.description, response.description );
         }
     }
 
     // decode -- exceptional failures
     {
-        const std::vector<std::vector<unsigned char>> responses
+        const std::vector<Response> responses
         {
-            {   0x59,   0x00,   0x00,   0x01 },
-            {   0x58,   0x01,   0x00,   0x01 },
-            {   0x58,   0x02,   0x00,   0x01 },
-            {   0x58,   0x00,   0x02,   0x01 },
-            {   0x58,   0x00,   0x00,   0x00 },
-            {   0x58,   0x00,   0x00,   0x04 }
+            { "59 00 00 01", ClientErrors::InvalidData, "Invalid Response Command Code (0x59) - expected (0x58)"   },
+            { "58 01 00 01", ClientErrors::InvalidData, "Invalid Response Operation Code (0x01) - expected (0x00)" },
+            { "58 02 00 01", ClientErrors::InvalidData, "Invalid Response Operation Code (0x02) - expected (0x00)" },
+            { "58 00 02 01", ClientErrors::InvalidData, "Invalid Response Status Code (2)"                         },
+            { "58 00 00 00", ClientErrors::InvalidData, "Invalid Response Value (0) - request type mismatch"       },
+            { "58 00 00 04", ClientErrors::InvalidData, "Invalid Response Value (4)"                               }
         };
 
-        const std::vector<std::pair<YukonError_t, std::string>> results
+        for ( const auto & response : responses )
         {
-            { ClientErrors::InvalidData, "Invalid Response Command Code (0x59) - expected (0x58)"   },
-            { ClientErrors::InvalidData, "Invalid Response Operation Code (0x01) - expected (0x00)" },
-            { ClientErrors::InvalidData, "Invalid Response Operation Code (0x02) - expected (0x00)" },
-            { ClientErrors::InvalidData, "Invalid Response Status Code (2)"                         },
-            { ClientErrors::InvalidData, "Invalid Response Value (0) - request type mismatch"       },
-            { ClientErrors::InvalidData, "Invalid Response Value (4)"                               }
-        };
-
-        BOOST_REQUIRE_EQUAL( responses.size(), results.size() );
-
-        for ( int i = 0; i < responses.size(); ++i )
-        {
-            BOOST_CHECK_THROW( command.decodeCommand( execute_time, responses[i] ), RfnCommand::CommandException );
+            BOOST_CHECK_THROW( command.decodeCommand( execute_time, response.payload.bytes ), RfnCommand::CommandException );
 
             try
             {
-                RfnCommandResult rcv = command.decodeCommand( execute_time, responses[i] );
+                RfnCommandResult rcv = command.decodeCommand( execute_time, response.payload.bytes );
             }
             catch ( const RfnCommand::CommandException & ex )
             {
-                BOOST_CHECK_EQUAL( ex.error_code, results[i].first );
-                BOOST_CHECK_EQUAL( ex.what(),     results[i].second );
+                BOOST_CHECK_EQUAL( ex.error_code, response.status );
+                BOOST_CHECK_EQUAL( ex.what(),     response.description );
             }
         }
     }
@@ -226,73 +214,51 @@ BOOST_AUTO_TEST_CASE( SetConfiguration_Enable_request )
 
     // decode -- non-exceptional non-zero status returns
     {
-        const std::vector<std::vector<unsigned char>> responses
+        const std::vector<Response> responses
         {
-            {   0x58,   0x00,   0x01,   0x00 },
-            {   0x58,   0x00,   0x05,   0x00 },
-            {   0x58,   0x00,   0x06,   0x00 },
-            {   0x58,   0x00,   0x08,   0x00 }
+            {   "58 00 01 00",  ClientErrors::Abnormal, "Status: No Change in Key Value (1)"
+                                                        "\nValue: Enable (0)"                   },
+            {   "58 00 05 00",  ClientErrors::Abnormal, "Status: Illegal Request (5)"
+                                                        "\nValue: Enable (0)"                   },
+            {   "58 00 06 00",  ClientErrors::Abnormal, "Status: Aborted (6)"
+                                                        "\nValue: Enable (0)"                   },
+            {   "58 00 08 00",  ClientErrors::Abnormal, "Status: Configuration not present (8)"
+                                                        "\nValue: Enable (0)"                   }
         };
 
-        const std::vector<std::pair<YukonError_t, std::string>> results
+        for ( const auto & response : responses )
         {
-            { ClientErrors::Abnormal, "Status: No Change in Key Value (1)"
-                                      "\nValue: Enable (0)"                     },
-            { ClientErrors::Abnormal, "Status: Illegal Request (5)"
-                                      "\nValue: Enable (0)"                     },
-            { ClientErrors::Abnormal, "Status: Aborted (6)"
-                                      "\nValue: Enable (0)"                     },
-            { ClientErrors::Abnormal, "Status: Configuration not present (8)"
-                                      "\nValue: Enable (0)"                     }
-        };
+            RfnCommandResult rcv = command.decodeCommand( execute_time, response.payload.bytes );
 
-        BOOST_REQUIRE_EQUAL( responses.size(), results.size() );
-
-        for ( int i = 0; i < responses.size(); ++i )
-        {
-            RfnCommandResult rcv = command.decodeCommand( execute_time, responses[i] );
-
-            BOOST_CHECK_EQUAL( rcv.status, results[i].first );
-            BOOST_CHECK_EQUAL( rcv.description,  results[i].second  );
+            BOOST_CHECK_EQUAL( rcv.status,      response.status );
+            BOOST_CHECK_EQUAL( rcv.description, response.description );
         }
     }
 
     // decode -- exceptional failures
     {
-        const std::vector<std::vector<unsigned char>> responses
+        const std::vector<Response> responses
         {
-            {   0x59,   0x00,   0x00,   0x00 },
-            {   0x58,   0x01,   0x00,   0x00 },
-            {   0x58,   0x02,   0x00,   0x00 },
-            {   0x58,   0x00,   0x02,   0x00 },
-            {   0x58,   0x00,   0x00,   0x01 },
-            {   0x58,   0x00,   0x00,   0x04 }
+            { "59 00 00 00", ClientErrors::InvalidData, "Invalid Response Command Code (0x59) - expected (0x58)"   },
+            { "58 01 00 00", ClientErrors::InvalidData, "Invalid Response Operation Code (0x01) - expected (0x00)" },
+            { "58 02 00 00", ClientErrors::InvalidData, "Invalid Response Operation Code (0x02) - expected (0x00)" },
+            { "58 00 02 00", ClientErrors::InvalidData, "Invalid Response Status Code (2)"                         },
+            { "58 00 00 01", ClientErrors::InvalidData, "Invalid Response Value (1) - request type mismatch"       },
+            { "58 00 00 04", ClientErrors::InvalidData, "Invalid Response Value (4)"                               }
         };
 
-        const std::vector<std::pair<YukonError_t, std::string>> results
+        for ( const auto & response : responses )
         {
-            { ClientErrors::InvalidData, "Invalid Response Command Code (0x59) - expected (0x58)"   },
-            { ClientErrors::InvalidData, "Invalid Response Operation Code (0x01) - expected (0x00)" },
-            { ClientErrors::InvalidData, "Invalid Response Operation Code (0x02) - expected (0x00)" },
-            { ClientErrors::InvalidData, "Invalid Response Status Code (2)"                         },
-            { ClientErrors::InvalidData, "Invalid Response Value (1) - request type mismatch"       },
-            { ClientErrors::InvalidData, "Invalid Response Value (4)"                               }
-        };
-
-        BOOST_REQUIRE_EQUAL( responses.size(), results.size() );
-
-        for ( int i = 0; i < responses.size(); ++i )
-        {
-            BOOST_CHECK_THROW( command.decodeCommand( execute_time, responses[i] ), RfnCommand::CommandException );
+            BOOST_CHECK_THROW( command.decodeCommand( execute_time, response.payload.bytes ), RfnCommand::CommandException );
 
             try
             {
-                RfnCommandResult rcv = command.decodeCommand( execute_time, responses[i] );
+                RfnCommandResult rcv = command.decodeCommand( execute_time, response.payload.bytes );
             }
             catch ( const RfnCommand::CommandException & ex )
             {
-                BOOST_CHECK_EQUAL( ex.error_code, results[i].first );
-                BOOST_CHECK_EQUAL( ex.what(),     results[i].second );
+                BOOST_CHECK_EQUAL( ex.error_code, response.status );
+                BOOST_CHECK_EQUAL( ex.what(),     response.description );
             }
         }
     }
@@ -358,71 +324,50 @@ BOOST_AUTO_TEST_CASE( GetConfiguration_State_request )
 
     // decode -- non-exceptional non-zero status returns
     {
-        const std::vector<std::vector<unsigned char>> responses
+        const std::vector<Response> responses
         {
-            {   0x58,   0x01,   0x01,   0x00 },
-            {   0x58,   0x01,   0x05,   0x00 },
-            {   0x58,   0x01,   0x06,   0x00 },
-            {   0x58,   0x01,   0x08,   0x00 }
+            {   "58 01 01 00",  ClientErrors::Abnormal, "Status: No Change in Key Value (1)"
+                                                        "\nValue: Enable (0)"                   },
+            {   "58 01 05 00",  ClientErrors::Abnormal, "Status: Illegal Request (5)"
+                                                        "\nValue: Enable (0)"                   },
+            {   "58 01 06 00",  ClientErrors::Abnormal, "Status: Aborted (6)"
+                                                        "\nValue: Enable (0)"                   },
+            {   "58 01 08 00",  ClientErrors::Abnormal, "Status: Configuration not present (8)"
+                                                        "\nValue: Enable (0)"                   }
         };
 
-        const std::vector<std::pair<YukonError_t, std::string>> results
+        for ( const auto & response : responses )
         {
-            { ClientErrors::Abnormal, "Status: No Change in Key Value (1)"
-                                      "\nValue: Enable (0)"                     },
-            { ClientErrors::Abnormal, "Status: Illegal Request (5)"
-                                      "\nValue: Enable (0)"                     },
-            { ClientErrors::Abnormal, "Status: Aborted (6)"
-                                      "\nValue: Enable (0)"                     },
-            { ClientErrors::Abnormal, "Status: Configuration not present (8)"
-                                      "\nValue: Enable (0)"                     }
-        };
+            RfnCommandResult rcv = command.decodeCommand( execute_time, response.payload.bytes );
 
-        BOOST_REQUIRE_EQUAL( responses.size(), results.size() );
-
-        for ( int i = 0; i < responses.size(); ++i )
-        {
-            RfnCommandResult rcv = command.decodeCommand( execute_time, responses[i] );
-
-            BOOST_CHECK_EQUAL( rcv.status, results[i].first );
-            BOOST_CHECK_EQUAL( rcv.description,  results[i].second  );
+            BOOST_CHECK_EQUAL( rcv.status,      response.status );
+            BOOST_CHECK_EQUAL( rcv.description, response.description );
         }
     }
 
     // decode -- exceptional failures
     {
-        const std::vector<std::vector<unsigned char>> responses
+        const std::vector<Response> responses
         {
-            {   0x59,   0x01,   0x00,   0x00 },
-            {   0x58,   0x00,   0x00,   0x00 },
-            {   0x58,   0x02,   0x00,   0x00 },
-            {   0x58,   0x01,   0x02,   0x00 },
-            {   0x58,   0x01,   0x00,   0x04 }
+            { "59 01 00 00", ClientErrors::InvalidData, "Invalid Response Command Code (0x59) - expected (0x58)"   },
+            { "58 00 00 00", ClientErrors::InvalidData, "Invalid Response Operation Code (0x00) - expected (0x01)" },
+            { "58 02 00 00", ClientErrors::InvalidData, "Invalid Response Operation Code (0x02) - expected (0x01)" },
+            { "58 01 02 00", ClientErrors::InvalidData, "Invalid Response Status Code (2)"                         },
+            { "58 01 00 04", ClientErrors::InvalidData, "Invalid Response Value (4)"                               }
         };
 
-        const std::vector<std::pair<YukonError_t, std::string>> results
+        for ( const auto & response : responses )
         {
-            { ClientErrors::InvalidData, "Invalid Response Command Code (0x59) - expected (0x58)"   },
-            { ClientErrors::InvalidData, "Invalid Response Operation Code (0x00) - expected (0x01)" },
-            { ClientErrors::InvalidData, "Invalid Response Operation Code (0x02) - expected (0x01)" },
-            { ClientErrors::InvalidData, "Invalid Response Status Code (2)"                         },
-            { ClientErrors::InvalidData, "Invalid Response Value (4)"                               }
-        };
-
-        BOOST_REQUIRE_EQUAL( responses.size(), results.size() );
-
-        for ( int i = 0; i < responses.size(); ++i )
-        {
-            BOOST_CHECK_THROW( command.decodeCommand( execute_time, responses[i] ), RfnCommand::CommandException );
+            BOOST_CHECK_THROW( command.decodeCommand( execute_time, response.payload.bytes ), RfnCommand::CommandException );
 
             try
             {
-                RfnCommandResult rcv = command.decodeCommand( execute_time, responses[i] );
+                RfnCommandResult rcv = command.decodeCommand( execute_time, response.payload.bytes );
             }
             catch ( const RfnCommand::CommandException & ex )
             {
-                BOOST_CHECK_EQUAL( ex.error_code, results[i].first );
-                BOOST_CHECK_EQUAL( ex.what(),     results[i].second );
+                BOOST_CHECK_EQUAL( ex.error_code, response.status );
+                BOOST_CHECK_EQUAL( ex.what(),     response.description );
             }
         }
     }
