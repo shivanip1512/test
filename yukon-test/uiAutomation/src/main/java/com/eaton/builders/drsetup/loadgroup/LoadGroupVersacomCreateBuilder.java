@@ -107,7 +107,6 @@ public class LoadGroupVersacomCreateBuilder {
                 relays.add(relayUsage.get());
                 this.relayUsage = relays;
             }
-
             return this;
         }
 
@@ -138,8 +137,6 @@ public class LoadGroupVersacomCreateBuilder {
                 versacomAddressUsage.add(addressUsage.get());
                 this.addressUsage = versacomAddressUsage;
             }
-
-            this.addressUsage = versacomAddressUsage;
             return this;
         }
 
