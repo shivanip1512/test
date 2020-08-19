@@ -2,7 +2,6 @@ package com.eaton.builders.drsetup.loadgroup;
 
 import java.util.Random;
 
-
 public class LoadGroupEnums {
 
 	public enum RelayUsageMCT {
@@ -27,4 +26,27 @@ public class LoadGroupEnums {
 			return values()[random.nextInt(values().length)];
 		}
 	}
+
+	public enum AddressLevelMCT {
+		BRONZE("BRONZE"), 
+		LEAD("LEAD"), 
+		MCT_ADDRESS("MCT_ADDRESS");
+
+		private final String addressLevelMCT;
+
+		AddressLevelMCT(String addressLevelMCT) {
+			this.addressLevelMCT = addressLevelMCT;
+		}
+
+		public String getAddressLevelMCT() {
+			return this.addressLevelMCT;
+		}
+
+		public static AddressLevelMCT getRandomAddressLevelMCT() {
+			Random random = new Random();
+			return values()[random.nextInt(values().length)];
+		}
+
+	}
+
 }

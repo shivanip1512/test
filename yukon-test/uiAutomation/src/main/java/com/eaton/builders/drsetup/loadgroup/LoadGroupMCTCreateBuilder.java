@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.javatuples.Pair;
 import org.json.JSONObject;
+import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.AddressLevelMCT;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.RelayUsageMCT;
 import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
 import com.eaton.rest.api.drsetup.DrSetupGetRequest;
@@ -14,19 +15,17 @@ import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupMCTCreateBuilder {
 
-
 	public static class Builder {
 		private Faker faker = new Faker();
-
 		private static final String TYPE = "LM_GROUP_MCT";
 		private String name;
 		private double kwCapacity;
 		private boolean disableGroup;
 		private boolean disableControl;
 		private int routeId;
-		private String level;
 		private int address;
 		private int mctDeviceId;
+		private AddressLevelMCT addressLevelMCT;
 		private List<RelayUsageMCT> relayUsage;
 
 		public Builder(Optional<String> name) {
@@ -61,8 +60,8 @@ public class LoadGroupMCTCreateBuilder {
 			return this;
 		}
 
-		public Builder withlevel(Optional<String> level) {
-			this.level = level.orElse("BRONZE");
+		public Builder withlevel(AddressLevelMCT addressLevelMCT) {
+			this.addressLevelMCT = addressLevelMCT;
 			return this;
 		}
 
@@ -83,7 +82,7 @@ public class LoadGroupMCTCreateBuilder {
 			jo.put("name", this.name);
 			jo.put("type", TYPE);
 			jo.put("routeId", this.routeId);
-			jo.put("level", this.level);
+			jo.put("level", this.addressLevelMCT);
 			jo.put("address", this.address);
 			jo.put("kWCapacity", this.kwCapacity);
 			jo.put("disableGroup", this.disableGroup);
@@ -111,5 +110,4 @@ public class LoadGroupMCTCreateBuilder {
 			return new Pair<>(request, jsonResponse);
 		}
 	}
-
 }
