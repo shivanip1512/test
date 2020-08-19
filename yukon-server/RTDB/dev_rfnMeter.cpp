@@ -302,7 +302,7 @@ RfnMeterDevice::ConfigMap RfnMeterDevice::getConfigMethods(InstallType installTy
 {
     ConfigMap m;
 
-    const bool metlibSupported = Commands::RfnMetrologyCommand::isSupportedByDeviceType( getDeviceType() );
+    const bool metlibSupported = hasMetrologyLibrarySupport();
 
     if( installType == InstallType::GetConfig )
     {
@@ -976,12 +976,20 @@ void RfnMeterDevice::storeIntervalRecordingActiveConfiguration( const Commands::
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds, cmd.getIntervalReportingSeconds() );
 }
 
+bool RfnMeterDevice::hasMetrologyLibrarySupport() const
+{
+    using Commands::RfnMetrologyCommand;
+
+    return hasRfnFirmwareSupportIn( 9.4 )
+            && RfnMetrologyCommand::isSupportedByDeviceType( getDeviceType() );
+}
+
 YukonError_t RfnMeterDevice::executePutConfigMetrology(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     using Commands::RfnMetrologyCommand;
     using Commands::RfnMetrologySetConfigurationCommand;
 
-    if ( ! RfnMetrologyCommand::isSupportedByDeviceType( getDeviceType() ) )
+    if ( ! hasMetrologyLibrarySupport() )
     {
         return ClientErrors::NoMethod;
     }
@@ -1051,10 +1059,9 @@ YukonError_t RfnMeterDevice::executePutConfigMetrology(CtiRequestMsg *pReq, CtiC
 
 YukonError_t RfnMeterDevice::executeGetConfigMetrology(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
-    using Commands::RfnMetrologyCommand;
     using Commands::RfnMetrologyGetConfigurationCommand;
 
-    if ( ! RfnMetrologyCommand::isSupportedByDeviceType( getDeviceType() ) )
+    if ( ! hasMetrologyLibrarySupport() )
     {
         return ClientErrors::NoMethod;
     }

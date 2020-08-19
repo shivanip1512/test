@@ -22,10 +22,10 @@
         <category type="rfnDemand" optional="true"/>
         <category type="demandFreeze"/>
         <category type="rfnChannelConfiguration"/>
+        <category type="rfnMetrologyConfiguration" optional="true"/>
         <category type="rfnTempAlarm"/>
         <category type="rfnVoltage"/>
         <category type="tou"/>
-        <category type="rfnMetrologyConfiguration" optional="true"/>
     </configuration>
     <pointInfos>
         <pointInfo name="Avg Voltage" attributes="AVERAGE_VOLTAGE,AVERAGE_VOLTAGE_PHASE_A"/>

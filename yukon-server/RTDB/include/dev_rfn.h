@@ -42,6 +42,8 @@ protected:
         };
     }
 
+    bool hasRfnFirmwareSupportIn( double minimumVersion ) const;
+
     virtual bool areAggregateCommandsSupported() const;
 
     std::unique_ptr<CtiReturnMsg> makeReturnMsg(const CtiRequestMsg& req, const std::string result, YukonError_t nRet);

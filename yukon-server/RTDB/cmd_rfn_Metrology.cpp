@@ -54,8 +54,7 @@ static const std::set<DeviceTypes>  supportedDeviceTypes
 
 bool RfnMetrologyCommand::isSupportedByDeviceType( DeviceTypes type )
 {
-    return gConfigParms.getValueAsDouble("RFN_FIRMWARE") >= 9.4
-        && supportedDeviceTypes.count( type );
+    return supportedDeviceTypes.count( type );
 }
 
 RfnMetrologyCommand::RfnMetrologyCommand( Operation op )

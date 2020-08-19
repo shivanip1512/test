@@ -85,6 +85,8 @@ protected:
 
     void handleCommandResult( const Commands::RfnMetrologyGetConfigurationCommand & cmd ) override;
 
+    bool hasMetrologyLibrarySupport() const;
+
 private:
     typedef Commands::RfnChannelConfigurationCommand::MetricIds MetricIds;
     typedef std::vector<unsigned long> PaoMetricIds;
