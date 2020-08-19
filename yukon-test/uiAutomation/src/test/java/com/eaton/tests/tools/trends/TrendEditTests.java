@@ -64,7 +64,7 @@ public class TrendEditTests extends SeleniumTestSetup {
         String editTrendName = "EditTrendTest " + timeStamp;
         Integer editTrendId;
 
-        Pair<JSONObject, ExtractableResponse<?>> pair = builder.withName(Optional.of(editTrendName)).create();
+        Pair<JSONObject, ExtractableResponse<?>> pair = builder.withName(editTrendName).create();
         ExtractableResponse<?> response = pair.getValue1();
         editTrendId = response.path("trendId");
 
@@ -94,7 +94,7 @@ public class TrendEditTests extends SeleniumTestSetup {
         timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String existingTrendName = "AT Trend " + timeStamp;
 
-        builder.withName(Optional.of(existingTrendName)).create();
+        builder.withName(existingTrendName).create();
 
         navigate(Urls.Tools.TREND_EDIT + trendId + Urls.EDIT);
         editPage.getName().setInputValue(existingTrendName);
@@ -128,17 +128,15 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_AddPoint_Success() {
-
         navigate(Urls.Tools.TREND_EDIT + trendId + Urls.EDIT);
 
         TrendAddPointModal modal = editPage.showAndWaitAddPointModal();
         SelectPointModal pointModal = modal.showAndWaitSelectPointModal();
-        pointModal.selectPoint("Analog Point for Create Trend", Optional.empty());
-        pointModal.clickOK();
+        pointModal.selectPoint("Analog Point for Create Trend", Optional.of("5231"));
+        pointModal.clickOkAndWait();
         modal.clickOkAndWait();
         editPage.getSave().click();
         assertThat(editPage.getUserMessage()).isEqualTo(trendName + " saved successfully.");
-
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
@@ -159,7 +157,7 @@ public class TrendEditTests extends SeleniumTestSetup {
     public void editTrend_EditPoint_Success() {
 
         String editTrendName = "TrendEditPointTest " + timeStamp;
-        Pair<JSONObject, ExtractableResponse<?>> pair = builder.withName(Optional.of(editTrendName)).create();
+        Pair<JSONObject, ExtractableResponse<?>> pair = builder.withName(editTrendName).create();
         ExtractableResponse<?> response = pair.getValue1();
         int editTrendId = response.path("trendId");
         navigate(Urls.Tools.TREND_EDIT + editTrendId + Urls.EDIT);
@@ -181,7 +179,7 @@ public class TrendEditTests extends SeleniumTestSetup {
 
         String editTrendName = "TrendEditMarkerTest " + timeStamp;
 
-        Pair<JSONObject, ExtractableResponse<?>> pair = builder.withName(Optional.of(editTrendName)).create();
+        Pair<JSONObject, ExtractableResponse<?>> pair = builder.withName(editTrendName).create();
         ExtractableResponse<?> response = pair.getValue1();
         int editTrendId = response.path("trendId");
         String markerLabel = response.path("trendSeries[0].label");
