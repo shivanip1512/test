@@ -2,6 +2,8 @@ package com.eaton.elements.modals;
 
 import java.util.Optional;
 
+import org.openqa.selenium.By;
+
 import com.eaton.elements.RadioButtonElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
@@ -34,4 +36,8 @@ public class TrendAddMarkerModal extends BaseModal {
     public RadioButtonElement getAxis() {
         return new RadioButtonElement(this.driverExt, "axis", getModal());
     }     
+    
+    public String getColor() {
+    	return getModal().findElement(By.cssSelector("table tr .value .sp-preview-inner")).getAttribute("style");
+    }
 }
