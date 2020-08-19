@@ -42,7 +42,7 @@ public class ThirdPartyJavaLibraryTest {
             "catalina-ssi.jar",
             "catalina-storeconfig.jar",
             "catalina-tribes.jar",
-            "ecj-4.13.jar",
+            "ecj-4.15.jar",
             "el-api.jar",
             "jasper-el.jar",
             "jasper.jar",
