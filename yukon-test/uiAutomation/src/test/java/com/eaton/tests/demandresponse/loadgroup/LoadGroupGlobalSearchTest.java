@@ -50,7 +50,7 @@ public class LoadGroupGlobalSearchTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void loadGroupDrGlobalSearch_SearchLoadGrou_ResultsContainLoadGroups() {
+    public void loadGroupDrGlobalSearch_SearchLoad_ResultsContainLoadGroups() {
         SearchBoxElement searchBox = globalSearchPage.getSearchBoxElement();
         
         searchBox.setSearchValue("Load");
