@@ -44,10 +44,11 @@
                 </c:forEach>
             </tbody>
         </table>
+        <c:if test="${empty virtualDevices.items}">
+            <span class="empty-list compact-results-table"><i:inline key="yukon.common.search.noResultsFound"/></span>
+        </c:if>
         <tags:paginatedResponseControls response="${virtualDevices}" adjustPageCount="true" thousands="true"/>
     </div>
-    <c:if test="${empty virtualDevices}">
-        <span class="empty-list compact-results-table"><i:inline key="yukon.common.search.noResultsFound"/></span>
-    </c:if>
+
     <cti:includeScript link="/resources/js/pages/yukon.assets.virtualDevice.js"/>
 </cti:standardPage>
