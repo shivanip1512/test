@@ -32,11 +32,10 @@ import com.eaton.builders.tools.webtrends.TrendCreateBuilder;
 
 public class TrendCreateTests extends SeleniumTestSetup {
 
-private Faker faker = new Faker();
+	private Faker faker = new Faker();
 	
 	private TrendCreatePage createPage;
 	private DriverExtensions driverExt;
-	private SoftAssertions softly;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
@@ -76,14 +75,14 @@ private Faker faker = new Faker();
     	createPage.getTabElement().clickTabAndWait("Additional Options");
     	TrendAddMarkerModal addMarkerModal = createPage.showAndWaitAddMarkerModal();
     	addMarkerModal.getLabel().setInputValue(label);
-    	addMarkerModal.clickOkAndWait();
+    	addMarkerModal.clickOkAndWaitForModalToClose();
 
     	//Adding Point Setup
     	createPage.getTabElement().clickTabAndWait("Setup");
     	TrendAddPointModal addPointModal = createPage.showAndWaitAddPointModal();
         SelectPointModal selectPointModal = addPointModal.showAndWaitAddPointModal();
     	selectPointModal.selectPoint(point, Optional.of("5231"));
-    	selectPointModal.clickOkAndWait();
+    	selectPointModal.clickOkAndWaitForModalToClose();
     	addPointModal.clickOkAndWaitForModalToClose();
     	
     	createPage.getSave().click();
@@ -115,7 +114,9 @@ private Faker faker = new Faker();
     }
   
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendCreate_TabsDisplayed_Correct() {
+    public void trendCreate_TabTitles_Correct() {
+    	SoftAssertions softly = new SoftAssertions();
+    	
     	List<String> titles = createPage.getTabElement().getTitles();
 
         softly.assertThat(titles.size()).isEqualTo(2);
