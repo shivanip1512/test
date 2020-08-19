@@ -24,7 +24,7 @@ public class EmetconLoadGroupApiDoc extends LoadGroupApiDocBase {
             fieldWithPath("LM_GROUP_EMETCON.addressUsage").type(JsonFieldType.STRING)
                     .description("Address Usage. Must have GOLD (for gold address), SILVER (For silver address)"),
             fieldWithPath("LM_GROUP_EMETCON.relayUsage").type(JsonFieldType.STRING)
-                    .description("Relay Usgae. Must have RELAY_1, RELAY_2, RELAY_3 or RELAY_4 (for All)"),
+                    .description("Relay Usgae. Must have RELAY_A, RELAY_B, RELAY_C or RELAY_ALL"),
             fieldWithPath("LM_GROUP_EMETCON.goldAddress").type(JsonFieldType.NUMBER).description("Gold address value."),
             fieldWithPath("LM_GROUP_EMETCON.silverAddress").type(JsonFieldType.NUMBER).description("Silver address value.")
     };
