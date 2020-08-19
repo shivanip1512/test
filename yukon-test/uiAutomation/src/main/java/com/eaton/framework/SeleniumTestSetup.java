@@ -226,19 +226,6 @@ public class SeleniumTestSetup {
         }
     }
 
-    public static void waitUntilSuccessMessageDisplayed() {
-        String classAttribute = "dn";
-
-        long startTime = System.currentTimeMillis();
-        while (classAttribute.contains("dn") || System.currentTimeMillis() - startTime < 3000) {
-            try {
-                classAttribute = driverExt.findElement(By.cssSelector(".yukon-content .user-message"), Optional.empty())
-                        .getAttribute("class");
-            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
-            }
-        }
-    }
-
     public static void waitUntilModalVisibleByDescribedBy(String describedBy) {
         boolean displayed = false;
 
