@@ -129,7 +129,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getUsage().setTrueFalseByName("Splinter", true);
         createPage.getUsage().setTrueFalseByName("Load", true);
         ConfirmModal confirmModal = new ConfirmModal(driverExt, Optional.empty(), Optional.of("addressing-popup"));
-        confirmModal.clickOkAndWait();        
+        confirmModal.clickOkAndWaitForSpinner();        
 
         createPage.getLoads().setTrueFalseByName("Load 8", true);
         createPage.getProgram().setInputValue(String.valueOf(randomNum.nextInt(254)));
@@ -586,7 +586,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getUsage().setTrueFalseByName("Load", true);
         createPage.getUsage().setTrueFalseByName("Program", true);
         ConfirmModal confirmModal = new ConfirmModal(driverExt, Optional.empty(), Optional.of("addressing-popup"));
-        confirmModal.clickOkAndWait();
+        confirmModal.clickOkAndWaitForSpinner();
         
         assertThat(createPage.getUsage().isValueSelected("Load")).isFalse();
         assertThat(createPage.getSendLoadsInControlMessageText()).isEqualTo("No");
@@ -616,7 +616,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         ConfirmModal confirmModal = new ConfirmModal(driverExt, Optional.empty(), Optional.of("addressing-popup"));
         confirmModal.clickCancelAndWait();
         createPage.getUsage().setTrueFalseByName("Splinter", true);
-        confirmModal.clickOkAndWait();
+        confirmModal.clickOkAndWaitForSpinner();
         
         assertThat(createPage.getUsage().isValueSelected("Load")).isFalse();
         assertThat(createPage.getSendLoadsInControlMessageText()).isEqualTo("No");

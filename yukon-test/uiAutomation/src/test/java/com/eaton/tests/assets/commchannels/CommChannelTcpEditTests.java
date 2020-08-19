@@ -84,7 +84,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         editModal.getName().setInputValue("/,tcp|");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
         
         String errorMsg = editModal.getName().getValidationError(); 
 
@@ -107,7 +107,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         editModal.getName().setInputValue(commChannelNameTcp);
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
         
         String errorMsg = editModal.getName().getValidationError();
 

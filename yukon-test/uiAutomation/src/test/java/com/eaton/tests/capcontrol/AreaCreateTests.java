@@ -18,12 +18,14 @@ import com.eaton.pages.capcontrol.AreaCreatePage;
 import com.eaton.pages.capcontrol.AreaDetailPage;
 
 public class AreaCreateTests extends SeleniumTestSetup {
-
+    
     private AreaCreatePage createPage;
     private DriverExtensions driverExt;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
+        driverExt = getDriverExt();
+        
         navigate(Urls.CapControl.AREA_CREATE);
 
         this.createPage = new AreaCreatePage(driverExt);

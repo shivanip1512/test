@@ -96,10 +96,19 @@ public class BaseModal {
     /**
      *  This method is to be used when you click ok on a modal and need to wait for a validation error
      */
-    public void clickOkAndWait() {
+    public void clickOkAndWaitForSpinner() {
         getModal().findElement(By.cssSelector(".ui-dialog-buttonset .primary")).click();
         
         SeleniumTestSetup.waitForLoadingSpinner();
+    }
+    
+    public void clickOkAndWaitForModalCloseDisplayNone() {
+        getModal().findElement(By.cssSelector(".ui-dialog-buttonset .primary")).click();
+        if (describedBy != null) {
+            SeleniumTestSetup.waitUntilModalInvisibleByDescribedBy(describedBy);
+        } else if (modalTitle != null) {
+            SeleniumTestSetup.waitUntilModalClosedByTitle(modalTitle);
+        }                
     }
 
     /// TODO need a unique way to select the cancel button

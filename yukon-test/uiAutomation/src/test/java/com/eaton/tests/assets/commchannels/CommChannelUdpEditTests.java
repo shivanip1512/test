@@ -79,7 +79,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
 
         editModal.getName().clearInputValue();
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
         
         String errorMsg = editModal.getName().getValidationError();
 
@@ -93,7 +93,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
 
         editModal.getName().setInputValue("/,udp|");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getName().getValidationError();
 
@@ -107,7 +107,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
 
         editModal.getPortNumber().setInputValue(portNumber);
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getPortNumber().getValidationError();
 
@@ -121,7 +121,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
 
         editModal.getPortNumber().setInputValue(portNumber);
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getPortNumber().getValidationError();
 
@@ -138,7 +138,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         editModal.getTabs().clickTabAndWait(tabName);
         
         editModal.getPreTxWait().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getPreTxWait().getValidationError();
 
@@ -154,7 +154,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPreTxWait().setInputValue("10000001");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getPreTxWait().getValidationError();
 
@@ -170,7 +170,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getRtsToTxWait().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getRtsToTxWait().getValidationError();
 
@@ -186,7 +186,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getRtsToTxWait().setInputValue("10000001");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getRtsToTxWait().getValidationError();
 
@@ -202,7 +202,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPostTxWait().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getPostTxWait().getValidationError();
 
@@ -218,7 +218,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPostTxWait().setInputValue("10000001");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getPostTxWait().getValidationError();
 
@@ -234,7 +234,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getReceiveDataWait().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getReceiveDataWait().getValidationError();
 
@@ -250,7 +250,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getReceiveDataWait().setInputValue("1001");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getReceiveDataWait().getValidationError();
 
@@ -266,7 +266,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getAdditionalTimeOut().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getAdditionalTimeOut().getValidationError();
 
@@ -282,7 +282,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getAdditionalTimeOut().setInputValue("1000");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getAdditionalTimeOut().getValidationError();
 
@@ -298,7 +298,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getSocketNumber().setInputValue("0");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getSocketNumber().getValidationError();
 
@@ -314,7 +314,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);        
         editModal.getSocketNumber().setInputValue("65536");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getSocketNumber().getValidationError();
 
@@ -330,7 +330,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getSocketNumber().clearInputValue();
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getSocketNumber().getValidationError();
 
@@ -448,7 +448,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
 
         editModal.getName().setInputValue(commChannelNameUdp);
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
         
         String errorMsg = editModal.getName().getValidationError();
 

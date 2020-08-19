@@ -72,7 +72,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal();
 
         editModal.getName().clearInputValue();
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
         
         String errorMsg = editModal.getName().getValidationError();
 
@@ -86,7 +86,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal();
 
         editModal.getName().setInputValue("/,LocalSerial|");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
         
         String errorMsg = editModal.getName().getValidationError();
 
@@ -99,7 +99,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
 
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal();
         editModal.getPhysicalPort().selectItemByValue("Other");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
         
         String errorMsg = editModal.getPhysicalPort().getValidationError();
         
@@ -115,7 +115,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPreTxWait().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getPreTxWait().getValidationError();
         
@@ -131,7 +131,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPreTxWait().setInputValue("10000001");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
         
         String errorMsg = editModal.getPreTxWait().getValidationError();
 
@@ -147,7 +147,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getRtsToTxWait().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
         
         String errorMsg = editModal.getRtsToTxWait().getValidationError();
         
@@ -163,7 +163,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getRtsToTxWait().setInputValue("10000001");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getRtsToTxWait().getValidationError(); 
         
@@ -178,7 +178,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait("Configuration");
         editModal.getPostTxWait().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
         
         String errorMsg = editModal.getPostTxWait().getValidationError();
 
@@ -194,7 +194,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPostTxWait().setInputValue("10000001");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getPostTxWait().getValidationError();
         
@@ -210,7 +210,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getReceiveDataWait().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
         
         String errorMsg = editModal.getReceiveDataWait().getValidationError();
 
@@ -226,7 +226,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getReceiveDataWait().setInputValue("1001");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getReceiveDataWait().getValidationError();
         
@@ -242,7 +242,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getAdditionalTimeOut().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getAdditionalTimeOut().getValidationError();
         
@@ -258,7 +258,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getAdditionalTimeOut().setInputValue("1000");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
         
         String errorMsg = editModal.getAdditionalTimeOut().getValidationError();
 
@@ -274,7 +274,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getSocketNumber().setInputValue("0");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getSocketNumber().getValidationError();
         
@@ -290,7 +290,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getSocketNumber().setInputValue("65536");
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
         
         String errorMsg = editModal.getSocketNumber().getValidationError();
 
@@ -307,7 +307,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         editModal.getTabs().clickTabAndWait(tabName);
         SeleniumTestSetup.moveToElement(editModal.getSocketNumber().getEditElement());
         editModal.getSocketNumber().clearInputValue();
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
         
         String errorMsg = editModal.getSocketNumber().getValidationError();
 
@@ -432,7 +432,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal();
 
         editModal.getName().setInputValue(commChannelNameLocalSerial);
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForSpinner();
         
         String errorMsg = editModal.getName().getValidationError();
 

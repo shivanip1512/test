@@ -74,7 +74,7 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
 
         createModal.getName().setInputValue(name);
 
-        createModal.clickOk();
+        createModal.clickOkAndWaitForSpinner();
 
         String errorMsg = createModal.getName().getValidationError();
 
@@ -89,7 +89,7 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
 
         createModal.getName().setInputValue(commChannelName);
 
-        createModal.clickOk();
+        createModal.clickOkAndWaitForSpinner();
 
         String errorMsg = createModal.getName().getValidationError();
 

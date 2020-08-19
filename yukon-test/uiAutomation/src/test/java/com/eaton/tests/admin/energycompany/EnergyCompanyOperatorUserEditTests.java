@@ -46,9 +46,9 @@ public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
 
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
         
-        modal.clickOk();
+        modal.clickOkAndWaitForModalToClose();
 
-        waitForUrlToLoad(Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_AFTER_DELETE_OR_EDIT, Optional.empty());
+        //waitForUrlToLoad(Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_AFTER_DELETE_OR_EDIT, Optional.empty());
 
         EnergyCompanyOperatorUserListPage listPage = new EnergyCompanyOperatorUserListPage(driverExt, 64);
 

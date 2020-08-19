@@ -258,7 +258,7 @@ public class SeleniumTestSetup {
 
     public static void waitUntilModalInvisibleByDescribedBy(String describedBy) {
         driverExt.waitUntilElementInvisibleByCssLocator("[aria-describedby='" + describedBy + "']");
-    }        
+    }          
     
     /**
      * @param modalTitle title of the modal
@@ -296,7 +296,7 @@ public class SeleniumTestSetup {
             
             Optional<WebElement> el = list.stream().filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle)).findFirst();
             
-            if(el.isPresent()) {
+            if(!el.isPresent()) {
                 return;
             } 
         }
