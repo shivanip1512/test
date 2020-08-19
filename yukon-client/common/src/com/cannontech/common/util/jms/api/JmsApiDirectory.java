@@ -10,6 +10,7 @@ import static com.cannontech.common.util.jms.api.JmsApiCategory.RFN_METER;
 import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_GATEWAY;
 import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_MISC;
 import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_NETWORK;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.SIMULATOR_MANAGEMENT;
 import static com.cannontech.common.util.jms.api.JmsApiCategory.SMART_NOTIFICATION;
 import static com.cannontech.common.util.jms.api.JmsApiCategory.WIDGET_REFRESH;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.NETWORK_MANAGER;
@@ -1237,7 +1238,6 @@ public final class JmsApiDirectory {
                 LOCATION,
                 PORTER_DYNAMIC_PAOINFO,
                 RFN_DEVICE_CREATION_ALERT,
-                SIMULATORS,
                 SYSTEM_DATA);
         
         addApis(jmsApis, RFN_LCR, 
@@ -1289,6 +1289,11 @@ public final class JmsApiDirectory {
                 RFN_NODE_WIFI_COMM_ARCHIVE,
                 DYNAMIC_RFN_DEVICE_DATA_COLLECTION);
         
+        addApis(jmsApis, SIMULATOR_MANAGEMENT,
+                FIELD_SIMULATOR_CONFIGURATION,
+                FIELD_SIMULATOR_STATUS,
+                SIMULATORS);
+
         addApis(jmsApis, SMART_NOTIFICATION,
                 SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT,
                 SMART_NOTIFICATION_DEVICE_DATA_MONITOR_EVENT,
