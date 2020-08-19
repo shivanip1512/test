@@ -22,8 +22,8 @@ public enum CollectionActionDetail implements DisplayableEnum {
     NOT_CONFIGURED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.NOT_CONFIGURED, YukonColorPalette.BLUE),
     CANCELED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.CANCELED, YukonColorPalette.SKY),
     CONFIRMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.GREEN),
-    UNCONFIRMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.LIGHT_GRAY),
-    ALREADY_CONFIGURED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.ALREADY_CONFIGURED, YukonColorPalette.LIGHT_GRAY);
+    UNCONFIRMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.GRAY_LIGHT),
+    ALREADY_CONFIGURED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.ALREADY_CONFIGURED, YukonColorPalette.GRAY_LIGHT);
 
     private CollectionActionDetailSummary summary;
     private CommandRequestUnsupportedType unsupportedType;

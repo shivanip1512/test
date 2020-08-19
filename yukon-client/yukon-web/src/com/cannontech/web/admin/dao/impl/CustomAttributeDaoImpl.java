@@ -118,7 +118,7 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
             jdbcTemplate.update(createSql);
             return attribute;
         } catch (DataIntegrityViolationException e) {
-            throw new DuplicateException("Unable to create Custom Attribute.", e);
+            throw new DuplicateException("Unable to create Custom Attribute. An attribute with this name may already exist.", e);
         }
     }
     
@@ -132,7 +132,7 @@ public class CustomAttributeDaoImpl implements CustomAttributeDao {
             jdbcTemplate.update(updateSql);
             return attribute;
         } catch (DataIntegrityViolationException e) {
-            throw new DuplicateException("Unable to update Custom Attribute.", e);
+            throw new DuplicateException("Unable to update Custom Attribute. An attribute with this name may already exist.", e);
         }
     }
 
