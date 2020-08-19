@@ -5,7 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
-<cti:standardPage module="dev" page="rfnTest">
+<cti:standardPage module="dev" page="rfnTest.viewEventArchive">
 
     <script type="text/javascript">
         $(document).ready(function() {
@@ -73,7 +73,7 @@
                 </tags:nameValueContainer2>
             </tags:sectionContainer>
 
-            <tags:sectionContainer title="Included only for REMOTE_METER_CONFIGURATION_FAILED">
+            <tags:sectionContainer title="Included only for REMOTE_METER_CONFIGURATION_FAILURE/FINISHED">
                 <tags:nameValueContainer2>
                     <tags:inputNameValue nameKey=".dataType.METER_CONFIGURATION_ID" path="meterConfigurationId" />
                     <tags:nameValue2 nameKey=".dataType.METER_STATUS_CODE">

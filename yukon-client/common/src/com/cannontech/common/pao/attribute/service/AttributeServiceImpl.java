@@ -117,13 +117,13 @@ public class AttributeServiceImpl implements AttributeService {
     }
     
     @Override
-    public boolean isValidAttributeId(int attributeId) {
-        return customAttributes.getIfPresent(attributeId) != null;
+    public boolean isValidAttributeId(Integer attributeId) {
+        return attributeId == null ? false : customAttributes.getIfPresent(attributeId) != null;
     }
     
     @Override
-    public boolean isValidAssignmentId(int assignmentId) {
-        return customAttributeAssignments.getIfPresent(assignmentId) != null;
+    public boolean isValidAssignmentId(Integer assignmentId) {
+        return assignmentId == null ? false : customAttributeAssignments.getIfPresent(assignmentId) != null;
     }
     
     private void createDatabaseChangeListeners() {

@@ -169,8 +169,8 @@ public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreateEmetcon_AddressingSectionTitleCorrect() {
-
         createPage.getType().selectItemByText("Emetcon Group");
+        waitForLoadingSpinner();
         createPage.getkWCapacity().setInputValue("2");
         Section general = createPage.getPageSection("Addressing");
         assertThat(general.getSection()).isNotNull();
@@ -182,6 +182,7 @@ public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
         String expectedLabel = "Communication Route:";
 
         createPage.getType().selectItemByText("Emetcon Group");
+        waitForLoadingSpinner();
         createPage.getkWCapacity().setInputValue("22");
         List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
@@ -194,6 +195,7 @@ public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
         List<String> expectedLabels = new ArrayList<>(List.of("Gold Address:", "Silver Address:", "Address To Use:", "Relay To Use:"));
 
         createPage.getType().selectItemByText("Emetcon Group");
+        waitForLoadingSpinner();
         createPage.getkWCapacity().setInputValue("2");
         List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
         

@@ -124,7 +124,7 @@ public class LiteYukonPoint implements YukonPao, YukonPoint {
         return allAttributes;
     }
     
-    public boolean displayPopup() {
+    public boolean isDisplayPopup() {
         return allAttributes.size() > 1;
     }
     

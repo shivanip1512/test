@@ -3,6 +3,7 @@ package com.cannontech.web.admin.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.exception.DataDependencyException;
+import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.Assignment;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
@@ -17,6 +18,7 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
     
     @Autowired private CustomAttributeDao customAttributeDao;
     @Autowired private AttributeService attributeService;
+    @Autowired private AttributeDao attributeDao;
     @Autowired private DbChangeManager dbChangeManager;
 
     @Override
@@ -40,12 +42,15 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
 
     @Override
     public AttributeAssignment updateAttributeAssignment(Assignment assignment) {
-        Integer attributeId = assignment.getAttributeId();
-        if (attributeId != null && !attributeService.isValidAttributeId(attributeId)) {
+        if (assignment.isEmpty()) {
+            return attributeDao.getAssignmentById(assignment.getAttributeAssignmentId());
+        }
+        if (!attributeService.isValidAttributeId(assignment.getAttributeId())) {
             throw new NotFoundException("Attribute id:" + assignment.getAttributeId() + " is not in the database.");
         }
         if (!attributeService.isValidAssignmentId(assignment.getAttributeAssignmentId())) {
-            throw new NotFoundException("Attribute Assignment id:" + assignment.getAttributeAssignmentId() + " is not in the database.");
+            throw new NotFoundException(
+                    "Attribute Assignment id:" + assignment.getAttributeAssignmentId() + " is not in the database.");
         }
         AttributeAssignment updatedAssignment = customAttributeDao.updateAttributeAssignment(assignment);
         dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.ATTRIBUTE_ASSIGNMENT,
@@ -55,6 +60,9 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
 
     @Override
     public CustomAttribute updateCustomAttribute(CustomAttribute attribute) {
+        if (attribute.isEmpty()) {
+            return attributeDao.getCustomAttribute(attribute.getCustomAttributeId());
+        }
         if (!attributeService.isValidAttributeId(attribute.getCustomAttributeId())) {
             throw new NotFoundException("Attribute id:" + attribute.getCustomAttributeId() + " is not in the database.");
         }

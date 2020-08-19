@@ -4,7 +4,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage module="dev" page="rfnTest">
+<cti:standardPage module="dev" page="rfnTest.pointMappingIcd">
 
     <tags:sectionContainer title="Point Mapping ICD">
         <div class="page-action-area">
