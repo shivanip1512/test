@@ -9,10 +9,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.loggers.EcobeeEventLogService;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
 import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
@@ -44,6 +48,7 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
     @Autowired private EcobeeReconciliationReportDao reconciliationReportDao;
     @Autowired private EcobeeCommunicationService communicationService;
     @Autowired private EcobeeGroupDeviceMappingDao ecobeeGroupDeviceMappingDao;
+    @Autowired private EcobeeEventLogService ecobeeEventLogService;
     
     //Fix issues in this order to avoid e.g. deleting an extraneous set containing a mislocated set.
     //(This should not be rearranged without some thought)
@@ -79,7 +84,7 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
     }
     
     @Override
-    public EcobeeReconciliationResult fixDiscrepancy(int reportId, int errorId) throws IllegalArgumentException {
+    public EcobeeReconciliationResult fixDiscrepancy(int reportId, int errorId, LiteYukonUser liteYukonUser) throws IllegalArgumentException {
         log.debug("Fixing ecobee discrepancy. ReportId: " + reportId + " ErrorId: " + errorId);
         
         //get discrepancy
@@ -96,17 +101,45 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
         
         //fix discrepancy
         EcobeeReconciliationResult result = fixDiscrepancy(error);
+        if (error.getErrorType() != EcobeeDiscrepancyType.EXTRANEOUS_DEVICE) {
+            String managementSet = retrivemangementSet(error);
+            int intValue = BooleanUtils.toInteger(result.isSuccess());
+            ecobeeEventLogService.reconciliationCompleted(intValue, managementSet,
+                    result.getOriginalDiscrepancy().getErrorType().toString(), liteYukonUser);
+        }
         
         //remove discrepancy from report
         if (result.isSuccess()) {
             reconciliationReportDao.removeError(reportId, errorId);
         }
         
+        
         return result;
     }
     
+    private String retrivemangementSet(EcobeeDiscrepancy error) {
+        String managementSet = StringUtils.EMPTY;
+        switch (error.getErrorType()) {
+        case EXTRANEOUS_MANAGEMENT_SET:
+        case MISLOCATED_MANAGEMENT_SET:
+            managementSet = error.getCurrentPath();
+            break;
+        case MISSING_MANAGEMENT_SET:
+            managementSet = error.getCorrectPath();
+            break;
+        case MISLOCATED_DEVICE:
+        case MISSING_DEVICE:
+            managementSet = error.getSerialNumber();
+            break;
+        default:
+            break;
+        }
+        return managementSet;
+    }
+
     @Override
-    public List<EcobeeReconciliationResult> fixAllDiscrepancies(int reportId) throws IllegalArgumentException {
+    public List<EcobeeReconciliationResult> fixAllDiscrepancies(int reportId, LiteYukonUser liteYukonUser)
+            throws IllegalArgumentException {
         log.debug("Fixing all ecobee discrepancies. ReportId: " + reportId);
         
         //get discrepancies
@@ -125,6 +158,12 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
                 EcobeeReconciliationResult result = fixDiscrepancy(error);
                 //Save the result
                 results.add(result);
+                if (error.getErrorType() != EcobeeDiscrepancyType.EXTRANEOUS_DEVICE) {
+                    String managementSet = retrivemangementSet(error);
+                    int intValue = BooleanUtils.toInteger(result.isSuccess());
+                    ecobeeEventLogService.reconciliationCompleted(intValue, managementSet,
+                            result.getOriginalDiscrepancy().getErrorType().toString(), liteYukonUser);
+                }
                 //Remove discrepancy from report
                 if (result.isSuccess()) {
                     reconciliationReportDao.removeError(reportId, error.getErrorId());

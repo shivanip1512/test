@@ -1178,8 +1178,8 @@ public class DevEventLogCreationService {
                 LocalDate startDate = LocalDate.now().minusDays(1);
                 String loadGroupIds = devEventLog.getIndicatorString() + "123, 456, 789";
 
-                ecobeeEventLogService.syncIssueFixed(yukonUser, EcobeeDiscrepancyType.EXTRANEOUS_DEVICE.toString(), devEventLog.getEventSource());
-                ecobeeEventLogService.allSyncIssuesFixed(yukonUser, devEventLog.getEventSource());
+                ecobeeEventLogService.reconciliationCompleted(1, "123453625", EcobeeDiscrepancyType.MISSING_DEVICE.toString(),
+                        yukonUser);
                 ecobeeEventLogService.dataDownloaded(yukonUser, startDate, endDate, loadGroupIds, devEventLog.getEventSource());
             }
         });
