@@ -1,7 +1,9 @@
 
 package com.cannontech.web.api.commChannel;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -60,7 +62,10 @@ public class CommChannelApiController {
     @DeleteMapping("/{portId}")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
     public ResponseEntity<Object> delete(@PathVariable int portId) {
-        return new ResponseEntity<>(portService.delete(portId), HttpStatus.OK);
+        int id = portService.delete(portId);
+        HashMap<String, Integer> portIdMap = new HashMap<>();
+        portIdMap.put("id", id);
+        return new ResponseEntity<>(portIdMap, HttpStatus.OK);
     }
 
     //Get all ports
