@@ -64,10 +64,6 @@
                 <c:set var="clazz" value="${clazz} ${mode == 'EDIT' ? 'middle' : 'right'}"/>
                 <tags:password path="admin.password" cssClass="js-gateway-edit-password M0" 
                       placeholder="${phPassword}" tabindex="5" showPassword="true" includeShowHideButton="true"/>
-                <c:if test="${mode == 'EDIT' && !isVirtualGateway}">
-                    <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn admin" 
-                         disabled="true" nameKey="testConnection" tabindex="6"/>
-                </c:if>
             </spring:bind>
         </tags:nameValue2>
         
@@ -84,10 +80,6 @@
                     <tags:password  path="superAdmin.password" cssClass="js-gateway-edit-password M0"
                         placeholder="${phPassword}" tabindex="8" showPassword="true" includeShowHideButton="true"/>
                 </div>
-                <c:if test="${mode == 'EDIT' && !isVirtualGateway}">
-                    <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn superAdmin" 
-                         disabled="true" nameKey="testConnection" tabindex="9"/>
-                </c:if>
             </spring:bind>
         </tags:nameValue2>
         
