@@ -26,7 +26,7 @@ public class SwitchBtnYesNoElement {
     }
     
     public void selectValue(String value) {
-        List<WebElement> list = this.driverExt.findElements(By.cssSelector(".switch-btn .b-label"), Optional.of(0));
+        List<WebElement> list = getSwitchBtn().findElements(By.cssSelector(".switch-btn .b-label"));
         
         WebElement el = list.stream().filter(x -> x.getText().contains(value)).findFirst().orElseThrow();
         

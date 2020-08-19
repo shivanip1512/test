@@ -121,7 +121,7 @@ public class TrendsListTests extends SeleniumTestSetup {
                         .withLabel(Optional.empty())
                         .withColor(Optional.empty())
                         .withStyle(Optional.empty())
-                        .withType(Optional.of(TrendTypes.Type.PEAK_TYPE))
+                        .withType(Optional.of(TrendTypes.PointType.PEAK_TYPE))
                         .withAxis(Optional.empty())
                         .withMultiplier(Optional.empty())
                         .withDate(Optional.empty()).build() })

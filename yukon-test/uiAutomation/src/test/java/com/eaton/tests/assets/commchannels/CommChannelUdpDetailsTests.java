@@ -4,18 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 import org.assertj.core.api.SoftAssertions;
-import org.javatuples.Pair;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.eaton.builders.assets.commchannel.CommChannelTypes;
-import com.eaton.builders.assets.commchannel.CommChannelUdpCreateBuilder;
 import com.eaton.elements.Section;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
@@ -33,6 +29,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
 
     private CommChannelUdpDetailPage detailPage;
     private DriverExtensions driverExt;
+    private SoftAssertions softly;
     private Integer commChannelId;
     private String commChannelName;
     private JSONObject jo;
@@ -42,44 +39,30 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        softly = new SoftAssertions();        
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         commChannelName = "UDP Comm Channel " + timeStamp;
-        
-        Pair<JSONObject, JSONObject> pair = new CommChannelUdpCreateBuilder.Builder(Optional.empty())
-                .withEnable(Optional.empty())
-                .withBaudRate(Optional.empty())
-                .withPortNumber(Optional.empty())
-                .withCarrierDetectWaitMs(Optional.empty())
-                .withProtocolWrap(Optional.empty())
-                .withPreTxWait(Optional.empty())
-                .withRtsToTxWait(Optional.empty())
-                .withPostTxWait(Optional.empty())
-                .withReceiveDataWait(Optional.empty())
-                .withExtraTimeOut(Optional.empty())
-                .withSharedPortType(Optional.of(CommChannelTypes.SharedPortType.ACS))
-                .withSharedSocketNumber(Optional.empty())
-                .create();
 
         // Creating one UDP port comm channel using hard coded json file.
-//        String payloadFile = System.getProperty("user.dir")
-//                + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelUDP.json";
-//
-//        Object body = JsonFileHelper.parseJSONFile(payloadFile);
-//        randomNum = getRandomNum();
-//        jo = (JSONObject) body;
-//        jo.put("name", commChannelName);
-//        portNumber = randomNum.nextInt(65536);
-//        jo.put("portNumber", portNumber);
-//        ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
-//        commChannelId = createResponse.path("id");
+        String payloadFile = System.getProperty("user.dir")
+                + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelUDP.json";
+
+        Object body = JsonFileHelper.parseJSONFile(payloadFile);
+        randomNum = getRandomNum();
+        jo = (JSONObject) body;
+        jo.put("name", commChannelName);
+        portNumber = randomNum.nextInt(65536);
+        jo.put("portNumber", portNumber);
+        ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
+        commChannelId = createResponse.path("id");
         
         navigate(Urls.Assets.COMM_CHANNEL_DETAIL + commChannelId);
         detailPage = new CommChannelUdpDetailPage(driverExt, commChannelId);
     }
 
-    @BeforeMethod(alwaysRun = true)
-    public void beforeMethod() {
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
         refreshPage(detailPage);
     }
 
@@ -89,12 +72,11 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         
         String actualPageTitle = detailPage.getPageTitle();
         
-        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
+        assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelDetailsUdp_InfoTab_LabelsCorrect() {
-        SoftAssertions softly = new SoftAssertions(); 
         String infoTitle = "Info";
         detailPage.getTabElement().clickTabAndWait(infoTitle);
         List<String> labels = detailPage.getTabElement().getTabLabels(infoTitle);
@@ -109,8 +91,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDetailsUdp_InfoTab_ValuesCorrect() {  
-        SoftAssertions softly = new SoftAssertions(); 
+    public void commChannelDetailsUdp_InfoTab_ValuesCorrect() {        
         List<String> values = detailPage.getTabElement().getTabValues("Info");        
         
         softly.assertThat(values.size()).isEqualTo(5);
@@ -123,7 +104,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDetailsUdp_ConfigTab_TimingSectionDisplayed() {
+    public void commChannelDetailsUdp_ConfigTabTimingSection_Displayed() {
         String infoTitle = "Configuration";
         
         detailPage.getTabElement().clickTabAndWait(infoTitle);
@@ -133,7 +114,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDetailsUdp_ConfigTab_GeneralSectionDisplayed() {
+    public void commChannelDetailsUdp_ConfigTabGeneralSection_Displayed() {
         String infoTitle = "Configuration";
         
         detailPage.getTabElement().clickTabAndWait(infoTitle);
@@ -143,24 +124,24 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDetailsUdp_ConfigTab_SharedSectionDisplayed() {
+    public void commChannelDetailsUdp_ConfigTabSharedSection_Displayed() {
         String infoTitle = "Configuration";
         
         detailPage.getTabElement().clickTabAndWait(infoTitle);
-        Section shared = detailPage.getTimingSection();
+        Section timing = detailPage.getTimingSection();
         
-        assertThat(shared.getSection()).isNotNull();
+        assertThat(timing.getSection()).isNotNull();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelDetailsUdp_ConfigTab_LabelsCorrect() {
-        SoftAssertions softly = new SoftAssertions(); 
         String infoTitle = "Configuration";
 
         detailPage.getTabElement().clickTabAndWait(infoTitle);
         List<String> labels = detailPage.getTabElement().getTabLabels(infoTitle);
 
         softly.assertThat(labels.size()).isEqualTo(10);
+
         softly.assertThat(labels.get(0)).isEqualTo("Protocol Wrap:");
         softly.assertThat(labels.get(1)).isEqualTo("Carrier Detect Wait:");
         softly.assertThat(labels.get(2)).isEqualTo("Encryption key:");
@@ -176,7 +157,6 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelDetailsUdp_ConfigTab_ValuesCorrect() {
-        SoftAssertions softly = new SoftAssertions(); 
         detailPage.getTabElement().clickTabAndWait("Configuration");
 
         List<String> values = detailPage.getTabElement().getTabValues("Configuration");
@@ -192,11 +172,12 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         softly.assertThat(values.get(7)).isEqualTo("98  sec");
         softly.assertThat(values.get(8)).isEqualTo("ACS");
         softly.assertThat(values.get(9)).isEqualTo("100");
+
         softly.assertAll();
     }
         
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDeleteUdp_DeleteCommChannelSuccessfully() {
+    public void commChannelDeleteUdp_DeleteCommChannel_Successfully() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String deleteCommChannelName = "UDP Comm Channel " + timeStamp;
 

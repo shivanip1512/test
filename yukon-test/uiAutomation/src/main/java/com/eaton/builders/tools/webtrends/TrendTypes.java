@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class TrendTypes {
 
-    public enum Type {
+    public enum PointType {
         BASIC_TYPE("BASIC_TYPE"),
         USAGE_TYPE("USAGE_TYPE"),
         PEAK_TYPE("PEAK_TYPE"),
@@ -13,7 +13,7 @@ public class TrendTypes {
 
         private final String type;
 
-        Type(String type) {
+        PointType(String type) {
             this.type = type;
         }
 
@@ -21,13 +21,13 @@ public class TrendTypes {
             return this.type;
         }
 
-        public static Type getRandomType() {
+        public static PointType getRandomType() {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
     }
     
-    public enum Color {
+    public enum PointColor {
         BLACK("BLACK"),
         BLUE("BLUE"),
         TEAL("TEAL"),
@@ -41,7 +41,7 @@ public class TrendTypes {
 
         private final String color;
 
-        Color(String color) {
+        PointColor(String color) {
             this.color = color;
         }
 
@@ -49,19 +49,19 @@ public class TrendTypes {
             return this.color;
         }
 
-        public static Color getRandomColor() {
+        public static PointColor getRandomColor() {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
     }
 
-    enum Axis {
+    enum PointAxis {
         LEFT("LEFT"),
         RIGHT("RIGHT");
 
         private final String axis;
 
-        Axis(String axis) {
+        PointAxis(String axis) {
             this.axis = axis;
         }
 
@@ -69,20 +69,20 @@ public class TrendTypes {
             return this.axis;
         }
         
-        public static Axis getRandomAxis() {
+        public static PointAxis getRandomAxis() {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
     }
 
-    enum Style {
+    enum PointStyle {
         LINE("LINE"),
         STEP("STEP"),
         BAR("BAR");
 
         private final String style;
 
-        Style(String style) {
+        PointStyle(String style) {
             this.style = style;
         }
 
@@ -90,7 +90,7 @@ public class TrendTypes {
             return this.style;
         }
         
-        public static Style getRandomStyle() {
+        public static PointStyle getRandomStyle() {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }

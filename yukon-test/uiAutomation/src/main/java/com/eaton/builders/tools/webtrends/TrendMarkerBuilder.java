@@ -25,16 +25,16 @@ public class TrendMarkerBuilder {
             return this;
         }
 
-        public Builder withColor(Optional<TrendTypes.Color> color) {
-            TrendTypes.Color randomColor = color.orElse(TrendTypes.Color.getRandomColor());
+        public Builder withColor(Optional<TrendTypes.PointColor> color) {
+            TrendTypes.PointColor randomColor = color.orElse(TrendTypes.PointColor.getRandomColor());
 
             this.color = randomColor.getColor();
             
             return this;
         }
 
-        public Builder withAxis(Optional<TrendTypes.Axis> axis) {
-            TrendTypes.Axis randomAxis = axis.orElse(TrendTypes.Axis.getRandomAxis());
+        public Builder withAxis(Optional<TrendTypes.PointAxis> axis) {
+            TrendTypes.PointAxis randomAxis = axis.orElse(TrendTypes.PointAxis.getRandomAxis());
 
             this.axis = randomAxis.getAxis();
 

@@ -451,9 +451,9 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
 
         ExtractableResponse<?> response = AssetsGetRequestAPI.getCommChannel(id.toString());
 
-        softly.assertThat(userMsg).isEqualTo(commChannelName + " saved successfully.");
-        softly.assertThat(response.path("name").toString()).isEqualTo(commChannelName);
-        softly.assertThat(response.path("baudRate").toString()).isEqualTo("BAUD_" + baudRate);
+        softly.assertThat(userMsg).isEqualTo(updateName + " saved successfully.");
+        softly.assertThat(response.path("name").toString()).isEqualTo(updateName);
+        softly.assertThat(response.path("baudRate").toString()).isEqualTo(baudRate);
         softly.assertThat(response.path("timing.preTxWait").toString()).isEqualTo((configFieldsValues[0]));
         softly.assertThat(response.path("timing.rtsToTxWait").toString()).isEqualTo((configFieldsValues[1]));
         softly.assertThat(response.path("timing.postTxWait").toString()).isEqualTo((configFieldsValues[2]));

@@ -93,6 +93,9 @@ public class BaseModal {
         }
     }
     
+    /**
+     *  This method is to be used when you click ok on a modal and need to wait for a validation error
+     */
     public void clickOkAndWait() {
         getModal().findElement(By.cssSelector(".ui-dialog-buttonset .primary")).click();
         

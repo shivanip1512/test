@@ -253,7 +253,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
         String actualLabels = createPage.getPageSection(sectionName).getSectionLabels().get(0);
 
-        assertThat(actualLabels.contains(expectedLabels)).withFailMessage("Assertion failed for label : " + expectedLabels).isTrue();
+        assertThat(actualLabels).contains(expectedLabels);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -302,8 +302,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
         String actualLabels = createPage.getPageSection(sectionName).getSectionLabels().get(0);
 
-        assertThat(actualLabels.contains(expectedLabels)).withFailMessage("Assertion failed for label : " + expectedLabels)
-                .isTrue();
+        assertThat(actualLabels).contains(expectedLabels);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })

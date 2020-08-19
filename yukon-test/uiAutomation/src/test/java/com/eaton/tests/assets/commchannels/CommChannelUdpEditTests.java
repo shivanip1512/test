@@ -79,7 +79,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
 
         editModal.getName().clearInputValue();
-        editModal.clickOk();
+        editModal.clickOkAndWait();
         
         String errorMsg = editModal.getName().getValidationError();
 
@@ -93,7 +93,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
 
         editModal.getName().setInputValue("/,udp|");
-        editModal.clickOk();
+        editModal.clickOkAndWait();
 
         String errorMsg = editModal.getName().getValidationError();
 
@@ -107,7 +107,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
 
         editModal.getPortNumber().setInputValue(portNumber);
-        editModal.clickOk();
+        editModal.clickOkAndWait();
 
         String errorMsg = editModal.getPortNumber().getValidationError();
 
@@ -121,7 +121,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
 
         editModal.getPortNumber().setInputValue(portNumber);
-        editModal.clickOk();
+        editModal.clickOkAndWait();
 
         String errorMsg = editModal.getPortNumber().getValidationError();
 
@@ -138,7 +138,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         editModal.getTabs().clickTabAndWait(tabName);
         
         editModal.getPreTxWait().setInputValue("-1");
-        editModal.clickOk();
+        editModal.clickOkAndWait();
 
         String errorMsg = editModal.getPreTxWait().getValidationError();
 
@@ -154,7 +154,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPreTxWait().setInputValue("10000001");
-        editModal.clickOk();
+        editModal.clickOkAndWait();
 
         String errorMsg = editModal.getPreTxWait().getValidationError();
 
@@ -170,7 +170,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getRtsToTxWait().setInputValue("-1");
-        editModal.clickOk();
+        editModal.clickOkAndWait();
 
         String errorMsg = editModal.getRtsToTxWait().getValidationError();
 
@@ -186,7 +186,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getRtsToTxWait().setInputValue("10000001");
-        editModal.clickOk();
+        editModal.clickOkAndWait();
 
         String errorMsg = editModal.getRtsToTxWait().getValidationError();
 
@@ -202,7 +202,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPostTxWait().setInputValue("-1");
-        editModal.clickOk();
+        editModal.clickOkAndWait();
 
         String errorMsg = editModal.getPostTxWait().getValidationError();
 
@@ -218,7 +218,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPostTxWait().setInputValue("10000001");
-        editModal.clickOk();
+        editModal.clickOkAndWait();
 
         String errorMsg = editModal.getPostTxWait().getValidationError();
 
@@ -234,7 +234,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getReceiveDataWait().setInputValue("-1");
-        editModal.clickOk();
+        editModal.clickOkAndWait();
 
         String errorMsg = editModal.getReceiveDataWait().getValidationError();
 
@@ -250,7 +250,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getReceiveDataWait().setInputValue("1001");
-        editModal.clickOk();
+        editModal.clickOkAndWait();
 
         String errorMsg = editModal.getReceiveDataWait().getValidationError();
 
@@ -266,7 +266,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getAdditionalTimeOut().setInputValue("-1");
-        editModal.clickOk();
+        editModal.clickOkAndWait();
 
         String errorMsg = editModal.getAdditionalTimeOut().getValidationError();
 
@@ -282,7 +282,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getAdditionalTimeOut().setInputValue("1000");
-        editModal.clickOk();
+        editModal.clickOkAndWait();
 
         String errorMsg = editModal.getAdditionalTimeOut().getValidationError();
 
@@ -298,7 +298,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getSocketNumber().setInputValue("0");
-        editModal.clickOk();
+        editModal.clickOkAndWait();
 
         String errorMsg = editModal.getSocketNumber().getValidationError();
 
@@ -312,9 +312,9 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
 
-        editModal.getTabs().clickTabAndWait(tabName);
+        editModal.getTabs().clickTabAndWait(tabName);        
         editModal.getSocketNumber().setInputValue("65536");
-        editModal.clickOk();
+        editModal.clickOkAndWait();
 
         String errorMsg = editModal.getSocketNumber().getValidationError();
 
@@ -330,7 +330,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getSocketNumber().clearInputValue();
-        editModal.clickOk();
+        editModal.clickOkAndWait();
 
         String errorMsg = editModal.getSocketNumber().getValidationError();
 
@@ -448,7 +448,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
 
         editModal.getName().setInputValue(commChannelNameUdp);
-        editModal.clickOk();
+        editModal.clickOkAndWait();
         
         String errorMsg = editModal.getName().getValidationError();
 
@@ -522,7 +522,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 	
         editModal.getTabs().clickTabAndWait(tabName);
         
-        editModal.getProtocolWrap().selectByValue("IDLC");
+        editModal.getProtocolWrap().selectByValue("None");
         editModal.getCarrierDetectWait().selectValue("No");	
         editModal.getEncryptionKey().selectValue("No");	
         editModal.getPreTxWait().setInputValue(configFieldsValues[0]);
@@ -536,10 +536,9 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
 	
         ExtractableResponse<?> response = AssetsGetRequestAPI.getCommChannel(id.toString());	
         
-        softly.assertThat(userMsg).isEqualTo(commChannelName + " saved successfully."); 
-        softly.assertThat(response.path("name").toString()).isEqualTo(commChannelName); 
-        softly.assertThat(response.path("baudRate").toString()).isEqualTo("BAUD_"+baudRate);    
-        softly.assertThat(response.path("keyInHex").toString()).isEqualTo("");          
+        softly.assertThat(userMsg).isEqualTo(updateName + " saved successfully."); 
+        softly.assertThat(response.path("name").toString()).isEqualTo(updateName); 
+        softly.assertThat(response.path("baudRate").toString()).isEqualTo(baudRate);    
         softly.assertThat(response.path("carrierDetectWaitInMilliseconds").toString()).isEqualTo("0");  
         softly.assertThat(response.path("timing.preTxWait").toString()).isEqualTo((configFieldsValues[0]));     
         softly.assertThat(response.path("timing.rtsToTxWait").toString()).isEqualTo((configFieldsValues[1]));   
