@@ -113,7 +113,7 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
     }
 
     /**
-     * populate me with valid javadoc text
+     * Log events for Ecobee Reconsilation.
      */
     private void doEventLog(LiteYukonUser liteYukonUser, EcobeeDiscrepancy error, EcobeeReconciliationResult result) {
         if (error.getErrorType() != EcobeeDiscrepancyType.EXTRANEOUS_DEVICE) {
@@ -125,7 +125,7 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
     }
 
     /**
-     * populate me with valid javadoc text
+     * Helper method to retrieve Sync Object for the specified EcobeeDiscrepancyType.
      */
     private String getSyncObjectForError(EcobeeDiscrepancy error) {
         switch (error.getErrorType()) {
