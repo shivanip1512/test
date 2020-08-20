@@ -310,7 +310,7 @@ public class AttributesController {
                 BindException error = new BindException(assignment, "assignment");
                 helper.populateBindingError(result, error, response);
             }
-            if (response.getStatusCode() == HttpStatus.OK) {
+            if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 successDeviceTypes.add(assignment.getPaoType().getDbString());
             }
         } catch (ApiCommunicationException | RestClientException e) {
