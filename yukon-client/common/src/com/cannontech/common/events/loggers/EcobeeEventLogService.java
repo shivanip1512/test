@@ -11,7 +11,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface EcobeeEventLogService {
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "ecobee")
-    public void reconciliationCompleted(int status, String managementSet,
+    public void reconciliationCompleted(int status, String syncObject,
                                         @Arg(ArgEnum.syncIssueType) String type,
                                         @Arg(ArgEnum.username) LiteYukonUser yukonUser);
 

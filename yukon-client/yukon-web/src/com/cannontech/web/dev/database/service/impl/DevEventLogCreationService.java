@@ -1286,7 +1286,7 @@ public class DevEventLogCreationService {
         DEMAND_RESPONSE(DemandResponseEventLogService.class, 54),
         DEVICE_CONFIG(DeviceConfigEventLogService.class, 21),
         DISCONNECT(DisconnectEventLogService.class, 10),
-        ECOBEE(EcobeeEventLogService.class, 3),
+        ECOBEE(EcobeeEventLogService.class, 2),
         ENDPOINT(EndpointEventLogService.class, 11),
         GATEWAY(GatewayEventLogService.class, 9),
         HARDWARE(HardwareEventLogService.class, 23),

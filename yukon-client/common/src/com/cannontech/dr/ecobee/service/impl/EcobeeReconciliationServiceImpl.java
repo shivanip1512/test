@@ -101,12 +101,7 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
         
         //fix discrepancy
         EcobeeReconciliationResult result = fixDiscrepancy(error);
-        if (error.getErrorType() != EcobeeDiscrepancyType.EXTRANEOUS_DEVICE) {
-            String managementSet = retrivemangementSet(error);
-            int intValue = BooleanUtils.toInteger(result.isSuccess());
-            ecobeeEventLogService.reconciliationCompleted(intValue, managementSet,
-                    result.getOriginalDiscrepancy().getErrorType().toString(), liteYukonUser);
-        }
+        doEventLog(liteYukonUser, error, result);
         
         //remove discrepancy from report
         if (result.isSuccess()) {
@@ -116,25 +111,35 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
         
         return result;
     }
-    
-    private String retrivemangementSet(EcobeeDiscrepancy error) {
-        String managementSet = StringUtils.EMPTY;
+
+    /**
+     * populate me with valid javadoc text
+     */
+    private void doEventLog(LiteYukonUser liteYukonUser, EcobeeDiscrepancy error, EcobeeReconciliationResult result) {
+        if (error.getErrorType() != EcobeeDiscrepancyType.EXTRANEOUS_DEVICE) {
+            String managementSet = getSyncObjectForError(error);
+            int intValue = BooleanUtils.toInteger(result.isSuccess());
+            ecobeeEventLogService.reconciliationCompleted(intValue, managementSet,
+                    result.getOriginalDiscrepancy().getErrorType().toString(), liteYukonUser);
+        }
+    }
+
+    /**
+     * populate me with valid javadoc text
+     */
+    private String getSyncObjectForError(EcobeeDiscrepancy error) {
         switch (error.getErrorType()) {
         case EXTRANEOUS_MANAGEMENT_SET:
         case MISLOCATED_MANAGEMENT_SET:
-            managementSet = error.getCurrentPath();
-            break;
+            return error.getCurrentPath();
         case MISSING_MANAGEMENT_SET:
-            managementSet = error.getCorrectPath();
-            break;
+            return error.getCorrectPath();
         case MISLOCATED_DEVICE:
         case MISSING_DEVICE:
-            managementSet = error.getSerialNumber();
-            break;
+            return error.getSerialNumber();
         default:
-            break;
+            return StringUtils.EMPTY;
         }
-        return managementSet;
     }
 
     @Override
@@ -158,12 +163,7 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
                 EcobeeReconciliationResult result = fixDiscrepancy(error);
                 //Save the result
                 results.add(result);
-                if (error.getErrorType() != EcobeeDiscrepancyType.EXTRANEOUS_DEVICE) {
-                    String managementSet = retrivemangementSet(error);
-                    int intValue = BooleanUtils.toInteger(result.isSuccess());
-                    ecobeeEventLogService.reconciliationCompleted(intValue, managementSet,
-                            result.getOriginalDiscrepancy().getErrorType().toString(), liteYukonUser);
-                }
+                doEventLog(liteYukonUser, error, result);
                 //Remove discrepancy from report
                 if (result.isSuccess()) {
                     reconciliationReportDao.removeError(reportId, error.getErrorId());
