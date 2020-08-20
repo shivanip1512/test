@@ -16,7 +16,8 @@ public final class TestConstants {
     }
     
     public static final class DemandResponse {
-        public static final String DEMAND_RESPONSE = "Demand_Response";      
+        public static final String DEMAND_RESPONSE = "Demand_Response";     
+        public static final String SETUP = "SETUP";     
     }
     
     public static final class VoltVar {

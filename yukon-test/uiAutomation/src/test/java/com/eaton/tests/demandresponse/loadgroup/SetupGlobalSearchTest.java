@@ -16,7 +16,7 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.admin.GlobalSearchPage;
 
-public class LoadGroupGlobalSearchTest extends SeleniumTestSetup {
+public class SetupGlobalSearchTest extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
     private GlobalSearchPage globalSearchPage;
@@ -31,31 +31,31 @@ public class LoadGroupGlobalSearchTest extends SeleniumTestSetup {
         globalSearchPage = new GlobalSearchPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void loadGroupDrGlobalSearch_SearchLoadGroupsAndEnter_NavigatesToSearchPage() {
-        globalSearchPage.getSearchBoxElement().setSearchValueAndEnter("Load Groups");
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.SETUP })
+    public void setupGlobalSearch_SearchSetupAndEnter_NavigatesToSearchPage() {
+        globalSearchPage.getSearchBoxElement().setSearchValueAndEnter("Setup");
         
-        boolean pageLoaded = waitForUrlToLoad(Urls.SEARCH + Urls.SEARCH_PARAM + "Load+Groups", Optional.empty());
+        boolean pageLoaded = waitForUrlToLoad(Urls.SEARCH + Urls.SEARCH_PARAM + "Setup", Optional.empty());
         
         assertThat(pageLoaded).isTrue();
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void loadGroupDrGlobalSearch_ResultNavigatesToLoadGroupsListPage() {
-        globalSearchPage.getSearchBoxElement().setSearchValueAndClickResult("Load Groups");
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.SETUP })
+    public void setupGlobalSearch_SearchAndSelectSetup_ResultNavigatesToSetupListPage() {
+        globalSearchPage.getSearchBoxElement().setSearchValueAndClickResult("Setup");
         
-        boolean pageLoaded = waitForUrlToLoad(Urls.DemandResponse.LOAD_GROUPS, Optional.empty());
+        boolean pageLoaded = waitForUrlToLoad(Urls.DemandResponse.SETUP, Optional.empty());
         
         assertThat(pageLoaded).isTrue();       
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void loadGroupDrGlobalSearch_SearchLoad_ResultsContainLoadGroups() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.SETUP })
+    public void setupGlobalSearch_SearchSetupPartialText_ResultsContainSetup() {
         SearchBoxElement searchBox = globalSearchPage.getSearchBoxElement();
         
-        searchBox.setSearchValue("Load");
+        searchBox.setSearchValue("Set");
         List<String> results = searchBox.getSearchResults();
         
-        assertThat(results).contains("Load Groups");
+        assertThat(results).contains("Setup");
     }        
 }
