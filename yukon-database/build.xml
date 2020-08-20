@@ -90,7 +90,6 @@
     </target>
 
     <target name="sqlServerCreationScriptXMLFile" depends="version_db_files">
-        <antcall target="git-checkout"/>
         <property name="databaseName" value="TempDBCreation_${version.major}_${version.minor}_${version.revision}" />
         <property environment="env" />
         

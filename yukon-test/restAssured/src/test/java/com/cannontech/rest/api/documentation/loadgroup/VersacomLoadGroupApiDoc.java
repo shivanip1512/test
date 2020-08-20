@@ -21,7 +21,6 @@ public class VersacomLoadGroupApiDoc extends LoadGroupApiDocBase {
             fieldWithPath("LM_GROUP_VERSACOM.disableGroup").type(JsonFieldType.BOOLEAN).description("Flag to disable Group"),
             fieldWithPath("LM_GROUP_VERSACOM.disableControl").type(JsonFieldType.BOOLEAN).description("Flag to disable Control"),
             fieldWithPath("LM_GROUP_VERSACOM.routeId").type(JsonFieldType.NUMBER).description("Route Id"),
-            fieldWithPath("LM_GROUP_VERSACOM.routeName").type(JsonFieldType.STRING).description("Route Name").optional(),
             fieldWithPath("LM_GROUP_VERSACOM.utilityAddress").type(JsonFieldType.NUMBER).description("Value of Utility Address"),
             fieldWithPath("LM_GROUP_VERSACOM.sectionAddress").type(JsonFieldType.NUMBER).description("Value of Section Address"),
             fieldWithPath("LM_GROUP_VERSACOM.classAddress").type(JsonFieldType.STRING).description("Value of Class Address"),
