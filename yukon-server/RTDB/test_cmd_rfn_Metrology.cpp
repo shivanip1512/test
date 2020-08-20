@@ -19,15 +19,6 @@ namespace std   {
 }
 // ---
 
-//namespace
-//{
-//    struct Response
-//    {
-//        Cti::Test::byte_str payload;
-//        YukonError_t        status;
-//        std::string         description;
-//    };
-//}
 
 BOOST_AUTO_TEST_SUITE( test_cmd_rfn_Metrology )
 
