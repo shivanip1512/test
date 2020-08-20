@@ -41,7 +41,7 @@ public class FlotChartServiceImpl implements FlotChartService {
         // datas
         List<Object> jsonDataContainer = new ArrayList<>();
         graphs.forEach(graph -> {
-            jsonDataContainer.add(new TrendData (getDataArray(graph.getChartData()), graph.getAxisIndex(), graph.getColor().getRgb()
+            jsonDataContainer.add(new TrendData (getDataArray(graph.getChartData()), graph.getAxisIndex(), graph.getColor().getColorHex()
                 , graph.getBars(), graph.getLines(), graph.getPoints()));
         });
         // if we have no data, then add an empty array to jsonData so a blank graph is displayed properly
