@@ -373,7 +373,7 @@ yukon.tools.point = (function () {
             var firstValue = row.find('.js-operation-options option:first').val();
             row.find('.js-operation-options').val(firstValue);
         }
-        if (newValue == 'Constant') {
+        if (newValue === 'Constant') {
             row.find("input[class='js-calc-point-comp']").val(0);
         } else {
             row.find("input[class='js-calc-point-comp']").val('');
