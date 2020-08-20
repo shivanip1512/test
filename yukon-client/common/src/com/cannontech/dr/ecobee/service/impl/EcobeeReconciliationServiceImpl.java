@@ -57,8 +57,8 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
         EcobeeDiscrepancyType.MISLOCATED_MANAGEMENT_SET,
         EcobeeDiscrepancyType.EXTRANEOUS_MANAGEMENT_SET,
         EcobeeDiscrepancyType.MISSING_DEVICE,
-        EcobeeDiscrepancyType.MISLOCATED_DEVICE
-        //EcobeeDiscrepancyType.EXTRANEOUS_DEVICE //No good way to fix this
+        EcobeeDiscrepancyType.MISLOCATED_DEVICE,
+        EcobeeDiscrepancyType.EXTRANEOUS_DEVICE
     );
     
     @Override
@@ -98,6 +98,7 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
             throw new IllegalArgumentException("Invalid error id.");
         }
         log.debug("Discrepancy type: " + error.getErrorType());
+        ecobeeEventLogService.reconciliationStarted(1, liteYukonUser);
         
         //fix discrepancy
         EcobeeReconciliationResult result = fixDiscrepancy(error);
@@ -113,15 +114,13 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
     }
 
     /**
-     * Log events for Ecobee Reconsilation.
+     * Log events for Ecobee Reconciliation.
      */
     private void doEventLog(LiteYukonUser liteYukonUser, EcobeeDiscrepancy error, EcobeeReconciliationResult result) {
-        if (error.getErrorType() != EcobeeDiscrepancyType.EXTRANEOUS_DEVICE) {
-            String managementSet = getSyncObjectForError(error);
-            int intValue = BooleanUtils.toInteger(result.isSuccess());
-            ecobeeEventLogService.reconciliationCompleted(intValue, managementSet,
-                    result.getOriginalDiscrepancy().getErrorType().toString(), liteYukonUser);
-        }
+        String managementSet = getSyncObjectForError(error);
+        int intValue = BooleanUtils.toInteger(result.isSuccess());
+        ecobeeEventLogService.reconciliationCompleted(intValue, managementSet,
+                result.getOriginalDiscrepancy().getErrorType().toString(), liteYukonUser);
     }
 
     /**
@@ -136,6 +135,7 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
             return error.getCorrectPath();
         case MISLOCATED_DEVICE:
         case MISSING_DEVICE:
+        case EXTRANEOUS_DEVICE:
             return error.getSerialNumber();
         default:
             return StringUtils.EMPTY;
@@ -145,6 +145,7 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
     @Override
     public List<EcobeeReconciliationResult> fixAllDiscrepancies(int reportId, LiteYukonUser liteYukonUser)
             throws IllegalArgumentException {
+        int successCount = 0;
         log.debug("Fixing all ecobee discrepancies. ReportId: " + reportId);
         
         //get discrepancies
@@ -153,7 +154,7 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
             throw new IllegalArgumentException("Report id is outdated.");
         }
         log.debug("Total number of discrepancies: " + report.getErrors().size());
-        
+        ecobeeEventLogService.reconciliationStarted(report.getErrors().size(), liteYukonUser);
         List<EcobeeReconciliationResult> results = new ArrayList<>();
         
         for (EcobeeDiscrepancyType errorType : errorTypes) {
@@ -167,10 +168,12 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
                 //Remove discrepancy from report
                 if (result.isSuccess()) {
                     reconciliationReportDao.removeError(reportId, error.getErrorId());
+                    successCount++;
                 }
             }
         }
-        
+        ecobeeEventLogService.reconciliationResults(report.getErrors().size(), successCount,
+                report.getErrors().size() - successCount);
         return results;
     }
     

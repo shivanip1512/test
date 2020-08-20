@@ -738,6 +738,8 @@
     <entry key="yukon.common.events.ecobee.reconciliationCompleted.1">Sync Object</entry>
     <entry key="yukon.common.events.ecobee.reconciliationCompleted.7">Success(1) / Fail(0)</entry>
     <entry key="yukon.common.events.ecobee.dataDownloaded">User {1} attempted to download an ecobee data report with start: {11}, end: {12}, load group ids: {2}.</entry>
+    <entry key="yukon.common.events.ecobee.reconciliationStarted">Ecobee reconciliation started for {7} object(s) by {1}.</entry>
+    <entry key="yukon.common.events.ecobee.reconciliationResults">Ecobee reconciliation completed for {7} objects (Success:{8} Failed:{9}).</entry>
 
     <!-- MultiSpeak log events -->
     <entry key="yukon.common.events.multispeak.methodInvoked">Received {1} from {2}.</entry>

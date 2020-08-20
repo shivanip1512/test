@@ -21,4 +21,11 @@ public interface EcobeeEventLogService {
                                @Arg(ArgEnum.endDate) LocalDate endReportDate,
                                @Arg(ArgEnum.loadGroupIds) String loadGroupIds,
                                @Arg(ArgEnum.eventSource) EventSource source);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "ecobee")
+    public void reconciliationStarted(@Arg(ArgEnum.totalCount) Integer total, @Arg(ArgEnum.username) LiteYukonUser yukonUser);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "ecobee")
+    public void reconciliationResults(@Arg(ArgEnum.totalCount) Integer total, @Arg(ArgEnum.successCount) Integer success,
+                                      @Arg(ArgEnum.failureCount) Integer failure);
 }
