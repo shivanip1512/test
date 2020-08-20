@@ -1,5 +1,6 @@
 package com.cannontech.web.smartNotifications;
 
+import java.beans.PropertyEditor;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -26,6 +27,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -76,6 +79,7 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.ContactDto;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
 import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.web.util.WebFileUtils;
@@ -100,49 +104,38 @@ public class SmartNotificationsController {
     @Autowired private DeviceDao deviceDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
 
     private final static String baseKey = "yukon.web.modules.smartNotifications.";
 
-    @RequestMapping(value="events/{type}", method=RequestMethod.GET)
-    public String eventDetailByType(@PathVariable String type, @DefaultSort(dir=Direction.desc, sort="timestamp") SortingParameters sorting, 
-                               @DefaultItemsPerPage(value=250) PagingParameters paging, ModelMap model, 
-                               YukonUserContext userContext,
-                               @RequestParam(required=false) String startDate,
-                               @RequestParam(required=false) String endDate,
-                               @RequestParam(required = false) List<InfrastructureWarningDeviceCategory> categories) throws ParseException {
-        Date to;
-        Date from;
-        SmartNotificationEventFilter notificationFilter = new SmartNotificationEventFilter();
-
-        if (StringUtils.isEmpty(startDate)) {
-            from = new Date();
-        } else {
-            from = dateFormattingService.flexibleDateParser(startDate, userContext);
-        }
-
-        if (StringUtils.isEmpty(endDate)) {
-            to = new Date();
-        } else {
-            to = dateFormattingService.flexibleDateParser(endDate, userContext);
-        }
-        notificationFilter.setStartDate(from);
-        notificationFilter.setEndDate(to);
-        notificationFilter.setCategories(categories);
-        model.addAttribute("filter", notificationFilter);
+    @RequestMapping(value = "events/{type}", method = RequestMethod.GET)
+    public String eventDetailByType(@PathVariable String type,
+            @DefaultSort(dir = Direction.desc, sort = "timestamp") SortingParameters sorting,
+            @DefaultItemsPerPage(value = 250) PagingParameters paging, ModelMap model, YukonUserContext userContext,
+            @ModelAttribute("filter") SmartNotificationEventFilter filter) {
 
         // Checks weather start date is greater than end date or not
-        if (from.compareTo(to) > 0) {
-            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            String startBeforeStopErrorMessage = accessor.getMessage("yukon.common.error.date.startBeforeStop");
-            model.addAttribute("errorMsg", startBeforeStopErrorMessage);
+        if (filter.getStartDate() != null && filter.getEndDate() != null) {
+            if (filter.getStartDate().compareTo(filter.getEndDate()) > 0) {
+                MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+                String startBeforeStopErrorMessage = accessor.getMessage("yukon.common.error.date.startBeforeStop");
+                model.addAttribute("errorMsg", startBeforeStopErrorMessage);
+            }
         }
-        return retrieveEventDetail(type, null, sorting, paging, userContext, model, notificationFilter);
+        return retrieveEventDetail(type, null, sorting, paging, userContext, model, filter);
     }
     
     @RequestMapping(value="events/{type}/{parameter}", method=RequestMethod.GET)
     public String eventDetailByTypeId(@PathVariable String type, @PathVariable String parameter, @DefaultSort(dir=Direction.desc, sort="timestamp") SortingParameters sorting, 
                                @DefaultItemsPerPage(value=250) PagingParameters paging, ModelMap model, 
                                YukonUserContext userContext, @ModelAttribute("filter") SmartNotificationEventFilter filter) {
+        if (filter.getStartDate() != null && filter.getEndDate() != null) {
+            if (filter.getStartDate().compareTo(filter.getEndDate()) > 0) {
+                MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+                String startBeforeStopErrorMessage = accessor.getMessage("yukon.common.error.date.startBeforeStop");
+                model.addAttribute("errorMsg", startBeforeStopErrorMessage);
+            }
+        }
         return retrieveEventDetail(type, parameter, sorting, paging, userContext, model, filter);
     }
     
@@ -589,4 +582,12 @@ public class SmartNotificationsController {
         }
     }
 
+    /* INIT BINDER */
+    @InitBinder
+    public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
+
+        PropertyEditor fullDateTimeEditor = datePropertyEditorFactory.getPropertyEditor(DateFormatEnum.DATEHM, userContext);
+
+        binder.registerCustomEditor(Date.class, fullDateTimeEditor);
+    }
 }
