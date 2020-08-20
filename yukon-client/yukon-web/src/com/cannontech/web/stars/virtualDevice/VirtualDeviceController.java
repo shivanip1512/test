@@ -76,7 +76,7 @@ public class VirtualDeviceController {
             ub.addParameter("sort", sortBy.getValue().name());
             ub.addParameter("direction", dir.name());
             ub.addParameter("itemsPerPage", Integer.toString(paging.getItemsPerPage()));
-            ub.addParameter("page", Integer.toString(paging.getPage() - 1));
+            ub.addParameter("page", Integer.toString(paging.getPage()));
 
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForParameterizedTypeObject(userContext, request, ub.toString(), 
                                                                                         HttpMethod.GET, DeviceBaseModel.class, Object.class);
