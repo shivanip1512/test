@@ -18,12 +18,17 @@ public class TrendCreateBuilder {
         private String name;
         private JSONObject[] markers;
         private JSONObject[] points;
-
+        
         public Builder(Optional<String> name) {
             String u = UUID.randomUUID().toString();
             String uuid = u.replace("-", "");
 
             this.name = name.orElse("Trend" + uuid);
+        }
+        
+        public Builder withName(String name) {
+            this.name = name;
+            return this;
         }
 
         public Builder withMarkers(JSONObject[] markers) {
@@ -66,10 +71,30 @@ public class TrendCreateBuilder {
         public Pair<JSONObject, ExtractableResponse<?>> create() {
 
             JSONObject request = build();
-
             ExtractableResponse<?> createResponse = TrendRequest.createTrend(request.toString());
 
             return new Pair<>(request, createResponse);
         }
+    }
+    
+    public static Builder buildTrend() {
+        return new TrendCreateBuilder.Builder(Optional.empty())
+                .withPoints(new JSONObject[] {new TrendPointBuilder.Builder()
+                        .withpointId(4999)
+                        .withLabel(Optional.empty())
+                        .withColor(Optional.empty())
+                        .withStyle(Optional.empty())
+                        .withType(Optional.empty())
+                        .withAxis(Optional.empty())
+                        .withMultiplier(Optional.empty())
+                        .withDate(Optional.empty())
+                        .build()})
+                .withMarkers(new JSONObject[] {new TrendMarkerBuilder.Builder()
+                        .withAxis(Optional.empty())
+                        .withColor(Optional.empty())
+                        .withLabel(Optional.empty())
+                        .withMultiplier(Optional.empty())
+                        .build()});
+        
     }
 }
