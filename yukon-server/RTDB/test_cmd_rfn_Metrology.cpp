@@ -19,40 +19,47 @@ namespace std   {
 }
 // ---
 
-namespace
-{
-    struct Response
-    {
-        Cti::Test::byte_str payload;
-        YukonError_t        status;
-        std::string         description;
-    };
-}
+//namespace
+//{
+//    struct Response
+//    {
+//        Cti::Test::byte_str payload;
+//        YukonError_t        status;
+//        std::string         description;
+//    };
+//}
 
 BOOST_AUTO_TEST_SUITE( test_cmd_rfn_Metrology )
 
 const CtiTime execute_time( CtiDate( 12, 8, 2020 ) , 17 );
+
+struct Response
+{
+    Cti::Test::byte_str payload;
+    YukonError_t        status;
+    std::string         description;
+};
 
 BOOST_AUTO_TEST_CASE( supported_devices )
 {
     const std::map<DeviceTypes, bool> testCases
     {
         //  RFN Focus
-        { TYPE_RFN410FL,     false },
-        { TYPE_RFN410FX,     false },
-        { TYPE_RFN410FD,     false },
-        { TYPE_RFN420FL,     false },
-        { TYPE_RFN420FX,     false },
-        { TYPE_RFN420FD,     false },
-        { TYPE_RFN420FRX,    false },
-        { TYPE_RFN420FRD,    false },
-        { TYPE_RFN510FL,     false },
+        { TYPE_RFN410FL,     true  },
+        { TYPE_RFN410FX,     true  },
+        { TYPE_RFN410FD,     true  },
+        { TYPE_RFN420FL,     true  },
+        { TYPE_RFN420FX,     true  },
+        { TYPE_RFN420FD,     true  },
+        { TYPE_RFN420FRX,    true  },
+        { TYPE_RFN420FRD,    true  },
+        { TYPE_RFN510FL,     true  },
         { TYPE_RFN520FAX,    true  },
-        { TYPE_RFN520FRX,    false },
+        { TYPE_RFN520FRX,    true  },
         { TYPE_RFN520FAXD,   true  },
-        { TYPE_RFN520FRXD,   false },
+        { TYPE_RFN520FRXD,   true  },
         { TYPE_RFN530FAX,    true  },
-        { TYPE_RFN530FRX,    false },
+        { TYPE_RFN530FRX,    true  },
         //  RFN Centron
         { TYPE_RFN410CL,     false },
         { TYPE_RFN420CL,     false },
@@ -74,8 +81,8 @@ BOOST_AUTO_TEST_CASE( supported_devices )
         { TYPE_RFN430SL4,    false },
         //   RFN Focus S4
         { TYPE_RFN530S4X,    false },
-        { TYPE_RFN530S4EAX,  true  },
-        { TYPE_RFN530S4EAXR, true  },
+        { TYPE_RFN530S4EAX,  false },
+        { TYPE_RFN530S4EAXR, false },
         { TYPE_RFN530S4ERX,  false },
         { TYPE_RFN530S4ERXR, false }
     };

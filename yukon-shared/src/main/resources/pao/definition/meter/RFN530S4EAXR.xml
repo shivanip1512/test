@@ -21,7 +21,6 @@
     </tags>
     <configuration>
         <category type="rfnChannelConfiguration"/>
-        <category type="rfnMetrologyConfiguration" optional="true"/>
         <category type="rfnTempAlarm"/>
     </configuration>
     <pointInfos>

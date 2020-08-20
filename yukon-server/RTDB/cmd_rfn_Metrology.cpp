@@ -40,12 +40,25 @@ static const std::map<unsigned char, States>  stateDecoder
 
 static const std::set<DeviceTypes>  supportedDeviceTypes
 {
-    // Supported by the L+G Focus 520AX/530AX
+    TYPE_RFN410FD,
+    TYPE_RFN410FL,
+    TYPE_RFN410FX,
+
+    TYPE_RFN420FD,
+    TYPE_RFN420FL,
+    TYPE_RFN420FRD,
+    TYPE_RFN420FRX,
+    TYPE_RFN420FX,
+
+    TYPE_RFN510FL,
+
     TYPE_RFN520FAX,
     TYPE_RFN520FAXD,
+    TYPE_RFN520FRX,
+    TYPE_RFN520FRXD,
+
     TYPE_RFN530FAX,
-    TYPE_RFN530S4EAX,
-    TYPE_RFN530S4EAXR,
+    TYPE_RFN530FRX
 };
 
 }   // -- anon
