@@ -735,7 +735,7 @@
     
     <!-- Ecobee Communication Service-->
     <entry key="yukon.common.events.ecobee.reconciliationCompleted">Ecobee reconciliation {7,choice,0#failed|1#succeeded} for {1} of Type {2} by {3}</entry>
-    <entry key="yukon.common.events.ecobee.reconciliationCompleted.1">syncObject</entry>
+    <entry key="yukon.common.events.ecobee.reconciliationCompleted.1">SyncObject</entry>
     <entry key="yukon.common.events.ecobee.reconciliationCompleted.7">Success(1) / Fail(0)</entry>
     <entry key="yukon.common.events.ecobee.dataDownloaded">User {1} attempted to download an ecobee data report with start: {11}, end: {12}, load group ids: {2}.</entry>
 
