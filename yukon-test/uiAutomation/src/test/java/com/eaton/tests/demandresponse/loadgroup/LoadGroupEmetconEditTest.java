@@ -24,7 +24,7 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
 	private DriverExtensions driverExt;
 	private Integer id;
 	private LoadGroupEmetconEditPage editPage;
-	private int routeId= 51;
+	private int routeId= 28;
 
 	@BeforeClass(alwaysRun = true)
 	public void beforeClass() {
@@ -121,7 +121,7 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldGrpEmetconEdit_name_invalidChars() {
-		final String EXPECTED_MSG = "Cannot be blank or include any of the following characters: / \\ , ' \" |";
+		final String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
 
 		editPage.getName().setInputValue("/emetcon,|group ");
 		editPage.getSaveBtn().click();
