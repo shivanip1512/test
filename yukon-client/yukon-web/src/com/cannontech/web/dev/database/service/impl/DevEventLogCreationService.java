@@ -1000,6 +1000,14 @@ public class DevEventLogCreationService {
                 systemEventLogService.maintenanceTaskEnabled(user, taskName);
                 systemEventLogService.maintenanceTaskSettingsUpdated(user, taskName);
                 
+                String attributeName = "testAttribute";
+                Integer attributeId = 42;
+                Integer pointOffset = 1000;
+                systemEventLogService.attributeCreated(user, attributeId, attributeName);
+                systemEventLogService.attributeUpdated(user, attributeName, "newAttributeName");
+                systemEventLogService.attributeDeleted(user, attributeName);
+                systemEventLogService.attributeAssigned(user, attributeName, PaoType.VIRTUAL_SYSTEM, PointType.CalcAnalog, pointOffset);
+                systemEventLogService.attributeAssignmentDeleted(user, attributeName, PaoType.VIRTUAL_SYSTEM, PointType.CalcAnalog, pointOffset);
             }
         });
         executables.put(LogType.TOOLS, new DevEventLogExecutable() {
@@ -1300,7 +1308,7 @@ public class DevEventLogCreationService {
         POWER_QUALITY_RESPONSE(PqrEventLogService.class, 1),
         RFN_DEVICE(RfnDeviceEventLogService.class, 4),
         STARS(StarsEventLogService.class, 26),
-        SYSTEM(SystemEventLogService.class, 35),
+        SYSTEM(SystemEventLogService.class, 40),
         TOOLS(ToolsEventLogService.class, 32),
         USERS(UsersEventLogService.class, 23),
         VALIDATION(ValidationEventLogService.class, 10),

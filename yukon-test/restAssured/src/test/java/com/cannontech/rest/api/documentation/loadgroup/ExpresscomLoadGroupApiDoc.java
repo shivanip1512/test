@@ -22,7 +22,6 @@ public class ExpresscomLoadGroupApiDoc extends LoadGroupApiDocBase {
             fieldWithPath("LM_GROUP_EXPRESSCOMM.disableControl").type(JsonFieldType.BOOLEAN)
                     .description("Flag to disable Control"),
             fieldWithPath("LM_GROUP_EXPRESSCOMM.routeId").type(JsonFieldType.NUMBER).description("Route Id"),
-            fieldWithPath("LM_GROUP_EXPRESSCOMM.routeName").type(JsonFieldType.STRING).description("Route Name").optional(),
             fieldWithPath("LM_GROUP_EXPRESSCOMM.serviceProvider").type(JsonFieldType.NUMBER).description("Service Provider Id"),
             fieldWithPath("LM_GROUP_EXPRESSCOMM.geo").type(JsonFieldType.NUMBER).description("Value of Geographical Address"),
             fieldWithPath("LM_GROUP_EXPRESSCOMM.substation").type(JsonFieldType.NUMBER)
