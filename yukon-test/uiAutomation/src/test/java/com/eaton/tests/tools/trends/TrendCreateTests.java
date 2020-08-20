@@ -80,7 +80,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
         //Adding Point Setup
         createPage.getTabElement().clickTabAndWait("Setup");
         TrendAddPointModal addPointModal = createPage.showAndWaitAddPointModal();
-        SelectPointModal selectPointModal = addPointModal.showAndWaitAddPointModal();
+        SelectPointModal selectPointModal = addPointModal.showAndWaitSelectPointModal();
         selectPointModal.selectPoint(point, Optional.of("5231"));
         selectPointModal.clickOkAndWaitForModalToClose();
         addPointModal.clickOkAndWaitForModalToClose();
