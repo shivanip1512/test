@@ -29,20 +29,18 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
     private LoadGroupVersacomEditPage editPage;
     private Random randomNum;
     Builder builder;
-    private String timeStamp;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
         randomNum = getRandomNum();
         editPage = new LoadGroupVersacomEditPage(driverExt);
-        timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpVersacomEdit_RequiredFieldsOnly_Successfully() {
         builder = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup();
-        timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String editName = "AT Edit Ld group " + timeStamp;
         final String EXPECTED_MSG = editName + " saved successfully.";
         Pair<JSONObject, JSONObject> pair = builder
