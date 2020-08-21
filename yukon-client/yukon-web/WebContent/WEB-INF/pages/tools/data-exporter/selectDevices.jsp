@@ -17,7 +17,7 @@
         <input type="hidden" name="formatId" value="${archivedValuesExporter.formatId}"/>
         <input type="hidden" name="archivedValuesExportFormatType" value="${archivedValuesExporter.archivedValuesExportFormatType}"/>
         <c:forEach var="attribute" items="${archivedValuesExporter.attributes}">
-                <input type="hidden" name="attributes" value="${attribute}"/>
+                <input type="hidden" name="attributes" value="${attribute.key}"/>
         </c:forEach>
     </div>
 

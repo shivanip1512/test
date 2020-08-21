@@ -46,6 +46,7 @@ public class EcobeeProgramApiDoc {
     private Integer copyProgramId = null;
     private FieldDescriptor[] ecobeeGearFieldDescriptor = null;
     private List<FieldDescriptor> ecobeeProgramFieldDescriptor = null;
+    private MockLoadProgram subOrdinateLoadProgram = null;
 
     @BeforeMethod
     public void setUp(Method method) {
@@ -56,7 +57,7 @@ public class EcobeeProgramApiDoc {
                 fieldWithPath("gears[].fields.rampIn").type(JsonFieldType.BOOLEAN).description("Ramp In").optional(),
                 fieldWithPath("gears[].fields.rampOut").type(JsonFieldType.BOOLEAN).description("Ramp Out").optional(),
                 fieldWithPath("gears[].fields.controlPercent").type(JsonFieldType.NUMBER).description("Control Percent. Min Value: 5, Max Value: 100").optional(),
-                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).ignored().description("How To Stop Control"),
+                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).description("How To Stop Control"),
                 fieldWithPath("gears[].fields.capacityReduction").type(JsonFieldType.NUMBER)
                                                                  .description("Group Capacity Reduction. Min Value: 0, Max Value: 100"),
                 fieldWithPath("gears[].fields.whenToChangeFields").type(JsonFieldType.OBJECT).description("Consists of When to change fields"),
@@ -111,7 +112,6 @@ public class EcobeeProgramApiDoc {
     public void Test_EcobeeProgram_Create(ITestContext context) {
         List<MockGearControlMethod> gearTypes = new ArrayList<>();
         gearTypes.add(MockGearControlMethod.EcobeeCycle);
-        gearTypes.add(MockGearControlMethod.EcobeeSetpoint);
         MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_ECOBEE_PROGRAM,
                                                                                  (List<MockLoadGroupBase>) context.getAttribute("loadGroups"),
                                                                                  gearTypes,
@@ -163,13 +163,16 @@ public class EcobeeProgramApiDoc {
     public void Test_EcobeeProgram_Update(ITestContext context) {
         List<MockGearControlMethod> gearTypes = new ArrayList<>();
         gearTypes.add(MockGearControlMethod.EcobeeCycle);
-        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_ECOBEE_PROGRAM,
+        subOrdinateLoadProgram = LoadProgramSetupHelper.getMemberControlLoadProgram(context, gearTypes, MockPaoType.LM_ECOBEE_PROGRAM);
+
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramUpdateRequest(MockPaoType.LM_ECOBEE_PROGRAM,
                                                                                  (List<MockLoadGroupBase>) context.getAttribute("loadGroups"),
                                                                                  gearTypes,
-                                                                                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
+                                                                                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID),
+                                                                                 subOrdinateLoadProgram);
 
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
-                                                                     requestFields(ecobeeProgramFieldDescriptor),
+                                                                     requestFields(LoadProgramSetupHelper.createFieldDescriptorForUpdate(ecobeeGearFieldDescriptor)),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
@@ -258,6 +261,7 @@ public class EcobeeProgramApiDoc {
                                                     .response();
 
         assertTrue("Status code should be 200", response.statusCode() == 200);
+        ApiCallHelper.delete(subOrdinateLoadProgram.getProgramId(), subOrdinateLoadProgram.getName(), "deleteLoadProgram");
     }
 
     /**

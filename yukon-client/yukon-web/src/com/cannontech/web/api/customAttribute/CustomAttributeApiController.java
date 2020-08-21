@@ -22,8 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.admin.AttributeValidator;
 import com.cannontech.web.admin.service.impl.CustomAttributeService;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
@@ -34,32 +36,30 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 public class CustomAttributeApiController {
 
     @Autowired private AttributeDao attributeDao;
+    @Autowired private AttributeService attributeService;
     @Autowired private CustomAttributeService customAttributeService;
     @Autowired private AttributeValidator customAttributeValidator;
 
     @PostMapping("")
-    public ResponseEntity<Object> create(@Valid @RequestBody CustomAttribute customAttribute) {
-        customAttribute = customAttributeService.createCustomAttribute(customAttribute);
-        return new ResponseEntity<>(customAttribute, HttpStatus.CREATED);
+    public ResponseEntity<Object> create(@Valid @RequestBody CustomAttribute customAttribute, YukonUserContext userContext) {
+        return new ResponseEntity<>(customAttributeService.createCustomAttribute(customAttribute, userContext), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> retrieve(@PathVariable Integer id) {
-        CustomAttribute attribute = attributeDao.getCustomAttribute(id);
+        CustomAttribute attribute = attributeService.getCustomAttribute(id);
         return new ResponseEntity<>(attribute, HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable Integer id, @Valid @RequestBody CustomAttribute customAttribute) {
+    public ResponseEntity<Object> update(@PathVariable Integer id, @Valid @RequestBody CustomAttribute customAttribute, YukonUserContext userContext) {
         customAttribute.setCustomAttributeId(id);
-        customAttribute = customAttributeService.updateCustomAttribute(customAttribute);
-
-        return new ResponseEntity<>(customAttribute, HttpStatus.OK);
+        return new ResponseEntity<>(customAttributeService.updateCustomAttribute(customAttribute, userContext), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> delete(@PathVariable Integer id) throws DataDependencyException {
-        customAttributeService.deleteCustomAttribute(id);
+    public ResponseEntity<Object> delete(@PathVariable Integer id, YukonUserContext userContext) throws DataDependencyException {
+        customAttributeService.deleteCustomAttribute(id, userContext);
         Map<String, Integer> jsonResponse = new HashMap<String, Integer>();
         jsonResponse.put("id", id);
         return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
