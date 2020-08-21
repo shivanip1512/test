@@ -42,6 +42,11 @@ public class LoadGroupVersacomCreateBuilder {
             this.name = name.orElse("AT LG " + uuid);
         }
 
+        public Builder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
         public Builder withKwCapacity(Optional<Double> kwCapacity) {
             this.kwCapacity = kwCapacity.orElse(faker.number().randomDouble(3, 0, 99999));
             return this;
