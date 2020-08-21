@@ -16,6 +16,7 @@
     <c:if test="${!empty parameter}">
         <c:set var="urlPath" value="${urlPath}/${parameter}"/>
     </c:if>
+    <c:if test="${not empty errorMsg}"><tags:alertBox>${fn:escapeXml(errorMsg)}</tags:alertBox></c:if>
     <cti:url var="detailUrl" value="${urlPath}"/>
     <form:form id="filter-form" action="${detailUrl}" method="GET" modelAttribute="filter">
         <div class="column-14-10 clearfix stacked">
