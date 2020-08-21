@@ -1,0 +1,113 @@
+package com.eaton.tests.demandresponse.loadgroup;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+
+import org.javatuples.Pair;
+import org.json.JSONObject;
+import org.openqa.selenium.WebDriver;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import com.eaton.builders.drsetup.loadgroup.LoadGroupRippleCreateBuilder;
+import com.eaton.builders.drsetup.loadgroup.LoadGroupRippleCreateBuilder.Builder;
+import com.eaton.elements.Section;
+import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestConstants;
+import com.eaton.framework.Urls;
+import com.eaton.pages.demandresponse.LoadGroupDetailPage;
+import com.eaton.pages.demandresponse.LoadGroupRippleCreatePage;
+
+public class LoadGroupRippleEditTests extends SeleniumTestSetup {
+
+    private LoadGroupRippleCreatePage createPage;
+    WebDriver driver;
+    private DriverExtensions driverExt;
+    private Random randomNum;
+    Builder builder;
+    private Integer id;
+
+    @BeforeClass(alwaysRun = true)
+    public void beforeClass() {
+        driverExt = getDriverExt();
+        randomNum = getRandomNum();
+        createPage = new LoadGroupRippleCreatePage(driverExt);
+    }
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpRippleEdit_RequiredFieldsOnly_Successfully() {
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String editName = "AT Edit Ripple " + timeStamp;
+        double randomDouble = randomNum.nextDouble();
+        int randomInt = randomNum.nextInt(9999);
+        double capacity = randomDouble + randomInt;
+        
+        builder = LoadGroupRippleCreateBuilder.buildDefaultRippleLoadGroup();
+        timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        final String EXPECTED_MSG = editName + " saved successfully.";
+        Pair<JSONObject, JSONObject> pair = builder
+                .create();
+        JSONObject response = pair.getValue1();
+        id = response.getInt("id");
+
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+        createPage.getName().setInputValue(editName);
+        createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
+
+        createPage.getSaveBtn().click();
+
+        waitForPageToLoad("Load Group: " + editName, Optional.empty());
+
+        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
+        String userMsg = detailsPage.getUserMessage();
+
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+    }
+    
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpRippleEdit_AllFields_Successfully() {
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String editName = "AT Edit Ripple " + timeStamp;
+        double randomDouble = randomNum.nextDouble();
+        int randomInt = randomNum.nextInt(9999);
+        double capacity = randomDouble + randomInt;
+        
+        builder = LoadGroupRippleCreateBuilder.buildDefaultRippleLoadGroup();
+        timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        final String EXPECTED_MSG = editName + " saved successfully.";
+        Pair<JSONObject, JSONObject> pair = builder
+                .create();
+        JSONObject response = pair.getValue1();
+        id = response.getInt("id");
+
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+        createPage.getName().setInputValue(editName);
+        createPage.getCommunicationRoute().selectItemByText("a_RTC");
+
+        createPage.getShedTime().selectItemByText("30 minutes");
+        createPage.getGroup().selectItemByText("2.01");
+        createPage.getAreaCode().selectItemByText("Minnkota");
+        createPage.getControlSwitchElement().setTrueFalseByBitNo(10, true);
+        createPage.getRestoreSwitchElement().setTrueFalseByBitNo(18, true);
+        createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
+        createPage.getDisableGroup().setValue(true);
+        createPage.getDisableControl().setValue(false);
+
+        createPage.getSaveBtn().click();
+
+        waitForPageToLoad("Load Group: " + editName, Optional.empty());
+
+        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
+        String userMsg = detailsPage.getUserMessage();
+
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+    }
+}
