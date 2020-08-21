@@ -7,3 +7,4 @@
            <class name = "com.cannontech.rest.api.documentation.attributeAssignment.AttributeAssignmentApiDoc" />
         </classes>
     </test>
+</suite>

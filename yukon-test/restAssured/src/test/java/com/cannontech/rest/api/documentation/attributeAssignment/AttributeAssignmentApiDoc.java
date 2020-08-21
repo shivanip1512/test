@@ -27,8 +27,8 @@ import com.cannontech.rest.api.common.model.MockPointType;
 
 public class AttributeAssignmentApiDoc extends DocumentationBase {
     
-    private final Integer attributeId = 1;
     private String attributeAssignmentId = null;
+    private final Integer attributeId = 1;
     private final MockPaoType paoType = MockPaoType.RFN420FL;
     private final String offset = "100";
     private String offsetDescription = "Point Offset";
@@ -57,7 +57,7 @@ public class AttributeAssignmentApiDoc extends DocumentationBase {
                     .type(JsonFieldType.STRING)
                     .description("Pao Type for the Attribute Assignment"),
                 fieldWithPath("offset")
-                    .type(JsonFieldType.STRING)
+                    .type(JsonFieldType.NUMBER)
                     .description("Point Offset"),
                 fieldWithPath("pointType")
                     .type(JsonFieldType.STRING)
@@ -117,6 +117,7 @@ public class AttributeAssignmentApiDoc extends DocumentationBase {
         List<FieldDescriptor> responseFields = getAttributeAssignmentFieldDescriptors();
         String url = ApiCallHelper.getProperty("attributeAssignmentsBaseURL") + "/" + attributeAssignmentId;
         return new DocumentationFields.Get(responseFields, url);
+//        return null;
     }
 
 
@@ -126,6 +127,7 @@ public class AttributeAssignmentApiDoc extends DocumentationBase {
         List<FieldDescriptor> responseFields = getAttributeAssignmentFieldDescriptors();
         String url = ApiCallHelper.getProperty("attributeAssignmentsBaseURL");
         return new DocumentationFields.Create(requestFields, responseFields, offset, offsetDescription, getMockAssignmentObject(), url);
+//        return null;
     }
 
 
@@ -135,6 +137,7 @@ public class AttributeAssignmentApiDoc extends DocumentationBase {
         List<FieldDescriptor> responseFields = getAttributeAssignmentFieldDescriptors();
         String url = ApiCallHelper.getProperty("attributeAssignmentsBaseURL") + "/" + attributeAssignmentId;
         return new DocumentationFields.Update(requestFields, responseFields, offset, offsetDescription, getMockAssignmentObject(), url);
+//        return null;
     }
 
 
