@@ -187,7 +187,7 @@ public static class Builder {
         }
        
     }
-	public static Builder buildDefaultVersacomLoadGroup() {
+	public static Builder buildDefaultRfnExpresscomLoadGroup() {
 		return new LoadGroupRfnExpresscomCreateBuilder.Builder(Optional.empty())
 							.withProtocolPriority(Optional.empty())
 							.withDisableControl(Optional.empty())
