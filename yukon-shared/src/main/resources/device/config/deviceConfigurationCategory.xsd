@@ -38,6 +38,7 @@
             <xs:enumeration value="regulatorHeartbeat"/>
             <xs:enumeration value="cbcHeartbeat"/>
             <xs:enumeration value="cbcAttributeMapping"/>
+            <xs:enumeration value="rfnMetrologyConfiguration"/>
         </xs:restriction>
     </xs:simpleType>
 

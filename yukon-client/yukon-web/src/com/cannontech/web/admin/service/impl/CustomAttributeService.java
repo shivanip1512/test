@@ -4,6 +4,7 @@ import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.pao.attribute.model.Assignment;
 import com.cannontech.common.pao.attribute.model.AttributeAssignment;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
+import com.cannontech.user.YukonUserContext;
 
 public interface CustomAttributeService {
     /**
@@ -11,13 +12,13 @@ public interface CustomAttributeService {
      * 
      * @throws DataDependencyException, NotFoundException
      */
-    void deleteCustomAttribute(int attributeId) throws DataDependencyException;
+    void deleteCustomAttribute(int attributeId, YukonUserContext userContext) throws DataDependencyException;
 
     /**
      * Deletes attribute assignment
      * @throws NotFoundException
      */
-    void deleteAttributeAssignment(int attributeAssignmentId);
+    void deleteAttributeAssignment(int attributeAssignmentId, YukonUserContext userContext);
 
     /**
      * Creates attribute assignment
@@ -25,7 +26,7 @@ public interface CustomAttributeService {
      * @return AttributeAssignment
      * @throws NotFoundException, DuplicateException
      */
-    AttributeAssignment updateAttributeAssignment(Assignment assignment);
+    AttributeAssignment updateAttributeAssignment(Assignment assignment, YukonUserContext userContext);
 
     /**
      * Updates attribute assignment
@@ -33,7 +34,7 @@ public interface CustomAttributeService {
      * @return AttributeAssignment
      * @throws NotFoundException, DuplicateException
      */
-    AttributeAssignment createAttributeAssignment(Assignment assignment);
+    AttributeAssignment createAttributeAssignment(Assignment assignment, YukonUserContext userContext);
 
     /**
      * Creates attribute
@@ -41,7 +42,7 @@ public interface CustomAttributeService {
      * @return CustomAttribute
      * @throws NotFoundException, DuplicateException
      */
-    CustomAttribute createCustomAttribute(CustomAttribute attribute);
+    CustomAttribute createCustomAttribute(CustomAttribute attribute, YukonUserContext userContext);
 
     /**
      * Updates attribute
@@ -49,5 +50,5 @@ public interface CustomAttributeService {
      * @return CustomAttribute
      * @throws NotFoundException, DuplicateException
      */
-    CustomAttribute updateCustomAttribute(CustomAttribute attribute);
+    CustomAttribute updateCustomAttribute(CustomAttribute attribute, YukonUserContext userContext);
 }

@@ -37,7 +37,7 @@ public class UdpTerminalServerApiTest {
         ExtractableResponse<?> createResponse = ApiCallHelper.post("createPort", udpTerminal);
         String portId = createResponse.path(CommChannelHelper.CONTEXT_PORT_ID).toString();
         context.setAttribute(CommChannelHelper.CONTEXT_PORT_ID, portId);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
         assertTrue("Port Id should not be Null", portId != null);
     }
 

@@ -66,7 +66,10 @@ public abstract class LoadGroupApiDocBase extends DocumentationBase {
         List<FieldDescriptor> responseFields = getFieldDescriptors();
         String typeId = getMockPaoType().name() + ".id";
         responseFields.add(0,fieldWithPath(typeId).type(JsonFieldType.NUMBER).description(LoadGroupHelper.CONTEXT_GROUP_ID_DESC));
-        String url = ApiCallHelper.getProperty("getloadgroup") + getLoadGroupId();
+        if (LoadGroupHelper.isLoadGroupSupportRoute(getMockPaoType())) {
+            responseFields.add(7, fieldWithPath(getMockPaoType() + ".routeName").type(JsonFieldType.STRING).description("Route Name"));
+        }
+        String url = ApiCallHelper.getProperty("getloadgroup") + getLoadGroupId() ;
         return new DocumentationFields.Get(responseFields, url);
     }
     

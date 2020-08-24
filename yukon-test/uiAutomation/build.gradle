@@ -51,7 +51,7 @@ dependencies {
 test{
 	useTestNG(){
 		useDefaultListeners = true
-		outputDirectory = file("c:/selenium_results/" + getDate())
+		//outputDirectory = file("c:/selenium_results/" + getDate())
 		suites 'smoketests.xml'
 	}
 }

@@ -17,6 +17,15 @@ struct test_MctDevice : Cti::Devices::MctDevice
     using Cti::Devices::MctDevice::value_locator;
 };
 
+namespace Cti {
+
+std::ostream& operator<<(std::ostream& o, const ConnectionHandle& ch)
+{
+    return o << ch.toString();
+}
+
+}
+
 namespace std {
 
 //  Override to get BOOST_CHECK_EQUAL_COLLECTIONS to print unsigned char as integer

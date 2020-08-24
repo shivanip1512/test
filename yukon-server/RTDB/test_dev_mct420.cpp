@@ -10,9 +10,11 @@
 #include "rtdb_test_helpers.h"
 #include "boost_test_helpers.h"
 
+#include <boost/algorithm/cxx11/all_of.hpp>
 #include <boost/assign/list_of.hpp>
 
 using namespace Cti::Protocols;
+using Cti::Test::isSentOnRouteMsg;
 
 using std::string;
 using std::vector;
@@ -20,7 +22,8 @@ typedef CtiTableDynamicPaoInfo Dpi;
 
 struct test_Mct420Device : Cti::Devices::Mct420Device
 {
-    test_Mct420Device(DeviceTypes type, const string &name)
+    test_Mct420Device(DeviceTypes type, const string &name) 
+        : rte(boost::make_shared<Cti::Test::test_CtiRouteCCU>())
     {
         setDeviceType(type);
         _name = name;
@@ -61,11 +64,17 @@ struct test_Mct420Device : Cti::Devices::Mct420Device
     bool test_isSupported_Mct4xxFeature_TouPeaks() const
             {  return Mct410Device::isSupported(Feature_TouPeaks);  }
 
+    CtiRouteSPtr rte;
     Cti::Test::DevicePointHelper pointHelper;
 
     CtiPointSPtr getDevicePointOffsetTypeEqual(int offset, CtiPointType_t type) override
     {
         return pointHelper.getCachedPoint(offset, type);
+    }
+
+    CtiRouteSPtr getRoute(long routeId) const override
+    {
+        return rte;
     }
 };
 
@@ -88,6 +97,11 @@ struct test_Mct420FD : test_Mct420Device
 {
     test_Mct420FD() : test_Mct420Device(TYPEMCT420FD, "Test MCT-420FD")  {}
 };
+
+namespace Cti {
+    //  defined in rtdb/test_main.cpp
+    std::ostream& operator<<(std::ostream& o, const ConnectionHandle& h);
+}
 
 namespace std {
     //  defined in rtdb/test_main.cpp
@@ -535,9 +549,15 @@ BOOST_AUTO_TEST_CASE(test_isProfileTablePointerCurrent)
 
 struct beginExecuteRequest_helper : overrideGlobals
 {
+    const Cti::ConnectionHandle testConnHandle{ 999 };
     CtiRequestMsg           request;
     std::list<CtiMessage*>  vgList, retList;
     std::list<OUTMESS*>     outList;
+
+    beginExecuteRequest_helper()
+    {
+        request.setConnectionHandle(testConnHandle);
+    }
 
     ~beginExecuteRequest_helper()
     {
@@ -863,13 +883,17 @@ struct control_helper : beginExecuteRequest_helper
         BOOST_CHECK_EQUAL( 0, dev.beginExecuteRequest(&req, parse, vgList, retList, outList) );
 
         BOOST_CHECK( retList.empty() );
-        BOOST_CHECK( vgList .empty() );
+        BOOST_REQUIRE_EQUAL( 1, vgList .size() );
         BOOST_REQUIRE_EQUAL( 1, outList.size() );
+
+        const auto signalMsg = dynamic_cast<const CtiSignalMsg*>(vgList.front());
+        BOOST_REQUIRE( signalMsg );
+        BOOST_CHECK_EQUAL( signalMsg->getLogType(), LoadMgmtLogType );
 
         const OUTMESS *om = outList.front();
 
         BOOST_REQUIRE( om );
-        BOOST_CHECK_EQUAL( om->DeviceID, 123456 );
+        BOOST_CHECK_EQUAL( om->DeviceID, 12345 );
         //BOOST_CHECK_EQUAL( om->MessageFlags, 80 );  //  Must be checked separately for the integrated disconnect vs. collar disconnect meters
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 76 );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       0 );
@@ -894,15 +918,15 @@ struct control_helper : beginExecuteRequest_helper
         BOOST_REQUIRE_EQUAL( 2, retList.size() );
         BOOST_CHECK( outList.empty() );
 
-        const std::vector<const CtiMessage *> retMsgs(retList.begin(), retList.end());
+        auto retList_itr = retList.cbegin();
 
-        const CtiRequestMsg *req = dynamic_cast<const CtiRequestMsg *>(retMsgs[0]);
+        auto req = dynamic_cast<const CtiRequestMsg *>(*retList_itr++);
 
         BOOST_REQUIRE( req );
         BOOST_CHECK_EQUAL( req->DeviceId(), 123456 );
         BOOST_CHECK_EQUAL( req->CommandString(), "getstatus disconnect" );
 
-        const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retMsgs[1]);
+        auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
 
         BOOST_REQUIRE( ret );
         BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
@@ -936,14 +960,18 @@ struct control_helper : beginExecuteRequest_helper
 
         BOOST_CHECK_EQUAL( 0, dev.beginExecuteRequest(&req, parse, vgList, retList, outList) );
 
-        BOOST_CHECK( vgList .empty() );
+        BOOST_REQUIRE_EQUAL( 1, vgList .size() );
         BOOST_CHECK( retList.empty() );
         BOOST_REQUIRE_EQUAL( 1, outList.size() );
+
+        const auto signalMsg = dynamic_cast<const CtiSignalMsg*>(vgList.front());
+        BOOST_REQUIRE( signalMsg );
+        BOOST_CHECK_EQUAL( signalMsg->getLogType(), LoadMgmtLogType );
 
         const OUTMESS *om = outList.front();
 
         BOOST_REQUIRE( om );
-        BOOST_CHECK_EQUAL( om->DeviceID, 123456 );
+        BOOST_CHECK_EQUAL( om->DeviceID, 12345 );
         //BOOST_CHECK_EQUAL( om->MessageFlags, 80 );  //  Must be checked separately for the integrated disconnect vs. collar disconnect meters
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 77 );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       0 );
@@ -968,15 +996,15 @@ struct control_helper : beginExecuteRequest_helper
         BOOST_REQUIRE_EQUAL( 2, retList.size() );
         BOOST_CHECK( outList.empty() );
 
-        const std::vector<const CtiMessage *> retMsgs(retList.begin(), retList.end());
+        auto retList_itr = retList.cbegin();
 
-        const CtiRequestMsg *req = dynamic_cast<const CtiRequestMsg *>(retMsgs[0]);
+        auto req = dynamic_cast<const CtiRequestMsg *>(*retList_itr++);
 
         BOOST_REQUIRE( req );
         BOOST_CHECK_EQUAL( req->DeviceId(), 123456 );
         BOOST_CHECK_EQUAL( req->CommandString(), "getstatus disconnect" );
 
-        const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retMsgs[1]);
+        auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
 
         BOOST_REQUIRE( ret );
         BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
@@ -1014,7 +1042,7 @@ BOOST_FIXTURE_TEST_SUITE(control_commands, control_helper)
         executeControlConnect_expectSuccess(test_Mct420CD());
 
         //  confirm the message flags are not set for the MCT collar disconnect silence
-        BOOST_CHECK_EQUAL( 16, outList.front()->MessageFlags );
+        BOOST_CHECK_EQUAL( 0, outList.front()->MessageFlags & MessageFlag_AddMctDisconnectSilence );
     }
     BOOST_AUTO_TEST_CASE(test_dev_mct420cd_control_connect_decode)
     {
@@ -1028,7 +1056,7 @@ BOOST_FIXTURE_TEST_SUITE(control_commands, control_helper)
         executeControlDisconnect_expectSuccess(test_Mct420CD());
 
         //  confirm the message flags are not set for the MCT collar disconnect silence
-        BOOST_CHECK_EQUAL( 16, outList.front()->MessageFlags );
+        BOOST_CHECK_EQUAL( 0, outList.front()->MessageFlags & MessageFlag_AddMctDisconnectSilence );
     }
     BOOST_AUTO_TEST_CASE(test_dev_mct420cd_control_disconnect_decode)
     {
@@ -1054,7 +1082,7 @@ BOOST_FIXTURE_TEST_SUITE(control_commands, control_helper)
         executeControlConnect_expectSuccess(test_Mct420FD());
 
         //  confirm the message flags are not set for the MCT collar disconnect silence
-        BOOST_CHECK_EQUAL( 16, outList.front()->MessageFlags );
+        BOOST_CHECK_EQUAL( 0, outList.front()->MessageFlags & MessageFlag_AddMctDisconnectSilence );
     }
     BOOST_AUTO_TEST_CASE(test_dev_mct420fd_control_connect_decode)
     {
@@ -1068,7 +1096,7 @@ BOOST_FIXTURE_TEST_SUITE(control_commands, control_helper)
         executeControlDisconnect_expectSuccess(test_Mct420FD());
 
         //  confirm the message flags are not set for the MCT collar disconnect silence
-        BOOST_CHECK_EQUAL( 16, outList.front()->MessageFlags );
+        BOOST_CHECK_EQUAL( 0, outList.front()->MessageFlags & MessageFlag_AddMctDisconnectSilence );
     }
     BOOST_AUTO_TEST_CASE(test_dev_mct420fd_control_disconnect_decode)
     {
@@ -1085,7 +1113,7 @@ BOOST_FIXTURE_TEST_SUITE(control_commands, control_helper)
         executeControlConnect_expectSuccess(test_Mct420FL());
 
         //  confirm the message flags are set for the MCT collar disconnect silence
-        BOOST_CHECK_EQUAL( 80, outList.front()->MessageFlags );
+        BOOST_CHECK_EQUAL( 64, outList.front()->MessageFlags & MessageFlag_AddMctDisconnectSilence );
     }
     BOOST_AUTO_TEST_CASE(test_dev_mct420fl_control_connect_decode)
     {
@@ -1123,7 +1151,7 @@ BOOST_FIXTURE_TEST_SUITE(control_commands, control_helper)
         executeControlDisconnect_expectSuccess(mct420fl);
 
         //  confirm the message flags are set for the MCT collar disconnect silence
-        BOOST_CHECK_EQUAL( 80, outList.front()->MessageFlags );
+        BOOST_CHECK_EQUAL( 64, outList.front()->MessageFlags & MessageFlag_AddMctDisconnectSilence );
     }
     BOOST_AUTO_TEST_CASE(test_dev_mct420fl_control_disconnect_decode)
     {
@@ -2203,11 +2231,12 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, test_Mct420CL().beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK( retList.empty() );
-
+        BOOST_REQUIRE_EQUAL( retList.size(), 6 );
         BOOST_REQUIRE_EQUAL( outList.size(), 6 );
 
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
+
+        auto om_itr = outList.cbegin();
 
         int writeMsgPriority,
             readMsgPriority;        // Capture message priorities to validate ordering
@@ -2330,11 +2359,12 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, test_Mct420CD().beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK( retList.empty() );
-
+        BOOST_REQUIRE_EQUAL( retList.size(), 8 );
         BOOST_REQUIRE_EQUAL( outList.size(), 8 );
 
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
+
+        auto om_itr = outList.cbegin();
 
         int writeMsgPriority,
             readMsgPriority;        // Capture message priorities to validate ordering
@@ -2494,11 +2524,12 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, test_Mct420FL().beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK( retList.empty() );
-
+        BOOST_REQUIRE_EQUAL( retList.size(), 8 );
         BOOST_REQUIRE_EQUAL( outList.size(), 8 );
 
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
+
+        auto om_itr = outList.cbegin();
 
         int writeMsgPriority,
             readMsgPriority;        // Capture message priorities to validate ordering
@@ -2658,11 +2689,12 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, test_Mct420FD().beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK( retList.empty() );
-
+        BOOST_REQUIRE_EQUAL( retList.size(), 8 );
         BOOST_REQUIRE_EQUAL( outList.size(), 8 );
 
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
+
+        auto om_itr = outList.cbegin();
 
         int writeMsgPriority,
             readMsgPriority;        // Capture message priorities to validate ordering
@@ -2815,6 +2847,31 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
 
         BOOST_CHECK(writeMsgPriority > readMsgPriority);
     }
+
+    BOOST_AUTO_TEST_CASE(test_getconfig_install_all)
+    {
+        test_Mct420FD mct420;
+
+        request.setCommandString("getconfig install all");
+
+        CtiCommandParser parse(request.CommandString());
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct420.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 6);
+        BOOST_REQUIRE_EQUAL(outList.size(), 5);
+
+        auto retList_itr = retList.cbegin();
+
+        const auto verifyMsg = dynamic_cast<const CtiRequestMsg*>(*retList_itr++);
+        BOOST_REQUIRE(verifyMsg);
+        BOOST_CHECK_EQUAL(verifyMsg->CommandString(), "putconfig install all verify");
+        BOOST_CHECK_EQUAL(verifyMsg->getConnectionHandle(), testConnHandle);
+
+        BOOST_CHECK( std::all_of( retList_itr, retList.cend(), isSentOnRouteMsg ) );
+    }
+
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
 

@@ -58,15 +58,18 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
         }
         
         try {
-            //If the current version is < 6.1.0 and Gateway is 2.0, the upgrade has to be done manually
+            // If the current version is less than the version that supports automated upgrades, then the upgrade for 
+            // this gateway has to be done manually.
             GatewayFirmwareVersion currentVersion = GatewayFirmwareVersion.parse(currentVersionString);
-
-            if (getPaoIdentifier().getPaoType() == PaoType.GWY800 && currentVersion.compareTo(new GatewayFirmwareVersion(6, 1, 0)) < 0) {
-                log.debug("Current version isn't above the minimum for GWY-800.");
+            // Supported version varies based on gateway type.
+            GatewayFirmwareVersion minimumSupportedFirmwareVersion = GatewayFirmwareVersion
+                    .getMinimumUpgradeVersion(getPaoIdentifier().getPaoType());
+            if (minimumSupportedFirmwareVersion == null) {
+                log.error("Unsupported gateway PaoType: " + getPaoIdentifier().getPaoType());
                 return false;
-            //If the current version is < 6.1.1 and Gateway is 1.5, the upgrade has to be done manually
-            } else if (getPaoIdentifier().getPaoType() == PaoType.RFN_GATEWAY && currentVersion.compareTo(new GatewayFirmwareVersion(6, 1, 1)) < 0) {
-                log.debug("Current version isn't above the minimum for Gateway 1.5.");
+            }
+            if (currentVersion.compareTo(minimumSupportedFirmwareVersion) < 0) {
+                log.debug("Current version isn't above the minimum for " + getPaoIdentifier().getPaoType());
                 return false;
             }
             //The available version has to be greater than or equal to the current version to allow upgrade
