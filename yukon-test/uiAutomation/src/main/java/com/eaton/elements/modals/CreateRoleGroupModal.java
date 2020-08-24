@@ -10,7 +10,7 @@ import com.eaton.elements.MultiLineTextElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 
-public class CreateRoleGroupModal{
+public class CreateRoleGroupModal {
 
     private DriverExtensions driverExt;
     private TextEditElement name;

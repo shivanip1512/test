@@ -60,7 +60,7 @@
                                 </c:forEach>
                                 <c:set var="buttonTextColor" value="green"/>
                                 <c:if test="${status == 'OPTED_OUT'}">
-                                    <c:set var="buttonTextColor" value="pie-blue"/>
+                                    <c:set var="buttonTextColor" value="blue"/>
                                 </c:if>
                                 <c:if test="${status == 'INACTIVE'}">
                                     <c:set var="buttonTextColor" value="orange"/>

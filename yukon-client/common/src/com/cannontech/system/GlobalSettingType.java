@@ -126,10 +126,12 @@ public enum GlobalSettingType implements DisplayableEnum {
     ITRON_HCM_USERNAME(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_HCM_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_HCM_DATA_COLLECTION_MINUTES(GlobalSettingSubCategory.DR, 15, Range.inclusive(5, 1440)),
+    ITRON_HCM_RESPONSE_TIMEOUT_SECONDS(GlobalSettingSubCategory.DR, 120, Range.inclusive(1, 600)),
     ITRON_SFTP_URL(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_SFTP_USERNAME(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_SFTP_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_SFTP_PRIVATE_KEY_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
+    RUNTIME_CALCULATION_INTERVAL_HOURS(GlobalSettingSubCategory.DR, 2, Range.inclusive(1, 24)),
 
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),

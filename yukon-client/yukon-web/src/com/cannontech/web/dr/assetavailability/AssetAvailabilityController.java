@@ -191,9 +191,9 @@ public class AssetAvailabilityController {
                     .map(d -> d.getDeviceId())
                     .collect(Collectors.toList());
                 DeviceCollection statusCollection = deviceMemoryCollectionProducer.createDeviceCollection(ids);
-                MappingColorCollection mapCollection = new MappingColorCollection(statusCollection, status.getColor(), status.getFormatKey());
+                MappingColorCollection mapCollection = new MappingColorCollection(statusCollection, status.getHexColor(), status.getFormatKey());
                 colorCollections.add(mapCollection);
-                mappingMap.put(status.getColor(), ids);
+                mappingMap.put(status.getHexColor(), ids);
             }
             attrs.addFlashAttribute("mappingColors", mappingMap);
             attrs.addFlashAttribute("colorCollections", colorCollections);

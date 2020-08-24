@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
@@ -30,7 +31,9 @@ import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.Assignment;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.admin.dao.CustomAttributeDao;
 import com.cannontech.web.admin.dao.CustomAttributeDao.SortBy;
 import com.cannontech.web.admin.service.impl.CustomAttributeService;
@@ -44,14 +47,15 @@ public class CustomAttributeAssignmentApiController {
     @Autowired private AttributeDao attributeDao;
     @Autowired private CustomAttributeDao customAttributeDao;
     @Autowired private CustomAttributeService customAttributeService;
+    @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private CustomAttributeAssignmentCreationValidator customAttributeAssignmentCreationValidator;
     @Autowired private CustomAttributeAssignmentValidator customAttributeAssignmentValidator;
 
 
 
     @PostMapping("")
-    public ResponseEntity<Object> create(@Valid @RequestBody Assignment assignment) {
-        return new ResponseEntity<>(customAttributeService.createAttributeAssignment(assignment), HttpStatus.CREATED);
+    public ResponseEntity<Object> create(@Valid @RequestBody Assignment assignment, YukonUserContext userContext) {
+        return new ResponseEntity<>(customAttributeService.createAttributeAssignment(assignment, userContext), HttpStatus.CREATED);
     }
 
     @GetMapping("/{attributeAssignmentId}")
@@ -60,15 +64,14 @@ public class CustomAttributeAssignmentApiController {
     }
 
     @PatchMapping("/{attributeAssignmentId}")
-    public ResponseEntity<Object> update(@PathVariable int attributeAssignmentId, @Valid @RequestBody Assignment assignment) {
+    public ResponseEntity<Object> update(@PathVariable int attributeAssignmentId, @Valid @RequestBody Assignment assignment, YukonUserContext userContext) {
         assignment.setAttributeAssignmentId(attributeAssignmentId);
-        return new ResponseEntity<>(customAttributeService.updateAttributeAssignment(assignment), HttpStatus.OK);
+        return new ResponseEntity<>(customAttributeService.updateAttributeAssignment(assignment, userContext), HttpStatus.OK);
     }
 
     @DeleteMapping("/{attributeAssignmentId}")
-    public ResponseEntity<Object> delete(@PathVariable int attributeAssignmentId) {
-        customAttributeService.deleteAttributeAssignment(attributeAssignmentId);
-
+    public ResponseEntity<Object> delete(@PathVariable int attributeAssignmentId, YukonUserContext userContext) {
+        customAttributeService.deleteAttributeAssignment(attributeAssignmentId, userContext);
         Map<String, Object> jsonResponse = new HashMap<String, Object>();
         jsonResponse.put("id", attributeAssignmentId);
 

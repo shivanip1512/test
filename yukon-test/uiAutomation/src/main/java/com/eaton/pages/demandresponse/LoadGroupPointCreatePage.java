@@ -25,11 +25,11 @@ public class LoadGroupPointCreatePage extends LoadGroupCreatePage {
         return getControlDevicePoint().getLinkValue();
     }
 
-    public SelectPointModal showAndWaitPointGroupControlDeviceModal(String modalTitle) {
+    public SelectPointModal showAndWaitPointGroupControlDeviceModal() {
 
         getControlDevicePoint().clickLink();
 
-        SeleniumTestSetup.waitUntilModalVisibleByTitle("Select Control Device");
+        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("pointGroupControlDevicePicker");
 
         return new SelectPointModal(this.driverExt, Optional.empty(), Optional.of("pointGroupControlDevicePicker"));
     }

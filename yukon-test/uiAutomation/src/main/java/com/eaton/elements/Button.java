@@ -43,6 +43,7 @@ public class Button {
     }
 
     public void click() {
+        this.driverExt.waitUntilClickable(getButton());
         getButton().click();
     }
 }

@@ -132,7 +132,7 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
                 metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "HARDWARE_VERSION"), data.getHardwareVersion()));
                 String dateTime = dateFormattingService.format(data.getInNetworkTimestamp(), DateFormatEnum.DATEHM, context);
                 metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "IN_NETWORK_TIMESTAMP"), dateTime));
-                metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "NODE_ADDRESS"), data.getMacAddress()));
+                metadataPairs.add(Pair.of(accessor.getMessage("yukon.web.modules.operator.mapNetwork.macAddress"), data.getMacAddress()));
                 metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "NODE_FIRMWARE_VERSION"), data.getFirmwareVersion()));
                 metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "NODE_TYPE"),
                         accessor.getMessage(keyPrefix + "NODE_TYPE." + data.getNodeType())));
@@ -157,8 +157,8 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
                     metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "NODE_NAMES"),
                             String.join(", ", info.getNodeNames())));
                 }
-                metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "IPV6_ADDRESS"), info.getIpv6Address()));
-                metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "HOSTNAME"), info.getHostname()));
+                //metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "IPV6_ADDRESS"), info.getIpv6Address()));
+                //metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "HOSTNAME"), info.getHostname()));
             } else {
                 log.info("NODE_NETWORK_INFO not found for {}", device);
             }

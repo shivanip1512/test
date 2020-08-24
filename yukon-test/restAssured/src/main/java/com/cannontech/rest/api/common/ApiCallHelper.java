@@ -6,8 +6,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import com.cannontech.rest.api.common.model.MockLMDto;
-import com.cannontech.rest.api.common.model.MockPointType;
+
+import com.cannontech.rest.api.utilities.Log;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -47,18 +49,35 @@ public class ApiCallHelper {
     }
 
     /**
-     * Returns value for the specified key from configuration.properties file.
-     * 
+     * Returns value for specified key from configuration property files.
+     * First looks in baseUriConfiguration.properties.
+     * If empty, look in configuration.properties
+     * Returns empty string when not found 
      */
     public static String getProperty(String key) {
+        String property = getProperty(key, "baseUriConfiguration.properties");
+        if (StringUtils.isBlank(property)) {
+            // key not found in base file, try override file.
+            property = getProperty(key, "configuration.properties");
+        }
+        return property;
+    }
+
+    /**
+     * Returns value for the specified key from configuration properties file.
+     */
+
+    public static String getProperty(String key, String filename) {
         try {
             FileReader reader = new FileReader(
-                userDirectory + File.separatorChar + "src" + File.separatorChar+ "main" + File.separatorChar+ "resources" + File.separatorChar + "configuration.properties");
+                    userDirectory + File.separatorChar + "src" + File.separatorChar + "main" + File.separatorChar + "resources"
+                            + File.separatorChar + filename);
+
             Properties properties = new Properties();
             properties.load(reader);
             return properties.getProperty(key);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.warn("Invalid filename " + filename);
             return "";
         }
     }

@@ -1012,6 +1012,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                                             EVENT_STARTED,
                                             EVENT_CANCELLED,
                                             EVENT_STOPPED,
+                                            EVENT_SUPERSEDED,
                                             CONTROL_STATUS,
                                             AVERAGE_VOLTAGE,
                                             SERVICE_STATUS,

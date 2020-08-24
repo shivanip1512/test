@@ -155,7 +155,7 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
                 }
             }
 
-            if (response.getStatusCode() == HttpStatus.OK) {
+            if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 model.clear();
                 Map<String, Object> json = new HashMap<>();
                 if (virtualDevice.getId() == null) {

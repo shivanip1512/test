@@ -195,7 +195,8 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
                     if (oldCount == 0) {
                         // we may log this multiple times if the server is restarted, but this if statement
                         // seems to be a good idea to prevent excess 
-                        rfnDeviceEventLogService.receivedDataForUnkownDeviceTemplate(templateName);
+                        rfnDeviceEventLogService.receivedDataForUnkownDeviceTemplate(templateName,
+                                rfnIdentifier.getSensorSerialNumber());
                         log.warn("Unable to create device with template for " + rfnIdentifier, e);
                     }
                     throw e;
@@ -228,7 +229,8 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
         log.info("Creating gateway: " + rfnIdentifier);
         Map<String, PaoType> modelTypes = Map.of(
                 GATEWAY_2_MODEL_STRING.toLowerCase(), PaoType.GWY800,
-                GATEWAY_3_MODEL_STRING.toLowerCase(), PaoType.VIRTUAL_GATEWAY);
+                GATEWAY_3_MODEL_STRING.toLowerCase(), PaoType.VIRTUAL_GATEWAY,
+                GATEWAY_4_MODEL_STRING.toLowerCase(), PaoType.GWY801);
 
         PaoType gatewayType = modelTypes.getOrDefault(rfnIdentifier.getSensorModel().toLowerCase(),
                 PaoType.RFN_GATEWAY);

@@ -13,14 +13,14 @@ public class SelectMCTMeterModal extends BaseModal {
         
     }
 
-    public WebTable getuserGroupTable() {
-        return new WebTable(driverExt, "compact-results-table.picker-results-table", "mctMeterPicker"); 
+    public WebTable getMctMeterTable() {
+        return new WebTable(driverExt, "compact-results-table", getModal()); 
     } 
     
     public void selectMeter(String meterName) {
-        getuserGroupTable().searchTable(meterName);        
+        getMctMeterTable().searchTable(meterName);        
 
-        WebTable table = getuserGroupTable();
+        WebTable table = getMctMeterTable();
         WebTableRow row = table.getDataRowByName(meterName);
 
         row.selectCellByLink();

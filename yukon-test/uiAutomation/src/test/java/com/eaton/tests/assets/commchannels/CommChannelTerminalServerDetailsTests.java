@@ -194,7 +194,7 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelDeleteTerminalServer_DeleteCommChannelSuccessfully() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String deleteCommChannelName = "Terminal Server Comm Channel " + timeStamp;
+        String deleteCommChannelName = "Terminal Server " + timeStamp;
 
         // Creating one TerminalServer port comm channel using hard coded json file.
         String payloadFile = System.getProperty("user.dir")

@@ -968,7 +968,7 @@ bool RfnResidentialDevice::isDisconnectConfigSupported() const
 
 bool RfnResidentialDevice::isDemandIntervalConfigSupported() const
 {
-    return gConfigParms.getValueAsDouble("RFN_FIRMWARE") >= 9.0;
+    return hasRfnFirmwareSupportIn( 9.0 );
 }
 
 void RfnResidentialDevice::handleCommandResult( const Commands::RfnConfigNotificationCommand & cmd )

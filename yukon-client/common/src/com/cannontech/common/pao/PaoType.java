@@ -10,12 +10,14 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.TypeNotSupportedException;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
@@ -164,6 +166,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     RFN_GATEWAY(DeviceTypes.RFN_GATEWAY, "RF Gateway", PaoCategory.DEVICE, PaoClass.RFMESH),
     GWY800(DeviceTypes.GWY800, "GWY-800", PaoCategory.DEVICE, PaoClass.RFMESH),
+    GWY801(DeviceTypes.GWY801, "GWY-801", PaoCategory.DEVICE, PaoClass.RFMESH),
     VIRTUAL_GATEWAY(DeviceTypes.VIRTUAL_GATEWAY, "Virtual Gateway", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     RFN_RELAY(DeviceTypes.RFN_RELAY, "RFN Relay", PaoCategory.DEVICE, PaoClass.RFMESH),
@@ -693,6 +696,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         rfGatewayTypes = ImmutableSet.of(
             RFN_GATEWAY,
             GWY800,
+            GWY801,
             VIRTUAL_GATEWAY);
         
         rfRelayTypes = ImmutableSet.of(
@@ -1242,5 +1246,14 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public boolean isWifiDevice() {
         return wifiTypes.contains(this);
+    }
+
+    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+    public static PaoType getPaoType(String paoTypeJsonString) {
+        try {
+            return PaoType.valueOf(paoTypeJsonString);
+        } catch (IllegalArgumentException e) {
+            throw new TypeNotSupportedException(paoTypeJsonString + " paoType is not valid.");
+        }
     }
 }

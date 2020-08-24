@@ -61,7 +61,6 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_NameInvalidCharValidation() {
-
         createPage.getName().setInputValue("test/,");
         createPage.getSaveBtn().click();
 
@@ -83,18 +82,18 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_kWCapacityRequired() {
-
         createPage.getType().selectItemByIndex(2);
-        createPage.getkWCapacity().setInputValue("");
+        waitForLoadingSpinner();
+        createPage.getkWCapacity().clearInputValue();
         createPage.getSaveBtn().click();
 
         assertThat(createPage.getkWCapacity().getValidationError()).isEqualTo("kW Capacity is required.");
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreate_kWCapacityMaxRangeValidation() {
-        
+    public void ldGrpCreate_kWCapacityMaxRangeValidation() {        
         createPage.getType().selectItemByIndex(2);
+        waitForLoadingSpinner();
         createPage.getkWCapacity().setInputValue("1000000");
         createPage.getSaveBtn().click();
 
@@ -103,8 +102,8 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_kWCapacityMinRangeValidation() {
-
         createPage.getType().selectItemByIndex(2);
+        waitForLoadingSpinner();
         createPage.getkWCapacity().setInputValue("-1");
         createPage.getSaveBtn().click();
 
@@ -113,15 +112,14 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_GeneralSectionTitleCorrect() {
-
         Section general = createPage.getPageSection("General");
         assertThat(general.getSection()).isNotNull();
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_OptionalAttributeSectionTitleCorrect() {
-
         createPage.getType().selectItemByIndex(2);
+        waitForLoadingSpinner();
         createPage.getkWCapacity().clearInputValue();
         
         Section optAttr = createPage.getPageSection("Optional Attributes");
@@ -140,10 +138,8 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_NameUniqueValidation() {
-
         // API test data. Creating Load group using hard coded json file, to be changed when builder pattern is implemented.
-        String payloadFile = System.getProperty("user.dir")
-                + "\\src\\test\\resources\\payload\\payload.loadgroup\\ecobee.json";
+        String payloadFile = System.getProperty("user.dir") + "\\src\\test\\resources\\payload\\payload.loadgroup\\ecobee.json";
         JSONObject jo;
         String name;
         JSONObject body = (JSONObject) JsonFileHelper.parseJSONFile(payloadFile);
@@ -153,6 +149,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
         createPage.getName().setInputValue(name);
         createPage.getType().selectItemByText("ecobee Group");
+        waitForLoadingSpinner();
         createPage.getkWCapacity().setInputValue("22");
         createPage.getSaveBtn().click();
 
@@ -175,6 +172,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         List<String> expectedLabels = new ArrayList<>(List.of("kW Capacity:", "Disable Group:", "Disable Control:"));
 
         createPage.getType().selectItemByIndex(2);
+        waitForLoadingSpinner();
         createPage.getkWCapacity().setInputValue("2");
         List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
         
