@@ -10,6 +10,8 @@ import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.testng.annotations.Test;
 
+import com.cannontech.rest.api.attributeAssignment.helper.AssignmentHelper;
+import com.cannontech.rest.api.attributeAssignment.request.MockAssignmentModel;
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.documentation.DocumentationBase;
 import com.cannontech.rest.api.documentation.DocumentationFields;
@@ -18,75 +20,25 @@ import com.cannontech.rest.api.documentation.DocumentationFields.Create;
 import com.cannontech.rest.api.documentation.DocumentationFields.Delete;
 import com.cannontech.rest.api.documentation.DocumentationFields.Get;
 import com.cannontech.rest.api.documentation.DocumentationFields.Update;
-import com.cannontech.rest.api.attributeAssignment.helper.AssignmentHelper;
-import com.cannontech.rest.api.attributeAssignment.helper.AttributeAssignmentHelper;
-import com.cannontech.rest.api.attributeAssignment.request.MockAssignmentModel;
-import com.cannontech.rest.api.attributeAssignment.request.MockAttributeAssignmentModel;
-import com.cannontech.rest.api.common.model.MockPaoType;
-import com.cannontech.rest.api.common.model.MockPointType;
 
 public class AttributeAssignmentApiDoc extends DocumentationBase {
     
     private String attributeAssignmentId = null;
-    private final Integer attributeId = 1;
-    private final MockPaoType paoType = MockPaoType.RFN420FL;
-    private final String offset = "100";
-    private String offsetDescription = "Point Offset";
-    private final MockPointType pointType = MockPointType.CalcAnalog;
+    public final static String idStr = "attributeAssignmentId";
+    public final static String idDescStr = "Attribute Assignment Id";
+
     
     
-    private MockAssignmentModel getMockAssignmentObject() {
+    private MockAssignmentModel getMockObject() {
         return AssignmentHelper.buildDevice();
     }
     
-    private MockAttributeAssignmentModel getMockAttributeAssignmentObject() {
-        return AttributeAssignmentHelper.buildDevice();
-    }
-    
-    
-    private static List<FieldDescriptor> getAssignmentFieldDescriptors() {
-        FieldDescriptor[] assignmentFieldDescriptor = new FieldDescriptor[] {
-                fieldWithPath("attributeId")
-                    .type(JsonFieldType.NUMBER)
-                    .description("Custom Attribute Id"),
-                fieldWithPath("attributeAssignmentId")
-                    .type(JsonFieldType.NUMBER)
-                    .optional()
-                    .description("Custom Attribute Assignment Id"),
-                fieldWithPath("paoType")
-                    .type(JsonFieldType.STRING)
-                    .description("Pao Type for the Attribute Assignment"),
-                fieldWithPath("offset")
-                    .type(JsonFieldType.NUMBER)
-                    .description("Point Offset"),
-                fieldWithPath("pointType")
-                    .type(JsonFieldType.STRING)
-                    .description("The Point Type for the Attribute Assignment")
-        };
-        return new ArrayList<>(Arrays.asList(assignmentFieldDescriptor));
-    }
-    
-    private static List<FieldDescriptor> getAttributeAssignmentFieldDescriptors() {
+    private static List<FieldDescriptor> getFieldDescriptors() {
         FieldDescriptor[] attributeAssignmentFieldDescriptor = new FieldDescriptor[] {
-                fieldWithPath("attributeId")
-                    .type(JsonFieldType.NUMBER)
-                    .description("Custom Attribute Id"),
-                fieldWithPath("attributeAssignmentId")
-                    .type(JsonFieldType.NUMBER)
-                    .optional()
-                    .description("Custom Attribute Assignment Id"),
-                fieldWithPath("paoType")
-                    .type(JsonFieldType.STRING)
-                    .description("Pao Type for the Attribute Assignment"),
-                fieldWithPath("offset")
-                    .type(JsonFieldType.STRING)
-                    .description("Point Offset"),
-                fieldWithPath("pointType")
-                    .type(JsonFieldType.STRING)
-                    .description("The Point Type for the Attribute Assignment"),
-                fieldWithPath("customAttribute")
-                    .type(JsonFieldType.OBJECT)
-                    .description("CustomAttribute Object")
+            fieldWithPath("attributeId").type(JsonFieldType.NUMBER).description(idDescStr),
+            fieldWithPath("paoType").type(JsonFieldType.STRING).description("Pao Type for the Attribute Assignment"),
+            fieldWithPath("offset").type(JsonFieldType.NUMBER).description("Point Offset"),
+            fieldWithPath("pointType").type(JsonFieldType.STRING).description("The Point Type for the Attribute Assignment")
         };
         return new ArrayList<>(Arrays.asList(attributeAssignmentFieldDescriptor));
     }
@@ -114,42 +66,47 @@ public class AttributeAssignmentApiDoc extends DocumentationBase {
 
     @Override
     protected Get buildGetFields() {
-        List<FieldDescriptor> responseFields = getAttributeAssignmentFieldDescriptors();
+        List<FieldDescriptor> responseFields = getFieldDescriptors();
+        responseFields.add(0, fieldWithPath("attributeAssignmentId").type(JsonFieldType.NUMBER).description("Custom Attribute Assignment Id"));
+        responseFields.add(fieldWithPath("customAttribute.customAttributeId").type(JsonFieldType.NUMBER).description("Custom Attribute Id").optional());
+        responseFields.add(fieldWithPath("customAttribute.name").type(JsonFieldType.STRING).description("Custom Attribute Name").optional());
         String url = ApiCallHelper.getProperty("attributeAssignmentsBaseURL") + "/" + attributeAssignmentId;
         return new DocumentationFields.Get(responseFields, url);
-//        return null;
     }
 
 
     @Override
     protected Create buildCreateFields() {
-        List<FieldDescriptor> requestFields = getAssignmentFieldDescriptors();
-        List<FieldDescriptor> responseFields = getAttributeAssignmentFieldDescriptors();
+        List<FieldDescriptor> requestFields = getFieldDescriptors();
+        List<FieldDescriptor> responseFields = getFieldDescriptors();
+        responseFields.add(0, fieldWithPath("attributeAssignmentId").type(JsonFieldType.NUMBER).description("Custom Attribute Assignment Id"));
+        responseFields.add(fieldWithPath("customAttribute.customAttributeId").type(JsonFieldType.NUMBER).description("Custom Attribute Id").optional());
+        responseFields.add(fieldWithPath("customAttribute.name").type(JsonFieldType.STRING).description("Custom Attribute Name").optional());
         String url = ApiCallHelper.getProperty("attributeAssignmentsBaseURL");
-        return new DocumentationFields.Create(requestFields, responseFields, offset, offsetDescription, getMockAssignmentObject(), url);
-//        return null;
+        return new DocumentationFields.Create(requestFields, responseFields, "attributeAssignmentId", idDescStr, getMockObject(), url);
     }
-
 
     @Override
     protected Update buildUpdateFields() {
-        List<FieldDescriptor> requestFields = getAssignmentFieldDescriptors();
-        List<FieldDescriptor> responseFields = getAttributeAssignmentFieldDescriptors();
+        List<FieldDescriptor> requestFields = getFieldDescriptors();
+        List<FieldDescriptor> responseFields = getFieldDescriptors();
+        responseFields.add(0, fieldWithPath("attributeAssignmentId").type(JsonFieldType.NUMBER).description("Custom Attribute Assignment Id"));
+        responseFields.add(fieldWithPath("customAttribute.customAttributeId").type(JsonFieldType.NUMBER).description("Custom Attribute Id").optional());
+        responseFields.add(fieldWithPath("customAttribute.name").type(JsonFieldType.STRING).description("Custom Attribute Name").optional());
         String url = ApiCallHelper.getProperty("attributeAssignmentsBaseURL") + "/" + attributeAssignmentId;
-        return new DocumentationFields.Update(requestFields, responseFields, offset, offsetDescription, getMockAssignmentObject(), url);
-//        return null;
+        return new DocumentationFields.Update(requestFields, responseFields, "attributeAssignmentId", idDescStr, getMockObject(), url);
     }
-
 
     @Override
     protected Copy buildCopyFields() {
         return null;
     }
 
-
     @Override
     protected Delete buildDeleteFields() {
-        return null;
+        List<FieldDescriptor> responseFields = Arrays
+                .asList(fieldWithPath("id").type(JsonFieldType.NUMBER).description(idDescStr));
+        String url = ApiCallHelper.getProperty("attributeAssignmentsBaseURL") + "/" + attributeAssignmentId;
+        return new DocumentationFields.DeleteWithBody(null, responseFields, null, url);
     }
-
 }
