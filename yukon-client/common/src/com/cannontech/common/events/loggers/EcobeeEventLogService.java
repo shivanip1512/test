@@ -9,13 +9,13 @@ import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface EcobeeEventLogService {
-    
+
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "ecobee")
     public void reconciliationCompleted(int status, String syncObject,
                                         @Arg(ArgEnum.syncIssueType) String type,
                                         @Arg(ArgEnum.username) LiteYukonUser yukonUser);
 
-    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="ecobee")
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "ecobee")
     public void dataDownloaded(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                @Arg(ArgEnum.startDate) LocalDate startReportDate,
                                @Arg(ArgEnum.endDate) LocalDate endReportDate,
@@ -27,5 +27,9 @@ public interface EcobeeEventLogService {
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "ecobee")
     public void reconciliationResults(@Arg(ArgEnum.totalCount) Integer total, @Arg(ArgEnum.successCount) Integer success,
-                                      @Arg(ArgEnum.failureCount) Integer failure);
+                                      @Arg(ArgEnum.failureCount) Integer failure, @Arg(ArgEnum.unsupportedCount) Integer unModified);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "ecobee")
+    public void syncIssueUnmodified(String syncObject, @Arg(ArgEnum.syncIssueType) String type,
+                                    @Arg(ArgEnum.username) LiteYukonUser yukonUser, @Arg(ArgEnum.syncIssueType) String syncIssueType);
 }

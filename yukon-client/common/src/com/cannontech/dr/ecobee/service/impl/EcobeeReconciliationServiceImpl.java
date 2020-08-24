@@ -135,7 +135,6 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
             return error.getCorrectPath();
         case MISLOCATED_DEVICE:
         case MISSING_DEVICE:
-        case EXTRANEOUS_DEVICE:
             return error.getSerialNumber();
         default:
             return StringUtils.EMPTY;
@@ -146,9 +145,10 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
     public List<EcobeeReconciliationResult> fixAllDiscrepancies(int reportId, LiteYukonUser liteYukonUser)
             throws IllegalArgumentException {
         int successCount = 0;
+        int extraneosDeviceCount = 0;
         log.debug("Fixing all ecobee discrepancies. ReportId: " + reportId);
-        
-        //get discrepancies
+
+        // get discrepancies
         EcobeeReconciliationReport report = reconciliationReportDao.findReport();
         if (report.getReportId() != reportId) {
             throw new IllegalArgumentException("Report id is outdated.");
@@ -156,16 +156,23 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
         log.debug("Total number of discrepancies: " + report.getErrors().size());
         ecobeeEventLogService.reconciliationStarted(report.getErrors().size(), liteYukonUser);
         List<EcobeeReconciliationResult> results = new ArrayList<>();
-        
+
         for (EcobeeDiscrepancyType errorType : errorTypes) {
             Collection<EcobeeDiscrepancy> errors = report.getErrors(errorType);
             for (EcobeeDiscrepancy error : errors) {
-                //Attempt to fix
+                // Attempt to fix
                 EcobeeReconciliationResult result = fixDiscrepancy(error);
-                //Save the result
+                // Save the result
                 results.add(result);
-                doEventLog(liteYukonUser, error, result);
-                //Remove discrepancy from report
+                if (error.getErrorType() != EcobeeDiscrepancyType.EXTRANEOUS_DEVICE) {
+                    doEventLog(liteYukonUser, error, result);
+                } else {
+                    ecobeeEventLogService.syncIssueUnmodified(error.getSerialNumber(),
+                            result.getOriginalDiscrepancy().getErrorType().toString(),
+                            liteYukonUser, result.getOriginalDiscrepancy().getErrorType().toString());
+                    extraneosDeviceCount++;
+                }
+                // Remove discrepancy from report
                 if (result.isSuccess()) {
                     reconciliationReportDao.removeError(reportId, error.getErrorId());
                     successCount++;
@@ -173,7 +180,7 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
             }
         }
         ecobeeEventLogService.reconciliationResults(report.getErrors().size(), successCount,
-                report.getErrors().size() - successCount);
+                report.getErrors().size() - successCount - extraneosDeviceCount, extraneosDeviceCount);
         return results;
     }
     
