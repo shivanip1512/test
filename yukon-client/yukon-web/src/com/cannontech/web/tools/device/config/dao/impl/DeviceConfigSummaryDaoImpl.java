@@ -91,8 +91,7 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         return searchResult;
     }
     
-    private SqlStatementBuilder buildUnassignSelect(DeviceConfigSummaryFilter filter, SortBy sortBy,
-            Direction direction, boolean selectCount) {
+    private SqlStatementBuilder buildUnassignSelect(DeviceConfigSummaryFilter filter, boolean selectCount) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         if (selectCount) {
             sql.append("SELECT ypo.PAObjectID");
@@ -115,9 +114,8 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("AND ypo.PAObjectID NOT IN (select DeviceID from DeviceConfigurationDeviceMap)");
         return sql;
     }
-    
-    private SqlStatementBuilder buildStateSelect(DeviceConfigSummaryFilter filter, SortBy sortBy,
-            Direction direction, boolean selectCount) {
+
+    private SqlStatementBuilder buildStateSelect(DeviceConfigSummaryFilter filter, boolean selectCount) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         if (selectCount) {
             sql.append("SELECT ypo.PAObjectID");
@@ -162,13 +160,13 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
             sql.append("FROM (");
         }
         if (filter.isDisplayAssigned()) {
-            sql.append(buildStateSelect(filter, sortBy, direction, selectCount));
+            sql.append(buildStateSelect(filter, selectCount));
             if (filter.isDisplayUnassigned()) {
                 sql.append("UNION");
             }
         }
         if (filter.isDisplayUnassigned()) {
-            sql.append(buildUnassignSelect(filter, sortBy, direction, selectCount));
+            sql.append(buildUnassignSelect(filter, selectCount));
         }
         addGroupsAndOrderBy(filter, sortBy, direction, sql);
         if (selectCount) {
