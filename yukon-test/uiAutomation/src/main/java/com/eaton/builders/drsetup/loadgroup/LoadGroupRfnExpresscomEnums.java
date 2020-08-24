@@ -2,9 +2,9 @@ package com.eaton.builders.drsetup.loadgroup;
 
 import java.util.Random;
 
-public class LoadGroupRfnExpresscommEnums {
+public class LoadGroupRfnExpresscomEnums {
 	
-	public enum AddressUsageRfnExpresscomm {
+	public enum AddressUsageRfnExpresscom {
 		GEO("GEO"), 
 		SUBSTATION("SUBSTATION"), 
 		FEEDER("FEEDER"), 
@@ -17,7 +17,7 @@ public class LoadGroupRfnExpresscommEnums {
 		
 		private final String addressUsage;
 
-		AddressUsageRfnExpresscomm(String addressUsage) {
+		AddressUsageRfnExpresscom(String addressUsage) {
 			this.addressUsage = addressUsage;
 		}
 
@@ -25,26 +25,26 @@ public class LoadGroupRfnExpresscommEnums {
 			return this.addressUsage;
 		}
 
-		public static AddressUsageRfnExpresscomm getRandomAddressUsage() {
+		public static AddressUsageRfnExpresscom getRandomAddressUsage() {
 
 			Random random = new Random();
 			return values()[random.nextInt(values().length)];
 		}
 	}
 
-	public enum RelayUsageRfnExpresscomm {
-		RELAY_1("Load_1"), 
-		RELAY_2("Load_2"), 
-		RELAY_3("Load_3"), 
-		RELAY_4("Load_4"),
-		RELAY_5("Load_5"), 
-		RELAY_6("Load_6"), 
-		RELAY_7("Load_7"), 
-		RELAY_8("Load_8");
+	public enum RelayUsageRfnExpresscom {
+		Load_1("Load_1"), 
+		Load_2("Load_2"), 
+		Load_3("Load_3"), 
+		Load_4("Load_4"),
+		Load_5("Load_5"), 
+		Load_6("Load_6"), 
+		Load_7("Load_7"), 
+		Load_8("Load_8");
 
 		private final String relayUsage;
 
-		RelayUsageRfnExpresscomm(String relayUsage) {
+		RelayUsageRfnExpresscom(String relayUsage) {
 			this.relayUsage = relayUsage;
 		}
 
@@ -52,14 +52,14 @@ public class LoadGroupRfnExpresscommEnums {
 			return this.relayUsage;
 		}
 
-		public static RelayUsageRfnExpresscomm getRandomRelayUsage() {
+		public static RelayUsageRfnExpresscom getRandomRelayUsage() {
 
 			Random random = new Random();
 			return values()[random.nextInt(values().length)];
 		}
 	}
 	
-	public enum ProtocolPriorityRfnExpresscomm {
+	public enum ProtocolPriorityRfnExpresscom {
 		DEFAULT("DEFAULT"), 
 		MEDIUM("MEDIUM"), 
 		HIGH("HIGH"),
@@ -67,7 +67,7 @@ public class LoadGroupRfnExpresscommEnums {
 		
 		private final String protocolPriority;
 
-		ProtocolPriorityRfnExpresscomm(String protocolPriority) {
+		ProtocolPriorityRfnExpresscom(String protocolPriority) {
 			this.protocolPriority = protocolPriority;
 		}
 
@@ -75,7 +75,7 @@ public class LoadGroupRfnExpresscommEnums {
 			return this.protocolPriority;
 		}
 
-		public static ProtocolPriorityRfnExpresscomm getRandomProtocolPriority() {
+		public static ProtocolPriorityRfnExpresscom getRandomProtocolPriority() {
 
 			Random random = new Random();
 			return values()[random.nextInt(values().length)];

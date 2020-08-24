@@ -8,8 +8,8 @@ import java.util.Optional;
 import org.javatuples.Pair;
 import org.json.JSONObject;
 
-import com.eaton.builders.drsetup.loadgroup.LoadGroupRfnExpresscommEnums.AddressUsageRfnExpresscomm;
-import com.eaton.builders.drsetup.loadgroup.LoadGroupRfnExpresscommEnums.RelayUsageRfnExpresscomm;
+import com.eaton.builders.drsetup.loadgroup.LoadGroupRfnExpresscomEnums.AddressUsageRfnExpresscom;
+import com.eaton.builders.drsetup.loadgroup.LoadGroupRfnExpresscomEnums.RelayUsageRfnExpresscom;
 import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
 import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 import com.github.javafaker.Faker;
@@ -17,11 +17,11 @@ import com.github.javafaker.Faker;
 import io.restassured.response.ExtractableResponse;
 
 
-public class LoadGroupRfnExpresscommCreateBuilder  {
+public class LoadGroupRfnExpresscomCreateBuilder  {
 public static class Builder {
 	    private Faker faker = new Faker();
-        private static final String TYPE = "LM_GROUP_RFN_ExpresscommM";
-        private static final String ParentType = "LM_GROUP_ExpresscommM";
+        private static final String TYPE = "LM_GROUP_RFN_EXPRESSCOMM";
+        private static final String ParentType = "LM_GROUP_EXPRESSCOMM";
         private String name;
         private int spid;
         private int geo;
@@ -34,8 +34,8 @@ public static class Builder {
         private double kwCapacity;
         private boolean disableGroup;
         private boolean disableControl;  
-        private List<AddressUsageRfnExpresscomm> addressUsage;
-        private List<RelayUsageRfnExpresscomm> relayUsage;
+        private List<AddressUsageRfnExpresscom> addressUsage;
+        private List<RelayUsageRfnExpresscom> relayUsage;
         private String protocolPriority;
         
         
@@ -103,15 +103,15 @@ public static class Builder {
             return this;
         }
         
-        public Builder withAddressUsage(Optional<AddressUsageRfnExpresscomm> addressUsage) {
-        	List<AddressUsageRfnExpresscomm> address = new ArrayList<AddressUsageRfnExpresscomm>();
+        public Builder withAddressUsage(Optional<AddressUsageRfnExpresscom> addressUsage) {
+        	List<AddressUsageRfnExpresscom> address = new ArrayList<AddressUsageRfnExpresscom>();
         	 if (address.isEmpty()) {
-        		 address.add(AddressUsageRfnExpresscomm.GEO);
-        		 address.add(AddressUsageRfnExpresscomm.SUBSTATION);
-        		 address.add(AddressUsageRfnExpresscomm.USER);
-        		 address.add(AddressUsageRfnExpresscomm.ZIP);
-        		 address.add(AddressUsageRfnExpresscomm.FEEDER);
-        		 address.add(AddressUsageRfnExpresscomm.PROGRAM);
+        		 address.add(AddressUsageRfnExpresscom.GEO);
+        		 address.add(AddressUsageRfnExpresscom.SUBSTATION);
+        		 address.add(AddressUsageRfnExpresscom.USER);
+        		 address.add(AddressUsageRfnExpresscom.ZIP);
+        		 address.add(AddressUsageRfnExpresscom.FEEDER);
+        		 address.add(AddressUsageRfnExpresscom.PROGRAM);
         		 this.addressUsage = address;
              } else {
             	 address.add(addressUsage.get());
@@ -120,14 +120,14 @@ public static class Builder {
             return this;
         }
         
-        public Builder withRelayUsage(Optional<RelayUsageRfnExpresscomm> relayUsage) {
-            List<RelayUsageRfnExpresscomm> relays = new ArrayList<RelayUsageRfnExpresscomm>();
+        public Builder withRelayUsage(Optional<RelayUsageRfnExpresscom> relayUsage) {
+            List<RelayUsageRfnExpresscom> relays = new ArrayList<RelayUsageRfnExpresscom>();
 
             if (relayUsage.isEmpty()) {
-                relays.add(RelayUsageRfnExpresscomm.RELAY_1);
-                relays.add(RelayUsageRfnExpresscomm.RELAY_2);
-                relays.add(RelayUsageRfnExpresscomm.RELAY_3);
-                relays.add(RelayUsageRfnExpresscomm.RELAY_4);
+                relays.add(RelayUsageRfnExpresscom.Load_1);
+                relays.add(RelayUsageRfnExpresscom.Load_2);
+                relays.add(RelayUsageRfnExpresscom.Load_3);
+                relays.add(RelayUsageRfnExpresscom.Load_4);
                 this.relayUsage = relays;
             } else {
                 relays.add(relayUsage.get());
@@ -136,9 +136,9 @@ public static class Builder {
             return this;
         }
                 
-        public Builder withProtocolPriority(Optional<LoadGroupRfnExpresscommEnums.ProtocolPriorityRfnExpresscomm> protocol_Priority) {
-        	LoadGroupRfnExpresscommEnums.ProtocolPriorityRfnExpresscomm randomProtocolPriority = protocol_Priority
-                    .orElse(LoadGroupRfnExpresscommEnums.ProtocolPriorityRfnExpresscomm.getRandomProtocolPriority());
+        public Builder withProtocolPriority(Optional<LoadGroupRfnExpresscomEnums.ProtocolPriorityRfnExpresscom> protocol_Priority) {
+        	LoadGroupRfnExpresscomEnums.ProtocolPriorityRfnExpresscom randomProtocolPriority = protocol_Priority
+                    .orElse(LoadGroupRfnExpresscomEnums.ProtocolPriorityRfnExpresscom.getRandomProtocolPriority());
 
             this.protocolPriority = randomProtocolPriority.getProtocolPriority();
             return this;
@@ -181,14 +181,14 @@ public static class Builder {
             
             String res = er.asString();
             JSONObject response = new JSONObject(res);
-            JSONObject jsonResponse = response.getJSONObject(TYPE);
+            JSONObject jsonResponse = response.getJSONObject(ParentType);
             
             return new Pair<>(request, jsonResponse);
         }
        
     }
 	public static Builder buildDefaultVersacomLoadGroup() {
-		return new LoadGroupRfnExpresscommCreateBuilder.Builder(Optional.empty())
+		return new LoadGroupRfnExpresscomCreateBuilder.Builder(Optional.empty())
 							.withProtocolPriority(Optional.empty())
 							.withDisableControl(Optional.empty())
 							.withDisableGroup(Optional.empty())
