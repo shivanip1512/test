@@ -3,7 +3,6 @@ package com.cannontech.web.api.commChannel;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -42,7 +41,7 @@ public class CommChannelApiController {
     @PostMapping
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> create(@Valid @RequestBody PortBase<?> port) {
-        return new ResponseEntity<>(portService.create(port), HttpStatus.OK);
+        return new ResponseEntity<>(portService.create(port), HttpStatus.CREATED);
     }
 
     //Get port

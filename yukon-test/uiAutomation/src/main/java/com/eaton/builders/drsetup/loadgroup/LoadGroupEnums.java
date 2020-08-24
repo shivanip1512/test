@@ -10,7 +10,6 @@ public class LoadGroupEnums {
         CLASS("CLASS"),
         DIVISION("DIVISION"),
         SERIAL("SERIAL");
-        
 
         private final String ADDRESS_USAGE;
 
@@ -39,7 +38,7 @@ public class LoadGroupEnums {
             return this.RELAY_USAGE;
         }
     }
-        
+
     public enum RouteId {
         firstRouteId(84),
         secondRouteId(28),
@@ -58,7 +57,7 @@ public class LoadGroupEnums {
         fifteenthRouteId(73),
         sixteenthRouteId(77),
         seventeenthRouteId(80);
-        
+
         private final int ROUTE_ID;
 
         RouteId(Integer route_Id) {
@@ -74,4 +73,27 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
+
+    public enum AddressLevelMCT {
+        BRONZE("BRONZE"),
+        LEAD("LEAD"),
+        MCT_ADDRESS("MCT_ADDRESS");
+
+        private final String addressLevelMCT;
+
+        AddressLevelMCT(String addressLevelMCT) {
+            this.addressLevelMCT = addressLevelMCT;
+        }
+
+        public String getAddressLevelMCT() {
+            return this.addressLevelMCT;
+        }
+
+        public static AddressLevelMCT getRandomAddressLevelMCT() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
+
+    }
+
 }
