@@ -2,6 +2,7 @@ package com.cannontech.web.tools.device.config.model;
 
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -32,6 +33,10 @@ public class DeviceConfigSummaryFilter {
 
     public boolean isDisplayUnassigned() {
         return displayUnassigned;
+    }
+
+    public boolean isDisplayAssigned() {
+        return !CollectionUtils.isEmpty(configurationIds);
     }
 
     public void setDisplayUnassigned(boolean displayUnassigned) {

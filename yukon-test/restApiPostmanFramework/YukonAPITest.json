@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "7d437393-da2a-4130-a581-3834c9a78dfe",
+		"_postman_id": "10e7b714-c2fa-4cf7-95f9-3a401fafa07a",
 		"name": "YukonAPITest",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -686,7 +686,7 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "13c81ad4-2c45-4c1d-84bf-196ffe245e35",
+												"id": "5f40b64c-2497-4831-aa31-d6b17fec0f5d",
 												"exec": [
 													"console.log('I am from ');"
 												],
@@ -1876,7 +1876,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "878c6dfa-254a-4081-a472-e1dc952f863d",
+								"id": "6ee30822-547a-41c3-a033-c40bb29ceb6f",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -1886,7 +1886,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "82ff1eba-984c-4bd8-bb40-0c99c977f881",
+								"id": "884e2079-ccc0-4e51-b27d-26535b91c207",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -3833,15 +3833,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{api-url}}/api/device/virtualDevices/create",
+							"raw": "{{api-url}}/api/device/virtualDevices",
 							"host": [
 								"{{api-url}}"
 							],
 							"path": [
 								"api",
 								"device",
-								"virtualDevices",
-								"create"
+								"virtualDevices"
 							]
 						}
 					},
@@ -3895,6 +3894,285 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "List Virtual Devices",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-url}}/api/device/virtualDevices?sort=PAO_NAME&direction=asc&page=1&itemsPerPage=250",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"device",
+								"virtualDevices"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "PAO_NAME"
+								},
+								{
+									"key": "direction",
+									"value": "asc"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "itemsPerPage",
+									"value": "250"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Attributes",
+			"item": [
+				{
+					"name": "Attribute CRUD",
+					"item": [
+						{
+							"name": "Create Attribute",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Postman API Test Attribute\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/attributes",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"attributes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Attribute",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Postman API Test Attribute Updated Name\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/attributes/{attribute-id}",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"attributes",
+										"{attribute-id}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve Attribute",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{api-url}}/api/attributes/{attribute-id}",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"attributes",
+										"{attribute-id}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Attribute",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{api-url}}/api/attributes/{attribute-id}",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"attributes",
+										"{attribute-id}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List Attributes",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{api-url}}/api/attributes",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"attributes"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Attribute Assignment",
+					"item": [
+						{
+							"name": "Create Assignment",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"attributeId\": 92,\r\n    \"paoType\": \"VIRTUAL_SYSTEM\",\r\n    \"pointType\": \"CalcAnalog\",\r\n    \"offset\": 1000\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/attributeAssignments",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"attributeAssignments"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Retrieve Assignment",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{api-url}}/api/attributeAssignments/{attribute-assignment-id}",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"attributeAssignments",
+										"{attribute-assignment-id}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Assignment",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{api-url}}/api/attributeAssignments/{attribute-assignment-id}",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"attributeAssignments",
+										"{attribute-assignment-id}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Assignment",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"attributeId\": 92,\r\n    \"paoType\": \"VIRTUAL_SYSTEM\",\r\n    \"pointType\": \"CalcAnalog\",\r\n    \"offset\": 1000\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/attributeAssignments/{attribute-assignment-id",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"attributeAssignments",
+										"{attribute-assignment-id"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List Assignments",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{api-url}}/api/attributeAssignments",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"attributeAssignments"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				}
 			],
 			"protocolProfileBehavior": {}
@@ -3914,7 +4192,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "dfdfbbbe-b549-40c6-bbd4-4429cf09beba",
+				"id": "21a78181-a640-4f83-82f7-f20e01535e10",
 				"type": "text/javascript",
 				"exec": [
 					"",
@@ -3963,7 +4241,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "98d38167-3ab2-4c09-92c2-421266887de7",
+				"id": "e5f78c83-b63f-4f32-a71f-18cebdef041f",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -3973,34 +4251,29 @@
 	],
 	"variable": [
 		{
-			"id": "1e095ccf-fd79-4c14-b42b-db62413971cb",
+			"id": "d9739676-2d02-4893-8578-2b0e1175fbd3",
 			"key": "api-url",
-			"value": "http://pspl-sw-night.eatoneaseng.net:8080",
-			"type": "string"
+			"value": "http://pspl-sw-night.eatoneaseng.net:8080"
 		},
 		{
-			"id": "ee3ad4ef-1040-446e-bee8-6e390b042d31",
+			"id": "f4260f55-45c5-4bcb-bc3e-31a9a2adae1c",
 			"key": "username",
-			"value": "yukon",
-			"type": "string"
+			"value": "yukon"
 		},
 		{
-			"id": "1371f0ed-decb-4c47-9caf-a019dbd45936",
+			"id": "4b11e89c-f67c-42d7-a629-60c1a45f0d3c",
 			"key": "password",
-			"value": "yukon",
-			"type": "string"
+			"value": "yukon"
 		},
 		{
-			"id": "bc08df03-6f72-457d-b27e-edf78c88da77",
+			"id": "4921ea58-5cb8-4d45-ba50-be6bcc2d4404",
 			"key": "currentAccessToken",
-			"value": "",
-			"type": "string"
+			"value": ""
 		},
 		{
-			"id": "b6e84b20-a8d3-47fa-bd26-778d66f7549c",
+			"id": "dfca3920-ea01-48d4-91ec-ba0c7819288f",
 			"key": "accessTokenExpiry",
-			"value": "",
-			"type": "string"
+			"value": ""
 		}
 	],
 	"protocolProfileBehavior": {}
