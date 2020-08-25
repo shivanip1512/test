@@ -1,6 +1,8 @@
 package com.cannontech.rest.api.dr.helper;
 
+import static org.junit.Assert.assertTrue;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.testng.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,6 +10,7 @@ import java.util.List;
 
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.testng.ITestContext;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.ApiUtils;
@@ -23,8 +26,11 @@ import com.cannontech.rest.api.loadProgram.request.MockNotificationGroup;
 import com.cannontech.rest.api.loadProgram.request.MockProgramConstraint;
 import com.cannontech.rest.api.loadProgram.request.MockProgramControlWindow;
 import com.cannontech.rest.api.loadProgram.request.MockProgramControlWindowFields;
+import com.cannontech.rest.api.loadProgram.request.MockProgramDirectMemberControl;
 import com.cannontech.rest.api.loadProgram.request.MockProgramGroup;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
+
+import io.restassured.response.ExtractableResponse;
 
 public class LoadProgramSetupHelper {
     public final static String CONTEXT_PROGRAM_ID = "programId"; 
@@ -98,7 +104,26 @@ public class LoadProgramSetupHelper {
                           .build();
 
     }
-    
+
+
+    public static MockLoadProgram buildLoadProgramUpdateRequest(MockPaoType type, List<MockLoadGroupBase> loadGroups,
+            List<MockGearControlMethod> gearTypes, Integer constraintId, MockLoadProgram subOrdinateProgram) {
+        MockLoadProgram program = buildLoadProgramRequest(type, loadGroups, gearTypes, constraintId);
+        program.setMemberControl(getMockProgramDirectMemberControl(subOrdinateProgram));
+        return program;
+    }
+
+    public static List<MockProgramDirectMemberControl> getMockProgramDirectMemberControl(MockLoadProgram subOrdinateLoadProgram) {
+        List<MockProgramDirectMemberControl> memberControls = new ArrayList<>();
+        MockProgramDirectMemberControl mockdirectProg = MockProgramDirectMemberControl.builder()
+                .subordinateProgId(subOrdinateLoadProgram.getProgramId())
+                .subordinateProgName(subOrdinateLoadProgram.getName())
+                .build();
+        memberControls.add(mockdirectProg);
+        return memberControls;
+
+    }
+
     public static MockLoadProgramCopy buildLoadProgramCopyRequest(MockPaoType programType, Integer constraintId) {
         return MockLoadProgramCopy.builder()
                                   .name(ApiUtils.buildFriendlyName(programType, "LM_", "TestCopy"))
@@ -146,6 +171,26 @@ public class LoadProgramSetupHelper {
                                                                                               .description("Assigned Notification Group Name") };
     }
 
+    /**
+     * Helper method to create member control field descriptor.
+     */
+    public static FieldDescriptor[] loadProgramMemberControlFields() {
+        return new FieldDescriptor[] {
+                fieldWithPath("memberControl[].subordinateProgId").type(JsonFieldType.NUMBER)
+                        .description("Sub-ordinate Program Id"),
+                fieldWithPath("memberControl[].subordinateProgName").type(JsonFieldType.STRING)
+                        .description("Sub-ordinate Program Name")
+        };
+    }
+
+    /**
+     * Helper method to merge member control field descriptor in Load Program.
+     */
+    public static List<FieldDescriptor> createFieldDescriptorForUpdate(FieldDescriptor[] programFieldDescriptor) {
+        List<FieldDescriptor> fieldDescriptorList = mergeProgramFieldDescriptors(programFieldDescriptor);
+        fieldDescriptorList.addAll(Arrays.asList(loadProgramMemberControlFields()));
+        return fieldDescriptorList;
+    }
     /**
      * Helper method to create program field descriptor.
      */
@@ -201,5 +246,26 @@ public class LoadProgramSetupHelper {
                 .notificationGrpID(Integer.valueOf(ApiCallHelper.getProperty("notificationGrpID")))
                 .notificationGrpName(ApiCallHelper.getProperty("notificationGrpName"))
                 .build();
+    }
+
+    public static MockLoadProgram getMemberControlLoadProgram(ITestContext context, List<MockGearControlMethod> gearTypes,
+            MockPaoType paoType) {
+        MockLoadProgram subOrdinateLoadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(paoType,
+                (List<MockLoadGroupBase>) context.getAttribute("loadGroups"),
+                gearTypes,
+                (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
+        subOrdinateLoadProgram.setName(subOrdinateLoadProgram.getName().concat("MemberControl"));
+        ExtractableResponse<?> loadProgramResponse = ApiCallHelper.post("saveLoadProgram", subOrdinateLoadProgram);
+
+        subOrdinateLoadProgram.setProgramId(loadProgramResponse.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID));
+        assertTrue("Program Id should not be Null", subOrdinateLoadProgram.getProgramId() != null);
+        assertTrue("Status code should be 200", loadProgramResponse.statusCode() == 200);
+
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("getLoadProgram",
+                loadProgramResponse.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString());
+        assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
+        subOrdinateLoadProgram = getResponse.as(MockLoadProgram.class);
+
+        return subOrdinateLoadProgram;
     }
 }

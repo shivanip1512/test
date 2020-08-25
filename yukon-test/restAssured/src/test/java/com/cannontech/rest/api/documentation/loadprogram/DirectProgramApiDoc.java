@@ -7,7 +7,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +45,7 @@ public class DirectProgramApiDoc {
 
     private FieldDescriptor[] smartCycleGearFieldDescriptor = null;
     private List<FieldDescriptor> smartCycleProgramFieldDescriptor = null;
+    private MockLoadProgram subOrdinateLoadProgram = null;
 
     @BeforeMethod
     public void setUp(Method method) {
@@ -162,12 +162,15 @@ public class DirectProgramApiDoc {
     public void Test_DirectProgram_Update(ITestContext context) {
         List<MockGearControlMethod> gearTypes = new ArrayList<>();
         gearTypes.add(MockGearControlMethod.SmartCycle);
-        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_DIRECT_PROGRAM,
+        subOrdinateLoadProgram = LoadProgramSetupHelper.getMemberControlLoadProgram(context, gearTypes, MockPaoType.LM_DIRECT_PROGRAM);
+
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramUpdateRequest(MockPaoType.LM_DIRECT_PROGRAM,
                                                                                  (List<MockLoadGroupBase>) context.getAttribute("loadGroups"),
                                                                                  gearTypes,
-                                                                                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
+                                                                                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID),
+                                                                                 subOrdinateLoadProgram);
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
-                                                                     requestFields(smartCycleProgramFieldDescriptor),
+                                                                     requestFields(LoadProgramSetupHelper.createFieldDescriptorForUpdate(smartCycleGearFieldDescriptor)),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
@@ -256,6 +259,7 @@ public class DirectProgramApiDoc {
                                                     .response();
 
         assertTrue("Status code should be 200", response.statusCode() == 200);
+        ApiCallHelper.delete(subOrdinateLoadProgram.getProgramId(), subOrdinateLoadProgram.getName(), "deleteLoadProgram");
     }
 
     /**

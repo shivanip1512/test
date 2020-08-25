@@ -11,6 +11,7 @@
 #include "cmd_rfn_ChannelConfiguration.h"
 #include "cmd_rfn_DataStreamingConfiguration.h"
 #include "cmd_rfn_ConfigNotification.h"
+#include "cmd_rfn_Metrology.h"
 
 #include "Attribute.h"
 #include "MetricIdLookup.h"
@@ -67,6 +68,7 @@ const std::string RfnMeterDevice::ConfigPart::temperaturealarm = "temperatureala
 const std::string RfnMeterDevice::ConfigPart::channelconfig    = "channelconfig";
 const std::string RfnMeterDevice::ConfigPart::voltageprofile   = "voltageprofile";
 const std::string RfnMeterDevice::ConfigPart::demand           = "demand";
+const std::string RfnMeterDevice::ConfigPart::metlib           = "metlib";
 
 
 YukonError_t RfnMeterDevice::executePutConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
@@ -300,15 +302,25 @@ RfnMeterDevice::ConfigMap RfnMeterDevice::getConfigMethods(InstallType installTy
 {
     ConfigMap m;
 
+    const bool metlibSupported = hasMetrologyLibrarySupport();
+
     if( installType == InstallType::GetConfig )
     {
         m.emplace(ConfigPart::channelconfig,    bindConfigMethod( &RfnMeterDevice::executeGetConfigInstallChannels,     this ) );
         m.emplace(ConfigPart::temperaturealarm, bindConfigMethod( &RfnMeterDevice::executeGetConfigTemperatureAlarm,    this ) );
+        if ( metlibSupported )
+        {
+            m.emplace(ConfigPart::metlib,           bindConfigMethod(&RfnMeterDevice::executeGetConfigMetrology,           this));
+        }
     }
     else
     {
         m.emplace(ConfigPart::channelconfig,    bindConfigMethod( &RfnMeterDevice::executePutConfigInstallChannels,     this ) );
         m.emplace(ConfigPart::temperaturealarm, bindConfigMethod( &RfnMeterDevice::executePutConfigTemperatureAlarm,    this ) );
+        if ( metlibSupported )
+        {
+            m.emplace(ConfigPart::metlib,           bindConfigMethod(&RfnMeterDevice::executePutConfigMetrology,           this));
+        }
     }
 
     return m;
@@ -962,6 +974,112 @@ void RfnMeterDevice::storeIntervalRecordingActiveConfiguration( const Commands::
     setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, paoMetrics );
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, cmd.getIntervalRecordingSeconds() );
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds, cmd.getIntervalReportingSeconds() );
+}
+
+bool RfnMeterDevice::hasMetrologyLibrarySupport() const
+{
+    using Commands::RfnMetrologyCommand;
+
+    return hasRfnFirmwareSupportIn( 9.4 )
+            && RfnMetrologyCommand::isSupportedByDeviceType( getDeviceType() );
+}
+
+YukonError_t RfnMeterDevice::executePutConfigMetrology(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+{
+    using Commands::RfnMetrologyCommand;
+    using Commands::RfnMetrologySetConfigurationCommand;
+
+    if ( ! hasMetrologyLibrarySupport() )
+    {
+        return ClientErrors::NoMethod;
+    }
+
+    YukonError_t ret = ClientErrors::ConfigCurrent;
+
+    try
+    {
+        Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
+
+        if ( ! deviceConfig )
+        {
+            return reportConfigErrorDetails( ClientErrors::NoConfigData, "Device \"" + getName() + "\"", pReq, returnMsgs );
+        }
+
+        const auto configMetrologyLibraryEnabled 
+            = deviceConfig->findValue<bool>( Config::RfnStrings::MetrologyLibraryEnabled );
+
+        //  This is an optional config, so don't throw an error if it's missing
+        if ( ! configMetrologyLibraryEnabled.is_initialized() )
+        {
+            return ClientErrors::None;
+        }
+
+        const boost::optional<bool> paoMetrologyLibraryEnabled
+            = findDynamicInfo<bool>( CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled );
+
+        if ( *configMetrologyLibraryEnabled != paoMetrologyLibraryEnabled
+             || parse.isKeyValid("force") )
+        {
+            if ( parse.isKeyValid("verify") )
+            {
+                reportConfigMismatchDetails<>( "Metrology Library Enabled",
+                    *configMetrologyLibraryEnabled, paoMetrologyLibraryEnabled,
+                    pReq, returnMsgs );
+
+                ret = ClientErrors::ConfigNotCurrent;
+            }
+            else
+            {
+                RfnMetrologyCommand::State  metrologyLibraryState
+                    = *configMetrologyLibraryEnabled
+                        ? RfnMetrologyCommand::Enable
+                        : RfnMetrologyCommand::Disable;
+
+                rfnRequests.push_back( std::make_unique<RfnMetrologySetConfigurationCommand>( metrologyLibraryState ) );
+
+                ret = ClientErrors::None;
+            }
+        }
+
+        return ret;
+    }
+    catch ( const MissingConfigDataException &e )
+    {
+        CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
+
+        return reportConfigErrorDetails( e, pReq, returnMsgs );
+    }
+    catch ( const InvalidConfigDataException &e )
+    {
+        CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
+
+        return reportConfigErrorDetails( e, pReq, returnMsgs );
+    }
+}
+
+YukonError_t RfnMeterDevice::executeGetConfigMetrology(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+{
+    using Commands::RfnMetrologyGetConfigurationCommand;
+
+    if ( ! hasMetrologyLibrarySupport() )
+    {
+        return ClientErrors::NoMethod;
+    }
+
+    rfnRequests.push_back( std::make_unique<RfnMetrologyGetConfigurationCommand>() );
+
+    return ClientErrors::None;
+}
+
+void RfnMeterDevice::handleCommandResult( const Commands::RfnMetrologyGetConfigurationCommand & cmd )
+{
+    using Commands::RfnMetrologyCommand;
+
+    if ( const auto state = cmd.getMetrologyState() )
+    {
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled,
+                        state == RfnMetrologyCommand::Enable );
+    }
 }
 
 }
