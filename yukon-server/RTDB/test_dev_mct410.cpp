@@ -12,41 +12,24 @@
 
 #include "boost_test_helpers.h"
 
+#include <boost/algorithm/cxx11/all_of.hpp>
 #include <boost/assign/list_of.hpp>
 
 using namespace Cti::Protocols;
+using Cti::Test::isSentOnRouteMsg;
 using std::string;
 using std::list;
 using std::vector;
 typedef CtiTableDynamicPaoInfo Dpi;
 
 
-struct test_CtiDeviceCCU : CtiDeviceCCU
-{
-    test_CtiDeviceCCU()
-    {
-        _paObjectID = 12345;
-    }
-};
-
-struct test_CtiRouteCCU : CtiRouteCCU
-{
-    CtiDeviceSPtr ccu;
-
-    test_CtiRouteCCU() : ccu(new test_CtiDeviceCCU)
-    {
-        _tblPAO.setID(1234, test_tag);
-        setDevicePointer(ccu);
-    }
-};
-
 struct test_Mct410Device : Cti::Devices::Mct410Device
 {
 protected:
     CtiRouteSPtr rte;
 
-    test_Mct410Device(DeviceTypes type, const string &name) :
-        rte(new test_CtiRouteCCU)
+    test_Mct410Device(DeviceTypes type, const string &name)
+        : rte(boost::make_shared<Cti::Test::test_CtiRouteCCU>())
     {
         setDeviceType(type);
         _name = name;
@@ -157,6 +140,11 @@ struct test_Mct410FocusDevice : test_Mct410Device
     {
     }
 };
+
+namespace Cti {
+    //  defined in rtdb/test_main.cpp
+    std::ostream& operator<<(std::ostream& o, const ConnectionHandle& h);
+}
 
 namespace std {
     //  defined in rtdb/test_main.cpp
@@ -484,15 +472,15 @@ BOOST_FIXTURE_TEST_SUITE(requests, executeRequest_helper)
         BOOST_REQUIRE_EQUAL( 2, retList.size() );
         BOOST_CHECK( outList.empty() );
 
-        const std::vector<const CtiMessage *> retMsgs(retList.begin(), retList.end());
+        auto retList_itr = retList.cbegin();
 
-        const CtiRequestMsg *req = dynamic_cast<const CtiRequestMsg *>(retMsgs[0]);
+        auto req = dynamic_cast<const CtiRequestMsg *>(*retList_itr++);
 
         BOOST_REQUIRE( req );
         BOOST_CHECK_EQUAL( req->DeviceId(), 123456 );
         BOOST_CHECK_EQUAL( req->CommandString(), "getstatus disconnect" );
 
-        const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retMsgs[1]);
+        auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
 
         BOOST_REQUIRE( ret );
         BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
@@ -550,15 +538,15 @@ BOOST_FIXTURE_TEST_SUITE(requests, executeRequest_helper)
         BOOST_REQUIRE_EQUAL( 2, retList.size() );
         BOOST_CHECK( outList.empty() );
 
-        const std::vector<const CtiMessage *> retMsgs(retList.begin(), retList.end());
+        auto retList_itr = retList.cbegin();
 
-        const CtiRequestMsg *req = dynamic_cast<const CtiRequestMsg *>(retMsgs[0]);
+        auto req = dynamic_cast<const CtiRequestMsg *>(*retList_itr++);
 
         BOOST_REQUIRE( req );
         BOOST_CHECK_EQUAL( req->DeviceId(), 123456 );
         BOOST_CHECK_EQUAL( req->CommandString(), "getstatus disconnect" );
 
-        const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retMsgs[1]);
+        auto ret = dynamic_cast<const CtiReturnMsg *>(*retList_itr++);
 
         BOOST_REQUIRE( ret );
         BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
@@ -611,16 +599,6 @@ struct mctExecute_noConfig_helper : executeRequest_helper
         delete om;
     }
 };
-
-bool isSentOnRouteMsg(const CtiMessage *msg)
-{
-    if( auto ret = dynamic_cast<const CtiReturnMsg *>(msg) )
-    {
-        return ret->ResultString() == "Emetcon DLC command sent on route ";
-    }
-
-    return false;
-}
 
 BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 //{  Brace matching for BOOST_FIXTURE_TEST_SUITE
@@ -2312,7 +2290,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK(outList.empty());
             BOOST_REQUIRE_EQUAL(vgList.size(), 2);
 
-            auto retList_itr = retList.begin();
+            auto retList_itr = retList.cbegin();
 
             {
                 BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
@@ -2350,7 +2328,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 }
             }
 
-            test_Mct410Device::CtiMessageList::const_iterator vgList_itr = vgList.begin();
+            auto vgList_itr = vgList.cbegin();
 
             {
                 const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(*vgList_itr++);
@@ -2421,7 +2399,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_CHECK( isSentOnRouteMsg(retList.front()) );
 
-        test_Mct410Device::OutMessageList::const_iterator outList_itr = outList.begin();
+        auto outList_itr = outList.cbegin();
 
         {
             CtiOutMessage *outmsg = *outList_itr++;
@@ -2755,7 +2733,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_CHECK( outList.empty() );
 
-        CtiDeviceBase::CtiMessageList::const_iterator retList_itr = retList.begin();
+        auto retList_itr = retList.cbegin();
 
         {
             const CtiReturnMsg *errorMsg = dynamic_cast<const CtiReturnMsg*>(*retList_itr++);
@@ -2792,14 +2770,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_REQUIRE_EQUAL( retList.size(), 6 );
         BOOST_REQUIRE_EQUAL( outList.size(), 6 );
 
-        auto retList_itr = retList.begin();
-        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
-        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
-        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
-        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
-        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
 
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+        auto om_itr = outList.cbegin();
 
         int writeMsgPriority,
             readMsgPriority;        // Capture message priorities to validate ordering
@@ -2943,14 +2916,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_REQUIRE_EQUAL( retList.size(), 6 );
         BOOST_REQUIRE_EQUAL( outList.size(), 6 );
 
-        auto retList_itr = retList.begin();
-        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
-        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
-        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
-        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
-        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
 
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+        auto om_itr = outList.cbegin();
 
         int writeMsgPriority,
             readMsgPriority;        // Capture message priorities to validate ordering
@@ -3092,11 +3060,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 2 );
 
-        auto retList_itr = retList.begin();
-        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
-        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
 
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+        auto om_itr = outList.cbegin();
 
         int writeMsgPriority,
             readMsgPriority;        // Capture message priorities to validate ordering
@@ -3190,11 +3156,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 2 );
 
-        auto retList_itr = retList.begin();
-        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
-        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
 
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+        auto om_itr = outList.cbegin();
 
         int writeMsgPriority,
             readMsgPriority;        // Capture message priorities to validate ordering
@@ -3288,11 +3252,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 2 );
 
-        auto retList_itr = retList.begin();
-        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
-        BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
 
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+        auto om_itr = outList.cbegin();
 
         int writeMsgPriority,
             readMsgPriority;        // Capture message priorities to validate ordering
@@ -3362,6 +3324,31 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK_EQUAL( mode, "ON_DEMAND" );
         }
     }
+
+    BOOST_AUTO_TEST_CASE(test_getconfig_install_all)
+    {
+        test_Mct410IconDevice mct410;
+        mct410.setDisconnectAddress(1234567);
+
+        request.setCommandString("getconfig install all");
+
+        CtiCommandParser parse(request.CommandString());
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 4 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 3 );
+
+        auto retList_itr = retList.cbegin();
+        const auto verifyMsg = dynamic_cast<const CtiRequestMsg*>( *retList_itr++ );
+        BOOST_REQUIRE( verifyMsg );
+        BOOST_CHECK_EQUAL( verifyMsg->CommandString(), "putconfig install all verify" );
+        BOOST_CHECK_EQUAL( verifyMsg->getConnectionHandle(), testConnHandle );
+
+        BOOST_CHECK( std::all_of( retList_itr, retList.cend(), isSentOnRouteMsg ) );
+    }
+
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_resume)
     {
         test_Mct410IconDevice mct410;
@@ -5848,7 +5835,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_REQUIRE_EQUAL(retList.size(), 2);
 
         {
-            auto retList_itr = retList.begin();
+            auto retList_itr = retList.cbegin();
             CtiRequestMsg *req;
 
             {

@@ -12,13 +12,12 @@ import com.github.javafaker.Faker;
 
 import io.restassured.response.ExtractableResponse;
 
-public class LoadGroupEmetconCreateBuilder extends LoadGroupEnums{
-	
-	public static class Builder {
-	
-		
+public class LoadGroupEmetconCreateBuilder extends LoadGroupEnums {
+
+    public static class Builder {
+
         private Faker faker = new Faker();
-        
+
         private static final String TYPE = "LM_GROUP_EMETCON";
         private String name;
         private int routeId;
@@ -28,32 +27,32 @@ public class LoadGroupEmetconCreateBuilder extends LoadGroupEnums{
         private String relayUsage;
         private double kwCapacity;
         private boolean disableGroup;
-        private boolean disableControl;   
-        
+        private boolean disableControl;
+
         public Builder(Optional<String> name) {
-            String u = UUID.randomUUID().toString();            
+            String u = UUID.randomUUID().toString();
             String uuid = u.replace("-", "");
-            
+
             this.name = name.orElse("AT LG " + uuid);
         }
 
         public Builder withGoldAddress(Optional<Integer> goldAddress) {
-            this.goldAddress = goldAddress.orElse(faker.number().numberBetween(1, 4));            
+            this.goldAddress = goldAddress.orElse(faker.number().numberBetween(1, 4));
             return this;
         }
 
         public Builder withSilverAddress(Optional<Integer> silverAddress) {
-            this.silverAddress = silverAddress.orElse(faker.number().numberBetween(0, 60));            
+            this.silverAddress = silverAddress.orElse(faker.number().numberBetween(0, 60));
             return this;
         }
-        
+
         public Builder withCommunicationRoute(int routeId) {
-        	this.routeId = routeId;
+            this.routeId = routeId;
             return this;
-        }    
-                
+        }
+
         public Builder withKwCapacity(Optional<Double> kwCapacity) {
-            this.kwCapacity = kwCapacity.orElse(faker.number().randomDouble(3, 0, 99999));            
+            this.kwCapacity = kwCapacity.orElse(faker.number().randomDouble(3, 0, 99999));
             return this;
         }
 
@@ -66,25 +65,25 @@ public class LoadGroupEmetconCreateBuilder extends LoadGroupEnums{
             this.disableControl = disableControl.orElse(false);
             return this;
         }
-        
-        public Builder withRelayUsage(Optional<LoadGroupEmetconCreateBuilder.RelayUsage> relayUsage) {
-        	LoadGroupEmetconCreateBuilder.RelayUsage randomRelayUsage = relayUsage.orElse(LoadGroupEmetconCreateBuilder.RelayUsage.getRandomRelayUsage());
+
+        public Builder withRelayUsage(Optional<LoadGroupEnums.RelayUsageEmetcon> relayUsage) {
+            LoadGroupEnums.RelayUsageEmetcon randomRelayUsage = relayUsage.orElse(LoadGroupEnums.RelayUsageEmetcon.getRandomRelayUsage());
 
             this.relayUsage = randomRelayUsage.getRelayUsage();
             return this;
         }
-        
-        public Builder withAddressUsage(Optional<LoadGroupEmetconCreateBuilder.AddressUsage> addressUsage) {
-        	LoadGroupEmetconCreateBuilder.AddressUsage randomAddressUsage = addressUsage.orElse(LoadGroupEmetconCreateBuilder.AddressUsage.getRandomAddressUsage());
+
+        public Builder withAddressUsage(Optional<LoadGroupEnums.AddressUsageEmetcon> addressUsage) {
+            LoadGroupEmetconCreateBuilder.AddressUsageEmetcon randomAddressUsage = addressUsage.orElse(LoadGroupEmetconCreateBuilder.AddressUsageEmetcon.getRandomAddressUsage());
 
             this.addressUsage = randomAddressUsage.getAddressUsage();
             return this;
         }
-       
-        public JSONObject build() {            
-            JSONObject j = new JSONObject();            
-            
-            JSONObject jo = new JSONObject();            
+
+        public JSONObject build() {
+            JSONObject j = new JSONObject();
+
+            JSONObject jo = new JSONObject();
             jo.put("name", this.name);
             jo.put("type", TYPE);
             jo.put("routeId", this.routeId);
@@ -94,32 +93,29 @@ public class LoadGroupEmetconCreateBuilder extends LoadGroupEnums{
             jo.put("relayUsage", this.relayUsage);
             jo.put("kWCapacity", this.kwCapacity);
             jo.put("disableGroup", this.disableGroup);
-            jo.put("disableControl", this.disableControl);            
+            jo.put("disableControl", this.disableControl);
 
             j.put(TYPE, jo);
-            
+
             return j;
         }
-        
+
         public Pair<JSONObject, JSONObject> create() {
-            JSONObject request = build(); 
-            
+            JSONObject request = build();
+
             ExtractableResponse<?> createResponse = DrSetupCreateRequest.createLoadGroup(request.toString());
-            
+
             String id = createResponse.path("groupId").toString();
-            
-            ExtractableResponse<?> er = DrSetupGetRequest.getLoadGroup(Integer.parseInt(id)); 
-            
+
+            ExtractableResponse<?> er = DrSetupGetRequest.getLoadGroup(Integer.parseInt(id));
+
             String res = er.asString();
             JSONObject response = new JSONObject(res);
             JSONObject jsonResponse = response.getJSONObject(TYPE);
-            
+
             return new Pair<>(request, jsonResponse);
         }
-       
-    }
-	
-	
 
+    }
 
 }

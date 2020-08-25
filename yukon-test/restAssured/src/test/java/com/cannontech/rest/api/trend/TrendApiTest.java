@@ -36,7 +36,7 @@ public class TrendApiTest {
         ExtractableResponse<?> createResponse = ApiCallHelper.post("createTrend", trendModel);
         String trendId = createResponse.path(TrendHelper.CONTEXT_TREND_ID).toString();
         context.setAttribute(TrendHelper.CONTEXT_TREND_ID, trendId);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
         assertTrue("Trend Id should not be Null", trendId != null);
         Log.endTestCase("trend_01_Create");
     }
