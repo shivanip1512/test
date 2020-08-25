@@ -13,7 +13,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.builders.drsetup.loadgroup.LoadGroupVersacomCreateBuilder;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupVersacomCreateBuilder.Builder;
-import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.AddressUsage;
+import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.RelayUsage;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
@@ -44,7 +44,7 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
         String editName = "AT Edit Ld group " + timeStamp;
         final String EXPECTED_MSG = editName + " saved successfully.";
         Pair<JSONObject, JSONObject> pair = builder
-                .withOtherAddressUsage(Optional.of(AddressUsage.UTILITY))
+                .withOtherAddressUsage(Optional.of(LoadGroupEnums.AddressUsageVersacom.UTILITY))
                 .withRelayUsage(Optional.of(RelayUsage.RELAY_3))
                 .create();
         JSONObject response = pair.getValue1();
