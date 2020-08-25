@@ -9,19 +9,15 @@ import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 
 public class TrendAddMarkerModal extends BaseModal {
-    
-    private String modalTitle;
-    private String describedBy;
-
     public TrendAddMarkerModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
         super(driverExt, modalTitle, describedBy);
         
         if(modalTitle.isPresent()) {
-            this.modalTitle = modalTitle.get();
+            modalTitle = Optional.of(modalTitle.get());
         }
         
         if(describedBy.isPresent()) {
-            this.describedBy = describedBy.get();
+            describedBy = Optional.of(describedBy.get());
         }
     } 
     
@@ -39,5 +35,9 @@ public class TrendAddMarkerModal extends BaseModal {
     
     public String getColor() {
     	return getModal().findElement(By.cssSelector("table tr .value .sp-preview-inner")).getAttribute("style");
+    }
+    
+    public String getLabelMaxLength() {
+        return getLabel().getEditElement().getAttribute("maxLength");
     }
 }

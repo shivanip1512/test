@@ -2,28 +2,22 @@ package com.eaton.tests.tools.trends;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
 
 import org.assertj.core.api.SoftAssertions;
-import org.codehaus.groovy.runtime.metaclass.MethodMetaProperty.GetMethodMetaProperty;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.eaton.elements.WebTableRow;
 import com.eaton.elements.WebTableRow.Icon;
-import com.eaton.elements.modals.SelectPointModal;
 import com.eaton.elements.modals.TrendAddMarkerModal;
-import com.eaton.elements.modals.TrendAddPointModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.tools.trends.TrendCreatePage;
-import com.eaton.pages.tools.trends.TrendsListPage;
-import com.github.javafaker.Faker;
 
 public class TrendMarkerSetupTests extends SeleniumTestSetup{
 
@@ -73,18 +67,6 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup{
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS})
-    public void trendMarkerSetup_AddMarkerColor_DefaultColorSelected() {
-    	String colorBlue = "rgb(77, 144, 254);";
-    			
-    	final String EXP_DFLT_COLOR = "background-color: " + colorBlue;
-    	
-    	createPage.getTabElement().clickTabAndWait("Additional Options");
-    	TrendAddMarkerModal addMarkerModal = createPage.showAndWaitAddMarkerModal();
-  
-    	assertThat(EXP_DFLT_COLOR).isEqualTo(addMarkerModal.getColor());
-    }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS})
     public void trendMarkerSetup_AddMarkerLabel_RequiredValidation() {
     	final String EXPECTED_MSG = "Label is required.";
     	
@@ -100,20 +82,13 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup{
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS})
     public void trendMarkerSetup_AddMarkerLabel_MaxLength40CharsSuccess() {
-    	Faker faker = new Faker();
-    	
-    	String label = "AT Marker Label" + faker.number().digits(25);
-    	
+    	final String EXPECTED_MAXLENGTH = "40";
     	createPage.getTabElement().clickTabAndWait("Additional Options");
     	TrendAddMarkerModal addMarkerModal = createPage.showAndWaitAddMarkerModal();
     	
-    	addMarkerModal.getLabel().setInputValue(label);
+    	String labelMaxlLength = addMarkerModal.getLabelMaxLength();
     	
-    	addMarkerModal.clickOkAndWaitForModalToClose();
-    	
-    	List<String> actLabel = createPage.getMarkerSetupTable().getDataRowsTextByCellIndex(1);
-    	
-    	assertThat(actLabel.get(0)).isEqualTo(label);
+    	assertThat(labelMaxlLength).isEqualTo(EXPECTED_MAXLENGTH);
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS})
@@ -135,7 +110,7 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup{
     }
    
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS})
-    public void trendMarkerSetup_EditMarkerOpensCorrectModal() {
+    public void trendMarkerSetup_EditMarker_OpensCorrectModal() {
     	String label = "AT Marker";
     	
     	final String EXP_MODAL_TITLE = "Edit " + label;
@@ -171,11 +146,8 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup{
         
         TrendAddMarkerModal modal = new TrendAddMarkerModal(this.driverExt, Optional.of("Edit " + label), Optional.empty());
     	
-        String colorBlue = "background-color: rgb(77, 144, 254);";
-    	
         softly.assertThat(modal.getValue().getInputValue()).isEqualTo("1.0");
         softly.assertThat(modal.getLabel().getInputValue()).isEqualTo(label);
-        softly.assertThat(modal.getColor()).isEqualTo(colorBlue);
         softly.assertThat(modal.getAxis().getValueChecked()).isEqualTo("LEFT");
         softly.assertAll();
     }
