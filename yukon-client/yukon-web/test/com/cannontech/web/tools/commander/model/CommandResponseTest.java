@@ -2,6 +2,7 @@ package com.cannontech.web.tools.commander.model;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -32,13 +33,11 @@ public class CommandResponseTest {
         
         var cr = CommandResponse.of(RESPONSE_ID, rtn);
         
-        assertEquals(
-                List.of("This string has multiple lines.", "See?", "Here's another."), 
-                cr.getResults());
+        assertEquals(List.of("This string has multiple lines.", "See?", "Here's another."), cr.getResults());
     }
 
     @Test
-    public void test_errorReturnTextIsIncluded() {
+    public void test_errorReturnTextIsExcluded() {
         var rtn = new Return();
 
         rtn.setDeviceID(DEVICE_ID);
@@ -51,8 +50,6 @@ public class CommandResponseTest {
         
         var cr = CommandResponse.of(RESPONSE_ID, rtn);
         
-        assertEquals(
-            List.of("This string has multiple lines.", "See?", "Here's another."), 
-            cr.getResults());
+        assertEquals(Collections.emptyList(), cr.getResults());
     }
 }
