@@ -1048,10 +1048,7 @@ ol.error{ list-style-type: none; }
 
 .user-message {
     position: relative;
-    padding: 5px 10px 5px 30px;
-    border-radius: @border-radius;
-    border-width: 1px;
-    border-style: solid;
+    padding: 10px 10px 10px 30px;
     margin-bottom: 10px;
     line-height: normal;
 }
@@ -1059,28 +1056,28 @@ ol.error{ list-style-type: none; }
     content: '';
     position: absolute;
     left: 7px;
-    top: 5px;
+    top: 10px;
     width: 16px;
     height: 16px;
     background-image: url('../Icons/icons.png');
 }
 
 .user-message.error {
-    background: pink;
-    border-color:@red;
+    background: #f9e8e8;
+    color: #6e0414 !important;
 }
 .user-message.error:before {
     background-position: -512px -144px;
 }
 
 .user-message.success {
-    background: #c3fdb8;
-    border-color: @green;
+    background: #e7f6e4;
+    color: #1c5b16 !important;
 }
 
 .user-message.info, .user-message.pending {
-    background: #dde5ff;
-    border-color: #849ddf;
+    background: #e0f1fd;
+    color: #002f55 !important;
 }
 .user-message.info:before {
     background-position: -96px -192px;
@@ -1091,8 +1088,8 @@ ol.error{ list-style-type: none; }
 }
 
 .user-message.warning {
-    background: #ffffda; 
-    border-color: @orange;
+    background: #feefe4;
+    color: #774e08 !important;
 }
 .user-message.warning:before {
     background-position: -448px -144px;
