@@ -12,7 +12,7 @@ public class TrendMarkerBuilder {
 
         private Faker faker = new Faker();
 
-        private final String type = "MARKER_TYPE";
+        private static final String TYPE = "MARKER_TYPE";
         private String color;
         private String axis;
         private final Integer pointId = -110;
@@ -29,7 +29,7 @@ public class TrendMarkerBuilder {
             TrendTypes.PointColor randomColor = color.orElse(TrendTypes.PointColor.getRandomColor());
 
             this.color = randomColor.getColor();
-            
+
             return this;
         }
 
@@ -49,12 +49,12 @@ public class TrendMarkerBuilder {
 
         public JSONObject build() {
             JSONObject j = new JSONObject();
-            j.put("type", this.type);
-            j.put("pointId", this.pointId);
-            j.put("label", this.label);
-            j.put("color", this.color);
-            j.put("axis", this.axis);
-            j.put("multiplier", this.multiplier);
+            j.put("type", TYPE);
+            j.put("pointId", pointId);
+            j.put("label", label);
+            j.put("color", color);
+            j.put("axis", axis);
+            j.put("multiplier", multiplier);
 
             return j;
         }

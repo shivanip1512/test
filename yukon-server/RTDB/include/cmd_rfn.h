@@ -50,6 +50,8 @@ class GetActiveConfigurationCommand;
 class SetConfigurationCommand;
 }
 class RfnTemperatureAlarmCommand;
+class RfnMetrologyGetConfigurationCommand;
+class RfnMetrologySetConfigurationCommand;
 
 struct RfnCommandResult
 {
@@ -111,6 +113,8 @@ struct RfnResultHandlerInvoker
         virtual void handleCommandResult(const RfnChannelIntervalRecording::GetConfigurationCommand &)        {}
         virtual void handleCommandResult(const RfnChannelIntervalRecording::GetActiveConfigurationCommand &)  {}
         virtual void handleCommandResult(const RfnTemperatureAlarmCommand &)                          {}
+        virtual void handleCommandResult(const RfnMetrologyGetConfigurationCommand &)                 {}
+        virtual void handleCommandResult(const RfnMetrologySetConfigurationCommand &)                 {}
     };
 
     //  to be overridden by children that require a result handler

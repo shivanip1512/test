@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.PickerElement;
-import com.eaton.elements.Section;
 import com.eaton.elements.SwitchBtnMultiSelectElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.modals.SelectMCTMeterModal;

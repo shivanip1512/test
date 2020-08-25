@@ -67,8 +67,14 @@ public class RadioButtonElement {
 
     public String getValueChecked() {
         List<WebElement> elements = getRadioButtons();
-        WebElement element = elements.stream().filter(x -> x.isSelected()).findFirst().orElseThrow();
-        return element.getAttribute("value");
+        
+        for (WebElement el : elements) {            
+            if(el.getAttribute("checked") != null) {
+                return el.getAttribute("value");
+            } 
+        }
+        
+        return null;
     }
 
     public void scrollTo() {
