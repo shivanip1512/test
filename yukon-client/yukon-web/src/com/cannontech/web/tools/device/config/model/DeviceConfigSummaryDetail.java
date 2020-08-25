@@ -91,7 +91,7 @@ public class DeviceConfigSummaryDetail {
     }
     
     public boolean isDisplayFailurePopup() {
-        return status == LastActionStatus.FAILURE;
+        return status == LastActionStatus.FAILURE && errorCode != null ;
     }
 
     public Integer getErrorCode() {
