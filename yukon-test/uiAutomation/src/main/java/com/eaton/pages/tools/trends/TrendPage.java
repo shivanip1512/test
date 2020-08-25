@@ -31,24 +31,34 @@ public class TrendPage extends PageBase {
         return tab;
     }   
     
+    /* This is to get the tab link */
     public WebElement getAdditionalOptionsTab() {
-        return getTabElement().getTabPanelByName("Additional Options");
+        return getTabElement().getTabByName("Additional Options");
     }
     
     public WebElement getSetupTab() {
+        return getTabElement().getTabByName("Setup");
+    }
+    
+    /* This is to get the container/section inside the tab */
+    public WebElement getAdditionalOptionsTabContainer() {
+        return getTabElement().getTabPanelByName("Additional Options");
+    }
+    
+    public WebElement getSetupTabContainer() {
         return getTabElement().getTabPanelByName("Setup");
     }
     
     public Section getGeneralSection() {
-        return new Section(this.driverExt, "General", getSetupTab());
+        return new Section(this.driverExt, "General", getSetupTabContainer());
     }
     
     public Section getPointSetupSection() {
-        return new Section(this.driverExt, "Point Setup", getSetupTab());
+        return new Section(this.driverExt, "Point Setup", getSetupTabContainer());
     }
     
     public Section getMarkerSetupSection() {
-        return new Section(this.driverExt, "Marker Setup", getAdditionalOptionsTab());
+        return new Section(this.driverExt, "Marker Setup", getAdditionalOptionsTabContainer());
     }   
     
     public WebTable getPointSetupTable() {

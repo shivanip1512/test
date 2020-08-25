@@ -43,7 +43,7 @@ public class TrendsDeleteTests extends SeleniumTestSetup {
         listPage = new TrendsListPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void trendsDelete_DeleteConfirmMessageCorrect() {
         String expectedModalMessage = "Are you sure you want to delete \"" + trendName + "\"?";
         
@@ -56,7 +56,7 @@ public class TrendsDeleteTests extends SeleniumTestSetup {
         assertThat(actualModalMessage).isEqualTo(expectedModalMessage);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void trendsDelete_AllFields_DeleteSuccessfully() {                
         Pair<JSONObject, ExtractableResponse<?>> pair = new TrendCreateBuilder.Builder(Optional.empty())
                 .withMarkers(new JSONObject[] { new TrendMarkerBuilder.Builder()

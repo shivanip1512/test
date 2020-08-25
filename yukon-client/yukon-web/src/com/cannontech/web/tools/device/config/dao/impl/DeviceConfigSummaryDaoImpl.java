@@ -74,10 +74,8 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         if (!filter.isDisplayUnassigned() && CollectionUtils.isEmpty(filter.getConfigurationIds())) {
             return new SearchResults<>();
         }
-        SqlStatementBuilder allRowsSql = buildDetailSelect(filter, sortBy, direction, false);
-        log.debug(allRowsSql.getDebugSql());
-        SqlStatementBuilder countSql = buildDetailSelect(filter, null, null, true);
-        log.debug(countSql);
+        SqlStatementBuilder allRowsSql = buildSummarySelect(filter, sortBy, direction, false);
+        SqlStatementBuilder countSql = buildSummarySelect(filter, null, null, true);
         int totalCount = jdbcTemplate.queryForInt(countSql);
 
         int start = paging.getStartIndex();
@@ -93,23 +91,10 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         return searchResult;
     }
     
-    private SqlStatementBuilder buildDetailSelect(DeviceConfigSummaryFilter filter, SortBy sortBy,
-            Direction direction, boolean selectCount) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        if (CollectionUtils.isEmpty(filter.getConfigurationIds())) {
-            sql.append(buildUnassignSelect(filter, sortBy, direction, selectCount));
-        } else {
-            sql.append(buildConfigStatesSelect(filter, sortBy, direction, selectCount));
-        }
-        addGroupsAndOrderBy(filter, sortBy, direction, sql);
-        return sql;
-    }
-
-    private SqlStatementBuilder buildUnassignSelect(DeviceConfigSummaryFilter filter, SortBy sortBy,
-            Direction direction, boolean selectCount) {
+    private SqlStatementBuilder buildUnassignSelect(DeviceConfigSummaryFilter filter, boolean selectCount) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         if (selectCount) {
-            sql.append("SELECT count(ypo.PAObjectID)");
+            sql.append("SELECT ypo.PAObjectID");
         } else {
             sql.append("SELECT");
             sql.append("ypo.PAObjectID,");
@@ -130,11 +115,10 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         return sql;
     }
 
-    private SqlStatementBuilder buildConfigStatesSelect(DeviceConfigSummaryFilter filter, SortBy sortBy,
-            Direction direction, boolean selectCount) {
+    private SqlStatementBuilder buildStateSelect(DeviceConfigSummaryFilter filter, boolean selectCount) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         if (selectCount) {
-            sql.append("SELECT count(ypo.PAObjectID)");
+            sql.append("SELECT ypo.PAObjectID");
         } else {
             sql.append("SELECT");
             sql.append("ypo.PAObjectID,");
@@ -155,9 +139,8 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("JOIN DeviceConfiguration dc ON dc.DeviceConfigurationID = scdm.DeviceConfigurationId");
         sql.append("LEFT JOIN CommandRequestExecResult crer ON crer.CommandRequestExecId = dcs.CommandRequestExecId AND dcs.PAObjectID=crer.DeviceId");
         sql.append("WHERE ypo.type").in_k(getSupportedPaoTypes());
-        if (!CollectionUtils.isEmpty(filter.getConfigurationIds())) {
-            sql.append("AND scdm.DeviceConfigurationId").in(filter.getConfigurationIds());
-        }
+        sql.append("AND scdm.DeviceConfigurationId").in(filter.getConfigurationIds());
+        
         if (filter.getStateSelection() == StateSelection.ALL) {
             sql.append("AND (CurrentState").in_k(filter.getStateSelection().getStates());
             sql.append("OR LastActionStatus").eq_k(LastActionStatus.IN_PROGRESS).append(")");
@@ -165,6 +148,29 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
             sql.append("AND LastActionStatus").eq_k(LastActionStatus.IN_PROGRESS);
         } else {
             sql.append("AND CurrentState").in_k(filter.getStateSelection().getStates());
+        }
+        return sql;
+    }
+
+    private SqlStatementBuilder buildSummarySelect(DeviceConfigSummaryFilter filter, SortBy sortBy,
+            Direction direction, boolean selectCount) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        if (selectCount) {
+            sql.append("SELECT count(PaObjectId)");
+            sql.append("FROM (");
+        }
+        if (filter.isDisplayAssigned()) {
+            sql.append(buildStateSelect(filter, selectCount));
+            if (filter.isDisplayUnassigned()) {
+                sql.append("UNION");
+            }
+        }
+        if (filter.isDisplayUnassigned()) {
+            sql.append(buildUnassignSelect(filter, selectCount));
+        }
+        addGroupsAndOrderBy(filter, sortBy, direction, sql);
+        if (selectCount) {
+            sql.append(") T");
         }
         return sql;
     }
