@@ -33,5 +33,7 @@ include::{snippets}/VirtualDeviceApiDoc/Test_VirtualDevice_01_Update/http-respon
 
 *Request Properties*
 include::{snippets}/VirtualDeviceApiDoc/Test_VirtualDevice_01_Delete/http-request.adoc[]
+*Response Properties* 
+include::{snippets}/VirtualDeviceApiDoc/Test_VirtualDevice_01_Delete/response-fields.adoc[]
 *Response Body*
 include::{snippets}/VirtualDeviceApiDoc/Test_VirtualDevice_01_Delete/http-response.adoc[]

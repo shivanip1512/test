@@ -125,14 +125,12 @@ public class ControlAreaHelper {
                                                             .optional()
                                                             .description("Allowed input types: only numeric, one negative(-) allowed, Range (-99999.9999 to 99999.9999), only 4 decimal points allowed"),
                 fieldWithPath("triggers[].peakPointId").type(JsonFieldType.NUMBER).optional().description("Peak Point Id"),
-                fieldWithPath("triggers[].thresholdPointId").type(JsonFieldType.NUMBER).optional().description("Threshold Point Id"),
-                fieldWithPath("triggers[].triggerPointName").type(JsonFieldType.STRING).optional().description("Threshold Point Name") };
+                fieldWithPath("triggers[].thresholdPointId").type(JsonFieldType.NUMBER).optional().description("Threshold Point Id")};
     }
 
     public static FieldDescriptor[] statusTriggerFields() {
         return new FieldDescriptor[] { fieldWithPath("triggers[].triggerType").type(JsonFieldType.STRING).description("Trigger type"),
                 fieldWithPath("triggers[].triggerPointId").type(JsonFieldType.NUMBER).description("Trigger point Id"),
-                fieldWithPath("triggers[].thresholdPointId").type(JsonFieldType.NUMBER).optional().description("Threshold Point Id"),
                 fieldWithPath("triggers[].normalState").type(JsonFieldType.NUMBER).optional().description("Normal state of Status trigger") };
     }
 
@@ -161,24 +159,11 @@ public class ControlAreaHelper {
                 fieldWithPath("triggers[].triggerNumber").type(JsonFieldType.NUMBER).optional().description("Trigger number"),
                 fieldWithPath("triggers[].triggerType").type(JsonFieldType.STRING).description("Trigger type"),
                 fieldWithPath("triggers[].triggerPointId").type(JsonFieldType.NUMBER).description("Trigger point Id"),
-                fieldWithPath("triggers[].normalState").type(JsonFieldType.NUMBER).optional().description("Normal state of Status trigger"),
-                fieldWithPath("triggers[].threshold").type(JsonFieldType.NUMBER).optional().description("Threshold value of trigger "),
-                fieldWithPath("triggers[].controlAreaProjection.projectionType").type(JsonFieldType.STRING)
-                                                                                .optional()
-                                                                                .description("Projection type for control area projection"),
-                fieldWithPath("triggers[].controlAreaProjection.projectionPoint").type(JsonFieldType.NUMBER)
-                                                                                 .optional()
-                                                                                 .description("Projection point for control area projection"),
-                fieldWithPath("triggers[].controlAreaProjection.projectAheadDuration").type(JsonFieldType.NUMBER)
-                                                                                      .optional()
-                                                                                      .description("Projection ahead duration for control area projection"),
-                fieldWithPath("triggers[].atku").type(JsonFieldType.NUMBER).optional().description("Automatic threshold kick up offset to be used"),
                 fieldWithPath("triggers[].minRestoreOffset").type(JsonFieldType.NUMBER)
                                                             .optional()
                                                             .description("Allowed input types: only numeric, one negative(-) allowed, Range (-99999.9999 to 99999.9999), only 4 decimal points allowed"),
                 fieldWithPath("triggers[].peakPointId").type(JsonFieldType.NUMBER).optional().description("Peak Point Id"),
                 fieldWithPath("triggers[].thresholdPointId").type(JsonFieldType.NUMBER).optional().description("Threshold Point Id"),
-                fieldWithPath("triggers[].triggerPointName").type(JsonFieldType.STRING).optional().description("Threshold Point Name"),
                 fieldWithPath("programAssignment[].programId").type(JsonFieldType.NUMBER).optional().description("Load Program Id"),
                 fieldWithPath("programAssignment[].programName").type(JsonFieldType.STRING).description("Load Program name"),
                 fieldWithPath("programAssignment[].startPriority").type(JsonFieldType.NUMBER).optional().description("Load Program start priority"),

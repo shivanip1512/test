@@ -32,8 +32,8 @@ public class RfnAddressCacheTest {
     private static final RfnIdentifier rfnId1 = new RfnIdentifier("11235813", "ITRN", "C2SX"); 
     private static final RfnIdentifier rfnId2 = new RfnIdentifier("31415927", "ITRN", "C2SX"); 
     private static final RfnIdentifier rfnId2_updated = new RfnIdentifier("62831853", "ITRN", "C2SX"); 
-    private static final RfnIdentifier rfnId3 = new RfnIdentifier("7800000024", "CPS", "RFGateway2");
-    private static final RfnIdentifier rfnId4 = new RfnIdentifier("Jambalaya", "CPS", "RFGateway2"); 
+    private static final RfnIdentifier rfnId3 = new RfnIdentifier("7800000024", "EATON", "GWY800");
+    private static final RfnIdentifier rfnId4 = new RfnIdentifier("Jambalaya", "EATON", "GWY800"); 
     private static final RfnIdentifier nonexistent = new RfnIdentifier("apple", "banana", "cucumber"); 
     
     @Test

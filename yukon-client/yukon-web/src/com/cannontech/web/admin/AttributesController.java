@@ -76,7 +76,7 @@ public class AttributesController {
     private static final Logger log = YukonLogManager.getLogger(AttributesController.class);
 
     @GetMapping("/config/attributes")
-    public String attributes(@DefaultSort(dir=Direction.desc, sort="attributeName") SortingParameters sorting, 
+    public String attributes(@DefaultSort(dir=Direction.asc, sort="attributeName") SortingParameters sorting, 
                              ModelMap model, YukonUserContext userContext, HttpServletRequest request, 
                              HttpServletResponse resp, FlashScope flashScope) {
         retrieveCustomAttributes(model, userContext, request, flashScope);
@@ -196,7 +196,7 @@ public class AttributesController {
     }
     
     @GetMapping("/config/attributeAssignments/filter")
-    public String filterAssignments(@DefaultSort(dir=Direction.desc, sort="attributeName") SortingParameters sorting, Integer[] selectedAttributes, 
+    public String filterAssignments(@DefaultSort(dir=Direction.asc, sort="attributeName") SortingParameters sorting, Integer[] selectedAttributes, 
                                     PaoType[] selectedDeviceTypes, ModelMap model, YukonUserContext userContext, HttpServletRequest request, HttpServletResponse resp) {
         retrieveAssignments(sorting, selectedAttributes, selectedDeviceTypes, model, userContext, request, resp);
         return "config/attributeAssignmentsTable.jsp";
@@ -310,7 +310,7 @@ public class AttributesController {
                 BindException error = new BindException(assignment, "assignment");
                 helper.populateBindingError(result, error, response);
             }
-            if (response.getStatusCode() == HttpStatus.OK) {
+            if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 successDeviceTypes.add(assignment.getPaoType().getDbString());
             }
         } catch (ApiCommunicationException | RestClientException e) {

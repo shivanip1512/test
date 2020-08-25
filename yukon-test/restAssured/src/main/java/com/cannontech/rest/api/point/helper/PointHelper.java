@@ -46,8 +46,8 @@ public class PointHelper {
     public final static Integer stateGroupId = Integer.valueOf(ApiCallHelper.getProperty("stateGroupId"));
     public final static Integer notificationId = Integer.valueOf(ApiCallHelper.getProperty("notificationGrpID"));
     public final static Integer baseLineId = Integer.valueOf(ApiCallHelper.getProperty("baselineId"));
-    public final static Double calcAnalogPointId = Double.valueOf(ApiCallHelper.getProperty("pointIdForCalcAnalogCalculation"));
-    public final static Double calcStatusPointId = Double.valueOf(ApiCallHelper.getProperty("pointIdForCalcStatusCalculation"));
+    public final static Double pointIdForCalculation = Double.valueOf(ApiCallHelper.getProperty("pointIdForCalculation"));
+
 
     public final static MockPointBase buildPoint(MockPointType pointType) {
         MockPointBase point = null;
@@ -175,7 +175,7 @@ public class PointHelper {
         mockCalculationComponent.add(MockCalculationComponent.builder()
                 .componentType(MockCalcCompType.OPERATION)
                 .operation(MockCalcOperation.ADDITION_OPERATION)
-                .operand(calcAnalogPointId)
+                .operand(pointIdForCalculation)
                 .build());
         return mockCalculationComponent;
     }
@@ -193,7 +193,7 @@ public class PointHelper {
         mockCalculationComponent.add(MockCalculationComponent.builder()
                 .componentType(MockCalcCompType.OPERATION)
                 .operation(MockCalcOperation.DIVISION_OPERATION)
-                .operand(calcStatusPointId)
+                .operand(pointIdForCalculation)
                 .build());
         return mockCalculationComponent;
     }
