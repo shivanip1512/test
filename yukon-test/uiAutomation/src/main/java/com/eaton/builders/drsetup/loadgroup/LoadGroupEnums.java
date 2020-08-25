@@ -178,47 +178,4 @@ public class LoadGroupEnums {
         }
 
     }
-	public enum RelayUsageEmetcon{
-		RELAY_A("RELAY_A"),
-		RELAY_B("RELAY_B"),
-		RELAY_C("RELAY_C"),
-		RELAY_ALL("RELAY_ALL");
-		 private final String relayUsage;
-
-		 RelayUsageEmetcon(String relayUsage) {
-	            this.relayUsage = relayUsage;
-	        }
-
-	        public String getRelayUsage() {
-	            return this.relayUsage;
-	        }
-
-	        public static RelayUsageEmetcon getRandomRelayUsage() {
-	            Random random = new Random();
-	            return values()[random.nextInt(values().length)];
-	        }
-		
-	}
-	
-	public enum AddressUsageEmetcon{
-		GOLD("GOLD"),
-		SILVER("SILVER");
-		
-		private final String addressUsage;
-
-		AddressUsageEmetcon(String addressUsage) {
-	            this.addressUsage = addressUsage;
-	        }
-
-	        public String getAddressUsage() {
-	            return this.addressUsage;
-	        }
-
-	        public static AddressUsageEmetcon getRandomAddressUsage() {
-	            Random random = new Random();
-	            return values()[random.nextInt(values().length)];
-	        }
-		
-	}
-	
 }
