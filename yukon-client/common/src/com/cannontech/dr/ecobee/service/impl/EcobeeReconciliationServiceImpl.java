@@ -119,6 +119,9 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
     private void doEventLog(LiteYukonUser liteYukonUser, EcobeeDiscrepancy error, EcobeeReconciliationResult result) {
         String managementSet = getSyncObjectForError(error);
         int intValue = BooleanUtils.toInteger(result.isSuccess());
+        if (error.getErrorType() == EcobeeDiscrepancyType.EXTRANEOUS_DEVICE) {
+            intValue = 2; // represents unmodified
+        }
         ecobeeEventLogService.reconciliationCompleted(intValue, managementSet,
                 result.getOriginalDiscrepancy().getErrorType().toString(), liteYukonUser);
     }
@@ -135,6 +138,7 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
             return error.getCorrectPath();
         case MISLOCATED_DEVICE:
         case MISSING_DEVICE:
+        case EXTRANEOUS_DEVICE:
             return error.getSerialNumber();
         default:
             return StringUtils.EMPTY;
@@ -164,12 +168,8 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
                 EcobeeReconciliationResult result = fixDiscrepancy(error);
                 // Save the result
                 results.add(result);
-                if (error.getErrorType() != EcobeeDiscrepancyType.EXTRANEOUS_DEVICE) {
-                    doEventLog(liteYukonUser, error, result);
-                } else {
-                    ecobeeEventLogService.syncIssueUnmodified(error.getSerialNumber(),
-                            EcobeeDiscrepancyType.EXTRANEOUS_DEVICE.toString(),
-                            liteYukonUser, EcobeeDiscrepancyType.EXTRANEOUS_DEVICE.toString());
+                doEventLog(liteYukonUser, error, result);
+                if (error.getErrorType() == EcobeeDiscrepancyType.EXTRANEOUS_DEVICE) {
                     extraneousDeviceCount++;
                 }
                 // Remove discrepancy from report

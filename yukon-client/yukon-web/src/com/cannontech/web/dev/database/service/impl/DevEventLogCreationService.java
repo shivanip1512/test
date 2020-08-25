@@ -1182,8 +1182,6 @@ public class DevEventLogCreationService {
                         yukonUser);
                 ecobeeEventLogService.reconciliationStarted(1, yukonUser);
                 ecobeeEventLogService.reconciliationResults(10, 5, 4, 1);
-                ecobeeEventLogService.syncIssueUnmodified("123453526", EcobeeDiscrepancyType.EXTRANEOUS_DEVICE.toString(),
-                        yukonUser, EcobeeDiscrepancyType.EXTRANEOUS_DEVICE.toString());
                 ecobeeEventLogService.dataDownloaded(yukonUser, startDate, endDate, loadGroupIds, devEventLog.getEventSource());
             }
         });
@@ -1290,7 +1288,7 @@ public class DevEventLogCreationService {
         DEMAND_RESPONSE(DemandResponseEventLogService.class, 54),
         DEVICE_CONFIG(DeviceConfigEventLogService.class, 21),
         DISCONNECT(DisconnectEventLogService.class, 10),
-        ECOBEE(EcobeeEventLogService.class, 5),
+        ECOBEE(EcobeeEventLogService.class, 4),
         ENDPOINT(EndpointEventLogService.class, 11),
         GATEWAY(GatewayEventLogService.class, 9),
         HARDWARE(HardwareEventLogService.class, 23),
