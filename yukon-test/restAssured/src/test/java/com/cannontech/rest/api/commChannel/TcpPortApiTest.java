@@ -240,7 +240,7 @@ public class TcpPortApiTest {
         mockTcpPort.setName("TimingAsNull");
         ExtractableResponse<?> createResponse = ApiCallHelper.post("createPort", mockTcpPort);
         String portId = createResponse.path(CommChannelHelper.CONTEXT_PORT_ID).toString();
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
         assertTrue("Port Id should not be Null", portId != null);
         
         ExtractableResponse<?> getResponse = ApiCallHelper.get("getPort",

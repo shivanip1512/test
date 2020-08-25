@@ -113,10 +113,12 @@ public class MeterProgrammingSummaryController {
         Direction dir = sorting.getDirection();
         
         Comparator<MeterProgramStatistics> comparator = (o1, o2) -> o1.getProgramInfo().getName().compareTo(o2.getProgramInfo().getName());
-        if (sortBy == ProgramSortBy.numberOfDevices) {
+        if (sortBy == ProgramSortBy.numberSuccessful) {
             comparator = (o1, o2) -> Integer.valueOf(o1.getDeviceTotal()).compareTo(Integer.valueOf(o2.getDeviceTotal()));
         } else if (sortBy == ProgramSortBy.numberInProgress) {
             comparator = (o1, o2) -> Integer.valueOf(o1.getInProgressTotal()).compareTo(Integer.valueOf(o2.getInProgressTotal()));
+        } else if (sortBy == ProgramSortBy.numberFailed) {
+            comparator = (o1, o2) -> Integer.valueOf(o1.getFailureTotal()).compareTo(Integer.valueOf(o2.getFailureTotal()));
         }
         if (sorting.getDirection() == Direction.desc) {
             comparator = Collections.reverseOrder(comparator);
@@ -153,8 +155,9 @@ public class MeterProgrammingSummaryController {
     public enum ProgramSortBy implements DisplayableEnum {
 
         program,
-        numberOfDevices,
-        numberInProgress;
+        numberSuccessful,
+        numberInProgress,
+        numberFailed;
 
         @Override
         public String getFormatKey() {
