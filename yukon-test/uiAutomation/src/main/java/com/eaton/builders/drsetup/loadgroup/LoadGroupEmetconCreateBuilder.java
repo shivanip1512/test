@@ -28,13 +28,18 @@ public class LoadGroupEmetconCreateBuilder extends LoadGroupEnums{
         private String relayUsage;
         private double kwCapacity;
         private boolean disableGroup;
-        private boolean disableControl;   
+        private boolean disableControl;  
         
         public Builder(Optional<String> name) {
             String u = UUID.randomUUID().toString();            
             String uuid = u.replace("-", "");
             
             this.name = name.orElse("AT LG " + uuid);
+        }
+        
+        public Builder withName(String name) {
+            this.name = name;
+            return this;
         }
 
         public Builder withGoldAddress(Optional<Integer> goldAddress) {
@@ -47,8 +52,8 @@ public class LoadGroupEmetconCreateBuilder extends LoadGroupEnums{
             return this;
         }
         
-        public Builder withCommunicationRoute(int routeId) {
-        	this.routeId = routeId;
+        public Builder withCommunicationRoute(Optional<Integer> routeId) {
+        	this.routeId = routeId.orElse(28);
             return this;
         }    
                 
@@ -67,15 +72,15 @@ public class LoadGroupEmetconCreateBuilder extends LoadGroupEnums{
             return this;
         }
         
-        public Builder withRelayUsage(Optional<LoadGroupEmetconCreateBuilder.RelayUsage> relayUsage) {
-        	LoadGroupEmetconCreateBuilder.RelayUsage randomRelayUsage = relayUsage.orElse(LoadGroupEmetconCreateBuilder.RelayUsage.getRandomRelayUsage());
+        public Builder withRelayUsage(Optional<LoadGroupEmetconCreateBuilder.RelayUsageEmetcon> relayUsage) {
+        	LoadGroupEmetconCreateBuilder.RelayUsageEmetcon randomRelayUsage = relayUsage.orElse(LoadGroupEmetconCreateBuilder.RelayUsageEmetcon.getRandomRelayUsage());
 
             this.relayUsage = randomRelayUsage.getRelayUsage();
             return this;
         }
         
-        public Builder withAddressUsage(Optional<LoadGroupEmetconCreateBuilder.AddressUsage> addressUsage) {
-        	LoadGroupEmetconCreateBuilder.AddressUsage randomAddressUsage = addressUsage.orElse(LoadGroupEmetconCreateBuilder.AddressUsage.getRandomAddressUsage());
+        public Builder withAddressUsage(Optional<LoadGroupEmetconCreateBuilder.AddressUsageEmetcon> addressUsage) {
+        	LoadGroupEmetconCreateBuilder.AddressUsageEmetcon randomAddressUsage = addressUsage.orElse(LoadGroupEmetconCreateBuilder.AddressUsageEmetcon.getRandomAddressUsage());
 
             this.addressUsage = randomAddressUsage.getAddressUsage();
             return this;
@@ -119,7 +124,16 @@ public class LoadGroupEmetconCreateBuilder extends LoadGroupEnums{
        
     }
 	
+	 public static Builder buildDefaultEmetconLoadGroup() {
+	        return new LoadGroupEmetconCreateBuilder.Builder(Optional.empty())
+	        		.withCommunicationRoute(Optional.empty())
+					.withDisableControl(Optional.empty())
+					.withDisableGroup(Optional.empty())
+					.withGoldAddress(Optional.empty())
+					.withKwCapacity(Optional.empty())
+					.withRelayUsage(Optional.of(LoadGroupEnums.RelayUsageEmetcon.getRandomRelayUsage()))
+					.withAddressUsage(Optional.of(LoadGroupEnums.AddressUsageEmetcon.getRandomAddressUsage()))
+					.withSilverAddress(Optional.empty());
+	    }
 	
-
-
 }
