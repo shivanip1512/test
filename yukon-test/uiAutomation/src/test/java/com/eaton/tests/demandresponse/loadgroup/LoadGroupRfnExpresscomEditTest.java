@@ -86,14 +86,14 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup{
 		}
 
 		
-		@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+		@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	    public void ldGrpRfnExpresscomEdit_EditAllFields_Success() {
 	        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 	        String name = "RFN Expresscomm" + timeStamp;
 	        final String EXPECTED_MSG = name + " saved successfully.";
 
 	        editPage.getName().setInputValue(name);
-	        editPage.getAddressUsage().setTrueFalseByName("Serial", true);
+	        editPage.getAddressUsage().setTrueFalseByName("Serial", true);s
 	        editPage.getSerialAddress().setInputValue("25");
 	        editPage.getLoadAddressUsage().setTrueFalseByName("Splinter", true);
 	        editPage.getSplinterLoadAddress().setInputValue("20");
