@@ -44,7 +44,7 @@ public class TrendApiController {
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> create(@Valid @RequestBody TrendModel trendModel) {
         TrendModel createdTrend = trendService.create(trendModel);
-        return new ResponseEntity<>(createdTrend, HttpStatus.OK);
+        return new ResponseEntity<>(createdTrend, HttpStatus.CREATED);
     }
 
     //Delete Trend

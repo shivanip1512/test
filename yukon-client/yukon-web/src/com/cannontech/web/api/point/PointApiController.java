@@ -60,7 +60,7 @@ public class PointApiController <T extends PointBaseModel<?>> {
     @PostMapping("/points")
     public ResponseEntity<Object> create(@Valid @RequestBody PointBaseModel<?> pointBase, HttpServletRequest request) {
         pointHelper.verifyRoles(getYukonUserContext(request).getYukonUser(), HierarchyPermissionLevel.CREATE);
-        return new ResponseEntity<>(pointEditorService.create(pointBase, getYukonUserContext(request)), HttpStatus.OK);
+        return new ResponseEntity<>(pointEditorService.create(pointBase, getYukonUserContext(request)), HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/points/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
