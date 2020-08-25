@@ -3,32 +3,27 @@ package com.eaton.tests.demandresponse.loadgroup;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
 import org.javatuples.Pair;
 import org.json.JSONObject;
 import org.openqa.selenium.WebDriver;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.eaton.builders.drsetup.loadgroup.LoadGroupRippleCreateBuilder;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupRippleCreateBuilder.Builder;
-import com.eaton.elements.Section;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.LoadGroupDetailPage;
-import com.eaton.pages.demandresponse.LoadGroupRippleCreatePage;
+import com.eaton.pages.demandresponse.LoadGroupRippleEditPage;
 
 public class LoadGroupRippleEditTests extends SeleniumTestSetup {
 
-    private LoadGroupRippleCreatePage createPage;
+    private LoadGroupRippleEditPage editPage;
     WebDriver driver;
     private DriverExtensions driverExt;
     private Random randomNum;
@@ -39,7 +34,7 @@ public class LoadGroupRippleEditTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         randomNum = getRandomNum();
-        createPage = new LoadGroupRippleCreatePage(driverExt);
+        editPage = new LoadGroupRippleEditPage(driverExt);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -49,7 +44,7 @@ public class LoadGroupRippleEditTests extends SeleniumTestSetup {
         double randomDouble = randomNum.nextDouble();
         int randomInt = randomNum.nextInt(9999);
         double capacity = randomDouble + randomInt;
-        
+
         builder = LoadGroupRippleCreateBuilder.buildDefaultRippleLoadGroup();
         timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         final String EXPECTED_MSG = editName + " saved successfully.";
@@ -59,10 +54,10 @@ public class LoadGroupRippleEditTests extends SeleniumTestSetup {
         id = response.getInt("id");
 
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-        createPage.getName().setInputValue(editName);
-        createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
+        editPage.getName().setInputValue(editName);
+        editPage.getkWCapacity().setInputValue(String.valueOf(capacity));
 
-        createPage.getSaveBtn().click();
+        editPage.getSaveBtn().click();
 
         waitForPageToLoad("Load Group: " + editName, Optional.empty());
 
@@ -71,7 +66,7 @@ public class LoadGroupRippleEditTests extends SeleniumTestSetup {
 
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
-    
+
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpRippleEdit_AllFields_Successfully() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -79,7 +74,7 @@ public class LoadGroupRippleEditTests extends SeleniumTestSetup {
         double randomDouble = randomNum.nextDouble();
         int randomInt = randomNum.nextInt(9999);
         double capacity = randomDouble + randomInt;
-        
+
         builder = LoadGroupRippleCreateBuilder.buildDefaultRippleLoadGroup();
         timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         final String EXPECTED_MSG = editName + " saved successfully.";
@@ -89,19 +84,19 @@ public class LoadGroupRippleEditTests extends SeleniumTestSetup {
         id = response.getInt("id");
 
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-        createPage.getName().setInputValue(editName);
-        createPage.getCommunicationRoute().selectItemByText("a_RTC");
+        editPage.getName().setInputValue(editName);
+        editPage.getCommunicationRoute().selectItemByText("a_RTC");
 
-        createPage.getShedTime().selectItemByText("30 minutes");
-        createPage.getGroup().selectItemByText("2.01");
-        createPage.getAreaCode().selectItemByText("Minnkota");
-        createPage.getControlSwitchElement().setTrueFalseByBitNo(10, true);
-        createPage.getRestoreSwitchElement().setTrueFalseByBitNo(18, true);
-        createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
-        createPage.getDisableGroup().setValue(true);
-        createPage.getDisableControl().setValue(false);
+        editPage.getShedTime().selectItemByText("30 minutes");
+        editPage.getGroup().selectItemByText("2.01");
+        editPage.getAreaCode().selectItemByText("Minnkota");
+        editPage.getControlSwitchElement().setTrueFalseByBitNo(10, true);
+        editPage.getRestoreSwitchElement().setTrueFalseByBitNo(18, true);
+        editPage.getkWCapacity().setInputValue(String.valueOf(capacity));
+        editPage.getDisableGroup().setValue(true);
+        editPage.getDisableControl().setValue(false);
 
-        createPage.getSaveBtn().click();
+        editPage.getSaveBtn().click();
 
         waitForPageToLoad("Load Group: " + editName, Optional.empty());
 
