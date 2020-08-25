@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
-import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.VerifyConfigCommandResult;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DeviceConfigState;
@@ -28,9 +27,9 @@ public interface DeviceConfigService {
 
     VerifyResult verifyConfig(SimpleDevice device, LiteYukonUser user);
 
-    CommandResultHolder readConfig(SimpleDevice device, LiteYukonUser user) throws Exception;
+    void readConfig(SimpleDevice device, LiteYukonUser user);
 
-    CommandResultHolder sendConfig(SimpleDevice device, LiteYukonUser user) throws Exception;
+    void sendConfig(SimpleDevice device, LiteYukonUser user);
 
     enum LogAction {
         READ, SEND, VERIFY
