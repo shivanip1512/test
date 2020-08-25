@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Optional;
 import org.openqa.selenium.WebDriver;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums;
@@ -20,6 +19,7 @@ import org.json.JSONObject;
 import com.eaton.pages.demandresponse.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.LoadGroupMCTEditPage;
 
+
 public class LoadGroupMCTEditTests extends SeleniumTestSetup {
 
 	WebDriver driver;
@@ -32,11 +32,6 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
 	public void beforeClass() {
 		driverExt = getDriverExt();
 		editPage = new LoadGroupMCTEditPage(driverExt);
-	}
-
-	@AfterMethod
-	public void afterMethod() {
-		refreshPage(editPage);
 	}
 
 	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
