@@ -145,7 +145,7 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
     public List<EcobeeReconciliationResult> fixAllDiscrepancies(int reportId, LiteYukonUser liteYukonUser)
             throws IllegalArgumentException {
         int successCount = 0;
-        int extraneosDeviceCount = 0;
+        int extraneousDeviceCount = 0;
         log.debug("Fixing all ecobee discrepancies. ReportId: " + reportId);
 
         // get discrepancies
@@ -168,9 +168,9 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
                     doEventLog(liteYukonUser, error, result);
                 } else {
                     ecobeeEventLogService.syncIssueUnmodified(error.getSerialNumber(),
-                            result.getOriginalDiscrepancy().getErrorType().toString(),
-                            liteYukonUser, result.getOriginalDiscrepancy().getErrorType().toString());
-                    extraneosDeviceCount++;
+                            EcobeeDiscrepancyType.EXTRANEOUS_DEVICE.toString(),
+                            liteYukonUser, EcobeeDiscrepancyType.EXTRANEOUS_DEVICE.toString());
+                    extraneousDeviceCount++;
                 }
                 // Remove discrepancy from report
                 if (result.isSuccess()) {
@@ -180,7 +180,7 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
             }
         }
         ecobeeEventLogService.reconciliationResults(report.getErrors().size(), successCount,
-                report.getErrors().size() - successCount - extraneosDeviceCount, extraneosDeviceCount);
+                report.getErrors().size() - successCount - extraneousDeviceCount, extraneousDeviceCount);
         return results;
     }
     
