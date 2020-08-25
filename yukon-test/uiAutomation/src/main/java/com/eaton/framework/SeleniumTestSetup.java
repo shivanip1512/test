@@ -40,10 +40,10 @@ public class SeleniumTestSetup {
     private static Random randomNum;
 
     private static boolean loggedIn = false;
-    
+
     private static String screenShotPath;
-    
-    @BeforeSuite(alwaysRun=true)
+
+    @BeforeSuite(alwaysRun = true)
     public static void beforeSuite() {
 
         try {
@@ -68,8 +68,7 @@ public class SeleniumTestSetup {
                     Boolean.parseBoolean(configFileReader.getUseRemoteDriver()),
                     Boolean.parseBoolean(configFileReader.getRunHeadless()),
                     configFileReader.getProxy(),
-                    configFileReader.getProxyFlag()
-                    ));
+                    configFileReader.getProxyFlag()));
             setDriverExt();
             setScreenShotPath(configFileReader.getScreenShotPath());
         } catch (Exception ex) {
@@ -126,25 +125,24 @@ public class SeleniumTestSetup {
     private static void setDriverExt() {
         SeleniumTestSetup.driverExt = new DriverExtensions(SeleniumTestSetup.driver);
     }
-    
+
     private static void setScreenShotPath(String screenShotPath) {
         SeleniumTestSetup.screenShotPath = screenShotPath;
     }
-    
+
     public static String getScreenShotPath() {
         return SeleniumTestSetup.screenShotPath;
     }
-    
-    
+
     public static String getCurrentUrl() {
         return SeleniumTestSetup.driver.getCurrentUrl();
     }
-    
+
     public static String getPageUrlFromCurrentUrl() {
         String baseUrl = getCurrentUrl();
-        
+
         String[] parts = baseUrl.split("/", 2);
-        
+
         return parts[1];
     }
 
@@ -162,7 +160,7 @@ public class SeleniumTestSetup {
 
     public static void setRandomNum(Random randomNum) {
         SeleniumTestSetup.randomNum = randomNum;
-    }    
+    }
 
     public static Logger getLogger() {
         return logger;
@@ -197,24 +195,19 @@ public class SeleniumTestSetup {
         Integer timeOut = timeOutSeconds.orElse(null);
 
         Integer waitTime;
-       
+
         if (timeOut == null) {
             waitTime = 1;
         } else {
             waitTime = timeOut;
         }
 
-        SeleniumTestSetup.driverExt.getDriverWait(Optional.of(waitTime)).until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".page-heading"), pageTitle));
+        SeleniumTestSetup.driverExt.getDriverWait(Optional.of(waitTime))
+                .until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".page-heading"), pageTitle));
     }
 
     public void refreshPage(PageBase page) {
-//        if (page != null) {
-//            navigate(page.getPageUrl());
-//        } else {
-//            driver.navigate().refresh();
-//        }        
-        
-        if (getCurrentUrl().equals(getBaseUrl() + page.getPageUrl())) {            
+        if (getCurrentUrl().equals(getBaseUrl() + page.getPageUrl())) {
             driver.navigate().refresh();
         } else {
             navigate(page.getPageUrl());
@@ -225,13 +218,12 @@ public class SeleniumTestSetup {
         String display = "";
 
         long startTime = System.currentTimeMillis();
-        while (!display.equals("display: none;") || System.currentTimeMillis() - startTime < 2000) {            
+        while (!display.equals("display: none;") || System.currentTimeMillis() - startTime < 2000) {
             try {
                 display = driverExt.findElement(By.id("modal-glass"), Optional.empty()).getAttribute("style");
+            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
             }
-            catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {               
-            }  
-        }                
+        }
     }
 
     public static void waitUntilModalVisibleByDescribedBy(String describedBy) {
@@ -241,13 +233,13 @@ public class SeleniumTestSetup {
 
         while (!displayed && System.currentTimeMillis() - startTime < 300) {
             try {
-                displayed = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).isDisplayed();
+                displayed = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0))
+                        .isDisplayed();
+            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
             }
-            catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {               
-            }  
         }
     }
-    
+
     public static void waitUntilModalClosedByDescribedBy(String describedBy) {
         boolean displayed = true;
 
@@ -255,84 +247,84 @@ public class SeleniumTestSetup {
 
         while (displayed && System.currentTimeMillis() - startTime < 300) {
             try {
-                displayed = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).isDisplayed();
+                displayed = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0))
+                        .isDisplayed();
+            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
             }
-            catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {               
-            }  
         }
     }
-    
-    public static void waitUntilModalVisibleByTitle(String modalTitle) {       
+
+    public static void waitUntilModalVisibleByTitle(String modalTitle) {
         List<WebElement> elements;
         Optional<WebElement> el;
         boolean found = false;
 
-        long startTime = System.currentTimeMillis();                
-        
-        while (!found && System.currentTimeMillis() - startTime < 300) {            
+        long startTime = System.currentTimeMillis();
+
+        while (!found && System.currentTimeMillis() - startTime < 300) {
             try {
-                elements = driverExt.findElements(By.cssSelector(".ui-dialog .ui-dialog-title"), Optional.of(0));            
-            
-                el = elements.stream().filter(element -> element.getText().equals(modalTitle)).findFirst();  
+                elements = driverExt.findElements(By.cssSelector(".ui-dialog .ui-dialog-title"), Optional.of(0));
+
+                el = elements.stream().filter(element -> element.getText().equals(modalTitle)).findFirst();
                 found = el.isPresent();
-            } catch(StaleElementReferenceException | NoSuchElementException | TimeoutException ex) { }            
+            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
+            }
         }
-    }    
-    
+    }
+
     public static void waitUntilModalClosedByTitle(String modalTitle) {
         List<WebElement> elements;
         Optional<WebElement> el;
         boolean found = true;
 
-        long startTime = System.currentTimeMillis();                
-        
-        while (found && System.currentTimeMillis() - startTime < 100) {              
+        long startTime = System.currentTimeMillis();
+
+        while (found && System.currentTimeMillis() - startTime < 100) {
             try {
-                elements = driverExt.findElements(By.cssSelector(".ui-dialog .ui-dialog-title"), Optional.empty());            
-            
-                el = elements.stream().filter(element -> element.getText().equals(modalTitle)).findFirst();  
+                elements = driverExt.findElements(By.cssSelector(".ui-dialog .ui-dialog-title"), Optional.empty());
+
+                el = elements.stream().filter(element -> element.getText().equals(modalTitle)).findFirst();
                 found = el.isPresent();
-                if(!found) {
+                if (!found) {
                     return;
                 }
-            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) { 
+            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
                 found = false;
-            }            
+            }
         }
     }
-    
-    public static void waitUntilModalClosed(WebElement modal) {               
+
+    public static void waitUntilModalClosed(WebElement modal) {
         String display = "";
 
         long startTime = System.currentTimeMillis();
         while (!display.equals("display: none;") && System.currentTimeMillis() - startTime < 100) {
             try {
                 display = modal.getAttribute("style");
+            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
             }
-            catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {                      
-            }            
-        }        
+        }
     }
 
     public void navigate(String url) {
         SeleniumTestSetup.driver.navigate().to(getBaseUrl() + url);
 
         waitForUrlToLoad(url, Optional.empty());
-    }    
-    
+    }
+
     public static void moveToElement(WebElement element) {
         Actions actions = new Actions(driver);
         actions.moveToElement(element);
         actions.perform();
     }
-    
+
     public static void scrollToElement(WebElement element) {
         JavascriptExecutor je = (JavascriptExecutor) driver;
-        je.executeScript("arguments[0].scrollIntoView(true);",element);
+        je.executeScript("arguments[0].scrollIntoView(true);", element);
     }
 
     @AfterSuite(alwaysRun = true)
-    public static void afterSuite() {        
+    public static void afterSuite() {
         getDriver().quit();
     }
 }

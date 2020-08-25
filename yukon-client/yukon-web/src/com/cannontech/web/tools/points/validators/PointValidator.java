@@ -1,6 +1,7 @@
 package com.cannontech.web.tools.points.validators;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -9,11 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.fdr.FdrInterfaceType;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
+import com.cannontech.database.data.point.CalcStatusPoint;
 import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.ScalarPoint;
@@ -22,6 +25,9 @@ import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.point.PointLimit;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.fdr.FDRTranslation;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.tools.points.model.CalcCompType;
 import com.cannontech.web.tools.points.model.LitePointModel;
 import com.cannontech.web.tools.points.model.PointModel;
 
@@ -29,6 +35,7 @@ import com.cannontech.web.tools.points.model.PointModel;
 public class PointValidator extends SimpleValidator<PointModel> {
 
     @Autowired private PointValidationUtil pointValidationUtil; 
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     private static final String baseKey = "yukon.web.modules.tools.point.error";
 
@@ -236,17 +243,49 @@ public class PointValidator extends SimpleValidator<PointModel> {
         
         YukonValidationUtils.checkRange(errors, "pointBase.pointStatusControl.commandTimeOut", 
             point.getPointStatusControl().getCommandTimeOut(), 0, 9999999, true);
+
+        MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
+        String openCommandI18nText = messageSourceAccessor.getMessage("yukon.web.modules.tools.point.command.open");
+        String closeCommandI18nText = messageSourceAccessor.getMessage("yukon.web.modules.tools.point.command.close");
+        YukonValidationUtils.checkIsBlank(errors, "pointBase.pointStatusControl.stateOneControl",
+                point.getPointStatusControl().getStateOneControl(), closeCommandI18nText, false);
+        YukonValidationUtils.checkIsBlank(errors, "pointBase.pointStatusControl.stateZeroControl",
+                point.getPointStatusControl().getStateZeroControl(), openCommandI18nText, false);
+        if (!errors.hasFieldErrors("pointBase.pointStatusControl.stateOneControl")) {
+            YukonValidationUtils.checkExceedsMaxLength(errors, "pointBase.pointStatusControl.stateOneControl",
+                    point.getPointStatusControl().getStateOneControl(), 100);
+        }
+        if (!errors.hasFieldErrors("pointBase.pointStatusControl.stateZeroControl")) {
+            YukonValidationUtils.checkExceedsMaxLength(errors, "pointBase.pointStatusControl.stateZeroControl",
+                    point.getPointStatusControl().getStateZeroControl(), 100);
+        }
     }
 
     private void doCalcValidation(PointBase base, Errors errors) {
-        if (base instanceof CalculatedPoint) {
-            CalculatedPoint calcPoint = (CalculatedPoint) base;
+        if (base instanceof CalcStatusPoint || base instanceof CalculatedPoint) {
+            List<CalcComponent> calcComponents;
+            if (base instanceof CalcStatusPoint) {
+                CalcStatusPoint calcPoint = (CalcStatusPoint) base;
+                calcComponents = calcPoint.getCalcComponents();
+            } else {
+                CalculatedPoint calcPoint = (CalculatedPoint) base;
+                calcComponents = calcPoint.getCalcComponents();
+            }
             int index = 0;
-            for (CalcComponent calcComponent : calcPoint.getCalcComponents()) {
+            for (CalcComponent calcComponent : calcComponents) {
                 if (calcComponent.getConstant() == null) {
                     if (!errors.hasFieldErrors("pointBase.calcComponents[" + index + "].constant")
                             && calcComponent.getConstant() == null) {
                         errors.rejectValue("pointBase.calcComponents[" + index + "].constant", "yukon.web.error.isBlank");
+                    }
+                }
+                MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
+                String operand = messageSourceAccessor.getMessage("yukon.web.modules.tools.point.calculation.operand");
+                if (calcComponent.getComponentType().equals(CalcCompType.OPERATION.getCalcCompType())
+                        || calcComponent.getComponentType().equals(CalcCompType.FUNCTION.getCalcCompType())) {
+                    if (!errors.hasFieldErrors("pointBase.calcComponents[" + index + "].componentPointID")) {
+                        YukonValidationUtils.checkIfFieldRequired("pointBase.calcComponents[" + index + "].componentPointID",
+                                errors, calcComponent.getComponentPointID(), operand);
                     }
                 }
                 index++;

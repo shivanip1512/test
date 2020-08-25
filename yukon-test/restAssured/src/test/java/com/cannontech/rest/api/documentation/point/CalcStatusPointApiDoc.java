@@ -51,8 +51,8 @@ public class CalcStatusPointApiDoc extends PointApiDocBase {
     @Test(dependsOnMethods = { "Test_CalcStatusPoint_04_Copy" })
     public void Test_CalcStatusPoint_05_Delete() {
         deleteDoc();
-        
-        //Delete copied point.
+
+        // Delete copied point.
         PointHelper.deletePoint(copyPointId);
     }
 

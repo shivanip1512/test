@@ -30,7 +30,7 @@ public abstract class PointApiTestBase {
         ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockPointBase);
         String pointId = createResponse.path(PointHelper.CONTEXT_POINT_ID).toString();
         context.setAttribute(PointHelper.CONTEXT_POINT_ID, pointId);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
         assertTrue("Point Id should not be Null", pointId != null);
     }
 
