@@ -41,7 +41,7 @@ public class VirtualDeviceApiController {
     @PostMapping("")
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> create(@Valid @RequestBody VirtualDeviceModel virtualDevice) {
-        return new ResponseEntity<>(virtualDeviceService.create(virtualDevice), HttpStatus.OK);
+        return new ResponseEntity<>(virtualDeviceService.create(virtualDevice), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")

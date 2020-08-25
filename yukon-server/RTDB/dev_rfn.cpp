@@ -51,10 +51,14 @@ void RfnDevice::DecodeDatabaseReader(RowReader &rdr)
     CtiDeviceSingle::DecodeDatabaseReader(rdr);
 }
 
+bool RfnDevice::hasRfnFirmwareSupportIn( double minimumVersion ) const
+{
+    return gConfigParms.getValueAsDouble("RFN_FIRMWARE") >= minimumVersion;
+}
 
 bool RfnDevice::areAggregateCommandsSupported() const
 {
-    return gConfigParms.getValueAsDouble("RFN_FIRMWARE") >= 9.0;
+    return hasRfnFirmwareSupportIn( 9.0 );
 }
 
 

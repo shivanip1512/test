@@ -23,6 +23,7 @@
         <category type="rfnDemand" optional="true"/>
         <category type="demandFreeze"/>
         <category type="rfnChannelConfiguration"/>
+        <category type="rfnMetrologyConfiguration" optional="true"/>
         <category type="rfnTempAlarm"/>
         <category type="tou"/>
     </configuration>
