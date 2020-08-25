@@ -1178,8 +1178,8 @@ public class DevEventLogCreationService {
                 LocalDate startDate = LocalDate.now().minusDays(1);
                 String loadGroupIds = devEventLog.getIndicatorString() + "123, 456, 789";
 
-                ecobeeEventLogService.reconciliationCompleted(1, "123453625", EcobeeDiscrepancyType.MISSING_DEVICE.toString(),
-                        yukonUser);
+                ecobeeEventLogService.reconciliationCompleted(0, "123453625", EcobeeDiscrepancyType.MISSING_DEVICE.toString(),
+                        yukonUser, 1);
                 ecobeeEventLogService.reconciliationStarted(1, yukonUser);
                 ecobeeEventLogService.reconciliationResults(10, 5, 4, 1);
                 ecobeeEventLogService.dataDownloaded(yukonUser, startDate, endDate, loadGroupIds, devEventLog.getEventSource());

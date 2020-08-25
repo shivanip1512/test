@@ -123,7 +123,7 @@ public class EcobeeReconciliationServiceImpl implements EcobeeReconciliationServ
             intValue = 2; // represents unmodified
         }
         ecobeeEventLogService.reconciliationCompleted(intValue, managementSet,
-                result.getOriginalDiscrepancy().getErrorType().toString(), liteYukonUser);
+                result.getOriginalDiscrepancy().getErrorType().toString(), liteYukonUser, intValue);
     }
 
     /**

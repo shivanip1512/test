@@ -13,7 +13,7 @@ public interface EcobeeEventLogService {
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "ecobee")
     public void reconciliationCompleted(int status, String syncObject,
                                         @Arg(ArgEnum.syncIssueType) String type,
-                                        @Arg(ArgEnum.username) LiteYukonUser yukonUser);
+                                        @Arg(ArgEnum.username) LiteYukonUser yukonUser, int statusValue);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "ecobee")
     public void dataDownloaded(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
