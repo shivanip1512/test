@@ -23,11 +23,16 @@
 #include "amq_constants.h"
 #include "amq_queues.h"
 #include "CParms.h"
+#include "utility.h"
+#include "database_reader.h"
+#include "sql_util.h"
 
 extern "C" {
 #include "coap/pdu.h"
 #include "coap/block.h"
 }
+
+#include <boost/algorithm/string/split.hpp>
 
 #include <random>
 #include <future>
@@ -69,6 +74,27 @@ bool isRfDa(const Cti::RfnIdentifier rfnIdentifier)
 {
     return rfDaManufacturerModels.count({ rfnIdentifier.manufacturer,
                                           rfnIdentifier.model });
+}
+
+namespace Settings {
+
+    std::string deviceGroup;
+    unsigned deviceConfigFailureRate = 0;
+
+    std::vector<std::string> getDeviceGroupSegments()
+    {
+        constexpr auto pathSeparator = '/';
+
+        std::vector<std::string> result;
+
+        if( ! deviceGroup.empty() && deviceGroup[0] == pathSeparator )
+        {
+            //  Exclude the root
+            boost::split(result, deviceGroup.substr(1), Cti::is_char{ pathSeparator });
+        }
+
+        return result;
+    }
 }
 }
 
@@ -199,6 +225,37 @@ void E2eSimulator::delayProcessing(float delay, const E2eDataRequestMsg requestM
     processE2eDtRequest(requestMsg);
 }
 
+
+double getDeviceFailureChance(RfnIdentifier rfnIdentifier)
+{
+    const auto groupSegments = Settings::getDeviceGroupSegments();
+
+    std::string sql = Database::getRfnAddressInDeviceGroupSql(groupSegments.size());
+
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader rdr(connection, sql);
+
+    for( const auto& groupSegment : groupSegments )
+    {
+        rdr << groupSegment;
+    }
+
+    rdr << rfnIdentifier.manufacturer;
+    rdr << rfnIdentifier.model;
+    rdr << rfnIdentifier.serialNumber;
+
+    rdr.execute();
+
+    if( rdr() && rdr[0].as<int>() > 0 )
+    {
+        return Settings::deviceConfigFailureRate / 100.0;
+    }
+
+    return 0;
+}
+
+
+
 void E2eSimulator::processE2eDtRequest(const E2eDataRequestMsg requestMsg)
 {
     const auto requestSender = [this, &requestMsg](const e2edt_request_packet& request) {
@@ -222,8 +279,11 @@ void E2eSimulator::processE2eDtRequest(const E2eDataRequestMsg requestMsg)
                         
         if( auto e2edtRequest = dynamic_cast<const e2edt_request_packet*>(msgPtr.get()) )
         {
+            auto failureChance = dist(gen);
+
             //  Request Unacceptable
-            if( dist(gen) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_REQUEST_NOT_ACCEPTABLE_CHANCE") )
+            if( failureChance < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_REQUEST_NOT_ACCEPTABLE_CHANCE")
+                || failureChance < getDeviceFailureChance(requestMsg.rfnIdentifier) )
             {
                 CTILOG_INFO(dout, "Sending E2E Request Not Acceptable for " << requestMsg.rfnIdentifier);
 
@@ -487,8 +547,10 @@ auto E2eSimulator::handleStatusRequest(const ActiveMQConnectionManager::MessageD
 
     Messaging::FieldSimulator::StatusResponseMsg response;
 
-    response.settings.deviceConfigFailureRate = 99;
-    response.settings.deviceGroup = "/Jimmy";
+    response.settings.deviceConfigFailureRate = 
+        Settings::deviceConfigFailureRate;
+    response.settings.deviceGroup = 
+        Settings::deviceGroup;
 
     return std::make_unique<ActiveMQConnectionManager::SerializedMessage>(
         Messaging::Serialization::serialize(response));
@@ -501,11 +563,16 @@ auto E2eSimulator::handleConfigurationRequest(const ActiveMQConnectionManager::M
 
     auto request = MessageSerializer<Messaging::FieldSimulator::ModifyConfigurationRequestMsg>::deserialize(md.msg);
 
-    if( ! request )
+    if( request )
     {
         return nullptr;
     }
 
+    Settings::deviceConfigFailureRate = 
+        request->settings.deviceConfigFailureRate;
+    Settings::deviceGroup = 
+        request->settings.deviceGroup;
+    
     Messaging::FieldSimulator::ModifyConfigurationResponseMsg response;
 
     response.success = true;
