@@ -202,7 +202,7 @@ public final class Urls {
         public static final String SCRIPTS = "/macsscheduler/schedules/view";
         
         public static final String TRENDS_LIST = "/tools/trends";
-        public static final String TREND_EDIT = "/tools/trends/";
+        public static final String TREND_EDIT = "/tools/trend/";
         public static final String TREND_CREATE = "/tools/trend/create";
         public static final String TREND_DETAILS = "/tools/trends/";
 
