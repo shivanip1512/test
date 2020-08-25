@@ -27,22 +27,8 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup{
 	    @BeforeClass(alwaysRun = true)
 		public void beforeClass() {
 			driverExt = getDriverExt();
-			Pair<JSONObject, JSONObject> pair = new LoadGroupRfnExpresscomCreateBuilder.Builder(Optional.empty())
-															.withProtocolPriority(Optional.empty())
-															.withDisableControl(Optional.empty())
-															.withDisableGroup(Optional.empty())
-															.withKwCapacity(Optional.empty())
-															.withSPID(Optional.empty())
-															.withGeo(Optional.empty())
-															.withProgram(Optional.empty())
-															.withSplinter(Optional.empty())
-															.withSubstation(Optional.empty())
-															.withFeeder(Optional.empty())
-															.withUser(Optional.empty())
-															.withZip(Optional.empty())
-															.withRelayUsage(Optional.empty())
-															.withAddressUsage(Optional.empty())
-															.create();
+			LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup().create();
+			Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup().create();
 			JSONObject response = pair.getValue1();
 			this.id = response.getInt("id");
 			navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
@@ -93,7 +79,7 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup{
 	        final String EXPECTED_MSG = name + " saved successfully.";
 
 	        editPage.getName().setInputValue(name);
-	        editPage.getAddressUsage().setTrueFalseByName("Serial", true);s
+	        editPage.getAddressUsage().setTrueFalseByName("Serial", true);
 	        editPage.getSerialAddress().setInputValue("25");
 	        editPage.getLoadAddressUsage().setTrueFalseByName("Splinter", true);
 	        editPage.getSplinterLoadAddress().setInputValue("20");

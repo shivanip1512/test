@@ -45,6 +45,11 @@ public static class Builder {
             
             this.name = name.orElse("AT LG " + uuid);
         }
+        
+        public Builder withName(String name) {
+            this.name = name;
+            return this;
+        }
 
         public Builder withSPID(Optional<Integer> serviceProvider) {
             this.spid = serviceProvider.orElse(faker.number().numberBetween(1, 65534));            
