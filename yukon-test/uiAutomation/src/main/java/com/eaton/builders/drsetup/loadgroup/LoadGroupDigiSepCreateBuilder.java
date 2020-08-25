@@ -25,7 +25,7 @@ public class LoadGroupDigiSepCreateBuilder {
         private boolean disableGroup;
         private boolean disableControl;
         private int utilityEnrollmentGroup;
-        private List<SepDeviceClass> deviceClassSet;
+        private List<DigiSepDeviceClassEnum> deviceClassSet;
         private int rampInMinutes;
         private int rampOutMinutes;
 
@@ -41,9 +41,9 @@ public class LoadGroupDigiSepCreateBuilder {
             return this;
         }
 
-        public Builder withDeviceClassSet(Optional<List<SepDeviceClass>> deviceClassSet) {
-            List<SepDeviceClass> list = new ArrayList<>();
-            list.add(SepDeviceClass.getRandomDeviceClassSet());
+        public Builder withDeviceClassSet(Optional<List<DigiSepDeviceClassEnum>> deviceClassSet) {
+            List<DigiSepDeviceClassEnum> list = new ArrayList<>();
+            list.add(DigiSepDeviceClassEnum.getRandomDeviceClassSet());
 
             this.deviceClassSet = deviceClassSet.orElse(list);
             return this;

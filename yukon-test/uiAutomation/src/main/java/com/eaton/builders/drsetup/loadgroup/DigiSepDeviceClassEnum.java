@@ -2,7 +2,7 @@ package com.eaton.builders.drsetup.loadgroup;
 
 import java.util.Random;
 
-public enum SepDeviceClass {
+public enum DigiSepDeviceClassEnum {
 
     HVAC_COMPRESSOR_FURNACE("HVAC_COMPRESSOR_FURNACE"),
     BASEBOARD_HEAT("BASEBOARD_HEAT"),
@@ -16,20 +16,19 @@ public enum SepDeviceClass {
     INTERIOR_LIGHTING("INTERIOR_LIGHTING"),
     ELECTRIC_VEHICLE("ELECTRIC_VEHICLE"),
     GENERATION_SYSTEMS("GENERATION_SYSTEMS");
-    
 
     private final String deviceClassSet;
 
-    SepDeviceClass(String deviceClassSet) {
+    DigiSepDeviceClassEnum(String deviceClassSet) {
         this.deviceClassSet = deviceClassSet;
     }
-    
+
     public String getDeviceClassSet() {
         return this.deviceClassSet;
     }
-    
-    public static SepDeviceClass getRandomDeviceClassSet() {
+
+    public static DigiSepDeviceClassEnum getRandomDeviceClassSet() {
         Random random = new Random();
         return values()[random.nextInt(values().length)];
-}
+    }
 }
