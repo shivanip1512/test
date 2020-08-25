@@ -5,8 +5,8 @@ import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.Con
 import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.ConfigState.UNCONFIRMED;
 import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.ConfigState.UNREAD;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao.ConfigState;
 import com.cannontech.common.i18n.DisplayableEnum;
@@ -22,6 +22,7 @@ public interface DeviceConfigSummaryDao {
     public enum StateSelection implements DisplayableEnum {
         ALL(List.of(IN_SYNC, OUT_OF_SYNC, UNCONFIRMED, UNREAD)),
         IN_PROGRESS(new ArrayList<>()),
+        IN_SYNC_(List.of(IN_SYNC)),
         NEEDS_UPLOAD(List.of(OUT_OF_SYNC, UNREAD)),
         NEEDS_VALIDATION(List.of(UNCONFIRMED));
 
