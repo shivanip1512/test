@@ -197,7 +197,8 @@ public class SeleniumTestSetup {
             waitTime = timeOut;
         }
 
-        SeleniumTestSetup.driverExt.getDriverWait(Optional.of(waitTime)).until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".page-heading"), pageTitle));
+        SeleniumTestSetup.driverExt.getDriverWait(Optional.of(waitTime))
+                .until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".page-heading"), pageTitle));
     }
 
     public void refreshPage(PageBase page) {
@@ -213,44 +214,44 @@ public class SeleniumTestSetup {
 
         long startTime = System.currentTimeMillis();
 
-        while (!display.equals("display: none;") || (System.currentTimeMillis() - startTime) < 1000) {            
+        while (!display.equals("display: none;") || (System.currentTimeMillis() - startTime) < 1000) {
             try {
                 display = driverExt.findElement(By.id("modal-glass"), Optional.empty()).getAttribute("style");
+            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
             }
-            catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {               
-            }  
-        }                
+        }
     }
-    
+
     public static void waitUntilModalOpenByDescribedBy(String describedBy) {
         Integer count = 0;
-        
+
         long startTime = System.currentTimeMillis();
 
         while (count.equals(0) || (System.currentTimeMillis() - startTime) < 1000) {
-            count = driverExt.findElements(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.empty()).size();    
-        }                
+            count = driverExt.findElements(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.empty()).size();
+        }
     }
-    
+
     public static void waitUntilModalClosedByDescribedBy(String describedBy) {
         Integer count = 1;
-        
+
         long startTime = System.currentTimeMillis();
 
         while (count.equals(1) || (System.currentTimeMillis() - startTime) < 1000) {
-            count = driverExt.findElements(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).size();    
-        } 
+            count = driverExt.findElements(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).size();
+        }
     }
-    
+
     public static void waitUntilModalClosedDisplayNone(String describedBy) {
         boolean found = true;
         long startTime = System.currentTimeMillis();
-        
-        while(found || (System.currentTimeMillis() - startTime) < 1000) {
-            
-            String style = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).getAttribute("style");
-            
-            if(style.contains("display: none")) {
+
+        while (found || (System.currentTimeMillis() - startTime) < 1000) {
+
+            String style = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0))
+                    .getAttribute("style");
+
+            if (style.contains("display: none")) {
                 found = false;
             }
         }
@@ -258,47 +259,51 @@ public class SeleniumTestSetup {
 
     public static void waitUntilModalInvisibleByDescribedBy(String describedBy) {
         driverExt.waitUntilElementInvisibleByCssLocator("[aria-describedby='" + describedBy + "']");
-    }          
-    
+    }
+
     /**
      * @param modalTitle title of the modal
      * 
-     * only use this method if area-describedby uses a dynamic id and
-     * can not use method waitUntilModalVisibleByDescribedBy
+     *                   only use this method if area-describedby uses a dynamic id and
+     *                   can not use method waitUntilModalVisibleByDescribedBy
      */
     public static void waitUntilModalOpenByTitle(String modalTitle) {
         boolean found = false;
         long startTime = System.currentTimeMillis();
 
         while (!found || (System.currentTimeMillis() - startTime) < 1000) {
-            List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-labelledby^='ui-id']"), Optional.empty());
-            
-            Optional<WebElement> el = list.stream().filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle)).findFirst();
-            
-            if(el.isPresent()) {
+            List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-labelledby^='ui-id']"),
+                    Optional.empty());
+
+            Optional<WebElement> el = list.stream()
+                    .filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle)).findFirst();
+
+            if (el.isPresent()) {
                 return;
-            } 
+            }
         }
     }
 
     /**
      * @param modalTitle title of the modal
      * 
-     * only use this method if area-describedby uses a dynamic id and
-     * can not use method waitUntilModalClosedByDescribedBy
+     *                   only use this method if area-describedby uses a dynamic id and
+     *                   can not use method waitUntilModalClosedByDescribedBy
      */
     public static void waitUntilModalClosedByTitle(String modalTitle) {
         boolean found = true;
         long startTime = System.currentTimeMillis();
 
         while (found || (System.currentTimeMillis() - startTime) < 1000) {
-            List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-labelledby^='ui-id']"), Optional.empty());
-            
-            Optional<WebElement> el = list.stream().filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle)).findFirst();
-            
-            if(!el.isPresent()) {
+            List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-labelledby^='ui-id']"),
+                    Optional.empty());
+
+            Optional<WebElement> el = list.stream()
+                    .filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle)).findFirst();
+
+            if (!el.isPresent()) {
                 return;
-            } 
+            }
         }
     }
 
