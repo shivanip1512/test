@@ -35,7 +35,7 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpMCTEdit_UpdateAllFields_WithBronzeAddress_Successfully() {
+	public void ldGrpMCTEdit_AllFields_WithBronzeAddress_Successfully() {
 		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 		String name = "AT Edited MCT Ldgrp " + timeStamp;
 		final String EXPECTED_MSG = name + " saved successfully.";
@@ -73,7 +73,7 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpMCTEdit_UpdateAllFields_WithMCTAddress_Successfully() {
+	public void ldGrpMCTEdit_AllFields_WithMCTAddress_Successfully() {
 		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 		String name = "AT Edited MCT Ldgrp " + timeStamp;
 		final String EXPECTED_MSG = name + " saved successfully.";
