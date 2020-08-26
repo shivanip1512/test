@@ -276,7 +276,7 @@
     <entry key="yukon.common.events.system.rfn.createdNewDeviceAutomatically">New meter {3} created from {2} for {1}.</entry>
     <entry key="yukon.common.events.system.rfn.createdNewDeviceAutomatically.2">Template Name</entry>
         
-    <entry key="yukon.common.events.system.rfn.receivedDataForUnkownDeviceTemplate">Unable to create meter because template {1}: serial={4} does not exist.</entry>
+    <entry key="yukon.common.events.system.rfn.receivedDataForUnkownDeviceTemplate">Unable to create meter because template {1} does not exist.</entry>
     <entry key="yukon.common.events.system.rfn.receivedDataForUnkownDeviceTemplate.1">Template Name</entry>
     
     <entry key="yukon.common.events.system.rfn.unableToCreateDeviceFromTemplate">Unable to create meter for template {1}: manufacturer={2}, model={3}, serial={4}</entry>
