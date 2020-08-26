@@ -15,10 +15,7 @@ import io.restassured.response.ExtractableResponse;
 public class LoadGroupEmetconCreateBuilder extends LoadGroupEnums{
 	
 	public static class Builder {
-	
-		
-        private Faker faker = new Faker();
-        
+	    private Faker faker = new Faker();
         private static final String TYPE = "LM_GROUP_EMETCON";
         private String name;
         private int routeId;
@@ -33,7 +30,6 @@ public class LoadGroupEmetconCreateBuilder extends LoadGroupEnums{
         public Builder(Optional<String> name) {
             String u = UUID.randomUUID().toString();            
             String uuid = u.replace("-", "");
-            
             this.name = name.orElse("AT LG " + uuid);
         }
         
@@ -74,21 +70,18 @@ public class LoadGroupEmetconCreateBuilder extends LoadGroupEnums{
         
         public Builder withRelayUsage(Optional<LoadGroupEmetconCreateBuilder.RelayUsageEmetcon> relayUsage) {
         	LoadGroupEmetconCreateBuilder.RelayUsageEmetcon randomRelayUsage = relayUsage.orElse(LoadGroupEmetconCreateBuilder.RelayUsageEmetcon.getRandomRelayUsage());
-
             this.relayUsage = randomRelayUsage.getRelayUsage();
             return this;
         }
         
         public Builder withAddressUsage(Optional<LoadGroupEmetconCreateBuilder.AddressUsageEmetcon> addressUsage) {
         	LoadGroupEmetconCreateBuilder.AddressUsageEmetcon randomAddressUsage = addressUsage.orElse(LoadGroupEmetconCreateBuilder.AddressUsageEmetcon.getRandomAddressUsage());
-
             this.addressUsage = randomAddressUsage.getAddressUsage();
             return this;
         }
        
         public JSONObject build() {            
             JSONObject j = new JSONObject();            
-            
             JSONObject jo = new JSONObject();            
             jo.put("name", this.name);
             jo.put("type", TYPE);
@@ -102,19 +95,14 @@ public class LoadGroupEmetconCreateBuilder extends LoadGroupEnums{
             jo.put("disableControl", this.disableControl);            
 
             j.put(TYPE, jo);
-            
             return j;
         }
         
         public Pair<JSONObject, JSONObject> create() {
             JSONObject request = build(); 
-            
             ExtractableResponse<?> createResponse = DrSetupCreateRequest.createLoadGroup(request.toString());
-            
             String id = createResponse.path("groupId").toString();
-            
             ExtractableResponse<?> er = DrSetupGetRequest.getLoadGroup(Integer.parseInt(id)); 
-            
             String res = er.asString();
             JSONObject response = new JSONObject(res);
             JSONObject jsonResponse = response.getJSONObject(TYPE);
@@ -135,5 +123,4 @@ public class LoadGroupEmetconCreateBuilder extends LoadGroupEnums{
 					.withAddressUsage(Optional.of(LoadGroupEnums.AddressUsageEmetcon.getRandomAddressUsage()))
 					.withSilverAddress(Optional.empty());
 	    }
-	
 }
