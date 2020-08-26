@@ -309,7 +309,6 @@ yukon.tools.point = (function () {
             newRow.find('.js-component-type').trigger("change");
             newRow.find('.js-function-options').on('change', changeFunctionType);
             newRow.find('.js-baseline-options').on('change', changeBaseLine);
-            newRow.find('.js-calc-point-comp').val(0);
             checkIfBaselineExists();
             newRow.removeClass('js-add-calc-row');
             yukon.ui.reindexInputs(calcTable);
@@ -374,7 +373,11 @@ yukon.tools.point = (function () {
             var firstValue = row.find('.js-operation-options option:first').val();
             row.find('.js-operation-options').val(firstValue);
         }
-        
+        if (newValue === 'Constant') {
+            row.find("input[class='js-calc-point-comp']").val(0);
+        } else {
+            row.find("input[class='js-calc-point-comp']").val('');
+        }
     };
 
      /**

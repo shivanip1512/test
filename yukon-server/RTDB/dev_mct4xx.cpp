@@ -15,7 +15,8 @@
 #include "date_utility.h"
 #include "std_helper.h"
 
-#include <boost/assign/list_of.hpp>
+#include <boost/algorithm/string/replace.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 
 using namespace Cti::Protocols;
 using namespace Cti::Devices::Commands;
@@ -167,16 +168,16 @@ Mct4xxDevice::Mct4xxDevice()
     }
 }
 
-const Mct4xxDevice::error_map Mct4xxDevice::error_codes = boost::assign::map_list_of
-        (0xfffffffe, error_details("Meter communications problem",                 InvalidQuality))
-        (0xfffffffd, error_details("No data yet available for requested interval", InvalidQuality))
-        (0xfffffffc, error_details("No data yet available for requested interval", InvalidQuality))
-        (0xfffffffa, error_details(ErrorText_OutOfRange,                           InvalidQuality))
-        (0xfffffff8, error_details("Device filler",                                DeviceFillerQuality))
-        (0xfffffff6, error_details("Power failure occurred during part or all of this interval",   PowerfailQuality))
-        (0xfffffff4, error_details("Power restored during this interval",          PartialIntervalQuality))
-        (0xffffffe1, error_details("Overflow",                                     OverflowQuality))
-        (0xffffffe0, error_details("Overflow",                                     OverflowQuality));
+const Mct4xxDevice::error_map Mct4xxDevice::error_codes {
+        { 0xfffffffe, error_details("Meter communications problem",                 InvalidQuality) },
+        { 0xfffffffd, error_details("No data yet available for requested interval", InvalidQuality) },
+        { 0xfffffffc, error_details("No data yet available for requested interval", InvalidQuality) },
+        { 0xfffffffa, error_details(ErrorText_OutOfRange,                           InvalidQuality) },
+        { 0xfffffff8, error_details("Device filler",                                DeviceFillerQuality) },
+        { 0xfffffff6, error_details("Power failure occurred during part or all of this interval",   PowerfailQuality) },
+        { 0xfffffff4, error_details("Power restored during this interval",          PartialIntervalQuality) },
+        { 0xffffffe1, error_details("Overflow",                                     OverflowQuality) },
+        { 0xffffffe0, error_details("Overflow",                                     OverflowQuality) } };
 
 
 Mct4xxDevice::CommandSet Mct4xxDevice::initCommandStore()
@@ -877,10 +878,10 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
 
                         typedef map<string, char> PeakTypes;
 
-                        const PeakTypes peakLookup = boost::assign::map_list_of
-                            (PeakString_Day,      FuncRead_LLPPeakDayPos)
-                            (PeakString_Hour,     FuncRead_LLPPeakHourPos)
-                            (PeakString_Interval, FuncRead_LLPPeakIntervalPos);
+                        static const PeakTypes peakLookup {
+                            { PeakString_Day,      FuncRead_LLPPeakDayPos },
+                            { PeakString_Hour,     FuncRead_LLPPeakHourPos },
+                            { PeakString_Interval, FuncRead_LLPPeakIntervalPos } };
 
                         PeakTypes::const_iterator peakType = peakLookup.find(parse.getsValue("lp_peaktype"));
 
@@ -1023,10 +1024,17 @@ YukonError_t Mct4xxDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParse
             
         if( ! readStatus )
         {
+            auto commandString = boost::replace_head_copy(pReq->CommandString(), 9, "putconfig");
+                
+            if( ! parse.isKeyValid("verify") )
+            {
+                commandString.append(" verify");
+            }
+
             auto verifyRequest = std::make_unique<CtiRequestMsg>(*pReq);
-            
+
             verifyRequest->setConnectionHandle(pReq->getConnectionHandle());
-            verifyRequest->setCommandString(pReq->CommandString() + " verify");
+            verifyRequest->setCommandString(commandString);
 
             incrementGroupMessageCount(verifyRequest->UserMessageId(), verifyRequest->getConnectionHandle());
 
@@ -2064,10 +2072,10 @@ YukonError_t Mct4xxDevice::decodePutConfig(const INMESS &InMessage, const CtiTim
 
                 typedef map<char, string> PeakStrings;
 
-                const PeakStrings peakLookup = boost::assign::map_list_of
-                    (FuncRead_LLPPeakDayPos,      PeakString_Day)
-                    (FuncRead_LLPPeakHourPos,     PeakString_Hour)
-                    (FuncRead_LLPPeakIntervalPos, PeakString_Interval);
+                static const PeakStrings peakLookup {
+                    { FuncRead_LLPPeakDayPos,      PeakString_Day },
+                    { FuncRead_LLPPeakHourPos,     PeakString_Hour },
+                    { FuncRead_LLPPeakIntervalPos, PeakString_Interval } };
 
                 PeakStrings::const_iterator peakString = peakLookup.find(_llpPeakInterest.peak_type);
 
