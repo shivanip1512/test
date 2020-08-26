@@ -13,9 +13,9 @@ public class ActionBtnDropDownElement {
     private DriverExtensions driverExt;
 
     public ActionBtnDropDownElement(DriverExtensions driverExt) {
-        this.driverExt = driverExt;    
+        this.driverExt = driverExt;
     }
-    
+
     public WebElement getActionBtn() {
         return this.driverExt.findElement(By.cssSelector(".page-actions #b-page-actions button"), Optional.empty());
     }
@@ -27,31 +27,63 @@ public class ActionBtnDropDownElement {
     public Boolean isDisplayed() {
         return getActionBtn().isDisplayed();
     }
-    
+
     public Boolean isEnabled() {
         return getActionBtn().isEnabled();
     }
-    
-    public void clickAndSelectOptionByText(String value) {
-        click();                
-        
+
+    public void clickAndSelectOptionByText(String text) {
+        click();
+
+        WebElement element = this.driverExt.findElement(By.cssSelector(".dropdown-menu[style*='display: block;']"),
+                Optional.of(3));
+
+        // if (element != null) {
+
+        List<WebElement> options = element.findElements(By.cssSelector(".dropdown-option-label"));
+
+        WebElement el = options.stream().filter(x -> x.getText().equals(text)).findFirst().orElseThrow();
+
+        el.click();
+//            for (WebElement option : options) {
+//                String optionText = option.getText();
+//                if (optionText.equals(value)) {
+//                    option.click();
+//                    return;
+//                }
+//            }
+        // }
+    }
+
+    /**
+     * @param text - The Text listed in the dropdown
+     * @return - returns true if the Action in the dropdown is enabled
+     *           returns false if the Action in the dropdown is disabled
+     */
+    public Boolean isActionEnabled(String text) {
         WebElement element = null;
-        //long startTime = System.currentTimeMillis();
-        //while (element == null && System.currentTimeMillis() - startTime < 3000) {
-            element = this.driverExt.findElement(By.cssSelector(".dropdown-menu[style*='display: block;']"), Optional.of(3));
-        //}
-        
-        if (element != null) {
-            
-            List<WebElement> options = element.findElements(By.cssSelector(".dropdown-option-label"));
-            
-            for (WebElement option : options) {
-                String optionText = option.getText();
-                if (optionText.equals(value)) {
-                    option.click();
-                    return;
-                }
-            }
-        }  //TODO add an exception stating did not find dropdown
+        element = this.driverExt.findElement(By.cssSelector(".dropdown-menu[style*='display: block;']"), Optional.of(3));
+
+        // Boolean flag = true;
+        // if (element != null) {
+
+        List<WebElement> options = element.findElements(By.cssSelector(".dropdown-option-label"));
+
+        WebElement el = options.stream().filter(x -> x.getText().equals(text)).findFirst().orElseThrow();
+
+        return !el.getAttribute("class").contains("disabled");
+
+//            for (WebElement option : options) {
+//                String optionText = option.getText();
+//                if (optionText.equals(value)) {
+//                    if (option.getAttribute("class").contains("disabled")) {
+//                        flag = false;
+//                        break;
+//                    }
+//                }
+//            }
+        // }
+
+        // return flag;
     }
 }

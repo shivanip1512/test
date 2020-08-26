@@ -115,7 +115,7 @@ public class TabElement {
         return getTabContainer().findElements(By.cssSelector(".ui-tabs-tab"));
     }
 
-    private WebElement getTabByName(String tabName) {
+    public WebElement getTabByName(String tabName) {
         List<WebElement> list = getTabs();
 
         return list.stream().filter(e -> e.findElement(By.cssSelector("a")).getText().contains(tabName)).findFirst().orElseThrow();

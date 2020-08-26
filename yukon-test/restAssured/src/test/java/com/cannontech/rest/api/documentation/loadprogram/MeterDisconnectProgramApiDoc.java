@@ -3,20 +3,16 @@ package com.cannontech.rest.api.documentation.loadprogram;
 import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertTrue;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
-
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.restdocs.ManualRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
-import org.springframework.restdocs.payload.JsonFieldType;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -46,45 +42,16 @@ public class MeterDisconnectProgramApiDoc {
     private Integer programId = null;
     private Integer copyProgramId = null;
     private FieldDescriptor[] meterDisconnectGearFieldDescriptor = null;
+    private List<FieldDescriptor> meterDisconnectProgramFieldDescriptor = null;
+    private MockLoadProgram subOrdinateLoadProgram = null;
 
     @BeforeMethod
     public void setUp(Method method) {
         baseURI = ApiCallHelper.getProperty("baseURI");
         this.restDocumentation.beforeTest(getClass(), method.getName());
         this.documentationSpec = RestApiDocumentationUtility.buildRequestSpecBuilder(restDocumentation, method);
-        meterDisconnectGearFieldDescriptor = new FieldDescriptor[] {
-                fieldWithPath("programId").type(JsonFieldType.NUMBER).optional().description("Load Program Id"),
-                fieldWithPath("name").type(JsonFieldType.STRING).description("Load Program Name"),
-                fieldWithPath("type").type(JsonFieldType.STRING).description("Load Program Type"),
-                fieldWithPath("operationalState").type(JsonFieldType.STRING).description("Load Program Operational State"),
-                fieldWithPath("constraint.constraintId").type(JsonFieldType.NUMBER).description("Constraint Id"),
-                fieldWithPath("triggerOffset").type(JsonFieldType.NUMBER).description("Trigger offset. Min Value: 0.0, Max Value: 99999.9999"),
-                fieldWithPath("restoreOffset").type(JsonFieldType.NUMBER).description("Restore offset. Min Value: -9999.9999 , Max Value: 99999.9999"),
-
-                fieldWithPath("gears[].gearName").type(JsonFieldType.STRING).description("Gear Name"),
-                fieldWithPath("gears[].gearNumber").type(JsonFieldType.NUMBER).description("Gear Number"),
-                fieldWithPath("gears[].controlMethod").type(JsonFieldType.STRING).description("Gear Type"),
-
-                fieldWithPath("controlWindow.controlWindowOne.availableStartTimeInMinutes").type(JsonFieldType.NUMBER)
-                                                                                           .description("Available Start Time In Minutes"),
-                fieldWithPath("controlWindow.controlWindowOne.availableStopTimeInMinutes").type(JsonFieldType.NUMBER)
-                                                                                          .description("Available Stop Time In Minutes"),
-                fieldWithPath("controlWindow.controlWindowTwo.availableStartTimeInMinutes").type(JsonFieldType.NUMBER)
-                                                                                           .description("Available Start Time In Minutes"),
-                fieldWithPath("controlWindow.controlWindowTwo.availableStopTimeInMinutes").type(JsonFieldType.NUMBER)
-                                                                                          .description("Available Stop Time In Minutes"),
-
-                fieldWithPath("assignedGroups[].groupId").type(JsonFieldType.NUMBER).description("Assigned Load Group Id"),
-                fieldWithPath("assignedGroups[].groupName").type(JsonFieldType.STRING).description("Assigned Load Group Name"),
-                fieldWithPath("assignedGroups[].type").type(JsonFieldType.STRING).description("Assigned Load Group Type"),
-
-                fieldWithPath("notification.notifyOnAdjust").type(JsonFieldType.BOOLEAN).description("Notify on Adjust"),
-                fieldWithPath("notification.enableOnSchedule").type(JsonFieldType.BOOLEAN).description("Enable on schedule"),
-                fieldWithPath("notification.assignedNotificationGroups[]").type(JsonFieldType.ARRAY).description("Assigned Notification groups"),
-                fieldWithPath("notification.assignedNotificationGroups[].notificationGrpID").type(JsonFieldType.NUMBER).description("Assigned Notification Id"),
-                fieldWithPath("notification.assignedNotificationGroups[].notificationGrpName").type(JsonFieldType.STRING)
-                                                                                              .description("Assigned Notification Group Name") };
-
+        meterDisconnectGearFieldDescriptor =  new FieldDescriptor[] {};
+        meterDisconnectProgramFieldDescriptor = LoadProgramSetupHelper.mergeProgramFieldDescriptors(meterDisconnectGearFieldDescriptor);
     }
 
     @AfterMethod
@@ -139,7 +106,7 @@ public class MeterDisconnectProgramApiDoc {
                                                                                  gearTypes,
                                                                                  (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
-                                                                     requestFields(meterDisconnectGearFieldDescriptor),
+                                                                     requestFields(meterDisconnectProgramFieldDescriptor),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
@@ -162,10 +129,7 @@ public class MeterDisconnectProgramApiDoc {
      */
     @Test(dependsOnMethods = { "Test_MeterDisconnectProgram_Create" })
     public void Test_MeterDisconnectProgram_Get(ITestContext context) {
-        List<FieldDescriptor> list = new ArrayList<>(Arrays.asList(meterDisconnectGearFieldDescriptor));
-        list.add(5, fieldWithPath("constraint.constraintName").type(JsonFieldType.STRING).description("Constraint Name"));
-        list.add(8, fieldWithPath("gears[].gearId").type(JsonFieldType.NUMBER).description("Gear Id"));
-        list.add(18, fieldWithPath("assignedGroups[].groupOrder").type(JsonFieldType.NUMBER).description("Group Order"));
+        List<FieldDescriptor> list =  LoadProgramSetupHelper.createFieldDescriptorForGet(meterDisconnectGearFieldDescriptor, 18);
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}", responseFields(list)))
                                                     .accept("application/json")
                                                     .contentType("application/json")
@@ -190,13 +154,19 @@ public class MeterDisconnectProgramApiDoc {
 
         List<MockGearControlMethod> gearTypes = new ArrayList<>();
         gearTypes.add(MockGearControlMethod.MeterDisconnect);
-        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_METER_DISCONNECT_PROGRAM,
+        
+        List<MockGearControlMethod> gearsForsubOrdinateLoadProg = new ArrayList<>();
+        gearsForsubOrdinateLoadProg.add(MockGearControlMethod.NoControl);
+        subOrdinateLoadProgram = LoadProgramSetupHelper.getMemberControlLoadProgram(context, gearsForsubOrdinateLoadProg, MockPaoType.LM_DIRECT_PROGRAM);
+
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramUpdateRequest(MockPaoType.LM_METER_DISCONNECT_PROGRAM,
                                                                                  (List<MockLoadGroupBase>) context.getAttribute("loadGroups"),
                                                                                  gearTypes,
-                                                                                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
+                                                                                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID),
+                                                                                 subOrdinateLoadProgram);
 
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
-                                                                     requestFields(meterDisconnectGearFieldDescriptor),
+                                                                     requestFields(LoadProgramSetupHelper.createFieldDescriptorForUpdate(meterDisconnectGearFieldDescriptor)),
                                                                      responseFields(LoadProgramSetupHelper.responseFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
@@ -262,6 +232,7 @@ public class MeterDisconnectProgramApiDoc {
                                                     .response();
 
         assertTrue("Status code should be 200", response.statusCode() == 200);
+        ApiCallHelper.delete(subOrdinateLoadProgram.getProgramId(), subOrdinateLoadProgram.getName(), "deleteLoadProgram");
     }
 
     /**

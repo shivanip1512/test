@@ -215,7 +215,7 @@ public class CommChannelController {
                 }
             }
 
-            if (response.getStatusCode() == HttpStatus.OK) {
+            if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 HashMap<String, Integer> savedCommChannel = (HashMap<String, Integer>) response.getBody();
                 Map<String, Object> json = new HashMap<>();
                 json.put("id", savedCommChannel.get("id"));

@@ -54,7 +54,7 @@
         </span>
         <span class="fl page-num-text">
             <cti:list var="arguments">
-                <cti:item value="${result.startIndex + 1}"/>
+                <cti:item value="${result.hitCount > 0 ? result.startIndex + 1 : 0}"/>
                 <cti:item value="${result.endIndex}"/>
                 <cti:item value="${result.hitCount}"/>
             </cti:list>

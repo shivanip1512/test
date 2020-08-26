@@ -11,9 +11,11 @@
 #include "pt_accum.h"
 #include "pt_status.h"
 #include "dev_single.h"
+#include "dev_ccu.h"
 #include "dev_rfnMeter.h"
 #include "dev_rfnCommercial.h"
 #include "dev_rfn_LgyrFocus_al.h"
+#include "rte_ccu.h"
 
 #include "test_reader.h"
 #include "std_helper.h"
@@ -64,7 +66,7 @@ public:
     {
         _oldConfigManager = std::move(gConfigManager);
 
-        gConfigManager.reset(new test_ConfigManager(config));
+        gConfigManager = std::move(std::make_unique<test_ConfigManager>(config));
     }
 
     ~Override_ConfigManager()
@@ -526,6 +528,25 @@ struct test_DeviceManager : CtiDeviceManager
     }
 };
 
+struct test_CtiDeviceCCU : CtiDeviceCCU
+{
+    test_CtiDeviceCCU()
+    {
+        _paObjectID = 12345;
+    }
+};
+
+struct test_CtiRouteCCU : CtiRouteCCU
+{
+    CtiDeviceSPtr ccu;
+
+    test_CtiRouteCCU() : ccu(new test_CtiDeviceCCU)
+    {
+        _tblPAO.setID(1234, test_tag);
+        setDevicePointer(ccu);
+    }
+};
+
 struct test_RouteManager : CtiRouteManager
 {
     CtiRouteSPtr rte;
@@ -602,6 +623,16 @@ void msgsEqual(
 auto extractExpectMore(const CtiDeviceSingle::ReturnMsgList & returnMsgs) 
 {
     return boost::copy_range<std::vector<bool>>(returnMsgs | boost::adaptors::transformed([](const std::unique_ptr<CtiReturnMsg> &msg) { return msg->ExpectMore(); }));
+}
+
+bool isSentOnRouteMsg(const CtiMessage* msg)
+{
+    if( auto ret = dynamic_cast<const CtiReturnMsg*>(msg) )
+    {
+        return ret->ResultString() == "Emetcon DLC command sent on route ";
+    }
+
+    return false;
 }
 
 struct PaoInfoValidator

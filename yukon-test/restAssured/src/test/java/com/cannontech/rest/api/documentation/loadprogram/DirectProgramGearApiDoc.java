@@ -468,6 +468,44 @@ public class DirectProgramGearApiDoc {
     }
 
     @Test
+    public void Test_LoadProgram_RotationGear_Create() {
+        /*--------Rotation Gear Field Descriptor--------- */
+
+        FieldDescriptor[] rotationGearDescriptor = new FieldDescriptor[] {
+                fieldWithPath("gears[].fields.shedTime").type(JsonFieldType.NUMBER)
+                                                         .description("Shed Time in seconds"),
+                fieldWithPath("gears[].fields.numberOfGroups").type(JsonFieldType.NUMBER).description("Number of Groups"),
+                fieldWithPath("gears[].fields.sendRate").type(JsonFieldType.NUMBER)
+                                                               .description("Send Rate in minutes. Min Value: 0, Max Value: 1000"),
+                fieldWithPath("gears[].fields.groupSelectionMethod").type(JsonFieldType.STRING)
+                                                               .description("Group selection method. Expected: 'LastControlled', 'AlwaysFirstGroup', 'LeastControlTime'"),
+                fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).description("How to stop control"),
+                fieldWithPath("gears[].fields.capacityReduction").type(JsonFieldType.NUMBER)
+                                                               .description("Group Capacity reduction. Min Value: 0, Max Value: 100"),
+                fieldWithPath("gears[].fields.whenToChangeFields").type(JsonFieldType.OBJECT).description("Consists of When to change fields"),
+                fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)
+                                                                               .description("When to change field Expected : None, Duration, Priority, TriggerOffset"),
+
+        };
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.Rotation);
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_DIRECT_PROGRAM,
+                                                                                 loadGroups,
+                                                                                 gearTypes,
+                                                                                 programConstraint.getId());
+        
+        Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(rotationGearDescriptor),
+                                                 programIdDescriptor,
+                                                 loadProgram,
+                                                 "saveLoadProgram");
+
+        paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
+        assertTrue("Program Id should not be Null", paoId != null);
+        assertTrue("Status code should be 200", response.statusCode() == 200);
+        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+    }
+
+    @Test
     public void Test_LoadProgram_NoControlGear_Create() {
         /*-------- No Control Field Descriptor--------- */
 

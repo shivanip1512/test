@@ -218,7 +218,7 @@ try
                     //  NOTE - the control duration is completely arbitrary here.  Fix sometime if necessary
                     //           (i.e. customer doing sheds/restores that need to be accurately LMHist'd)
                     //  ugh - does this need to be sent from Porter as well?  do we send it if the control fails?
-                    CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg(getID(), pStatus->getPointID(), 0, CtiTime(), 86400, 100);
+                    auto hist = std::make_unique<CtiLMControlHistoryMsg>( getID(), pStatus->getPointID(), 0, CtiTime(), 86400, 100 );
 
                     //  if the control is latched
                     if( controlParameters->getControlType() == ControlType_Latch ||
@@ -286,7 +286,13 @@ try
 
                     hist->setMessagePriority(MAXPRIORITY - 1);
                     hist->setUser(pReq->getUser());
-                    vgList.push_back(hist);
+
+                    // send the control history message to dispatch unless this control is a select - the control history message
+                    //  may trigger an alt scan rate scan, breaking the sequence numbering for the follow-up operate command (YUK-20220)
+                    if ( ! parse.isKeyValid("sbo_selectonly") )
+                    {
+                        vgList.push_back( hist.release() );
+                    }
                 }
                 else
                 {
