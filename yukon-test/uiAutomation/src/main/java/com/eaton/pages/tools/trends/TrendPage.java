@@ -8,8 +8,11 @@ import com.eaton.elements.Button;
 import com.eaton.elements.Section;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.WebTable;
+import com.eaton.elements.WebTableRow;
+import com.eaton.elements.WebTableRow.Icon;
 import com.eaton.elements.modals.TrendAddMarkerModal;
 import com.eaton.elements.modals.TrendAddPointModal;
+import com.eaton.elements.modals.TrendEditPointModal;
 import com.eaton.elements.tabs.TabElement;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
@@ -97,6 +100,13 @@ public class TrendPage extends PageBase {
         return new TrendAddPointModal(this.driverExt, Optional.empty(), Optional.of("js-add-point-dialog"));
     }
     
+    public TrendEditPointModal showAndWaitEditPointModal(String modalTitle) {
+        getPointSetupTable().getDataRowByIndex(0);
+        WebTableRow row = getPointSetupTable().getDataRowByIndex(0);
+        row.clickIcon(Icon.PENCIL);
+        SeleniumTestSetup.waitUntilModalVisibleByTitle(modalTitle);
+        return new TrendEditPointModal(this.driverExt, Optional.of(modalTitle),Optional.empty());
+    }
     public TrendAddMarkerModal showAndWaitAddMarkerModal() {
         getMarkerSetupAdd().click();
         

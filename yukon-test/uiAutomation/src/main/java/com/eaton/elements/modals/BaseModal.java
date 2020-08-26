@@ -119,7 +119,34 @@ public class BaseModal {
         }
 
         return names;
-    }            
+    }
+    
+    /**This function will fetch all the values from the given model and will return then as List
+     * @return list of Field Values as List<String> 
+     */
+    public List<String> getFieldValues() {
+        List<WebElement> valueElements = getModal().findElements(By.cssSelector("table tr .value"));
+        List<String> values = new ArrayList<>();
+        for (WebElement element : valueElements) {
+            values.add(element.getText());
+        }
+        return values;
+    }
+    
+    /**This function will take the field Label and will return the corresponding value for that field.
+     * @param fieldLabel  : provide label for which you want to fetch corresponding value like 'Name' 
+     * @return Value as String or null
+     */
+    public String getFieldValue(String fieldLabel) {
+        List<String> allFieldLabels = getFieldLabels();
+        List<String> allFieldValues = getFieldValues();
+        for (int index=0;index<allFieldLabels.size();index++){
+            if(allFieldLabels.get(index).equals(fieldLabel)) {
+                return allFieldValues.get(index);
+            }
+        }
+        return null;
+    }
     
     public boolean isModalDisplayed() {
         WebElement modal = getModal();

@@ -55,7 +55,7 @@ public class TrendTypes {
         }
     }
 
-    enum Axis {
+    public enum Axis {
         LEFT("LEFT"),
         RIGHT("RIGHT");
 
@@ -75,7 +75,7 @@ public class TrendTypes {
         }
     }
 
-    enum Style {
+    public enum Style {
         LINE("LINE"),
         STEP("STEP"),
         BAR("BAR");
