@@ -68,6 +68,7 @@ public class LoadGroupRippleCreateBuilder {
         }
 
         public Builder withControl(Optional<String> control) {
+            // 2,147,483,647 is equal to max value for 32 bit no
             int x = faker.number().numberBetween(0, 2147483647);
             String s = String.format("%34s", Integer.toBinaryString(x)).replace(' ', '0');
             this.control = control.orElse(s);
