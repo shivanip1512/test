@@ -48,7 +48,7 @@ public class LoadGroupHoneyWellEditTests extends SeleniumTestSetup{
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpHoneywellEdit_RequiredFieldsOnly_Successfully() {
+    public void ldGrpHoneywellEdit_AllFields_Successfully() {
         String nameAfterEdit = "EditLdGrpHoneywell " + timeStamp;
 
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
