@@ -195,7 +195,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
                     if (oldCount == 0) {
                         // we may log this multiple times if the server is restarted, but this if statement
                         // seems to be a good idea to prevent excess 
-                        rfnDeviceEventLogService.receivedDataForUnkownDeviceTemplate(templateName);
+                        rfnDeviceEventLogService.receivedDataForUnkownDeviceTemplate(templateName, rfnIdentifier.getSensorSerialNumber());
                         log.warn("Unable to create device with template for " + rfnIdentifier, e);
                     }
                     throw e;
