@@ -111,34 +111,4 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
 		String userMsg = detailsPage.getUserMessage();
 		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
 	}
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpMCTEdit_RequiredFieldsOnly_Successfully() {
-		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		String name = "AT Edited MCT Ldgrp " + timeStamp;
-		final String EXPECTED_MSG = name + " saved successfully.";
-		
-		  Pair<JSONObject, JSONObject> pair = new
-		  LoadGroupMCTCreateBuilder.Builder(Optional.empty())
-		  .withCommunicationRoute(routeId) 
-		  .withDisableControl(Optional.empty())
-		  .withDisableGroup(Optional.empty()) 
-		  .withKwCapacity(Optional.empty())
-		  .withAddress(34597)
-		  .withlevel(LoadGroupEnums.AddressLevelMCT.LEAD)
-		  .withRelayUsage(Arrays.asList(LoadGroupEnums.RelayUsageMCT.RELAY_4))
-		  .create(); 
-		  
-		  JSONObject response = pair.getValue1(); 
-		  id = response.getInt("id");
-
-		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-
-		editPage.getName().setInputValue(name);
-		editPage.getSaveBtn().click();
-
-		LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
-		String userMsg = detailsPage.getUserMessage();
-
-		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-	}
 }
