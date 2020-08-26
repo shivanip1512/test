@@ -33,9 +33,9 @@
                     <td>
                         <cm:dropdown icon="icon-cog">
                             <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-edit-assignment" data-assignment-id="${assignmentId}"/>
-                            <cm:dropdownOption id="delete-assignment-${assignmentId}" key=".delete" icon="icon-cross" 
-                                data-ok-event="yukon:assignment:delete" classes="js-hide-dropdown" data-assignment-id="${assignmentId}"/>
-                            <d:confirm on="#delete-assignment-${assignmentId}" nameKey="assignmentConfirmDelete" argument="${assignment.customAttribute.name}"  />
+                            <cm:dropdownOption key=".delete" icon="icon-cross" data-ok-event="yukon:assignment:delete" 
+                                classes="js-hide-dropdown js-delete-assignment-${assignmentId}" data-assignment-id="${assignmentId}"/>
+                            <d:confirm on=".js-delete-assignment-${assignmentId}" nameKey="assignmentConfirmDelete" argument="${assignment.customAttribute.name}"  />
                             <cti:url var="deleteUrl" value="/admin/config/attributeAssignments/${assignmentId}/delete"/>
                             <form:form id="delete-assignment-form-${assignmentId}" action="${deleteUrl}" method="DELETE">
                                 <cti:csrfToken/>

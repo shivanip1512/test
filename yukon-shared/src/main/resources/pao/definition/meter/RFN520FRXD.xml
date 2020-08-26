@@ -24,6 +24,7 @@
         <category type="demandFreeze"/>
         <category type="rfnChannelConfiguration"/>
         <category type="rfnDisconnectConfiguration"/>
+        <category type="rfnMetrologyConfiguration" optional="true"/>
         <category type="rfnTempAlarm"/>
         <category type="rfnVoltage"/>
         <category type="tou"/>

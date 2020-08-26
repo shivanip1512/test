@@ -1,17 +1,13 @@
 package com.eaton.tests.demandresponse.loadgroup;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import java.text.SimpleDateFormat;
 import java.util.Optional;
-
 import org.javatuples.Pair;
 import org.json.JSONObject;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
 import com.eaton.builders.drsetup.loadgroup.LoadGroupEmetconCreateBuilder;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums;
 import com.eaton.framework.DriverExtensions;
@@ -39,11 +35,6 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
 		editPage = new LoadGroupEmetconEditPage(driverExt, id);
 	}
 	
-	@BeforeMethod
-	public void beforeMethod() {
-		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + this.id + Urls.EDIT);
-	}
-
 	@AfterMethod
 	public void afterMethod() {
 		refreshPage(editPage);
@@ -69,7 +60,7 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEmetconEdit_Name_NameRequired() {
+	public void ldGrpEmetconEdit_Name_RequiredValidation() {
 		final String EXPECTED_MSG = "Name is required.";
 
 		editPage.getName().clearInputValue();
@@ -80,7 +71,7 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEmetconEdit_Name_UniqueName() {
+	public void ldGrpEmetconEdit_Name_UniqueValidation() {
 		Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
 											.withCommunicationRoute(Optional.of(routeId))
 											.create();
@@ -98,7 +89,7 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEmetconEdit_Name_invalidChars() {
+	public void ldGrpEmetconEdit_Name_invalidCharsValidation() {
 		final String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
 
 		editPage.getName().setInputValue("/emetcon,|group ");
