@@ -31,7 +31,7 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
 	@BeforeClass(alwaysRun = true)
 	public void beforeClass() {
 		driverExt = getDriverExt();
-		editPage = new LoadGroupMCTEditPage(driverExt);
+		editPage = new LoadGroupMCTEditPage(driverExt, id);
 	}
 
 	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -50,7 +50,6 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
 		  .withlevel(LoadGroupEnums.AddressLevelMCT.MCT_ADDRESS)
 		  .withRelayUsage(Arrays.asList(LoadGroupEnums.RelayUsageMCT.RELAY_2))
 		  .create(); 
-		  
 		  JSONObject response = pair.getValue1(); 
 		  id = response.getInt("id");
 
@@ -101,11 +100,8 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
         SelectMCTMeterModal mctMeterModal = this.editPage.showAndWaitMCTMeter();
         mctMeterModal.selectMeter("a_MCT-430A");
         mctMeterModal.clickOkAndWaitForModalToClose();
-		editPage.showAndWaitMCTMeter().clickOkAndWait();	
-		editPage.getRelayMCT().setTrueFalseByName("Relay 1", false);
+		editPage.showAndWaitMCTMeter().clickOkAndWait();
 		editPage.getRelayMCT().setTrueFalseByName("Relay 2", false);
-		editPage.getRelayMCT().setTrueFalseByName("Relay 3", true);
-		editPage.getRelayMCT().setTrueFalseByName("Relay 4", true);
 		editPage.getkWCapacity().setInputValue("870");
 		editPage.getDisableGroup().setValue(false);
 		editPage.getDisableControl().setValue(false);
@@ -113,7 +109,6 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
 
 		LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
 		String userMsg = detailsPage.getUserMessage();
-
 		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
 	}
 	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
