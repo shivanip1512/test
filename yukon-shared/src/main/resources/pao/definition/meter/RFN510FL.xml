@@ -23,6 +23,7 @@
         <category type="demandFreeze"/>
         <category type="focusAlDisplay"/>
         <category type="rfnChannelConfiguration"/>
+        <category type="rfnMetrologyConfiguration" optional="true"/>
         <category type="rfnTempAlarm"/>
         <category type="rfnVoltage"/>
         <category type="tou"/>

@@ -211,30 +211,40 @@ include::{snippets}/PulseAccumulatorPointApiDoc/Test_PulseAccumulatorPoint_04_Co
 ==== Analog Point
 *Request JSON* 
 include::{snippets}/AnalogPointApiDoc/Test_AnalogPoint_05_Delete/http-request.adoc[]
+*Response Properties* 
+include::{snippets}/AnalogPointApiDoc/Test_AnalogPoint_05_Delete/response-fields.adoc[]
 *Response JSON* 
 include::{snippets}/AnalogPointApiDoc/Test_AnalogPoint_05_Delete/http-response.adoc[]
 
 ==== Status Point
 *Request JSON* 
 include::{snippets}/StatusPointApiDoc/Test_StatusPoint_05_Delete/http-request.adoc[]
+*Response Properties* 
+include::{snippets}/StatusPointApiDoc/Test_StatusPoint_05_Delete/response-fields.adoc[]
 *Response JSON* 
 include::{snippets}/StatusPointApiDoc/Test_StatusPoint_05_Delete/http-response.adoc[]
 
 ==== Calc Status Point
 *Request JSON* 
 include::{snippets}/CalcStatusPointApiDoc/Test_CalcStatusPoint_05_Delete/http-request.adoc[]
+*Response Properties* 
+include::{snippets}/CalcStatusPointApiDoc/Test_CalcStatusPoint_05_Delete/response-fields.adoc[]
 *Response JSON* 
 include::{snippets}/CalcStatusPointApiDoc/Test_CalcStatusPoint_05_Delete/http-response.adoc[]
 
 ==== Calc Analog Point
 *Request JSON* 
 include::{snippets}/CalcAnalogPointApiDoc/Test_CalcAnalogPoint_05_Delete/http-request.adoc[]
+*Response Properties* 
+include::{snippets}/CalcAnalogPointApiDoc/Test_CalcAnalogPoint_05_Delete/response-fields.adoc[]
 *Response JSON* 
 include::{snippets}/CalcAnalogPointApiDoc/Test_CalcAnalogPoint_05_Delete/http-response.adoc[]
 
 ==== Pulse Accumulator Point
 *Request JSON* 
 include::{snippets}/PulseAccumulatorPointApiDoc/Test_PulseAccumulatorPoint_05_Delete/http-request.adoc[]
+*Response Properties* 
+include::{snippets}/PulseAccumulatorPointApiDoc/Test_PulseAccumulatorPoint_05_Delete/response-fields.adoc[]
 *Response JSON* 
 include::{snippets}/PulseAccumulatorPointApiDoc/Test_PulseAccumulatorPoint_05_Delete/http-response.adoc[]
 

@@ -56,7 +56,8 @@ public class PaginatedResponse<T> {
     @JsonIgnore
     public void setItems(List<T> allItems) {
         this.totalItems = allItems.size();
-        Integer startPosition = (pageNumber * itemsPerPage >= allItems.size() ? allItems.size() : pageNumber * itemsPerPage);
+        int indexBasedPageNbr = pageNumber - 1;
+        Integer startPosition = (indexBasedPageNbr * itemsPerPage >= allItems.size() ? allItems.size() : indexBasedPageNbr * itemsPerPage);
         Integer endPosition = (startPosition + itemsPerPage > allItems.size() ? allItems.size() : startPosition + itemsPerPage);
         items = allItems.subList(startPosition, endPosition);
     }

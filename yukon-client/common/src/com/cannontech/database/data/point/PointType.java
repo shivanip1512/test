@@ -5,8 +5,10 @@ import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
 
+import com.cannontech.common.exception.TypeNotSupportedException;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Lists;
@@ -91,5 +93,14 @@ public enum PointType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public boolean isCalcPoint() {
         return calcPoints.contains(this);
+    }
+
+    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+    public static PointType getPaoType(String pointTypeJsonString) {
+        try {
+            return PointType.valueOf(pointTypeJsonString);
+        } catch (IllegalArgumentException e) {
+            throw new TypeNotSupportedException(pointTypeJsonString + " pointType is not valid.");
+        }
     }
 }

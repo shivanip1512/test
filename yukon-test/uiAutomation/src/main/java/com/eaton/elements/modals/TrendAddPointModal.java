@@ -50,7 +50,7 @@ public class TrendAddPointModal extends BaseModal {
         return new TextEditElement(this.driverExt, "multiplier", getModal());
     }
     
-    public SelectPointModal showAndWaitAddPointModal() {
+    public SelectPointModal showAndWaitSelectPointModal() {
         getPoint().clickLinkWithDynamicId();
         
         SeleniumTestSetup.waitUntilModalVisibleByTitle("Select Point");

@@ -27,7 +27,7 @@ public class SelectPointModal extends BaseModal {
         } else {
             getPointTable().searchTable(pointName);    
         }                
-
+        
         WebTable table = getPointTable();
         WebTableRow row = table.getDataRowByName(pointName);
 

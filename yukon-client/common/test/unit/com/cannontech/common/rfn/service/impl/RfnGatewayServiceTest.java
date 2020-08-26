@@ -63,7 +63,7 @@ public class RfnGatewayServiceTest {
     private final String ipAddress = "123.123.123.123";
     private final String gatewayName = "Test Gateway";
     private final PaoIdentifier gatewayPaoId = new PaoIdentifier(100, PaoType.RFN_GATEWAY);
-    private static final RfnIdentifier gatewayRfnId = new RfnIdentifier("10000", "CPS", "RFGateway");
+    private static final RfnIdentifier gatewayRfnId = new RfnIdentifier("10000", "EATON", "RFGateway");
     
     //Gateway 2.0 data
     private GatewaySettings settings2;
@@ -74,7 +74,7 @@ public class RfnGatewayServiceTest {
     private final String ipAddress2 = "123.123.123.124";
     private final static String gateway2Name = "Test Gateway 2";
     private final PaoIdentifier gateway2PaoId = new PaoIdentifier(101, PaoType.GWY800);
-    private static final RfnIdentifier gateway2RfnId = new RfnIdentifier("10001", "CPS", "RFGateway2");
+    private static final RfnIdentifier gateway2RfnId = new RfnIdentifier("10001", "EATON", "GWY800");
     
     //WIFI Super Meter Virtual Gateway
     private GatewaySettings settings3;
@@ -86,7 +86,7 @@ public class RfnGatewayServiceTest {
     private final Integer port3 = 32035;
     private final static String gateway3Name = "Test Gateway 3";
     private final PaoIdentifier gateway3PaoId = new PaoIdentifier(102, PaoType.VIRTUAL_GATEWAY);
-    private static final RfnIdentifier gateway3RfnId = new RfnIdentifier("10002", "CPS", "VGW");
+    private static final RfnIdentifier gateway3RfnId = new RfnIdentifier("10002", "EATON", "VGW");
     
     private GatewaySettings settings4;
     private Authentication admin4;
@@ -97,7 +97,7 @@ public class RfnGatewayServiceTest {
     private final Integer port4 = 32035;
     private final static String gateway4Name = "Test Gateway 4";
     private final PaoIdentifier gateway4PaoId = new PaoIdentifier(104, PaoType.GWY801);
-    private static final RfnIdentifier gateway4RfnId = new RfnIdentifier("10003", "Eaton", "GW-801");
+    private static final RfnIdentifier gateway4RfnId = new RfnIdentifier("10003", "EATON", "GW-801");
     
     @Before
     public void init() {
