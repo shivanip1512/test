@@ -2,8 +2,8 @@ package com.eaton.tests.demandresponse.loadgroup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.text.SimpleDateFormat;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.javatuples.Pair;
 import org.json.JSONObject;
@@ -23,7 +23,6 @@ public class LoadGroupItronEditTests extends SeleniumTestSetup{
 	private DriverExtensions driverExt;
 	private Integer id;
 	private String name;
-	private Integer relay;
 	private LoadGroupItronEditPage editPage;
 	
 	@BeforeClass(alwaysRun = true)
@@ -56,35 +55,15 @@ public class LoadGroupItronEditTests extends SeleniumTestSetup{
 	}
 	
 	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpItronEdit_RequiredFieldsOnly_Success() {
-		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		String name = "AT Edited Ecobee Ldgrp " + timeStamp;
+	public void ldGrpItronEdit_AllFields_Success() {
+		String u = UUID.randomUUID().toString();            
+        String uuid = u.replace("-", "");
+		String name = "AT LG Edit " + uuid;
+		Integer relay;
+		Double kwCapacity;
+		
 		final String EXPECTED_MSG = name + " saved successfully.";
 
-		Pair<JSONObject, JSONObject> pair = new LoadGroupItronCreateBuilder.Builder(Optional.empty())
-												.withKwCapacity(Optional.empty())
-												.withRelay(Optional.empty())
-												.create();
-		
-		JSONObject response = pair.getValue1();
-		id = response.getInt("id");
-		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-
-		editPage.getName().setInputValue(name);
-
-		editPage.getSaveBtn().click();
-
-		waitForPageToLoad("Load Group: " + name, Optional.empty());
-
-		LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
-
-		String userMsg = detailsPage.getUserMessage();
-
-		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-	}
-	
-	@Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpItronEdit_WithRelayOnly_Success() {
 		Pair<JSONObject, JSONObject> pair = new LoadGroupItronCreateBuilder.Builder(Optional.empty())
 												.withKwCapacity(Optional.empty())
 												.withRelay(Optional.empty())
@@ -93,18 +72,26 @@ public class LoadGroupItronEditTests extends SeleniumTestSetup{
 		JSONObject response = pair.getValue1();
 		id = response.getInt("id");
 		relay = response.getInt("virtualRelayId");
-		name = response.getString("name");
 		
-		final String EXPECTED_MSG = name + " saved successfully.";
+		kwCapacity = response.getDouble("kWCapacity");
+		kwCapacity = kwCapacity + 1.0;
 		
 		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
 
+		editPage.getName().setInputValue(name);
+		
 		//Relay value should be between 1 to 8 only, getting relay from API and updating it
-		if(relay == 1) relay = relay + 1;
+		if (relay == 1) relay = relay + 1;
 		else relay = relay - 1;
 		
 		editPage.getRelay().selectItemByText(relay.toString());
-
+		
+		editPage.getkWCapacity().setInputValue(kwCapacity.toString());
+		
+		editPage.getDisableGroup().setValue(true);
+		
+		editPage.getDisableControl().setValue(true);
+		
 		editPage.getSaveBtn().click();
 
 		waitForPageToLoad("Load Group: " + name, Optional.empty());
@@ -115,4 +102,5 @@ public class LoadGroupItronEditTests extends SeleniumTestSetup{
 
 		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
 	}
+
 }
