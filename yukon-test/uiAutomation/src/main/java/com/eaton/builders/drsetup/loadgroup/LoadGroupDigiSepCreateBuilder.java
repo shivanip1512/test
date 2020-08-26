@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.javatuples.Pair;
 import org.json.JSONObject;
 
+import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.DigiSepDeviceClassEnum;
 import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
 import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 import com.github.javafaker.Faker;
@@ -43,7 +44,7 @@ public class LoadGroupDigiSepCreateBuilder {
 
         public Builder withDeviceClassSet(Optional<List<DigiSepDeviceClassEnum>> deviceClassSet) {
             List<DigiSepDeviceClassEnum> list = new ArrayList<>();
-            list.add(DigiSepDeviceClassEnum.getRandomDeviceClassSet());
+            list.add(LoadGroupEnums.DigiSepDeviceClassEnum.getRandomDeviceClassSet());
 
             this.deviceClassSet = deviceClassSet.orElse(list);
             return this;
