@@ -124,12 +124,12 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
                             oldStatus);
                     return;
                 }
-                Instant timeoutThreshold = oldStatus.getLastUpdate().plus(60000); // One hour after last reported status
+                Instant timeoutThreshold = oldStatus.getLastUpdate().plus(3600000); // One hour after last reported status
                 if (oldStatus.getStatus() == ProgrammingStatus.UPLOADING  &&
                         request.getSource() == MeterProgramStatusArchiveRequest.Source.SM_STATUS_ARCHIVE &&
-                        newStatus.getReportedGuid() == oldStatus.getReportedGuid() &&
+                        newStatus.getReportedGuid().equals(oldStatus.getReportedGuid()) &&
                         newStatus.getLastUpdate().isBefore(timeoutThreshold)) {
-                    log.info("The GUID recieved for this status does not match the assigned programs, however the meter may still be programming at this time. Discarding the record.\nNew Status{} \nExisting status{}", 
+                    log.info("The GUID recieved for this status does not match the GUID of the assigned program, however the meter may still be programming at this time. Discarding the record.\nNew Status{} \nExisting status{}", 
                             newStatus,
                             oldStatus);
                     return;
