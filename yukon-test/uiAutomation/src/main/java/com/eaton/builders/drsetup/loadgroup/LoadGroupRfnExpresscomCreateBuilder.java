@@ -8,8 +8,8 @@ import java.util.Optional;
 import org.javatuples.Pair;
 import org.json.JSONObject;
 
-import com.eaton.builders.drsetup.loadgroup.LoadGroupRfnExpresscomEnums.AddressUsageRfnExpresscom;
-import com.eaton.builders.drsetup.loadgroup.LoadGroupRfnExpresscomEnums.RelayUsageRfnExpresscom;
+import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.AddressUsageRfnExpresscom;
+import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.RelayUsageRfnExpresscom;
 import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
 import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 import com.github.javafaker.Faker;
@@ -141,9 +141,9 @@ public static class Builder {
             return this;
         }
                 
-        public Builder withProtocolPriority(Optional<LoadGroupRfnExpresscomEnums.ProtocolPriorityRfnExpresscom> protocol_Priority) {
-        	LoadGroupRfnExpresscomEnums.ProtocolPriorityRfnExpresscom randomProtocolPriority = protocol_Priority
-                    .orElse(LoadGroupRfnExpresscomEnums.ProtocolPriorityRfnExpresscom.getRandomProtocolPriority());
+        public Builder withProtocolPriority(Optional<LoadGroupEnums.ProtocolPriorityRfnExpresscom> protocol_Priority) {
+        	LoadGroupEnums.ProtocolPriorityRfnExpresscom randomProtocolPriority = protocol_Priority
+                    .orElse(LoadGroupEnums.ProtocolPriorityRfnExpresscom.getRandomProtocolPriority());
 
             this.protocolPriority = randomProtocolPriority.getProtocolPriority();
             return this;

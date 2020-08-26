@@ -27,7 +27,6 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup{
 	    @BeforeClass(alwaysRun = true)
 		public void beforeClass() {
 			driverExt = getDriverExt();
-			LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup().create();
 			Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup().create();
 			JSONObject response = pair.getValue1();
 			this.id = response.getInt("id");
@@ -35,11 +34,6 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup{
 			editPage = new LoadGroupRfnExpresscomEditPage(driverExt);
 		}
 	    
-	    @BeforeMethod
-	    public void beforeMethod() {
-	    	navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-	    }
-
 		@AfterMethod
 		public void afterMethod() {
 			refreshPage(editPage);
@@ -50,7 +44,7 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup{
 			String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 			String name = "AT Edited Rfn Expresscom Ldgrp " + timeStamp;
 			final String EXPECTED_MSG = name + " saved successfully.";
-			
+			navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + this.id + Urls.EDIT);
 			editPage.getName().setInputValue(name);
 			editPage.getSaveBtn().click();
 			waitForPageToLoad("Load Group: " + name, Optional.empty());
@@ -61,7 +55,7 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup{
 		}
 
 		@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-		public void ldGrpRfnExpresscomEdit_Name_NameRequired() {
+		public void ldGrpRfnExpresscomEdit_Name_RequiredValidation() {
 			final String EXPECTED_MSG = "Name is required.";
 
 			editPage.getName().clearInputValue();
