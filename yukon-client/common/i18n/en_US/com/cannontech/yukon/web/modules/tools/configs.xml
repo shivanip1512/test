@@ -772,6 +772,7 @@
     <entry key="yukon.web.modules.tools.configs.summary.stateSelection.IN_PROGRESS">In Progress</entry>
     <entry key="yukon.web.modules.tools.configs.summary.stateSelection.NEEDS_UPLOAD">Needs Upload</entry>
     <entry key="yukon.web.modules.tools.configs.summary.stateSelection.NEEDS_VALIDATION">Needs Validation</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.stateSelection.IN_SYNC">In Sync</entry>
     
     <!-- Statuses -->
     <entry key="yukon.web.modules.tools.configs.summary.configState.UNKNOWN">Unassigned</entry>
