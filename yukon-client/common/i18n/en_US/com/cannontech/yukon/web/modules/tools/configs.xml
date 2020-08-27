@@ -754,7 +754,7 @@
     <entry key="yukon.web.modules.tools.configs.summary.failure">Error Message</entry>
     <entry key="yukon.web.modules.tools.configs.summary.uploadConfig.success">Configuration Upload has been sent to device: {0}. Please allow time for a response to be received.</entry>
     <entry key="yukon.web.modules.tools.configs.summary.validateConfig.success">Configuration Validation has been requested for device: {0}. Please allow time for a response to be received.</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.needsUploadMessage">Device requires an Upload to change it's Device Configuration. The device may also be Validated to determine if it matches prior to an Upload.</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.needsUploadMessage">Device requires an Upload to change its Device Configuration. The device may also be Validated to determine if it matches prior to an Upload.</entry>
     
     <entry key="yukon.web.modules.tools.configs.summary.viewHistory">View History</entry>
     <entry key="yukon.web.modules.tools.configs.summary.viewHistory.action">Action</entry>
