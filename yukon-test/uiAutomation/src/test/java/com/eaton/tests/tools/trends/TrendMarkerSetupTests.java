@@ -6,10 +6,15 @@ import java.util.List;
 import java.util.Optional;
 
 import org.assertj.core.api.SoftAssertions;
+import org.javatuples.Pair;
+import org.json.JSONObject;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.eaton.builders.tools.webtrends.TrendCreateBuilder;
+import com.eaton.builders.tools.webtrends.TrendMarkerBuilder;
+import com.eaton.builders.tools.webtrends.TrendTypes;
 import com.eaton.elements.WebTableRow;
 import com.eaton.elements.WebTableRow.Icon;
 import com.eaton.elements.modals.TrendAddMarkerModal;
@@ -18,31 +23,47 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.tools.trends.TrendCreatePage;
+import com.eaton.pages.tools.trends.TrendEditPage;
+import io.restassured.response.ExtractableResponse;
 
 public class TrendMarkerSetupTests extends SeleniumTestSetup{
 
-	private TrendCreatePage createPage;
+	private TrendCreatePage trendCreatePage;
+	private TrendEditPage trendEditPage;
     private DriverExtensions driverExt;
-    
+    private int trendId;
+
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
 
+        Pair<JSONObject, ExtractableResponse<?>> pair = new TrendCreateBuilder.Builder(Optional.empty())
+                .withPoints(new JSONObject[] { new TrendMarkerBuilder.Builder()
+                        .withLabel(Optional.empty())
+                        .withColor(Optional.of(TrendTypes.Color.BLUE))
+                        .withMultiplier(Optional.empty())
+                        .build() })
+                .create();
+        
+        ExtractableResponse<?> response = pair.getValue1();
+        trendId = response.path("trendId");
+        
         navigate(Urls.Tools.TREND_CREATE);
-        createPage = new TrendCreatePage(driverExt, Urls.Tools.TREND_CREATE);
+        trendCreatePage = new TrendCreatePage(driverExt, Urls.Tools.TREND_CREATE);
+        trendEditPage = new TrendEditPage(driverExt, Urls.Tools.TREND_EDIT, trendId);
     }
 
     @AfterMethod
     public void afterMethod() {
-        refreshPage(createPage);
+        refreshPage(trendCreatePage);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS})
     public void trendMarkerSetup_Add_OpensCorrectModal() {
     	final String EXP_MODAL_TITLE = "Add Marker";
     			
-    	createPage.getTabElement().clickTabAndWait("Additional Options");
-    	TrendAddMarkerModal addMarkerModal = createPage.showAndWaitAddMarkerModal();
+    	trendCreatePage.getTabElement().clickTabAndWait("Additional Options");
+    	TrendAddMarkerModal addMarkerModal = trendCreatePage.showAndWaitAddMarkerModal();
    
     	String title = addMarkerModal.getModalTitle();
     	
@@ -53,8 +74,8 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup{
     public void trendMarkerSetup_AddMarkerLabels_Correct() {
     	SoftAssertions softly = new SoftAssertions();
     	
-    	createPage.getTabElement().clickTabAndWait("Additional Options");
-    	TrendAddMarkerModal addMarkerModal = createPage.showAndWaitAddMarkerModal();
+    	trendCreatePage.getTabElement().clickTabAndWait("Additional Options");
+    	TrendAddMarkerModal addMarkerModal = trendCreatePage.showAndWaitAddMarkerModal();
     	
     	List<String> labels = addMarkerModal.getFieldLabels();
     	
@@ -70,8 +91,8 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup{
     public void trendMarkerSetup_AddMarkerLabel_RequiredValidation() {
     	final String EXPECTED_MSG = "Label is required.";
     	
-    	createPage.getTabElement().clickTabAndWait("Additional Options");
-    	TrendAddMarkerModal addMarkerModal = createPage.showAndWaitAddMarkerModal();
+    	trendCreatePage.getTabElement().clickTabAndWait("Additional Options");
+    	TrendAddMarkerModal addMarkerModal = trendCreatePage.showAndWaitAddMarkerModal();
     	
     	addMarkerModal.clickOkAndWait();
     	
@@ -83,8 +104,8 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup{
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS})
     public void trendMarkerSetup_AddMarkerLabel_MaxLength40CharsSuccess() {
     	final String EXPECTED_MAXLENGTH = "40";
-    	createPage.getTabElement().clickTabAndWait("Additional Options");
-    	TrendAddMarkerModal addMarkerModal = createPage.showAndWaitAddMarkerModal();
+    	trendCreatePage.getTabElement().clickTabAndWait("Additional Options");
+    	TrendAddMarkerModal addMarkerModal = trendCreatePage.showAndWaitAddMarkerModal();
     	
     	String labelMaxlLength = addMarkerModal.getLabelMaxLength();
     	
@@ -97,8 +118,8 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup{
     	
     	String value = "!@Test";
     	
-    	createPage.getTabElement().clickTabAndWait("Additional Options");
-    	TrendAddMarkerModal addMarkerModal = createPage.showAndWaitAddMarkerModal();
+    	trendCreatePage.getTabElement().clickTabAndWait("Additional Options");
+    	TrendAddMarkerModal addMarkerModal = trendCreatePage.showAndWaitAddMarkerModal();
     	
     	addMarkerModal.getValue().setInputValue(value);
     	
@@ -111,16 +132,31 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup{
    
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS})
     public void trendMarkerSetup_EditMarker_OpensCorrectModal() {
-    	String label = "AT Marker";
+    	Pair<JSONObject, ExtractableResponse<?>> pair = new TrendCreateBuilder.Builder(Optional.empty())
+                .withPoints(new JSONObject[] { new TrendMarkerBuilder.Builder()
+                        .withLabel(Optional.empty())
+                        .withColor(Optional.empty())
+                        .withMultiplier(Optional.empty())
+                        .withAxis(Optional.empty())
+                        .build() })
+                .create();
+        
+        ExtractableResponse<?> response = pair.getValue1();
     	
+        JSONObject request = pair.getValue0();
+        JSONObject jo =  (JSONObject) request.getJSONArray("trendSeries").get(0);
+    	
+        String label = jo.getString("label");
+        
     	final String EXP_MODAL_TITLE = "Edit " + label;
     	
-    	createPage.getTabElement().clickTabAndWait("Additional Options");
-    	TrendAddMarkerModal addMarkerModal = createPage.showAndWaitAddMarkerModal();
-    	addMarkerModal.getLabel().setInputValue(label);
-    	addMarkerModal.clickOkAndWait();
+    	trendId = response.path("trendId");
+        
+    	navigate(Urls.Tools.TREND_EDIT + trendId + Urls.EDIT);
+   
+    	trendEditPage.getTabElement().clickTabAndWait("Additional Options");
     	
-    	WebTableRow row = createPage.getMarkerSetupTable().getDataRowByIndex(0);
+    	WebTableRow row = trendCreatePage.getMarkerSetupTable().getDataRowByIndex(0);
         row.clickIcon(Icon.PENCIL);
         
         TrendAddMarkerModal modal = new TrendAddMarkerModal(this.driverExt, Optional.of(EXP_MODAL_TITLE), Optional.empty());
@@ -134,21 +170,39 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup{
     public void trendMarkerSetup_EditMarkerFieldValues_Correct() {
     	SoftAssertions softly = new SoftAssertions();
     	
-    	String label = "AT Marker";
+    	String color = null;
     	
-    	createPage.getTabElement().clickTabAndWait("Additional Options");
-    	TrendAddMarkerModal addMarkerModal = createPage.showAndWaitAddMarkerModal();
-    	addMarkerModal.getLabel().setInputValue(label);
-    	addMarkerModal.clickOkAndWait();
-    	
-    	WebTableRow row = createPage.getMarkerSetupTable().getDataRowByIndex(0);
+    	Pair<JSONObject, ExtractableResponse<?>> pair = new TrendCreateBuilder.Builder(Optional.empty())
+                .withPoints(new JSONObject[] { new TrendMarkerBuilder.Builder()
+                        .withLabel(Optional.empty())
+                        .withColor(Optional.of(TrendTypes.Color.BLUE))
+                        .withMultiplier(Optional.empty())
+                        .withAxis(Optional.empty())
+                        .build() })
+                .create();
+        
+        ExtractableResponse<?> response = pair.getValue1();
+        
+        JSONObject request = pair.getValue0();
+        JSONObject jo =  (JSONObject) request.getJSONArray("trendSeries").get(0);
+        
+        trendId = response.path("trendId");
+        
+    	navigate(Urls.Tools.TREND_EDIT + trendId + Urls.EDIT);
+   
+    	trendEditPage.getTabElement().clickTabAndWait("Additional Options");
+
+    	WebTableRow row = trendEditPage.getMarkerSetupTable().getDataRowByIndex(0);
         row.clickIcon(Icon.PENCIL);
         
-        TrendAddMarkerModal modal = new TrendAddMarkerModal(this.driverExt, Optional.of("Edit " + label), Optional.empty());
+        TrendAddMarkerModal modal = new TrendAddMarkerModal(this.driverExt, Optional.of("Edit " + jo.getString("label")), Optional.empty());
+        
+        if ((modal.getColor()).equalsIgnoreCase("background-color: rgb(0, 136, 242);")) color = "BLUE";
     	
-        softly.assertThat(modal.getValue().getInputValue()).isEqualTo("1.0");
-        softly.assertThat(modal.getLabel().getInputValue()).isEqualTo(label);
-        softly.assertThat(modal.getAxis().getValueChecked()).isEqualTo("LEFT");
+        softly.assertThat(modal.getValue().getInputValue()).isEqualTo(Double.toString(jo.getDouble("multiplier")));
+        softly.assertThat(modal.getLabel().getInputValue()).isEqualTo(jo.getString("label"));
+        softly.assertThat(modal.getAxis().getValueChecked()).isEqualTo(jo.getString("axis"));
+        softly.assertThat(color).isEqualTo(jo.getString("color"));
         softly.assertAll();
     }
     
