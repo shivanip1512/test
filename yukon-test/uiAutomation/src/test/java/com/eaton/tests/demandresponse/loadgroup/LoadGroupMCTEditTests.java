@@ -31,7 +31,6 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
 	@BeforeClass(alwaysRun = true)
 	public void beforeClass() {
 		driverExt = getDriverExt();
-		editPage = new LoadGroupMCTEditPage(driverExt, id);
 	}
 
 	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -54,7 +53,7 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
 		  id = response.getInt("id");
 
 		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-
+		editPage = new LoadGroupMCTEditPage(driverExt, id);
 		editPage.getName().setInputValue(name);
 		editPage.getCommunicationRoute().selectItemByText("a_CCU-721");
 		editPage.getAddressLevel().selectItemByText("Bronze");
@@ -93,7 +92,7 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
 		  id = response.getInt("id");
 
 		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-
+		editPage = new LoadGroupMCTEditPage(driverExt, id);
 		editPage.getName().setInputValue(name);
 		editPage.getCommunicationRoute().selectItemByText("a_RTC");
 		editPage.getAddressLevel().selectItemByText("MCT Address");
