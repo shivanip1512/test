@@ -26,7 +26,7 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
-    
+
     public enum RelayUsageEmetcon {
         RELAY_A("RELAY_A"),
         RELAY_B("RELAY_B"),
@@ -49,7 +49,7 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
-    
+
     public enum RelayUsageExpresscom {
         LOAD_1("LOAD_1"),
         LOAD_2("LOAD_2"),
@@ -97,7 +97,7 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
-    
+
     public enum AddressUsageEmetcon {
         GOLD("GOLD"),
         SILVER("SILVER");
@@ -117,7 +117,7 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
-    
+
     public enum AddressUsageExpresscom {
         GEO("GEO"),
         SUBSTATION("SUBSTATION"),
@@ -148,8 +148,7 @@ public class LoadGroupEnums {
         UTILITY("UTILITY"),
         SECTION("SECTION"),
         CLASS("CLASS"),
-        DIVISION("DIVISION"),
-        SERIAL("SERIAL");
+        DIVISION("DIVISION");
 
         private final String addressUsage;
 
@@ -157,7 +156,7 @@ public class LoadGroupEnums {
             this.addressUsage = addressUsage;
         }
 
-        public String getAddressLevelMCT() {
+        public String getAddressUsageVersacom() {
             return this.addressUsage;
         }
 
@@ -169,7 +168,7 @@ public class LoadGroupEnums {
 
     public enum RouteId {
         ACCU710A(28),
-        ACCU711(32),                        
+        ACCU711(32),
         ACCU721(36),
         ALCUEASTRIVER(40),
         APAGINGTAPTERMINAL(43),

@@ -7,20 +7,20 @@ import java.util.Optional;
 import java.util.Random;
 
 import org.javatuples.Pair;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.eaton.builders.drsetup.loadgroup.LoadGroupVersacomCreateBuilder;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupVersacomCreateBuilder.Builder;
-import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums;
-import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.RelayUsage;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.LoadGroupVersacomEditPage;
+import com.google.gson.JsonArray;
 
 public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
     private DriverExtensions driverExt;
@@ -34,7 +34,6 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         randomNum = getRandomNum();
-        editPage = new LoadGroupVersacomEditPage(driverExt);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -44,8 +43,6 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
         String editName = "AT Edit Ld group " + timeStamp;
         final String EXPECTED_MSG = editName + " saved successfully.";
         Pair<JSONObject, JSONObject> pair = builder
-                .withOtherAddressUsage(Optional.of(LoadGroupEnums.AddressUsageVersacom.UTILITY))
-                .withRelayUsage(Optional.of(RelayUsage.RELAY_3))
                 .create();
         JSONObject response = pair.getValue1();
         id = response.getInt("id");
@@ -56,7 +53,8 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
         double capacity = randomDouble + randomInt;
 
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-
+        editPage = new LoadGroupVersacomEditPage(driverExt, id);
+        
         editPage.getName().setInputValue(editName);
         editPage.getCommunicationRoute().selectItemByText("a_CCU-711");
 
@@ -87,7 +85,8 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = name + " saved successfully.";
 
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-
+        editPage = new LoadGroupVersacomEditPage(driverExt, id);
+        
         editPage.getCommunicationRoute().selectItemByText("a_LCU-EASTRIVER");
 
         editPage.getAddressUsage().setTrueFalseByName("Serial", false);
@@ -109,7 +108,7 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpVersacomEdit_WithoutSerialAddressToSerialAddressUsage_Successfully() {
         builder = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup();
-        Pair<JSONObject, JSONObject> pair = builder.withOtherAddressUsage(Optional.empty())
+        Pair<JSONObject, JSONObject> pair = builder
                 .create();
         JSONObject response = pair.getValue1();
         id = response.getInt("id");
@@ -117,6 +116,7 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = name + " saved successfully.";
 
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+        editPage = new LoadGroupVersacomEditPage(driverExt, id);
 
         editPage.getCommunicationRoute().selectItemByText("a_TCU-5000");
 
@@ -144,14 +144,16 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = name + " saved successfully.";
 
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+        editPage = new LoadGroupVersacomEditPage(driverExt, id);
 
         editPage.getCommunicationRoute().selectItemByText("a_REPEATER-921");
 
-        editPage.getRelayUsage().setTrueFalseByName("Relay 1", false);
-        editPage.getRelayUsage().setTrueFalseByName("Relay 2", false);
-        editPage.getRelayUsage().setTrueFalseByName("Relay 3", false);
-        editPage.getRelayUsage().setTrueFalseByName("Relay 4", false);
+        JSONArray s = response.getJSONArray("relayUsage");
+        String route = s.getString(0).toString();
+        String buttonName = route.replace("_", " ");
+        buttonName = buttonName.substring(0, 1).toUpperCase() + buttonName.substring(1).toLowerCase();
 
+        editPage.getRelayUsage().setTrueFalseByName(buttonName, false);
         editPage.getSaveBtn().click();
 
         waitForPageToLoad("Load Group: " + name, Optional.empty());
