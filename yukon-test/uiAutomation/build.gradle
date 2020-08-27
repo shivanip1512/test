@@ -56,6 +56,14 @@ test{
 	}
 }
 
+regression{
+	useTestNG(){
+		useDefaultListeners = true
+		//outputDirectory = file("c:/selenium_results/" + getDate())
+		suites 'AllTests.xml'
+	}
+}
+
 def getDate() {
     return new Date().format('yyyy_MM_dd_HHmm')
 }
