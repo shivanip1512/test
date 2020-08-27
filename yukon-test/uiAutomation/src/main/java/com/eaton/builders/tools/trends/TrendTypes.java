@@ -1,4 +1,4 @@
-package com.eaton.builders.tools.webtrends;
+package com.eaton.builders.tools.trends;
 
 import java.util.Random;
 

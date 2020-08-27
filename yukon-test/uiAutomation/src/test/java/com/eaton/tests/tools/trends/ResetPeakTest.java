@@ -17,9 +17,9 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.eaton.builders.tools.webtrends.TrendCreateBuilder;
-import com.eaton.builders.tools.webtrends.TrendPointBuilder;
-import com.eaton.builders.tools.webtrends.TrendTypes;
+import com.eaton.builders.tools.trends.TrendCreateBuilder;
+import com.eaton.builders.tools.trends.TrendPointBuilder;
+import com.eaton.builders.tools.trends.TrendTypes;
 import com.eaton.elements.modals.ResetPeakModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;

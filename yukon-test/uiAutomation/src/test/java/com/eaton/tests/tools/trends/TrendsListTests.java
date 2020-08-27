@@ -6,9 +6,11 @@ import org.javatuples.Pair;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.json.JSONObject;
-import com.eaton.builders.tools.webtrends.TrendCreateBuilder;
-import com.eaton.builders.tools.webtrends.TrendPointBuilder;
-import com.eaton.builders.tools.webtrends.TrendTypes;
+
+import com.eaton.builders.tools.trends.TrendCreateBuilder;
+import com.eaton.builders.tools.trends.TrendCreateService;
+import com.eaton.builders.tools.trends.TrendPointBuilder;
+import com.eaton.builders.tools.trends.TrendTypes;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.ResetPeakModal;
 import com.eaton.framework.DriverExtensions;
@@ -29,8 +31,8 @@ public class TrendsListTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
 
-        Pair<JSONObject, ExtractableResponse<?>> pair = new TrendCreateBuilder.Builder(Optional.empty()).create();
-
+        Pair<JSONObject, ExtractableResponse<?>> pair = TrendCreateService.BuildAndCreateTrendAllFields();
+        
         ExtractableResponse<?> response = pair.getValue1();
 
         trendId = response.path("trendId");
@@ -42,8 +44,9 @@ public class TrendsListTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
     public void trendsList_Create_NavigatesToCorrectUrl() {
         final String EXPECTED_TITLE = "Create Trend";
-        navigate(Urls.Tools.TRENDS_LIST);
         
+        navigate(Urls.Tools.TRENDS_LIST);
+
         listPage.getActionBtn().clickAndSelectOptionByText("Create");
         String actualTitle = listPage.getPageTitle();
 
@@ -66,7 +69,7 @@ public class TrendsListTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
     public void trendsList_Delete_OpensCorrectModal() {
         String expectedModalTitle = "Confirm Delete";
-        
+
         navigate(Urls.Tools.TREND_EDIT + trendId);
 
         ConfirmModal deleteConfirmModal = listPage.showDeleteTrendModal();
@@ -91,13 +94,12 @@ public class TrendsListTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TOOLS, TestConstants.Tools.TRENDS })
     public void trendsList_DeleteTrend_Success() {
-        Pair<JSONObject, ExtractableResponse<?>> pair = new TrendCreateBuilder.Builder(Optional.empty())
-                .create();
+        Pair<JSONObject, ExtractableResponse<?>> pair = TrendCreateService.BuildAndCreateTrendAllFields();
 
         ExtractableResponse<?> response = pair.getValue1();
         Integer deleteTrendId = response.path("trendId");
         String deleteTrendName = response.path("name").toString();
-        
+
         String expectedMessage = deleteTrendName + " deleted successfully.";
 
         navigate(Urls.Tools.TREND_EDIT + deleteTrendId);
@@ -110,7 +112,6 @@ public class TrendsListTests extends SeleniumTestSetup {
         String userMsg = trendListPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(expectedMessage);
-
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
@@ -129,10 +130,9 @@ public class TrendsListTests extends SeleniumTestSetup {
 
         ExtractableResponse<?> response = pair.getValue1();
 
-        trendId = response.path("trendId");
-        trendName = response.path("name").toString();
+        Integer resettrendId = response.path("trendId");
 
-        navigate(Urls.Tools.TREND_EDIT + trendId);
+        navigate(Urls.Tools.TREND_EDIT + resettrendId);
 
         final String expectedModalTitle = "Reset Peak";
 

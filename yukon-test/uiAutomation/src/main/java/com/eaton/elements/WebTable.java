@@ -85,7 +85,7 @@ public class WebTable {
         List<WebElement> rows = new ArrayList<>();
         long startTime = System.currentTimeMillis();
 
-        while((rows.size() != 1) && (System.currentTimeMillis() - startTime) < 500) {
+        while((rows.size() != 1) || (System.currentTimeMillis() - startTime) < 1000) {
             try {
                 table = this.driverExt.findElement(By.cssSelector(".compact-results-table"), Optional.empty());
 
@@ -101,7 +101,7 @@ public class WebTable {
         List<WebElement> rows = new ArrayList<>();
         long startTime = System.currentTimeMillis();
 
-        while((rows.size() != 1) && (System.currentTimeMillis() - startTime) < 3000) {
+        while((rows.size() != 1) || (System.currentTimeMillis() - startTime) < 3000) {
             try {
                 table = parent.findElement(By.cssSelector(".compact-results-table"));
 
@@ -119,20 +119,22 @@ public class WebTable {
             
             search.setInputValue(value);
             
-            waitForSearch();
+            waitForSearch(parentElement);
+            
         } else if (parent != null) {
             TextEditElement search = new TextEditElement(this.driverExt, "ss", parent);
             
             search.setInputValue(value);
             
             waitForSearch();
+            
         } else {
             TextEditElement search = new TextEditElement(this.driverExt, "ss");  
             
             search.setInputValue(value);
             
             waitForSearch();
-        }              
+        }                      
     }
     
     public void searchTable(String value, WebElement parent) {
@@ -163,15 +165,9 @@ public class WebTable {
     public WebTableRow getDataRowByName(String name) {
         List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody tr"));
         
-        for (WebElement row : rowList) {
-            String text = row.findElement(By.cssSelector("a")).getText();
-            
-            if (text.equals(name)) {
-                return new WebTableRow(row);
-            }
-        }
+        WebElement element = rowList.stream().filter(x -> x.findElement(By.cssSelector("a")).getText().contains(name)).findFirst().orElseThrow();
         
-        return null;
+        return new WebTableRow(element);
     }   
     
     public WebTableRow getDataRowByIndex(Integer index) {

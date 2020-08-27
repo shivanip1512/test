@@ -10,9 +10,10 @@ import org.assertj.core.api.SoftAssertions;
 import org.javatuples.Pair;
 import org.json.JSONObject;
 import org.testng.annotations.BeforeMethod;
-import com.eaton.builders.tools.webtrends.TrendCreateBuilder;
-import com.eaton.builders.tools.webtrends.TrendPointBuilder;
-import com.eaton.builders.tools.webtrends.TrendTypes;
+
+import com.eaton.builders.tools.trends.TrendCreateBuilder;
+import com.eaton.builders.tools.trends.TrendPointBuilder;
+import com.eaton.builders.tools.trends.TrendTypes;
 import com.eaton.elements.modals.TrendPointModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;

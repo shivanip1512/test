@@ -9,9 +9,9 @@ import org.json.JSONObject;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.eaton.builders.tools.webtrends.TrendCreateBuilder;
-import com.eaton.builders.tools.webtrends.TrendMarkerBuilder;
-import com.eaton.builders.tools.webtrends.TrendPointBuilder;
+import com.eaton.builders.tools.trends.TrendCreateBuilder;
+import com.eaton.builders.tools.trends.TrendMarkerBuilder;
+import com.eaton.builders.tools.trends.TrendPointBuilder;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;

@@ -10,7 +10,7 @@ import com.eaton.elements.TextEditElement;
 import com.eaton.elements.WebTable;
 import com.eaton.elements.WebTableRow;
 import com.eaton.elements.WebTableRow.Icon;
-import com.eaton.elements.modals.TrendAddMarkerModal;
+import com.eaton.elements.modals.TrendMarkerModal;
 import com.eaton.elements.modals.TrendPointModal;
 import com.eaton.elements.tabs.TabElement;
 import com.eaton.framework.DriverExtensions;
@@ -100,17 +100,30 @@ public class TrendPage extends PageBase {
     }
     
     public TrendPointModal showAndWaitEditPointModal(String modalTitle, int index) {
-        getPointSetupTable().getDataRowByIndex(0);
         WebTableRow row = getPointSetupTable().getDataRowByIndex(index);
+        
         row.clickIcon(Icon.PENCIL);
+        
         SeleniumTestSetup.waitUntilModalVisibleByTitle(modalTitle);
+        
         return new TrendPointModal(this.driverExt, Optional.of(modalTitle),Optional.empty());
     }
-    public TrendAddMarkerModal showAndWaitAddMarkerModal() {
+    
+    public TrendMarkerModal showAndWaitEditMarkerModal(String modalTitle, int index) {                
+        WebTableRow row = getMarkerSetupTable().getDataRowByIndex(index);
+        
+        row.clickIcon(Icon.PENCIL);
+        
+        SeleniumTestSetup.waitUntilModalVisibleByTitle(modalTitle);
+        
+        return new TrendMarkerModal(this.driverExt, Optional.of(modalTitle) ,Optional.empty());
+    }
+    
+    public TrendMarkerModal showAndWaitAddMarkerModal() {
         getMarkerSetupAdd().click();
         
         SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-add-marker-dialog");
         
-        return new TrendAddMarkerModal(this.driverExt, Optional.empty(), Optional.of("js-add-marker-dialog"));
+        return new TrendMarkerModal(this.driverExt, Optional.empty(), Optional.of("js-add-marker-dialog"));
     }
 }
