@@ -2,9 +2,11 @@ package com.eaton.tests.demandresponse.loadgroup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 import org.javatuples.Pair;
 import org.json.JSONObject;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -34,31 +36,39 @@ public class LoadGroupHoneyWellEditTests extends SeleniumTestSetup{
         id = response.getInt("id");
         name = response.getString("name");
         timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        editPage = new LoadGroupEditPage(driverExt, id);
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+		editPage = new LoadGroupEditPage(driverExt, id);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpHoneywellEdit_PageTitleCorrect() {
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        refreshPage(editPage);
+    }
+    
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpHoneywellEdit_PageTitle_Correct() {
         final String EXPECTED_TITLE = "Edit Load Group: " + name;
         String actualPageTitle;
 
-        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
         actualPageTitle = editPage.getPageTitle();
+        
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpHoneywellEdit_RequiredFieldsOnly_Successfully() {
-        String nameAfterEdit = "EditLdGrpHoneywell " + timeStamp;
+    public void ldGrpHoneywellEdit_AllFields_Successfully() {
+        name = "EditLdGrpHoneywell " + timeStamp;
 
-        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-        editPage.getName().setInputValue(nameAfterEdit);
+        editPage.getName().setInputValue(name);
         editPage.getkWCapacity().setInputValue("215");
         editPage.getDisableControl().setValue(true);
         editPage.getDisableGroup().setValue(true);
 
         editPage.getSaveBtn().click();
-        assertThat(editPage.getUserMessage()).isEqualTo(nameAfterEdit + " saved successfully.");
+        
+        waitForPageToLoad("Load Group: " + name, Optional.empty());
+        
+        assertThat(editPage.getUserMessage()).isEqualTo(name + " saved successfully.");
     }
 
 }
