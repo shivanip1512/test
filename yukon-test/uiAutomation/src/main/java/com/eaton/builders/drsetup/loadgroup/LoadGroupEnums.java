@@ -98,6 +98,41 @@ public class LoadGroupEnums {
         }
     }
     
+    public enum RouteId {
+        ACCU710A(28),
+        ACCU711(32),                        
+        ACCU721(36),
+        ALCUEASTRIVER(40),
+        APAGINGTAPTERMINAL(43),
+        AREPEATER800(52),
+        AREPEATER801(55),
+        AREPEATER900(46),
+        AREPEATER902(49),
+        AREPEATER921(58),
+        ARTC(62),
+        ARTULMI(66),
+        ASNPPTERMINAL(69),
+        ATCU5000(73),
+        ATCU5500(77),
+        AWCTPTERMINAL(80),
+        AXML(84);
+
+        private final int routeId;
+
+        RouteId(Integer routeId) {
+            this.routeId = routeId;
+        }
+
+        public Integer getRouteId() {
+            return this.routeId;
+        }
+
+        public static RouteId getRandomRouteId() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
+    }
+    
     public enum AddressUsageEmetcon {
         GOLD("GOLD"),
         SILVER("SILVER");
@@ -167,36 +202,96 @@ public class LoadGroupEnums {
         }
     }
 
-    public enum RouteId {
-        ACCU710A(28),
-        ACCU711(32),                        
-        ACCU721(36),
-        ALCUEASTRIVER(40),
-        APAGINGTAPTERMINAL(43),
-        AREPEATER800(52),
-        AREPEATER801(55),
-        AREPEATER900(46),
-        AREPEATER902(49),
-        AREPEATER921(58),
-        ARTC(62),
-        ARTULMI(66),
-        ASNPPTERMINAL(69),
-        ATCU5000(73),
-        ATCU5500(77),
-        AWCTPTERMINAL(80),
-        AXML(84);
+    public enum RippleAreaCode {
+        UNIVERSAL("UNIVERSAL"),
+        MINNKOTA("MINNKOTA"),
+        BELTRAMI("BELTRAMI"),
+        CASS_COUNTY("CASS_COUNTY"),
+        CAVALIER_RURAL("CAVALIER_RURAL"),
+        CLEARWATER_POLK("CLEARWATER_POLK"),
+        NODAK_RURAL("NODAK_RURAL"),
+        NORTH_STAR("NORTH_STAR"),
+        PKM_ELECTRIC("PKM_ELECTRIC"),
+        RED_LAKE("RED_LAKE"),
+        RED_RIVER_VALLEY("RED_RIVER_VALLEY"),
+        ROSEAU_ELECTRIC("ROSEAU_ELECTRIC"),
+        SHEYENNE_VALLEY("SHEYENNE_VALLEY"),
+        WILD_RICE("WILD_RICE"),
+        NMPA("NMPA");
 
-        private final int routeId;
+        private final String areaCode;
 
-        RouteId(Integer routeId) {
-            this.routeId = routeId;
+        RippleAreaCode(String areaCode) {
+            this.areaCode = areaCode;
         }
 
-        public Integer getRouteId() {
-            return this.routeId;
+        public String getAreaCode() {
+            return this.areaCode;
         }
 
-        public static RouteId getRandomRouteId() {
+        public static RippleAreaCode getRandomAreaCode() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
+    }
+
+    public enum RippleGroup {
+        TST("TST"),
+        ONE_00("ONE_00"),
+        ONE_01("ONE_01"),
+        ONE_02("ONE_02"),
+        TWO_00("TWO_00"),
+        TWO_01("TWO_01"),
+        TWO_02("TWO_02"),
+        TWO_03("TWO_03"),
+        TWO_04("TWO_04"),
+        THREE_00("THREE_00"),
+        THREE_01("THREE_01"),
+        THREE_06("THREE_06"),
+        THREE_07("THREE_07"),
+        THREE_09("THREE_09"),
+        THREE_01_AND_THREE_09("THREE_01_AND_THREE_09"),
+        FOUR_00("FOUR_00"),
+        FOUR_01("FOUR_01"),
+        FOUR_02("FOUR_02"),
+        SIX_00("SIX_00"),
+        SIX_01("SIX_01"),
+        SIX_06("SIX_06");
+
+        private final String group;
+
+        RippleGroup(String group) {
+            this.group = group;
+        }
+
+        public String getGroup() {
+            return this.group;
+        }
+
+        public static RippleGroup getRandomGroup() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
+    }
+
+    public enum RippleShedTime {
+        CONTINUOUS_LATCH("0"),
+        SEVEN_MINUTES_30_SECONDS("450"),
+        FIFTEEN_MINUTES("900"),
+        THIRTY_MINUTES("1800"),
+        ONE_HOUR("3600");
+
+        private final String shedTime;
+
+        RippleShedTime(String shedTime) {
+            this.shedTime = shedTime;
+        }
+
+        public String getShedTime() {
+            return this.shedTime;
+        }
+
+        public static RippleShedTime getRandomShedTime() {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
