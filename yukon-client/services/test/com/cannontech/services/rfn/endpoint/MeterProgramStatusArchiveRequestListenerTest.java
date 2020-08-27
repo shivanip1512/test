@@ -99,7 +99,7 @@ public class MeterProgramStatusArchiveRequestListenerTest {
                     updatedStatus.getValue(), 
                     createMeterProgramStatus(
                             UNKNOWN_CONFIG_ID, 
-                            ProgrammingStatus.IDLE, 
+                            ProgrammingStatus.MISMATCHED, 
                             TIMED_OUT_TIMESTAMP));
         }
         
@@ -108,7 +108,7 @@ public class MeterProgramStatusArchiveRequestListenerTest {
             initializeMockRfnDeviceDao(l);
             initializeMockMeterProgrammingDao(l, updatedStatus,
                     () -> {
-                        return createMeterProgramStatus(YUKON_CONFIG_ID, ProgrammingStatus.UPLOADING, EXISTING_TIMESTAMP);
+                        return createMeterProgramStatus(UNKNOWN_CONFIG_ID, ProgrammingStatus.UPLOADING, EXISTING_TIMESTAMP);
                     },
                     () -> {
                         var mp = new MeterProgram();
