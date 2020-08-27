@@ -34,37 +34,6 @@ public class LoadGroupRippleEditTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         randomNum = getRandomNum();
-        editPage = new LoadGroupRippleEditPage(driverExt);
-    }
-
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpRippleEdit_RequiredFieldsOnly_Successfully() {
-        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String editName = "AT Edit Ripple " + timeStamp;
-        double randomDouble = randomNum.nextDouble();
-        int randomInt = randomNum.nextInt(9999);
-        double capacity = randomDouble + randomInt;
-
-        builder = LoadGroupRippleCreateBuilder.buildDefaultRippleLoadGroup();
-        timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        final String EXPECTED_MSG = editName + " saved successfully.";
-        Pair<JSONObject, JSONObject> pair = builder
-                .create();
-        JSONObject response = pair.getValue1();
-        id = response.getInt("id");
-
-        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-        editPage.getName().setInputValue(editName);
-        editPage.getkWCapacity().setInputValue(String.valueOf(capacity));
-
-        editPage.getSaveBtn().click();
-
-        waitForPageToLoad("Load Group: " + editName, Optional.empty());
-
-        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
-        String userMsg = detailsPage.getUserMessage();
-
-        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -84,6 +53,8 @@ public class LoadGroupRippleEditTests extends SeleniumTestSetup {
         id = response.getInt("id");
 
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+        editPage = new LoadGroupRippleEditPage(driverExt, id);
+        
         editPage.getName().setInputValue(editName);
         editPage.getCommunicationRoute().selectItemByText("a_RTC");
 
