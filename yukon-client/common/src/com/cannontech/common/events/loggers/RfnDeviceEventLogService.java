@@ -14,7 +14,7 @@ public interface RfnDeviceEventLogService {
             String templateName,
             @Arg(ArgEnum.paoName) String paoName);
 
-    @YukonEventLog(transactionality=ExecutorTransactionality.ASYNCHRONOUS, category="system.rfn")
+    @YukonEventLog(transactionality = ExecutorTransactionality.ASYNCHRONOUS, category = "system.rfn")
     public void receivedDataForUnkownDeviceTemplate(String templateName);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.ASYNCHRONOUS, category="system.rfn")

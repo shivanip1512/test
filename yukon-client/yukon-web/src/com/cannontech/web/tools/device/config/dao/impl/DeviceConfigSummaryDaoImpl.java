@@ -3,11 +3,15 @@ package com.cannontech.web.tools.device.config.dao.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao.ConfigState;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction;
@@ -40,6 +44,14 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, DeviceRequestType.GROUP_DEVICE_CONFIG_READ);
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired ConfigurationSource configurationSource;
+    
+    private String rfTemplatePrefix;
+    
+    @PostConstruct
+    public void initialize() {
+         rfTemplatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
+    }
 
     private final YukonRowMapper<DeviceConfigSummaryDetail> detailRowMapper = rs -> {
         DeviceConfigSummaryDetail detail = new DeviceConfigSummaryDetail();
@@ -74,10 +86,8 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         if (!filter.isDisplayUnassigned() && CollectionUtils.isEmpty(filter.getConfigurationIds())) {
             return new SearchResults<>();
         }
-        SqlStatementBuilder allRowsSql = buildDetailSelect(filter, sortBy, direction, false);
-        log.debug(allRowsSql.getDebugSql());
-        SqlStatementBuilder countSql = buildDetailSelect(filter, null, null, true);
-        log.debug(countSql);
+        SqlStatementBuilder allRowsSql = buildSummarySelect(filter, sortBy, direction, false);
+        SqlStatementBuilder countSql = buildSummarySelect(filter, null, null, true);
         int totalCount = jdbcTemplate.queryForInt(countSql);
 
         int start = paging.getStartIndex();
@@ -93,23 +103,10 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         return searchResult;
     }
     
-    private SqlStatementBuilder buildDetailSelect(DeviceConfigSummaryFilter filter, SortBy sortBy,
-            Direction direction, boolean selectCount) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        if (CollectionUtils.isEmpty(filter.getConfigurationIds())) {
-            sql.append(buildUnassignSelect(filter, sortBy, direction, selectCount));
-        } else {
-            sql.append(buildConfigStatesSelect(filter, sortBy, direction, selectCount));
-        }
-        addGroupsAndOrderBy(filter, sortBy, direction, sql);
-        return sql;
-    }
-
-    private SqlStatementBuilder buildUnassignSelect(DeviceConfigSummaryFilter filter, SortBy sortBy,
-            Direction direction, boolean selectCount) {
+    private SqlStatementBuilder buildUnassignSelect(DeviceConfigSummaryFilter filter, boolean selectCount) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         if (selectCount) {
-            sql.append("SELECT count(ypo.PAObjectID)");
+            sql.append("SELECT ypo.PAObjectID");
         } else {
             sql.append("SELECT");
             sql.append("ypo.PAObjectID,");
@@ -127,14 +124,14 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("FROM YukonPAObject ypo");
         sql.append("WHERE ypo.type").in_k(getSupportedPaoTypes());
         sql.append("AND ypo.PAObjectID NOT IN (select DeviceID from DeviceConfigurationDeviceMap)");
+        sql.append("AND ypo.PAOName NOT").startsWith(rfTemplatePrefix);
         return sql;
     }
 
-    private SqlStatementBuilder buildConfigStatesSelect(DeviceConfigSummaryFilter filter, SortBy sortBy,
-            Direction direction, boolean selectCount) {
+    private SqlStatementBuilder buildStateSelect(DeviceConfigSummaryFilter filter, boolean selectCount) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         if (selectCount) {
-            sql.append("SELECT count(ypo.PAObjectID)");
+            sql.append("SELECT ypo.PAObjectID");
         } else {
             sql.append("SELECT");
             sql.append("ypo.PAObjectID,");
@@ -155,9 +152,8 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("JOIN DeviceConfiguration dc ON dc.DeviceConfigurationID = scdm.DeviceConfigurationId");
         sql.append("LEFT JOIN CommandRequestExecResult crer ON crer.CommandRequestExecId = dcs.CommandRequestExecId AND dcs.PAObjectID=crer.DeviceId");
         sql.append("WHERE ypo.type").in_k(getSupportedPaoTypes());
-        if (!CollectionUtils.isEmpty(filter.getConfigurationIds())) {
-            sql.append("AND scdm.DeviceConfigurationId").in(filter.getConfigurationIds());
-        }
+        sql.append("AND scdm.DeviceConfigurationId").in(filter.getConfigurationIds());
+        
         if (filter.getStateSelection() == StateSelection.ALL) {
             sql.append("AND (CurrentState").in_k(filter.getStateSelection().getStates());
             sql.append("OR LastActionStatus").eq_k(LastActionStatus.IN_PROGRESS).append(")");
@@ -165,6 +161,29 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
             sql.append("AND LastActionStatus").eq_k(LastActionStatus.IN_PROGRESS);
         } else {
             sql.append("AND CurrentState").in_k(filter.getStateSelection().getStates());
+        }
+        return sql;
+    }
+
+    private SqlStatementBuilder buildSummarySelect(DeviceConfigSummaryFilter filter, SortBy sortBy,
+            Direction direction, boolean selectCount) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        if (selectCount) {
+            sql.append("SELECT count(PaObjectId)");
+            sql.append("FROM (");
+        }
+        if (filter.isDisplayAssigned()) {
+            sql.append(buildStateSelect(filter, selectCount));
+            if (filter.isDisplayUnassigned()) {
+                sql.append("UNION");
+            }
+        }
+        if (filter.isDisplayUnassigned()) {
+            sql.append(buildUnassignSelect(filter, selectCount));
+        }
+        addGroupsAndOrderBy(filter, sortBy, direction, sql);
+        if (selectCount) {
+            sql.append(") T");
         }
         return sql;
     }
