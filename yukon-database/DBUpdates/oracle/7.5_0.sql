@@ -697,6 +697,19 @@ WHERE Manufacturer = 'CPS' AND Model = 'VGW';
 
 INSERT INTO DBUpdates VALUES ('YUK-22665', '7.5.0', SYSDATE);
 /* @end YUK-22665 */
+
+/* @start YUK-22749 */
+UPDATE Point SET StateGroupId = -16
+WHERE StateGroupId = 4
+AND PointType = 'Status' 
+AND PointOffset IN (1, 2, 3, 4, 5, 6, 7)
+AND PaObjectId IN (
+    SELECT PaObjectId FROM YukonPaObject 
+    WHERE Type IN ('RF Gateway', 'GWY-800', 'GWY-801', 'Virtual Gateway')
+);
+
+INSERT INTO DBUpdates VALUES ('YUK-22749', '7.5.0', SYSDATE);
+/* @end YUK-22749 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
