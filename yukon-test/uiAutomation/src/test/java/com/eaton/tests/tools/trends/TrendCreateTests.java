@@ -15,8 +15,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.eaton.elements.Section;
-import com.eaton.elements.modals.TrendAddPointModal;
 import com.eaton.elements.modals.TrendAddMarkerModal;
+import com.eaton.elements.modals.TrendPointModal;
 import com.eaton.elements.modals.SelectPointModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
@@ -79,7 +79,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
 
         //Adding Point Setup
         createPage.getTabElement().clickTabAndWait("Setup");
-        TrendAddPointModal addPointModal = createPage.showAndWaitAddPointModal();
+        TrendPointModal addPointModal = createPage.showAndWaitAddPointModal();
         SelectPointModal selectPointModal = addPointModal.showAndWaitSelectPointModal();
         selectPointModal.selectPoint(point, Optional.of("5231"));
         selectPointModal.clickOkAndWaitForModalToClose();

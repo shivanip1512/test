@@ -16,7 +16,7 @@ import com.eaton.elements.WebTableRow;
 import com.eaton.elements.WebTableRow.Icon;
 import com.eaton.elements.modals.SelectPointModal;
 import com.eaton.elements.modals.TrendAddMarkerModal;
-import com.eaton.elements.modals.TrendAddPointModal;
+import com.eaton.elements.modals.TrendPointModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
@@ -130,7 +130,7 @@ public class TrendEditTests extends SeleniumTestSetup {
     public void editTrend_AddPoint_Success() {
         navigate(Urls.Tools.TREND_EDIT + trendId + Urls.EDIT);
 
-        TrendAddPointModal modal = editPage.showAndWaitAddPointModal();
+        TrendPointModal modal = editPage.showAndWaitAddPointModal();
         SelectPointModal pointModal = modal.showAndWaitSelectPointModal();
         pointModal.selectPoint("Analog Point for Create Trend", Optional.of("5231"));
         pointModal.clickOkAndWait();
@@ -166,7 +166,7 @@ public class TrendEditTests extends SeleniumTestSetup {
         WebTableRow row = editPage.getPointSetupTable().getDataRowByIndex(0);
         row.clickIcon(Icon.PENCIL);
 
-        TrendAddPointModal modal = new TrendAddPointModal(this.driverExt, Optional.of("Edit Month History"), Optional.empty());
+        TrendPointModal modal = new TrendPointModal(this.driverExt, Optional.of("Edit Month History"), Optional.empty());
         modal.getLabel().setInputValue("Edit Point Label");
         modal.clickOkAndWait();
 
