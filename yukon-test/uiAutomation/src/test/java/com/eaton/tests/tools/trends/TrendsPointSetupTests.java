@@ -95,7 +95,7 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
-    public void trendPointSetup_AddPoint_LabelRequiredValidation() {
+    public void trendPointSetup_AddPointLabel_RequiredValidation() {
         final String EXPECTED_MSG = "Label is required.";
         trendPointModal = trendCreatePage.showAndWaitAddPointModal();
         // Set the empty value for the Label Input Field
@@ -107,7 +107,7 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
-    public void trendPointSetup_AddPoint_LabelMaxLengthCorrect() {
+    public void trendPointSetup_AddPointLabel_MaxLengthCorrect() {
         final String ALLOWED_MAX_LENGTH = "40";
         trendPointModal = trendCreatePage.showAndWaitAddPointModal();
         String maxLengthofLabel = trendPointModal.getLabel().getEditElement().getAttribute("maxlength");
@@ -115,7 +115,7 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
-    public void trendPointSetup_AddPoint_PointRequiredValidation() {
+    public void trendPointSetup_AddPointPoint_RequiredValidation() {
         final String EXPECTED_MSG = "Point is required.";
         trendPointModal = trendCreatePage.showAndWaitAddPointModal();
         trendPointModal.clickOkAndWait();
@@ -186,27 +186,6 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
         softly.assertThat(trendPointModal.getType().getSelectedValue()).isEqualTo("Basic");
         softly.assertThat(trendPointModal.getReadOnlyFieldValueByLabel("Device:")).isEqualTo("AT Cap Bank");
         softly.assertThat(trendPointModal.getPoint().getLinkValueDynamic()).isEqualTo(POINT_NAME);
-        softly.assertAll();
-    }
-
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
-    public void trendPointSetup_EditPoint_LabelsCorrect() {
-        SoftAssertions softly = new SoftAssertions();
-        final String EXPECTED_MODAL_TITLE = "Edit " + POINT_NAME;
-        navigate(Urls.Tools.TREND_EDIT + trendId + Urls.EDIT);
-        trendEditPage = new TrendEditPage(driverExt, Urls.Tools.TREND_EDIT, trendId);
-        trendPointModal = trendEditPage.showAndWaitEditPointModal(EXPECTED_MODAL_TITLE, 0);
-
-        List<String> labels = trendPointModal.getFieldLabels();
-        softly.assertThat(labels.size()).isEqualTo(9);
-        softly.assertThat(labels.get(0)).isEqualTo("Point:");
-        softly.assertThat(labels.get(1)).contains("Device:");
-        softly.assertThat(labels.get(2)).contains("Label:");
-        softly.assertThat(labels.get(3)).contains("Color:");
-        softly.assertThat(labels.get(4)).contains("Style:");
-        softly.assertThat(labels.get(5)).contains("Type:");
-        softly.assertThat(labels.get(7)).contains("Axis:");
-        softly.assertThat(labels.get(8)).contains("Multiplier:");
         softly.assertAll();
     }
 }
