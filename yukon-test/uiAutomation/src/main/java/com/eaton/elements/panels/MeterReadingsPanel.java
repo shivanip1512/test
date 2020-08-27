@@ -9,26 +9,37 @@ import com.eaton.elements.Button;
 import com.eaton.elements.WebTable;
 import com.eaton.framework.DriverExtensions;
 
-public class MeterInfoPanel extends BasePanel {
+public class MeterReadingsPanel extends BasePanel {
 
     private DriverExtensions driverExt;
     private WebElement panel;
+    private Button readButton;
     private WebTable pointsTable;
     private List<String> labelEntries;
     private List<String> valueEntries;
     
-    public MeterInfoPanel(DriverExtensions driverExt, String panelName) {
+    public MeterReadingsPanel(DriverExtensions driverExt, String panelName) {
         super(driverExt, panelName);
         final int LABEL_INDEX = 1;
         final int VALUE_INDEX = 2;
         
         this.driverExt = driverExt;
         this.panel = initPanel();
+        if(panel == null) {
+        	this.readButton = null;
+            this.pointsTable = null;
+            this.labelEntries = null;
+            this.valueEntries = null;
+        	
+        } else {
+        	this.readButton = new Button(driverExt, "Read", panel);
+            
+            this.pointsTable = new WebTable(driverExt, "name-value-table", panel);
+            this.labelEntries = pointsTable.getDataRowsTextByCellIndex(LABEL_INDEX);
+            
+            this.valueEntries = pointsTable.getDataRowsTextByCellIndex(VALUE_INDEX);
+        }
         
-        this.pointsTable = new WebTable(driverExt, "name-value-table", panel);
-        this.labelEntries = pointsTable.getDataRowsTextByCellIndex(LABEL_INDEX);
-        
-        this.valueEntries = pointsTable.getDataRowsTextByCellIndex(VALUE_INDEX);
     }
     
     //================================================================================
@@ -52,8 +63,12 @@ public class MeterInfoPanel extends BasePanel {
     	return panel;
     }
 
-    public Button getEdit() {
-        return new Button(this.driverExt, "Edit", this.panel);
+    public Button getReadButton() {
+        return readButton;
+    }
+    
+    public WebTable getPointsTable() {
+    	return pointsTable;
     }
     
     public List<String> getLabelEntries() {

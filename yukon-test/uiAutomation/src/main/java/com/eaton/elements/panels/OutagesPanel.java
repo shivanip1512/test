@@ -9,7 +9,7 @@ import com.eaton.elements.Button;
 import com.eaton.elements.WebTable;
 import com.eaton.framework.DriverExtensions;
 
-public class MeterInfoPanel extends BasePanel {
+public class OutagesPanel extends BasePanel {
 
     private DriverExtensions driverExt;
     private WebElement panel;
@@ -17,7 +17,7 @@ public class MeterInfoPanel extends BasePanel {
     private List<String> labelEntries;
     private List<String> valueEntries;
     
-    public MeterInfoPanel(DriverExtensions driverExt, String panelName) {
+    public OutagesPanel(DriverExtensions driverExt, String panelName) {
         super(driverExt, panelName);
         final int LABEL_INDEX = 1;
         final int VALUE_INDEX = 2;
@@ -25,10 +25,17 @@ public class MeterInfoPanel extends BasePanel {
         this.driverExt = driverExt;
         this.panel = initPanel();
         
-        this.pointsTable = new WebTable(driverExt, "name-value-table", panel);
-        this.labelEntries = pointsTable.getDataRowsTextByCellIndex(LABEL_INDEX);
-        
-        this.valueEntries = pointsTable.getDataRowsTextByCellIndex(VALUE_INDEX);
+        if(panel == null) {
+            this.pointsTable = null;
+            this.labelEntries = null;
+            this.valueEntries = null;
+        	
+        } else { 
+            this.pointsTable = new WebTable(driverExt, "name-value-table", panel);
+            this.labelEntries = pointsTable.getDataRowsTextByCellIndex(LABEL_INDEX);
+            
+            this.valueEntries = pointsTable.getDataRowsTextByCellIndex(VALUE_INDEX);
+        }
     }
     
     //================================================================================
@@ -51,9 +58,9 @@ public class MeterInfoPanel extends BasePanel {
     public WebElement getPanel() {
     	return panel;
     }
-
-    public Button getEdit() {
-        return new Button(this.driverExt, "Edit", this.panel);
+    
+    public WebTable getPointsTable() {
+    	return pointsTable;
     }
     
     public List<String> getLabelEntries() {
@@ -63,4 +70,5 @@ public class MeterInfoPanel extends BasePanel {
     public List<String> getValueEntries() {
     	return valueEntries;
     }
+
 }
