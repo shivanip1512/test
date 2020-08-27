@@ -31,7 +31,7 @@ public class SetupGlobalSearchTest extends SeleniumTestSetup {
         globalSearchPage = new GlobalSearchPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE, TestConstants.DemandResponse.DEMAND_RESPONSE, TestConstants.DemandResponse.SETUP })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE, TestConstants.DemandResponse.SETUP })
     public void setupGlobalSearch_SearchSetupAndEnter_NavigatesToSearchPage() {
         globalSearchPage.getSearchBoxElement().setSearchValueAndEnter("Setup");
         
