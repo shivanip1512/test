@@ -34,7 +34,7 @@ public static class Builder {
         private double kwCapacity;
         private boolean disableGroup;
         private boolean disableControl;  
-        private List<AddressUsageRfnExpresscom> addressUsage;
+        private List<LoadGroupEnums.AddressUsageRfnExpresscom> addressUsage;
         private List<RelayUsageRfnExpresscom> relayUsage;
         private String protocolPriority;
         
@@ -108,39 +108,22 @@ public static class Builder {
             return this;
         }
         
-        public Builder withAddressUsage(Optional<AddressUsageRfnExpresscom> addressUsage) {
-        	List<AddressUsageRfnExpresscom> address = new ArrayList<AddressUsageRfnExpresscom>();
-        	 if (address.isEmpty()) {
-        		 address.add(AddressUsageRfnExpresscom.GEO);
-        		 address.add(AddressUsageRfnExpresscom.SUBSTATION);
-        		 address.add(AddressUsageRfnExpresscom.USER);
-        		 address.add(AddressUsageRfnExpresscom.ZIP);
-        		 address.add(AddressUsageRfnExpresscom.FEEDER);
-        		 address.add(AddressUsageRfnExpresscom.PROGRAM);
-        		 this.addressUsage = address;
-             } else {
-            	 address.add(addressUsage.get());
-                 this.addressUsage = address;
-             }
+        public Builder withAddressUsage(Optional<List<AddressUsageRfnExpresscom>> addressUsage) {
+            List<AddressUsageRfnExpresscom> addresses = new ArrayList<AddressUsageRfnExpresscom>();
+            addresses.add(AddressUsageRfnExpresscom.getRandomAddressUsage());
+            addresses.add(AddressUsageRfnExpresscom.PROGRAM);
+            this.addressUsage = addressUsage.orElse(addresses);
             return this;
         }
         
-        public Builder withRelayUsage(Optional<RelayUsageRfnExpresscom> relayUsage) {
+        public Builder withRelayUsage(Optional<List<RelayUsageRfnExpresscom>> relayUsage) {
             List<RelayUsageRfnExpresscom> relays = new ArrayList<RelayUsageRfnExpresscom>();
+            relays.add(RelayUsageRfnExpresscom.getRandomRelayUsage());
 
-            if (relayUsage.isEmpty()) {
-                relays.add(RelayUsageRfnExpresscom.Load_1);
-                relays.add(RelayUsageRfnExpresscom.Load_2);
-                relays.add(RelayUsageRfnExpresscom.Load_3);
-                relays.add(RelayUsageRfnExpresscom.Load_4);
-                this.relayUsage = relays;
-            } else {
-                relays.add(relayUsage.get());
-                this.relayUsage = relays;
-            }
+            this.relayUsage = relayUsage.orElse(relays);
             return this;
         }
-                
+        
         public Builder withProtocolPriority(Optional<LoadGroupEnums.ProtocolPriorityRfnExpresscom> protocol_Priority) {
         	LoadGroupEnums.ProtocolPriorityRfnExpresscom randomProtocolPriority = protocol_Priority
                     .orElse(LoadGroupEnums.ProtocolPriorityRfnExpresscom.getRandomProtocolPriority());
