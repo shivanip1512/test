@@ -5,6 +5,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.point.PointType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -58,6 +59,7 @@ public class Assignment {
         this.offset = offset;
     }
     
+    @JsonIgnore
     public boolean isEmpty() {
         return attributeId == null && paoType == null && pointType == null
                 && offset == null ? true : false;

@@ -4066,7 +4066,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"attributeId\": 452,\r\n    \"paoType\": \"VIRTUAL_SYSTEM\",\r\n    \"PointType\": \"CalcAnalog\",\r\n    \"PointOffset\": 1000\r\n}",
+									"raw": "{\r\n    \"attributeId\": 92,\r\n    \"paoType\": \"VIRTUAL_SYSTEM\",\r\n    \"pointType\": \"CalcAnalog\",\r\n    \"offset\": 1000\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -4131,7 +4131,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"attributeId\": 452,\r\n    \"paoType\": \"VIRTUAL_SYSTEM\",\r\n    \"PointType\": \"CalcAnalog\",\r\n    \"PointOffset\": 1000\r\n}",
+									"raw": "{\r\n    \"attributeId\": 92,\r\n    \"paoType\": \"VIRTUAL_SYSTEM\",\r\n    \"pointType\": \"CalcAnalog\",\r\n    \"offset\": 1000\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -4139,14 +4139,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/attributeAssignments/{attribute-assignment-id}",
+									"raw": "{{api-url}}/api/attributeAssignments/{attribute-assignment-id",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"attributeAssignments",
-										"{attribute-assignment-id}"
+										"{attribute-assignment-id"
 									]
 								}
 							},
@@ -4251,34 +4251,29 @@
 	],
 	"variable": [
 		{
-			"id": "1e095ccf-fd79-4c14-b42b-db62413971cb",
+			"id": "d9739676-2d02-4893-8578-2b0e1175fbd3",
 			"key": "api-url",
-			"value": "http://pspl-sw-night.eatoneaseng.net:8080",
-			"type": "string"
+			"value": "http://pspl-sw-night.eatoneaseng.net:8080"
 		},
 		{
-			"id": "ee3ad4ef-1040-446e-bee8-6e390b042d31",
+			"id": "f4260f55-45c5-4bcb-bc3e-31a9a2adae1c",
 			"key": "username",
-			"value": "yukon",
-			"type": "string"
+			"value": "yukon"
 		},
 		{
-			"id": "1371f0ed-decb-4c47-9caf-a019dbd45936",
+			"id": "4b11e89c-f67c-42d7-a629-60c1a45f0d3c",
 			"key": "password",
-			"value": "yukon",
-			"type": "string"
+			"value": "yukon"
 		},
 		{
-			"id": "bc08df03-6f72-457d-b27e-edf78c88da77",
+			"id": "4921ea58-5cb8-4d45-ba50-be6bcc2d4404",
 			"key": "currentAccessToken",
-			"value": "",
-			"type": "string"
+			"value": ""
 		},
 		{
-			"id": "b6e84b20-a8d3-47fa-bd26-778d66f7549c",
+			"id": "dfca3920-ea01-48d4-91ec-ba0c7819288f",
 			"key": "accessTokenExpiry",
-			"value": "",
-			"type": "string"
+			"value": ""
 		}
 	],
 	"protocolProfileBehavior": {}
