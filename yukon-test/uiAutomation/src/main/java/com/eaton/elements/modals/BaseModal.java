@@ -121,8 +121,8 @@ public class BaseModal {
         return names;
     }
     
-    /**This function will fetch all the values from the given model and will return then as List
-     * @return list of Field Values as List<String> 
+    /**This function is to get all the field labels on a modal.  It will return the labels in a string list
+     * @return Field Values as List<String> 
      */
     public List<String> getFieldValues() {
         List<WebElement> valueElements = getModal().findElements(By.cssSelector("table tr .value"));
@@ -133,19 +133,16 @@ public class BaseModal {
         return values;
     }
     
-    /**This function will take the field Label and will return the corresponding value for that field.
+    /**This function should be used for values that are read only.  It will take the field Label and will return the corresponding value.
      * @param fieldLabel  : provide label for which you want to fetch corresponding value like 'Name' 
-     * @return Value as String or null
+     * @return Value as String if label can not be found will throw a selenium error.
      */
-    public String getFieldValue(String fieldLabel) {
-        List<String> allFieldLabels = getFieldLabels();
-        List<String> allFieldValues = getFieldValues();
-        for (int index=0;index<allFieldLabels.size();index++){
-            if(allFieldLabels.get(index).equals(fieldLabel)) {
-                return allFieldValues.get(index);
-            }
-        }
-        return null;
+    public String getReadOnlyFieldValueByLabel(String fieldLabel) {
+        List<WebElement> rows = getModal().findElements(By.cssSelector("table tr"));
+        
+        WebElement row = rows.stream().filter(x -> x.findElement(By.cssSelector(".name")).getText().contains(fieldLabel)).findFirst().orElseThrow();
+        
+        return row.findElement(By.cssSelector(".value")).getText();        
     }
     
     public boolean isModalDisplayed() {

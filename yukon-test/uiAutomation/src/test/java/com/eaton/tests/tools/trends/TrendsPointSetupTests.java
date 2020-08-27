@@ -35,7 +35,6 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
     private TrendEditPointModal trendEditPointModal;
     private TrendEditPage trendEditPage;
     private TrendCreatePage trendCreatePage;
-    private SoftAssertions softly;
     private final int POINT_ID = 5157;
     private final String POINT_NAME = "BANK STATUS";
     private final String POINT_LABEL = "BANK STATUS LABEL";
@@ -59,7 +58,7 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
         trendId = response.path("trendId");
         trendName = response.path("name").toString();
 
-        softly = new SoftAssertions();
+        
         navigate(Urls.Tools.TREND_CREATE);
         trendCreatePage = new TrendCreatePage(driverExt, Urls.Tools.TREND_CREATE);
     }
@@ -81,8 +80,11 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
     public void trendPointSetup_AddPoint_AllLabelsCorrect() {
+        SoftAssertions softly = new SoftAssertions();
+        
         trendAddPointModal = trendCreatePage.showAndWaitAddPointModal();
         List<String> labels = trendAddPointModal.getFieldLabels();
+        
         softly.assertThat(labels.size()).isEqualTo(9);
         softly.assertThat(labels.get(0)).isEqualTo("Point:");
         softly.assertThat(labels.get(1)).contains("Device:");
@@ -137,6 +139,7 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
     public void trendPointSetup_AddPointStyle_ContainsAllExpectedValues() {
+        SoftAssertions softly = new SoftAssertions();
         trendAddPointModal = trendCreatePage.showAndWaitAddPointModal();
         List<String> Styles = trendAddPointModal.getStyle().getOptionValues();
         softly.assertThat(Styles.size()).isEqualTo(3);
@@ -148,6 +151,7 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
     public void trendPointSetup_AddPointType_ContainsAllExpectedValues() {
+        SoftAssertions softly = new SoftAssertions();
         trendAddPointModal = trendCreatePage.showAndWaitAddPointModal();
         List<String> Types = trendAddPointModal.getType().getOptionValues();
         softly.assertThat(Types.size()).isEqualTo(5);
@@ -172,6 +176,7 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
     public void trendPointSetup_EditPoint_ValuesCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_MODAL_TITLE = "Edit " + POINT_NAME;
         navigate(Urls.Tools.TREND_EDIT + trendId + Urls.EDIT);
         trendEditPage = new TrendEditPage(driverExt, Urls.Tools.TREND_EDIT, trendId);
@@ -182,13 +187,14 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
         softly.assertThat(trendEditPointModal.getMultiplier().getInputValue()).isEqualTo("2.0");
         softly.assertThat(trendEditPointModal.getStyle().getSelectedValue()).isEqualTo("Line");
         softly.assertThat(trendEditPointModal.getType().getSelectedValue()).isEqualTo("Basic");
-        softly.assertThat(trendEditPointModal.getFieldValue("Device:")).isEqualTo("AT Cap Bank");
+        softly.assertThat(trendEditPointModal.getReadOnlyFieldValueByLabel("Device:")).isEqualTo("AT Cap Bank");
         softly.assertThat(trendEditPointModal.getPoint().getLinkValueDynamic()).isEqualTo(POINT_NAME);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
     public void trendPointSetup_EditPoint_LabelsCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_MODAL_TITLE = "Edit " + POINT_NAME;
         navigate(Urls.Tools.TREND_EDIT + trendId + Urls.EDIT);
         trendEditPage = new TrendEditPage(driverExt, Urls.Tools.TREND_EDIT, trendId);
