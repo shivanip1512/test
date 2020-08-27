@@ -8,8 +8,8 @@ import com.cannontech.common.YukonColorPalette;
  * Provides colors for graphs.
  */
 public enum GraphColors {
-    WINE(YukonColorPalette.WINE),   // do not use RED in this enum, as it's text will conflict. Both use "Red".
     BLUE(YukonColorPalette.BLUE),
+    WINE(YukonColorPalette.WINE),   // do not use RED in this enum, as it's text will conflict. Both use "Red".
     GREEN(YukonColorPalette.GREEN),
     BLACK(YukonColorPalette.BLACK),
     SAGE(YukonColorPalette.SAGE),

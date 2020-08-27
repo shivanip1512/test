@@ -57,7 +57,7 @@ public class TrendApiDoc extends DocumentationBase {
                 fieldWithPath("trendSeries[].color")
                     .type(JsonFieldType.STRING)
                     .optional()
-                    .description("Color. Expected: BLACK, BLUE, CYAN, GREY, GREEN, MAGENTA, ORANGE, PINK, RED, YELLOW. Default Color: BLUE."),
+                    .description("Color. Expected: BLACK, BLUE, TEAL, GRAY, GREEN, SAGE, ORANGE, PURPLE, WINE, YELLOW, SKY. Default Color: BLUE."),
                 fieldWithPath("trendSeries[].axis")
                     .type(JsonFieldType.STRING)
                     .optional()
