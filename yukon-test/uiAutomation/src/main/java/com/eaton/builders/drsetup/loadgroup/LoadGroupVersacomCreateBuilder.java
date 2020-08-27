@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.javatuples.Pair;
 import org.json.JSONObject;
 
+import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.AddressUsageVersacom;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.RelayUsage;
 import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
 import com.eaton.rest.api.drsetup.DrSetupGetRequest;
@@ -32,6 +33,7 @@ public class LoadGroupVersacomCreateBuilder {
         private String classAddress;
         private String divisionAddress;
         private List<LoadGroupEnums.AddressUsageVersacom> addressUsage;
+        private Optional<List<String>> serialAddressUsage;
         private List<RelayUsage> relayUsage;
 
         public Builder(Optional<String> name) {
@@ -97,48 +99,31 @@ public class LoadGroupVersacomCreateBuilder {
             return this;
         }
 
-        public Builder withRelayUsage(Optional<RelayUsage> relayUsage) {
+        public Builder withRelayUsage(Optional<List<RelayUsage>> relayUsage) {
             List<RelayUsage> relays = new ArrayList<RelayUsage>();
+            relays.add(RelayUsage.getRandomRelayUsage());
 
-            if (relayUsage.isEmpty()) {
-                relays.add(RelayUsage.RELAY_1);
-                relays.add(RelayUsage.RELAY_2);
-                relays.add(RelayUsage.RELAY_3);
-                relays.add(RelayUsage.RELAY_4);
-                this.relayUsage = relays;
-            } else {
-                relays.add(relayUsage.get());
-                this.relayUsage = relays;
-            }
+            this.relayUsage = relayUsage.orElse(relays);
             return this;
         }
 
-        public Builder withOtherAddressUsage(Optional<LoadGroupEnums.AddressUsageVersacom> addressUsage) {
-            List<LoadGroupEnums.AddressUsageVersacom> versacomAddressUsage = new ArrayList<LoadGroupEnums.AddressUsageVersacom>();
+        public Builder withOtherAddressUsage(Optional<List<AddressUsageVersacom>> addressUsage) {
+            List<AddressUsageVersacom> versacomAddressUsage = new ArrayList<AddressUsageVersacom>();
+            versacomAddressUsage.add(AddressUsageVersacom.getRandomAddressUsage());
 
-            if (addressUsage.isEmpty()) {
-                versacomAddressUsage.add(LoadGroupEnums.AddressUsageVersacom.UTILITY);
-                versacomAddressUsage.add(LoadGroupEnums.AddressUsageVersacom.SECTION);
-                versacomAddressUsage.add(LoadGroupEnums.AddressUsageVersacom.CLASS);
-                versacomAddressUsage.add(LoadGroupEnums.AddressUsageVersacom.DIVISION);
-                this.addressUsage = versacomAddressUsage;
-            } else {
-                versacomAddressUsage.add(addressUsage.get());
-                this.addressUsage = versacomAddressUsage;
-            }
+            this.addressUsage = addressUsage.orElse(versacomAddressUsage);
             return this;
         }
 
-        public Builder withSerialAddressUsage(Optional<LoadGroupEnums.AddressUsageVersacom> addressUsage) {
-            List<LoadGroupEnums.AddressUsageVersacom> versacomAddressUsage = new ArrayList<LoadGroupEnums.AddressUsageVersacom>();
+        public Builder withSerialAddressUsage(Optional<List<String>> addressUsage) {
+            List<String> serialAddressUsage = new ArrayList<String>();
 
             if (addressUsage.isEmpty()) {
-                versacomAddressUsage.add(LoadGroupEnums.AddressUsageVersacom.UTILITY);
-                versacomAddressUsage.add(LoadGroupEnums.AddressUsageVersacom.SERIAL);
-                this.addressUsage = versacomAddressUsage;
+                serialAddressUsage.add("UTILITY");
+                serialAddressUsage.add("SERIAL");
+                this.serialAddressUsage = Optional.of(serialAddressUsage);
             } else {
-                versacomAddressUsage.add(addressUsage.get());
-                this.addressUsage = versacomAddressUsage;
+                this.serialAddressUsage = addressUsage;
             }
             return this;
         }
@@ -184,17 +169,15 @@ public class LoadGroupVersacomCreateBuilder {
     }
 
     public static Builder buildDefaultVersacomLoadGroup() {
+        List<AddressUsageVersacom> list = new ArrayList<>();
+        list.add(AddressUsageVersacom.UTILITY);
         return new LoadGroupVersacomCreateBuilder.Builder(Optional.empty())
                 .withDisableControl(Optional.empty())
                 .withDisableGroup(Optional.empty())
                 .withKwCapacity(Optional.empty())
                 .withRelayUsage(Optional.empty())
-                .withOtherAddressUsage(Optional.empty())
-                .withClassAddress(Optional.empty())
-                .withDivisionAddress(Optional.empty())
+                .withOtherAddressUsage(Optional.of(list))
                 .withRouteId(Optional.empty())
-                .withSectionAddress(Optional.empty())
-                .withUtilityAddress(Optional.empty())
-                .withSerialAddress(Optional.empty());
+                .withUtilityAddress(Optional.empty());
     }
 }

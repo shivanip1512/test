@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.javatuples.Pair;
 import org.json.JSONObject;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.AddressLevelMCT;
+import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.RelayUsage;
 import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
 import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 import com.github.javafaker.Faker;
@@ -25,7 +26,7 @@ public class LoadGroupMCTCreateBuilder {
         private int address;
         private int mctDeviceId;
         private AddressLevelMCT addressLevelMCT;
-        private List<LoadGroupEnums.RelayUsage> relayUsage;
+        private List<RelayUsage> relayUsage;
 
         public Builder(Optional<String> name) {
             String u = UUID.randomUUID().toString();
@@ -34,7 +35,7 @@ public class LoadGroupMCTCreateBuilder {
             this.name = name.orElse("AT LG " + uuid);
         }
 
-        public Builder withRelayUsage(List<LoadGroupEnums.RelayUsage> relayUsage) {
+        public Builder withRelayUsage(List<RelayUsage> relayUsage) {
             this.relayUsage = relayUsage;
             return this;
         }

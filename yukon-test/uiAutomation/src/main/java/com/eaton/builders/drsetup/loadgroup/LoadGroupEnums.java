@@ -98,7 +98,7 @@ public class LoadGroupEnums {
         }
     }
     
-    public enum RouteId {
+        public enum RouteId {
         ACCU710A(28),
         ACCU711(32),                        
         ACCU721(36),
@@ -219,14 +219,14 @@ public class LoadGroupEnums {
         WILD_RICE("WILD_RICE"),
         NMPA("NMPA");
 
-        private final String areaCode;
+        private final String AREA_CODE;
 
         RippleAreaCode(String areaCode) {
-            this.areaCode = areaCode;
+            this.AREA_CODE = areaCode;
         }
 
         public String getAreaCode() {
-            return this.areaCode;
+            return this.AREA_CODE;
         }
 
         public static RippleAreaCode getRandomAreaCode() {
@@ -258,14 +258,14 @@ public class LoadGroupEnums {
         SIX_01("SIX_01"),
         SIX_06("SIX_06");
 
-        private final String group;
+        private final String GROUP;
 
         RippleGroup(String group) {
-            this.group = group;
+            this.GROUP = group;
         }
 
         public String getGroup() {
-            return this.group;
+            return this.GROUP;
         }
 
         public static RippleGroup getRandomGroup() {
@@ -275,20 +275,20 @@ public class LoadGroupEnums {
     }
 
     public enum RippleShedTime {
-        CONTINUOUS_LATCH("0"),
-        SEVEN_MINUTES_30_SECONDS("450"),
-        FIFTEEN_MINUTES("900"),
-        THIRTY_MINUTES("1800"),
-        ONE_HOUR("3600");
+        Continuous_Latch("0"),
+        Seven_minutes_30_seconds("450"),
+        Fifteen_minutes("900"),
+        Thirty_minutes("1800"),
+        One_hour("3600");
 
-        private final String shedTime;
+        private final String SHED_TIME;
 
         RippleShedTime(String shedTime) {
-            this.shedTime = shedTime;
+            this.SHED_TIME = shedTime;
         }
 
         public String getShedTime() {
-            return this.shedTime;
+            return this.SHED_TIME;
         }
 
         public static RippleShedTime getRandomShedTime() {
