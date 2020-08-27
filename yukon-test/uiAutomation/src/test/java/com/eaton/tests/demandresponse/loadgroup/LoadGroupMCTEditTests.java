@@ -53,6 +53,7 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
 		  id = response.getInt("id");
 
 		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+		
 		editPage = new LoadGroupMCTEditPage(driverExt, id);
 		editPage.getName().setInputValue(name);
 		editPage.getCommunicationRoute().selectItemByText("a_CCU-721");
@@ -91,6 +92,7 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
 		  id = response.getInt("id");
 
 		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+		
 		editPage = new LoadGroupMCTEditPage(driverExt, id);
 		editPage.getName().setInputValue(name);
 		editPage.getCommunicationRoute().selectItemByText("a_RTC");
