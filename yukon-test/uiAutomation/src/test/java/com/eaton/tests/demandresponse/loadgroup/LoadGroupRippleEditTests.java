@@ -34,7 +34,6 @@ public class LoadGroupRippleEditTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         randomNum = getRandomNum();
-        editPage = new LoadGroupRippleEditPage(driverExt);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -54,6 +53,8 @@ public class LoadGroupRippleEditTests extends SeleniumTestSetup {
         id = response.getInt("id");
 
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+        editPage = new LoadGroupRippleEditPage(driverExt, id);
+        
         editPage.getName().setInputValue(editName);
         editPage.getCommunicationRoute().selectItemByText("a_RTC");
 
