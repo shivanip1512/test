@@ -888,7 +888,7 @@ public class DevEventLogCreationService {
                 RfnIdentifier rfnIdentifier = new RfnIdentifier(sensorSerialNumber, sensorManufacturer, sensorModel);
                 
                 rfnDeviceEventLogService.createdNewDeviceAutomatically(rfnIdentifier, templateName,  templateName);
-                rfnDeviceEventLogService.receivedDataForUnkownDeviceTemplate(templateName, sensorSerialNumber);
+                rfnDeviceEventLogService.receivedDataForUnkownDeviceTemplate(templateName);
                 rfnDeviceEventLogService.unableToCreateDeviceFromTemplate(templateName, sensorManufacturer, sensorModel, sensorSerialNumber);
                 rfnDeviceEventLogService.outageEventReceived(sensorSerialNumber, "RfnEvent", "Outage", new Instant(), null);
                 rfnDeviceEventLogService.outageEventReceived(sensorSerialNumber, "RfnEvent", "Restore", new Instant(), new Instant());
@@ -1186,8 +1186,10 @@ public class DevEventLogCreationService {
                 LocalDate startDate = LocalDate.now().minusDays(1);
                 String loadGroupIds = devEventLog.getIndicatorString() + "123, 456, 789";
 
-                ecobeeEventLogService.syncIssueFixed(yukonUser, EcobeeDiscrepancyType.EXTRANEOUS_DEVICE.toString(), devEventLog.getEventSource());
-                ecobeeEventLogService.allSyncIssuesFixed(yukonUser, devEventLog.getEventSource());
+                ecobeeEventLogService.reconciliationCompleted(0, "123453625", EcobeeDiscrepancyType.MISSING_DEVICE.toString(),
+                        yukonUser, 1);
+                ecobeeEventLogService.reconciliationStarted(1, yukonUser);
+                ecobeeEventLogService.reconciliationResults(10, 5, 4, 1);
                 ecobeeEventLogService.dataDownloaded(yukonUser, startDate, endDate, loadGroupIds, devEventLog.getEventSource());
             }
         });
@@ -1294,7 +1296,7 @@ public class DevEventLogCreationService {
         DEMAND_RESPONSE(DemandResponseEventLogService.class, 54),
         DEVICE_CONFIG(DeviceConfigEventLogService.class, 21),
         DISCONNECT(DisconnectEventLogService.class, 10),
-        ECOBEE(EcobeeEventLogService.class, 3),
+        ECOBEE(EcobeeEventLogService.class, 4),
         ENDPOINT(EndpointEventLogService.class, 11),
         GATEWAY(GatewayEventLogService.class, 9),
         HARDWARE(HardwareEventLogService.class, 23),
