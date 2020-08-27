@@ -76,7 +76,6 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
 		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 		String name = "AT Edited MCT Ldgrp " + timeStamp;
 		final String EXPECTED_MSG = name + " saved successfully.";
-		
 		  Pair<JSONObject, JSONObject> pair = new
 		  LoadGroupMCTCreateBuilder.Builder(Optional.empty())
 		  .withCommunicationRoute(routeId) 
