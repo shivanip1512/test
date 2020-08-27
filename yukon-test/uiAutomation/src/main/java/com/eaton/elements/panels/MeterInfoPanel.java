@@ -24,11 +24,15 @@ public class MeterInfoPanel extends BasePanel {
         
         this.driverExt = driverExt;
         this.panel = initPanel();
-        
-        this.pointsTable = new WebTable(driverExt, "name-value-table", panel);
-        this.labelEntries = pointsTable.getDataRowsTextByCellIndex(LABEL_INDEX);
-        
-        this.valueEntries = pointsTable.getDataRowsTextByCellIndex(VALUE_INDEX);
+        if(panel == null) {
+        	pointsTable = null;
+        	labelEntries = null;
+        	valueEntries = null;
+        } else {
+	        this.pointsTable = new WebTable(driverExt, "name-value-table", panel);
+	        this.labelEntries = pointsTable.getDataRowsTextByCellIndex(LABEL_INDEX);
+	        this.valueEntries = pointsTable.getDataRowsTextByCellIndex(VALUE_INDEX);
+        }
     }
     
     //================================================================================
