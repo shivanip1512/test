@@ -119,19 +119,7 @@ public class BaseModal {
         }
 
         return names;
-    }
-    
-    /**This function is to get all the field labels on a modal.  It will return the labels in a string list
-     * @return Field Values as List<String> 
-     */
-    public List<String> getFieldValues() {
-        List<WebElement> valueElements = getModal().findElements(By.cssSelector("table tr .value"));
-        List<String> values = new ArrayList<>();
-        for (WebElement element : valueElements) {
-            values.add(element.getText());
-        }
-        return values;
-    }
+    }    
     
     /**This function should be used for values that are read only.  It will take the field Label and will return the corresponding value.
      * @param fieldLabel  : provide label for which you want to fetch corresponding value like 'Name' 
