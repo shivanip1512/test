@@ -3,6 +3,7 @@ package com.cannontech.services.rfn.endpoint;
 import java.util.UUID;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -124,7 +125,7 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
                             oldStatus);
                     return;
                 }
-                Instant timeoutThreshold = oldStatus.getLastUpdate().plus(3600000); // One hour after last reported status
+                Instant timeoutThreshold = oldStatus.getLastUpdate().plus(Duration.standardHours(1));
                 if (oldStatus.getStatus() == ProgrammingStatus.UPLOADING  &&
                         request.getSource() == MeterProgramStatusArchiveRequest.Source.SM_STATUS_ARCHIVE &&
                         newStatus.getReportedGuid().equals(oldStatus.getReportedGuid()) &&
