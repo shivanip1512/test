@@ -26,7 +26,7 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
-    
+
     public enum RelayUsageEmetcon {
         RELAY_A("RELAY_A"),
         RELAY_B("RELAY_B"),
@@ -49,7 +49,7 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
-    
+
     public enum RelayUsageExpresscom {
         LOAD_1("LOAD_1"),
         LOAD_2("LOAD_2"),
@@ -97,10 +97,10 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
-    
-        public enum RouteId {
+
+    public enum RouteId {
         ACCU710A(28),
-        ACCU711(32),                        
+        ACCU711(32),
         ACCU721(36),
         ALCUEASTRIVER(40),
         APAGINGTAPTERMINAL(43),
@@ -132,7 +132,7 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
-    
+
     public enum AddressUsageEmetcon {
         GOLD("GOLD"),
         SILVER("SILVER");
@@ -152,7 +152,7 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
-    
+
     public enum AddressUsageExpresscom {
         GEO("GEO"),
         SUBSTATION("SUBSTATION"),
@@ -292,6 +292,37 @@ public class LoadGroupEnums {
         }
 
         public static RippleShedTime getRandomShedTime() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
+    }
+
+    public enum DigiSepDeviceClassEnum {
+
+        HVAC_COMPRESSOR_FURNACE("HVAC_COMPRESSOR_FURNACE"),
+        BASEBOARD_HEAT("BASEBOARD_HEAT"),
+        WATER_HEATER("WATER_HEATER"),
+        POOL_PUMP("POOL_PUMP"),
+        SMART_APPLIANCE("SMART_APPLIANCE"),
+        IRRIGATION_PUMP("IRRIGATION_PUMP"),
+        MANAGED_COMMERCIAL_INDUSTRIAL("IRRIGATION_PUMP"),
+        SIMPLE_RESIDENTIAL_ON_OFF("SIMPLE_RESIDENTIAL_ON_OFF"),
+        EXTERIOR_LIGHTING("EXTERIOR_LIGHTING"),
+        INTERIOR_LIGHTING("INTERIOR_LIGHTING"),
+        ELECTRIC_VEHICLE("ELECTRIC_VEHICLE"),
+        GENERATION_SYSTEMS("GENERATION_SYSTEMS");
+
+        private final String deviceClassSet;
+
+        DigiSepDeviceClassEnum(String deviceClassSet) {
+            this.deviceClassSet = deviceClassSet;
+        }
+
+        public String getDeviceClassSet() {
+            return this.deviceClassSet;
+        }
+
+        public static DigiSepDeviceClassEnum getRandomDeviceClassSet() {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
