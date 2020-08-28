@@ -56,12 +56,11 @@ test{
 	}
 }
 
-regression{
+task regression(type: Test) {
 	useTestNG(){
-		useDefaultListeners = true
-		//outputDirectory = file("c:/selenium_results/" + getDate())
-		suites 'AllTests.xml'
-	}
+			useDefaultListeners = true
+			suites 'AllTests.xml'
+		}	
 }
 
 def getDate() {
