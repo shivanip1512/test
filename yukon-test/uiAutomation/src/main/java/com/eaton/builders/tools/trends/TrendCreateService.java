@@ -9,7 +9,7 @@ import io.restassured.response.ExtractableResponse;
 
 public class TrendCreateService {
 
-    public static Pair<JSONObject, ExtractableResponse<?>> BuildAndCreateTrendAllFields() {
+    public static Pair<JSONObject, ExtractableResponse<?>> buildAndCreateTrendAllFields() {
         return new TrendCreateBuilder.Builder(Optional.empty())
                 .withPoints(new JSONObject[] { new TrendPointBuilder.Builder()
                         .withpointId(4999)
@@ -30,14 +30,16 @@ public class TrendCreateService {
                 .create();
     }
 
-    public static Pair<JSONObject, ExtractableResponse<?>> BuildAndCreateTrendWithPoint() {
+    public static Pair<JSONObject, ExtractableResponse<?>> buildAndCreateTrendWithPoint(Optional<TrendTypes.Type> pointType) {
+        Optional<TrendTypes.Type> type = pointType;
+        
         return new TrendCreateBuilder.Builder(Optional.empty())
                 .withPoints(new JSONObject[] { new TrendPointBuilder.Builder()
                         .withpointId(4999)
                         .withLabel(Optional.empty())
                         .withColor(Optional.empty())
                         .withStyle(Optional.empty())
-                        .withType(Optional.empty())
+                        .withType(type)
                         .withAxis(Optional.empty())
                         .withMultiplier(Optional.empty())
                         .withDate(Optional.empty())
@@ -45,7 +47,7 @@ public class TrendCreateService {
                 .create();
     }
 
-    public static Pair<JSONObject, ExtractableResponse<?>> BuildAndCreateTrendWithMarker() {
+    public static Pair<JSONObject, ExtractableResponse<?>> buildAndCreateTrendWithMarker() {
         return new TrendCreateBuilder.Builder(Optional.empty())
                 .withMarkers(new JSONObject[] { new TrendMarkerBuilder.Builder()
                         .withAxis(Optional.empty())
@@ -56,7 +58,7 @@ public class TrendCreateService {
                 .create();
     }
 
-    public static Pair<JSONObject, ExtractableResponse<?>> BuildAndCreateTrendRequiredFields() {
+    public static Pair<JSONObject, ExtractableResponse<?>> buildAndCreateTrendOnlyRequiredFields() {
         return new TrendCreateBuilder.Builder(Optional.empty())
                 .create();
     }

@@ -11,9 +11,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.eaton.builders.tools.trends.TrendCreateBuilder;
 import com.eaton.builders.tools.trends.TrendCreateService;
-import com.eaton.builders.tools.trends.TrendMarkerBuilder;
 import com.eaton.elements.WebTableRow;
 import com.eaton.elements.WebTableRow.Icon;
 import com.eaton.elements.modals.SelectPointModal;
@@ -38,7 +36,7 @@ public class TrendEditTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         
-        Pair<JSONObject, ExtractableResponse<?>> pair = TrendCreateService.BuildAndCreateTrendAllFields();
+        Pair<JSONObject, ExtractableResponse<?>> pair = TrendCreateService.buildAndCreateTrendAllFields();
         
         ExtractableResponse<?> response = pair.getValue1();
         
@@ -68,7 +66,7 @@ public class TrendEditTests extends SeleniumTestSetup {
     public void editTrend_AllFields_Success() {
         String editTrendName = "EditTrendTest " + timeStamp;
         
-        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.BuildAndCreateTrendAllFields();
+        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.buildAndCreateTrendAllFields();
         
         ExtractableResponse<?> response = responses.getValue1();
         Integer editTrendId = response.path("trendId");
@@ -92,7 +90,7 @@ public class TrendEditTests extends SeleniumTestSetup {
     public void editTrend_Name_AlreadyExistsValidation() {
         timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         
-        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.BuildAndCreateTrendRequiredFields();
+        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.buildAndCreateTrendOnlyRequiredFields();
         
         ExtractableResponse<?> response = responses.getValue1();
         Integer newTrendId = response.path("trendId");
@@ -107,7 +105,7 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_RemovePoint_Success() {        
-        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.BuildAndCreateTrendWithPoint();
+        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.buildAndCreateTrendWithPoint(Optional.empty());
         
         ExtractableResponse<?> response = responses.getValue1();
         Integer newTrendId = response.path("trendId");
@@ -124,7 +122,7 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_RemoveMarker_Success() {
-        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.BuildAndCreateTrendWithMarker();
+        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.buildAndCreateTrendWithMarker();
         
         ExtractableResponse<?> response = responses.getValue1();
         Integer newTrendId = response.path("trendId");
@@ -142,7 +140,7 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_AddPoint_Success() {
-        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.BuildAndCreateTrendRequiredFields();
+        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.buildAndCreateTrendOnlyRequiredFields();
         
         ExtractableResponse<?> response = responses.getValue1();
         Integer newTrendId = response.path("trendId");
@@ -162,7 +160,7 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_AddMarker_Success() {
-        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.BuildAndCreateTrendRequiredFields();
+        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.buildAndCreateTrendOnlyRequiredFields();
         
         ExtractableResponse<?> response = responses.getValue1();
         Integer newTrendId = response.path("trendId");
@@ -183,7 +181,7 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_EditPoint_Success() {
-        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.BuildAndCreateTrendWithPoint();
+        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.buildAndCreateTrendWithPoint(Optional.empty());
         
         ExtractableResponse<?> response = responses.getValue1();
         Integer newTrendId = response.path("trendId");
@@ -206,14 +204,7 @@ public class TrendEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_EditMarker_Success() {
         String markerLabel = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        Pair<JSONObject, ExtractableResponse<?>> responses = new TrendCreateBuilder.Builder(Optional.empty())
-                .withMarkers(new JSONObject[] {new TrendMarkerBuilder.Builder()
-                        .withAxis(Optional.empty())
-                        .withColor(Optional.empty())
-                        .withLabel(Optional.of(markerLabel))
-                        .withMultiplier(Optional.empty())
-                        .build()})
-                .create();
+        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.buildAndCreateTrendWithMarker();
         
         ExtractableResponse<?> response = responses.getValue1();
         Integer newTrendId = response.path("trendId");
