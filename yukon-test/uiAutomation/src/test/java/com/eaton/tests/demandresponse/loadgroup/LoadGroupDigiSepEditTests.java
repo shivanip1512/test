@@ -34,7 +34,7 @@ public class LoadGroupDigiSepEditTests extends SeleniumTestSetup {
         id = response.getInt("id");
         name = response.getString("name");
         timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        editPage = new LoadGroupDigiSepEditPage(driverExt);
+        editPage = new LoadGroupDigiSepEditPage(driverExt,id);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
