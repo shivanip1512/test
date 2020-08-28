@@ -290,7 +290,7 @@ $(document).ready(function(){
                         data-url="${smartNotificationsUrl}" 
                         data-load-event="yukon:notifications:load"
                         data-width="600"
-                        data-help-text="<i:inline key='yukon.web.modules.smartNotifications.popup.helpText'/>"></div>
+                        data-help-text="${helpText}"></div>
 
             </cti:msgScope>
         </cti:checkRolesAndProperties>

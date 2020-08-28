@@ -145,6 +145,7 @@ yukon.ui = (function () {
                 message: dialog.data("helpText"),
                 messageClass: 'info'
             });
+            /* Reposition the dialog to the center of the screen after the help text is displayed. */
             dialog.dialog({
                 position:{
                     my: 'center',
