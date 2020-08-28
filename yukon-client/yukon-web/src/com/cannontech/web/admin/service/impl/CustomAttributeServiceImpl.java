@@ -62,7 +62,7 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
         }
 
         // Gather information for logging
-        Assignment originalAssignment = attributeDao.getAssignmentById(assignment.getAttributeId());
+        Assignment originalAssignment = attributeDao.getAssignmentById(assignment.getAttributeAssignmentId());
         String originalAttributeName = attributeService.getCustomAttribute(originalAssignment.getAttributeId()).getName();
 
         AttributeAssignment updatedAssignment = customAttributeDao.updateAttributeAssignment(assignment);

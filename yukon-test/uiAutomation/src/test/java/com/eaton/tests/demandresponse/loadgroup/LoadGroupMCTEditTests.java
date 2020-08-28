@@ -47,7 +47,7 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
 		  .withKwCapacity(Optional.empty())
 		  .withMctDeviceId(259) 
 		  .withlevel(LoadGroupEnums.AddressLevelMCT.MCT_ADDRESS)
-		  .withRelayUsage(Arrays.asList(LoadGroupEnums.RelayUsageMCT.RELAY_2))
+		  .withRelayUsage(Arrays.asList(LoadGroupEnums.RelayUsage.RELAY_2))
 		  .create(); 
 		  JSONObject response = pair.getValue1(); 
 		  id = response.getInt("id");
@@ -85,7 +85,7 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
 		  .withKwCapacity(Optional.empty())
 		  .withAddress(34567)
 		  .withlevel(LoadGroupEnums.AddressLevelMCT.LEAD)
-		  .withRelayUsage(Arrays.asList(LoadGroupEnums.RelayUsageMCT.RELAY_2,LoadGroupEnums.RelayUsageMCT.RELAY_1 ))
+		  .withRelayUsage(Arrays.asList(LoadGroupEnums.RelayUsage.RELAY_2,LoadGroupEnums.RelayUsage.RELAY_1 ))
 		  .create(); 
 		  
 		  JSONObject response = pair.getValue1(); 
