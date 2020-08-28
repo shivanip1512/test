@@ -27,11 +27,9 @@ import com.eaton.pages.tools.trends.TrendCreatePage;
 import com.eaton.pages.tools.trends.TrendsListPage;
 import com.github.javafaker.Faker;
 
-import io.restassured.response.ExtractableResponse;
-
 public class TrendCreateTests extends SeleniumTestSetup {
 
-    private Faker faker = new Faker();
+    private Faker faker;
 
     private TrendCreatePage createPage;
     private DriverExtensions driverExt;
@@ -39,6 +37,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        faker = SeleniumTestSetup.getFaker();
 
         navigate(Urls.Tools.TREND_CREATE);
         createPage = new TrendCreatePage(driverExt, Urls.Tools.TREND_CREATE);
@@ -164,10 +163,8 @@ public class TrendCreateTests extends SeleniumTestSetup {
 
         createPage.getTabElement().clickTabAndWait(tab);
 
-        List<String> expectedLabels = new ArrayList<>(
-                List.of("Device", "Point Name", "Label", "Color", "Axis", "Type", "Multiplier", "Style"));
+        List<String> expectedLabels = new ArrayList<>(List.of("Device", "Point Name", "Label", "Color", "Axis", "Type", "Multiplier", "Style", ""));
         List<String> actualLabels = createPage.getPointSetupTable().getListTableHeaders();
-        actualLabels.remove("");
 
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
@@ -213,11 +210,11 @@ public class TrendCreateTests extends SeleniumTestSetup {
 
         final String EXPECTED_MSG = "Name already exists";
 
-        Pair<JSONObject, ExtractableResponse<?>> pair = TrendCreateService.buildAndCreateTrendOnlyRequiredFields();
+        Pair<JSONObject, JSONObject> pair = TrendCreateService.buildAndCreateTrendOnlyRequiredFields();
 
-        ExtractableResponse<?> response = pair.getValue1();
+        JSONObject response = pair.getValue1();
 
-        trendName = response.path("name").toString();
+        trendName = response.getString("name");
 
         navigate(Urls.Tools.TREND_CREATE);
 

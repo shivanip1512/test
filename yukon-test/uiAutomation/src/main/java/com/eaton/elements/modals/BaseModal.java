@@ -47,9 +47,7 @@ public class BaseModal {
 
             List<WebElement> elements = this.driverExt.findElements(By.cssSelector(".ui-dialog"), Optional.of(5));
 
-            found = elements.stream()
-                    .filter(element -> element.findElement(By.cssSelector(".ui-dialog-title")).getText().equals(this.modalTitle))
-                    .findFirst();
+            found = elements.stream().filter(element -> element.findElement(By.cssSelector(".ui-dialog-title")).getText().equals(this.modalTitle)).findFirst();
         }
 
         return found.get();

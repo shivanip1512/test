@@ -72,7 +72,7 @@ public class TrendPointBuilder {
         }
 
         public Builder withDate(Optional<String> date) {
-            if (this.type == TrendTypes.Type.DATE_TYPE.getType()) {
+            if (this.type.equals(TrendTypes.Type.DATE_TYPE.getType())) {
                 this.date = date.orElse(new SimpleDateFormat("MM/dd/yyyy").format(System.currentTimeMillis()));
             }
 

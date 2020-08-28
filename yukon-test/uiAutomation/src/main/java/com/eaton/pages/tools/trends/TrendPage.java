@@ -106,7 +106,7 @@ public class TrendPage extends PageBase {
         
         SeleniumTestSetup.waitUntilModalVisibleByTitle(modalTitle);
         
-        return new TrendPointModal(this.driverExt, Optional.of(modalTitle),Optional.empty());
+        return new TrendPointModal(this.driverExt, Optional.of(modalTitle), Optional.empty());
     }
     
     public TrendMarkerModal showAndWaitEditMarkerModal(String modalTitle, int index) {                

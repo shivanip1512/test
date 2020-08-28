@@ -26,8 +26,6 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.tools.trends.TrendsDetailPage;
 
-import io.restassured.response.ExtractableResponse;
-
 public class ResetPeakTest extends SeleniumTestSetup {
 
     private TrendsDetailPage detailsPage;
@@ -39,12 +37,12 @@ public class ResetPeakTest extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         
-        Pair<JSONObject, ExtractableResponse<?>> pair = TrendCreateService.buildAndCreateTrendWithPoint(Optional.of(TrendTypes.Type.PEAK_TYPE));
+        Pair<JSONObject, JSONObject> pair = TrendCreateService.buildAndCreateTrendWithPoint(Optional.empty(), Optional.of(TrendTypes.Type.PEAK_TYPE));
 
-        ExtractableResponse<?> response = pair.getValue1();
+        JSONObject response = pair.getValue1();
 
-        trendId = response.path("trendId");
-        trendName = response.path("name").toString();
+        trendId = response.getInt("trendId");
+        trendName = response.getString("name");
 
         navigate(Urls.Tools.TREND_DETAILS + trendId);
         detailsPage = new TrendsDetailPage(driverExt, trendId);
@@ -66,7 +64,7 @@ public class ResetPeakTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
-    public void trendResetPeak_Default_FieldValuesCorrect() {
+    public void trendResetPeak_DefaultFieldValues_Correct() {
         SoftAssertions softly = new SoftAssertions();
 
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
@@ -80,11 +78,11 @@ public class ResetPeakTest extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void trendResetPeak_NoPoint_ResetPeakDisabled() {
-        Pair<JSONObject, ExtractableResponse<?>> pair = TrendCreateService.buildAndCreateTrendOnlyRequiredFields();
+        Pair<JSONObject, JSONObject> pair = TrendCreateService.buildAndCreateTrendOnlyRequiredFields();
 
-        ExtractableResponse<?> response = pair.getValue1();
+        JSONObject response = pair.getValue1();
 
-        Integer trendIdTypeNotPeak = response.path("trendId");
+        Integer trendIdTypeNotPeak = response.getInt("trendId");
 
         navigate(Urls.Tools.TREND_DETAILS + trendIdTypeNotPeak);
 
@@ -94,13 +92,13 @@ public class ResetPeakTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
-    public void trendResetPeak_ResetPeak_ForAllTrendsSuccess() {
+    public void trendResetPeak_ResetPeakForAllTrendsYes_Success() {
         SoftAssertions softly = new SoftAssertions();
-        Pair<JSONObject, ExtractableResponse<?>> pair = TrendCreateService.buildAndCreateTrendWithPoint(Optional.of(TrendTypes.Type.PEAK_TYPE));
+        Pair<JSONObject, JSONObject> pair = TrendCreateService.buildAndCreateTrendWithPoint(Optional.empty(), Optional.of(TrendTypes.Type.PEAK_TYPE));
 
-        ExtractableResponse<?> response = pair.getValue1();
+        JSONObject response = pair.getValue1();
 
-        Integer id = response.path("trendId");
+        Integer id = response.getInt("trendId");
 
         navigate(Urls.Tools.TREND_DETAILS + id);
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
@@ -115,7 +113,7 @@ public class ResetPeakTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
-    public void trendResetPeak_ResetPeak_NotAllTrends_Success() {
+    public void trendResetPeak_ResetPeakForAllTrendsNo_Success() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
         resetPeakModal.getResetPeakForAllTrends().setByValue("false", true);

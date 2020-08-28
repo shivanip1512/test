@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Optional;
 
 import org.javatuples.Pair;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -22,7 +23,6 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.tools.trends.TrendEditPage;
-import io.restassured.response.ExtractableResponse;
 
 public class TrendEditTests extends SeleniumTestSetup {
 
@@ -36,12 +36,12 @@ public class TrendEditTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         
-        Pair<JSONObject, ExtractableResponse<?>> pair = TrendCreateService.buildAndCreateTrendAllFields();
+        Pair<JSONObject, JSONObject> pair = TrendCreateService.buildAndCreateTrendAllFields();
         
-        ExtractableResponse<?> response = pair.getValue1();
+        JSONObject response = pair.getValue1();
         
-        trendId = response.path("trendId");
-        trendName = response.path("name").toString();
+        trendId = response.getInt("trendId");
+        trendName = response.getString("name");
         timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 
         navigate(Urls.Tools.TREND_EDIT + trendId + Urls.EDIT);
@@ -54,7 +54,7 @@ public class TrendEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void editTrend_PageTitleCorrect() {
+    public void editTrend_PageTitle_Correct() {
         final String EXPECTED_TITLE = "Edit Trend: " + trendName;
         String actualPageTitle;
 
@@ -66,10 +66,10 @@ public class TrendEditTests extends SeleniumTestSetup {
     public void editTrend_AllFields_Success() {
         String editTrendName = "EditTrendTest " + timeStamp;
         
-        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.buildAndCreateTrendAllFields();
+        Pair<JSONObject, JSONObject> responses = TrendCreateService.buildAndCreateTrendAllFields();
         
-        ExtractableResponse<?> response = responses.getValue1();
-        Integer editTrendId = response.path("trendId");
+        JSONObject response = responses.getValue1();
+        Integer editTrendId = response.getInt("trendId");
 
         navigate(Urls.Tools.TREND_EDIT + editTrendId + Urls.EDIT);
         
@@ -83,17 +83,16 @@ public class TrendEditTests extends SeleniumTestSetup {
     public void editTrend_Name_RequiredValidation() {
         editPage.getName().setInputValue("");
         editPage.getSave().click();
+        
         assertThat(editPage.getName().getValidationError()).isEqualTo("Name is required.");
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_Name_AlreadyExistsValidation() {
-        timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        Pair<JSONObject, JSONObject> responses = TrendCreateService.buildAndCreateTrendOnlyRequiredFields();
         
-        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.buildAndCreateTrendOnlyRequiredFields();
-        
-        ExtractableResponse<?> response = responses.getValue1();
-        Integer newTrendId = response.path("trendId");
+        JSONObject response = responses.getValue1();
+        Integer newTrendId = response.getInt("trendId");
         
         navigate(Urls.Tools.TREND_EDIT + newTrendId + Urls.EDIT);
         
@@ -105,11 +104,11 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_RemovePoint_Success() {        
-        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.buildAndCreateTrendWithPoint(Optional.empty());
+        Pair<JSONObject, JSONObject> responses = TrendCreateService.buildAndCreateTrendWithPoint(Optional.empty(), Optional.empty());
         
-        ExtractableResponse<?> response = responses.getValue1();
-        Integer newTrendId = response.path("trendId");
-        String newTrendName = response.path("name");
+        JSONObject response = responses.getValue1();
+        Integer newTrendId = response.getInt("trendId");
+        String newTrendName = response.getString("name");
         
         navigate(Urls.Tools.TREND_EDIT + newTrendId + Urls.EDIT);
         editPage.getSetupTab().click();
@@ -122,11 +121,11 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_RemoveMarker_Success() {
-        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.buildAndCreateTrendWithMarker();
+        Pair<JSONObject, JSONObject> responses = TrendCreateService.buildAndCreateTrendWithMarker();
         
-        ExtractableResponse<?> response = responses.getValue1();
-        Integer newTrendId = response.path("trendId");
-        String newTrendName = response.path("name");
+        JSONObject response = responses.getValue1();
+        Integer newTrendId = response.getInt("trendId");
+        String newTrendName = response.getString("name");
         
         navigate(Urls.Tools.TREND_EDIT + newTrendId + Urls.EDIT);
         
@@ -140,11 +139,11 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_AddPoint_Success() {
-        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.buildAndCreateTrendOnlyRequiredFields();
+        Pair<JSONObject, JSONObject> responses = TrendCreateService.buildAndCreateTrendOnlyRequiredFields();
         
-        ExtractableResponse<?> response = responses.getValue1();
-        Integer newTrendId = response.path("trendId");
-        String newTrendName = response.path("name");
+        JSONObject response = responses.getValue1();
+        Integer newTrendId = response.getInt("trendId");
+        String newTrendName = response.getString("name");
         
         navigate(Urls.Tools.TREND_EDIT + newTrendId + Urls.EDIT);
         
@@ -160,11 +159,11 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_AddMarker_Success() {
-        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.buildAndCreateTrendOnlyRequiredFields();
+        Pair<JSONObject, JSONObject> responses = TrendCreateService.buildAndCreateTrendOnlyRequiredFields();
         
-        ExtractableResponse<?> response = responses.getValue1();
-        Integer newTrendId = response.path("trendId");
-        String newTrendName = response.path("name");
+        JSONObject response = responses.getValue1();
+        Integer newTrendId = response.getInt("trendId");
+        String newTrendName = response.getString("name");
         
         navigate(Urls.Tools.TREND_EDIT + newTrendId + Urls.EDIT);
         
@@ -181,19 +180,17 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_EditPoint_Success() {
-        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.buildAndCreateTrendWithPoint(Optional.empty());
+        Pair<JSONObject, JSONObject> responses = TrendCreateService.buildAndCreateTrendWithPoint(Optional.empty(), Optional.empty());
         
-        ExtractableResponse<?> response = responses.getValue1();
-        Integer newTrendId = response.path("trendId");
-        String newTrendName = response.path("name");
+        JSONObject response = responses.getValue1();
+        Integer newTrendId = response.getInt("trendId");
+        String newTrendName = response.getString("name");
+        String pointName = "Analog Point for Create Trend";
         
         navigate(Urls.Tools.TREND_EDIT + newTrendId + Urls.EDIT);
 
-        editPage.getSetupTab().click();
-        WebTableRow row = editPage.getPointSetupTable().getDataRowByIndex(0);
-        row.clickIcon(Icon.PENCIL);
-
-        TrendPointModal modal = new TrendPointModal(this.driverExt, Optional.of("Edit Month History"), Optional.empty());
+        TrendPointModal modal = editPage.showAndWaitEditPointModal("Edit " + pointName, 0);
+        
         modal.getLabel().setInputValue("Edit Point Label");
         modal.clickOkAndWait();
 
@@ -203,12 +200,16 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_EditMarker_Success() {
-        String markerLabel = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        Pair<JSONObject, ExtractableResponse<?>> responses = TrendCreateService.buildAndCreateTrendWithMarker();
+        Pair<JSONObject, JSONObject> pair = TrendCreateService.buildAndCreateTrendWithMarker();
         
-        ExtractableResponse<?> response = responses.getValue1();
-        Integer newTrendId = response.path("trendId");
-        String newTrendName = response.path("name");
+        JSONObject response = pair.getValue1();
+        
+        Integer newTrendId = response.getInt("trendId");
+        String newTrendName = response.getString("name");
+        
+        JSONArray trendSeries = response.getJSONArray("trendSeries");
+        JSONObject marker = (JSONObject)trendSeries.get(0);
+        String markerLabel = marker.get("label").toString();
         
         navigate(Urls.Tools.TREND_EDIT + newTrendId + Urls.EDIT);
 
@@ -216,7 +217,7 @@ public class TrendEditTests extends SeleniumTestSetup {
         TrendMarkerModal markerModal = editPage.showAndWaitEditMarkerModal("Edit " + markerLabel, 0);        
 
         markerModal.getLabel().setInputValue("Edit Marker Label");
-        markerModal.clickOkAndWait();
+        markerModal.clickOkAndWaitForModalToClose();;
 
         editPage.getSave().click();
         assertThat(editPage.getUserMessage()).isEqualTo(newTrendName + " saved successfully.");

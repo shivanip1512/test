@@ -68,11 +68,14 @@ public class TrendCreateBuilder {
             return j;
         }
 
-        public Pair<JSONObject, ExtractableResponse<?>> create() {
+        public Pair<JSONObject, JSONObject> create() {
             JSONObject request = build();
             ExtractableResponse<?> createResponse = TrendRequest.createTrend(request.toString());
 
-            return new Pair<>(request, createResponse);
+            String res = createResponse.asString();
+            JSONObject response = new JSONObject(res);
+
+            return new Pair<>(request, response);
         }
     }
 }

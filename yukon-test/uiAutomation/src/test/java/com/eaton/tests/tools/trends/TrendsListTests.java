@@ -16,7 +16,6 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.tools.trends.TrendsListPage;
-import io.restassured.response.ExtractableResponse;
 
 public class TrendsListTests extends SeleniumTestSetup {
 
@@ -29,12 +28,12 @@ public class TrendsListTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
 
-        Pair<JSONObject, ExtractableResponse<?>> pair = TrendCreateService.buildAndCreateTrendAllFields();
+        Pair<JSONObject, JSONObject> pair = TrendCreateService.buildAndCreateTrendAllFields();
 
-        ExtractableResponse<?> response = pair.getValue1();
+        JSONObject response = pair.getValue1();
 
-        trendId = response.path("trendId");
-        trendName = response.path("name").toString();
+        trendId = response.getInt("trendId");
+        trendName = response.getString("name");
 
         navigate(Urls.Tools.TRENDS_LIST);
         listPage = new TrendsListPage(driverExt);
@@ -93,11 +92,11 @@ public class TrendsListTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TOOLS, TestConstants.Tools.TRENDS })
     public void trendsList_DeleteTrend_Success() {
-        Pair<JSONObject, ExtractableResponse<?>> pair = TrendCreateService.buildAndCreateTrendAllFields();
+        Pair<JSONObject, JSONObject> pair = TrendCreateService.buildAndCreateTrendAllFields();
 
-        ExtractableResponse<?> response = pair.getValue1();
-        Integer deleteTrendId = response.path("trendId");
-        String deleteTrendName = response.path("name").toString();
+        JSONObject response = pair.getValue1();
+        Integer deleteTrendId = response.getInt("trendId");
+        String deleteTrendName = response.getString("name");
 
         String expectedMessage = deleteTrendName + " deleted successfully.";
 
@@ -113,11 +112,11 @@ public class TrendsListTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void trendsList_ResetPeak_OpensCorrectModal() {
-        Pair<JSONObject, ExtractableResponse<?>> pair = TrendCreateService.buildAndCreateTrendWithPoint(Optional.of(TrendTypes.Type.PEAK_TYPE));
+        Pair<JSONObject, JSONObject> pair = TrendCreateService.buildAndCreateTrendWithPoint(Optional.empty(), Optional.of(TrendTypes.Type.PEAK_TYPE));
 
-        ExtractableResponse<?> response = pair.getValue1();
+        JSONObject response = pair.getValue1();
 
-        Integer resettrendId = response.path("trendId");
+        Integer resettrendId = response.getInt("trendId");
 
         navigate(Urls.Tools.TREND_DETAILS + resettrendId);
 
