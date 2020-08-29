@@ -361,6 +361,9 @@ const string RfnStrings::ChannelConfiguration::ReportingIntervalMinutes = "repor
 const string RfnStrings::WaterNodeConfiguration::ReportingIntervalSeconds = "reportingIntervalSeconds";
 const string RfnStrings::WaterNodeConfiguration::RecordingIntervalSeconds = "recordingIntervalSeconds";
 
+// Metrology Library configuration
+const string RfnStrings::MetrologyLibraryEnabled = "metrologyLibraryEnabled";
+
 // Regulators
 const string RegulatorStrings::voltageControlMode  = "voltageControlMode";
 const string RegulatorStrings::voltageChangePerTap = "voltageChangePerTap";

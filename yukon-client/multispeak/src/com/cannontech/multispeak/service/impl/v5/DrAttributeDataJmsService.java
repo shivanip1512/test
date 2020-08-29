@@ -23,6 +23,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dynamic.RichPointData;
@@ -74,8 +75,8 @@ public class DrAttributeDataJmsService implements RichPointDataListener {
 
     @Override
     public void pointDataReceived(RichPointData richPointData) {
-        
-        if (supportedPaoTypes.contains(richPointData.getPaoPointIdentifier().getPaoIdentifier().getPaoType())) {
+
+        if (supportedPaoTypes.contains(richPointData.getPaoPointIdentifier().getPaoIdentifier().getPaoType()) && richPointData.getPointValue().getPointQuality() != PointQuality.Uninitialized) {
             Set<BuiltInAttribute> supportedAttributes = attributeService.findAttributesForPoint(
                    richPointData.getPaoPointIdentifier().getPaoTypePointIdentifier(),
                    attributes);

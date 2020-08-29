@@ -46,3 +46,6 @@ include::VirtualDevice.adoc[]
 == Custom Attribute
 include::CustomAttribute.adoc[]
 
+== Attribute Assignment
+include::AttributeAssignment.adoc[]
+

@@ -18,7 +18,6 @@
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.HARDWARE_VERSION">Hardware Version</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.IN_NETWORK_TIMESTAMP">Joined Network At</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.NEIGHBOR_COUNT">Neighbor Count</entry>
-<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.NODE_ADDRESS">Node Address</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.NODE_FIRMWARE_VERSION">Node Firmware Version</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.NODE_NAMES">Node Names</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.NODE_SERIAL_NUMBER">Node Serial Number</entry>
