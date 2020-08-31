@@ -6,9 +6,9 @@ import com.eaton.elements.RadioButtonElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 
-public class TrendAddMarkerModal extends BaseModal {
+public class TrendMarkerModal extends BaseModal {
     
-    public TrendAddMarkerModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
+    public TrendMarkerModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
         super(driverExt, modalTitle, describedBy);
         
         if(modalTitle.isPresent()) {

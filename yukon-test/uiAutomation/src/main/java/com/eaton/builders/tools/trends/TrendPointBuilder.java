@@ -1,4 +1,4 @@
-package com.eaton.builders.tools.webtrends;
+package com.eaton.builders.tools.trends;
 
 import java.text.SimpleDateFormat;
 import java.util.Optional;
@@ -21,8 +21,8 @@ public class TrendPointBuilder {
         private String label;
         private Double multiplier;
 
-        public Builder withType(Optional<TrendTypes.PointType> type) {
-            TrendTypes.PointType trendType = type.orElse(TrendTypes.PointType.getRandomType());
+        public Builder withType(Optional<TrendTypes.Type> type) {
+            TrendTypes.Type trendType = type.orElse(TrendTypes.Type.getRandomType());
 
             this.type = trendType.getType();
             
@@ -41,16 +41,16 @@ public class TrendPointBuilder {
             return this;
         }
 
-        public Builder withColor(Optional<TrendTypes.PointColor> color) {
-            TrendTypes.PointColor randomColor = color.orElse(TrendTypes.PointColor.getRandomColor());
+        public Builder withColor(Optional<TrendTypes.Color> color) {
+            TrendTypes.Color randomColor = color.orElse(TrendTypes.Color.getRandomColor());
 
             this.color = randomColor.getColor();  
             
             return this;
         }
 
-        public Builder withAxis(Optional<TrendTypes.PointAxis> axis) {
-            TrendTypes.PointAxis randomAxis = axis.orElse(TrendTypes.PointAxis.getRandomAxis());
+        public Builder withAxis(Optional<TrendTypes.Axis> axis) {
+            TrendTypes.Axis randomAxis = axis.orElse(TrendTypes.Axis.getRandomAxis());
 
             this.axis = randomAxis.getAxis();
 
@@ -63,8 +63,8 @@ public class TrendPointBuilder {
             return this;
         }
 
-        public Builder withStyle(Optional<TrendTypes.PointStyle> style) {
-            TrendTypes.PointStyle randomStyle = style.orElse(TrendTypes.PointStyle.getRandomStyle());
+        public Builder withStyle(Optional<TrendTypes.Style> style) {
+            TrendTypes.Style randomStyle = style.orElse(TrendTypes.Style.getRandomStyle());
 
             this.style = randomStyle.getStyle();
 
@@ -72,7 +72,7 @@ public class TrendPointBuilder {
         }
 
         public Builder withDate(Optional<String> date) {
-            if (this.type == TrendTypes.PointType.DATE_TYPE.getType()) {
+            if (this.type.equals(TrendTypes.Type.DATE_TYPE.getType())) {
                 this.date = date.orElse(new SimpleDateFormat("MM/dd/yyyy").format(System.currentTimeMillis()));
             }
 

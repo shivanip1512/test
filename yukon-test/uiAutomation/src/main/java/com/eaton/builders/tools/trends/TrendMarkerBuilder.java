@@ -1,4 +1,4 @@
-package com.eaton.builders.tools.webtrends;
+package com.eaton.builders.tools.trends;
 
 import java.util.Optional;
 
@@ -25,16 +25,16 @@ public class TrendMarkerBuilder {
             return this;
         }
 
-        public Builder withColor(Optional<TrendTypes.PointColor> color) {
-            TrendTypes.PointColor randomColor = color.orElse(TrendTypes.PointColor.getRandomColor());
+        public Builder withColor(Optional<TrendTypes.Color> color) {
+            TrendTypes.Color randomColor = color.orElse(TrendTypes.Color.getRandomColor());
 
             this.color = randomColor.getColor();
 
             return this;
         }
 
-        public Builder withAxis(Optional<TrendTypes.PointAxis> axis) {
-            TrendTypes.PointAxis randomAxis = axis.orElse(TrendTypes.PointAxis.getRandomAxis());
+        public Builder withAxis(Optional<TrendTypes.Axis> axis) {
+            TrendTypes.Axis randomAxis = axis.orElse(TrendTypes.Axis.getRandomAxis());
 
             this.axis = randomAxis.getAxis();
 

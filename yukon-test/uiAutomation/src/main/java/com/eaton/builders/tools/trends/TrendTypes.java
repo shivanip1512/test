@@ -1,10 +1,10 @@
-package com.eaton.builders.tools.webtrends;
+package com.eaton.builders.tools.trends;
 
 import java.util.Random;
 
 public class TrendTypes {
 
-    public enum PointType {
+    public enum Type {
         BASIC_TYPE("BASIC_TYPE"),
         USAGE_TYPE("USAGE_TYPE"),
         PEAK_TYPE("PEAK_TYPE"),
@@ -13,7 +13,7 @@ public class TrendTypes {
 
         private final String type;
 
-        PointType(String type) {
+        Type(String type) {
             this.type = type;
         }
 
@@ -21,13 +21,13 @@ public class TrendTypes {
             return this.type;
         }
 
-        public static PointType getRandomType() {
+        public static Type getRandomType() {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
     }
     
-    public enum PointColor {
+    public enum Color {
         BLACK("BLACK"),
         BLUE("BLUE"),
         TEAL("TEAL"),
@@ -41,7 +41,7 @@ public class TrendTypes {
 
         private final String color;
 
-        PointColor(String color) {
+        Color(String color) {
             this.color = color;
         }
 
@@ -49,19 +49,19 @@ public class TrendTypes {
             return this.color;
         }
 
-        public static PointColor getRandomColor() {
+        public static Color getRandomColor() {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
     }
 
-    enum PointAxis {
+    public enum Axis {
         LEFT("LEFT"),
         RIGHT("RIGHT");
 
         private final String axis;
 
-        PointAxis(String axis) {
+        Axis(String axis) {
             this.axis = axis;
         }
 
@@ -69,20 +69,20 @@ public class TrendTypes {
             return this.axis;
         }
         
-        public static PointAxis getRandomAxis() {
+        public static Axis getRandomAxis() {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
     }
 
-    enum PointStyle {
+    public enum Style {
         LINE("LINE"),
         STEP("STEP"),
         BAR("BAR");
 
         private final String style;
 
-        PointStyle(String style) {
+        Style(String style) {
             this.style = style;
         }
 
@@ -90,7 +90,7 @@ public class TrendTypes {
             return this.style;
         }
         
-        public static PointStyle getRandomStyle() {
+        public static Style getRandomStyle() {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }

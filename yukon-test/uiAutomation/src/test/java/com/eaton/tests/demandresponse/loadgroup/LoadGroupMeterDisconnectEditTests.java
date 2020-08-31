@@ -16,79 +16,75 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.LoadGroupDetailPage;
-import com.eaton.pages.demandresponse.LoadGroupMeterDisconnectEditPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupMeterDisconnectEditPage;
 
 public class LoadGroupMeterDisconnectEditTests extends SeleniumTestSetup {
-	private DriverExtensions driverExt;
-	private Integer id;
-	private String name;
-	private LoadGroupMeterDisconnectEditPage editPage;
-	
-	@BeforeClass(alwaysRun = true)
-	public void beforeClass() {
-		driverExt = getDriverExt();
-		Pair<JSONObject, JSONObject> pair = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
-												.create();
-												
-		JSONObject response = pair.getValue1();
-		id = response.getInt("id");
-		name = response.getString("name");
-		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-		editPage = new LoadGroupMeterDisconnectEditPage(driverExt, id);
-	}
-	
-	@AfterMethod
-	public void afterMethod() {
-		refreshPage(editPage);
-	}
-	
-	@Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpMeterDisconnectEdit_PageTitle_Correct() {
-		final String EXPECTED_TITLE = "Edit Load Group: " + name;
+    private DriverExtensions driverExt;
+    private Integer id;
+    private String name;
+    private LoadGroupMeterDisconnectEditPage editPage;
 
-		String actualPageTitle = editPage.getPageTitle();
+    @BeforeClass(alwaysRun = true)
+    public void beforeClass() {
+        driverExt = getDriverExt();
+        Pair<JSONObject, JSONObject> pair = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
+                .create();
 
-		assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
-	}
-	
-	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpMeterDisconnectEdit_AllFields_Success() {
-		String u = UUID.randomUUID().toString();            
+        JSONObject response = pair.getValue1();
+        id = response.getInt("id");
+        name = response.getString("name");
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+        editPage = new LoadGroupMeterDisconnectEditPage(driverExt, id);
+    }
+
+    @AfterMethod
+    public void afterMethod() {
+        refreshPage(editPage);
+    }
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpMeterDisconnectEdit_PageTitle_Correct() {
+        final String EXPECTED_TITLE = "Edit Load Group: " + name;
+
+        String actualPageTitle = editPage.getPageTitle();
+
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
+    }
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpMeterDisconnectEdit_AllFields_Success() {
+        String u = UUID.randomUUID().toString();
         String uuid = u.replace("-", "");
-		String name = "AT LG Edit " + uuid;
-		Double kwCapacity;
-		
-		final String EXPECTED_MSG = name + " saved successfully.";
-		
-		Pair<JSONObject, JSONObject> pair = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
-												.create();
-		
-		JSONObject response = pair.getValue1();
-		id = response.getInt("id");
-		
-		kwCapacity = response.getDouble("kWCapacity");
-		kwCapacity = kwCapacity + 1.0;
-		
-		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+        String name = "AT LG Edit " + uuid;
+        Double kwCapacity;
 
-		editPage.getName().setInputValue(name);
-		
-		editPage.getkWCapacity().setInputValue(kwCapacity.toString());
-		
-		editPage.getDisableGroup().setValue(true);
-		
-		editPage.getDisableControl().setValue(true);
+        final String EXPECTED_MSG = name + " saved successfully.";
 
-		editPage.getSaveBtn().click();
+        Pair<JSONObject, JSONObject> pair = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
+                .create();
 
-		waitForPageToLoad("Load Group: " + name, Optional.empty());
+        JSONObject response = pair.getValue1();
+        id = response.getInt("id");
 
-		LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
+        kwCapacity = response.getDouble("kWCapacity");
+        kwCapacity = kwCapacity + 1.0;
 
-		String userMsg = detailsPage.getUserMessage();
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
 
-		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-	}
-	
+        editPage.getName().setInputValue(name);
+        editPage.getkWCapacity().setInputValue(kwCapacity.toString());
+        editPage.getDisableGroup().selectValue("true");
+        editPage.getDisableControl().selectValue("true");
+        editPage.getSaveBtn().click();
+
+        waitForPageToLoad("Load Group: " + name, Optional.empty());
+
+        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
+
+        String userMsg = detailsPage.getUserMessage();
+
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+    }
+
 }

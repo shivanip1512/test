@@ -1,5 +1,4 @@
 package com.eaton.elements.modals;
-
 import java.util.Optional;
 
 import com.eaton.elements.DropDownElement;
@@ -9,9 +8,9 @@ import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 
-public class TrendAddPointModal extends BaseModal {   
-
-    public TrendAddPointModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
+public class TrendPointModal extends BaseModal {
+    
+    public TrendPointModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
         super(driverExt, modalTitle, describedBy);
         
         if (modalTitle.isPresent()) {
@@ -32,7 +31,7 @@ public class TrendAddPointModal extends BaseModal {
     }
     
     public DropDownElement getStyle() {
-        return new DropDownElement(this.driverExt, "name", getModal());
+        return new DropDownElement(this.driverExt, "style", getModal());
     }
     
     public DropDownElement getType() {
@@ -47,11 +46,15 @@ public class TrendAddPointModal extends BaseModal {
         return new TextEditElement(this.driverExt, "multiplier", getModal());
     }
     
-    public SelectPointModal showAndWaitAddPointModal() {
+    public TextEditElement getDevice() {
+        return new TextEditElement(this.driverExt, "multiplier", getModal());
+    }
+    
+    public SelectPointModal showAndWaitSelectPointModal() {
         getPoint().clickLink();
         
-        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-add-point-dialog");
+        SeleniumTestSetup.waitUntilModalOpenByTitle("Select Point");
         
-        return new SelectPointModal(this.driverExt, Optional.empty(), Optional.of("js-add-point-dialog"));
+        return new SelectPointModal(this.driverExt, Optional.of("Select Point"), Optional.empty());
     }
 }

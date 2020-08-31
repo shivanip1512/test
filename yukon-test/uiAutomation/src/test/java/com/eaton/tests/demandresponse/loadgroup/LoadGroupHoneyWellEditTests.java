@@ -16,10 +16,10 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.LoadGroupEditPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupEditPage;
 
-public class LoadGroupHoneyWellEditTests extends SeleniumTestSetup{
-    
+public class LoadGroupHoneyWellEditTests extends SeleniumTestSetup {
+
     private DriverExtensions driverExt;
     private Integer id;
     private String name;
@@ -37,21 +37,21 @@ public class LoadGroupHoneyWellEditTests extends SeleniumTestSetup{
         name = response.getString("name");
         timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-		editPage = new LoadGroupEditPage(driverExt, id);
+        editPage = new LoadGroupEditPage(driverExt, id);
     }
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
         refreshPage(editPage);
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpHoneywellEdit_PageTitle_Correct() {
         final String EXPECTED_TITLE = "Edit Load Group: " + name;
         String actualPageTitle;
 
         actualPageTitle = editPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
@@ -61,13 +61,13 @@ public class LoadGroupHoneyWellEditTests extends SeleniumTestSetup{
 
         editPage.getName().setInputValue(name);
         editPage.getkWCapacity().setInputValue("215");
-        editPage.getDisableControl().setValue(true);
-        editPage.getDisableGroup().setValue(true);
+        editPage.getDisableControl().selectValue("true");
+        editPage.getDisableGroup().selectValue("true");
 
         editPage.getSaveBtn().click();
-        
+
         waitForPageToLoad("Load Group: " + name, Optional.empty());
-        
+
         assertThat(editPage.getUserMessage()).isEqualTo(name + " saved successfully.");
     }
 

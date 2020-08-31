@@ -13,6 +13,7 @@ import com.eaton.framework.Urls;
 
 public class LoadGroupMCTCreatePage extends LoadGroupCreatePage {
     
+    private DropDownElement communicationRoute;
     private PickerElement mctAddress;
     private TextEditElement address;
     private SwitchBtnMultiSelectElement relayUsage;
@@ -24,10 +25,15 @@ public class LoadGroupMCTCreatePage extends LoadGroupCreatePage {
         requiresLogin = true;
         pageUrl = Urls.DemandResponse.LOAD_GROUP_CREATE;
                 
+        communicationRoute = new DropDownElement(this.driverExt, "routeId");
         addressLevel = new DropDownElement(this.driverExt, "level");
         mctAddress = new PickerElement(this.driverExt, Optional.empty(), Optional.of("mctMeterPicker"));
         address = new TextEditElement(this.driverExt, "address");        
         relayUsage = new SwitchBtnMultiSelectElement(this.driverExt, "button-group");        
+    }
+    
+    public DropDownElement getCommunicationRoute() {
+        return communicationRoute;
     }
 
     public PickerElement getMctAddress() {

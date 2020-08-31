@@ -18,8 +18,8 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.LoadGroupDetailPage;
-import com.eaton.pages.demandresponse.LoadGroupRippleEditPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupRippleEditPage;
 
 public class LoadGroupRippleEditTests extends SeleniumTestSetup {
 
@@ -56,16 +56,19 @@ public class LoadGroupRippleEditTests extends SeleniumTestSetup {
         editPage = new LoadGroupRippleEditPage(driverExt, id);
         
         editPage.getName().setInputValue(editName);
-        editPage.getCommunicationRoute().selectItemByText("a_RTC");
+        //62 = a_RTC
+        editPage.getCommunicationRoute().selectItemByValue("62");
 
-        editPage.getShedTime().selectItemByText("30 minutes");
-        editPage.getGroup().selectItemByText("2.01");
-        editPage.getAreaCode().selectItemByText("Minnkota");
+        //1800 = 30 minutes
+        editPage.getShedTime().selectItemByValue("1800");
+        //TWO_01 = 2.01
+        editPage.getGroup().selectItemByValue("TWO_01");;
+        editPage.getAreaCode().selectItemByValue("MINNKOTA");
         editPage.getControlSwitchElement().setTrueFalseByBitNo(10, true);
         editPage.getRestoreSwitchElement().setTrueFalseByBitNo(18, true);
         editPage.getkWCapacity().setInputValue(String.valueOf(capacity));
-        editPage.getDisableGroup().setValue(true);
-        editPage.getDisableControl().setValue(false);
+        editPage.getDisableGroup().selectValue("true");
+        editPage.getDisableControl().selectValue("false");
 
         editPage.getSaveBtn().click();
 
