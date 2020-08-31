@@ -143,6 +143,47 @@ UPDATE GlobalSetting SET Name = 'ITRON_HCM_DATA_COLLECTION_MINUTES', Value = '15
 INSERT INTO DBUpdates VALUES ('YUK-22518', '7.4.2', GETDATE());
 /* @end YUK-22518 */
 
+
+/* @start YUK-22622 */
+DECLARE @StartGear AS NUMERIC,
+        @ProgramID AS NUMERIC,
+        @StartGearNumber AS NUMERIC;
+
+DECLARE startGearAndProgramIDCursor CURSOR STATIC FOR (
+    SELECT StartGear, ProgramID
+    FROM LMControlScenarioProgram 
+);
+
+BEGIN
+    OPEN startGearAndProgramIDCursor 
+    FETCH NEXT FROM startGearAndProgramIDCursor INTO @StartGear , @ProgramID
+    WHILE (@@FETCH_STATUS = 0)
+    BEGIN
+        IF (@StartGear > 5)
+        BEGIN
+            SET @StartGearNumber = (SELECT GearNumber FROM LMProgramDirectGear WHERE  GearID = @StartGear)
+            UPDATE LMControlScenarioProgram SET StartGear = @StartGearNumber WHERE StartGear = @StartGear AND ProgramID=@ProgramID
+        END
+        ELSE
+        BEGIN
+            DECLARE @GearCount AS NUMERIC;
+            SET @GearCount = (SELECT  Count(GearID) from LMProgramDirectGear where DeviceID=@ProgramID GROUP BY DeviceID)
+            IF (@StartGear > @GearCount)
+                BEGIN
+                    UPDATE LMControlScenarioProgram SET StartGear = 1 WHERE StartGear = @StartGear AND ProgramID=@ProgramID
+                END
+         END
+         FETCH NEXT FROM startGearAndProgramIDCursor INTO @StartGear , @ProgramID
+         END
+    CLOSE startGearAndProgramIDCursor;
+    DEALLOCATE startGearAndProgramIDCursor;
+END;
+
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-22622', '7.5.0', GETDATE());
+/* @end YUK-22622 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
