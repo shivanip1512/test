@@ -24,6 +24,7 @@ import org.testng.annotations.BeforeSuite;
 import com.eaton.framework.drivers.DriverFactory;
 import com.eaton.pages.LoginPage;
 import com.eaton.pages.PageBase;
+import com.github.javafaker.Faker;
 
 public class SeleniumTestSetup {
 
@@ -42,6 +43,8 @@ public class SeleniumTestSetup {
     private static boolean loggedIn = false;
 
     private static String screenShotPath;
+    
+    private static Faker faker;
 
     @BeforeSuite(alwaysRun = true)
     public static void beforeSuite() {
@@ -69,7 +72,8 @@ public class SeleniumTestSetup {
                     Boolean.parseBoolean(configFileReader.getRunHeadless()),
                     configFileReader.getProxy(),
                     configFileReader.getProxyFlag()));
-            setDriverExt();
+            setDriverExt(new DriverExtensions(SeleniumTestSetup.driver));
+            setFaker(new Faker());
             setScreenShotPath(configFileReader.getScreenShotPath());
         } catch (Exception ex) {
             logger.fine(EXCEPTION_MSG + ex);
@@ -122,10 +126,18 @@ public class SeleniumTestSetup {
         return driverExt;
     }
 
-    private static void setDriverExt() {
-        SeleniumTestSetup.driverExt = new DriverExtensions(SeleniumTestSetup.driver);
+    private static void setDriverExt(DriverExtensions driverExt) {
+        SeleniumTestSetup.driverExt = driverExt;
     }
 
+    public static Faker getFaker() {
+        return SeleniumTestSetup.faker;
+    }
+    
+    private static void setFaker(Faker faker) {
+        SeleniumTestSetup.faker = faker; 
+    }
+    
     private static void setScreenShotPath(String screenShotPath) {
         SeleniumTestSetup.screenShotPath = screenShotPath;
     }
