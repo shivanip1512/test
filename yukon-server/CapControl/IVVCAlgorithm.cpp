@@ -789,7 +789,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     // if it is in the mapping, update the min and max voltages as necessary, if it isn't, add the current
                     //  value as both the min and max
 
-                    if ( auto result = Cti::mapFind( state->feasibilityData, pointData.first ) )
+                    if ( auto result = Cti::mapFindRef( state->feasibilityData, pointData.first ) )
                     {
                         auto & min_max_pair = *result;
 
@@ -3730,7 +3730,7 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
                     const long                      pointID = point->getPointId();
                     const Cti::CapControl::Phase    phase   = point->getPhase();
 
-                    if ( boost::optional<PointValue> pv = Cti::mapFind( voltages, pointID ) )
+                    if ( auto pv = Cti::mapFindRef( voltages, pointID ) )
                     {
                         pv->value += realVoltageChange[ phase ];
                     }
@@ -3752,7 +3752,7 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
             const long                      pointID = entry.second;
             const Cti::CapControl::Phase    phase   = entry.first;
 
-            if ( boost::optional<PointValue> pv = Cti::mapFind( voltages, pointID ) )
+            if ( auto pv = Cti::mapFindRef( voltages, pointID ) )
             {
                 pv->value += realVoltageChange[ phase ];
             }
@@ -3770,7 +3770,7 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
 
             const long  pointID = regulator->getPointByAttribute( Attribute::Voltage ).getPointId();
 
-            if ( boost::optional<PointValue> pv = Cti::mapFind( voltages, pointID ) )
+            if ( auto pv = Cti::mapFindRef( voltages, pointID ) )
             {
                 pv->value += realVoltageChange[ phase ];
             }
