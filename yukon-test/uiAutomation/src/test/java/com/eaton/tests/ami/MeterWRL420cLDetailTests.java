@@ -311,8 +311,20 @@ public class MeterWRL420cLDetailTests extends SeleniumTestSetup {
     }
     
     @Test(enabled = true, groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void meterWRL420cLDetail_OutagesBlinkCount() {
+    public void meterWRL420cLDetail_OutagesRFNBlinkCount() {
     	final int ROW = 0;
+    	final String EXPECTED_LABEL = "RFN Blink Count";
+    	final String EXPECTED_VALUE = "5 Counts 08/26/2020 13:15:09";
+
+    	SoftAssertions softly = new SoftAssertions();
+    	softly.assertThat(meterDetailsPage.getOutagesPanel().getLabelEntries().get(ROW)).contains(EXPECTED_LABEL);
+    	softly.assertThat(meterDetailsPage.getOutagesPanel().getValueEntries().get(ROW)).contains(EXPECTED_VALUE);
+    	softly.assertAll();
+    }
+    
+    @Test(enabled = true, groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    public void meterWRL420cLDetail_OutagesBlinkCount() {
+    	final int ROW = 1;
     	final String EXPECTED_LABEL = "Blink Count";
     	final String EXPECTED_VALUE = "7 Counts 08/26/2020 13:15:13";
 
@@ -324,21 +336,9 @@ public class MeterWRL420cLDetailTests extends SeleniumTestSetup {
     
     @Test(enabled = true, groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
     public void meterWRL420cLDetail_OutagesRFNOutageCount() {
-    	final int ROW = 1;
+    	final int ROW = 2;
     	final String EXPECTED_LABEL = "RFN Outage Count";
     	final String EXPECTED_VALUE = "2 Counts 08/26/2020 13:15:13";
-
-    	SoftAssertions softly = new SoftAssertions();
-    	softly.assertThat(meterDetailsPage.getOutagesPanel().getLabelEntries().get(ROW)).contains(EXPECTED_LABEL);
-    	softly.assertThat(meterDetailsPage.getOutagesPanel().getValueEntries().get(ROW)).contains(EXPECTED_VALUE);
-    	softly.assertAll();
-    }
-    
-    @Test(enabled = true, groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void meterWRL420cLDetail_OutagesRFNBlinkCount() {
-    	final int ROW = 2;
-    	final String EXPECTED_LABEL = "RFN Blink Count";
-    	final String EXPECTED_VALUE = "5 Counts 08/26/2020 13:15:09";
 
     	SoftAssertions softly = new SoftAssertions();
     	softly.assertThat(meterDetailsPage.getOutagesPanel().getLabelEntries().get(ROW)).contains(EXPECTED_LABEL);

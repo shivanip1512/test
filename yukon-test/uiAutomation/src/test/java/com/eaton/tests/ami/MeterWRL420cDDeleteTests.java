@@ -27,7 +27,7 @@ public class MeterWRL420cDDeleteTests extends SeleniumTestSetup {
 
     @Test(enabled = true, groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
     public void meterWRL420cDDetail_deleteSuccess() {
-        final int DEVICEID = 1233;
+        final int DEVICEID = 1263;
     	final String EXPECTED_MSG = "Meter AT Delete " + MeterConstants.WRL420CD.getMeterType() + " deleted successfully.";
 
         navigate(Urls.Ami.METER_DETAIL + DEVICEID);
