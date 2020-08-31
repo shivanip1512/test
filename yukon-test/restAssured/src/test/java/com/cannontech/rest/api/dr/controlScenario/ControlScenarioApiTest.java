@@ -13,7 +13,7 @@ import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.common.model.MockLMDto;
+import com.cannontech.rest.api.common.model.MockLMGearDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.constraint.request.MockProgramConstraint;
 import com.cannontech.rest.api.controlArea.request.MockControlArea;
@@ -85,8 +85,8 @@ public class ControlScenarioApiTest {
                 "Stop Offset In Minutes Should be : " + controlScenario.getAllPrograms().get(0).getStopOffsetInMinutes());
         assertTrue(
                 controlScenario.getAllPrograms().get(0).getGears().get(0)
-                        .getId() == (controlScenarioGetResponse.getAllPrograms().get(0).getGears().get(0).getId()),
-                "Gear Id Should be : " + controlScenario.getAllPrograms().get(0).getGears().get(0).getId());
+                        .getGearNumber() == (controlScenarioGetResponse.getAllPrograms().get(0).getGears().get(0).getGearNumber()),
+                "Gear Number Should be : " + controlScenario.getAllPrograms().get(0).getGears().get(0).getGearNumber());
         Log.endTestCase("controlScenario_02_Get");
     }
 
@@ -155,7 +155,7 @@ public class ControlScenarioApiTest {
             }
         }
 
-        MockLMDto gear = MockLMDto.builder().id(gearNumber).build();
+        MockLMGearDto gear = MockLMGearDto.builder().gearNumber(gearNumber).build();
         controlScenario.getAllPrograms().get(0).getGears().set(0, gear);
 
         ExtractableResponse<?> updatedResponse = ApiCallHelper.post("updateControlScenario",
@@ -166,7 +166,7 @@ public class ControlScenarioApiTest {
                 context.getAttribute("controlScenarioId").toString());
 
         MockControlScenario updatedControlScenarioResponse = getupdatedResponse.as(MockControlScenario.class);
-        assertTrue(updatedControlScenarioResponse.getAllPrograms().get(0).getGears().get(0).getName().equals("TestGear2"),
+        assertTrue(updatedControlScenarioResponse.getAllPrograms().get(0).getGears().get(0).getGearName().equals("TestGear2"),
                 "Gear Name should get updated to : TestGear2");
     }
 
@@ -489,8 +489,8 @@ public class ControlScenarioApiTest {
 
         MockControlScenario controlScenario = (MockControlScenario) context.getAttribute("expectedControlScenario");
         MockProgramDetails programDetails = new MockProgramDetails();
-        MockLMDto gear = MockLMDto.builder().id(loadProgram.getGears().get(0).getGearNumber()).build();
-        List<MockLMDto> gears = new ArrayList<>();
+        MockLMGearDto gear = MockLMGearDto.builder().gearNumber(loadProgram.getGears().get(0).getGearNumber()).build();
+        List<MockLMGearDto> gears = new ArrayList<>();
         gears.add(gear);
         programDetails.setProgramId(loadProgram.getProgramId());
         programDetails.setStartOffsetInMinutes(600);
@@ -544,8 +544,8 @@ public class ControlScenarioApiTest {
     }
 
     public MockControlScenario buildControlScenario(String controlScenarioName) {
-        MockLMDto gear = MockLMDto.builder().id(loadProgram.getGears().get(0).getGearNumber()).build();
-        List<MockLMDto> gears = new ArrayList<>();
+    	MockLMGearDto gear = MockLMGearDto.builder().gearNumber(loadProgram.getGears().get(0).getGearNumber()).build();
+        List<MockLMGearDto> gears = new ArrayList<>();
         gears.add(gear);
 
         MockProgramDetails program = MockProgramDetails.builder()
@@ -569,8 +569,8 @@ public class ControlScenarioApiTest {
     
     public MockControlScenario buildControlScenarioWithTwoPrograms(MockLoadProgram loadProgram1,
             MockLoadProgram loadProgram2) {
-        MockLMDto gear = MockLMDto.builder().id(loadProgram.getGears().get(0).getGearNumber()).build();
-        List<MockLMDto> gears = new ArrayList<>();
+    	MockLMGearDto gear = MockLMGearDto.builder().gearNumber(loadProgram.getGears().get(0).getGearNumber()).build();
+        List<MockLMGearDto> gears = new ArrayList<>();
         gears.add(gear);
 
         List<MockLoadProgram> loadProgram = new ArrayList<>();
