@@ -749,7 +749,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                 newState.setCurrentState(IN_SYNC);
             }
         } else if (error == DeviceError.CONFIG_NOT_CURRENT) {
-            newState.setLastActionStatus(SUCCESS);
+            newState.setLastActionStatus(FAILURE);
             newState.setCurrentState(OUT_OF_SYNC);
         } else {
             newState.setLastActionStatus(FAILURE);
