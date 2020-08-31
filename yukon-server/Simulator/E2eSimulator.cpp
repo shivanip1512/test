@@ -563,7 +563,7 @@ auto E2eSimulator::handleConfigurationRequest(const ActiveMQConnectionManager::M
 
     auto request = MessageSerializer<Messaging::FieldSimulator::ModifyConfigurationRequestMsg>::deserialize(md.msg);
 
-    if( request )
+    if( ! request )
     {
         return nullptr;
     }
