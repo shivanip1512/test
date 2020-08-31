@@ -124,7 +124,8 @@ void CapControlPao::setDisableFlag(bool disableFlag, int priority)
     if ( _disableFlag != disableFlag )
     {
         _disableFlag = disableFlag;
-        
+        _disabledStateUpdatedTime = CtiTime();
+
         syncDisabledPoint( priority );
     }
 }
@@ -141,6 +142,8 @@ CapControlPao& CapControlPao::operator=(const CapControlPao& right)
         _paoDescription = right._paoDescription;
         _disableFlag = right._disableFlag;
         _disabledStatePointId = right._disabledStatePointId;
+        _disabledStateUpdatedTime = right._disabledStateUpdatedTime;
+
         _pointIds = right._pointIds;
         _operationStats = right._operationStats;
         _confirmationStats = right._confirmationStats;
@@ -376,6 +379,7 @@ void CapControlPao::handlePointData( const CtiPointDataMsg & message )
 {
     const long   pointID = message.getId();
     const double value   = message.getValue();
+    const CtiTime timestamp = message.getTime();
 
     handleSpecializedPointData( message );
 
@@ -384,13 +388,27 @@ void CapControlPao::handlePointData( const CtiPointDataMsg & message )
         CTILOG_DEBUG( dout, getPaoName() << " - Incoming point data for the disabled state point [PID: " << pointID
                         << ", O: " << Cti::CapControl::Offset_PaoIsDisabled << "]." );
 
-        const bool disabled = value;
+        // ignore point updates with an older time than the last time the disable state point was updated
 
-        if ( disabled != getDisableFlag() )
+        if ( timestamp > _disabledStateUpdatedTime )
         {
-            CtiCCExecutorFactory::createExecutor(
-                new ItemCommand( desolveDisabledStateCommand( getPaoType(), disabled ),
-                                 getPaoId() ) )->execute();
+            const bool disabled = value;
+
+            if ( disabled != getDisableFlag() )
+            {
+                CtiCCExecutorFactory::createExecutor(
+                    new ItemCommand( desolveDisabledStateCommand( getPaoType(), disabled ),
+                                     getPaoId() ) )->execute();
+            }
+            else
+            {
+                CTILOG_DEBUG( dout, getPaoName() << " - Ignoring disabled state point data. Already in requested state: "
+                                << ( disabled ? "Dis" : "En" ) << "abled." );
+            }
+        }
+        else
+        {
+            CTILOG_DEBUG( dout, getPaoName() << " - Ignoring disabled state point data. Timestamp is old: " << timestamp );
         }
     }
 }
