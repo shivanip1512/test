@@ -98,7 +98,6 @@ private:
 
     enum MiscNumeric
     {
-        CommRetryCount     =   3,
         ProtocolRetryCount =   3
     };
 
