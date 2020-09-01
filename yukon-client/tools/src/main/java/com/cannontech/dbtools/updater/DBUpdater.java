@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
@@ -344,7 +345,10 @@ public class DBUpdater extends MessageFrameAdaptor {
                 getIMessageFrame().addOutput("     (IGNORING ERROR) : " + ex.getMessage());
             }
 
-        } else {
+        } else if (line_.isWarning()) {
+            warnInvalidDirectories(line_, stat, cmd);
+        }
+        else {
             stat.execute(cmd);
             line_.setSuccess(true);
             getIMessageFrame().addOutput("   SUCCESS : " + cmd);
@@ -356,6 +360,38 @@ public class DBUpdater extends MessageFrameAdaptor {
             }
         } catch (Exception e) {} // ain't no thang
     
+    }
+
+    /**
+     * Method to display warning message for invalid Import / Export directories while upgrading DB.
+     */
+    private void warnInvalidDirectories(UpdateLine line, Statement stat, String cmd) throws SQLException {
+        String yukonBase = CtiUtilities.getYukonBase();
+        boolean showWarnMessage = false;
+        ResultSet resultSet = stat.executeQuery(cmd);
+        while (resultSet.next()) {
+            String value = resultSet.getString("value");
+            String[] directoryPaths = value.split(",");
+            for (String directoryPath : directoryPaths) {
+                if (!directoryPath.contains(yukonBase + File.separator)) {
+                    showWarnMessage = true;
+                    break;
+                }
+            }
+        }
+        line.setSuccess(true);
+        if (showWarnMessage) {
+            getIMessageFrame().addOutput("");
+            getIMessageFrame().addOutput(
+                    " ************************************************************************** ");
+            getIMessageFrame().addOutput("   Warning Message:");
+            getIMessageFrame().addOutput("   Yukon Required Local service Access for Import and Export directories. "
+                    + "Please provide the access manually and, press Start again to continue execution.");
+            getIMessageFrame().addOutput("");
+            getIMessageFrame().addOutput(
+                    " ************************************************************************** ");
+            throw new RuntimeException("Invalid Import/Export directories.");
+        }
     }
 
     private void processLine(UpdateLine line_, Connection conn) throws SQLException {

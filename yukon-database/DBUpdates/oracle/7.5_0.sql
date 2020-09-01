@@ -710,6 +710,12 @@ AND PaObjectId IN (
 
 INSERT INTO DBUpdates VALUES ('YUK-22749', '7.5.0', SYSDATE);
 /* @end YUK-22749 */
+
+/* @begin warning */
+SELECT Value FROM GlobalSetting WHERE Name 
+    IN ('SCHEDULE_PARAMETERS_EXPORT_PATH', 'SCHEDULE_PARAMETERS_IMPORT_PATH');
+/* @stop warning */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

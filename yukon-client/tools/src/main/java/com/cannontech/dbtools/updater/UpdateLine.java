@@ -218,4 +218,16 @@ public class UpdateLine
         getMetaProps().put( DBMSDefines.META_ERROR, DBMSDefines.OPTIONS_ERROR[5] );
     }
 
+    public Boolean isWarning() {
+        Object o = getMetaProps().get(DBMSDefines.BEGIN);
+        if (o != null)
+            return DBMSDefines.WARNING.equalsIgnoreCase(o.toString());
+        else
+            return false;
+    }
+
+    public void setWarning(boolean b) {
+        getMetaProps().put(DBMSDefines.BEGIN, Boolean.toString(b));
+    }
+
 }
