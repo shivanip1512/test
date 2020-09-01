@@ -24,7 +24,6 @@ import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.picker.Picker;
 import com.cannontech.web.picker.service.PickerFactory;
@@ -34,52 +33,52 @@ import com.google.common.collect.Lists;
 @RestController
 @RequestMapping("/picker")
 public class PickerApiController {
-    
+
     @Autowired private PickerFactory pickerFactory;
     @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private YukonUserContextResolver contextResolver;
-    @Autowired private PickerIdSearchApiValidator pickersearchIdValidator;
+    @Autowired private PickerIdSearchApiValidator pickerSearchIdValidator;
     @Autowired private PickerSearchApiValidator pickerSearchValidator;
 
     @GetMapping("/build/{type}")
     public ResponseEntity<Object> search(@PathVariable String type) {
 
         Picker<?> picker = pickerFactory.getPicker(type);
-        
+
         return new ResponseEntity<>(picker, HttpStatus.OK);
 
     }
-    
+
     @PostMapping("/idSearch")
-    public ResponseEntity<Object> idSearch(@Valid @RequestBody PickerIdSearchCriteria searchIdCriteria, HttpServletRequest request) {
-        
+    public ResponseEntity<Object> idSearch(@Valid @RequestBody PickerIdSearchCriteria searchIdCriteria,
+            HttpServletRequest request) {
+
         LiteYukonUser user = ApiRequestContext.getContext().getLiteYukonUser();
         YukonUserContext userContext = contextResolver.resolveContext(user, request);
 
         Picker<?> picker = pickerFactory.getPicker(searchIdCriteria.getType());
-        SearchResults<?> searchResult = picker.search(Lists.newArrayList(searchIdCriteria.getInitialIds()), 
+        SearchResults<?> searchResult = picker.search(Lists.newArrayList(searchIdCriteria.getInitialIds()),
                 searchIdCriteria.getExtraArgs(), userContext);
 
         searchResult = resolveDisplayables(searchResult, userContext);
-        
+
         return new ResponseEntity<>(searchResult, HttpStatus.OK);
 
     }
-    
+
     @PostMapping("/search")
     public ResponseEntity<Object> search(@Valid @RequestBody PickerSearchCriteria searchCriteria, HttpServletRequest request) {
-        
+
         LiteYukonUser user = ApiRequestContext.getContext().getLiteYukonUser();
         YukonUserContext userContext = contextResolver.resolveContext(user, request);
 
         Picker<?> picker = pickerFactory.getPicker(searchCriteria.getType());
-        SearchResults<?> searchResult = picker.search(searchCriteria.getQueryString(), searchCriteria.getStartCount(), searchCriteria.getCount(), 
-                                                      searchCriteria.getExtraArgs(), userContext);
+        SearchResults<?> searchResult = picker.search(searchCriteria.getQueryString(), searchCriteria.getStartCount(),
+                searchCriteria.getCount(), searchCriteria.getExtraArgs(), userContext);
 
         searchResult = resolveDisplayables(searchResult, userContext);
-        
-        return new ResponseEntity<>(searchResult, HttpStatus.OK);
 
+        return new ResponseEntity<>(searchResult, HttpStatus.OK);
     }
 
     /**
@@ -103,19 +102,19 @@ public class PickerApiController {
                 newHits.add(newHit);
             }
             searchResult = SearchResults.pageBasedForSublist(newHits, searchResult.getCurrentPage(),
-                searchResult.getCount(), searchResult.getHitCount());
+                    searchResult.getCount(), searchResult.getHitCount());
         }
-        
+
         return searchResult;
     }
-    
-    @InitBinder("searchCriteria")
+
+    @InitBinder("pickerSearchCriteria")
     public void setupPickerSearchBinder(WebDataBinder binder) {
         binder.addValidators(pickerSearchValidator);
     }
-    
-    @InitBinder("searchIdCriteria")
-    public void setupPickerIdSearchBinder(WebDataBinder binder) {
-        binder.addValidators(pickersearchIdValidator);
+
+    @InitBinder("pickerIdSearchCriteria")
+    public void setupPickerSearchIdBinder(WebDataBinder binder) {
+        binder.addValidators(pickerSearchIdValidator);
     }
 }
