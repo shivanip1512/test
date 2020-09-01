@@ -43,7 +43,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void LoadGroupRfnExpresscom_createAllFieldsSuccess() {
+    public void LoadGroupRfnExpresscomCreate_AllFields_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "RFN Expresscomm" + timeStamp;
         double randomDouble = randomNum.nextDouble();

@@ -55,7 +55,7 @@ public class LoadGroupCreatePage extends PageBase {
         WebElement section = getPageSection("Optional Attributes").getSection();
         
         return new SwitchBtnYesNoElement(this.driverExt, "disableControl", section);
-    }
+    }    
     
     public Button getSaveBtn() {
         return saveBtn;

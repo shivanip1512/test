@@ -52,18 +52,12 @@ public class LoadGroupItronCreateTests extends SeleniumTestSetup {
         createPage.getName().setInputValue(name);
         createPage.getType().selectItemByValue(TYPE);
 
-        waitForLoadingSpinner();
-
-        String disableGroup = "Yes";
-        if (jo.getJSONObject(TYPE).getBoolean("disableGroup")) {
-            disableGroup = "Yes";
-        } else { disableGroup = "No"; }
+        waitForLoadingSpinner();   
         
-        String disableControl = "Yes";
-        if (jo.getJSONObject(TYPE).getBoolean("disableControl")) {
-            disableGroup = "Yes";
-        } else { disableGroup = "No"; }
-            
+        String disableGroup = jo.getJSONObject(TYPE).getBoolean("disableGroup") ? "Yes" : "No";
+        
+        String disableControl = jo.getJSONObject(TYPE).getBoolean("disableControl") ? "Yes" : "No";
+        
         createPage.getRelay().selectItemByValue(String.valueOf(jo.getJSONObject(TYPE).getInt("virtualRelayId")));
         createPage.getkWCapacity().setInputValue(String.valueOf(jo.getJSONObject(TYPE).getDouble("kWCapacity")));
         createPage.getDisableGroup().selectValue(disableGroup);
@@ -101,14 +95,10 @@ public class LoadGroupItronCreateTests extends SeleniumTestSetup {
         String userMsg = detailsPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-
-        List<String> row = detailsPage.getTable().getDataRowsTextByCellIndex(2);
-
-        assertThat(row.get(0)).isEqualTo("1");
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateItron_RelayDropDownContainsExpectedValues() {
+    public void ldGrpCreateItron_RelayDropDown_ValuesCorrect() {
         List<String> expectedRelayValues = new ArrayList<>(List.of("1", "2", "3", "4", "5", "6", "7", "8"));
 
         createPage.getType().selectItemByValue(TYPE);

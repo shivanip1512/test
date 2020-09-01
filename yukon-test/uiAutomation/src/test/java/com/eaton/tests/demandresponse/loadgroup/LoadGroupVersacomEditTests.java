@@ -74,7 +74,7 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpVersacomEdit_WithSerialAddressToOtherAddressUsage_Successfully() {
+    public void ldGrpVersacomEdit_SerialAddressToSectionClass_Successfully() {
         builder = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup();
         Pair<JSONObject, JSONObject> pair = builder.withSerialAddressUsage(Optional.empty())
                 .withSerialAddress(Optional.of(567))
@@ -107,7 +107,7 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpVersacomEdit_WithoutSerialAddressToSerialAddressUsage_Successfully() {
+    public void ldGrpVersacomEdit_AddressUsageToSerial_Successfully() {
         builder = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup();
         Pair<JSONObject, JSONObject> pair = builder
                 .create();
@@ -120,7 +120,7 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
         editPage = new LoadGroupVersacomEditPage(driverExt, id);
 
         //73 = a_TCU-5000
-        editPage.getCommunicationRoute().selectItemByValue("70");
+        editPage.getCommunicationRoute().selectItemByValue("73");
 
         editPage.getAddressUsage().setTrueFalseByName("Serial", true);
 
@@ -136,7 +136,7 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpVersacomEdit_WithRelayUsageToWithoutRelayUsage_Successfully() {
+    public void ldGrpVersacomEdit_NoRelayUsage_Successfully() {
         builder = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup();
         Pair<JSONObject, JSONObject> pair = builder
                 .create();

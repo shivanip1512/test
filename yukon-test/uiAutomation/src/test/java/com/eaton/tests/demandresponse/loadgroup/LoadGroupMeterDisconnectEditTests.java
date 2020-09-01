@@ -74,8 +74,8 @@ public class LoadGroupMeterDisconnectEditTests extends SeleniumTestSetup {
 
         editPage.getName().setInputValue(name);
         editPage.getkWCapacity().setInputValue(kwCapacity.toString());
-        editPage.getDisableGroup().selectValue("true");
-        editPage.getDisableControl().selectValue("true");
+        editPage.getDisableGroup().selectValue("Yes");
+        editPage.getDisableControl().selectValue("Yes");
         editPage.getSaveBtn().click();
 
         waitForPageToLoad("Load Group: " + name, Optional.empty());

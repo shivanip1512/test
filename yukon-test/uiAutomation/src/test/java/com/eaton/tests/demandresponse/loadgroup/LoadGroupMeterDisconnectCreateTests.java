@@ -37,7 +37,7 @@ public class LoadGroupMeterDisconnectCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateMeterDisconnect_AllFieldsDisableFalseSuccessfully() {
+    public void ldGrpCreateMeterDisconnect_AllFieldsDisableFalse_Successfully() {
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Meter Disconnect " + timeStamp;
@@ -65,7 +65,7 @@ public class LoadGroupMeterDisconnectCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateMeterDisconnect_AllFieldsDisableTrueSuccessfully() {
+    public void ldGrpCreateMeterDisconnect_AllFieldsDisableTrue_Successfully() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Meter Disconnect " + timeStamp;
         double randomDouble = randomNum.nextDouble();

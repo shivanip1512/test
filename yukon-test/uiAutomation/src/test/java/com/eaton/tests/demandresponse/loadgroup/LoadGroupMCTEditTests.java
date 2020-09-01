@@ -62,8 +62,8 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
         editPage.getAddress().setInputValue("123");
         editPage.getRelayUsage().setTrueFalseByName("Relay 3", true);
         editPage.getkWCapacity().setInputValue("400");
-        editPage.getDisableGroup().selectValue("true");
-        editPage.getDisableControl().selectValue("true");
+        editPage.getDisableGroup().selectValue("Yes");
+        editPage.getDisableControl().selectValue("Yes");
         editPage.getSaveBtn().click();
 
         LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
@@ -103,8 +103,8 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
         
         editPage.getRelayUsage().setTrueFalseByName("Relay 2", false);
         editPage.getkWCapacity().setInputValue("870");
-        editPage.getDisableGroup().selectValue("false");
-        editPage.getDisableControl().selectValue("false");
+        editPage.getDisableGroup().selectValue("No");
+        editPage.getDisableControl().selectValue("No");
         editPage.getSaveBtn().click();
 
         LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);

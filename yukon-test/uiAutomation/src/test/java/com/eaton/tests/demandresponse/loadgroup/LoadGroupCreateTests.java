@@ -113,14 +113,14 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreate_GeneralSectionTitleCorrect() {
+    public void ldGrpCreate_GeneralSection_TitleCorrect() {
 
         Section general = createPage.getPageSection("General");
         assertThat(general.getSection()).isNotNull();
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreate_OptionalAttributeSectionTitleCorrect() {
+    public void ldGrpCreate_OptionalAttributeSection_TitleCorrect() {
 
         createPage.getType().selectItemByIndex(2);
         createPage.getkWCapacity().clearInputValue();
@@ -130,7 +130,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreate_TypeDropDownContainsAllExpectedValues() {
+    public void ldGrpCreate_TypeDropDown_ExpectedValuesCorrect() {
         List<String> expectedDropDownValues = new ArrayList<>(List.of("Select", "Digi SEP Group", "ecobee Group", "Emetcon Group", "Expresscom Group", "Honeywell Group",
                 "Itron Group", "MCT Group", "Meter Disconnect Group", "Point Group", "RFN Expresscom Group", "Ripple Group",
                 "Versacom Group"));
@@ -162,7 +162,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreateCommon_GeneralSectionLabelsCorrect() {
+    public void ldGrpCreateCommon_GeneralSection_LabelsCorrect() {
         String sectionName = "General";
         List<String> expectedLabels = new ArrayList<>(List.of("Name:", "Type:" ));
 
@@ -172,7 +172,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreateCommon_OptionalAttrSectionLabelsCorrect() {
+    public void ldGrpCreateCommon_OptionalAttrSection_LabelsCorrect() {
         String sectionName = "Optional Attributes";
         List<String> expectedLabels = new ArrayList<>(List.of("kW Capacity:", "Disable Group:", "Disable Control:"));
 

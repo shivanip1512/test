@@ -67,8 +67,8 @@ public class LoadGroupRippleEditTests extends SeleniumTestSetup {
         editPage.getControlSwitchElement().setTrueFalseByBitNo(10, true);
         editPage.getRestoreSwitchElement().setTrueFalseByBitNo(18, true);
         editPage.getkWCapacity().setInputValue(String.valueOf(capacity));
-        editPage.getDisableGroup().selectValue("true");
-        editPage.getDisableControl().selectValue("false");
+        editPage.getDisableGroup().selectValue("Yes");
+        editPage.getDisableControl().selectValue("No");
 
         editPage.getSaveBtn().click();
 

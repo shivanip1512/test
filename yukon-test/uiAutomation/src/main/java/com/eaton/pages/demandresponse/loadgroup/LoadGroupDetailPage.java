@@ -3,7 +3,6 @@ package com.eaton.pages.demandresponse.loadgroup;
 import java.util.Optional;
 
 import com.eaton.elements.ActionBtnDropDownElement;
-import com.eaton.elements.WebTable;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.CopyLoadGroupModal;
 import com.eaton.framework.DriverExtensions;
@@ -39,10 +38,6 @@ public class LoadGroupDetailPage extends PageBase {
     public CopyLoadGroupModal showCopyLoadGroupModal() {
         getActionBtn().clickAndSelectOptionByText("Copy");   
         
-        return new CopyLoadGroupModal(this.driverExt, Optional.of("Copy Load Group"), Optional.empty()); 
-    }
-    
-    public WebTable getTable() {
-        return new WebTable(this.driverExt, "noswitchtype");
-    }
+        return new CopyLoadGroupModal(this.driverExt, Optional.empty(), Optional.of("copy-loadGroup-popup")); 
+    }    
 }
