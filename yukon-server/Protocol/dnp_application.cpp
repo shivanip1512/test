@@ -523,7 +523,7 @@ YukonError_t ApplicationLayer::decode( TransportLayer &_transport )
         {
             _appState = SendResponse;
 
-            break;
+            [[fallthrough]];
         }
         case SendResponse:
         {
