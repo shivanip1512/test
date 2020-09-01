@@ -44,7 +44,7 @@ Clear-Host
 "YukonMessageBroker"
 
 <#
-    SetStatusToAuto function set all services status Type Automatic.
+    SetStatusToAuto function set all services Status Type Automatic.
 #>
 Function SetStatusToAuto{
     foreach($YukonService in $YukonServices)
@@ -57,7 +57,7 @@ Function SetStatusToAuto{
 }
 
 <#
-    SetStatusToManual function set all services status Type Manual.
+    SetStatusToManual function set all services Status Type Manual.
 #>
 Function SetStatusToManual{
     foreach($YukonService in $YukonServices)
@@ -73,7 +73,7 @@ If($Operation -eq 'auto')
 {
     Write-Host "All Services status set to be Automatic"
 
-    # Call SetStatusToAuto function to set status type Auto #
+    # Call SetStatusToAuto function to set Status Type Auto #
     SetStatusToAuto
 }
 
@@ -81,7 +81,7 @@ If($Operation -eq 'manual')
 {
     Write-Host "All Services status set to be Manual"
 
-    # Call SetStatusToManual function to set status type Manual #
+    # Call SetStatusToManual function to set Status Type Manual #
     SetStatusToManual
 }
 
