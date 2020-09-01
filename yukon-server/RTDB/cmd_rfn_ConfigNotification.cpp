@@ -387,10 +387,10 @@ std::string RfnConfigNotificationCommand::decodeDisconnect(Bytes payload)
         d.maxDisconnects  = payload[5];
 
         l.add("Reconnect method") << payload[1];
-        l.add("Demand interval")  << std::chrono::minutes(d.demandInterval);
-        l.add("Demand threshold") << d.demandThreshold << "kW";
-        l.add("Connect delay")    << std::chrono::minutes(d.connectDelay);
-        l.add("Max disconnects")  << d.maxDisconnects;
+        l.add("Demand interval")  << std::chrono::minutes(d.demandInterval.value());
+        l.add("Demand threshold") << d.demandThreshold.value() << "kW";
+        l.add("Connect delay")    << std::chrono::minutes(d.connectDelay.value());
+        l.add("Max disconnects")  << d.maxDisconnects.value();
 
         break;
     }

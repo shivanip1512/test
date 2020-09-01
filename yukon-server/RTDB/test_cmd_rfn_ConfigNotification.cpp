@@ -369,6 +369,141 @@ BOOST_AUTO_TEST_CASE(test_one_tlv)
     BOOST_CHECK_EQUAL(cmd.touEnabled.value(), Cti::Devices::Commands::RfnTouConfigurationCommand::TouEnable);
 }
 
+BOOST_AUTO_TEST_CASE(test_disconnect_modes)
+{
+    //  On demand
+    {
+        const std::vector<uint8_t> payload {
+            0x1e,
+            0x00, 0x01,
+            //  TLV 7
+            0x00, 0x07,  //  Disconnect
+            0x00, 0x02,
+            0x01, //  disconnect mode
+            0x77, //  reconnect mode
+            };
+
+        RfnConfigNotificationCommand cmd;
+
+        std::string exp = "Device Configuration Request:"
+            "\nDisconnect configuration:"
+            "\n    Disconnect mode  : on demand"
+            "\n    Reconnect method : 119";
+
+        const auto result = cmd.handleResponse(execute_time, payload);
+
+        BOOST_REQUIRE_EQUAL(result.size(), 1);
+
+        BOOST_CHECK_EQUAL(result[0].status, ClientErrors::None);
+        BOOST_CHECK(result[0].points.empty());
+        BOOST_CHECK_EQUAL(result[0].description, exp);
+
+        BOOST_REQUIRE(cmd.disconnect);
+        BOOST_CHECK_EQUAL(cmd.disconnect->connectDelay.is_initialized(), false);
+        BOOST_CHECK_EQUAL(cmd.disconnect->demandInterval.is_initialized(), false);
+        BOOST_CHECK_EQUAL(cmd.disconnect->demandThreshold.is_initialized(), false);
+        BOOST_CHECK_EQUAL(cmd.disconnect->disconnectMode, 1);
+        BOOST_CHECK_EQUAL(cmd.disconnect->maxDisconnects.is_initialized(), false);
+        BOOST_CHECK_EQUAL(cmd.disconnect->reconnect, 1);
+        BOOST_CHECK_EQUAL(cmd.disconnect->disconnectTime.is_initialized(), false);
+        BOOST_CHECK_EQUAL(cmd.disconnect->connectTime.is_initialized(), false);
+    }
+
+    //  Demand threshold
+    {
+        const std::vector<uint8_t> payload{
+            0x1e,
+            0x00, 0x01,
+            //  TLV 7
+            0x00, 0x07,  //  Disconnect
+            0x00, 0x06,
+            0x02, //  disconnect mode
+            0x00, //  reconnect mode
+            0x17, //  demand interval
+            0x97, //  demand threshold
+            0x05, //  connect delay
+            0x09, //  max disconnects
+        };
+
+        RfnConfigNotificationCommand cmd;
+
+        std::string exp = "Device Configuration Request:"
+            "\nDisconnect configuration:"
+            "\n    Disconnect mode  : demand threshold"
+            "\n    Reconnect method : 0"
+            "\n    Demand interval  : 23 minutes"
+            "\n    Demand threshold : 15.100000000000001kW"
+            "\n    Connect delay    : 5 minutes"
+            "\n    Max disconnects  : 9";
+
+        const auto result = cmd.handleResponse(execute_time, payload);
+
+        BOOST_REQUIRE_EQUAL(result.size(), 1);
+
+        BOOST_CHECK_EQUAL(result[0].status, ClientErrors::None);
+        BOOST_CHECK(result[0].points.empty());
+        BOOST_CHECK_EQUAL(result[0].description, exp);
+
+        BOOST_REQUIRE(cmd.disconnect);
+        BOOST_REQUIRE(cmd.disconnect->connectDelay);
+        BOOST_CHECK_EQUAL(cmd.disconnect->connectDelay.value(), 5);
+        BOOST_REQUIRE(cmd.disconnect->demandInterval);
+        BOOST_CHECK_EQUAL(cmd.disconnect->demandInterval.value(), 23);
+        BOOST_REQUIRE(cmd.disconnect->demandThreshold);
+        BOOST_CHECK_EQUAL(cmd.disconnect->demandThreshold.value(), 15.100000000000001);
+        BOOST_CHECK_EQUAL(cmd.disconnect->disconnectMode, 2);
+        BOOST_REQUIRE(cmd.disconnect->maxDisconnects);
+        BOOST_CHECK_EQUAL(cmd.disconnect->maxDisconnects.value(), 9);
+        BOOST_CHECK_EQUAL(cmd.disconnect->reconnect, 0);
+        BOOST_CHECK_EQUAL(cmd.disconnect->disconnectTime.is_initialized(), false);
+        BOOST_CHECK_EQUAL(cmd.disconnect->connectTime.is_initialized(), false);
+    }
+
+    //  Cycling
+    {
+        const std::vector<uint8_t> payload{
+            0x1e,
+            0x00, 0x01,
+            //  TLV 7
+            0x00, 0x07,  //  Disconnect
+            0x00, 0x06,
+            0x03, //  disconnect mode
+            0x13, //  reconnect mode
+            0x02, 0x77, //  disconnect time
+            0x01, 0x38, //  connect time
+        };
+
+        RfnConfigNotificationCommand cmd;
+
+        std::string exp = "Device Configuration Request:"
+            "\nDisconnect configuration:"
+            "\n    Disconnect mode  : cycling"
+            "\n    Reconnect method : 19"
+            "\n    Disconnect time  : 631 minutes"
+            "\n    Connect time     : 312 minutes";
+
+        const auto result = cmd.handleResponse(execute_time, payload);
+
+        BOOST_REQUIRE_EQUAL(result.size(), 1);
+
+        BOOST_CHECK_EQUAL(result[0].status, ClientErrors::None);
+        BOOST_CHECK(result[0].points.empty());
+        BOOST_CHECK_EQUAL(result[0].description, exp);
+    
+        BOOST_REQUIRE(cmd.disconnect);
+        BOOST_CHECK_EQUAL(cmd.disconnect->connectDelay.is_initialized(), false);
+        BOOST_CHECK_EQUAL(cmd.disconnect->demandInterval.is_initialized(), false);
+        BOOST_CHECK_EQUAL(cmd.disconnect->demandThreshold.is_initialized(), false);
+        BOOST_CHECK_EQUAL(cmd.disconnect->disconnectMode, 3);
+        BOOST_CHECK_EQUAL(cmd.disconnect->maxDisconnects.is_initialized(), false);
+        BOOST_CHECK_EQUAL(cmd.disconnect->reconnect, 1);
+        BOOST_REQUIRE(cmd.disconnect->disconnectTime);
+        BOOST_CHECK_EQUAL(cmd.disconnect->disconnectTime.value(),631);
+        BOOST_REQUIRE(cmd.disconnect->connectTime);
+        BOOST_CHECK_EQUAL(cmd.disconnect->connectTime.value(), 312);
+    }
+}
+
 BOOST_AUTO_TEST_CASE(test_channel_configuration)
 {
     const std::vector<uint8_t> payload{
@@ -640,12 +775,18 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
     BOOST_CHECK_EQUAL(cmd.demandFreezeDay.value(), 32);
 
     BOOST_REQUIRE(cmd.disconnect);
-    BOOST_CHECK_EQUAL(cmd.disconnect->connectDelay, 17);
-    BOOST_CHECK_EQUAL(cmd.disconnect->demandInterval, 24);
-    BOOST_CHECK_EQUAL(cmd.disconnect->demandThreshold, 3.1);
+    BOOST_REQUIRE(cmd.disconnect->connectDelay);
+    BOOST_CHECK_EQUAL(cmd.disconnect->connectDelay.value(), 17);
+    BOOST_REQUIRE(cmd.disconnect->demandInterval);
+    BOOST_CHECK_EQUAL(cmd.disconnect->demandInterval.value(), 24);
+    BOOST_REQUIRE(cmd.disconnect->demandThreshold);
+    BOOST_CHECK_EQUAL(cmd.disconnect->demandThreshold.value(), 3.1);
     BOOST_CHECK_EQUAL(cmd.disconnect->disconnectMode, 2);
-    BOOST_CHECK_EQUAL(cmd.disconnect->maxDisconnects, 7);
+    BOOST_REQUIRE(cmd.disconnect->maxDisconnects);
+    BOOST_CHECK_EQUAL(cmd.disconnect->maxDisconnects.value(), 7);
     BOOST_CHECK_EQUAL(cmd.disconnect->reconnect, 1);
+    BOOST_CHECK_EQUAL(cmd.disconnect->disconnectTime.is_initialized(), false);
+    BOOST_CHECK_EQUAL(cmd.disconnect->connectTime.is_initialized(), false);
 
     BOOST_REQUIRE(cmd.focusDisplay);
     BOOST_CHECK_EQUAL(cmd.focusDisplay->displayItemDuration, 6);
