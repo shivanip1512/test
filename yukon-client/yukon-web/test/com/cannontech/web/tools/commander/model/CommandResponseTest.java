@@ -13,25 +13,23 @@ import com.cannontech.message.porter.message.Return;
 
 public class CommandResponseTest {
     
-    private static final int RESPONSE_ID = 198;
-    private static final int DEVICE_ID = 99;
-    private static final int SUCCESS = DeviceError.SUCCESS.getCode();
-    private static final int FUNCTION_CODE_NOT_SUPPORTED = DeviceError.FUNCTION_CODE_NOT_SUPPORTED.getCode();
-    private static final Date TIMESTAMP = new Date(1597945886662L);
+    private static final int responseId = 198;
+    private static final int deviceId = 99;
+    private static final Date timestamp = new Date(1597945886662L);
     
     @Test
     public void test_normalReturnTextIsIncluded() {
         var rtn = new Return();
 
-        rtn.setDeviceID(DEVICE_ID);
-        rtn.setStatus(SUCCESS);
+        rtn.setDeviceID(deviceId);
+        rtn.setStatus(DeviceError.SUCCESS.getCode());
         rtn.setResultString(
                 "This string has multiple lines." 
                 + "\nSee?" 
                 + "\nHere's another.");
-        rtn.setTimeStamp(TIMESTAMP);
+        rtn.setTimeStamp(timestamp);
         
-        var cr = CommandResponse.of(RESPONSE_ID, rtn);
+        var cr = CommandResponse.of(responseId, rtn);
         
         assertEquals(List.of("This string has multiple lines.", "See?", "Here's another."), cr.getResults());
     }
@@ -40,15 +38,15 @@ public class CommandResponseTest {
     public void test_errorReturnTextIsExcluded() {
         var rtn = new Return();
 
-        rtn.setDeviceID(DEVICE_ID);
-        rtn.setStatus(FUNCTION_CODE_NOT_SUPPORTED);
+        rtn.setDeviceID(deviceId);
+        rtn.setStatus(DeviceError.FUNCTION_CODE_NOT_SUPPORTED.getCode());
         rtn.setResultString(
                 "This string has multiple lines." 
                 + "\nSee?" 
                 + "\nHere's another.");
-        rtn.setTimeStamp(TIMESTAMP);
+        rtn.setTimeStamp(timestamp);
         
-        var cr = CommandResponse.of(RESPONSE_ID, rtn);
+        var cr = CommandResponse.of(responseId, rtn);
         
         assertEquals(Collections.emptyList(), cr.getResults());
     }
