@@ -1,5 +1,7 @@
 #pragma once
 
+#include "amq_connection.h"
+
 namespace cms {
 class Session;
 class Message;
@@ -68,6 +70,11 @@ private:
     Bytes buildE2eRequestNotAcceptable(unsigned id, unsigned long token) const;
 
     void sendE2eDataIndication(const Messaging::Rfn::E2eDataRequestMsg &, const Bytes&);
+
+    auto handleStatusRequest(const Messaging::ActiveMQConnectionManager::MessageDescriptor& md)
+            -> std::unique_ptr<Messaging::ActiveMQConnectionManager::SerializedMessage>;
+    auto handleConfigurationRequest(const Messaging::ActiveMQConnectionManager::MessageDescriptor& md)
+            -> std::unique_ptr<Messaging::ActiveMQConnectionManager::SerializedMessage>;
 };
 
 }

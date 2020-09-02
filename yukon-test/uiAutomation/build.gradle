@@ -56,6 +56,13 @@ test{
 	}
 }
 
+task regression(type: Test) {
+	useTestNG(){
+			useDefaultListeners = true
+			suites 'AllTests.xml'
+		}	
+}
+
 def getDate() {
     return new Date().format('yyyy_MM_dd_HHmm')
 }

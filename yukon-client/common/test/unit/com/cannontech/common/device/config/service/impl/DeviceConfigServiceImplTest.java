@@ -125,33 +125,33 @@ public class DeviceConfigServiceImplTest {
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, DeviceError.CATASTROPHIC_FAILURE, three, null, FAILURE);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, null, nine, IN_SYNC, SUCCESS);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, DeviceError.CATASTROPHIC_FAILURE, nine, null, FAILURE);
-        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, DeviceError.CONFIG_NOT_CURRENT, nine, OUT_OF_SYNC, SUCCESS);
+        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, DeviceError.CONFIG_NOT_CURRENT, nine, OUT_OF_SYNC, FAILURE);
 
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, null, three, IN_SYNC, SUCCESS);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CATASTROPHIC_FAILURE, three, null, FAILURE);
-        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT, three, OUT_OF_SYNC, SUCCESS);
+        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT, three, OUT_OF_SYNC, FAILURE);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, null, nine, IN_SYNC, SUCCESS);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CATASTROPHIC_FAILURE, nine, null, FAILURE);
-        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT, nine, OUT_OF_SYNC, SUCCESS);
+        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT, nine, OUT_OF_SYNC, FAILURE);
 
         // In sync
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, null, four, IN_SYNC, SUCCESS);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CATASTROPHIC_FAILURE, four, null, FAILURE);
-        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT, four, OUT_OF_SYNC, SUCCESS);
+        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT, four, OUT_OF_SYNC, FAILURE);
 
         // Out of sync
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, null, ten, UNCONFIRMED, SUCCESS);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, DeviceError.CATASTROPHIC_FAILURE, ten, null, FAILURE);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, null, five, IN_SYNC, SUCCESS);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, DeviceError.CATASTROPHIC_FAILURE, five, null, FAILURE);
-        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, DeviceError.CONFIG_NOT_CURRENT, five, OUT_OF_SYNC, SUCCESS);
+        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, DeviceError.CONFIG_NOT_CURRENT, five, OUT_OF_SYNC, FAILURE);
 
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, null, ten, IN_SYNC, SUCCESS);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CATASTROPHIC_FAILURE, ten, null, FAILURE);
-        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT, ten, OUT_OF_SYNC, SUCCESS);
+        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT, ten, OUT_OF_SYNC, FAILURE);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, null, five, IN_SYNC, SUCCESS);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CATASTROPHIC_FAILURE, five, null, FAILURE);
-        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT, five, OUT_OF_SYNC, SUCCESS);
+        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT, five, OUT_OF_SYNC, FAILURE);
 
         // unconfirmed
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, null, seven, UNCONFIRMED, SUCCESS);
@@ -159,7 +159,7 @@ public class DeviceConfigServiceImplTest {
         
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, null, seven, IN_SYNC, SUCCESS);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CATASTROPHIC_FAILURE, seven, null, FAILURE);
-        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT,  seven, OUT_OF_SYNC, SUCCESS);
+        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT,  seven, OUT_OF_SYNC, FAILURE);
     }
     
     @Test

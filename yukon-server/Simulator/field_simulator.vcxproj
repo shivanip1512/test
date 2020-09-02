@@ -152,7 +152,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cppd.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;$(LIBCOAP)\$(CONFIGURATION)\lib\libcoapd.lib;advapi32.lib;Dnsapi.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctiprtdb.lib;..\lib-debug\ctisvr.lib;..\lib-debug\ctimsg.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctiprot.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\service.lib;..\lib-debug\rfn-e2e.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cppd.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;$(LIBCOAP)\$(CONFIGURATION)\lib\libcoapd.lib;$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;advapi32.lib;Dnsapi.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctiprtdb.lib;..\lib-debug\ctisvr.lib;..\lib-debug\ctimsg.lib;..\lib-debug\ctithriftmsg.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctiprot.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\service.lib;..\lib-debug\rfn-e2e.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
@@ -201,7 +201,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cpp.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;$(LIBCOAP)\$(CONFIGURATION)\lib\libcoap.lib;advapi32.lib;Dnsapi.lib;..\lib\ctibase.lib;..\lib\ctiprtdb.lib;..\lib\ctisvr.lib;..\lib\ctimsg.lib;..\lib\ctidevdb.lib;..\lib\ctiprot.lib;..\lib\ctidbsrc.lib;..\lib\service.lib;..\lib\rfn-e2e.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cpp.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;$(LIBCOAP)\$(CONFIGURATION)\lib\libcoap.lib;$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;advapi32.lib;Dnsapi.lib;..\lib\ctibase.lib;..\lib\ctiprtdb.lib;..\lib\ctisvr.lib;..\lib\ctimsg.lib;..\lib\ctithriftmsg.lib;..\lib\ctidevdb.lib;..\lib\ctiprot.lib;..\lib\ctidbsrc.lib;..\lib\service.lib;..\lib\rfn-e2e.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -356,6 +356,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClCompile Include="Ccu721.cpp">
     </ClCompile>
     <ClCompile Include="field_simulator.cpp" />
+    <ClCompile Include="field_simulator_message_serialization.cpp" />
     <ClCompile Include="field_simulator_service.cpp" />
     <ClCompile Include="NodeInfo.cpp" />
     <ClCompile Include="RfDa.cpp" />
@@ -410,6 +411,8 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\Ccu721.h" />
     <ClInclude Include="include\CcuIDLC.h" />
     <ClInclude Include="include\e2e_packet.h" />
+    <ClInclude Include="include\FieldSimulatorMsg.h" />
+    <ClInclude Include="include\field_simulator_message_serialization.h" />
     <ClInclude Include="include\field_simulator_service.h" />
     <ClInclude Include="include\CommInterface.h" />
     <ClInclude Include="include\CommsBehavior.h" />

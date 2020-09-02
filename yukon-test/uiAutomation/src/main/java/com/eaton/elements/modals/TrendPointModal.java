@@ -1,5 +1,4 @@
 package com.eaton.elements.modals;
-
 import java.util.Optional;
 
 import com.eaton.elements.DropDownElement;
@@ -9,20 +8,17 @@ import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 
-public class TrendAddPointModal extends BaseModal {   
-
-    private String modalTitle;
-    private String desrcibedBy;
+public class TrendPointModal extends BaseModal {
     
-    public TrendAddPointModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
+    public TrendPointModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
         super(driverExt, modalTitle, describedBy);
         
         if (modalTitle.isPresent()) {
-            this.modalTitle = modalTitle.get();
+            modalTitle = Optional.of(modalTitle.get());
         }
         
         if (describedBy.isPresent()) {
-            this.desrcibedBy = describedBy.get();
+            describedBy = Optional.of(describedBy.get());
         }
     }   
     
@@ -35,7 +31,7 @@ public class TrendAddPointModal extends BaseModal {
     }
     
     public DropDownElement getStyle() {
-        return new DropDownElement(this.driverExt, "name", getModal());
+        return new DropDownElement(this.driverExt, "style", getModal());
     }
     
     public DropDownElement getType() {
@@ -50,6 +46,9 @@ public class TrendAddPointModal extends BaseModal {
         return new TextEditElement(this.driverExt, "multiplier", getModal());
     }
     
+    public TextEditElement getDevice() {
+        return new TextEditElement(this.driverExt, "multiplier", getModal());
+    }
     public SelectPointModal showAndWaitSelectPointModal() {
         getPoint().clickLinkWithDynamicId();
         
