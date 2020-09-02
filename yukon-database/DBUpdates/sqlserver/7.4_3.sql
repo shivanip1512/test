@@ -3,6 +3,7 @@
 /******************************************/
 
 /* @start YUK-22622 */
+/* @start-block */
 DECLARE @StartGear AS NUMERIC,
         @ProgramId AS NUMERIC,
         @StartGearNumber AS NUMERIC;
@@ -12,7 +13,7 @@ DECLARE startGearAndProgramIdCursor CURSOR STATIC FOR (
     SELECT StartGear , ProgramID
     FROM LMControlScenarioProgram 
 );
-/* @start-block */
+
 BEGIN
     OPEN startGearAndProgramIdCursor 
     FETCH NEXT FROM startGearAndProgramIdCursor INTO @StartGear , @ProgramId
@@ -36,9 +37,9 @@ BEGIN
     CLOSE startGearAndProgramIdCursor;
     DEALLOCATE startGearAndProgramIdCursor;
 END;
-/* @end-block */
-GO
 
+GO
+/* @end-block */
 INSERT INTO DBUpdates VALUES ('YUK-22622', '7.4.3', GETDATE());
 /* @end YUK-22622 */
 

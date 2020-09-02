@@ -3,13 +3,14 @@
 /******************************************/ 
 
 /* @start YUK-22622 */
+/* @start-block */
 DECLARE 
     Start_Gear VARCHAR(10);
     Program_ID VARCHAR(10);
     Start_Gear_Number VARCHAR(10);
     Gear_Count VARCHAR(10);
     CURSOR startGearAndProgramIdCursor IS SELECT StartGear , ProgramID FROM LMControlScenarioProgram;
-/* @start-block */
+
 BEGIN
     OPEN startGearAndProgramIdCursor;
     LOOP
