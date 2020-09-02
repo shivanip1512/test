@@ -45,15 +45,17 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
 		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 		String name = "AT Edited Emetcon Ldgrp " + timeStamp;
 		final String EXPECTED_MSG = name + " saved successfully.";
+		Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
+													.withCommunicationRoute(Optional.of(routeId))
+													.create();
+		JSONObject response = pair.getValue1();
+		id = response.getInt("id");
 
 		editPage.getName().setInputValue(name);
-
 		editPage.getSaveBtn().click();
-
 		waitForPageToLoad("Load Group: " + name, Optional.empty());
 
 		LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
-
 		String userMsg = detailsPage.getUserMessage();
 
 		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
@@ -62,6 +64,11 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
 	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldGrpEmetconEdit_Name_RequiredValidation() {
 		final String EXPECTED_MSG = "Name is required.";
+		Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
+													.withCommunicationRoute(Optional.of(routeId))
+													.create();
+		JSONObject response = pair.getValue1();
+		id = response.getInt("id");
 
 		editPage.getName().clearInputValue();
 		editPage.getSaveBtn().click();
@@ -72,15 +79,14 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldGrpEmetconEdit_Name_UniqueValidation() {
+		final String EXPECTED_MSG = "Name must be unique.";
 		Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
 											.withCommunicationRoute(Optional.of(routeId))
 											.create();
 		JSONObject response = pair.getValue1();
-
+		id = response.getInt("id");
+		
 		String name = response.getString("name");
-
-		final String EXPECTED_MSG = "Name must be unique.";
-
 		editPage.getName().setInputValue(name);
 		editPage.getSaveBtn().click();
 
@@ -91,7 +97,12 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldGrpEmetconEdit_Name_invalidCharsValidation() {
 		final String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
-
+		Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
+													.withCommunicationRoute(Optional.of(routeId))
+													.create();
+		JSONObject response = pair.getValue1();
+		id = response.getInt("id");
+		
 		editPage.getName().setInputValue("/emetcon,|group ");
 		editPage.getSaveBtn().click();
 
@@ -110,8 +121,7 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
 													.create();
 		JSONObject response = pair.getValue1();
 		id = response.getInt("id");
-		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-
+		
 		editPage.getName().setInputValue(name);
 		editPage.getCommuncationRoute().selectItemByText("a_CCU-721");
 		editPage.getaddressUsage().setByValue("SILVER", true);
@@ -128,5 +138,4 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
 
 		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
 	}
-
 }
