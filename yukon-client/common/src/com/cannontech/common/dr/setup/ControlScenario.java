@@ -3,8 +3,11 @@ package com.cannontech.common.dr.setup;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import javax.validation.Valid;
+
 import org.apache.commons.collections4.CollectionUtils;
+
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

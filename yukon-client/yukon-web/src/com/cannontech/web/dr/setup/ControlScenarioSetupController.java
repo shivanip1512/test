@@ -31,7 +31,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.setup.ControlScenario;
 import com.cannontech.common.dr.setup.LMDelete;
-import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMGearDto;
 import com.cannontech.common.dr.setup.LmSetupFilterType;
 import com.cannontech.common.dr.setup.ProgramDetails;
