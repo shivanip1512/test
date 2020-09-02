@@ -76,19 +76,8 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(expected_msg);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpRfnExpresscomEdit_Name_RequiredValidation() {
-        final String expected_msg = "Name is required.";
-
-        editPage.getName().clearInputValue();
-        editPage.getSaveBtn().click();
-
-        String actualMsg = editPage.getName().getValidationError();
-        assertThat(actualMsg).isEqualTo(expected_msg);
-    }
-
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpRfnExpresscomEdit_EditAllFields_Success() {
+    public void ldGrpRfnExpresscomEdit_EditAllFieldsWithSerial_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "Edit RfnExpresscomm" + timeStamp;
         final String expected_msg = name + " saved successfully.";
@@ -120,11 +109,17 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup {
 
         assertThat(userMsg).isEqualTo(expected_msg);
     }
+    
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpRfnExpresscomEdit_EditAllFieldsWithoutSerial_Success() {
+
+    }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscomEdit_FieldValues_Correct() {
         SoftAssertions softly = new SoftAssertions();;
         
+        //We should be createing a load group with every field selected and validating that when we go to the edit page every field has the correct information
         softly.assertThat(editPage.getAddressUsage().isValueSelected("Serial")).isEqualTo(true);
         softly.assertThat(editPage.getLoadAddressUsage().isValueSelected("Program")).isEqualTo(false);
         softly.assertThat(editPage.getkWCapacity().getInputValue()).isEqualTo("310.12");
