@@ -49,7 +49,6 @@ import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestType;
-import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.VerifyConfigCommandResult;
 import com.cannontech.common.device.commands.WaitableCommandCompletionCallbackFactory;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
@@ -84,7 +83,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionActionCancellationService {
@@ -190,13 +188,13 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
     }
 
     @Override
-    public CommandResultHolder readConfig(SimpleDevice device, LiteYukonUser user) throws Exception {
-        return initiateAction(device, GROUP_DEVICE_CONFIG_READ, LogAction.READ, user);
+    public void readConfig(SimpleDevice device, LiteYukonUser user) {
+        initiateAction(device, GROUP_DEVICE_CONFIG_READ, LogAction.READ, user);
     }
 
     @Override
-    public CommandResultHolder sendConfig(SimpleDevice device, LiteYukonUser user) throws Exception {
-        return initiateAction(device, GROUP_DEVICE_CONFIG_SEND, LogAction.SEND, user);
+    public void sendConfig(SimpleDevice device, LiteYukonUser user) {
+        initiateAction(device, GROUP_DEVICE_CONFIG_SEND, LogAction.SEND, user);
     }
    
     @Override
@@ -418,31 +416,39 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
     /**
      * Sends a command to porter
      */
-    private CommandResultHolder initiateAction(SimpleDevice device, DeviceRequestType requestType, LogAction logAction,
+    private void initiateAction(SimpleDevice device, DeviceRequestType requestType, LogAction logAction,
             LiteYukonUser user) {
-        CommandRequestExecution execution = createExecutionAndUpdateStateToInProgress(requestType,
-                Collections.singletonList(device), user);
         CommandRequestDevice request = new CommandRequestDevice(commands.get(requestType),
                 new SimpleDevice(device.getPaoIdentifier()));
         logInitiated(Collections.singletonList(device), logAction, user);
-        CommandResultHolder resultHolder = commandExecutionService.execute(request, requestType, execution, user);
-        DeviceConfigState currentState = deviceConfigurationDao.getDeviceConfigStateByDeviceId(device.getDeviceId());
-        if(resultHolder.isErrorsExist()) {
-            boolean hasConfigNotCurrentError = resultHolder.getErrors().stream()
-                    .anyMatch(error -> error.getDeviceError() == DeviceError.CONFIG_NOT_CURRENT);
-            if (hasConfigNotCurrentError) {
-                updateState(requestType, DeviceError.CONFIG_NOT_CURRENT, device, currentState);
-            } else {
-                updateState(requestType, Iterables.getLast(resultHolder.getErrors()).getDeviceError(), device,
-                        currentState);
+        CommandRequestExecution execution = createExecutionAndUpdateStateToInProgress(requestType,
+                Collections.singletonList(device), user);
+        commandExecutionService.execute(List.of(request), new CommandCompletionCallback<CommandRequestDevice>() {
+            Map<Integer, DeviceConfigState> deviceToState = deviceConfigurationDao
+                    .getDeviceConfigStatesByDeviceIds(List.of(device.getDeviceId()));
+
+            @Override
+            public void receivedLastResultString(CommandRequestDevice command, String value) {
+                logCompleted(device, logAction, true);
+                DeviceConfigState currentState = deviceToState.get(device.getDeviceId());
+                updateState(requestType, null, command.getDevice(), currentState);
             }
-        } else {
-            updateState(requestType, null, device, currentState);
-        }
-        logCompleted(device, logAction, !resultHolder.isErrorsExist());
-        return resultHolder;
+
+            @Override
+            public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
+                logCompleted(command.getDevice(), logAction, false);
+                DeviceConfigState currentState = deviceToState.get(device.getDeviceId());
+                updateState(requestType, error.getDeviceError(), command.getDevice(), currentState);
+            }
+
+            @Override
+            public void processingExceptionOccurred(String reason) {
+                logCompleted(device, logAction, false);
+                deviceConfigurationDao.failInProgressDevices(List.of(device.getDeviceId()));
+            }
+        }, execution, true, user);
     }
-    
+
     /**
      * Creates command request execution and updates device config state to "In Progress"
      */
@@ -589,6 +595,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
 
             @Override
             public void processingExceptionOccurred(String reason) {
+                supportedDevices.forEach(device -> logCompleted(device, logAction, false));
                 result.setExecutionExceptionText(reason);
                 collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
                 deviceConfigurationDao.failInProgressDevices(getDeviceIds(supportedDevices));
@@ -734,7 +741,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         if (currentState == null) {
             return null;
         }
-        DeviceConfigState newState = (DeviceConfigState) SerializationUtils.clone(currentState);
+        DeviceConfigState newState = SerializationUtils.clone(currentState);
         newState.setActionEnd(Instant.now());
         if (error == null) {
             newState.setLastActionStatus(SUCCESS);
@@ -744,7 +751,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                 newState.setCurrentState(IN_SYNC);
             }
         } else if (error == DeviceError.CONFIG_NOT_CURRENT) {
-            newState.setLastActionStatus(SUCCESS);
+            newState.setLastActionStatus(FAILURE);
             newState.setCurrentState(OUT_OF_SYNC);
         } else {
             newState.setLastActionStatus(FAILURE);
@@ -785,6 +792,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
             
             @Override
             public void processingExceptionOccurred(String reason) {
+                supported.forEach(device -> logCompleted(device, LogAction.VERIFY, false));
                 deviceConfigurationDao.failInProgressDevices(getDeviceIds(supported));
             }
 

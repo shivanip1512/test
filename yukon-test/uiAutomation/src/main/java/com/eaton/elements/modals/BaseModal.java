@@ -47,9 +47,7 @@ public class BaseModal {
 
             List<WebElement> elements = this.driverExt.findElements(By.cssSelector(".ui-dialog"), Optional.of(5));
 
-            found = elements.stream()
-                    .filter(element -> element.findElement(By.cssSelector(".ui-dialog-title")).getText().equals(this.modalTitle))
-                    .findFirst();
+            found = elements.stream().filter(element -> element.findElement(By.cssSelector(".ui-dialog-title")).getText().equals(this.modalTitle)).findFirst();
         }
 
         return found.get();
@@ -119,7 +117,19 @@ public class BaseModal {
         }
 
         return names;
-    }            
+    }    
+    
+    /**This function should be used for values that are read only.  It will take the field Label and will return the corresponding value.
+     * @param fieldLabel  : provide label for which you want to fetch corresponding value like 'Name' 
+     * @return Value as String if label can not be found will throw a selenium error.
+     */
+    public String getReadOnlyFieldValueByLabel(String fieldLabel) {
+        List<WebElement> rows = getModal().findElements(By.cssSelector("table tr"));
+        
+        WebElement row = rows.stream().filter(x -> x.findElement(By.cssSelector(".name")).getText().contains(fieldLabel)).findFirst().orElseThrow();
+        
+        return row.findElement(By.cssSelector(".value")).getText();        
+    }
     
     public boolean isModalDisplayed() {
         WebElement modal = getModal();

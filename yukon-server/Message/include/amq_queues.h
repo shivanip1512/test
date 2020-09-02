@@ -54,6 +54,9 @@ public:
     static const InboundQueue ScannerOutMessages;
     static const InboundQueue ScannerInMessages;
     static const InboundQueue PorterDynamicPaoInfoRequest;
+
+    static const InboundQueue FieldSimulatorStatusRequest;
+    static const InboundQueue FieldSimulatorModifyConfiguration;
 };
 
 }
