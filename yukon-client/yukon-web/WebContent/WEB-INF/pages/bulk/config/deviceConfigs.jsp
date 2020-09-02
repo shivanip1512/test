@@ -74,7 +74,6 @@
                 <cti:button nameKey="unassign" classes="primary action js-unassign-config js-action-submit" busy="true"/>
                 <cti:button nameKey="send" classes="primary action js-send-config js-action-submit" busy="true"/>
                 <cti:button nameKey="read" classes="primary action js-read-config js-action-submit" busy="true"/>
-                <cti:button nameKey="verify" classes="primary action js-verify-config js-action-submit" busy="true"/>
             </div>
             
         </form>
