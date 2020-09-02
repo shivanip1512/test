@@ -465,21 +465,25 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
             BOOST_CHECK_EQUAL(pd->getId(), 9999);
         }
 
-        auto string_list = dnp.getInboundStrings();
+        const auto string_list = dnp.getInboundStrings();
 
-        BOOST_REQUIRE_EQUAL(4, string_list.size());
+        BOOST_REQUIRE_EQUAL(5, string_list.size());
 
-        BOOST_CHECK_EQUAL(string_list[0],
+        auto string_itr = string_list.cbegin();
+
+        BOOST_CHECK_EQUAL(*string_itr++,
             "Successfully read internal indications");
-        BOOST_CHECK_EQUAL(string_list[1],
+        BOOST_CHECK_EQUAL(*string_itr++,
             "Internal indications:\n"
             "Time synchronization needed\n"
             "Device restart\n");
-        BOOST_CHECK_EQUAL(string_list[2],
+        BOOST_CHECK_EQUAL(*string_itr++,
             "Attempting to clear Device Restart bit");
-        BOOST_CHECK_EQUAL(string_list[3],
+        BOOST_CHECK_EQUAL(*string_itr++,
             "Internal indications:\n"
             "Time synchronization needed\n");
+        BOOST_CHECK_EQUAL(*string_itr++,
+            "Reset Device Restart Bit completed successfully");
 
         delete_container(point_list);
     }
@@ -754,26 +758,362 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_with_unsolicited_enable)
             BOOST_CHECK_EQUAL(pd->getId(), 9999);
         }
 
-        auto string_list = dnp.getInboundStrings();
+        const auto string_list = dnp.getInboundStrings();
 
-        BOOST_REQUIRE_EQUAL(6, string_list.size());
+        BOOST_REQUIRE_EQUAL(8, string_list.size());
 
-        BOOST_CHECK_EQUAL(string_list[0],
+        auto string_itr = string_list.cbegin();
+
+        BOOST_CHECK_EQUAL(*string_itr++,
             "Successfully read internal indications");
-        BOOST_CHECK_EQUAL(string_list[1],
+        BOOST_CHECK_EQUAL(*string_itr++,
             "Internal indications:\n"
             "Time synchronization needed\n"
             "Device restart\n");
-        BOOST_CHECK_EQUAL(string_list[2],
+        BOOST_CHECK_EQUAL(*string_itr++,
             "Attempting to clear Device Restart bit");
-        BOOST_CHECK_EQUAL(string_list[3],
+        BOOST_CHECK_EQUAL(*string_itr++,
             "Internal indications:\n"
             "Time synchronization needed\n");
-        BOOST_CHECK_EQUAL(string_list[4],
+        BOOST_CHECK_EQUAL(*string_itr++,
+            "Reset Device Restart Bit completed successfully");
+        BOOST_CHECK_EQUAL(*string_itr++,
             "Unsolicited reporting enabled");
-        BOOST_CHECK_EQUAL(string_list[5],
+        BOOST_CHECK_EQUAL(*string_itr++,
             "Internal indications:\n"
             "Time synchronization needed\n");
+        BOOST_CHECK_EQUAL(*string_itr++,
+            "Unsolicited Enable completed successfully");
+
+        delete_container(point_list);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_with_unsolicited_unsupported)
+{
+    DnpProtocol dnp;
+
+    BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
+
+    dnp.setAddresses(4, 3);
+    dnp.setName("Test DNP device");
+    dnp.setCommand(DnpProtocol::Command_Class1230Read);
+
+    CtiXfer xfer;
+
+    dnp.setConfigData(2, DNP::TimeOffset::Utc, false, false, true, false, false, false);
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+        const byte_str expected(
+            "05 64 14 C4 04 00 03 00 c7 17 "
+            "c0 c1 01 3c 02 06 3c 03 06 3c 04 06 3c 01 06 7a 6f");
+
+        //  copy them into int vectors so they display nicely
+        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+
+        BOOST_CHECK_EQUAL_RANGES(expected, output);
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
+    }
+
+    {
+        {
+            const byte_str response(
+                "05 64 27 44 03 00 04 00 AB 3D");
+
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(),
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(40, xfer.getInCountExpected());
+    }
+
+    {
+        {
+            const byte_str response(
+                "c0 ca 81 9f 00 1e 01 18 01 00 03 00 3f 01 00 00 DB A8 "
+                "01 02 18 01 00 01 00 14 01 18 01 00 00 00 13 00 95 4f "
+                "00 00 ff ff");
+
+
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(),
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+        const byte_str expected(
+            "05 64 0E C4 04 00 03 00 6D D3 "
+            "C0 C2 02 50 01 00 07 07 00 08 "
+            "65");
+
+        //  copy them into int vectors so they display nicely
+        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+
+        BOOST_CHECK_EQUAL_RANGES(expected, output);
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
+    }
+
+    {
+        {
+            const byte_str response(
+                "05 64 0A 44 03 00 04 00 7C AE");
+
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(),
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(7, xfer.getInCountExpected());
+    }
+
+    {
+        {
+            const byte_str response(
+                "C2 C2 81 10 00 11 b9");
+
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(),
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+        const byte_str expected(
+            "05 64 0B C4 04 00 03 00 E4 2B "
+            "C0 C3 14 3C 02 06 BA 3C");
+
+        //  copy them into int vectors so they display nicely
+        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+
+        BOOST_CHECK_EQUAL_RANGES(expected, output);
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
+    }
+
+    {
+        {
+            const byte_str response(
+                "05 64 0A 44 03 00 04 00 7C AE");
+
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(),
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(7, xfer.getInCountExpected());
+    }
+
+    {
+        {
+            const byte_str response(
+                "C3 C3 81 10 01 A1 6E");
+
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(),
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
+
+        pointlist_t point_list;
+
+        dnp.getInboundPoints(point_list);
+
+        BOOST_REQUIRE_EQUAL(6, point_list.size());
+
+        auto pd_itr = point_list.cbegin();
+
+        {
+            auto pd = *pd_itr++;
+
+            BOOST_CHECK_EQUAL(pd->getValue(), 319);
+            BOOST_CHECK_EQUAL(pd->getType(), AnalogPointType);
+            BOOST_CHECK_EQUAL(pd->getId(), 4);
+        }
+        {
+            auto pd = *pd_itr++;
+
+            BOOST_CHECK_EQUAL(pd->getValue(), 0);
+            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
+            BOOST_CHECK_EQUAL(pd->getId(), 2);
+        }
+        {
+            auto pd = *pd_itr++;
+
+            BOOST_CHECK_EQUAL(pd->getValue(), 19);
+            BOOST_CHECK_EQUAL(pd->getType(), PulseAccumulatorPointType);
+            BOOST_CHECK_EQUAL(pd->getId(), 1);
+        }
+        {
+            auto pd = *pd_itr++;
+
+            BOOST_CHECK_EQUAL(pd->getValue(), 1);
+            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
+        }
+        {
+            auto pd = *pd_itr++;
+
+            BOOST_CHECK_EQUAL(pd->getValue(), 0);
+            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
+        }
+        {
+            auto pd = *pd_itr++;
+
+            BOOST_CHECK_EQUAL(pd->getValue(), 0);
+            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
+        }
+
+        const auto string_list = dnp.getInboundStrings();
+
+        BOOST_REQUIRE_EQUAL(7, string_list.size());
+
+        auto str_itr = string_list.cbegin();
+
+        BOOST_CHECK_EQUAL(*str_itr++,
+            "Internal indications:\n"
+            "Broadcast message received\n"
+            "Class 1 data available\n"
+            "Class 2 data available\n"
+            "Class 3 data available\n"
+            "Time synchronization needed\n"
+            "Device restart\n");
+        BOOST_CHECK_EQUAL(*str_itr++,
+            "Point data report:"
+            "\nAI:     1; AO:     0; DI:     1; DO:     0; Counters:     1; "
+            "\nFirst/Last 5 points of each type returned:"
+            "\nAnalog inputs:"
+            "\n[4:319]"
+            "\nBinary inputs:"
+            "\n[2:0]"
+            "\nCounters:"
+            "\n[1:19]"
+            "\n");
+        BOOST_CHECK_EQUAL(*str_itr++,
+            "Attempting to clear Device Restart bit");
+        BOOST_CHECK_EQUAL(*str_itr++,
+            "Internal indications:\n"
+            "Time synchronization needed\n");
+        BOOST_CHECK_EQUAL(*str_itr++,
+            "Reset Device Restart Bit completed successfully");
+        BOOST_CHECK_EQUAL(*str_itr++,
+            "Internal indications:\n"
+            "Time synchronization needed\n"
+            "Function code not implemented\n");
+        BOOST_CHECK_EQUAL(*str_itr++,
+            "Unsolicited Enable completed with status 304 - Function code not supported.");
 
         delete_container(point_list);
     }
@@ -858,22 +1198,26 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_parameter_error)
 
     dnp.decode(xfer, ClientErrors::None);
 
-    auto string_list = dnp.getInboundStrings();
+    const auto string_list = dnp.getInboundStrings();
 
-    BOOST_REQUIRE_EQUAL(4, string_list.size());
+    BOOST_REQUIRE_EQUAL(5, string_list.size());
 
-    BOOST_CHECK_EQUAL(string_list[0],
+    auto string_itr = string_list.cbegin();
+
+    BOOST_CHECK_EQUAL(*string_itr++,
         "Successfully read internal indications");
-    BOOST_CHECK_EQUAL(string_list[1],
+    BOOST_CHECK_EQUAL(*string_itr++,
         "Internal indications:\n"
         "Time synchronization needed\n"
         "Device restart\n"
         "Parameter error\n");
-    BOOST_CHECK_EQUAL(string_list[2],
+    BOOST_CHECK_EQUAL(*string_itr++,
         "Attempting to clear Device Restart bit");
-    BOOST_CHECK_EQUAL(string_list[3],
+    BOOST_CHECK_EQUAL(*string_itr++,
         "Internal indications:\n"
         "Time synchronization needed\n");
+    BOOST_CHECK_EQUAL(*string_itr++,
+        "Reset Device Restart Bit completed successfully");
 }
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_invalid_function_code)
@@ -952,22 +1296,26 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_invalid_function_code)
 
     dnp.decode(xfer, ClientErrors::None);
 
-    auto string_list = dnp.getInboundStrings();
+    const auto string_list = dnp.getInboundStrings();
 
-    BOOST_REQUIRE_EQUAL(4, string_list.size());
+    BOOST_REQUIRE_EQUAL(5, string_list.size());
 
-    BOOST_CHECK_EQUAL(string_list[0],
+    auto string_itr = string_list.cbegin();
+
+    BOOST_CHECK_EQUAL(*string_itr++,
         "Successfully read internal indications");
-    BOOST_CHECK_EQUAL(string_list[1],
+    BOOST_CHECK_EQUAL(*string_itr++,
         "Internal indications:\n"
         "Time synchronization needed\n"
         "Device restart\n"
         "Function code not implemented\n");
-    BOOST_CHECK_EQUAL(string_list[2],
+    BOOST_CHECK_EQUAL(*string_itr++,
         "Attempting to clear Device Restart bit");
-    BOOST_CHECK_EQUAL(string_list[3],
+    BOOST_CHECK_EQUAL(*string_itr++,
         "Internal indications:\n"
         "Time synchronization needed\n");
+    BOOST_CHECK_EQUAL(*string_itr++,
+        "Reset Device Restart Bit completed successfully");
 }
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_unknown_object)
@@ -1046,22 +1394,26 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_unknown_object)
 
     dnp.decode(xfer, ClientErrors::None);
 
-    auto string_list = dnp.getInboundStrings();
+    const auto string_list = dnp.getInboundStrings();
 
-    BOOST_REQUIRE_EQUAL(4, string_list.size());
+    BOOST_REQUIRE_EQUAL(5, string_list.size());
 
-    BOOST_CHECK_EQUAL(string_list[0],
+    auto string_itr = string_list.cbegin();
+
+    BOOST_CHECK_EQUAL(*string_itr++,
         "Successfully read internal indications");
-    BOOST_CHECK_EQUAL(string_list[1],
+    BOOST_CHECK_EQUAL(*string_itr++,
         "Internal indications:\n"
         "Time synchronization needed\n"
         "Device restart\n"
         "Requested objects unknown\n");
-    BOOST_CHECK_EQUAL(string_list[2],
+    BOOST_CHECK_EQUAL(*string_itr++,
         "Attempting to clear Device Restart bit");
-    BOOST_CHECK_EQUAL(string_list[3],
+    BOOST_CHECK_EQUAL(*string_itr++,
         "Internal indications:\n"
         "Time synchronization needed\n");
+    BOOST_CHECK_EQUAL(*string_itr++,
+        "Reset Device Restart Bit completed successfully");
 }
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_operation_already_executing)
@@ -1140,22 +1492,26 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_operation_already_execut
 
     dnp.decode(xfer, ClientErrors::None);
 
-    auto string_list = dnp.getInboundStrings();
+    const auto string_list = dnp.getInboundStrings();
 
-    BOOST_REQUIRE_EQUAL(4, string_list.size());
+    BOOST_REQUIRE_EQUAL(5, string_list.size());
 
-    BOOST_CHECK_EQUAL(string_list[0],
+    auto string_itr = string_list.cbegin();
+
+    BOOST_CHECK_EQUAL(*string_itr++,
         "Successfully read internal indications");
-    BOOST_CHECK_EQUAL(string_list[1],
+    BOOST_CHECK_EQUAL(*string_itr++,
         "Internal indications:\n"
         "Time synchronization needed\n"
         "Device restart\n"
         "Request already executing\n");
-    BOOST_CHECK_EQUAL(string_list[2],
+    BOOST_CHECK_EQUAL(*string_itr++,
         "Attempting to clear Device Restart bit");
-    BOOST_CHECK_EQUAL(string_list[3],
+    BOOST_CHECK_EQUAL(*string_itr++,
         "Internal indications:\n"
         "Time synchronization needed\n");
+    BOOST_CHECK_EQUAL(*string_itr++,
+        "Reset Device Restart Bit completed successfully");
 }
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
@@ -3550,25 +3906,31 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
             BOOST_CHECK_EQUAL(pd->getId(), 9999);
         }
 
-        auto string_list = dnp.getInboundStrings();
+        const auto string_list = dnp.getInboundStrings();
 
-        BOOST_REQUIRE_EQUAL(6, string_list.size());
+        BOOST_REQUIRE_EQUAL(8, string_list.size());
 
-        BOOST_CHECK_EQUAL(string_list[0],
+        auto string_itr = string_list.cbegin();
+
+        BOOST_CHECK_EQUAL(*string_itr++,
             "Successfully read internal indications");
-        BOOST_CHECK_EQUAL(string_list[1],
+        BOOST_CHECK_EQUAL(*string_itr++,
             "Internal indications:\n"
             "Time synchronization needed\n"
             "Device restart\n");
-        BOOST_CHECK_EQUAL(string_list[2],
+        BOOST_CHECK_EQUAL(*string_itr++,
             "Attempting to clear Device Restart bit");
-        BOOST_CHECK_EQUAL(string_list[3],
+        BOOST_CHECK_EQUAL(*string_itr++,
             "Internal indications:\n"
             "Time synchronization needed\n");
-        BOOST_CHECK_EQUAL(string_list[4],
+        BOOST_CHECK_EQUAL(*string_itr++,
+            "Reset Device Restart Bit completed successfully");
+        BOOST_CHECK_EQUAL(*string_itr++,
             "Time sync sent");
-        BOOST_CHECK_EQUAL(string_list[5],
+        BOOST_CHECK_EQUAL(*string_itr++,
             ""); // no internal indication
+        BOOST_CHECK_EQUAL(*string_itr++,
+            "Write Time completed successfully");
 
         delete_container(point_list);
     }

@@ -86,6 +86,12 @@ public class DropDownElement {
     	WebElement element = elements.stream().filter(x -> x.isSelected()).findFirst().orElseThrow();
     	return element.getText();
     }
+    
+    public String getOptionValue() {
+        List<WebElement> elements = getSelectElement().findElements(By.tagName("option"));
+        WebElement element = elements.stream().filter(x -> x.isSelected()).findFirst().orElseThrow();
+        return element.getAttribute("value");
+    }
 }
 
 

@@ -23,7 +23,6 @@ DatalinkLayer::DatalinkLayer() :
     _reset_sent(false),
     _fcb_out(false),
     _fcb_in(false),
-    _comm_errors(0),
     _protocol_errors(0),
     _out_sent(0),
     _out_data_len(0),
@@ -67,7 +66,6 @@ void DatalinkLayer::setToLoopback()
     _io_state        = State_IO_Complete;
     _errorCondition  = ClientErrors::None;
     _control_state   = State_Control_Request_LinkStatus_Out;
-    _comm_errors     = 0;
     _protocol_errors = 0;
 }
 
@@ -101,7 +99,6 @@ void DatalinkLayer::setToOutput( unsigned char *buf, unsigned int len )
         _out_data_len  = len;
         _out_sent      = 0;     //  unused, eh?  we mostly just switch off of comm errors
 
-        _comm_errors     = 0;
         _protocol_errors = 0;
 
         memcpy(_out_data, buf, _out_data_len);
@@ -122,7 +119,6 @@ void DatalinkLayer::setToInput( void )
 
     _in_data_len = 0;
 
-    _comm_errors     = 0;
     _protocol_errors = 0;
 }
 

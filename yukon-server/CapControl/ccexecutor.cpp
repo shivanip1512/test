@@ -703,7 +703,6 @@ void CtiCCCommandExecutor::enableOvUv(long bankId,
     events.push_back(EventLogEntry(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capControlEnableOvUv, seqId, 1, text, _command->getUser()));
 
     //Actual Command Work
-    capBank->setOvUvDisabledFlag(false);
     subBus->setBusUpdatedFlag(true);
 
     PorterRequest reqMsg;
@@ -785,7 +784,6 @@ void CtiCCCommandExecutor::disableOvUv(long bankId,
     events.push_back(EventLogEntry(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capControlEnableOvUv, seqId, 1, text, _command->getUser()));
 
     //Actual Command
-    capBank->setOvUvDisabledFlag(true);
     subBus->setBusUpdatedFlag(true);
 
     PorterRequest reqMsg;
