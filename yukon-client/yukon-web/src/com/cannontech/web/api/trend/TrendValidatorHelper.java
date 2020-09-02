@@ -1,6 +1,5 @@
 package com.cannontech.web.api.trend;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 import javax.annotation.PostConstruct;
@@ -11,7 +10,6 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoUtils;
-import com.cannontech.common.trend.model.GraphColors;
 import com.cannontech.common.trend.model.RenderType;
 import com.cannontech.common.trend.model.TrendSeries;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -98,10 +96,6 @@ public class TrendValidatorHelper {
             if (!errors.hasFieldErrors("date") && trendSeries.getDate().isAfterNow()) {
                 errors.rejectValue("date", basekey + "date.inThePast");
             }
-        }
-        if (trendSeries.getColor() != null) {
-            if (!Arrays.asList(GraphColors.getYukonColors()).contains(trendSeries.getColor()))
-                errors.rejectValue("color", basekey + "notSupported", new Object[] { trendSeries.getColor() }, "");
         }
     }
 }

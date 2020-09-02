@@ -266,7 +266,7 @@ public class TrendEditorController {
                 json.put("dateStr", dateFormattingService.format(trendSeries.getDate(), DateFormatEnum.DATE, userContext));
             }
         }
-        json.put("color", accessor.getMessage(trendSeries.getColor().getFormatKey()));
+        json.put("color", accessor.getMessage(trendSeries.getColor().getYukonColor().getFormatKey()));
         json.put("colorHexValue", trendSeries.getColor().getHexValue());
         json.put("axis", accessor.getMessage(trendSeries.getAxis().getFormatKey()));
         
@@ -356,10 +356,10 @@ public class TrendEditorController {
             }
         });
         
-        binder.registerCustomEditor(YukonColorPalette.class, new PropertyEditorSupport() {
+        binder.registerCustomEditor(GraphColors.class, new PropertyEditorSupport() {
             @Override
             public void setAsText(String color) throws IllegalArgumentException {
-                setValue(YukonColorPalette.getColorByHexValue(color));
+                setValue(GraphColors.getGraphColor(YukonColorPalette.getColorByHexValue(color).toString()));
             }
         });
     }

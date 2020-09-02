@@ -62,7 +62,7 @@ public class TrendModel implements DBPersistentConverter<GraphDefinition> {
                 graphSeries.setAxis(
                         series.getAxis() == null ? TrendAxis.LEFT.getAbbreviation() : series.getAxis().getAbbreviation());
                 graphSeries.setColor(series.getColor() == null ? (int) YukonColorPalette.BLUE.getDatabaseRepresentation()
-                        : (int) series.getColor().getDatabaseRepresentation());
+                        : (int) series.getColor().getYukonColor().getDatabaseRepresentation());
                 graphSeries.setType(series.getType() == null ? GDSTypes.BASIC_GRAPH_TYPE
                         : GDSTypesFuncs.getTypeInt(series.getType().getStringType()));
                 graphSeries.setMultiplier(series.getMultiplier() == null ? 1 : series.getMultiplier());
@@ -112,7 +112,7 @@ public class TrendModel implements DBPersistentConverter<GraphDefinition> {
             for (GraphDataSeries data : graphSeries) {
                 TrendSeries trend = new TrendSeries();
                 trend.setAxis(TrendAxis.getAxis(data.getAxis()));
-                trend.setColor(YukonColorPalette.getColor(data.getColor()));
+                trend.setColor(GraphColors.getGraphColor(YukonColorPalette.getColor(data.getColor()).toString()));
                 if (!data.getMoreData().equals(CtiUtilities.STRING_NONE)) {
                     trend.setDate(new DateTime(Long.valueOf(data.getMoreData())));
                 }

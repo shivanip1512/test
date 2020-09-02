@@ -3,6 +3,8 @@ package com.cannontech.common.trend.model;
 import java.util.Arrays;
 
 import com.cannontech.common.YukonColorPalette;
+import com.cannontech.common.exception.TypeNotSupportedException;
+import com.fasterxml.jackson.annotation.JsonCreator;
 
 /**
  * Provides colors for graphs.
@@ -45,7 +47,20 @@ public enum GraphColors {
         return getYukonColor().getHexValue();
     }
 
-    public static YukonColorPalette getNextDefaultColor(int index) {
-        return GraphColors.values()[index % GraphColors.values().length].getYukonColor();
-    } 
+    public static GraphColors getNextDefaultColor(int index) {
+        return GraphColors.values()[index % GraphColors.values().length];
+    }
+
+    /*
+     * Returns GraphColors object for given string of color otherwise throw error message
+     */
+    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+    public static GraphColors getGraphColor(String color) {
+        try {
+            return GraphColors.valueOf(color);
+        } catch (IllegalArgumentException e) {
+            throw new TypeNotSupportedException(color + " Graph Color is not valid.");
+        }
+    }
+
 }
