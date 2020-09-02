@@ -271,11 +271,18 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         DateTime secondEventTime = DateTime.now().minusMinutes(1);
         rfnDevices.forEach(device -> {
             RfnConditionType first = event.getFirstEvent();
+            DateTime effectiveFirstEventTime = firstEventTime;
+            DateTime effectiveSecondEventTime = secondEventTime;
             if (event.getFirstEventRandom() != null && event.getFirstEventRandom().booleanValue()) {
                 first = random.nextBoolean() ? RfnConditionType.OUTAGE : RfnConditionType.RESTORE;
             }
             RfnConditionType second = first == RfnConditionType.RESTORE ? RfnConditionType.OUTAGE : RfnConditionType.RESTORE;
-            sendOutageOrRestoreEvents(device, first, second, firstEventTime, secondEventTime, event.getMilliseconds());
+            if (event.getOutageTimestampFirst() != null && event.getOutageTimestampFirst().booleanValue() && first != RfnConditionType.OUTAGE) {
+                // first event is a restore, but outage should have an earlier timestamp
+                effectiveFirstEventTime = secondEventTime;
+                effectiveSecondEventTime = firstEventTime;
+            }
+            sendOutageOrRestoreEvents(device, first, second, effectiveFirstEventTime, effectiveSecondEventTime, event.getMilliseconds());
         });
         return rfnDevices.size() * 2;
     }
