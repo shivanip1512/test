@@ -521,7 +521,9 @@ YukonError_t ApplicationLayer::decode( TransportLayer &_transport )
 
         case SendFirstResponse:
         {
-            _appState = SendResponse;
+            _appState = _out_object_blocks.empty()
+                ? Complete
+                : SendResponse;
 
             break;
         }
