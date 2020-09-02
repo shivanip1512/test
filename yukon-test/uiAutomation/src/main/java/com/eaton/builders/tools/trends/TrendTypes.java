@@ -1,8 +1,26 @@
 package com.eaton.builders.tools.trends;
 
+import java.util.HashMap;
 import java.util.Random;
 
 public class TrendTypes {
+
+    public static String getcolorNameFromHex(String hexValue) {
+        HashMap<String, String> colors = new HashMap<>();
+        colors.put("#e99012", "orange");
+        colors.put("#abd7e1", "light blue");
+        colors.put("#f0cb2f", "yellow");
+        colors.put("#b779f4", "purple");
+        colors.put("#7b8387", "gray");
+        colors.put("#00b2a9", "teal");
+        colors.put("#ce8799", "wine");
+        colors.put("#0088f2", "blue");
+        colors.put("#2ca618", "green");
+        colors.put("#000000", "black");
+        colors.put("#b2c98d", "sage");
+        
+        return colors.get(hexValue);
+    }
 
     public enum Type {
         BASIC_TYPE("BASIC_TYPE"),
@@ -26,12 +44,12 @@ public class TrendTypes {
             return values()[random.nextInt(values().length)];
         }
     }
-    
+
     public enum Color {
         BLACK("BLACK"),
         BLUE("BLUE"),
         TEAL("TEAL"),
-        GRAY("GRAY"),        
+        GRAY("GRAY"),
         GREEN("GREEN"),
         SAGE("SAGE"),
         ORANGE("ORANGE"),
@@ -68,7 +86,7 @@ public class TrendTypes {
         public String getAxis() {
             return this.axis;
         }
-        
+
         public static Axis getRandomAxis() {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
@@ -89,7 +107,7 @@ public class TrendTypes {
         public String getStyle() {
             return this.style;
         }
-        
+
         public static Style getRandomStyle() {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
