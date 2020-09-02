@@ -25,6 +25,8 @@ public class GeneralSecurityFilter implements Filter {
         response.addHeader("X-Frame-Options", "SAMEORIGIN"); // click jacking prevention
         response.addHeader("X-Content-Type-Options", "nosniff"); // avoid mime sniffing
         response.setHeader("X-XSS-Protection", "1; mode=block"); // avoid XSS attack
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader(
             "Content-Security-Policy", // header blocks popups, plugins and script execution from unknown source
             ContentSecurityPolicyFilterType.DEFAULT_SRC.getValue()

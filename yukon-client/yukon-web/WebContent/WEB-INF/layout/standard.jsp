@@ -59,6 +59,8 @@
     <script src="<c:url value="/resources/js/pages/yukon.smart.notifications.js"/>"></script>
 </c:if>
 
+<script src="<c:url value="/resources/js/common/yukon.navigation.js"/>"></script>
+
 </head>
 <body>
     <audio id="alert-audio">
@@ -80,7 +82,13 @@
         
         <div class="yukon-page">
             <header class="yukon-header">
-                <div class="toolbar-outer">
+                <div class="js-navigation">
+<%--                 <iframe src="http://localhost:3000/navigation" frameBorder="0" scrolling="no" allowTransparency="true" 
+                        style="width:100%;height:100%;border:0;background-color:transparent"></iframe> --%>
+                    <iframe src="http://localhost:3000/navigation" frameBorder="0" scrolling="no" 
+                        style="width:100%;height:45px;border:0"></iframe>
+                </div>
+<%--                 <div class="toolbar-outer">
                     <div class="toolbar-inner">
                         <div class="toolbar">
                             <form accept-charset="ISO-8859-1" enctype="application/x-www-form-urlencoded" method="get"
@@ -110,8 +118,8 @@
                             </cm:dropdown>
                         </div>
                     </div>
-                </div>
-                <div class="nav-outer">
+                </div> --%>
+<%--                 <div class="nav-outer">
                     <div class="nav-inner">
                         <nav role="navigation">
                             <ul class="menus">
@@ -120,7 +128,7 @@
                             </ul>
                         </nav>
                     </div>
-                </div>
+                </div> --%>
                 <div class="bars">
                     <div class="bc-bar">
                         <div class="inner clearfix">
@@ -201,7 +209,7 @@
                 <%-- <tags:feedback/> TODO: uncomment when ready for feedback --%>
             </section>
             
-            <footer id="yukon-footer" class="yukon-footer">
+<%--             <footer id="yukon-footer" class="yukon-footer">
                 <div class="utility">
                     <nav>
                         <ul>
@@ -227,9 +235,9 @@
                             </c:if>
                         </ul>
                     </nav>
-                </div>
+                </div> --%>
                 
-                <div class="footer">
+<%--                 <div class="footer">
                     <div class="content clearfix">
                         <div class="left">
                             <div class="legal">
@@ -268,7 +276,7 @@
                         </div>
                     </div>
                 </div>
-            </footer>
+            </footer> --%>
             
         </div>
     </cti:msgScope>
