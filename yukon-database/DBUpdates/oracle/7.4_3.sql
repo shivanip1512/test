@@ -3,6 +3,7 @@
 /******************************************/ 
 
 /* @start YUK-22622 */
+/* @start-block */
 DECLARE 
     Start_Gear VARCHAR(10);
     Program_ID VARCHAR(10);
