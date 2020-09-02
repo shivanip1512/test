@@ -12,7 +12,6 @@ import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.eaton.elements.Section;
@@ -36,12 +35,14 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
         randomNum = getRandomNum();
         softly = new SoftAssertions();
-    }
-
-    @BeforeMethod(alwaysRun = true)
-    public void beforeTest() {
+        
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
         createPage = new LoadGroupVersacomCreatePage(driverExt);
+    }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterTest() {
+        refreshPage(createPage);        
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -176,8 +177,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         String actualLabels = createPage.getPageSection(sectionName).getSectionLabels().get(0);
-        assertThat(actualLabels.contains(expectedLabels)).withFailMessage("Assertion failed for label : " + expectedLabels)
-                .isTrue();
+        assertThat(actualLabels.contains(expectedLabels)).withFailMessage("Assertion failed for label : " + expectedLabels).isTrue();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -385,14 +385,9 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getAddressUsage().setTrueFalseByName("Division", true);
         createPage.getAddressUsage().setTrueFalseByName("Serial", true);
 
-        assertThat(createPage.getClassAddress().allValuesDisabled()).isTrue();
-        assertThat(createPage.getSectionAddress().isDisabled()).isFalse();
-        assertThat(createPage.getDivisionAddress().allValuesDisabled()).isTrue();
-    }
-
-    @AfterMethod(alwaysRun = true)
-    public void afterTest() {
-        refreshPage(createPage);
-        createPage = new LoadGroupVersacomCreatePage(driverExt);
+        softly.assertThat(createPage.getClassAddress().allValuesDisabled()).isTrue();
+        softly.assertThat(createPage.getSectionAddress().isDisabled()).isFalse();
+        softly.assertThat(createPage.getDivisionAddress().allValuesDisabled()).isTrue();
+        softly.assertAll();
     }
 }

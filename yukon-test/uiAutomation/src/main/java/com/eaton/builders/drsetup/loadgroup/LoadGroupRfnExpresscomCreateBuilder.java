@@ -8,20 +8,17 @@ import java.util.Optional;
 import org.javatuples.Pair;
 import org.json.JSONObject;
 
-import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.AddressUsageRfnExpresscom;
-import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.RelayUsageRfnExpresscom;
+import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.RelayUsageExpresscom;
 import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
 import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 import com.github.javafaker.Faker;
 
 import io.restassured.response.ExtractableResponse;
 
-
-public class LoadGroupRfnExpresscomCreateBuilder  {
-public static class Builder {
-	    private Faker faker = new Faker();
-        private static final String TYPE = "LM_GROUP_RFN_EXPRESSCOMM";
-        private static final String ParentType = "LM_GROUP_EXPRESSCOMM";
+public class LoadGroupRfnExpresscomCreateBuilder {
+    public static class Builder {
+        private Faker faker = new Faker();
+        private static final String PARENTTYPE = "LM_GROUP_EXPRESSCOMM";
         private String name;
         private int spid;
         private int geo;
@@ -33,68 +30,67 @@ public static class Builder {
         private int splinter;
         private double kwCapacity;
         private boolean disableGroup;
-        private boolean disableControl;  
-        private List<LoadGroupEnums.AddressUsageRfnExpresscom> addressUsage;
-        private List<RelayUsageRfnExpresscom> relayUsage;
+        private boolean disableControl;
+        private List<LoadGroupEnums.AddressUsageExpresscom> addressUsage;
+        private List<RelayUsageExpresscom> relayUsage;
         private String protocolPriority;
-        
-        
+
         public Builder(Optional<String> name) {
-            String u = UUID.randomUUID().toString();            
+            String u = UUID.randomUUID().toString();
             String uuid = u.replace("-", "");
-            
+
             this.name = name.orElse("AT LG " + uuid);
         }
-        
+
         public Builder withName(String name) {
             this.name = name;
             return this;
         }
 
         public Builder withSPID(Optional<Integer> serviceProvider) {
-            this.spid = serviceProvider.orElse(faker.number().numberBetween(1, 65534));            
+            this.spid = serviceProvider.orElse(faker.number().numberBetween(1, 65534));
             return this;
         }
-        
+
         public Builder withGeo(Optional<Integer> geo) {
-            this.geo = geo.orElse(faker.number().numberBetween(1, 65534));            
+            this.geo = geo.orElse(faker.number().numberBetween(1, 65534));
             return this;
         }
-        
+
         public Builder withUser(Optional<Integer> user) {
-            this.user = user.orElse(faker.number().numberBetween(1, 65534));            
+            this.user = user.orElse(faker.number().numberBetween(1, 65534));
             return this;
         }
-        
+
         public Builder withSubstation(Optional<Integer> substation) {
-            this.substation = substation.orElse(faker.number().numberBetween(1, 65534));            
+            this.substation = substation.orElse(faker.number().numberBetween(1, 65534));
             return this;
         }
-        
+
         public Builder withZip(Optional<Integer> zip) {
-            this.zip = zip.orElse(faker.number().numberBetween(1, 16777214));            
+            this.zip = zip.orElse(faker.number().numberBetween(1, 16777214));
             return this;
         }
-        
+
         public Builder withFeeder(Optional<String> feeder) {
-        	 int x = faker.number().numberBetween(1, 65535);
-             String s = String.format("%16s", Integer.toBinaryString(x)).replace(' ', '0');
-        	 this.feeder = feeder.orElse(s);
+            int x = faker.number().numberBetween(1, 65535);
+            String s = String.format("%16s", Integer.toBinaryString(x)).replace(' ', '0');
+            this.feeder = feeder.orElse(s);
             return this;
-        }    
-        
+        }
+
         public Builder withProgram(Optional<Integer> program) {
-            this.program = program.orElse(faker.number().numberBetween(1, 254));            
+            this.program = program.orElse(faker.number().numberBetween(1, 254));
             return this;
         }
-        
+
         public Builder withSplinter(Optional<Integer> splinter) {
-            this.splinter = splinter.orElse(faker.number().numberBetween(1, 254));            
+            this.splinter = splinter.orElse(faker.number().numberBetween(1, 254));
             return this;
         }
-                
+
         public Builder withKwCapacity(Optional<Double> kwCapacity) {
-            this.kwCapacity = kwCapacity.orElse(faker.number().randomDouble(3, 0, 99999));            
+            this.kwCapacity = kwCapacity.orElse(faker.number().randomDouble(3, 0, 99999));
             return this;
         }
 
@@ -107,37 +103,36 @@ public static class Builder {
             this.disableControl = disableControl.orElse(false);
             return this;
         }
-        
-        public Builder withAddressUsage(Optional<List<AddressUsageRfnExpresscom>> addressUsage) {
-            List<AddressUsageRfnExpresscom> addresses = new ArrayList<AddressUsageRfnExpresscom>();
-            addresses.add(AddressUsageRfnExpresscom.getRandomAddressUsage());
-            addresses.add(AddressUsageRfnExpresscom.PROGRAM);
+
+        public Builder withAddressUsage(Optional<List<LoadGroupEnums.AddressUsageExpresscom>> addressUsage) {
+            List<LoadGroupEnums.AddressUsageExpresscom> addresses = new ArrayList<>();
+            addresses.add(LoadGroupEnums.AddressUsageExpresscom.getRandomAddressUsage());
             this.addressUsage = addressUsage.orElse(addresses);
             return this;
         }
-        
-        public Builder withRelayUsage(Optional<List<RelayUsageRfnExpresscom>> relayUsage) {
-            List<RelayUsageRfnExpresscom> relays = new ArrayList<RelayUsageRfnExpresscom>();
-            relays.add(RelayUsageRfnExpresscom.getRandomRelayUsage());
+
+        public Builder withRelayUsage(Optional<List<LoadGroupEnums.RelayUsageExpresscom>> relayUsage) {
+            List<LoadGroupEnums.RelayUsageExpresscom> relays = new ArrayList<>();
+            relays.add(LoadGroupEnums.RelayUsageExpresscom.getRandomRelayUsage());
 
             this.relayUsage = relayUsage.orElse(relays);
             return this;
         }
-        
-        public Builder withProtocolPriority(Optional<LoadGroupEnums.ProtocolPriorityRfnExpresscom> protocol_Priority) {
-        	LoadGroupEnums.ProtocolPriorityRfnExpresscom randomProtocolPriority = protocol_Priority
-                    .orElse(LoadGroupEnums.ProtocolPriorityRfnExpresscom.getRandomProtocolPriority());
+
+        public Builder withProtocolPriority(Optional<LoadGroupEnums.ProtocolPriorityExpresscom> protocolPriority) {
+            LoadGroupEnums.ProtocolPriorityExpresscom randomProtocolPriority = protocolPriority
+                    .orElse(LoadGroupEnums.ProtocolPriorityExpresscom.getRandomProtocolPriority());
 
             this.protocolPriority = randomProtocolPriority.getProtocolPriority();
             return this;
         }
-        
-        public JSONObject build() {            
-            JSONObject j = new JSONObject();            
-            
-            JSONObject jo = new JSONObject();            
+
+        public JSONObject build() {
+            JSONObject j = new JSONObject();
+
+            JSONObject jo = new JSONObject();
             jo.put("name", this.name);
-            jo.put("type", TYPE);
+            jo.put("type", "LM_GROUP_RFN_EXPRESSCOMM");
             jo.put("serviceProvider", this.spid);
             jo.put("geo", this.geo);
             jo.put("substation", this.substation);
@@ -151,47 +146,46 @@ public static class Builder {
             jo.put("protocolPriority", this.protocolPriority);
             jo.put("kWCapacity", this.kwCapacity);
             jo.put("disableGroup", this.disableGroup);
-            jo.put("disableControl", this.disableControl);            
+            jo.put("disableControl", this.disableControl);
 
-            j.put(ParentType, jo);
-            
+            j.put(PARENTTYPE, jo);
+
             return j;
         }
-        
+
         public Pair<JSONObject, JSONObject> create() {
-            JSONObject request = build(); 
-            
+            JSONObject request = build();
+
             ExtractableResponse<?> createResponse = DrSetupCreateRequest.createLoadGroup(request.toString());
-            
+
             String id = createResponse.path("groupId").toString();
-            
-            ExtractableResponse<?> er = DrSetupGetRequest.getLoadGroup(Integer.parseInt(id)); 
-            
+
+            ExtractableResponse<?> er = DrSetupGetRequest.getLoadGroup(Integer.parseInt(id));
+
             String res = er.asString();
             JSONObject response = new JSONObject(res);
-            JSONObject jsonResponse = response.getJSONObject(ParentType);
-            
+            JSONObject jsonResponse = response.getJSONObject(PARENTTYPE);
+
             return new Pair<>(request, jsonResponse);
         }
-       
+
     }
-	public static Builder buildDefaultRfnExpresscomLoadGroup() {
-		return new LoadGroupRfnExpresscomCreateBuilder.Builder(Optional.empty())
-							.withProtocolPriority(Optional.empty())
-							.withDisableControl(Optional.empty())
-							.withDisableGroup(Optional.empty())
-							.withKwCapacity(Optional.empty())
-							.withSPID(Optional.empty())
-							.withGeo(Optional.empty())
-							.withProgram(Optional.empty())
-							.withSplinter(Optional.empty())
-							.withSubstation(Optional.empty())
-							.withFeeder(Optional.empty())
-							.withUser(Optional.empty())
-							.withZip(Optional.empty())
-							.withRelayUsage(Optional.empty())
-							.withAddressUsage(Optional.empty());
-							
-	}
-	
+
+    public static Builder buildDefaultRfnExpresscomLoadGroup() {
+        return new LoadGroupRfnExpresscomCreateBuilder.Builder(Optional.empty())
+                .withProtocolPriority(Optional.empty())
+                .withDisableControl(Optional.empty())
+                .withDisableGroup(Optional.empty())
+                .withKwCapacity(Optional.empty())
+                .withSPID(Optional.empty())
+                .withGeo(Optional.empty())
+                .withProgram(Optional.empty())
+                .withSplinter(Optional.empty())
+                .withSubstation(Optional.empty())
+                .withFeeder(Optional.empty())
+                .withUser(Optional.empty())
+                .withZip(Optional.empty())
+                .withRelayUsage(Optional.empty())
+                .withAddressUsage(Optional.empty());
+    }
 }

@@ -61,7 +61,7 @@ public class DropDownElement {
         List<String> optionValues = new ArrayList<>();
         List<WebElement> options = getSelectElement().findElements(By.tagName("option"));
         for(WebElement option : options) {
-            optionValues.add(option.getText().trim().replaceAll("\n", ""));
+            optionValues.add(option.getText().trim().replace("\n", ""));
         }
         
         return optionValues;
