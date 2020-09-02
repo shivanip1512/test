@@ -26,12 +26,12 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
-    
+
     public enum RelayUsageEmetcon {
         RELAY_A("RELAY_A"),
         RELAY_B("RELAY_B"),
         RELAY_C("RELAY_C"),
-        RELAY_S("RELAY_S");
+        RELAY_ALL("RELAY_ALL");
 
         private final String relayUsage;
 
@@ -49,7 +49,7 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
-    
+
     public enum RelayUsageExpresscom {
         LOAD_1("LOAD_1"),
         LOAD_2("LOAD_2"),
@@ -75,7 +75,7 @@ public class LoadGroupEnums {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
-    }
+    }   
 
     public enum AddressLevelMCT {
         BRONZE("BRONZE"),
@@ -97,10 +97,10 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
-    
-        public enum RouteId {
+
+    public enum RouteId {
         ACCU710A(28),
-        ACCU711(32),                        
+        ACCU711(32),
         ACCU721(36),
         ALCUEASTRIVER(40),
         APAGINGTAPTERMINAL(43),
@@ -132,7 +132,7 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
-    
+
     public enum AddressUsageEmetcon {
         GOLD("GOLD"),
         SILVER("SILVER");
@@ -152,7 +152,7 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
-    
+
     public enum AddressUsageExpresscom {
         GEO("GEO"),
         SUBSTATION("SUBSTATION"),
@@ -177,7 +177,7 @@ public class LoadGroupEnums {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
-    }
+    }   
 
     public enum AddressUsageVersacom {
         UTILITY("UTILITY"),
@@ -296,80 +296,26 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
-	
-	public enum AddressUsageRfnExpresscom {
-		GEO("GEO"), 
-		SUBSTATION("SUBSTATION"), 
-		FEEDER("FEEDER"), 
-		ZIP("ZIP"),
-		USER("USER"),
-		SERIAL("SERIAL"),
-		LOAD("LOAD"), 
-		SPLINTER("SPLINTER"), 
-		PROGRAM("PROGRAM");;
-		
-		private final String addressUsage;
 
-		AddressUsageRfnExpresscom(String addressUsage) {
-			this.addressUsage = addressUsage;
-		}
+    public enum ProtocolPriorityExpresscom {
+        DEFAULT("DEFAULT"),
+        MEDIUM("MEDIUM"),
+        HIGH("HIGH"),
+        HIGHEST("HIGHEST");
 
-		public String getAddressUsage() {
-			return this.addressUsage;
-		}
+        private final String protocolPriority;
 
-		public static AddressUsageRfnExpresscom getRandomAddressUsage() {
+        ProtocolPriorityExpresscom(String protocolPriority) {
+            this.protocolPriority = protocolPriority;
+        }
 
-			Random random = new Random();
-			return values()[random.nextInt(values().length)];
-		}
-	}
+        public String getProtocolPriority() {
+            return this.protocolPriority;
+        }
 
-	public enum RelayUsageRfnExpresscom {
-		Load_1("Load_1"), 
-		Load_2("Load_2"), 
-		Load_3("Load_3"), 
-		Load_4("Load_4"),
-		Load_5("Load_5"), 
-		Load_6("Load_6"), 
-		Load_7("Load_7"), 
-		Load_8("Load_8");
-
-		private final String relayUsage;
-
-		RelayUsageRfnExpresscom(String relayUsage) {
-			this.relayUsage = relayUsage;
-		}
-
-		public String getRelayUsage() {
-			return this.relayUsage;
-		}
-
-		public static RelayUsageRfnExpresscom getRandomRelayUsage() {
-			Random random = new Random();
-			return values()[random.nextInt(values().length)];
-		}
-	}
-	
-	public enum ProtocolPriorityRfnExpresscom {
-		DEFAULT("DEFAULT"), 
-		MEDIUM("MEDIUM"), 
-		HIGH("HIGH"),
-		HIGHEST("HIGHEST");
-		
-		private final String protocolPriority;
-
-		ProtocolPriorityRfnExpresscom(String protocolPriority) {
-			this.protocolPriority = protocolPriority;
-		}
-
-		public String getProtocolPriority() {
-			return this.protocolPriority;
-		}
-
-		public static ProtocolPriorityRfnExpresscom getRandomProtocolPriority() {
-			Random random = new Random();
-			return values()[random.nextInt(values().length)];
-		}
-	}	
+        public static ProtocolPriorityExpresscom getRandomProtocolPriority() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
+    }
 }

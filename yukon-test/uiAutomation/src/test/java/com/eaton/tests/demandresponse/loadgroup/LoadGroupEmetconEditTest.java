@@ -16,126 +16,99 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.LoadGroupEmetconEditPage;
+import com.github.javafaker.Faker;
 
 public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
-	private DriverExtensions driverExt;
-	private Integer id;
-	private LoadGroupEmetconEditPage editPage;
-	private int routeId= 28;
+    private DriverExtensions driverExt;
+    private Integer id;
+    private LoadGroupEmetconEditPage editPage;
+    private Faker faker;
 
-	@BeforeClass(alwaysRun = true)
-	public void beforeClass() {
-		driverExt = getDriverExt();
-		Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
-													.withCommunicationRoute(Optional.of(routeId))
-													.create();
-		JSONObject response = pair.getValue1();
-		id = response.getInt("id");
-		navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-		editPage = new LoadGroupEmetconEditPage(driverExt, id);
-	}
-	
-	@AfterMethod
-	public void afterMethod() {
-		refreshPage(editPage);
-	}
+    @BeforeClass(alwaysRun = true)
+    public void beforeClass() {
+        driverExt = getDriverExt();
+        faker = new Faker();
+        Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
+                .create();
+        JSONObject response = pair.getValue1();
+        id = response.getInt("id");
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+        editPage = new LoadGroupEmetconEditPage(driverExt, id);
+    }
 
-	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEmetconEdit_RequiredFieldsOnly_Success() {
-		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		String name = "AT Edited Emetcon Ldgrp " + timeStamp;
-		final String EXPECTED_MSG = name + " saved successfully.";
-		Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
-													.withCommunicationRoute(Optional.of(routeId))
-													.create();
-		JSONObject response = pair.getValue1();
-		id = response.getInt("id");
+    @AfterMethod
+    public void afterMethod() {
+        refreshPage(editPage);
+    }
 
-		editPage.getName().setInputValue(name);
-		editPage.getSaveBtn().click();
-		waitForPageToLoad("Load Group: " + name, Optional.empty());
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpEmetconEdit_Name_RequiredValidation() {
+        final String EXPECTED_MSG = "Name is required.";
 
-		LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
-		String userMsg = detailsPage.getUserMessage();
+        editPage.getName().clearInputValue();
+        editPage.getSaveBtn().click();
 
-		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-	}
+        String actualMsg = editPage.getName().getValidationError();
+        assertThat(actualMsg).isEqualTo(EXPECTED_MSG);
+    }
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEmetconEdit_Name_RequiredValidation() {
-		final String EXPECTED_MSG = "Name is required.";
-		Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
-													.withCommunicationRoute(Optional.of(routeId))
-													.create();
-		JSONObject response = pair.getValue1();
-		id = response.getInt("id");
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpEmetconEdit_Name_UniqueValidation() {
+        final String EXPECTED_MSG = "Name must be unique.";
+        Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
+                .create();
+        JSONObject response = pair.getValue1();
+        String name = response.getString("name");
+        
+        editPage.getName().setInputValue(name);
+        editPage.getSaveBtn().click();
 
-		editPage.getName().clearInputValue();
-		editPage.getSaveBtn().click();
+        String actualMsg = editPage.getName().getValidationError();
+        assertThat(actualMsg).isEqualTo(EXPECTED_MSG);
+    }
 
-		String actualMsg = editPage.getName().getValidationError();
-		assertThat(actualMsg).isEqualTo(EXPECTED_MSG);
-	}
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpEmetconEdit_Name_InvalidCharsValidation() {
+        final String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEmetconEdit_Name_UniqueValidation() {
-		final String EXPECTED_MSG = "Name must be unique.";
-		Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
-											.withCommunicationRoute(Optional.of(routeId))
-											.create();
-		JSONObject response = pair.getValue1();
-		id = response.getInt("id");
-		
-		String name = response.getString("name");
-		editPage.getName().setInputValue(name);
-		editPage.getSaveBtn().click();
+        editPage.getName().setInputValue("/emetcon,|group ");
+        editPage.getSaveBtn().click();
 
-		String actualMsg = editPage.getName().getValidationError();
-		assertThat(actualMsg).isEqualTo(EXPECTED_MSG);
-	}
+        String actualMsg = editPage.getName().getValidationError();
+        assertThat(actualMsg).isEqualTo(EXPECTED_MSG);
+    }
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEmetconEdit_Name_invalidCharsValidation() {
-		final String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
-		Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
-													.withCommunicationRoute(Optional.of(routeId))
-													.create();
-		JSONObject response = pair.getValue1();
-		id = response.getInt("id");
-		
-		editPage.getName().setInputValue("/emetcon,|group ");
-		editPage.getSaveBtn().click();
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpEmetconEdit_AllFields_Success() {
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String name = "AT Edited Emetcon Ldgrp " + timeStamp;
+        final String EXPECTED_MSG = name + " saved successfully.";
+        Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
+                .withAddressUsage(Optional.of(LoadGroupEnums.AddressUsageEmetcon.GOLD))
+                .withRelayUsage(Optional.of(LoadGroupEnums.RelayUsageEmetcon.RELAY_C))
+                .withGoldAddress(Optional.of(1))
+                .withSilverAddress(Optional.of(25))
+                .create();
+        
+        JSONObject response = pair.getValue1();
+        Integer editId = response.getInt("id");
+        
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + editId + Urls.EDIT);
 
-		String actualMsg = editPage.getName().getValidationError();
-		assertThat(actualMsg).isEqualTo(EXPECTED_MSG);
-	}
+        editPage.getName().setInputValue(name);
+        editPage.getCommuncationRoute().selectItemByText("a_CCU-721");
+        editPage.getaddressUsage().setByValue("SILVER", true);
+        editPage.getGoldAddress().setInputValue("4");
+        editPage.getSilverAddress().setInputValue("23");
+        editPage.getaddressrelayUsage().setByValue("RELAY_ALL", true);
+        editPage.getkWCapacity().setInputValue(String.valueOf(faker.number().randomDouble(3, 0, 99999)));
+        editPage.getDisableGroup().setValue(true);
+        editPage.getDisableControl().setValue(true);
+        editPage.getSaveBtn().click();
 
-	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpEmetconEdit_UpdateAllFields_Success() {
-		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		String name = "AT Edited Emetcon Ldgrp " + timeStamp;
-		final String EXPECTED_MSG = name + " saved successfully.";
-		Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
-													.withAddressUsage(Optional.of(LoadGroupEnums.AddressUsageEmetcon.GOLD))
-													.withRelayUsage(Optional.of(LoadGroupEnums.RelayUsageEmetcon.RELAY_C))
-													.create();
-		JSONObject response = pair.getValue1();
-		id = response.getInt("id");
-		
-		editPage.getName().setInputValue(name);
-		editPage.getCommuncationRoute().selectItemByText("a_CCU-721");
-		editPage.getaddressUsage().setByValue("SILVER", true);
-		editPage.getGoldAddress().setInputValue("2");
-		editPage.getSilverAddress().setInputValue("30");
-		editPage.getaddressrelayUsage().setByValue("RELAY_ALL", true);
-		editPage.getkWCapacity().setInputValue("2345");
-		editPage.getDisableGroup().setValue(true);
-		editPage.getDisableControl().setValue(true);
-		editPage.getSaveBtn().click();
+        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
+        String userMsg = detailsPage.getUserMessage();
 
-		LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
-		String userMsg = detailsPage.getUserMessage();
-
-		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-	}
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+    }
 }
