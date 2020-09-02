@@ -355,6 +355,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="InvalidReaderException.cpp">
     </ClCompile>
+    <ClCompile Include="sql_util.cpp" />
     <ClCompile Include="tbl_alm_ngroup.cpp">
     </ClCompile>
     <ClCompile Include="tbl_base.cpp">
@@ -513,6 +514,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\dbmemobject.h" />
     <ClInclude Include="include\dllyukon.h" />
     <ClInclude Include="include\InvalidReaderException.h" />
+    <ClInclude Include="include\sql_util.h" />
     <ClInclude Include="include\tbl_alm_ngroup.h" />
     <ClInclude Include="include\tbl_base.h" />
     <ClInclude Include="include\tbl_carrier.h" />

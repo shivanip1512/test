@@ -6,20 +6,17 @@ import com.eaton.elements.RadioButtonElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 
-public class TrendAddMarkerModal extends BaseModal {
+public class TrendMarkerModal extends BaseModal {
     
-    private String modalTitle;
-    private String describedBy;
-
-    public TrendAddMarkerModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
+    public TrendMarkerModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
         super(driverExt, modalTitle, describedBy);
         
         if(modalTitle.isPresent()) {
-            this.modalTitle = modalTitle.get();
+            modalTitle = Optional.of(modalTitle.get());
         }
         
         if(describedBy.isPresent()) {
-            this.describedBy = describedBy.get();
+            describedBy = Optional.of(describedBy.get());
         }
     } 
     

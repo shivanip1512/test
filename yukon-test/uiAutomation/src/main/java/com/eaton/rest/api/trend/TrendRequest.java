@@ -12,7 +12,7 @@ public class TrendRequest {
 
         String pathParam = APIs.Trend.CREATE_TREND;
         ExtractableResponse<?> response = ApiCallHelper.post(pathParam, body);
-        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.statusCode()).isEqualTo(201);
         return response;
     }
 

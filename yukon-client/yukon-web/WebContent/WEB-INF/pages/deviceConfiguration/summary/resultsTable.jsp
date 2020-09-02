@@ -118,7 +118,7 @@
                                 <cm:dropdown icon="icon-cog">
                                     <cti:msg2 var="historyTitle" key=".viewHistory.title" argument="${detail.device.name}"/>
                                     <div class="dn js-view-history-${deviceId}" data-dialog data-cancel-omit="true" data-title="${historyTitle}" 
-                                    data-width="600" data-load-event="yukon:config:viewHistory"
+                                    data-width="600" data-height="400" data-load-event="yukon:config:viewHistory"
                                     data-url="<cti:url value="/deviceConfiguration/summary/${deviceId}/viewHistory"/>"></div>
                                     <cm:dropdownOption key=".viewHistory" data-popup=".js-view-history-${deviceId}" icon="icon-application-view-columns"/>
                                     <cti:checkRolesAndProperties value="SEND_READ_CONFIG">                    
