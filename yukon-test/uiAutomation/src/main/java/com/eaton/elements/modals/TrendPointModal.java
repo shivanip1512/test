@@ -23,7 +23,7 @@ public class TrendPointModal extends BaseModal {
     }   
     
     public PickerElement getPoint() {
-        return new PickerElement(this.driverExt, Optional.empty(), Optional.of("picker-trendPointPicker"));
+        return new PickerElement(this.driverExt, Optional.empty(), Optional.of("trendPointPicker"));
     }
     
     public TextEditElement getLabel() {

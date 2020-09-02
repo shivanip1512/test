@@ -40,6 +40,6 @@ public class LoadProgramDetailPage extends PageBase {
     public CopyLoadProgramModal showCopyLoadProgramModal() {
         getActionBtn().clickAndSelectOptionByText("Copy");   
         
-        return new CopyLoadProgramModal(this.driverExt, Optional.of("Copy Load Program"), Optional.empty()); 
+        return new CopyLoadProgramModal(this.driverExt, Optional.empty(), Optional.of("copy-loadProgram-popup")); 
     }
 }

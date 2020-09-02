@@ -13,7 +13,6 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.framework.test.annotation.CustomTestNgAnnotations;
 import com.eaton.pages.capcontrol.AreaCreatePage;
 import com.eaton.pages.capcontrol.AreaDetailPage;
 
@@ -27,12 +26,16 @@ public class AreaCreateTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
         
         navigate(Urls.CapControl.AREA_CREATE);
-
-        this.createPage = new AreaCreatePage(driverExt);
+        createPage = new AreaCreatePage(driverExt);
+    }
+    
+    @AfterMethod
+    public void afterMethod() {
+        refreshPage(createPage);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void areaCreate_pageTitleCorrect() {
+    public void areaCreate_pageTitle_Correct() {
         final String EXPECTED_TITLE = "Create Area";
 
         String actualPageTitle = createPage.getPageTitle();
@@ -41,8 +44,7 @@ public class AreaCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    @CustomTestNgAnnotations(refreshPage = true, urlToRefresh = Urls.CapControl.AREA_CREATE)
-    public void areaCreate_RequiredFieldsOnlySuccess() {
+    public void areaCreate_RequiredFieldsOnly_Success() {
         final String EXPECTED_MSG = "Area was saved successfully.";
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -59,10 +61,5 @@ public class AreaCreateTests extends SeleniumTestSetup {
         String userMsg = detailsPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }
-
-    @AfterMethod(alwaysRun = true)
-    public void afterTest() {
-        this.createPage = new AreaCreatePage(driverExt);
     }
 }

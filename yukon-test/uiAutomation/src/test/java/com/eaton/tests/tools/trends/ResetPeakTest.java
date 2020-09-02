@@ -103,7 +103,7 @@ public class ResetPeakTest extends SeleniumTestSetup {
         navigate(Urls.Tools.TREND_DETAILS + id);
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
-        resetPeakModal.getResetPeakForAllTrends().selectByValue("true");
+        resetPeakModal.getResetPeakForAllTrends().selectByValue("Yes");
 
         resetPeakModal.clickOkAndWaitForModalToClose();        
         String actualUserMessage = detailsPage.getResetPeakMessage();
@@ -116,7 +116,7 @@ public class ResetPeakTest extends SeleniumTestSetup {
     public void trendResetPeak_ResetPeakForAllTrendsNo_Success() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
-        resetPeakModal.getResetPeakForAllTrends().selectByValue("false");
+        resetPeakModal.getResetPeakForAllTrends().selectByValue("No");
         resetPeakModal.clickOkAndWaitForModalToClose();
 
         assertThat(detailsPage.getUserMessage()).contains("Reset peak performed successfully for " + trendName + ".");

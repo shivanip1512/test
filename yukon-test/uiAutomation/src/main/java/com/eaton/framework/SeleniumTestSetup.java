@@ -43,7 +43,7 @@ public class SeleniumTestSetup {
     private static boolean loggedIn = false;
 
     private static String screenShotPath;
-    
+
     private static Faker faker;
 
     @BeforeSuite(alwaysRun = true)
@@ -130,11 +130,11 @@ public class SeleniumTestSetup {
     public static Faker getFaker() {
         return SeleniumTestSetup.faker;
     }
-    
+
     private static void setFaker(Faker faker) {
-        SeleniumTestSetup.faker = faker; 
+        SeleniumTestSetup.faker = faker;
     }
-    
+
     private static void setScreenShotPath(String screenShotPath) {
         SeleniumTestSetup.screenShotPath = screenShotPath;
     }
@@ -307,14 +307,19 @@ public class SeleniumTestSetup {
         long startTime = System.currentTimeMillis();
 
         while (found || (System.currentTimeMillis() - startTime) < 1000) {
-            List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-labelledby^='ui-id']"),
+            List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-describedby^='ui-id']"),
                     Optional.empty());
 
-            Optional<WebElement> el = list.stream()
-                    .filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle)).findFirst();
+            try {
+                Optional<WebElement> el = list.stream()
+                        .filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle))
+                        .findFirst();
 
-            if (!el.isPresent()) {
-                return;
+                if (!el.isPresent()) {
+                    return;
+                }
+            } catch (StaleElementReferenceException ex) {
+
             }
         }
     }
