@@ -3,6 +3,8 @@ package com.cannontech.dbtools.updater;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -346,7 +348,15 @@ public class DBUpdater extends MessageFrameAdaptor {
             }
 
         } else if (line_.isWarning()) {
-            warnInvalidDirectories(line_, stat, cmd);
+            String commandName = line_.getCommandName();
+            String warningMessage = line_.getWarningMessage();
+            try {
+                Method method = DBUpdater.class.getDeclaredMethod(commandName, Statement.class, String.class, String.class);
+                method.invoke(this, stat, cmd, warningMessage);
+            } catch (SecurityException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException
+                    | InvocationTargetException e) {
+                throw new RuntimeException(e.getCause());
+            }
         }
         else {
             stat.execute(cmd);
@@ -365,28 +375,26 @@ public class DBUpdater extends MessageFrameAdaptor {
     /**
      * Method to display warning message for invalid Import / Export directories while upgrading DB.
      */
-    private void warnInvalidDirectories(UpdateLine line, Statement stat, String cmd) throws SQLException {
-        String yukonBase = CtiUtilities.getYukonBase();
+    private void checkDirectoryAccess(Statement stat, String cmd, String warningMessage) throws SQLException {
         boolean showWarnMessage = false;
         ResultSet resultSet = stat.executeQuery(cmd);
         while (resultSet.next()) {
             String value = resultSet.getString("value");
             String[] directoryPaths = value.split(",");
             for (String directoryPath : directoryPaths) {
-                if (!directoryPath.contains(yukonBase + File.separator)) {
+                File file = new File(directoryPath);
+                if (!file.canWrite() || !file.canRead()) {
                     showWarnMessage = true;
                     break;
                 }
             }
         }
-        line.setSuccess(true);
         if (showWarnMessage) {
             getIMessageFrame().addOutput("");
             getIMessageFrame().addOutput(
                     " ************************************************************************** ");
             getIMessageFrame().addOutput("   Warning Message:");
-            getIMessageFrame().addOutput("   Yukon Required Local service Access for Import and Export directories. "
-                    + "Please provide the access manually and, press Start again to continue execution.");
+            getIMessageFrame().addOutput("   " + warningMessage);
             getIMessageFrame().addOutput("");
             getIMessageFrame().addOutput(
                     " ************************************************************************** ");

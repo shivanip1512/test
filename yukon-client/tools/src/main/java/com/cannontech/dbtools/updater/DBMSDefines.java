@@ -51,11 +51,7 @@ public interface DBMSDefines
     public static final String START_CPARM_REGEX        = "/\\* @start-cparm (\\w+) \\*/";
     public static final String END_CPARM                = "/* @end-cparm */";
     public static final String PROCESS_COMMAND_CHARACTER= "/";
-    public static final String WARNING                  = "warning";
-    public static final String BEGIN                    = "begin";
-    public static final String STOP                     = "stop";
-    public static final String META_WARNING_BEGIN       = COMMENT_BEGIN + " " + META_TAG + BEGIN + " " + WARNING;
-
+    public static final String START_WARNING            = "start-warning";
     String START_IF_REGEX                               = "/\\* @start +([\\w-])+(\\sif\\s)+([\\w-])+\\s\\*/";
     String START_REGEX                                  = "/\\* @start +([\\w-])+\\s\\*/";
     String END_REGEX                                    = "/\\* @end +([\\w-])+\\s\\*/";

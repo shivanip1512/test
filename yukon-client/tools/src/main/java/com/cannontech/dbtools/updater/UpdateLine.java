@@ -5,6 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @author rneuharth
  *
@@ -218,16 +220,33 @@ public class UpdateLine
         getMetaProps().put( DBMSDefines.META_ERROR, DBMSDefines.OPTIONS_ERROR[5] );
     }
 
+    /**
+     * Method to check if warning message is required or not.
+     */
     public Boolean isWarning() {
-        Object o = getMetaProps().get(DBMSDefines.BEGIN);
+        Object o = getMetaProps().get(DBMSDefines.START_WARNING);
+        return o != null ? true : false;
+    }
+
+    /**
+     * method to retrieve commandName from the @start-warning annotation.
+     */
+    public String getCommandName() {
+        Object o = getMetaProps().get(DBMSDefines.START_WARNING);
         if (o != null)
-            return DBMSDefines.WARNING.equalsIgnoreCase(o.toString());
+            return o.toString().split("\\s+")[0];
         else
-            return false;
+            return StringUtils.EMPTY;
     }
 
-    public void setWarning(boolean b) {
-        getMetaProps().put(DBMSDefines.BEGIN, Boolean.toString(b));
+    /**
+     * method to retrieve warning message from the @start-warning annotation.
+     */
+    public String getWarningMessage() {
+        Object o = getMetaProps().get(DBMSDefines.START_WARNING);
+        if (o != null)
+            return o.toString().split("\\s+", 2)[1];
+        else
+            return StringUtils.EMPTY;
     }
-
 }

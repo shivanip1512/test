@@ -527,10 +527,6 @@ public class UpdateDB
                     cparmToken = cparmMatcher.group(1);
                     continue;
                 }
-                if (token.startsWith(DBMSDefines.META_WARNING_BEGIN)) {
-                    updLine.setWarning(true);
-                }
-
                 if (startIfState) {
                     startIfState = !endMatcher.find();
                     if (!startIfState) {
