@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
-import com.cannontech.common.device.commands.VerifyConfigCommandResult;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DeviceConfigState;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
@@ -23,8 +22,6 @@ public interface DeviceConfigService {
 
     int readConfigs(DeviceCollection deviceCollection, SimpleCallback<CollectionActionResult> callback, YukonUserContext context);
 
-    VerifyConfigCommandResult verifyConfigs(List<SimpleDevice> devices, LiteYukonUser user);
-
     VerifyResult verifyConfig(SimpleDevice device, LiteYukonUser user);
 
     void readConfig(SimpleDevice device, LiteYukonUser user);
@@ -34,8 +31,6 @@ public interface DeviceConfigService {
     enum LogAction {
         READ, SEND, VERIFY
     }
-
-    int verifyConfigs(DeviceCollection deviceCollection, YukonUserContext context);
 
     /**
      * Updates device config state for success results for assign and unassign collection action
