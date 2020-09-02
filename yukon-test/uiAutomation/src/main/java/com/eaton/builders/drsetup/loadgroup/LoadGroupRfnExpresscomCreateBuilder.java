@@ -31,9 +31,9 @@ public class LoadGroupRfnExpresscomCreateBuilder {
         private double kwCapacity;
         private boolean disableGroup;
         private boolean disableControl;
-        private List<LoadGroupEnums.AddressUsageExpresscom> addressUsage;
         private List<RelayUsageExpresscom> relayUsage;
         private String protocolPriority;
+        List<LoadGroupEnums.AddressUsageExpresscom> addressUsageList = new ArrayList<>();
 
         public Builder(Optional<String> name) {
             String u = UUID.randomUUID().toString();
@@ -47,28 +47,32 @@ public class LoadGroupRfnExpresscomCreateBuilder {
             return this;
         }
 
-        public Builder withSPID(Optional<Integer> serviceProvider) {
+        public Builder withSpid(Optional<Integer> serviceProvider) {
             this.spid = serviceProvider.orElse(faker.number().numberBetween(1, 65534));
             return this;
         }
 
         public Builder withGeo(Optional<Integer> geo) {
             this.geo = geo.orElse(faker.number().numberBetween(1, 65534));
+            addressUsageList.add(LoadGroupEnums.AddressUsageExpresscom.GEO);
             return this;
         }
 
         public Builder withUser(Optional<Integer> user) {
             this.user = user.orElse(faker.number().numberBetween(1, 65534));
+            addressUsageList.add(LoadGroupEnums.AddressUsageExpresscom.USER);
             return this;
         }
 
         public Builder withSubstation(Optional<Integer> substation) {
             this.substation = substation.orElse(faker.number().numberBetween(1, 65534));
+            addressUsageList.add(LoadGroupEnums.AddressUsageExpresscom.SUBSTATION);
             return this;
         }
 
         public Builder withZip(Optional<Integer> zip) {
             this.zip = zip.orElse(faker.number().numberBetween(1, 16777214));
+            addressUsageList.add(LoadGroupEnums.AddressUsageExpresscom.ZIP);
             return this;
         }
 
@@ -76,16 +80,27 @@ public class LoadGroupRfnExpresscomCreateBuilder {
             int x = faker.number().numberBetween(1, 65535);
             String s = String.format("%16s", Integer.toBinaryString(x)).replace(' ', '0');
             this.feeder = feeder.orElse(s);
+            addressUsageList.add(LoadGroupEnums.AddressUsageExpresscom.FEEDER);
+            return this;
+        }
+        
+        public Builder withRelayUsage(Optional<List<LoadGroupEnums.RelayUsageExpresscom>> relayUsage) {
+            List<LoadGroupEnums.RelayUsageExpresscom> relays = new ArrayList<>();
+            relays.add(LoadGroupEnums.RelayUsageExpresscom.getRandomRelayUsage());
+            this.relayUsage = relayUsage.orElse(relays);
+            addressUsageList.add(LoadGroupEnums.AddressUsageExpresscom.LOAD);
             return this;
         }
 
         public Builder withProgram(Optional<Integer> program) {
             this.program = program.orElse(faker.number().numberBetween(1, 254));
+            addressUsageList.add(LoadGroupEnums.AddressUsageExpresscom.PROGRAM);
             return this;
         }
 
         public Builder withSplinter(Optional<Integer> splinter) {
             this.splinter = splinter.orElse(faker.number().numberBetween(1, 254));
+            addressUsageList.add(LoadGroupEnums.AddressUsageExpresscom.SPLINTER);
             return this;
         }
 
@@ -101,21 +116,6 @@ public class LoadGroupRfnExpresscomCreateBuilder {
 
         public Builder withDisableControl(Optional<Boolean> disableControl) {
             this.disableControl = disableControl.orElse(false);
-            return this;
-        }
-
-        public Builder withAddressUsage(Optional<List<LoadGroupEnums.AddressUsageExpresscom>> addressUsage) {
-            List<LoadGroupEnums.AddressUsageExpresscom> addresses = new ArrayList<>();
-            addresses.add(LoadGroupEnums.AddressUsageExpresscom.getRandomAddressUsage());
-            this.addressUsage = addressUsage.orElse(addresses);
-            return this;
-        }
-
-        public Builder withRelayUsage(Optional<List<LoadGroupEnums.RelayUsageExpresscom>> relayUsage) {
-            List<LoadGroupEnums.RelayUsageExpresscom> relays = new ArrayList<>();
-            relays.add(LoadGroupEnums.RelayUsageExpresscom.getRandomRelayUsage());
-
-            this.relayUsage = relayUsage.orElse(relays);
             return this;
         }
 
@@ -141,7 +141,7 @@ public class LoadGroupRfnExpresscomCreateBuilder {
             jo.put("user", this.user);
             jo.put("program", this.program);
             jo.put("splinter", this.splinter);
-            jo.put("addressUsage", this.addressUsage);
+            jo.put("addressUsage", this.addressUsageList);
             jo.put("relayUsage", this.relayUsage);
             jo.put("protocolPriority", this.protocolPriority);
             jo.put("kWCapacity", this.kwCapacity);
@@ -177,7 +177,7 @@ public class LoadGroupRfnExpresscomCreateBuilder {
                 .withDisableControl(Optional.empty())
                 .withDisableGroup(Optional.empty())
                 .withKwCapacity(Optional.empty())
-                .withSPID(Optional.empty())
+                .withSpid(Optional.empty())
                 .withGeo(Optional.empty())
                 .withProgram(Optional.empty())
                 .withSplinter(Optional.empty())
@@ -185,7 +185,6 @@ public class LoadGroupRfnExpresscomCreateBuilder {
                 .withFeeder(Optional.empty())
                 .withUser(Optional.empty())
                 .withZip(Optional.empty())
-                .withRelayUsage(Optional.empty())
-                .withAddressUsage(Optional.empty());
+                .withRelayUsage(Optional.empty());
     }
 }

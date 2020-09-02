@@ -23,8 +23,7 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup {
     private DriverExtensions driverExt;
     private Integer id;
     private LoadGroupRfnExpresscomEditPage editPage;
-    Builder builder;
-    private SoftAssertions softly;
+    Builder builder;    
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
@@ -32,10 +31,9 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup {
         Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup().create();
         JSONObject response = pair.getValue1();
         this.id = response.getInt("id");
+        
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-        editPage = new LoadGroupRfnExpresscomEditPage(driverExt, id);
-        softly = new SoftAssertions();
-
+        editPage = new LoadGroupRfnExpresscomEditPage(driverExt, id);        
     }
 
     @AfterMethod
@@ -48,13 +46,30 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited Rfn Expresscom Ldgrp " + timeStamp;
         final String expected_msg = name + " saved successfully.";
-        Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup().create();
+        Pair<JSONObject, JSONObject> pair = new LoadGroupRfnExpresscomCreateBuilder.Builder(Optional.empty())
+                .withSpid(Optional.of(10))
+                .withProgram(Optional.of(198))
+                .withProtocolPriority(Optional.of(LoadGroupEnums.ProtocolPriorityExpresscom.DEFAULT))
+                .withKwCapacity(Optional.of(875.12))
+                .withDisableGroup(Optional.of(false))
+                .withDisableControl(Optional.of(false))
+                .create();
+        
         JSONObject response = pair.getValue1();
-        id = response.getInt("id");
+        Integer editId = response.getInt("id");
 
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + editId + Urls.EDIT);
+        
         editPage.getName().setInputValue(name);
+        editPage.getSpidAddress().setInputValue("251");
+        editPage.getProgram().setInputValue("89");
+        editPage.getControPriority().selectItemByText("Medium");
+        editPage.getDisableGroup().setValue(true);
+        editPage.getDisableControl().setValue(true);
         editPage.getSaveBtn().click();
-        waitForPageToLoad("Load Group: " + name, Optional.empty());
+        
+        waitForPageToLoad("Load Group: " + name, Optional.of(3));
+        
         LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
         String userMsg = detailsPage.getUserMessage();
 
@@ -64,9 +79,6 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscomEdit_Name_RequiredValidation() {
         final String expected_msg = "Name is required.";
-        Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup().create();
-        JSONObject response = pair.getValue1();
-        id = response.getInt("id");
 
         editPage.getName().clearInputValue();
         editPage.getSaveBtn().click();
@@ -78,21 +90,27 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscomEdit_EditAllFields_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "RFN Expresscomm" + timeStamp;
+        String name = "Edit RfnExpresscomm" + timeStamp;
         final String expected_msg = name + " saved successfully.";
-        Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup().create();
+        Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup()
+                .create();
         JSONObject response = pair.getValue1();
-        id = response.getInt("id");
+        Integer editId = response.getInt("id");
+        
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + editId + Urls.EDIT);
 
         editPage.getName().setInputValue(name);
-        editPage.getAddressUsage().setTrueFalseByName("Serial", true);
-        editPage.getSerialAddress().setInputValue("25");
-        editPage.getLoadAddressUsage().setTrueFalseByName("Splinter", true);
-        editPage.getSplinterLoadAddress().setInputValue("20");
+        
+        editPage.getSpidAddress().setInputValue("251");
+        editPage.getSubstationAddress().setInputValue("");
+        
+        editPage.getProgram().setInputValue("89");
+
+        editPage.getControPriority().selectItemByText("Medium");
         editPage.getkWCapacity().setInputValue(String.valueOf(100.12));
         editPage.getDisableControl().setValue(true);
         editPage.getDisableGroup().setValue(true);
-
+        
         editPage.getSaveBtn().click();
 
         waitForPageToLoad("Load Group: " + name, Optional.empty());
@@ -103,31 +121,15 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(expected_msg);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpRfnExpresscomEdit_AssertEditedFieldsValueOnEditPage_Success() {
-        Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup()
-                .withProtocolPriority(Optional.of(LoadGroupEnums.ProtocolPriorityExpresscom.HIGHEST))
-                .withKwCapacity(Optional.of(310.12))
-                .create();
-        JSONObject response = pair.getValue1();
-        id = response.getInt("id");
-        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-
-        editPage.getAddressUsage().setTrueFalseByName("Serial", true);
-        editPage.getSerialAddress().setInputValue("25");
-        editPage.getLoadAddressUsage().setTrueFalseByName("Program", false);
-        editPage.getLoadAddressUsage().setTrueFalseByName("Splinter", true);
-        editPage.getSplinterLoadAddress().setInputValue("20");
-
-        editPage.getSaveBtn().click();
-
-        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpRfnExpresscomEdit_FieldValues_Correct() {
+        SoftAssertions softly = new SoftAssertions();;
+        
         softly.assertThat(editPage.getAddressUsage().isValueSelected("Serial")).isEqualTo(true);
         softly.assertThat(editPage.getLoadAddressUsage().isValueSelected("Program")).isEqualTo(false);
         softly.assertThat(editPage.getkWCapacity().getInputValue()).isEqualTo("310.12");
         softly.assertThat(editPage.getDisableControl().getCheckedValue()).isEqualTo("No");
         softly.assertThat(editPage.getDisableGroup().getCheckedValue()).isEqualTo("No");
-
         softly.assertAll();
     }
 }
