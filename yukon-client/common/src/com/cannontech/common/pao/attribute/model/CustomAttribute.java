@@ -42,6 +42,7 @@ public class CustomAttribute implements Attribute {
         return String.valueOf(customAttributeId);
     }
 
+    @JsonIgnore
     public boolean isEmpty() {
         return name == null;
     }

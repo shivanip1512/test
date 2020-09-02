@@ -11,8 +11,6 @@
 #include "dnp_object_binaryoutput.h"
 #include "dnp_configuration.h"
 
-#include <boost/scoped_ptr.hpp>
-
 #include <map>
 
 namespace Cti::Protocols {
@@ -32,10 +30,11 @@ class IM_EX_PROT DnpProtocol : public Interface
     std::deque<Command> _additional_commands;
 
     std::vector<output_point> _command_parameters;
-    boost::scoped_ptr<DNP::config_data> _config;
+    std::unique_ptr<DNP::config_data> _config;
 
     DNP::ApplicationLayer::object_block_queue _object_blocks;
 
+    std::queue<YukonError_t> _command_results;
     stringlist_t _string_results;
     pointlist_t  _point_results;
 

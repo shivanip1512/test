@@ -3,11 +3,15 @@ package com.cannontech.web.tools.device.config.dao.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao.ConfigState;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction;
@@ -36,10 +40,18 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     private static final Logger log = YukonLogManager.getLogger(DeviceConfigSummaryDaoImpl.class);
-    private static List<DeviceRequestType> deviceConfigExecTypes = ImmutableList.of(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY,
-        DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, DeviceRequestType.GROUP_DEVICE_CONFIG_READ);
+    private static List<DeviceRequestType> deviceConfigExecTypes = ImmutableList.of(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, 
+            DeviceRequestType.GROUP_DEVICE_CONFIG_READ);
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired ConfigurationSource configurationSource;
+    
+    private String rfTemplatePrefix;
+    
+    @PostConstruct
+    public void initialize() {
+         rfTemplatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
+    }
 
     private final YukonRowMapper<DeviceConfigSummaryDetail> detailRowMapper = rs -> {
         DeviceConfigSummaryDetail detail = new DeviceConfigSummaryDetail();
@@ -112,6 +124,7 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("FROM YukonPAObject ypo");
         sql.append("WHERE ypo.type").in_k(getSupportedPaoTypes());
         sql.append("AND ypo.PAObjectID NOT IN (select DeviceID from DeviceConfigurationDeviceMap)");
+        sql.append("AND ypo.PAOName NOT").startsWith(rfTemplatePrefix);
         return sql;
     }
 

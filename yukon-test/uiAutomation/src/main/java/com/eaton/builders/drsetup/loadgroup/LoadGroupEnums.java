@@ -31,7 +31,7 @@ public class LoadGroupEnums {
         RELAY_A("RELAY_A"),
         RELAY_B("RELAY_B"),
         RELAY_C("RELAY_C"),
-        RELAY_S("RELAY_S");
+        RELAY_ALL("RELAY_ALL");
 
         private final String relayUsage;
 
@@ -75,7 +75,7 @@ public class LoadGroupEnums {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
-    }
+    }   
 
     public enum AddressLevelMCT {
         BRONZE("BRONZE"),
@@ -177,7 +177,7 @@ public class LoadGroupEnums {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
-    }
+    }   
 
     public enum AddressUsageVersacom {
         UTILITY("UTILITY"),
@@ -297,6 +297,27 @@ public class LoadGroupEnums {
         }
     }
 
+    public enum ProtocolPriorityExpresscom {
+        DEFAULT("DEFAULT"),
+        MEDIUM("MEDIUM"),
+        HIGH("HIGH"),
+        HIGHEST("HIGHEST");
+
+        private final String protocolPriority;
+
+        ProtocolPriorityExpresscom(String protocolPriority) {
+            this.protocolPriority = protocolPriority;
+        }
+
+        public String getProtocolPriority() {
+            return this.protocolPriority;
+        }
+
+        public static ProtocolPriorityExpresscom getRandomProtocolPriority() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
+    }
     public enum DigiSepDeviceClassEnum {
 
         HVAC_COMPRESSOR_FURNACE("HVAC_COMPRESSOR_FURNACE"),

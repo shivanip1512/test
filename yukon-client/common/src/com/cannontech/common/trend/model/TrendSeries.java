@@ -21,7 +21,8 @@ public class TrendSeries {
     private DateTime date;
     
     public TrendSeries () {
-        this.color = GraphColors.getNextDefaultColor(0);
+        //Defaulting to BLUE, set to index 1 because BLUE is 2nd item in GraphColors enum list. 
+        this.color = GraphColors.getNextDefaultColor(1);
     }
     
     public TrendSeries (YukonColorPalette color) {

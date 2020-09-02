@@ -111,4 +111,10 @@ const IM_EX_MSG InboundQueue
     InboundQueue::PorterDynamicPaoInfoRequest
     {"com.eaton.eas.yukon.porter.dynamicPaoInfoRequest"};
 
+const IM_EX_MSG InboundQueue
+    InboundQueue::FieldSimulatorStatusRequest
+    { "com.eaton.eas.yukon.fieldSimulator.statusRequest" };
+const IM_EX_MSG InboundQueue
+    InboundQueue::FieldSimulatorModifyConfiguration
+    { "com.eaton.eas.yukon.fieldSimulator.modifyConfiguration" };
 }

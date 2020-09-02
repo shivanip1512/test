@@ -6,6 +6,7 @@ package com.cannontech.common.util.jms.api;
 public enum JmsCommunicatingService {
     NETWORK_MANAGER("Network Manager"),
     YUKON_EIM("Yukon EIM (SOAP Web Services)"),
+    YUKON_FIELD_SIMULATOR("Yukon Field Simulator"),
     YUKON_PORTER("Yukon Porter"),
     YUKON_SERVICE_MANAGER("Yukon Service Manager"),
     YUKON_SIMULATORS("Yukon Simulators"),

@@ -10,10 +10,12 @@ import static com.cannontech.common.util.jms.api.JmsApiCategory.RFN_METER;
 import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_GATEWAY;
 import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_MISC;
 import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_NETWORK;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.SIMULATOR_MANAGEMENT;
 import static com.cannontech.common.util.jms.api.JmsApiCategory.SMART_NOTIFICATION;
 import static com.cannontech.common.util.jms.api.JmsApiCategory.WIDGET_REFRESH;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.NETWORK_MANAGER;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_EIM;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_FIELD_SIMULATOR;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_MESSAGE_BROKER;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_PORTER;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_SERVICE_MANAGER;
@@ -127,7 +129,11 @@ import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenResponse;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfigurations;
+import com.cannontech.simulators.message.request.FieldSimulatorStatusRequest;
+import com.cannontech.simulators.message.request.ModifyFieldSimulatorRequest;
 import com.cannontech.simulators.message.request.SimulatorRequest;
+import com.cannontech.simulators.message.response.FieldSimulatorStatusResponse;
+import com.cannontech.simulators.message.response.ModifyFieldSimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.stars.dr.jms.message.DrAttributeDataJmsMessage;
 import com.cannontech.stars.dr.jms.message.DrProgramStatusJmsMessage;
@@ -1173,6 +1179,32 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_PORTER)
                   .build();
 
+    public static final JmsApi<FieldSimulatorStatusRequest,?,FieldSimulatorStatusResponse> FIELD_SIMULATOR_STATUS =
+            JmsApi.builder(FieldSimulatorStatusRequest.class, FieldSimulatorStatusResponse.class)
+                  .name("Field Simulator Status")
+                  .description("Requests current status from Field Simulator for UI display")
+                  .communicationPattern(REQUEST_RESPONSE)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.fieldSimulator.statusRequest"))
+                  .responseQueue(JmsQueue.TEMP_QUEUE)
+                  .requestMessage(FieldSimulatorStatusRequest.class)
+                  .responseMessage(FieldSimulatorStatusResponse.class)
+                  .sender(YUKON_SIMULATORS)
+                  .receiver(YUKON_FIELD_SIMULATOR)
+                  .build();
+
+    public static final JmsApi<ModifyFieldSimulatorRequest,?,ModifyFieldSimulatorResponse> FIELD_SIMULATOR_CONFIGURATION =
+            JmsApi.builder(ModifyFieldSimulatorRequest.class, ModifyFieldSimulatorResponse.class)
+                  .name("Field Simulator Configuration")
+                  .description("Changes settings in Field Simulator")
+                  .communicationPattern(REQUEST_RESPONSE)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.fieldSimulator.modifyConfiguration"))
+                  .responseQueue(JmsQueue.TEMP_QUEUE)
+                  .requestMessage(ModifyFieldSimulatorRequest.class)
+                  .responseMessage(ModifyFieldSimulatorResponse.class)
+                  .sender(YUKON_SIMULATORS)
+                  .receiver(YUKON_FIELD_SIMULATOR)
+                  .build();
+
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1206,7 +1238,6 @@ public final class JmsApiDirectory {
                 LOCATION,
                 PORTER_DYNAMIC_PAOINFO,
                 RFN_DEVICE_CREATION_ALERT,
-                SIMULATORS,
                 SYSTEM_DATA);
         
         addApis(jmsApis, RFN_LCR, 
@@ -1258,6 +1289,11 @@ public final class JmsApiDirectory {
                 RFN_NODE_WIFI_COMM_ARCHIVE,
                 DYNAMIC_RFN_DEVICE_DATA_COLLECTION);
         
+        addApis(jmsApis, SIMULATOR_MANAGEMENT,
+                FIELD_SIMULATOR_CONFIGURATION,
+                FIELD_SIMULATOR_STATUS,
+                SIMULATORS);
+
         addApis(jmsApis, SMART_NOTIFICATION,
                 SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT,
                 SMART_NOTIFICATION_DEVICE_DATA_MONITOR_EVENT,

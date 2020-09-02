@@ -2,24 +2,22 @@ package com.eaton.elements.modals;
 
 import java.util.Optional;
 
+import com.eaton.elements.ColorPickerElement;
 import com.eaton.elements.RadioButtonElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 
-public class TrendAddMarkerModal extends BaseModal {
+public class TrendMarkerModal extends BaseModal {
     
-    private String modalTitle;
-    private String describedBy;
-
-    public TrendAddMarkerModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
+    public TrendMarkerModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
         super(driverExt, modalTitle, describedBy);
         
         if(modalTitle.isPresent()) {
-            this.modalTitle = modalTitle.get();
+            modalTitle = Optional.of(modalTitle.get());
         }
         
         if(describedBy.isPresent()) {
-            this.describedBy = describedBy.get();
+            describedBy = Optional.of(describedBy.get());
         }
     } 
     
@@ -33,5 +31,9 @@ public class TrendAddMarkerModal extends BaseModal {
     
     public RadioButtonElement getAxis() {
         return new RadioButtonElement(this.driverExt, "axis", getModal());
-    }     
+    } 
+    
+    public ColorPickerElement getColor() {
+        return new ColorPickerElement(this.driverExt, "sp-replacer");
+    }
 }
