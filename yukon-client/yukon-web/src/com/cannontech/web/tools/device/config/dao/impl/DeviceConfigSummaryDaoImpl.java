@@ -40,8 +40,8 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     private static final Logger log = YukonLogManager.getLogger(DeviceConfigSummaryDaoImpl.class);
-    private static List<DeviceRequestType> deviceConfigExecTypes = ImmutableList.of(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY,
-        DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, DeviceRequestType.GROUP_DEVICE_CONFIG_READ);
+    private static List<DeviceRequestType> deviceConfigExecTypes = ImmutableList.of(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, 
+            DeviceRequestType.GROUP_DEVICE_CONFIG_READ);
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired ConfigurationSource configurationSource;
