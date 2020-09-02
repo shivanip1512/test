@@ -36,5 +36,7 @@ public enum MockPaoType {
     TCPPORT,
     UDPPORT,
     TSERVER_SHARED,
-    LOCAL_SHARED
+    LOCAL_SHARED,
+    
+    RFN420FL
 }

@@ -421,6 +421,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         CommandRequestDevice request = new CommandRequestDevice(commands.get(requestType),
                 new SimpleDevice(device.getPaoIdentifier()));
         logInitiated(Collections.singletonList(device), logAction, user);
+        CommandRequestExecution execution = createExecutionAndUpdateStateToInProgress(requestType,
+                Collections.singletonList(device), user);
         commandExecutionService.execute(List.of(request), new CommandCompletionCallback<CommandRequestDevice>() {
             Map<Integer, DeviceConfigState> deviceToState = deviceConfigurationDao
                     .getDeviceConfigStatesByDeviceIds(List.of(device.getDeviceId()));
@@ -444,7 +446,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                 logCompleted(device, logAction, false);
                 deviceConfigurationDao.failInProgressDevices(List.of(device.getDeviceId()));
             }
-        }, requestType, user);
+        }, execution, true, user);
     }
 
     /**
@@ -749,7 +751,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                 newState.setCurrentState(IN_SYNC);
             }
         } else if (error == DeviceError.CONFIG_NOT_CURRENT) {
-            newState.setLastActionStatus(SUCCESS);
+            newState.setLastActionStatus(FAILURE);
             newState.setCurrentState(OUT_OF_SYNC);
         } else {
             newState.setLastActionStatus(FAILURE);

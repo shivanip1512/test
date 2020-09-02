@@ -346,6 +346,7 @@
     </ClCompile>
     <ClCompile Include="test_main.cpp">
     </ClCompile>
+    <ClCompile Include="test_sql_util.cpp" />
     <ClCompile Include="test_tbl_dv_idlcremote.cpp">
     </ClCompile>
     <ClCompile Include="test_tbl_dyn_paoinfo.cpp">
