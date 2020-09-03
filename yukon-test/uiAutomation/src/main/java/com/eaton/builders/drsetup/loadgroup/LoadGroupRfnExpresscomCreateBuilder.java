@@ -184,7 +184,7 @@ public class LoadGroupRfnExpresscomCreateBuilder {
                 .withSubstation(Optional.empty())
                 .withFeeder(Optional.empty())
                 .withUser(Optional.empty())
-                .withZip(Optional.empty())
-                .withRelayUsage(Optional.empty());
+                .withZip(Optional.empty());
+                //.withRelayUsage(Optional.empty());
     }
 }

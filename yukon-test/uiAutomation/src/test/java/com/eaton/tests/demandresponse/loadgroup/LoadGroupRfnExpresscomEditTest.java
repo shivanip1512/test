@@ -76,50 +76,10 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(expected_msg);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpRfnExpresscomEdit_EditAllFieldsWithSerial_Success() {
-        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "Edit RfnExpresscomm" + timeStamp;
-        final String expected_msg = name + " saved successfully.";
-        Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup()
-                .create();
-        JSONObject response = pair.getValue1();
-        Integer editId = response.getInt("id");
-        
-        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + editId + Urls.EDIT);
-
-        editPage.getName().setInputValue(name);
-        
-        editPage.getSpidAddress().setInputValue("251");
-        editPage.getSubstationAddress().setInputValue("");
-        
-        editPage.getProgram().setInputValue("89");
-
-        editPage.getControPriority().selectItemByText("Medium");
-        editPage.getkWCapacity().setInputValue(String.valueOf(100.12));
-        editPage.getDisableControl().setValue(true);
-        editPage.getDisableGroup().setValue(true);
-        
-        editPage.getSaveBtn().click();
-
-        waitForPageToLoad("Load Group: " + name, Optional.empty());
-
-        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
-        String userMsg = detailsPage.getUserMessage();
-
-        assertThat(userMsg).isEqualTo(expected_msg);
-    }
-    
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpRfnExpresscomEdit_EditAllFieldsWithoutSerial_Success() {
-
-    }
-
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscomEdit_FieldValues_Correct() {
         SoftAssertions softly = new SoftAssertions();;
         
-        //We should be createing a load group with every field selected and validating that when we go to the edit page every field has the correct information
         softly.assertThat(editPage.getAddressUsage().isValueSelected("Serial")).isEqualTo(true);
         softly.assertThat(editPage.getLoadAddressUsage().isValueSelected("Program")).isEqualTo(false);
         softly.assertThat(editPage.getkWCapacity().getInputValue()).isEqualTo("310.12");
