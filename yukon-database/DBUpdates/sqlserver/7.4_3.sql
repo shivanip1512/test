@@ -26,7 +26,7 @@ BEGIN
         END
         ELSE
         BEGIN
-            SET @GearCount =(SELECT COUNT(GearID) FROM LMProgramDirectGear WHERE DeviceID = @ProgramId GROUP BY DeviceID)
+            SET @GearCount = (SELECT COUNT(GearID) FROM LMProgramDirectGear WHERE DeviceID = @ProgramId GROUP BY DeviceID)
             IF (@StartGear > @GearCount)
                 BEGIN
                     UPDATE LMControlScenarioProgram SET StartGear = 1 WHERE StartGear = @StartGear AND ProgramID = @ProgramId
