@@ -20,7 +20,6 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.LoadGroupVersacomEditPage;
-import com.google.gson.JsonArray;
 
 public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
     private DriverExtensions driverExt;
@@ -54,7 +53,7 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
 
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
         editPage = new LoadGroupVersacomEditPage(driverExt, id);
-        
+
         editPage.getName().setInputValue(editName);
         editPage.getCommunicationRoute().selectItemByText("a_CCU-711");
 
@@ -86,7 +85,7 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
 
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
         editPage = new LoadGroupVersacomEditPage(driverExt, id);
-        
+
         editPage.getCommunicationRoute().selectItemByText("a_LCU-EASTRIVER");
 
         editPage.getAddressUsage().setTrueFalseByName("Serial", false);

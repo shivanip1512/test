@@ -2,6 +2,7 @@ package com.eaton.pages.demandresponse;
 
 import java.util.Optional;
 
+import com.eaton.elements.DropDownElement;
 import com.eaton.elements.PickerElement;
 import com.eaton.elements.modals.SelectPointModal;
 import com.eaton.framework.DriverExtensions;
@@ -23,6 +24,10 @@ public class LoadGroupPointCreatePage extends LoadGroupCreatePage {
 
     public String getControlDevicePointLabelText() {
         return getControlDevicePoint().getLinkValue();
+    }
+
+    public DropDownElement getControlStartState() {
+        return new DropDownElement(this.driverExt, "startControlRawState.rawState");
     }
 
     public SelectPointModal showAndWaitPointGroupControlDeviceModal() {

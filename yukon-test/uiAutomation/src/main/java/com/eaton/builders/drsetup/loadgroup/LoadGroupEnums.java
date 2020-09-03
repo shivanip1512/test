@@ -75,7 +75,7 @@ public class LoadGroupEnums {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
-    }   
+    }
 
     public enum AddressLevelMCT {
         BRONZE("BRONZE"),
@@ -177,7 +177,7 @@ public class LoadGroupEnums {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
-    }   
+    }
 
     public enum AddressUsageVersacom {
         UTILITY("UTILITY"),
@@ -314,6 +314,50 @@ public class LoadGroupEnums {
         }
 
         public static ProtocolPriorityExpresscom getRandomProtocolPriority() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
+    }
+
+    public enum PointId {
+        SCADA_Override(4230),
+        CVR_Mode(4231),
+        Capacitor_Bank_State(4249),
+        Remote_Control_Mode(4251),
+        OVUV_Control(4255),
+        Manual_Control_Mode(4265);
+
+        private final Integer POINT_ID;
+
+        PointId(Integer pointId) {
+            this.POINT_ID = pointId;
+        }
+
+        public Integer getPointId() {
+            return this.POINT_ID;
+        }
+
+        public static PointId getRandomPointId() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
+    }
+
+    public enum PointStartControlRawState {
+        True(1),
+        False(0);
+
+        private final Integer START_CONTROL_RAW_STATE;
+
+        PointStartControlRawState(Integer startControlRawState) {
+            this.START_CONTROL_RAW_STATE = startControlRawState;
+        }
+
+        public Integer getPointStartControlRawState() {
+            return this.START_CONTROL_RAW_STATE;
+        }
+
+        public static PointStartControlRawState getRandomPointStartControlRawState() {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
