@@ -6,24 +6,24 @@
 /* @start-block */
 DECLARE 
     Start_Gear VARCHAR(10);
-    Program_ID VARCHAR(10);
+    Program_Id VARCHAR(10);
     Start_Gear_Number VARCHAR(10);
     Gear_Count VARCHAR(10);
-    CURSOR startGearAndProgramIdCursor IS SELECT StartGear , ProgramID FROM LMControlScenarioProgram;
+    CURSOR startGearAndProgramIdCursor IS SELECT StartGear, ProgramID FROM LMControlScenarioProgram;
 
 BEGIN
     OPEN startGearAndProgramIdCursor;
     LOOP
-        FETCH startGearAndProgramIdCursor INTO Start_Gear , Program_ID;
-        IF Start_Gear>'12' THEN
-           SELECT GearNumber INTO Start_Gear_Number FROM LMProgramDirectGear WHERE GearID=Start_Gear;
+        FETCH startGearAndProgramIdCursor INTO Start_Gear, Program_Id;
+        IF Start_Gear > '12' THEN
+           SELECT GearNumber INTO Start_Gear_Number FROM LMProgramDirectGear WHERE GearID = Start_Gear;
            UPDATE LMControlScenarioProgram 
-           SET StartGear=Start_Gear_Number
-           WHERE StartGear=Start_Gear AND ProgramId=Program_ID;
+           SET StartGear = Start_Gear_Number
+           WHERE StartGear = Start_Gear AND ProgramID = Program_Id;
         ELSE
-            SELECT Count(GearID) INTO Gear_Count FROM LMProgramDirectGear WHERE DeviceID=Program_ID GROUP BY DeviceID;
-            IF(Start_Gear>Gear_Count) THEN
-                 UPDATE LMControlScenarioProgram SET StartGear=1 WHERE StartGear=Start_Gear AND ProgramId=Program_ID;
+            SELECT Count(GearID) INTO Gear_Count FROM LMProgramDirectGear WHERE DeviceID = Program_Id GROUP BY DeviceID;
+            IF(Start_Gear > Gear_Count) THEN
+                 UPDATE LMControlScenarioProgram SET StartGear = 1 WHERE StartGear = Start_Gear AND ProgramID = Program_Id;
             END IF;
         END IF; 
         EXIT WHEN startGearAndProgramIdCursor%NOTFOUND; 
@@ -38,4 +38,4 @@ INSERT INTO DBUpdates VALUES ('YUK-22622', '7.4.3', SYSDATE);
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('7.4', '2-SEPT-2020', 'Latest Update', 3, SYSDATE);*/
+/*INSERT INTO CTIDatabase VALUES ('7.4', '2-SEP-2020', 'Latest Update', 3, SYSDATE);*/
