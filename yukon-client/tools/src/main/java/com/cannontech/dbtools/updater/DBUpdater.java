@@ -13,7 +13,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.common.exception.StarsNotCreatedException;
@@ -379,7 +385,7 @@ public class DBUpdater extends MessageFrameAdaptor {
      * Method to display warning message for invalid Import / Export directories while upgrading DB.
      */
     private void checkDirectoryAccess(Statement stat, String cmd, String warningMessage) throws SQLException, IOException {
-        boolean showWarnMessage = false;
+        List<String> invalidDirectories = new ArrayList<String>();
         ResultSet resultSet = stat.executeQuery(cmd);
         while (resultSet.next()) {
             String value = resultSet.getString("value");
@@ -388,23 +394,20 @@ public class DBUpdater extends MessageFrameAdaptor {
                 File file = new File(directoryPath);
                 AclFileAttributeView attributeView = Files.getFileAttributeView(file.toPath(), AclFileAttributeView.class);
                 List<AclEntry> entry = attributeView.getAcl();
-                showWarnMessage = entry.stream()
-                        .map(e -> !e.principal().getName().equals(LOCAL_SERVICE))
-                        .findAny().get();
-                if (showWarnMessage) {
-                    break;
+                if (entry.stream()
+                         .map(e -> !e.principal().getName().equals(LOCAL_SERVICE))
+                         .findAny().get()) {
+                    invalidDirectories.add(directoryPath);
                 }
             }
-            if (showWarnMessage) {
-                break;
-            }
         }
-        if (showWarnMessage) {
+        if (CollectionUtils.isNotEmpty(invalidDirectories)) {
             getIMessageFrame().addOutput("");
             getIMessageFrame().addOutput(
                     " ************************************************************************** ");
             getIMessageFrame().addOutput("   Warning Message:");
             getIMessageFrame().addOutput("   " + warningMessage);
+            getIMessageFrame().addOutput("   " + StringUtils.join(invalidDirectories, ','));
             getIMessageFrame().addOutput("");
             getIMessageFrame().addOutput(
                     " ************************************************************************** ");
