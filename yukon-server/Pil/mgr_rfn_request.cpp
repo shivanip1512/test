@@ -167,6 +167,14 @@ void updateMeterProgrammingProgress(Devices::RfnDevice& rfnDevice, const std::st
     constexpr auto YukonPrefix = static_cast<char>(Cti::MeterProgramming::GuidPrefixes::YukonProgrammed);
     double progress = MeterProgramming::gMeterProgrammingManager->calculateMeterProgrammingProgress(rfnDevice.getRfnIdentifier(), guid, totalSent);
 
+    auto oldProgress = rfnDevice.findDynamicInfo<double>(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress);
+
+    //  If it's the same progress as the last one we sent, don't send the update again
+    if( fabs(progress - oldProgress.value_or(0.0)) < 1 )
+    {
+        return;
+    }
+
     rfnDevice.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress, progress);
 
     const ProgrammingStatus programmingStatus =
