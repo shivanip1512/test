@@ -51,7 +51,7 @@ Function SetStatusToAuto{
     {
        if(Get-Service $YukonService -ErrorAction SilentlyContinue)
        {
-          Set-Service -Name $YukonService -StartupType Automatic
+          sc.exe config $YukonService start= delayed-auto
        }
     }
 }
