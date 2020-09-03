@@ -7,6 +7,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
 
 public class TextEditElement extends EditElement {
 
@@ -28,11 +29,14 @@ public class TextEditElement extends EditElement {
     }
 
     public void clearInputValue() {
-        getEditElement().clear();
+        WebElement input = getEditElement();
+        SeleniumTestSetup.scrollToElement(input);
+        input.clear();
     }
 
     public void setInputValue(String value) {
         WebElement input = getEditElement();
+        SeleniumTestSetup.scrollToElement(input);
 
         input.click();
         input.clear();

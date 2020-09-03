@@ -8,7 +8,11 @@ import java.util.Optional;
 
 import com.eaton.elements.ActionBtnDropDownElement;
 import com.eaton.elements.WebTable;
-import com.eaton.elements.modals.CreateCommChannelModal;
+import com.eaton.elements.modals.commchannel.CreateCommChannelModal;
+import com.eaton.elements.modals.commchannel.CreateLocalSerialPortCommChannelModal;
+import com.eaton.elements.modals.commchannel.CreateTcpCommChannelModal;
+import com.eaton.elements.modals.commchannel.CreateTerminalServerCommChannelModal;
+import com.eaton.elements.modals.commchannel.CreateUdpCommChannelModal;
 
 public class CommChannelsListPage extends PageBase {
     
@@ -30,11 +34,35 @@ public class CommChannelsListPage extends PageBase {
         return actionBtn;
     }    
     
-    public CreateCommChannelModal showAndWaitCreateCommChannelModal() {        
+    public CreateUdpCommChannelModal showAndWaitCreateUdpCommChannelModal() {        
     	actionBtn.clickAndSelectOptionByText("Create");
     	
-    	SeleniumTestSetup.waitUntilModalVisibleByTitle("Create Comm Channel");
+    	SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-create-comm-channel-popup");
     	
-    	return new CreateCommChannelModal(this.driverExt, Optional.of("Create Comm Channel"), Optional.empty());
-    }      
+    	return new CreateUdpCommChannelModal(this.driverExt, Optional.empty(), Optional.of("js-create-comm-channel-popup"));
+    }   
+    
+    public CreateTcpCommChannelModal showAndWaitCreateTcpCommChannelModal() {        
+        actionBtn.clickAndSelectOptionByText("Create");
+        
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-create-comm-channel-popup");
+        
+        return new CreateTcpCommChannelModal(this.driverExt, Optional.empty(), Optional.of("js-create-comm-channel-popup"));
+    }  
+    
+    public CreateTerminalServerCommChannelModal showAndWaitCreateTerminalServerCommChannelModal() {        
+        actionBtn.clickAndSelectOptionByText("Create");
+        
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-create-comm-channel-popup");
+        
+        return new CreateTerminalServerCommChannelModal(this.driverExt, Optional.empty(), Optional.of("js-create-comm-channel-popup"));
+    }  
+    
+    public CreateLocalSerialPortCommChannelModal showAndWaitCreateLocalSerialPortCommChannelModal() {        
+        actionBtn.clickAndSelectOptionByText("Create");
+        
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-create-comm-channel-popup");
+        
+        return new CreateLocalSerialPortCommChannelModal(this.driverExt, Optional.empty(), Optional.of("js-create-comm-channel-popup"));
+    }  
 }

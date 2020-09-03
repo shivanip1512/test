@@ -150,8 +150,8 @@ public class TrendEditTests extends SeleniumTestSetup {
         TrendPointModal modal = editPage.showAndWaitAddPointModal();
         SelectPointModal pointModal = modal.showAndWaitSelectPointModal();
         pointModal.selectPoint("Analog Point for Create Trend", Optional.of("5231"));
-        pointModal.clickOkAndWait();
-        modal.clickOkAndWait();
+        pointModal.clickOkAndWaitForModalCloseDisplayNone();
+        modal.clickOkAndWaitForModalToClose();
         editPage.getSave().click();
         
         assertThat(editPage.getUserMessage()).isEqualTo(newTrendName + " saved successfully.");
@@ -171,7 +171,7 @@ public class TrendEditTests extends SeleniumTestSetup {
         
         TrendMarkerModal modal = editPage.showAndWaitAddMarkerModal();
         modal.getLabel().setInputValue("Test label");
-        modal.clickOkAndWait();
+        modal.clickOkAndWaitForModalToClose();
 
         editPage.getSave().click();
         
@@ -192,7 +192,7 @@ public class TrendEditTests extends SeleniumTestSetup {
         TrendPointModal modal = editPage.showAndWaitEditPointModal("Edit " + pointName, 0);
         
         modal.getLabel().setInputValue("Edit Point Label");
-        modal.clickOkAndWait();
+        modal.clickOkAndWaitForModalToClose();
 
         editPage.getSave().click();
         assertThat(editPage.getUserMessage()).isEqualTo(newTrendName + " saved successfully.");

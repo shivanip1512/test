@@ -59,8 +59,8 @@ public class LoadGroupRippleCreateBuilder {
             return this;
         }
 
-        public Builder withRouteId(Optional<LoadGroupEnums.RouteId> route_Id) {
-            LoadGroupEnums.RouteId randomRelayUsage = route_Id
+        public Builder withRouteId(Optional<LoadGroupEnums.RouteId> routeId) {
+            LoadGroupEnums.RouteId randomRelayUsage = routeId
                     .orElse(RouteId.getRandomRouteId());
 
             this.routeId = randomRelayUsage.getRouteId();

@@ -12,13 +12,17 @@ import com.eaton.elements.tabs.TabElement;
 import com.eaton.framework.DriverExtensions;
 
 public class EditCommChannelModal extends BaseModal {
+    
+    private TabElement tabs;
 
     public EditCommChannelModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
         super(driverExt, modalTitle, describedBy);
+        
+        tabs = new TabElement(this.driverExt, getModal()); 
     }
     
     public TabElement getTabs() {
-        return new TabElement(this.driverExt, getModal());                
+        return tabs;             
     }
     
     public WebElement getInfoTab() {
@@ -32,8 +36,7 @@ public class EditCommChannelModal extends BaseModal {
     public Section getTimingSection() {
         return new Section(this.driverExt, "Timing", getConfigTab());
     }
-    
-    
+        
     //Info Tab
     public TextEditElement getName() {
         return new TextEditElement(this.driverExt, "name", getModal());

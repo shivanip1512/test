@@ -3,7 +3,6 @@ package com.eaton.tests.demandresponse.loadgroup;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -23,8 +22,7 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-
-import com.eaton.pages.demandresponse.LoadGroupListPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupListPage;
 
 public class LoadGroupSetupListTests extends SeleniumTestSetup {
 
@@ -145,7 +143,7 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
 
         listPage.getName().setInputValue("dsdddadadadadadada");
         listPage.getSaveBtn().click();
-        String userMsg = listPage.getUserMessage();
+        String userMsg = listPage.getTable().getTableMessage();
 
         assertThat(EXPECTED_MSG).isEqualTo(userMsg);
     }

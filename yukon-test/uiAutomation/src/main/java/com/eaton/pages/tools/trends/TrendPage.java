@@ -94,7 +94,7 @@ public class TrendPage extends PageBase {
     public TrendPointModal showAndWaitAddPointModal() {
         getpointSetupAdd().click();
         
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-add-point-dialog");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-add-point-dialog");
         
         return new TrendPointModal(this.driverExt, Optional.empty(), Optional.of("js-add-point-dialog"));
     }
@@ -104,7 +104,7 @@ public class TrendPage extends PageBase {
         
         row.clickIcon(Icon.PENCIL);
         
-        SeleniumTestSetup.waitUntilModalVisibleByTitle(modalTitle);
+        SeleniumTestSetup.waitUntilModalOpenByTitle(modalTitle);
         
         return new TrendPointModal(this.driverExt, Optional.of(modalTitle), Optional.empty());
     }
@@ -114,7 +114,7 @@ public class TrendPage extends PageBase {
         
         row.clickIcon(Icon.PENCIL);
         
-        SeleniumTestSetup.waitUntilModalVisibleByTitle(modalTitle);
+        SeleniumTestSetup.waitUntilModalOpenByTitle(modalTitle);
         
         return new TrendMarkerModal(this.driverExt, Optional.of(modalTitle) ,Optional.empty());
     }
@@ -122,7 +122,7 @@ public class TrendPage extends PageBase {
     public TrendMarkerModal showAndWaitAddMarkerModal() {
         getMarkerSetupAdd().click();
         
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-add-marker-dialog");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-add-marker-dialog");
         
         return new TrendMarkerModal(this.driverExt, Optional.empty(), Optional.of("js-add-marker-dialog"));
     }

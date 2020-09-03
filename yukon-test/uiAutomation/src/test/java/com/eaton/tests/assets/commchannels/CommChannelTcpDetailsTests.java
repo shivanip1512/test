@@ -13,7 +13,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.elements.Section;
 import com.eaton.elements.modals.ConfirmModal;
-import com.eaton.elements.modals.CreateCommChannelModal;
+import com.eaton.elements.modals.commchannel.CreateCommChannelModal;
 import com.eaton.elements.modals.commchannel.EditTcpCommChannelModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
@@ -29,14 +29,13 @@ import io.restassured.response.ExtractableResponse;
 public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     private CommChannelTcpDetailPage detailPage;
     private DriverExtensions driverExt;
-    private SoftAssertions softly;
     private Integer commChannelId;
     private String commChannelName;
     private JSONObject jo;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        driverExt = getDriverExt();        
+        driverExt = getDriverExt();
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         commChannelName = "TCP Comm Channel " + timeStamp;
@@ -50,24 +49,28 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         jo.put("name", commChannelName);
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
         commChannelId = createResponse.path("id");
+        
+        navigate(Urls.Assets.COMM_CHANNEL_DETAIL + commChannelId);
+        detailPage = new CommChannelTcpDetailPage(driverExt, commChannelId);
     }
 
     @BeforeMethod(alwaysRun = true)
     public void beforeMethod() {
-        navigate(Urls.Assets.COMM_CHANNEL_DETAIL + commChannelId);
-        detailPage = new CommChannelTcpDetailPage(driverExt, commChannelId);
+        refreshPage(detailPage);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTcp_PageTitleCorrect() {
         String EXPECTED_TITLE = commChannelName;
+        
         String actualPageTitle = detailPage.getPageTitle();
-        assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);
+        
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDetailsTcp_TabTitlesCorrect() {
-        softly = new SoftAssertions();
+        SoftAssertions softly = new SoftAssertions();
         List<String> titles = detailPage.getTabElement().getTitles();
 
         softly.assertThat(titles.size()).isEqualTo(2);
@@ -77,8 +80,8 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTcp_InfoTabLabelsCorrect() {
-        softly = new SoftAssertions();
+    public void commChannelDetailsTcp_InfoTab_LabelsCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         String infoTitle = "Info";
         detailPage.getTabElement().clickTabAndWait(infoTitle);
         List<String> labels = detailPage.getTabElement().getTabLabels(infoTitle);
@@ -92,20 +95,20 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTcp_InfoTabValuesCorrect() {
-        softly = new SoftAssertions();
+    public void commChannelDetailsTcp_InfoTab_ValuesCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         List<String> values = detailPage.getTabElement().getTabValues("Info");
 
-        softly.assertThat(values.size()).isEqualTo(4);
-        softly.assertThat(values).contains(commChannelName);
-        softly.assertThat(values).contains("TCP");
-        softly.assertThat(values).contains("1200");
-        softly.assertThat(values).contains("Enabled");
+        softly.assertThat(4).isEqualTo(values.size());
+        softly.assertThat(values.get(0)).isEqualTo(commChannelName);
+        softly.assertThat(values.get(1)).isEqualTo("TCP");
+        softly.assertThat(values.get(2)).isEqualTo("1200");
+        softly.assertThat(values.get(3)).isEqualTo("Enabled");
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTcp_ConfigTabTimingSectionDisplayed() {
+    public void commChannelDetailsTcp_ConfigTab_TimingSectionDisplayed() {
         String infoTitle = "Configuration";
 
         detailPage.getTabElement().clickTabAndWait(infoTitle);
@@ -116,8 +119,8 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTcp_ConfigTabLabelsCorrect() {
-        softly = new SoftAssertions();
+    public void commChannelDetailsTcp_ConfigTab_LabelsCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         String infoTitle = "Configuration";
 
         detailPage.getTabElement().clickTabAndWait(infoTitle);
@@ -134,8 +137,8 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTcp_ConfigTabValuesCorrect() {
-        softly = new SoftAssertions();
+    public void commChannelDetailsTcp_ConfigTab_ValuesCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         detailPage.getTabElement().clickTabAndWait("Configuration");
 
         List<String> values = detailPage.getTabElement().getTabValues("Configuration");
@@ -162,16 +165,15 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     public void commChannelDetailsTcp_Edit_NavigatesCorrectly() {
         String expectedModalTitle = "Edit " + commChannelName;
 
-        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal(expectedModalTitle);
+        EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
         String actualModalTitle = editModal.getModalTitle();
 
         assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
     }
 
-    //TODO This only needs to be tested once in the context of Comm Channels??
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTCP_CreateNavigatesCorrectly() {
+    public void commChannelDetailsTCP_Create_NavigatesCorrectly() {
         String expectedModalTitle = "Create Comm Channel";
 
         CreateCommChannelModal createModal = detailPage.showCreateCommChannelModal();
@@ -183,9 +185,9 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDeleteTcp_DeleteTitleCorrect() {
         String expectedModalTitle = "Confirm Delete";
-        
+
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
-        
+
         String actualModalTitle = deleteConfirmModal.getModalTitle();
 
         assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
@@ -194,9 +196,9 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDeleteTcp_DeleteConfirmMessageCorrect() {
         String expectedModalMessage = "Are you sure you want to delete \"" + commChannelName + "\"?";
-        
+
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
-        
+
         String actualModalMessage = deleteConfirmModal.getConfirmMsg();
 
         assertThat(actualModalMessage).isEqualTo(expectedModalMessage);
@@ -205,18 +207,18 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDeleteTcp_CancelDeleteNavigatesCorrectly() {
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
-        
-        deleteConfirmModal.clickCancelByNameAndWait();
-        
+
+        deleteConfirmModal.clickCancelBtnByNameAndWait();
+
         assertThat(deleteConfirmModal.isModalAvailable()).isFalse();
     }
-    
+
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelDeleteTcp_CloseDeleteNavigatesCorrectly() {
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
-        
+
         deleteConfirmModal.clickCloseAndWait();
-        
+
         assertThat(deleteConfirmModal.isModalDisplayed()).isFalse();
     }
 
@@ -234,10 +236,9 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         jo.put("name", name);
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
         Integer deleteCommChannelId = createResponse.path("id");
-        
+
         navigate(Urls.Assets.COMM_CHANNEL_DETAIL + deleteCommChannelId);
-        detailPage = new CommChannelTcpDetailPage(driverExt, deleteCommChannelId);
-        
+
         String expectedMessage = name + " deleted successfully.";
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
         deleteConfirmModal.clickOkAndWaitForModalToClose();
