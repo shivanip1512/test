@@ -252,6 +252,9 @@ std::string RfnConfigNotificationCommand::decodeDemandFreezeDay(Bytes payload)
     return "Demand freeze configuration:\nDemand freeze day: " + std::to_string(*demandFreezeDay);
 }
 
+//  From cmd_rfn_ChannelConfiguration.cpp
+extern bool isValidRecordingMetric(const unsigned metricId);
+
 std::string RfnConfigNotificationCommand::decodeIntervalRecordingReporting(Bytes payload)
 {
     validate(Condition(payload.size() >= 9, ClientErrors::DataMissing)
@@ -284,6 +287,10 @@ std::string RfnConfigNotificationCommand::decodeIntervalRecordingReporting(Bytes
         if( payload[pos + 3] & 0x38 )
         {
             coincidentMetrics.insert(metricId);
+        }
+        else if( ! isValidRecordingMetric(metricId) )
+        {
+            CTILOG_WARN(dout, "Skipping invalid interval metric " << metricId);
         }
         else if( ! r.intervalMetrics.insert(metricId).second )
         {
@@ -324,6 +331,10 @@ std::string RfnConfigNotificationCommand::decodeChannelSelection(Bytes payload)
         if( payload[pos + 3] & 0x38 )
         {
             coincidentMetrics.insert(metricId);
+        }
+        else if( ! isValidRecordingMetric(metricId) )
+        {
+            CTILOG_WARN(dout, "Skipping invalid recording metric " << metricId);
         }
         else if( ! metrics.insert(metricId).second )
         {
