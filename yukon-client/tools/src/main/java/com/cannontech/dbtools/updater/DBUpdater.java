@@ -5,13 +5,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.attribute.AclEntry;
+import java.nio.file.attribute.AclFileAttributeView;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.List;
-
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.common.exception.StarsNotCreatedException;
@@ -96,6 +98,7 @@ public class DBUpdater extends MessageFrameAdaptor {
     public final static String[] CMD_LINE_PARAM_NAMES = { IRunnableDBTool.PROP_VALUE, "verbose", "nightly"};
     private static final String oracleDBPath = "/Client/DBScripts/oracle";
     private static final String sqlServerDBPath = "/Client/DBScripts/sqlserver";
+    private static final String LOCAL_SERVICE = "NT AUTHORITY\\LOCAL SERVICE";
     
     public DBUpdater() {
         super();
@@ -375,7 +378,7 @@ public class DBUpdater extends MessageFrameAdaptor {
     /**
      * Method to display warning message for invalid Import / Export directories while upgrading DB.
      */
-    private void checkDirectoryAccess(Statement stat, String cmd, String warningMessage) throws SQLException {
+    private void checkDirectoryAccess(Statement stat, String cmd, String warningMessage) throws SQLException, IOException {
         boolean showWarnMessage = false;
         ResultSet resultSet = stat.executeQuery(cmd);
         while (resultSet.next()) {
@@ -383,10 +386,17 @@ public class DBUpdater extends MessageFrameAdaptor {
             String[] directoryPaths = value.split(",");
             for (String directoryPath : directoryPaths) {
                 File file = new File(directoryPath);
-                if (!file.canWrite() || !file.canRead()) {
-                    showWarnMessage = true;
+                AclFileAttributeView attributeView = Files.getFileAttributeView(file.toPath(), AclFileAttributeView.class);
+                List<AclEntry> entry = attributeView.getAcl();
+                showWarnMessage = entry.stream()
+                        .map(e -> !e.principal().getName().equals(LOCAL_SERVICE))
+                        .findAny().get();
+                if (showWarnMessage) {
                     break;
                 }
+            }
+            if (showWarnMessage) {
+                break;
             }
         }
         if (showWarnMessage) {

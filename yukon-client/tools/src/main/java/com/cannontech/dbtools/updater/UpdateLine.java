@@ -229,7 +229,10 @@ public class UpdateLine
     }
 
     /**
-     * method to retrieve commandName from the @start-warning annotation.
+     * Method to retrieve commandName from the @start-warning annotation.<br>
+     * <br>
+     * For example, this method returns <b>checkDirectoryAccess</b> from "@start-warning checkDirectoryAccess Yukon requires write access to Import
+     * and Export directories".
      */
     public String getCommandName() {
         Object o = getMetaProps().get(DBMSDefines.START_WARNING);
@@ -240,7 +243,11 @@ public class UpdateLine
     }
 
     /**
-     * method to retrieve warning message from the @start-warning annotation.
+     * Method to retrieve commandName from the @start-warning annotation.<br>
+     * <br>
+     * For example, this method returns <b> Yukon requires write access to Import
+     * and Export directories</b> from "@start-warning checkDirectoryAccess Yukon requires write access to Import
+     * and Export directories".
      */
     public String getWarningMessage() {
         Object o = getMetaProps().get(DBMSDefines.START_WARNING);
