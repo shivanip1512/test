@@ -8,7 +8,6 @@ import java.util.Optional;
 
 import com.eaton.elements.ActionBtnDropDownElement;
 import com.eaton.elements.WebTable;
-import com.eaton.elements.modals.commchannel.CreateCommChannelModal;
 import com.eaton.elements.modals.commchannel.CreateLocalSerialPortCommChannelModal;
 import com.eaton.elements.modals.commchannel.CreateTcpCommChannelModal;
 import com.eaton.elements.modals.commchannel.CreateTerminalServerCommChannelModal;

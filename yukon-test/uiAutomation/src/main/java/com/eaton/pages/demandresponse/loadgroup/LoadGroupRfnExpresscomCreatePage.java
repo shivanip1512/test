@@ -15,15 +15,6 @@ public class LoadGroupRfnExpresscomCreatePage extends LoadGroupCreatePage {
         pageUrl = Urls.DemandResponse.LOAD_GROUP_CREATE;
     }
 
-    // General
-    public TextEditElement getName() {
-        return new TextEditElement(this.driverExt, "name");
-    }
-
-    public DropDownElement getType() {
-        return new DropDownElement(this.driverExt, "type");
-    }
-
     // Address
     public SwitchBtnMultiSelectElement getAddressUsage() {
         WebElement section = getPageSection("Geographical Address").getSection();
@@ -67,11 +58,11 @@ public class LoadGroupRfnExpresscomCreatePage extends LoadGroupCreatePage {
         return new SwitchBtnMultiSelectElement(this.driverExt, "loadaddressing", section);
     }
 
-    public TextEditElement getProgramLoadAddress() {
+    public TextEditElement getProgram() {
         return new TextEditElement(this.driverExt, "program");
     }
 
-    public TextEditElement getSplinterLoadAddress() {
+    public TextEditElement getSplinter() {
         return new TextEditElement(this.driverExt, "splinter");
     }
 
