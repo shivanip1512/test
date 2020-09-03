@@ -1,9 +1,8 @@
-package com.eaton.pages.demandresponse;
+package com.eaton.pages.demandresponse.loadgroup;
 
 import com.eaton.framework.DriverExtensions;
 
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.loadgroup.LoadGroupDigiSepCreatePage;
 
 
 public class LoadGroupDigiSepEditPage extends LoadGroupDigiSepCreatePage{
