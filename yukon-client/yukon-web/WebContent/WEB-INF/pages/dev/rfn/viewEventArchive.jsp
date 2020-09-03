@@ -128,6 +128,9 @@
                 <tags:nameValue name="Random Outage/Restore First" nameColumnWidth="220px">
                     <tags:checkbox path="firstEventRandom"/>
                 </tags:nameValue>
+                <tags:nameValue name="Outage Timestamp First" nameColumnWidth="220px">
+                    <tags:checkbox path="outageTimestampFirst"/>
+                </tags:nameValue>
             </tags:nameValueContainer>
             
             <div class="page-action-area">
