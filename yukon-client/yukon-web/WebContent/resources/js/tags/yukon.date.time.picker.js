@@ -325,7 +325,7 @@ yukon.ui.initDateTimePickers = function (cfgLocalization, cfgTimepickerArgs) {
     try {
         dateTimePicker.init(cfgLocalization, cfgTimepickerArgs);
     } catch (datetimepickerex) {
-        alert('dateTimePickers: exception in yukon.ui.dateTimePickers.init: ' + datetimepickerex);
+        console.log('dateTimePickers: exception in yukon.ui.dateTimePickers.init: ' + datetimepickerex);
     }
     return dateTimePicker;
 };

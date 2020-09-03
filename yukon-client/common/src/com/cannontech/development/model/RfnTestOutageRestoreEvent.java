@@ -8,6 +8,7 @@ public class RfnTestOutageRestoreEvent {
     private Integer milliseconds = 1;
     private RfnConditionType firstEvent;
     private Boolean firstEventRandom;
+    private Boolean outageTimestampFirst;
     
     public String getDeviceGroup() {
         return deviceGroup;
@@ -32,5 +33,11 @@ public class RfnTestOutageRestoreEvent {
     }
     public void setFirstEventRandom(Boolean firstEventRandom) {
         this.firstEventRandom = firstEventRandom;
+    }
+    public Boolean getOutageTimestampFirst() {
+        return outageTimestampFirst;
+    }
+    public void setOutageTimestampFirst(Boolean outageTimestampFirst) {
+        this.outageTimestampFirst = outageTimestampFirst;
     }
 }
