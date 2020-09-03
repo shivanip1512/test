@@ -34,6 +34,11 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
 
         createPage = new LoadProgramCreatePage(driverExt);
     }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterTest() {
+        refreshPage(createPage);
+    }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void loadProgramCreate_pageTitleCorrect() {
@@ -46,22 +51,21 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void loadProgramCreate_requiredFieldsOnlySuccess() {
-
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT LM Direct Program " + timeStamp;
 
         final String EXPECTED_MSG = name + " saved successfully.";
 
         createPage.getName().setInputValue(name);
-        createPage.getType().selectItemByText("LM Direct Program");
+        createPage.getType().selectItemByValue("LM_DIRECT_PROGRAM");
         waitForLoadingSpinner();
 
         CreateDirectPrgmGearModal modal = createPage.showCreateDirectPrgmGearsModal();
 
         modal.getGearName().setInputValue("TC " + timeStamp);
-        modal.getGearType().selectItemByText("True Cycle");
+        modal.getGearType().selectItemByValue("TrueCycle");
         waitForLoadingSpinner();
-        modal.clickOkAndWaitForModalToClose();
+        modal.clickOkAndWaitForModalCloseDisplayNone();
 
         LoadGroupsTab groupsTab = createPage.getLoadGroupTab();
 
@@ -77,10 +81,5 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
         String userMsg = detailsPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }
-
-    @AfterMethod(alwaysRun = true)
-    public void afterTest() {
-        refreshPage(createPage);
     }
 }

@@ -70,7 +70,7 @@ public class SearchBoxElement {
     public void setSearchValueAndClickResult(String searchValue) {        
         setSearchValue(searchValue);
         
-        List<WebElement> list = this.driverExt.findElements(By.cssSelector(".ui-menu .ui-menu-item"), Optional.of(3));
+        List<WebElement> list = this.driverExt.findElements(By.cssSelector(".ui-menu .ui-menu-item .ui-menu-item-wrapper"), Optional.of(3));
         
         WebElement value = list.stream().filter(element -> element.getText().contains(searchValue)).findFirst().orElseThrow();
         

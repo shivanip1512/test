@@ -32,7 +32,7 @@ public class LoadProgramDetailPage extends PageBase {
     public ConfirmModal showDeleteLoadProgramModal() {
         getActionBtn().clickAndSelectOptionByText("Delete");
         
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("yukon_dialog_confirm");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("yukon_dialog_confirm");
         
         return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of("yukon_dialog_confirm"));        
     }
@@ -40,6 +40,6 @@ public class LoadProgramDetailPage extends PageBase {
     public CopyLoadProgramModal showCopyLoadProgramModal() {
         getActionBtn().clickAndSelectOptionByText("Copy");   
         
-        return new CopyLoadProgramModal(this.driverExt, Optional.of("Copy Load Program"), Optional.empty()); 
+        return new CopyLoadProgramModal(this.driverExt, Optional.empty(), Optional.of("copy-loadProgram-popup")); 
     }
 }
