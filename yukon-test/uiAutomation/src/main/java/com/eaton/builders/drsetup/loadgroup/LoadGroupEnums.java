@@ -26,12 +26,12 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
-    
+
     public enum RelayUsageEmetcon {
         RELAY_A("RELAY_A"),
         RELAY_B("RELAY_B"),
         RELAY_C("RELAY_C"),
-        RELAY_S("RELAY_S");
+        RELAY_ALL("RELAY_ALL");
 
         private final String relayUsage;
 
@@ -49,7 +49,7 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
-    
+
     public enum RelayUsageExpresscom {
         LOAD_1("LOAD_1"),
         LOAD_2("LOAD_2"),
@@ -75,7 +75,7 @@ public class LoadGroupEnums {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
-    }
+    }   
 
     public enum AddressLevelMCT {
         BRONZE("BRONZE"),
@@ -97,10 +97,10 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
-    
-        public enum RouteId {
+
+    public enum RouteId {
         ACCU710A(28),
-        ACCU711(32),                        
+        ACCU711(32),
         ACCU721(36),
         ALCUEASTRIVER(40),
         APAGINGTAPTERMINAL(43),
@@ -132,7 +132,7 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
-    
+
     public enum AddressUsageEmetcon {
         GOLD("GOLD"),
         SILVER("SILVER");
@@ -152,7 +152,7 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
-    
+
     public enum AddressUsageExpresscom {
         GEO("GEO"),
         SUBSTATION("SUBSTATION"),
@@ -177,7 +177,7 @@ public class LoadGroupEnums {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
-    }
+    }   
 
     public enum AddressUsageVersacom {
         UTILITY("UTILITY"),
@@ -292,6 +292,28 @@ public class LoadGroupEnums {
         }
 
         public static RippleShedTime getRandomShedTime() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
+    }
+
+    public enum ProtocolPriorityExpresscom {
+        DEFAULT("DEFAULT"),
+        MEDIUM("MEDIUM"),
+        HIGH("HIGH"),
+        HIGHEST("HIGHEST");
+
+        private final String protocolPriority;
+
+        ProtocolPriorityExpresscom(String protocolPriority) {
+            this.protocolPriority = protocolPriority;
+        }
+
+        public String getProtocolPriority() {
+            return this.protocolPriority;
+        }
+
+        public static ProtocolPriorityExpresscom getRandomProtocolPriority() {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }

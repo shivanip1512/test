@@ -28,6 +28,6 @@ public class GatewayCertificateExpirationEvaluator extends InfrastructureStatusW
 
     @Override
     public Set<PaoType> getSupportedTypes() {
-        return ImmutableSet.of(PaoType.GWY800, PaoType.VIRTUAL_GATEWAY);
+        return ImmutableSet.of(PaoType.GWY800, PaoType.GWY801, PaoType.VIRTUAL_GATEWAY);
     }
 }

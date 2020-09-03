@@ -198,11 +198,7 @@ yukon.tools.trends = (function () {
                     }
                 });
             });
-            
-            $(document).on("click", ".js-reset-peak-help-icon", function () {
-                $('.js-help-text-message').removeClass('dn');
-            });
-            
+
             $(document).on("change", ".js-reset-peak-duration", function () {
                 var selectedDuration = $(this).val(),
                       datePicker = $(".js-reset-peak-date");
