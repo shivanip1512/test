@@ -117,14 +117,14 @@ public class LoadGroupEnums {
         AWCTPTERMINAL(80),
         AXML(84);
 
-        private final int routeId;
+        private final int communicationRouteId;
 
-        RouteId(Integer routeId) {
-            this.routeId = routeId;
+        RouteId(Integer communicationRouteId) {
+            this.communicationRouteId = communicationRouteId;
         }
 
         public Integer getRouteId() {
-            return this.routeId;
+            return this.communicationRouteId;
         }
 
         public static RouteId getRandomRouteId() {
@@ -219,14 +219,14 @@ public class LoadGroupEnums {
         WILD_RICE("WILD_RICE"),
         NMPA("NMPA");
 
-        private final String AREA_CODE;
+        private final String areaCode;
 
         RippleAreaCode(String areaCode) {
-            this.AREA_CODE = areaCode;
+            this.areaCode = areaCode;
         }
 
         public String getAreaCode() {
-            return this.AREA_CODE;
+            return this.areaCode;
         }
 
         public static RippleAreaCode getRandomAreaCode() {
@@ -258,14 +258,14 @@ public class LoadGroupEnums {
         SIX_01("SIX_01"),
         SIX_06("SIX_06");
 
-        private final String GROUP;
+        private final String group;
 
         RippleGroup(String group) {
-            this.GROUP = group;
+            this.group = group;
         }
 
         public String getGroup() {
-            return this.GROUP;
+            return this.group;
         }
 
         public static RippleGroup getRandomGroup() {
@@ -275,20 +275,20 @@ public class LoadGroupEnums {
     }
 
     public enum RippleShedTime {
-        Continuous_Latch("0"),
-        Seven_minutes_30_seconds("450"),
-        Fifteen_minutes("900"),
-        Thirty_minutes("1800"),
-        One_hour("3600");
+        CONTINUOUS_LATCH("0"),
+        SEVEN_MINUTES_30SECOND("450"),
+        FIFTEEN_MINUTES("900"),
+        THIRTY_MINUTES("1800"),
+        ONE_HOUR("3600");
 
-        private final String SHED_TIME;
+        private final String shedTime;
 
         RippleShedTime(String shedTime) {
-            this.SHED_TIME = shedTime;
+            this.shedTime = shedTime;
         }
 
         public String getShedTime() {
-            return this.SHED_TIME;
+            return this.shedTime;
         }
 
         public static RippleShedTime getRandomShedTime() {

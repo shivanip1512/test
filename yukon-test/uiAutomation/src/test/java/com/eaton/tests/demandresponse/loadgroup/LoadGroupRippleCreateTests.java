@@ -11,7 +11,6 @@ import java.util.Random;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.eaton.elements.Section;
@@ -19,8 +18,8 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.LoadGroupDetailPage;
-import com.eaton.pages.demandresponse.LoadGroupRippleCreatePage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupRippleCreatePage;
 
 public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
 
@@ -33,14 +32,16 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         randomNum = getRandomNum();
-    }
-
-    @BeforeMethod(alwaysRun = true)
-    public void beforeTest() {
+        
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
         createPage = new LoadGroupRippleCreatePage(driverExt);
     }
 
+    @AfterMethod(alwaysRun = true)
+    public void afterTest() {
+        refreshPage(createPage);
+    }
+    
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_AllFieldsSuccessfully() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -52,14 +53,17 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = name + " saved successfully.";
 
         createPage.getName().setInputValue(name);
-        createPage.getType().selectItemByText("Ripple Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RIPPLE");
 
         waitForLoadingSpinner();
-        createPage.getCommunicationRoute().selectItemByText("a_CCU-721");
+        
+        //36 = a_CCU-721
+        createPage.getCommunicationRoute().selectItemByValue("36");
 
-        createPage.getShedTime().selectItemByText("15 minutes");
-        createPage.getGroup().selectItemByText("2.01");
-        createPage.getAreaCode().selectItemByText("Minnkota");
+        //900 = 15 minutes
+        createPage.getShedTime().selectItemByValue("900");
+        createPage.getGroup().selectItemByValue("TWO_01");
+        createPage.getAreaCode().selectItemByValue("MINNKOTA");
 
         createPage.getControlSwitchElement().setTrueFalseByBitNo(1, true);
         createPage.getControlSwitchElement().setTrueFalseByBitNo(33, true);
@@ -81,7 +85,7 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_GeneralSectionTitleCorrect() {
-        createPage.getType().selectItemByText("Ripple Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RIPPLE");
         waitForLoadingSpinner();
         Section generalSection = createPage.getPageSection("General");
 
@@ -91,7 +95,7 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_GeneralSectionLabelsCorrect() {
         String sectionName = "General";
-        createPage.getType().selectItemByText("Ripple Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RIPPLE");
         waitForLoadingSpinner();
         List<String> expectedLabels = new ArrayList<>(List.of("Name:", "Type:", "Communication Route:"));
         List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
@@ -102,7 +106,7 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_AddressingSectionTitleCorrect() {
-        createPage.getType().selectItemByText("Ripple Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RIPPLE");
         waitForLoadingSpinner();
 
         Section generalSection = createPage.getPageSection("Addressing");
@@ -113,7 +117,7 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_AddressingSectionLabelsCorrect() {
         String sectionName = "Addressing";
-        createPage.getType().selectItemByText("Ripple Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RIPPLE");
         waitForLoadingSpinner();
 
         List<String> expectedLabels = new ArrayList<>(
@@ -125,7 +129,7 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_OptionalAttributesSectionTitleCorrect() {
-        createPage.getType().selectItemByText("Ripple Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RIPPLE");
         waitForLoadingSpinner();
 
         Section generalSection = createPage.getPageSection("Optional Attributes");
@@ -135,7 +139,7 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_OptionalAttributesSectionLabelsCorrect() {
         String sectionName = "Optional Attributes";
-        createPage.getType().selectItemByText("Ripple Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RIPPLE");
         waitForLoadingSpinner();
 
         List<String> expectedLabels = new ArrayList<>(List.of("kW Capacity:", "Disable Group:", "Disable Control:"));
@@ -146,7 +150,7 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_CommunicationRouteDropDownContainsAllExpectedValues() {
-        createPage.getType().selectItemByText("Ripple Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RIPPLE");
         waitForLoadingSpinner();
         List<String> expectedDropDownValues = new ArrayList<>(
                 List.of("a_CCU-710A", "a_CCU-711", "a_CCU-721", "a_LCU-EASTRIVER", "a_PAGING TAP TERMINAL", "a_REPEATER-800",
@@ -160,7 +164,7 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_ShedTimeDropDownContainsAllExpectedValues() {
-        createPage.getType().selectItemByText("Ripple Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RIPPLE");
         waitForLoadingSpinner();
         List<String> expectedDropDownValues = new ArrayList<>(
                 List.of("Continuous Latch", "7 minutes 30 seconds", "15 minutes", "30 minutes", "1 hour"));
@@ -171,7 +175,7 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_GroupDropDownContainsAllExpectedValues() {
-        createPage.getType().selectItemByText("Ripple Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RIPPLE");
         waitForLoadingSpinner();
         List<String> expectedDropDownValues = new ArrayList<>(
                 List.of("TST", "1.00", "1.01", "1.02", "2.00", "2.01", "2.02", "2.03", "2.04", "3.00",
@@ -183,7 +187,7 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_AreaCodeTimeDropDownContainsAllExpectedValues() {
-        createPage.getType().selectItemByText("Ripple Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RIPPLE");
         waitForLoadingSpinner();
         List<String> expectedDropDownValues = new ArrayList<>(
                 List.of("Universal", "Minnkota", "Beltrami", "Cass County", "Cavalier Rural", "Clearwater-Polk",
@@ -196,7 +200,7 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_DoubleOrdersSectionTitleCorrect() {
-        createPage.getType().selectItemByText("Ripple Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RIPPLE");
         waitForLoadingSpinner();
 
         Section generalSection = createPage.getPageSection("Double Orders");
@@ -206,7 +210,7 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_DoubleOrdersSectionLabelsCorrect() {
         String sectionName = "Double Orders";
-        createPage.getType().selectItemByText("Ripple Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RIPPLE");
         waitForLoadingSpinner();
 
         List<String> expectedLabels = new ArrayList<>(List.of("Control:", "Restore:"));
@@ -217,7 +221,7 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_DoubleOrdersControlField34Switches() {
-        createPage.getType().selectItemByText("Ripple Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RIPPLE");
         waitForLoadingSpinner();
 
         assertThat(createPage.getControlSwitchElement().getSwitchCount()).isEqualTo(34);
@@ -225,7 +229,7 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_DoubleOrdersRestoreField34Switches() {
-        createPage.getType().selectItemByText("Ripple Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RIPPLE");
         waitForLoadingSpinner();
 
         assertThat(createPage.getControlSwitchElement().getSwitchCount()).isEqualTo(34);
@@ -233,7 +237,7 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_DoubleOrdersControlField1stRowLabels() {
-        createPage.getType().selectItemByText("Ripple Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RIPPLE");
         waitForLoadingSpinner();
 
         List<String> expectedLabels = new ArrayList<>(
@@ -245,7 +249,7 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_DoubleOrdersRestoreField1stRowLabels() {
-        createPage.getType().selectItemByText("Ripple Group");
+        createPage.getType().selectItemByValue("LM_GROUP_RIPPLE");
         waitForLoadingSpinner();
 
         List<String> expectedLabels = new ArrayList<>(
@@ -253,11 +257,5 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
         List<String> actualLabels = createPage.getRestoreLabels();
 
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
-    }
-
-    @AfterMethod(alwaysRun = true)
-    public void afterTest() {
-        refreshPage(createPage);
-        createPage = new LoadGroupRippleCreatePage(driverExt);
     }
 }

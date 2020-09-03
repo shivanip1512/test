@@ -2,9 +2,12 @@ package com.eaton.elements.modals;
 
 import java.util.Optional;
 
+import org.openqa.selenium.WebElement;
+
 import com.eaton.elements.WebTable;
 import com.eaton.elements.WebTableRow;
 import com.eaton.framework.DriverExtensions;
+
 
 public class SelectPointModal extends BaseModal {
     
@@ -18,8 +21,10 @@ public class SelectPointModal extends BaseModal {
     
 
     /**
-     * @param pointName = pass in the name of the point
-     * @param id = optional field, use if name is not unique, otherwise pass in Optional.empty()
+     * Use this method when you can search by name or id, but only use id if absolutely necessary.
+     * 
+     * @param pointName the name of the point, that will be clicked on to select
+     * @param id = optional field, id of the point, otherwise use Optional.empty()
      */
     public void selectPoint(String pointName, Optional<String> id) {
         if(id.isPresent()) {
@@ -32,5 +37,19 @@ public class SelectPointModal extends BaseModal {
         WebTableRow row = table.getDataRowByName(pointName);
 
         row.selectCellByLink();
+    }    
+    
+    
+    
+    /**
+     * Use this method only when you need to select a point, and can only search by name.  
+     * Id will be used to help select the correct result if multiple values are returned.
+     * 
+     * @param pointName the name of the point, that will be clicked on to select
+     * @param id the id of the point
+     */
+    public void selectPointById(String pointName, String id) {
+        WebElement row = getPointTable().searchAndGetRowById(pointName, id);
+        row.click();
     }
 }

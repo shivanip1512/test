@@ -13,7 +13,7 @@ import com.eaton.pages.HomePage;
 
 public class HomeTests extends SeleniumTestSetup {
 
-    private HomePage page;
+    private HomePage page;  
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
@@ -26,14 +26,14 @@ public class HomeTests extends SeleniumTestSetup {
         page = new HomePage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL })
+    @Test(groups = { TestConstants.Priority.CRITICAL })    
     public void support_UrlCorrect() {
         String url = page.getUtilityUrl("Support");
 
         assertThat(url).contains(Urls.SUPPORT);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL })
+    @Test(groups = { TestConstants.Priority.CRITICAL })    
     public void siteMap_UrlCorrect() {
         String url = page.getUtilityUrl("Site Map");
 

@@ -74,7 +74,7 @@ public class EnergyCompanyOperatorUserEditPage extends PageBase {
         return save;
     }
     
-    private Button getDeleteBtn() {
+    public  Button getDeleteBtn() {
         return delete;
     }
     
@@ -82,11 +82,10 @@ public class EnergyCompanyOperatorUserEditPage extends PageBase {
         return cancel;
     }
     
-    public ConfirmModal showAndWaitConfirmDeleteModal() {
-        
-        getDeleteBtn().click();      
+    public ConfirmModal showAndWaitConfirmDeleteModal() {      
+        getDeleteBtn().click();     
                       
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("yukon_dialog_confirm");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("yukon_dialog_confirm");
         
         return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of("yukon_dialog_confirm"));  
     }

@@ -40,12 +40,12 @@ public class EditElement {
 
     public WebElement getEditElement() {
         if (this.parentName != null) {
-            this.driverExt.waitForElement("[aria-describedby='" + this.parentName + "'] input[name='" + this.elementName + "']");
+            this.driverExt.waitUntilElementVisibleByCssLocator("[aria-describedby='" + this.parentName + "'] input[name='" + this.elementName + "']");
             return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] input[name='" + this.elementName + "']"), Optional.of(3));
         } else if (this.parentElement != null) {
             return this.parentElement.findElement(By.cssSelector("input[name='" + this.elementName + "']"));
         } else {
-            this.driverExt.waitForElement("input[name='" + this.elementName + "']");
+            this.driverExt.waitUntilElementVisibleByCssLocator("input[name='" + this.elementName + "']");
             return this.driverExt.findElement(By.cssSelector("input[name='" + this.elementName + "']"), Optional.of(3));
         }        
     }    

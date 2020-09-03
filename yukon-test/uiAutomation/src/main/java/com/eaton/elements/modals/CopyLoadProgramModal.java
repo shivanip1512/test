@@ -11,7 +11,6 @@ import com.eaton.framework.DriverExtensions;
 
 public class CopyLoadProgramModal extends BaseModal {
     
-    private DriverExtensions driverExt; 
     private WebElement modal;
     
     public CopyLoadProgramModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {

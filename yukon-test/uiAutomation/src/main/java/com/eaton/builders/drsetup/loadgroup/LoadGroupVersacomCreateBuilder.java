@@ -32,8 +32,7 @@ public class LoadGroupVersacomCreateBuilder {
         private Integer serialAddress;
         private String classAddress;
         private String divisionAddress;
-        private List<LoadGroupEnums.AddressUsageVersacom> addressUsage;
-        private Optional<List<String>> serialAddressUsage;
+        List<LoadGroupEnums.AddressUsageVersacom> addressUsageList = new ArrayList<>();
         private List<RelayUsage> relayUsage;
 
         public Builder(Optional<String> name) {
@@ -47,38 +46,57 @@ public class LoadGroupVersacomCreateBuilder {
             this.name = name;
             return this;
         }
+        
+        public Builder withRouteId(Optional<LoadGroupEnums.RouteId> routeId) {
+            LoadGroupEnums.RouteId randomRelayUsage = routeId.orElse(LoadGroupEnums.RouteId.getRandomRouteId());
 
-        public Builder withKwCapacity(Optional<Double> kwCapacity) {
-            this.kwCapacity = kwCapacity.orElse(faker.number().randomDouble(3, 0, 99999));
+            this.routeId = randomRelayUsage.getRouteId();
             return this;
         }
 
+        public Builder withSection(Optional<Integer> sectionAddress) {
+            this.sectionAddress = sectionAddress.orElse(faker.number().numberBetween(0, 256));
+            addressUsageList.add(LoadGroupEnums.AddressUsageVersacom.SECTION);
+            return this;
+        }        
+
+        public Builder withClass(Optional<String> classAddress) {
+            int x = faker.number().numberBetween(1, 65535);
+            String s = String.format("%16s", Integer.toBinaryString(x)).replace(' ', '0');
+            this.classAddress = classAddress.orElse(s);
+            addressUsageList.add(LoadGroupEnums.AddressUsageVersacom.CLASS);
+            return this;
+        }
+
+        public Builder withDivision(Optional<String> divisionAddress) {
+            int x = faker.number().numberBetween(1, 65535);
+            String s = String.format("%16s", Integer.toBinaryString(x)).replace(' ', '0');
+            this.divisionAddress = divisionAddress.orElse(s);
+            addressUsageList.add(LoadGroupEnums.AddressUsageVersacom.DIVISION);
+            return this;
+        }
+        
+        public Builder withSerial(Optional<Integer> serialAddress) {
+            this.serialAddress = serialAddress.orElse(faker.number().numberBetween(1, 99999));
+            addressUsageList.add(LoadGroupEnums.AddressUsageVersacom.SERIAL);
+            return this;
+        }
+        
         public Builder withUtilityAddress(Optional<Integer> utilityAddress) {
             this.utilityAddress = utilityAddress.orElse(faker.number().numberBetween(1, 254));
             return this;
         }
+        
+        public Builder withRelayUsage(Optional<List<RelayUsage>> relayUsage) {
+            List<RelayUsage> relays = new ArrayList<>();
+            relays.add(RelayUsage.getRandomRelayUsage());
 
-        public Builder withSectionAddress(Optional<Integer> sectionAddress) {
-            this.sectionAddress = sectionAddress.orElse(faker.number().numberBetween(0, 256));
+            this.relayUsage = relayUsage.orElse(relays);
             return this;
         }
-
-        public Builder withSerialAddress(Optional<Integer> serialAddress) {
-            this.serialAddress = serialAddress.orElse(faker.number().numberBetween(1, 99999));
-            return this;
-        }
-
-        public Builder withClassAddress(Optional<String> classAddress) {
-            int x = faker.number().numberBetween(1, 65535);
-            String s = String.format("%16s", Integer.toBinaryString(x)).replace(' ', '0');
-            this.classAddress = classAddress.orElse(s);
-            return this;
-        }
-
-        public Builder withDivisionAddress(Optional<String> divisionAddress) {
-            int x = faker.number().numberBetween(1, 65535);
-            String s = String.format("%16s", Integer.toBinaryString(x)).replace(' ', '0');
-            this.divisionAddress = divisionAddress.orElse(s);
+        
+        public Builder withKwCapacity(Optional<Double> kwCapacity) {
+            this.kwCapacity = kwCapacity.orElse(faker.number().randomDouble(3, 0, 99999));
             return this;
         }
 
@@ -89,42 +107,6 @@ public class LoadGroupVersacomCreateBuilder {
 
         public Builder withDisableControl(Optional<Boolean> disableControl) {
             this.disableControl = disableControl.orElse(true);
-            return this;
-        }
-
-        public Builder withRouteId(Optional<LoadGroupEnums.RouteId> route_Id) {
-            LoadGroupEnums.RouteId randomRelayUsage = route_Id.orElse(LoadGroupEnums.RouteId.getRandomRouteId());
-
-            this.routeId = randomRelayUsage.getRouteId();
-            return this;
-        }
-
-        public Builder withRelayUsage(Optional<List<RelayUsage>> relayUsage) {
-            List<RelayUsage> relays = new ArrayList<RelayUsage>();
-            relays.add(RelayUsage.getRandomRelayUsage());
-
-            this.relayUsage = relayUsage.orElse(relays);
-            return this;
-        }
-
-        public Builder withOtherAddressUsage(Optional<List<AddressUsageVersacom>> addressUsage) {
-            List<AddressUsageVersacom> versacomAddressUsage = new ArrayList<AddressUsageVersacom>();
-            versacomAddressUsage.add(AddressUsageVersacom.getRandomAddressUsage());
-
-            this.addressUsage = addressUsage.orElse(versacomAddressUsage);
-            return this;
-        }
-
-        public Builder withSerialAddressUsage(Optional<List<String>> addressUsage) {
-            List<String> serialAddressUsage = new ArrayList<String>();
-
-            if (addressUsage.isEmpty()) {
-                serialAddressUsage.add("UTILITY");
-                serialAddressUsage.add("SERIAL");
-                this.serialAddressUsage = Optional.of(serialAddressUsage);
-            } else {
-                this.serialAddressUsage = addressUsage;
-            }
             return this;
         }
 
@@ -142,7 +124,7 @@ public class LoadGroupVersacomCreateBuilder {
             jo.put("serialAddress", this.serialAddress);
             jo.put("classAddress", this.classAddress);
             jo.put("divisionAddress", this.divisionAddress);
-            jo.put("addressUsage", this.addressUsage);
+            jo.put("addressUsage", this.addressUsageList);
             jo.put("relayUsage", this.relayUsage);
             jo.put("routeId", this.routeId);
             j.put(TYPE, jo);
@@ -172,12 +154,12 @@ public class LoadGroupVersacomCreateBuilder {
         List<AddressUsageVersacom> list = new ArrayList<>();
         list.add(AddressUsageVersacom.UTILITY);
         return new LoadGroupVersacomCreateBuilder.Builder(Optional.empty())
+                .withRouteId(Optional.empty())
+                .withSection(Optional.empty())
+                .withUtilityAddress(Optional.empty())
+                .withRelayUsage(Optional.empty())
                 .withDisableControl(Optional.empty())
                 .withDisableGroup(Optional.empty())
-                .withKwCapacity(Optional.empty())
-                .withRelayUsage(Optional.empty())
-                .withOtherAddressUsage(Optional.of(list))
-                .withRouteId(Optional.empty())
-                .withUtilityAddress(Optional.empty());
+                .withKwCapacity(Optional.empty());
     }
 }
