@@ -7,9 +7,9 @@ public final class TestConstants {
         public static final String HIGH = "High";
         public static final String MEDIUM = "Medium";
         public static final String LOW = "Low";
-    }
+    }    
 
-    public static final String DATE_FORMAT = "MMddyyyyHHmmssSSS";    
+    public static final String DATE_FORMAT = "MMddyyyyHHmmssSSS";           
     
     public static final class Ami {
         public static final String AMI = "AMI";
@@ -40,5 +40,5 @@ public final class TestConstants {
     
     public static final class Support {
         public static final String SUPPORT = "Support";
-    }    
+    }         
 }

@@ -196,8 +196,10 @@
         </form:form>
         <cti:msg2 var="addPointTitle" key=".addPoint"/>
         <cti:msg2 var="addMarkerTitle" key=".addMarker"/>
+        <cti:msg2 var="markerHelpText" key=".markerValueHelpTxt"/>
         <input type="hidden" class="js-add-point-title" value="${addPointTitle}"/>
         <input type="hidden" class="js-add-marker-title" value="${addMarkerTitle}"/>
+        <input type="hidden" class="js-marker-help" value="${markerHelpText}"/>
     </cti:msgScope>
     <cti:includeScript link="/resources/js/pages/yukon.tools.trend.setup.js" />
     <dt:pickerIncludes />

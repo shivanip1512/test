@@ -87,13 +87,45 @@ public class WebTable {
 
         while((rows.size() != 1) || (System.currentTimeMillis() - startTime) < 1000) {
             try {
-                table = this.driverExt.findElement(By.cssSelector(".compact-results-table"), Optional.empty());
+                table = getTable();
 
                 rows = table.findElements(By.cssSelector("tbody tr"));  
             } 
             catch(StaleElementReferenceException ex) {
             }
         }        
+    }
+    
+    public WebElement searchAndGetRowById(String value, String id) {
+        TextEditElement search = new TextEditElement(this.driverExt, "ss", parentElement);
+        
+        search.setInputValue(value);
+        
+        WebElement table = null;
+        List<WebElement> rows;
+        List<WebElement> anchors;
+        boolean allMatch = false;
+        Optional<WebElement> row = Optional.empty();
+        WebElement anchorElement = null;
+        long startTime = System.currentTimeMillis();
+
+        while ((row.isEmpty()) || (System.currentTimeMillis() - startTime) < 1000) {
+            try {
+                table = getTable();
+
+                rows = table.findElements(By.cssSelector("tbody tr"));
+                anchors = table.findElements(By.cssSelector("td a"));
+                allMatch = anchors.stream().allMatch(x -> x.getText().contains(value));
+                if (allMatch) {
+                    row = rows.stream().filter(x -> x.getAttribute("data-id").contains(id)).findFirst();   
+                    anchorElement = row.get().findElement(By.cssSelector("td a"));
+                }                                  
+            } 
+            catch(StaleElementReferenceException ex) {
+            }
+        } 
+        
+        return anchorElement;
     }
     
     private void waitForSearch(WebElement parent) {
@@ -135,7 +167,7 @@ public class WebTable {
             
             waitForSearch();
         }                      
-    }
+    }    
     
     public void searchTable(String value, WebElement parent) {
         TextEditElement search = new TextEditElement(this.driverExt, "ss", parent);
@@ -185,5 +217,9 @@ public class WebTable {
 
             this.columnHeaders.add(new WebTableColumnHeader(element));
         }
+    }
+    
+    public String getTableMessage() {
+        return this.driverExt.findElement(By.cssSelector(".empty-list"), Optional.of(2)).getText();
     }
 }

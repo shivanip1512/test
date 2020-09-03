@@ -12,6 +12,7 @@ import com.eaton.elements.modals.SelectMCTMeterModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupCreatePage;
 
 public class LoadGroupMCTCreatePage extends LoadGroupCreatePage {
 
@@ -23,11 +24,11 @@ public class LoadGroupMCTCreatePage extends LoadGroupCreatePage {
     }
 
     public PickerElement getMCTAddress() {
-        return new PickerElement(this.driverExt, "picker-mctMeterPicker");
+        return new PickerElement(this.driverExt, Optional.empty(), Optional.of("picker-mctMeterPicker"));
     }
 
     public String getMCTAddressLabelText() {
-        return getMCTAddress().getLinkValueDynamic();
+        return getMCTAddress().getLinkValue();
     }
 
     public TextEditElement getAddress() {
@@ -44,14 +45,10 @@ public class LoadGroupMCTCreatePage extends LoadGroupCreatePage {
         return new DropDownElement(this.driverExt, "level");
     }
 
-    private PickerElement getMCTAddressSelection() {
-        return new PickerElement(this.driverExt, "picker-mctMeterPicker");
-    }
-
     public SelectMCTMeterModal showAndWaitMCTMeter() {
-        getMCTAddressSelection().clickLinkWithDynamicId();
+        getMCTAddress().clickLink();
 
-        SeleniumTestSetup.waitUntilModalVisibleByTitle("Select MCT Meter");
+        SeleniumTestSetup.waitUntilModalOpenByTitle("Select MCT Meter");
 
         return new SelectMCTMeterModal(this.driverExt, Optional.of("Select MCT Meter"), Optional.empty());
     }

@@ -3,12 +3,9 @@ package com.eaton.tests.admin.energycompany;
 import static org.assertj.core.api.Assertions.*;
 import java.util.Optional;
 
-import org.assertj.core.api.SoftAssertions;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.eaton.elements.WebTable;
-import com.eaton.elements.WebTableRow;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
@@ -20,12 +17,10 @@ import com.eaton.pages.admin.energycompany.EnergyCompanyOperatorUserListPage;
 public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
-    private SoftAssertions softly;
     
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
         driverExt = getDriverExt();   
-        softly = new SoftAssertions();
     }
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
@@ -44,7 +39,6 @@ public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
     public void energyCompanyOperatorUserEdit_deleteOperatorUserSuccess() {
         final String EXPECTED_USER_MSG = "Successfully deleted the user.";
-        final String OPERATOR_USER = "ATDeleteUser";
         
         navigate(Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_EDIT + "64" + Urls.Admin.ENERGY_COMPANY_OPERATOR_LOGIN_ID + "302");
 
@@ -54,17 +48,12 @@ public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
         
         modal.clickOkAndWaitForModalToClose();
 
-        waitForUrlToLoad(Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_LIST + "64", Optional.empty());
+        //waitForUrlToLoad(Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_AFTER_DELETE_OR_EDIT, Optional.empty());
 
         EnergyCompanyOperatorUserListPage listPage = new EnergyCompanyOperatorUserListPage(driverExt, 64);
 
         String actualUserMsg = listPage.getUserMessage();
-        WebTable table = listPage.getTable();
-        WebTableRow row = table.getDataRowByName(OPERATOR_USER);
 
-        softly.assertThat(actualUserMsg).isEqualTo(EXPECTED_USER_MSG);
-        softly.assertThat(row).isNull();
-        
-        softly.assertAll();
+        assertThat(EXPECTED_USER_MSG).isEqualTo(actualUserMsg);
     }  
 }

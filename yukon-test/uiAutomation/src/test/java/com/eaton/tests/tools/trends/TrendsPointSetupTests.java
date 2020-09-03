@@ -87,7 +87,7 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
         trendPointModal = trendEditPage.showAndWaitAddPointModal();
         // Set the empty value for the Label Input Field
         trendPointModal.getLabel().setInputValue("");
-        trendPointModal.clickOkAndWait();
+        trendPointModal.clickOk();
 
         String errorMsg = trendPointModal.getLabel().getValidationError();
         
@@ -107,7 +107,7 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
     public void trendPointSetup_Point_RequiredValidation() {
         final String EXPECTED_MSG = "Point is required.";
         trendPointModal = trendEditPage.showAndWaitAddPointModal();
-        trendPointModal.clickOkAndWait();
+        trendPointModal.clickOk();
         String errorMsg = trendPointModal.getPoint().getValidationError("pointId");
         
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
@@ -119,7 +119,8 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
         trendPointModal = trendEditPage.showAndWaitAddPointModal();
         // Put invalid chars in the Multiplier field and save
         trendPointModal.getMultiplier().setInputValue("abc@");
-        trendPointModal.clickOkAndWait();
+        trendPointModal.clickOk();
+        
         String errorMsg = trendPointModal.getMultiplier().getValidationError();
 
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
@@ -182,7 +183,7 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
         softly.assertThat(trendPointModal.getStyle().getOptionValue()).isEqualTo(point.getString("style"));
         softly.assertThat(trendPointModal.getType().getOptionValue()).isEqualTo(point.getString("type"));
         softly.assertThat(trendPointModal.getReadOnlyFieldValueByLabel("Device:")).isEqualTo("RTU for Trends");
-        softly.assertThat(trendPointModal.getPoint().getLinkValueDynamic()).isEqualTo(POINT_NAME);
+        softly.assertThat(trendPointModal.getPoint().getLinkValue()).isEqualTo(POINT_NAME);
         softly.assertAll();
     }
 }

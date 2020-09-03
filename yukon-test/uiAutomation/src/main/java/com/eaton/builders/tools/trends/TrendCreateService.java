@@ -5,8 +5,6 @@ import java.util.Optional;
 import org.javatuples.Pair;
 import org.json.JSONObject;
 
-import io.restassured.response.ExtractableResponse;
-
 public class TrendCreateService {
 
     public static Pair<JSONObject, JSONObject> buildAndCreateTrendAllFields() {

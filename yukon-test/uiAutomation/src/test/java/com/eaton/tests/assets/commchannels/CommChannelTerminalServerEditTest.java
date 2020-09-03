@@ -4,12 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 import org.assertj.core.api.SoftAssertions;
 import org.json.simple.JSONObject;
-import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -30,7 +28,6 @@ import io.restassured.response.ExtractableResponse;
 public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
     private CommChannelTerminalServerDetailPage channelDetailPage;
     private DriverExtensions driverExt;
-    private SoftAssertions softly;
     private Integer commChannelId;
     private String commChannelName;
     private JSONObject jo;
@@ -40,10 +37,9 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        softly = new SoftAssertions();
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        commChannelName = "Terminal Server Comm Channel " + timeStamp;
+        commChannelName = "Terminal Server " + timeStamp;
 
         // Creating one TerminalServer port comm channel using hard coded json file.
         String payloadFile = System.getProperty("user.dir")
@@ -57,7 +53,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         jo.put("portNumber", portNumber);
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
         commChannelId = createResponse.path("id");
-        
+
         navigate(Urls.Assets.COMM_CHANNEL_DETAIL + commChannelId);
         channelDetailPage = new CommChannelTerminalServerDetailPage(driverExt, commChannelId);
     }
@@ -70,84 +66,81 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_ModalTitleCorrect() {
         String expectedModalTitle = "Edit " + commChannelName;
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
         String actualModalTitle = editModal.getModalTitle();
 
         assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_NameRequired() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "Name is required.";
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+    public void commChannelTerminalServerEdit_Name_RequiredValidation() {
+        String exprectedMsg = "Name is required.";
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
         editModal.getName().setInputValue(" ");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getName().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getName().getValidationError();
+
+        assertThat(errorMsg).isEqualTo(exprectedMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_NameInvalidChars() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
+    public void commChannelTerminalServerEdit_Name_InvalidCharsValidation() {
+        String exprectedMsg = "Name must not contain any of the following characters: / \\ , ' \" |.";
 
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
         editModal.getName().setInputValue("/,terminal|");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getName().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getName().getValidationError();
+
+        assertThat(errorMsg).isEqualTo(exprectedMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit__NameUniqueValidation() {
+    public void commChannelTerminalServerEdit__Name_AlreadyExitsValidation() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String EXPECTED_MSG = "Name already exists";
-        String commChannelNameTwo = "Terminal Server Comm Channel" + timeStamp;
+        String exprectedMsg = "Name already exists";
+        String name = "Terminal Server " + timeStamp;
         String payloadFile = System.getProperty("user.dir")
                 + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelTerminalServer.json";
 
         Object body = JsonFileHelper.parseJSONFile(payloadFile);
         randomNum = getRandomNum();
         jo = (JSONObject) body;
-        jo.put("name", commChannelNameTwo);
-        portNumber = randomNum.nextInt(65536);
-        jo.put("portNumber", portNumber);
+        jo.put("name", name);
+        Integer portNum = randomNum.nextInt(65536);
+        jo.put("portNumber", portNum);
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
 
-        String expectedModalTitle = "Edit " + commChannelName;
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
-        editModal.getName().setInputValue(commChannelNameTwo);
-        editModal.clickOkAndWait();
+        editModal.getName().setInputValue(name);
+        editModal.clickOk();
 
-        assertThat(editModal.getName().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getName().getValidationError();
+
+        assertThat(errorMsg).isEqualTo(exprectedMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_CancelNavigatesCorrectly() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_TITLE = commChannelName;
+    public void commChannelTerminalServerEdit_Cancel_NavigatesCorrectly() {
+        String expectedTitle = commChannelName;
 
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
         editModal.clickCancelAndWait();
 
         String actualPageTitle = channelDetailPage.getPageTitle();
-        assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);
+
+        assertThat(actualPageTitle).isEqualTo(expectedTitle);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_TabLabelsCorrect() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+    public void commChannelTerminalServerEdit_TabTitlesCorrect() {
+        SoftAssertions softly = new SoftAssertions();
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
         List<String> titles = editModal.getTabs().getTitles();
 
@@ -158,15 +151,15 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_InfoTabLabelsCorrect() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+    public void commChannelTerminalServerEdit_InfoTab_LabelsCorrect() {
+        SoftAssertions softly = new SoftAssertions();
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
         String tabName = "Info";
         editModal.getTabs().clickTabAndWait(tabName);
 
         List<String> labels = editModal.getTabs().getTabLabels(tabName);
+        
         softly.assertThat(labels.size()).isEqualTo(6);
         softly.assertThat(labels.get(0)).isEqualTo("Name:");
         softly.assertThat(labels.get(1)).contains("Type:");
@@ -178,17 +171,16 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_ConfigurationLabelsCorrect() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+    public void commChannelTerminalServerEdit_ConfigTab_LabelsCorrect() {
+        SoftAssertions softly = new SoftAssertions();
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
         String tabName = "Configuration";
         editModal.getTabs().clickTabAndWait(tabName);
 
         List<String> labels = editModal.getTabs().getTabLabels("Configuration");
+        
         softly.assertThat(labels.size()).isEqualTo(9);
-
         softly.assertThat(labels.get(0)).isEqualTo("Protocol Wrap:");
         softly.assertThat(labels.get(1)).isEqualTo("Carrier Detect Wait:");
         softly.assertThat(labels.get(2)).isEqualTo("Pre Tx Wait:");
@@ -202,11 +194,10 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_ConfigurationsValuesCorrect() {
-        String expectedModalTitle = "Edit " + commChannelName;
+    public void commChannelTerminalServerEdit_ConfigTab_ValuesCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         String tabName = "Configuration";
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
 
@@ -224,171 +215,170 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_PreTxWaitMinValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "Pre Tx Wait must be between 0 and 10,000,000.";
+    public void commChannelTerminalServerEdit_PreTxWait_MinValueValidation() {
+        String expectedMsg = "Pre Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
 
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPreTxWait().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getPreTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getPreTxWait().getValidationError();
+
+        assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_PreTxWaitMaxValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "Pre Tx Wait must be between 0 and 10,000,000.";
+        String expectedMsg = "Pre Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
 
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPreTxWait().setInputValue("10000001");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getPreTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getPreTxWait().getValidationError();
+
+        assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_RTSTxWaitMinValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "RTS To Tx Wait must be between 0 and 10,000,000.";
+    public void commChannelTerminalServerEdit_RtsToTxWait_MinValueValidation() {
+        String expectedMsg = "RTS To Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
 
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getRtsToTxWait().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getRtsToTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getRtsToTxWait().getValidationError();
+
+        assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_RTSTxWaitMaxValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "RTS To Tx Wait must be between 0 and 10,000,000.";
+    public void commChannelTerminalServerEdit_RtsToTxWait_MaxValueValidation() {
+        String expectedMsg = "RTS To Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
 
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getRtsToTxWait().setInputValue("10000001");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getRtsToTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getRtsToTxWait().getValidationError();
+
+        assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_PostTxWaitMinValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "Post Tx Wait must be between 0 and 10,000,000.";
+    public void commChannelTerminalServerEdit_PostTxWait_MinValueValidation() {
+        String expectedMsg = "Post Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
 
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPostTxWait().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getPostTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getPostTxWait().getValidationError();
+
+        assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_PostTxWaitMaxValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "Post Tx Wait must be between 0 and 10,000,000.";
+    public void commChannelTerminalServerEdit_PostTxWait_MaxValueValidation() {
+        String expectedMsg = "Post Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
 
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPostTxWait().setInputValue("10000001");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getPostTxWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getPostTxWait().getValidationError();
+
+        assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_RecDataWaitMinValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "Receive Data Wait must be between 0 and 1,000.";
+    public void commChannelTerminalServerEdit_ReceiveDataWait_MinValueValidation() {
+        String expectedMsg = "Receive Data Wait must be between 0 and 1,000.";
         String tabName = "Configuration";
 
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getReceiveDataWait().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getReceiveDataWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getReceiveDataWait().getValidationError();
+
+        assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_RecDataWaitMaxValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "Receive Data Wait must be between 0 and 1,000.";
+    public void commChannelTerminalServerEdit_ReceiveDataWait_MaxValueValidation() {
+        String expectedMsg = "Receive Data Wait must be between 0 and 1,000.";
         String tabName = "Configuration";
 
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getReceiveDataWait().setInputValue("1001");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getReceiveDataWait().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getReceiveDataWait().getValidationError();
+
+        assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_AdditionalTimeOutMinValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "Additional Time Out must be between 0 and 999.";
+    public void commChannelTerminalServerEdit_AdditionalTimeOut_MinValueValidation() {
+        String expectedMsg = "Additional Time Out must be between 0 and 999.";
         String tabName = "Configuration";
 
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getAdditionalTimeOut().setInputValue("-1");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getAdditionalTimeOut().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getAdditionalTimeOut().getValidationError();
+
+        assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_AdditionalTimeOutMaxValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "Additional Time Out must be between 0 and 999.";
+    public void commChannelTerminalServerEdit_AdditionalTimeOut_MaxValueValidation() {
+        String expectedMsg = "Additional Time Out must be between 0 and 999.";
         String tabName = "Configuration";
 
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getAdditionalTimeOut().setInputValue("1000");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getAdditionalTimeOut().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getAdditionalTimeOut().getValidationError();
+
+        assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_InfoFieldsValuesCorrect() {
-        String expectedModalTitle = "Edit " + commChannelName;
+    public void commChannelTerminalServerEdit_InfoTab_ValuesCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         String tabName = "Info";
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
 
@@ -397,43 +387,57 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         softly.assertThat(editModal.getBaudRate().getSelectedValue()).isEqualTo("2400");
         softly.assertThat(editModal.getStatus().getCheckedValue()).isEqualTo("Enabled");
         softly.assertThat(editModal.getIpAddress().getInputValue()).isEqualTo("Localhost");
-
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_ConfigTabTimingSectionDisplayed() {
-        String expectedModalTitle = "Edit " + commChannelName;
+    public void commChannelTerminalServerEdit_ConfigTab_TimingSectionDisplayed() {
         String tabName = "Configuration";
 
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
         editModal.getTabs().clickTabAndWait(tabName);
 
         Section timing = editModal.getTimingSection();
+
         assertThat(timing.getSection()).isNotNull();
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_UpdateAllFieldsSuccess() {
-        String expectedModalTitle = "Edit " + commChannelName;
+    public void commChannelTerminalServerEdit_AllFieldsSuccess() {
+        SoftAssertions softly = new SoftAssertions();
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String commChannelName = "CommChannel_TerminalServer_Update" + timeStamp;
-        String baudRate = "4800";
+        String name = "Terminal Server " + timeStamp;
+        String updateName = "Update Terminal Server " + timeStamp;
+
+        // Creating one TerminalServer port comm channel using hard coded json file.
+        String payloadFile = System.getProperty("user.dir")
+                + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelTerminalServer.json";
+
+        Object body = JsonFileHelper.parseJSONFile(payloadFile);
+        randomNum = getRandomNum();
+        jo = (JSONObject) body;
+        jo.put("name", name);
+        Integer portNum = randomNum.nextInt(65536);
+        jo.put("portNumber", portNum);
+        ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
+        Integer id = createResponse.path("id");
+
+        navigate(Urls.Assets.COMM_CHANNEL_DETAIL + id);
+
+        String baudRate = "BAUD_4800";
         String configFieldsValues[] = { "55", "10", "20", "15", "500" };
         String tabName = "Configuration";
-        portNumber = randomNum.nextInt(65536);
+        Integer port = randomNum.nextInt(65536);
 
-        EditTerminalServerCommChannelModal editM = new EditTerminalServerCommChannelModal(this.driverExt, Optional.of(expectedModalTitle), Optional.empty());
-        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal(expectedModalTitle);
-        editM.getIpAddress().setInputValue("10.0.0.1");
-        editModal.getName().setInputValue(commChannelName);
-        editModal.getBaudRate().selectItemByText(baudRate);
-        editModal.getPortNumber().setInputValue(portNumber.toString());
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
+        editModal.getIpAddress().setInputValue("10.0.0.1");
+        editModal.getName().setInputValue(updateName);
+        editModal.getBaudRate().selectItemByValue(baudRate);
+        editModal.getPortNumber().setInputValue(portNum.toString());
 
         editModal.getTabs().clickTabAndWait(tabName);
-        editModal.getProtocolWrap().setByValue("IDLC", false);
-        editModal.getCarrierDetectWait().setValue(true);
+        editModal.getProtocolWrap().selectByValue("IDLC");
+        editModal.getCarrierDetectWait().selectValue("Yes");
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getPreTxWait().setInputValue(configFieldsValues[0]);
@@ -441,15 +445,15 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         editModal.getPostTxWait().setInputValue(configFieldsValues[2]);
         editModal.getReceiveDataWait().setInputValue(configFieldsValues[3]);
         editModal.getAdditionalTimeOut().setInputValue(configFieldsValues[4]);
-        editModal.clickOkAndWait();
+        editModal.clickOkAndWaitForModalToClose();
 
         String userMsg = channelDetailPage.getUserMessage();
 
-        ExtractableResponse<?> response = AssetsGetRequestAPI.getCommChannel(commChannelId.toString());
+        ExtractableResponse<?> response = AssetsGetRequestAPI.getCommChannel(id.toString());
 
-        softly.assertThat(userMsg).isEqualTo(commChannelName + " saved successfully.");
-        softly.assertThat(response.path("name").toString()).isEqualTo(commChannelName);
-        softly.assertThat(response.path("baudRate").toString()).isEqualTo("BAUD_" + baudRate);
+        softly.assertThat(userMsg).isEqualTo(updateName + " saved successfully.");
+        softly.assertThat(response.path("name").toString()).isEqualTo(updateName);
+        softly.assertThat(response.path("baudRate").toString()).isEqualTo(baudRate);
         softly.assertThat(response.path("timing.preTxWait").toString()).isEqualTo((configFieldsValues[0]));
         softly.assertThat(response.path("timing.rtsToTxWait").toString()).isEqualTo((configFieldsValues[1]));
         softly.assertThat(response.path("timing.postTxWait").toString()).isEqualTo((configFieldsValues[2]));
@@ -459,108 +463,93 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_ConfigTabSharingSectionDisplayed() {
-        String expectedModalTitle = "Edit " + commChannelName;
+    public void commChannelTerminalServerEdit_ConfigTab_SharingSectionDisplayed() {
         String tabName = "Configuration";
 
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
         editModal.getTabs().clickTabAndWait(tabName);
 
         editModal.getSharedPortType().moveTo();
 
         Section shared = editModal.getSharedSection();
+
         assertThat(shared.getSection()).isNotNull();
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_SocketNumber_RequiredValidation() {
-        throw new SkipException("Development Defect: QA-6176");
-//        String expectedModalTitle = "Edit " + commChannelName;
-//        String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
-//        String tabName = "Configuration";
-//
-//        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal(expectedModalTitle);
-//
-//        editModal.getTabs().clickTabAndWait(tabName);
-//        editModal.getSocketNumber().setInputValue(" ");
-//        editModal.clickOkAndWait();
-//
-//        assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String expectedMsg = "Socket Number must be between 1 and 65,535.";
+        String tabName = "Configuration";
+
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
+
+        editModal.getTabs().clickTabAndWait(tabName);
+        editModal.getSocketNumber().setInputValue(" ");
+        editModal.clickOk();
+
+        String errorMsg = editModal.getSocketNumber().getValidationError();
+
+        assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_SocketNumber_MinValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
+        String expectedMsg = "Socket Number must be between 1 and 65,535.";
         String tabName = "Configuration";
 
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getSocketNumber().setInputValue("0");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getSocketNumber().getValidationError();
+
+        assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_SocketNumber_MaxValueValidation() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
+        String expectedMsg = "Socket Number must be between 1 and 65,535.";
         String tabName = "Configuration";
 
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getSocketNumber().setInputValue("65537");
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getSocketNumber().getValidationError()).isEqualTo(EXPECTED_MSG);
+        String errorMsg = editModal.getSocketNumber().getValidationError();
+
+        assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_InfoTab_IpAddressIsRequired() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String expected_msg = "IP Address is required.";
+    public void commChannelTerminalServerEdit_IpAddress_RequiredValidation() {
+        String expectedMsg = "IP Address is required.";
 
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
         editModal.getIpAddress().setInputValue(" ");
 
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getIpAddress().getValidationError()).isEqualTo(expected_msg);
+        String errorMsg = editModal.getIpAddress().getValidationError();
+
+        assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_InfoTab_VerifyIfIpAddressIsValid() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        String expected_msg = "Invalid IP/Host Name.";
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
+    public void commChannelTerminalServerEdit_IpAddress_InvalidValidation() {
+        String expectedMsg = "Invalid IP/Host Name.";
+        EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
         editModal.getIpAddress().setInputValue("@123");
 
-        editModal.clickOkAndWait();
+        editModal.clickOk();
 
-        assertThat(editModal.getIpAddress().getValidationError()).isEqualTo(expected_msg);
+        String errorMsg = editModal.getIpAddress().getValidationError();
+
+        assertThat(errorMsg).isEqualTo(expectedMsg);
     }
-
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_ConfigurationTab_EmptyCarrierWaitSavesDefaultValueAsNo() {
-        String expectedModalTitle = "Edit " + commChannelName;
-        EditTerminalServerCommChannelModal editModal = channelDetailPage
-                .showTerminalServerCommChannelEditModal(expectedModalTitle);
-        editModal.getTabs().clickTabAndWait("Configuration");
-        editModal.getCarrierDetectWaitTextBox().getInputValue();
-        editModal.getCarrierDetectWaitTextBox().clearInputValue();
-
-        editModal.clickOkAndWait();
-        assertThat(editModal.getCarrierDetectWait().getCheckedValue()).isEqualTo("No");
-    }
-
 }

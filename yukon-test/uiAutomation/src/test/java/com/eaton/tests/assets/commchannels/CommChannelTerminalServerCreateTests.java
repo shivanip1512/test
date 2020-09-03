@@ -12,7 +12,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.eaton.elements.modals.CreateCommChannelModal;
+import com.eaton.elements.modals.commchannel.CreateTerminalServerCommChannelModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
@@ -23,40 +23,37 @@ import com.eaton.pages.assets.commchannels.CommChannelsListPage;
 public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
     private CommChannelsListPage listPage;
     private DriverExtensions driverExt;
-    private SoftAssertions softly;
-    String type = "Terminal Server";
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         WebDriver driver = getDriver();
         driverExt = getDriverExt();
-        softly = new SoftAssertions();
         
         driver.get(getBaseUrl() + Urls.Assets.COMM_CHANNELS_LIST);
         
         listPage = new CommChannelsListPage(driverExt);
     }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        refreshPage(listPage);
+    }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannelTerminalServer_RequiredFieldsOnlySuccess() {
-        CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
+    public void createCommChannelTerminalServer_AllFieldsSuccess() {
+        CreateTerminalServerCommChannelModal createModal = listPage.showAndWaitCreateTerminalServerCommChannelModal();
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-
-        String name = "AT Comm Channel Terminal Server " + timeStamp;
-
-        String ipAddress = "127.0.0.1";
-        String portNumber = Integer.toString(getRandomNum().nextInt(65536));
-        String baudRate = "14400";
+        String name = "AT Terminal Server " + timeStamp;
 
         final String EXPECTED_MSG = name + " saved successfully.";
 
         createModal.getName().setInputValue(name);
-        createModal.getType().selectItemByText(type);
+        createModal.getType().selectItemByValue("TSERVER_SHARED");
         waitForLoadingSpinner();
-        createModal.getIpAddress().setInputValue(ipAddress);
-        createModal.getPortNumber().setInputValue(portNumber);
-        createModal.getBaudRate().selectItemByText(baudRate);
+        createModal.getIpAddress().setInputValue("127.0.0.1");
+        createModal.getPortNumber().setInputValue(Integer.toString(getRandomNum().nextInt(65536)));
+        createModal.getBaudRate().selectItemByValue("BAUD_14400");
 
         createModal.clickOkAndWaitForModalToClose();
 
@@ -69,35 +66,36 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannelTerminalServer_AllFieldsSuccess() {
-        CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    public void createCommChannelTerminalServer_LabelsCorrect() {
+        SoftAssertions softly = new SoftAssertions();
+        CreateTerminalServerCommChannelModal createModal = listPage.showAndWaitCreateTerminalServerCommChannelModal();
 
-        createModal.getType().selectItemByText(type);
+        createModal.getType().selectItemByValue("TSERVER_SHARED");
         waitForLoadingSpinner();
 
         List<String> labels = createModal.getFieldLabels();
 
         softly.assertThat(labels.size()).isEqualTo(6);
         softly.assertThat(labels.get(0)).isEqualTo("Name:");
-        softly.assertThat(labels.get(1)).contains("Type:");
-        softly.assertThat(labels.get(2)).contains("IP Address:");
-        softly.assertThat(labels.get(3)).contains("Port Number:");
-        softly.assertThat(labels.get(4)).contains("Baud Rate:");
-        softly.assertThat(labels.get(5)).contains("Status:");
+        softly.assertThat(labels.get(1)).isEqualTo("Type:");
+        softly.assertThat(labels.get(2)).isEqualTo("IP Address:");
+        softly.assertThat(labels.get(3)).isEqualTo("Port Number:");
+        softly.assertThat(labels.get(4)).isEqualTo("Baud Rate:");
+        softly.assertThat(labels.get(5)).isEqualTo("Status:");
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannelTerminalServer_IpAddressRequiredValidation() {
-        CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
+    public void createCommChannelTerminalServer_IpAddress_RequiredValidation() {
+        CreateTerminalServerCommChannelModal createModal = listPage.showAndWaitCreateTerminalServerCommChannelModal();
 
         final String EXPECTED_MSG = "IP Address is required.";
 
-        createModal.getType().selectItemByText(type);
+        createModal.getType().selectItemByValue("TSERVER_SHARED");
         waitForLoadingSpinner();
 
-        createModal.clickOkAndWaitForModalToClose();
+        createModal.clickOk();
 
         String errorMsg = createModal.getIpAddress().getValidationError();
 
@@ -105,18 +103,18 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannelTerminalServer_IpAddressInvalidValidation() {
-        CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
+    public void createCommChannelTerminalServer_IpAddress_InvalidValidation() {
+        CreateTerminalServerCommChannelModal createModal = listPage.showAndWaitCreateTerminalServerCommChannelModal();
 
         String ipAddress = "#123";
 
         final String EXPECTED_MSG = "Invalid IP/Host Name.";
 
-        createModal.getType().selectItemByText(type);
+        createModal.getType().selectItemByValue("TSERVER_SHARED");
         waitForLoadingSpinner();
         createModal.getIpAddress().setInputValue(ipAddress);
 
-        createModal.clickOkAndWaitForModalToClose();
+        createModal.clickOk();
 
         String errorMsg = createModal.getIpAddress().getValidationError();
 
@@ -124,18 +122,16 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannelTerminalServer_PortNumberMinValidation() {
-        CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
-
-        String portNumber = "0";
+    public void createCommChannelTerminalServer_PortNumber_MinValidation() {
+        CreateTerminalServerCommChannelModal createModal = listPage.showAndWaitCreateTerminalServerCommChannelModal();
 
         final String EXPECTED_MSG = "Port Number must be between 1 and 65,535.";
 
-        createModal.getType().selectItemByText(type);
+        createModal.getType().selectItemByValue("TSERVER_SHARED");
         waitForLoadingSpinner();
-        createModal.getPortNumber().setInputValue(portNumber);
+        createModal.getPortNumber().setInputValue("0");
 
-        createModal.clickOkAndWaitForModalToClose();
+        createModal.clickOk();
 
         String errorMsg = createModal.getPortNumber().getValidationError();
 
@@ -143,18 +139,16 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannelTerminalServer_PortNumberMaxValidation() {
-        CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();                
-
-        String portNumber = "65536";
+    public void createCommChannelTerminalServer_PortNumber_MaxValidation() {
+        CreateTerminalServerCommChannelModal createModal = listPage.showAndWaitCreateTerminalServerCommChannelModal();                
 
         final String EXPECTED_MSG = "Port Number must be between 1 and 65,535.";
 
-        createModal.getType().selectItemByText(type);
+        createModal.getType().selectItemByValue("TSERVER_SHARED");
         waitForLoadingSpinner();
-        createModal.getPortNumber().setInputValue(portNumber);
+        createModal.getPortNumber().setInputValue("65536");
 
-        createModal.clickOkAndWaitForModalToClose();
+        createModal.clickOk();;
 
         String errorMsg = createModal.getPortNumber().getValidationError();
 
@@ -162,24 +156,18 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannelTerminalServer_PortNumberEmptyValidation() {
-        CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
+    public void createCommChannelTerminalServer_PortNumber_RequiredValidation() {
+        CreateTerminalServerCommChannelModal createModal = listPage.showAndWaitCreateTerminalServerCommChannelModal();
 
         final String EXPECTED_MSG = "Port Number must be between 1 and 65,535.";
 
-        createModal.getType().selectItemByText(type);
+        createModal.getType().selectItemByValue("TSERVER_SHARED");
         waitForLoadingSpinner();
 
-        createModal.clickOkAndWaitForModalToClose();
+        createModal.clickOk();
 
         String errorMsg = createModal.getPortNumber().getValidationError();
 
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
-    }
-    
-    @AfterMethod(alwaysRun = true)
-    public void afterTest() {
-        refreshPage(listPage);
-        listPage = new CommChannelsListPage(driverExt);
-    }
+    }    
 }

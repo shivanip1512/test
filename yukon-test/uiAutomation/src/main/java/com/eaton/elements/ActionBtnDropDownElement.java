@@ -38,21 +38,11 @@ public class ActionBtnDropDownElement {
         WebElement element = this.driverExt.findElement(By.cssSelector(".dropdown-menu[style*='display: block;']"),
                 Optional.of(3));
 
-        // if (element != null) {
-
         List<WebElement> options = element.findElements(By.cssSelector(".dropdown-option-label"));
 
         WebElement el = options.stream().filter(x -> x.getText().equals(text)).findFirst().orElseThrow();
 
         el.click();
-//            for (WebElement option : options) {
-//                String optionText = option.getText();
-//                if (optionText.equals(value)) {
-//                    option.click();
-//                    return;
-//                }
-//            }
-        // }
     }
 
     /**
@@ -64,26 +54,10 @@ public class ActionBtnDropDownElement {
         WebElement element = null;
         element = this.driverExt.findElement(By.cssSelector(".dropdown-menu[style*='display: block;']"), Optional.of(3));
 
-        // Boolean flag = true;
-        // if (element != null) {
-
         List<WebElement> options = element.findElements(By.cssSelector(".dropdown-option-label"));
 
         WebElement el = options.stream().filter(x -> x.getText().equals(text)).findFirst().orElseThrow();
 
         return !el.getAttribute("class").contains("disabled");
-
-//            for (WebElement option : options) {
-//                String optionText = option.getText();
-//                if (optionText.equals(value)) {
-//                    if (option.getAttribute("class").contains("disabled")) {
-//                        flag = false;
-//                        break;
-//                    }
-//                }
-//            }
-        // }
-
-        // return flag;
     }
 }

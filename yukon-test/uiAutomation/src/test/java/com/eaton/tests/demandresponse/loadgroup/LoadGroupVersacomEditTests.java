@@ -18,8 +18,8 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.LoadGroupDetailPage;
-import com.eaton.pages.demandresponse.LoadGroupVersacomEditPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupVersacomEditPage;
 
 public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
     private DriverExtensions driverExt;
@@ -53,15 +53,16 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
 
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
         editPage = new LoadGroupVersacomEditPage(driverExt, id);
-
+        
         editPage.getName().setInputValue(editName);
-        editPage.getCommunicationRoute().selectItemByText("a_CCU-711");
+        //28 - a_CCU-711
+        editPage.getCommunicationRoute().selectItemByValue("28"); 
 
         editPage.getUtilityAddress().setInputValue(String.valueOf(randomNum.nextInt(254)));
 
         editPage.getkWCapacity().setInputValue(String.valueOf(capacity));
-        editPage.getDisableGroup().setValue(true);
-        editPage.getDisableControl().setValue(false);
+        editPage.getDisableGroup().selectValue("Yes");
+        editPage.getDisableControl().selectValue("Yes");
 
         editPage.getSaveBtn().click();
 
@@ -73,10 +74,10 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpVersacomEdit_WithSerialAddressToOtherAddressUsage_Successfully() {
+    public void ldGrpVersacomEdit_SerialAddressToSectionClass_Successfully() {
         builder = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup();
-        Pair<JSONObject, JSONObject> pair = builder.withSerialAddressUsage(Optional.empty())
-                .withSerialAddress(Optional.of(567))
+        Pair<JSONObject, JSONObject> pair = builder
+                .withSerial(Optional.of(567))
                 .create();
         JSONObject response = pair.getValue1();
         id = response.getInt("id");
@@ -85,8 +86,9 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
 
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
         editPage = new LoadGroupVersacomEditPage(driverExt, id);
-
-        editPage.getCommunicationRoute().selectItemByText("a_LCU-EASTRIVER");
+        
+        //40 = a_LCU-EASTRIVER
+        editPage.getCommunicationRoute().selectItemByValue("40");
 
         editPage.getAddressUsage().setTrueFalseByName("Serial", false);
         editPage.getAddressUsage().setTrueFalseByName("Section", true);
@@ -105,7 +107,7 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpVersacomEdit_WithoutSerialAddressToSerialAddressUsage_Successfully() {
+    public void ldGrpVersacomEdit_AddressUsageToSerial_Successfully() {
         builder = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup();
         Pair<JSONObject, JSONObject> pair = builder
                 .create();
@@ -117,7 +119,8 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
         editPage = new LoadGroupVersacomEditPage(driverExt, id);
 
-        editPage.getCommunicationRoute().selectItemByText("a_TCU-5000");
+        //73 = a_TCU-5000
+        editPage.getCommunicationRoute().selectItemByValue("73");
 
         editPage.getAddressUsage().setTrueFalseByName("Serial", true);
 
@@ -133,7 +136,7 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpVersacomEdit_WithRelayUsageToWithoutRelayUsage_Successfully() {
+    public void ldGrpVersacomEdit_NoRelayUsage_Successfully() {
         builder = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup();
         Pair<JSONObject, JSONObject> pair = builder
                 .create();
@@ -145,7 +148,8 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
         editPage = new LoadGroupVersacomEditPage(driverExt, id);
 
-        editPage.getCommunicationRoute().selectItemByText("a_REPEATER-921");
+        //58 - a_REPEATER-921
+        editPage.getCommunicationRoute().selectItemByValue("58");
 
         JSONArray s = response.getJSONArray("relayUsage");
         String route = s.getString(0).toString();

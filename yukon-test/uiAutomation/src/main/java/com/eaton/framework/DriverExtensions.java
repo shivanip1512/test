@@ -126,16 +126,27 @@ public class DriverExtensions {
         return element;
     }
     
-    public void waitForElement(String by) {
-        driverWait.withTimeout(Duration.ofSeconds(8));
+    public void waitUntilElementVisibleByCssLocator(String by) {
+        driverWait.withTimeout(Duration.ofSeconds(1));
         
-        //driverWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(by)));
-        driverWait.until(ExpectedConditions.visibilityOf(getDriver().findElement(By.cssSelector(by))));
+        driverWait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(by)));
     }
     
-    public void waitUntilClickable(WebElement element) {
-        driverWait.withTimeout(Duration.ofSeconds(8));
+    public void waitUntilElementClickable(WebElement element) {
+        driverWait.withTimeout(Duration.ofSeconds(1));
         
         driverWait.until(ExpectedConditions.elementToBeClickable(element));
+    }
+    
+    public void waitUntilElementInvisible(WebElement element) {
+        driverWait.withTimeout(Duration.ofSeconds(1));
+        
+        driverWait.until(ExpectedConditions.invisibilityOf(element));
+    }
+    
+    public void waitUntilElementInvisibleByCssLocator(String locator) {
+        driverWait.withTimeout(Duration.ofSeconds(1));
+        
+        driverWait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(locator)));
     }
 }

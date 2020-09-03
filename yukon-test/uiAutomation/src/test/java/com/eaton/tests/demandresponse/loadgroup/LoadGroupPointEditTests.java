@@ -21,8 +21,8 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.LoadGroupPointEditPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 
 public class LoadGroupPointEditTests extends SeleniumTestSetup {
 
@@ -69,11 +69,12 @@ public class LoadGroupPointEditTests extends SeleniumTestSetup {
         SelectPointModal pointGroupControlDevice = editPage.showAndWaitPointGroupControlDeviceModal();
         pointGroupControlDevice.selectPoint("SCADA Override", Optional.empty());
         pointGroupControlDevice.clickOkAndWaitForModalToClose();
-        editPage.getControlStartState().selectItemByText("True");
+        // 1 = true
+        editPage.getControlStartState().selectItemByValue("1");
 
         editPage.getkWCapacity().setInputValue(String.valueOf(capacity));
-        editPage.getDisableGroup().setValue(false);
-        editPage.getDisableControl().setValue(true);
+        editPage.getDisableGroup().selectValue("no");
+        editPage.getDisableControl().selectValue("yes");
 
         editPage.getSaveBtn().click();
 
