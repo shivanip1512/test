@@ -359,7 +359,7 @@ public class TrendEditorController {
         binder.registerCustomEditor(GraphColors.class, new PropertyEditorSupport() {
             @Override
             public void setAsText(String color) throws IllegalArgumentException {
-                setValue(GraphColors.getGraphColor(YukonColorPalette.getColorByHexValue(color).toString()));
+                setValue(GraphColors.getByYukonColor(YukonColorPalette.getColorByHexValue(color)));
             }
         });
     }

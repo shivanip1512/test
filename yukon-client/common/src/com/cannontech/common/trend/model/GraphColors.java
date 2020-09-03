@@ -1,10 +1,12 @@
 package com.cannontech.common.trend.model;
 
-import java.util.Arrays;
+import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.Arrays;
 import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.exception.TypeNotSupportedException;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.google.common.collect.ImmutableMap;
 
 /**
  * Provides colors for graphs.
@@ -24,11 +26,26 @@ public enum GraphColors {
     
     private final YukonColorPalette yukonColor;
     private final static YukonColorPalette[] yukonColors;
-    
+    private final static ImmutableMap<YukonColorPalette, GraphColors> lookupByYukonColor;
+
     static {
         yukonColors = Arrays.stream(GraphColors.values())
-                            .map(GraphColors::getYukonColor)
-                            .toArray(YukonColorPalette[]::new);
+                .map(GraphColors::getYukonColor)
+                .toArray(YukonColorPalette[]::new);
+        com.google.common.collect.ImmutableMap.Builder<YukonColorPalette, GraphColors> dbBuilder = ImmutableMap.builder();
+        for (GraphColors color : values()) {
+            dbBuilder.put(color.getYukonColor(), color);
+        }
+        lookupByYukonColor = dbBuilder.build();
+    }
+
+    /*
+     * Return GraphColors for corresponding YukonColorPalette
+     */
+    public static GraphColors getByYukonColor(YukonColorPalette yukonColor) throws IllegalArgumentException {
+        GraphColors graphColor = lookupByYukonColor.get(yukonColor);
+        checkArgument(graphColor != null, yukonColor);
+        return lookupByYukonColor.get(yukonColor);
     }
 
     private GraphColors(YukonColorPalette yukonColor) {

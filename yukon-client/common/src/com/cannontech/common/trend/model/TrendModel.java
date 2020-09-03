@@ -112,7 +112,7 @@ public class TrendModel implements DBPersistentConverter<GraphDefinition> {
             for (GraphDataSeries data : graphSeries) {
                 TrendSeries trend = new TrendSeries();
                 trend.setAxis(TrendAxis.getAxis(data.getAxis()));
-                trend.setColor(GraphColors.getGraphColor(YukonColorPalette.getColor(data.getColor()).toString()));
+                trend.setColor(GraphColors.getByYukonColor(YukonColorPalette.getColor(data.getColor())));
                 if (!data.getMoreData().equals(CtiUtilities.STRING_NONE)) {
                     trend.setDate(new DateTime(Long.valueOf(data.getMoreData())));
                 }
