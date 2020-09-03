@@ -60,4 +60,8 @@ public class TextEditElement extends EditElement {
         
         return this.driverExt.findElement(By.cssSelector(by), Optional.of(3)).getText();        
     }
+    
+    public String getMaxLength() {
+        return getEditElement().getAttribute("maxLength");
+    }
 }

@@ -362,6 +362,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         softly.assertThat(createPage.getClassAddress().allValuesDisabled()).isTrue();
         softly.assertThat(createPage.getSectionAddress().isDisabled()).isFalse();
         softly.assertThat(createPage.getDivisionAddress().allValuesDisabled()).isTrue();
+        softly.assertAll();
     }
 
     @AfterMethod(alwaysRun = true)

@@ -127,36 +127,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         return initiateAction(commands.get(GROUP_DEVICE_CONFIG_READ), deviceCollection, LogAction.READ,
                 CollectionAction.READ_CONFIG, GROUP_DEVICE_CONFIG_READ, callback, context);
     }
-    
-    @Override
-    public int verifyConfigs(DeviceCollection deviceCollection, YukonUserContext context) {
-        CollectionActionResult result = collectionActionService.createResult(CollectionAction.VERIFY_CONFIG, null,
-                deviceCollection, CommandRequestType.DEVICE, GROUP_DEVICE_CONFIG_VERIFY, context);
-        Map<Integer, LightDeviceConfiguration> configurations = deviceConfigurationDao
-                .getConfigurations(getDeviceIds(deviceCollection.getDeviceList()));
-        DeviceSummary summary = new DeviceSummary(deviceCollection.getDeviceList(), configurations);
-        collectionActionService.addUnsupportedToResult(CollectionActionDetail.UNSUPPORTED, result, summary.unsupported);
-        collectionActionService.addUnsupportedToResult(CollectionActionDetail.UNSUPPORTED, result, summary.inProgress,
-                getInProgressMessage(context));
-        VerifyConfigCommandResult configResult = getInitializedConfigResult(configurations, summary.supported);
-
-        if (summary.supported.isEmpty()) {
-            createVerifyCallback(configResult, summary.supported, result).complete();
-        } else {
-            List<CommandRequestDevice> requests = buildCommandRequests(GROUP_DEVICE_CONFIG_VERIFY, summary.supported);
-            result.getExecution().setRequestCount(requests.size());
-            log.debug("updating request count {}", requests.size());
-            commandRequestExecutionDao.saveOrUpdate(result.getExecution());
-            updateStatusToInProgress(GROUP_DEVICE_CONFIG_VERIFY, getDeviceIds(summary.supported), result.getStartTime(),
-                    result.getExecution().getId());
-            commandExecutionService.execute(requests, createVerifyCallback(configResult, summary.supported, result),
-                    result.getExecution(), false, context.getYukonUser());
-        }
-        return result.getCacheKey();
-    }
-    
-    @Override
-    public VerifyConfigCommandResult verifyConfigs(List<SimpleDevice> devices, LiteYukonUser user) {
+        
+    private VerifyConfigCommandResult verifyConfigs(List<SimpleDevice> devices, LiteYukonUser user) {
         Map<Integer, LightDeviceConfiguration> configurations = deviceConfigurationDao.getConfigurations(getDeviceIds(devices));
         DeviceSummary summary = new DeviceSummary(devices, configurations);
 
@@ -165,11 +137,11 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         if (summary.supported.isEmpty()) {
             return configResult;
         }
+        CommandRequestExecution execution = createExecutionAndUpdateStateToInProgress(GROUP_DEVICE_CONFIG_VERIFY,
+                summary.supported, user);
         WaitableCommandCompletionCallback<CommandRequestDevice> waitableCallback = waitableCommandCompletionCallbackFactory
                 .createWaitable(createVerifyCallback(configResult, summary.supported));
         logInitiated(devices, LogAction.VERIFY, user);
-        CommandRequestExecution execution = createExecutionAndUpdateStateToInProgress(GROUP_DEVICE_CONFIG_VERIFY,
-                summary.supported, user);
         commandExecutionService.execute(buildCommandRequests(GROUP_DEVICE_CONFIG_VERIFY, summary.supported), waitableCallback,
                 execution, true, user);
         try {
@@ -624,72 +596,6 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Creates callback for Verify request for collection action
-     */
-    private CommandCompletionCallback<CommandRequestDevice> createVerifyCallback(VerifyConfigCommandResult configResult,
-            List<SimpleDevice> supportedDevices, CollectionActionResult result) {
-        return new CommandCompletionCallback<CommandRequestDevice>() {
-            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
-
-            Map<Integer, DeviceConfigState> deviceToState = deviceConfigurationDao.getDeviceConfigStatesByDeviceIds(getDeviceIds(supportedDevices));
-            @Override
-            public void receivedLastResultString(CommandRequestDevice command, String value) {
-                CollectionActionLogDetail detail = new CollectionActionLogDetail(command.getDevice(),
-                        CollectionActionDetail.SUCCESS);
-                VerifyResult discrepancy = configResult.getVerifyResultsMap().get(command.getDevice());
-                detail.setLastValue(value);
-                detail.setConfigName(discrepancy.getConfig().getName());
-                result.addDeviceToGroup(CollectionActionDetail.SUCCESS, command.getDevice(), detail);
-                DeviceConfigState currentState = deviceToState.get(command.getDevice().getDeviceId());
-                updateState(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY, null, command.getDevice(), currentState);
-                log(command);
-            }
-
-            @Override
-            public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
-                SimpleDevice device = command.getDevice();
-                configResult.addError(device, error.getPorter());
-            }
-
-            @Override
-            public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
-                CollectionActionLogDetail detail = new CollectionActionLogDetail(command.getDevice(),
-                        CollectionActionDetail.FAILURE);
-                detail.setDeviceErrorText(accessor.getMessage(error.getDetail()));
-                VerifyResult discrepancy = configResult.getVerifyResultsMap().get(command.getDevice());
-                detail.setConfigName(discrepancy.getConfig().getName());
-                if (!discrepancy.getDiscrepancies().isEmpty()) {
-                    detail.setLastValue(discrepancy.getDiscrepancies().toString());
-                }
-                result.addDeviceToGroup(CollectionActionDetail.FAILURE, command.getDevice(), detail);
-                DeviceConfigState currentState = deviceToState.get(command.getDevice().getDeviceId());
-                updateState(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY, error.getDeviceError(), command.getDevice(), currentState);
-                log(command);
-            }
-
-            @Override
-            public void processingExceptionOccurred(String reason) {
-                result.setExecutionExceptionText(reason);
-                collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
-                deviceConfigurationDao.failInProgressDevices(getDeviceIds(supportedDevices));
-            }
-
-            @Override
-            public void complete() {
-                collectionActionService.updateResult(result, CommandRequestExecutionStatus.COMPLETE);
-            }
-
-            private void log(CommandRequestDevice command) {
-                if (configResult.getVerifyResultsMap().get(command.getDevice()).getDiscrepancies().isEmpty()) {
-                    logCompleted(command.getDevice(), LogAction.VERIFY, true);
-                } else {
-                    logCompleted(command.getDevice(), LogAction.VERIFY, false);
-                }
-            }
-        };
-    }
-    
     /**
      * Updates device config state to "In Progress". Creates a new state if it is not found (shouldn't happen)
      */

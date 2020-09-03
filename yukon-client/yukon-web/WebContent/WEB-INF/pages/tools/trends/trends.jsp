@@ -101,16 +101,19 @@
         </c:choose>
     </div>
     
+    <cti:msg var="helpText" key="yukon.web.modules.tools.trend.resetPeak.helpTxt"/>
     <cti:url value="/tools/trend/renderResetPeakPopup" var="renderResetPeakPopup">
         <cti:param name="trendId" value="${trendId}"/>
     </cti:url>
     <div class="dn js-reset-peak-popup"
              data-popup
              data-dialog
+             data-width="500"
              data-title="${resetPeakLbl}"
              data-url="${renderResetPeakPopup}"
              data-load-event="yukon:tools:trend:resetPeakPopupLoaded"
-             data-event="yukon:tools:trend:resetPeak">
+             data-event="yukon:tools:trend:resetPeak"
+             data-help-text="${helpText}">
     </div>
     
     <dt:pickerIncludes />
