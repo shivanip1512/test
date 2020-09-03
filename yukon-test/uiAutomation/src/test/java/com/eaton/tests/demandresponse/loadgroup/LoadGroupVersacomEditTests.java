@@ -76,8 +76,8 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpVersacomEdit_SerialAddressToSectionClass_Successfully() {
         builder = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup();
-        Pair<JSONObject, JSONObject> pair = builder.withSerialAddressUsage(Optional.empty())
-                .withSerialAddress(Optional.of(567))
+        Pair<JSONObject, JSONObject> pair = builder
+                .withSerial(Optional.of(567))
                 .create();
         JSONObject response = pair.getValue1();
         id = response.getInt("id");
