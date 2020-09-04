@@ -37,7 +37,7 @@ public class PickerApiController {
     @Autowired private PickerFactory pickerFactory;
     @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private YukonUserContextResolver contextResolver;
-    @Autowired private PickerIdSearchApiValidator pickerSearchIdValidator;
+    @Autowired private PickerIdSearchApiValidator pickerIdSearchValidator;
     @Autowired private PickerSearchApiValidator pickerSearchValidator;
 
     @GetMapping("/build/{type}")
@@ -115,6 +115,6 @@ public class PickerApiController {
 
     @InitBinder("pickerIdSearchCriteria")
     public void setupPickerSearchIdBinder(WebDataBinder binder) {
-        binder.addValidators(pickerSearchIdValidator);
+        binder.addValidators(pickerIdSearchValidator);
     }
 }
