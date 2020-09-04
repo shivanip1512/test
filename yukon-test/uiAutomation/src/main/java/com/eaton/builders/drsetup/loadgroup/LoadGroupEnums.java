@@ -327,14 +327,14 @@ public class LoadGroupEnums {
         OVUV_Control(4255),
         Manual_Control_Mode(4265);
 
-        private final Integer POINT_ID;
+        private final Integer pointUsageId;
 
         PointId(Integer pointId) {
-            this.POINT_ID = pointId;
+            this.pointUsageId = pointId;
         }
 
         public Integer getPointId() {
-            return this.POINT_ID;
+            return this.pointUsageId;
         }
 
         public static PointId getRandomPointId() {
@@ -347,14 +347,14 @@ public class LoadGroupEnums {
         True(1),
         False(0);
 
-        private final Integer START_CONTROL_RAW_STATE;
+        private final Integer startControlRawState;
 
         PointStartControlRawState(Integer startControlRawState) {
-            this.START_CONTROL_RAW_STATE = startControlRawState;
+            this.startControlRawState = startControlRawState;
         }
 
         public Integer getPointStartControlRawState() {
-            return this.START_CONTROL_RAW_STATE;
+            return this.startControlRawState;
         }
 
         public static PointStartControlRawState getRandomPointStartControlRawState() {

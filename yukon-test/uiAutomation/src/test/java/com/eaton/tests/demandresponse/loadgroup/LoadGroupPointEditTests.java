@@ -68,13 +68,13 @@ public class LoadGroupPointEditTests extends SeleniumTestSetup {
         editPage.getName().setInputValue(editName);
         SelectPointModal pointGroupControlDevice = editPage.showAndWaitPointGroupControlDeviceModal();
         pointGroupControlDevice.selectPoint("SCADA Override", Optional.empty());
-        pointGroupControlDevice.clickOkAndWaitForModalToClose();
+        pointGroupControlDevice.clickOkAndWaitForModalCloseDisplayNone();
         // 1 = true
         editPage.getControlStartState().selectItemByValue("1");
 
         editPage.getkWCapacity().setInputValue(String.valueOf(capacity));
-        editPage.getDisableGroup().selectValue("no");
-        editPage.getDisableControl().selectValue("yes");
+        editPage.getDisableGroup().selectValue("No");
+        editPage.getDisableControl().selectValue("Yes");
 
         editPage.getSaveBtn().click();
 
