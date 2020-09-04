@@ -319,13 +319,44 @@ public class LoadGroupEnums {
         }
     }
 
+    public enum DigiSepDeviceClassEnum {
+
+        HVAC_COMPRESSOR_FURNACE("HVAC_COMPRESSOR_FURNACE"),
+        BASEBOARD_HEAT("BASEBOARD_HEAT"),
+        WATER_HEATER("WATER_HEATER"),
+        POOL_PUMP("POOL_PUMP"),
+        SMART_APPLIANCE("SMART_APPLIANCE"),
+        IRRIGATION_PUMP("IRRIGATION_PUMP"),
+        MANAGED_COMMERCIAL_INDUSTRIAL("IRRIGATION_PUMP"),
+        SIMPLE_RESIDENTIAL_ON_OFF("SIMPLE_RESIDENTIAL_ON_OFF"),
+        EXTERIOR_LIGHTING("EXTERIOR_LIGHTING"),
+        INTERIOR_LIGHTING("INTERIOR_LIGHTING"),
+        ELECTRIC_VEHICLE("ELECTRIC_VEHICLE"),
+        GENERATION_SYSTEMS("GENERATION_SYSTEMS");
+
+        private final String deviceClassSet;
+
+        DigiSepDeviceClassEnum(String deviceClassSet) {
+            this.deviceClassSet = deviceClassSet;
+        }
+
+        public String getDeviceClassSet() {
+            return this.deviceClassSet;
+        }
+        
+        public static DigiSepDeviceClassEnum getRandomDeviceClassSet() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
+    }
+
     public enum PointId {
-        SCADA_Override(4230),
-        CVR_Mode(4231),
-        Capacitor_Bank_State(4249),
-        Remote_Control_Mode(4251),
-        OVUV_Control(4255),
-        Manual_Control_Mode(4265);
+        SCADA_OVERRIDE(4230),
+        CVR_MODE(4231),
+        CAPACITOR_BANK_STATE(4249),
+        REMOTE_CONTROL_MODE(4251),
+        OVUV_CONTROL(4255),
+        MANUAL_CONTROL_MODE(4265);
 
         private final Integer pointUsageId;
 
@@ -344,8 +375,8 @@ public class LoadGroupEnums {
     }
 
     public enum PointStartControlRawState {
-        True(1),
-        False(0);
+        TRUE(1),
+        FALSE(0);
 
         private final Integer startControlRawState;
 
