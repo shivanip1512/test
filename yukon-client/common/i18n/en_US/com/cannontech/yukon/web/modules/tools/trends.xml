@@ -95,13 +95,15 @@
     <entry key="yukon.web.modules.tools.trend.resetPeakTo">Reset Peak To</entry>
     <entry key="yukon.web.modules.tools.trend.resetPeakForAllTrend">Reset Peak For All Trends</entry>
     <entry key="yukon.web.modules.tools.trend.resetPeak.helpTxt">
-         <![CDATA[The Peak type is used to display data for the peak date. When a Peak type is added, the minimum starting date is set to the first day of this month
-            and will remain at this date until Reset Peaks is performed. The peak day is determined by finding the highest archived value from the minimum starting date
-            through today. The data from the peak day is overlaid and repeated for every day displayed in the trend.
-            <br><br>
-            Use Reset Peaks to change the minimum starting date to: Today, First Date of Month, First Date of Year, Selected Date.
-            <br><br>
-            Reset Peaks For All Trends: Choose Yes to reset the minimum starting date for all Trends in the system.]]>
+         <![CDATA[
+                The Peak type is used to display data for the peak date. When a Peak type is added, the minimum starting date is set to the first day of this month
+                and will remain at this date until Reset Peaks is performed. The peak day is determined by finding the highest archived value from the minimum starting date
+                through today. The data from the peak day is overlaid and repeated for every day displayed in the trend.
+                <br><br>
+                Use Reset Peaks to change the minimum starting date to: Today, First Date of Month, First Date of Year, Selected Date.
+                <br><br>
+                Reset Peaks For All Trends: Choose Yes to reset the minimum starting date for all Trends in the system.
+         ]]>
     </entry>
     <entry key="yukon.web.modules.tools.trend.resetPeak.tooltip">Reset Peak can be performed only if the trend has atleast one series with graph type as peak.</entry>
     <entry key="yukon.web.modules.tools.trend.resetPeak.duration.TODAY">Today</entry>

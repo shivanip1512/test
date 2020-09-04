@@ -40,7 +40,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void loadPrgoramDetails_copySuccess() {
+    public void loadPrgoramDetails_Copy_Success() {
 
         navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "604");
 

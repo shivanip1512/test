@@ -1,0 +1,114 @@
+package com.eaton.tests.demandresponse.loadgroup;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Optional;
+import org.openqa.selenium.WebDriver;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums;
+import com.eaton.builders.drsetup.loadgroup.LoadGroupMCTCreateBuilder;
+import com.eaton.elements.modals.SelectMCTMeterModal;
+import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestConstants;
+import com.eaton.framework.Urls;
+import org.javatuples.Pair;
+import org.json.JSONObject;
+
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupMCTEditPage;
+
+public class LoadGroupMCTEditTests extends SeleniumTestSetup {
+
+    WebDriver driver;
+    private Integer id;
+    private LoadGroupMCTEditPage editPage;
+    private DriverExtensions driverExt;
+    private Integer routeId = 28;
+
+    @BeforeClass(alwaysRun = true)
+    public void beforeClass() {
+        driverExt = getDriverExt();
+    }
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpMCTEdit_AllFields_WithBronzeAddress_Successfully() {
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String name = "AT Edited MCT Ldgrp " + timeStamp;
+        final String EXPECTED_MSG = name + " saved successfully.";
+
+        Pair<JSONObject, JSONObject> pair = new LoadGroupMCTCreateBuilder.Builder(Optional.empty())
+                .withCommunicationRoute(routeId)
+                .withDisableControl(Optional.empty())
+                .withDisableGroup(Optional.empty())
+                .withKwCapacity(Optional.empty())
+                .withMctDeviceId(259)
+                .withlevel(LoadGroupEnums.AddressLevelMCT.MCT_ADDRESS)
+                .withRelayUsage(Arrays.asList(LoadGroupEnums.RelayUsage.RELAY_2))
+                .create();
+        
+        JSONObject response = pair.getValue1();
+        id = response.getInt("id");
+
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+
+        editPage = new LoadGroupMCTEditPage(driverExt, id);
+        editPage.getName().setInputValue(name);
+        //36 = a_CCU-721
+        editPage.getCommunicationRoute().selectItemByValue("36");
+        editPage.getAddressLevel().selectItemByValue("BRONZE");
+        editPage.getAddress().setInputValue("123");
+        editPage.getRelayUsage().setTrueFalseByName("Relay 3", true);
+        editPage.getkWCapacity().setInputValue("400");
+        editPage.getDisableGroup().selectValue("Yes");
+        editPage.getDisableControl().selectValue("Yes");
+        editPage.getSaveBtn().click();
+
+        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
+        String userMsg = detailsPage.getUserMessage();
+
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+    }
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpMCTEdit_AllFields_WithMCTAddress_Successfully() {
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String name = "AT Edited MCT Ldgrp " + timeStamp;
+        final String EXPECTED_MSG = name + " saved successfully.";
+        Pair<JSONObject, JSONObject> pair = new LoadGroupMCTCreateBuilder.Builder(Optional.empty())
+                .withCommunicationRoute(routeId)
+                .withDisableControl(Optional.of(true))
+                .withDisableGroup(Optional.of(true))
+                .withKwCapacity(Optional.empty())
+                .withAddress(34567)
+                .withlevel(LoadGroupEnums.AddressLevelMCT.LEAD)
+                .withRelayUsage(Arrays.asList(LoadGroupEnums.RelayUsage.RELAY_2, LoadGroupEnums.RelayUsage.RELAY_1))
+                .create();
+
+        JSONObject response = pair.getValue1();
+        id = response.getInt("id");
+
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+
+        editPage = new LoadGroupMCTEditPage(driverExt, id);
+        editPage.getName().setInputValue(name);
+        // 62 - a_RTC
+        editPage.getCommunicationRoute().selectItemByValue("62");
+        editPage.getAddressLevel().selectItemByValue("MCT_ADDRESS");
+        SelectMCTMeterModal mctMeterModal = this.editPage.showAndWaitMCTMeter();
+        mctMeterModal.selectMeter("a_MCT-430A");
+        mctMeterModal.clickOkAndWaitForModalCloseDisplayNone();;
+        
+        editPage.getRelayUsage().setTrueFalseByName("Relay 2", false);
+        editPage.getkWCapacity().setInputValue("870");
+        editPage.getDisableGroup().selectValue("No");
+        editPage.getDisableControl().selectValue("No");
+        editPage.getSaveBtn().click();
+
+        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
+        String userMsg = detailsPage.getUserMessage();
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+    }
+}

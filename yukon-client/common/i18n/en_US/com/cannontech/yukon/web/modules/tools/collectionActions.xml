@@ -129,8 +129,8 @@
     <entry key="yukon.web.modules.tools.collectionActions.collectionAction.ARM">Arm</entry>
     <entry key="yukon.web.modules.tools.collectionActions.collectionAction.DEMAND_RESET">Demand Reset</entry>
     <entry key="yukon.web.modules.tools.collectionActions.collectionAction.DEVICE_CONFIGS">Device Configs</entry>
-    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.SEND_CONFIG">Send Config</entry>
-    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.READ_CONFIG">Read Config</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.SEND_CONFIG">Upload Config</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.READ_CONFIG">Validate Config</entry>
     <entry key="yukon.web.modules.tools.collectionActions.collectionAction.VERIFY_CONFIG">Verify Config</entry>
     <entry key="yukon.web.modules.tools.collectionActions.collectionAction.ARCHIVE_DATA_ANALYSIS">Archive Data Analysis</entry>
     <entry key="yukon.web.modules.tools.collectionActions.collectionAction.MASS_CHANGE">Mass Change</entry>
@@ -139,8 +139,8 @@
     <entry key="yukon.web.modules.tools.collectionActions.collectionAction.ADD_POINTS">Add Points</entry>
     <entry key="yukon.web.modules.tools.collectionActions.collectionAction.UPDATE_POINTS">Update Points</entry>
     <entry key="yukon.web.modules.tools.collectionActions.collectionAction.REMOVE_POINTS">Remove Points</entry>
-    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.ASSIGN_CONFIG">Assign Config</entry>
-    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.UNASSIGN_CONFIG">Unassign Config</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.ASSIGN_CONFIG">Change Config</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionAction.UNASSIGN_CONFIG">Remove Config</entry>
     <entry key="yukon.web.modules.tools.collectionActions.collectionAction.CONFIGURE_DATA_STREAMING">Configure Data Streaming</entry>
     <entry key="yukon.web.modules.tools.collectionActions.collectionAction.READ_DATA_STREAMING_CONFIG">Read Data Streaming Config</entry>
     <entry key="yukon.web.modules.tools.collectionActions.collectionAction.REMOVE_DATA_STREAMING">Remove Data Streaming</entry>

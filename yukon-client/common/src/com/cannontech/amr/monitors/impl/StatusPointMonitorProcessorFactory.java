@@ -54,7 +54,6 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
     private YukonJmsTemplate jmsTemplate;
-    private PointDataTrackingLogger trackingLogger = new PointDataTrackingLogger(log);
     private Cache<Integer, PointValueHolder> recentStatusPoints = CacheBuilder.newBuilder()
                        .expireAfterWrite(30, TimeUnit.SECONDS)
                        .build();
@@ -121,14 +120,14 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
 
     @Override
     protected RichPointDataListener createPointListener(final StatusPointMonitor statusPointMonitor) {
-        
+        var trackingLogger = new PointDataTrackingLogger(statusPointMonitor.getName(), log); 
         return richPointData -> {
             if (!isMonitoredData(statusPointMonitor, richPointData)) {
-                trackingLogger.rejectId(statusPointMonitor.getName(), richPointData);
+                trackingLogger.rejectId(richPointData);
                 return;
             }
             
-            trackingLogger.acceptId(statusPointMonitor.getName(), richPointData);
+            trackingLogger.acceptId(richPointData);
 
             PointValueHolder nextValue = richPointData.getPointValue();
             PointValueHolder previousValue = null; // store this outside the loop because it is valid for every processor 

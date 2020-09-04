@@ -98,8 +98,6 @@ public class DeviceConfigController {
             return doSendConfig(request, deviceCollection, method, model, userContext);
         } else if (action.equals("READ")) {
             return doReadConfig(request, deviceCollection, model, userContext);
-        } else if (action.equals("VERIFY")) {
-            return doVerifyConfigs(deviceCollection, userContext, model);
         }
         return null;
     }
@@ -151,13 +149,6 @@ public class DeviceConfigController {
                 .collect(Collectors.toList());
     }
     
-    @RequestMapping(value = "doVerifyConfigs", method = RequestMethod.POST)
-    public String doVerifyConfigs(DeviceCollection deviceCollection, YukonUserContext context, ModelMap model) {
-        model.addAttribute("deviceCollection", deviceCollection);
-        int key = deviceConfigService.verifyConfigs(deviceCollection, context);
-        return "redirect:/collectionActions/progressReport/detail?key=" + key;
-    }
-
     @CheckRoleProperty(YukonRoleProperty.SEND_READ_CONFIG)
     @RequestMapping(value = "doReadConfig", method = RequestMethod.POST)
     public String doReadConfig(HttpServletRequest request, DeviceCollection deviceCollection, ModelMap model, 

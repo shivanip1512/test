@@ -91,7 +91,7 @@ public class MeterDetailsPage extends PageBase {
 
         getMeterInfoPanel().getEdit().click();
 
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("meter-info-popup");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("meter-info-popup");
 
         return new EditMeterModal(this.driverExt, Optional.empty(), Optional.of("meter-info-popup"));
     }    
@@ -100,7 +100,7 @@ public class MeterDetailsPage extends PageBase {
         
         getAction().clickAndSelectOptionByText("Delete Meter");       
                       
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("yukon_dialog_confirm");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("yukon_dialog_confirm");
         
         return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of("yukon_dialog_confirm"));  
     }

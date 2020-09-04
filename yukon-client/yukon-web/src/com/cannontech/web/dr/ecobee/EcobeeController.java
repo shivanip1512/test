@@ -385,10 +385,7 @@ public class EcobeeController {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
-            result = ecobeeReconciliation.fixDiscrepancy(reportId, errorId);
-            ecobeeEventLogService.syncIssueFixed(userContext.getYukonUser(), 
-                                                 result.getOriginalDiscrepancy().getErrorType().toString(), 
-                                                 EventSource.OPERATOR);
+            result = ecobeeReconciliation.fixDiscrepancy(reportId, errorId, userContext.getYukonUser());
             if (result.isSuccess()) {
                 json.put("success", "true");
             } else {
@@ -415,7 +412,7 @@ public class EcobeeController {
         List<Map<String, Object>> fixResponse = new ArrayList<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
-            List<EcobeeReconciliationResult> results = ecobeeReconciliation.fixAllDiscrepancies(reportId);
+            List<EcobeeReconciliationResult> results = ecobeeReconciliation.fixAllDiscrepancies(reportId, userContext.getYukonUser());
             for (EcobeeReconciliationResult result: results) {
                 EcobeeDiscrepancy originalError = result.getOriginalDiscrepancy();
                 Integer originalErrorId = originalError.getErrorId();

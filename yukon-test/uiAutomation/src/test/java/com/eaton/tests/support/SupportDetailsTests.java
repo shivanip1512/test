@@ -42,13 +42,13 @@ public class SupportDetailsTests extends SeleniumTestSetup {
 
         supportPageTitles = supportPage.getSupportSectionPageList().getListOfItemsText();
         supportPageLinks = supportPage.getSupportSectionPageList().getListOfItemLinks();
-        
+
         manualsPageTitles = supportPage.getManualsSectionPageList().getListOfItemsText();
         manualsPageLinks = supportPage.getManualsSectionPageList().getListOfItemLinks();
-        
+
         todaysLogsPageTitles = supportPage.getTodaysLogsSectionPageList().getListOfItemsText();
         todaysLogsPageLinks = supportPage.getTodaysLogsSectionPageList().getListOfItemLinks();
-        
+
         baseUrl = getBaseUrl();
     }
 
@@ -74,7 +74,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
     public void supportPage_SupportSection_BatteryNodeAnalysis_DisplayedAndCorrectLink() {
-        
+
         throw new SkipException("Development Defect created: YUK-22612");
 //        softly = new SoftAssertions();
 //        softly.assertThat(supportPageTitles).contains("Battery Node Analysis");
@@ -226,7 +226,8 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     public void supportPage_TodaysLogsSection_Calc_DisplayedAndCorrectLink() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Calc");
-        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.CALC_LOG + supportPage.getCurrentLogTimeStamp()+ ".log");
+        softly.assertThat(todaysLogsPageLinks).contains(
+                baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.CALC_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
         softly.assertAll();
     }
 
@@ -234,7 +235,8 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     public void supportPage_TodaysLogsSection_Capcontrol_DisplayedAndCorrectLink() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Capcontrol");
-        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.CAPCONTROL_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
+        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.CAPCONTROL_LOG
+                + supportPage.getCurrentLogTimeStamp() + ".log");
         softly.assertAll();
     }
 
@@ -242,7 +244,8 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     public void supportPage_TodaysLogsSection_Dispatch_DisplayedAndCorrectLink() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Dispatch");
-        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.DISPATCH_LOG + supportPage.getCurrentLogTimeStamp()+ ".log");
+        softly.assertThat(todaysLogsPageLinks).contains(
+                baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.DISPATCH_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
         softly.assertAll();
     }
 
@@ -250,7 +253,8 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     public void supportPage_TodaysLogsSection_Fdr_DisplayedAndCorrectLink() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Fdr");
-        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.FDR_LOG + supportPage.getCurrentLogTimeStamp()+ ".log");
+        softly.assertThat(todaysLogsPageLinks).contains(
+                baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.FDR_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
         softly.assertAll();
     }
 
@@ -258,7 +262,8 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     public void supportPage_TodaysLogsSection_LoadManagement_DisplayedAndCorrectLink() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Loadmanagement");
-        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.LOADMANGEMENT_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
+        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.LOADMANGEMENT_LOG
+                + supportPage.getCurrentLogTimeStamp() + ".log");
         softly.assertAll();
     }
 
@@ -266,7 +271,8 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     public void supportPage_TodaysLogsSection_Macs_DisplayedAndCorrectLink() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Macs");
-        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.MACS_LOG + supportPage.getCurrentLogTimeStamp()+ ".log");
+        softly.assertThat(todaysLogsPageLinks).contains(
+                baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.MACS_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
         softly.assertAll();
     }
 
@@ -274,7 +280,8 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     public void supportPage_TodaysLogsSection_MessageBroker_DisplayedAndCorrectLink() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("MessageBroker");
-        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.MESSAGE_BROKER_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
+        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.MESSAGE_BROKER_LOG
+                + supportPage.getCurrentLogTimeStamp() + ".log");
         softly.assertAll();
     }
 
@@ -282,7 +289,8 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     public void supportPage_TodaysLogsSection_NotificationServer_DisplayedAndCorrectLink() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("NotificationServer");
-        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.NOTIFICATION_SERVER_LOG+ supportPage.getCurrentLogTimeStamp() + ".log");
+        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.NOTIFICATION_SERVER_LOG
+                + supportPage.getCurrentLogTimeStamp() + ".log");
         softly.assertAll();
     }
 
@@ -290,7 +298,8 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     public void supportPage_TodaysLogsSection_Porter_DisplayedAndCorrectLink() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Porter");
-        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.PORTER_LOG + supportPage.getCurrentLogTimeStamp()+ ".log");
+        softly.assertThat(todaysLogsPageLinks).contains(
+                baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.PORTER_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
         softly.assertAll();
     }
 
@@ -298,7 +307,8 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     public void supportPage_TodaysLogsSection_Scanner_DisplayedAndCorrectLink() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Scanner");
-        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.SCANNER_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
+        softly.assertThat(todaysLogsPageLinks).contains(
+                baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.SCANNER_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
         softly.assertAll();
     }
 
@@ -306,7 +316,8 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     public void supportPage_TodaysLogsSection_ServiceManager_DisplayedAndCorrectLink() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("ServiceManager");
-        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.SERVICE_MANAGER_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
+        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.SERVICE_MANAGER_LOG
+                + supportPage.getCurrentLogTimeStamp() + ".log");
         softly.assertAll();
     }
 
@@ -314,7 +325,8 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     public void supportPage_TodaysLogsSection_Watchdog_DisplayedAndCorrectLink() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Watchdog");
-        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.WATCHDOG_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
+        softly.assertThat(todaysLogsPageLinks).contains(
+                baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.WATCHDOG_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
         softly.assertAll();
     }
 
@@ -322,16 +334,18 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     public void supportPage_TodaysLogsSection_Webserver_DisplayedAndCorrectLink() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Webserver");
-        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.WEBSERVER_LOG + supportPage.getCurrentLogTimeStamp()+ ".log");
+        softly.assertThat(todaysLogsPageLinks).contains(
+                baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.WEBSERVER_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
     public void supportPage_TodaysLogsSection_ViewAllLogs_DisplayedAndCorrectLink() {
         softly = new SoftAssertions();
-        
+
         softly.assertThat(supportPage.getViewAllLogsText()).isEqualTo("View All Logs");
-        softly.assertThat(supportPage.getViewAllLogsLink()).isEqualTo(baseUrl + Urls.Support.LOGGING_MENU + Urls.Support.VIEW_ALL_LOGS);
+        softly.assertThat(supportPage.getViewAllLogsLink())
+                .isEqualTo(baseUrl + Urls.Support.LOGGING_MENU + Urls.Support.VIEW_ALL_LOGS);
         softly.assertAll();
     }
 

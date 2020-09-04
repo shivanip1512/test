@@ -17,9 +17,8 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.eaton.builders.tools.webtrends.TrendCreateBuilder;
-import com.eaton.builders.tools.webtrends.TrendPointBuilder;
-import com.eaton.builders.tools.webtrends.TrendTypes;
+import com.eaton.builders.tools.trends.TrendCreateService;
+import com.eaton.builders.tools.trends.TrendTypes;
 import com.eaton.elements.modals.ResetPeakModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
@@ -27,36 +26,23 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.tools.trends.TrendsDetailPage;
 
-import io.restassured.response.ExtractableResponse;
-
 public class ResetPeakTest extends SeleniumTestSetup {
 
     private TrendsDetailPage detailsPage;
     private DriverExtensions driverExt;
     private Integer trendId;
     String trendName;
-    private SoftAssertions softly;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        Pair<JSONObject, ExtractableResponse<?>> pair = new TrendCreateBuilder.Builder(Optional.empty())
-                .withPoints(new JSONObject[] { new TrendPointBuilder.Builder()
-                        .withpointId(4999)
-                        .withLabel(Optional.empty())
-                        .withColor(Optional.empty())
-                        .withStyle(Optional.empty())
-                        .withType(Optional.of(TrendTypes.Type.PEAK_TYPE))
-                        .withAxis(Optional.empty())
-                        .withMultiplier(Optional.empty())
-                        .withDate(Optional.empty())
-                        .build() })
-                .create();
+        
+        Pair<JSONObject, JSONObject> pair = TrendCreateService.buildAndCreateTrendWithPoint(Optional.empty(), Optional.of(TrendTypes.Type.PEAK_TYPE));
 
-        ExtractableResponse<?> response = pair.getValue1();
+        JSONObject response = pair.getValue1();
 
-        trendId = response.path("trendId");
-        trendName = response.path("name").toString();
+        trendId = response.getInt("trendId");
+        trendName = response.getString("name");
 
         navigate(Urls.Tools.TREND_DETAILS + trendId);
         detailsPage = new TrendsDetailPage(driverExt, trendId);
@@ -78,8 +64,8 @@ public class ResetPeakTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
-    public void trendResetPeak_Default_FieldValuesCorrect() {
-        softly = new SoftAssertions();
+    public void trendResetPeak_DefaultFieldValues_Correct() {
+        SoftAssertions softly = new SoftAssertions();
 
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
@@ -91,13 +77,12 @@ public class ResetPeakTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
-    public void trendResetPeak_TypeNotPeak_ResetPeakDisabled() {
-        Pair<JSONObject, ExtractableResponse<?>> pair = new TrendCreateBuilder.Builder(Optional.empty())
-                .create();
+    public void trendResetPeak_NoPoint_ResetPeakDisabled() {
+        Pair<JSONObject, JSONObject> pair = TrendCreateService.buildAndCreateTrendOnlyRequiredFields();
 
-        ExtractableResponse<?> response = pair.getValue1();
+        JSONObject response = pair.getValue1();
 
-        Integer trendIdTypeNotPeak = response.path("trendId");
+        Integer trendIdTypeNotPeak = response.getInt("trendId");
 
         navigate(Urls.Tools.TREND_DETAILS + trendIdTypeNotPeak);
 
@@ -107,28 +92,18 @@ public class ResetPeakTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
-    public void trendResetPeak_ResetPeak_ForAllTrendsSuccess() {
-        Pair<JSONObject, ExtractableResponse<?>> pair = new TrendCreateBuilder.Builder(Optional.empty())
-                .withPoints(new JSONObject[] { new TrendPointBuilder.Builder()
-                        .withpointId(5157)
-                        .withLabel(Optional.empty())
-                        .withColor(Optional.empty())
-                        .withStyle(Optional.empty())
-                        .withType(Optional.of(TrendTypes.Type.PEAK_TYPE))
-                        .withAxis(Optional.empty())
-                        .withMultiplier(Optional.empty())
-                        .withDate(Optional.empty())
-                        .build() })
-                .create();
+    public void trendResetPeak_ResetPeakForAllTrendsYes_Success() {
+        SoftAssertions softly = new SoftAssertions();
+        Pair<JSONObject, JSONObject> pair = TrendCreateService.buildAndCreateTrendWithPoint(Optional.empty(), Optional.of(TrendTypes.Type.PEAK_TYPE));
 
-        ExtractableResponse<?> response = pair.getValue1();
+        JSONObject response = pair.getValue1();
 
-        Integer id = response.path("trendId");
+        Integer id = response.getInt("trendId");
 
         navigate(Urls.Tools.TREND_DETAILS + id);
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
-        resetPeakModal.getResetPeakForAllTrends().setByValue("true", true);
+        resetPeakModal.getResetPeakForAllTrends().selectByValue("Yes");
 
         resetPeakModal.clickOkAndWaitForModalToClose();        
         String actualUserMessage = detailsPage.getResetPeakMessage();
@@ -138,10 +113,10 @@ public class ResetPeakTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
-    public void trendResetPeak_ResetPeak_NotAllTrends_Success() {
+    public void trendResetPeak_ResetPeakForAllTrendsNo_Success() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
-        resetPeakModal.getResetPeakForAllTrends().setByValue("false", true);
+        resetPeakModal.getResetPeakForAllTrends().selectByValue("No");
         resetPeakModal.clickOkAndWaitForModalToClose();
 
         assertThat(detailsPage.getUserMessage()).contains("Reset peak performed successfully for " + trendName + ".");
@@ -151,45 +126,44 @@ public class ResetPeakTest extends SeleniumTestSetup {
     public void trendResetPeak_ResetPeakTo_ContainsAllExpectedValues() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
-        List<String> expectedDropDownValues = new ArrayList<>(
-                List.of("Today", "First Date of Month", "First Date of Year", "Selected Date"));
+        List<String> expectedDropDownValues = new ArrayList<>(List.of("Today", "First Date of Month", "First Date of Year", "Selected Date"));
         List<String> actualDropDownValues = resetPeakModal.getResetPeakTo().getOptionValues();
 
         assertThat(expectedDropDownValues).containsExactlyElementsOf(actualDropDownValues);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
-    public void trendResetPeak_SetResetPeakToSelectedDate_DateEnabled() {
+    public void trendResetPeak_ResetPeakToSelectedDate_DateEnabled() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
-        resetPeakModal.getResetPeakTo().selectItemByText("Selected Date");
+        resetPeakModal.getResetPeakTo().selectItemByValue("SELECTED_DATE");
 
         assertThat(resetPeakModal.getDate().isPickerEnabled()).isTrue();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendResetPeak_SetResetPeakToFirstMonth_DateDisabled() {
+    public void trendResetPeak_ResetPeakToFirstMonth_DateDisabled() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
-        resetPeakModal.getResetPeakTo().selectItemByText("First Date of Month");
+        resetPeakModal.getResetPeakTo().selectItemByValue("FIRST_DATE_OF_MONTH");
 
         assertThat(resetPeakModal.getDate().isPickerEnabled()).isFalse();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendResetPeak_SetResetPeakToFirstYear_DateDisabled() {
+    public void trendResetPeak_ResetPeakToFirstYear_DateDisabled() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
-        resetPeakModal.getResetPeakTo().selectItemByText("First Date of Year");
+        resetPeakModal.getResetPeakTo().selectItemByValue("FIRST_DATE_OF_YEAR");
 
         assertThat(resetPeakModal.getDate().isPickerEnabled()).isFalse();
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
-    public void trendResetPeak_SetResetPeakSelectedDate_SetDateSaveSuccess() {
+    public void trendResetPeak_ResetPeakToSelectedDate_SaveSuccess() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
-        resetPeakModal.getResetPeakTo().selectItemByText("Selected Date");
+        resetPeakModal.getResetPeakTo().selectItemByValue("SELECTED_DATE");
 
         resetPeakModal.getDate().setValue(LocalDate.now().minusDays(10).format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
         resetPeakModal.clickOkAndWaitForModalToClose();
@@ -198,8 +172,8 @@ public class ResetPeakTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
-    public void trendResetPeak_ResetPeakModal_HelpTextMessage() {
-        softly = new SoftAssertions();
+    public void trendResetPeak_HelpTextMessage_Correct() {
+        SoftAssertions softly = new SoftAssertions();
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
         resetPeakModal.clickHelpIcon();
@@ -216,7 +190,7 @@ public class ResetPeakTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendResetPeak_ResetPeakModal_HelpCloseIcon_Click() {
+    public void trendResetPeak_ClickHelpCloseIcon_Success() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
         resetPeakModal.clickHelpIcon();

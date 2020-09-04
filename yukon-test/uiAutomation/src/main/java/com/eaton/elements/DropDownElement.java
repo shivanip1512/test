@@ -34,7 +34,7 @@ public class DropDownElement {
         this.parentElement = parentElement;
     }
     
-    public void selectItemByText(String text)
+    public void selectItemByValue(String text)
     {
         if (text.isBlank())
         {
@@ -43,8 +43,8 @@ public class DropDownElement {
 
         Select dropDown = new Select(getSelectElement());
         
-        dropDown.selectByVisibleText(text);
-    }
+        dropDown.selectByValue(text);
+    }    
     
     public void selectItemByIndex(int index)
     {
@@ -61,7 +61,7 @@ public class DropDownElement {
         List<String> optionValues = new ArrayList<>();
         List<WebElement> options = getSelectElement().findElements(By.tagName("option"));
         for(WebElement option : options) {
-            optionValues.add(option.getText().trim().replaceAll("\n", ""));
+            optionValues.add(option.getText().trim().replace("\n", ""));
         }
         
         return optionValues;
@@ -85,6 +85,12 @@ public class DropDownElement {
     	List<WebElement> elements = getSelectElement().findElements(By.tagName("option"));
     	WebElement element = elements.stream().filter(x -> x.isSelected()).findFirst().orElseThrow();
     	return element.getText();
+    }
+    
+    public String getOptionValue() {
+        List<WebElement> elements = getSelectElement().findElements(By.tagName("option"));
+        WebElement element = elements.stream().filter(x -> x.isSelected()).findFirst().orElseThrow();
+        return element.getAttribute("value");
     }
 }
 

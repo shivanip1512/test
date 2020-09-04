@@ -138,6 +138,22 @@ yukon.ui = (function () {
     };
 
     var addEventListeners = function () {
+        
+        $(document).on('click', '.js-dialog-help-text', function () {
+            var dialog = $(this).closest('.ui-dialog').find(".ui-dialog-content");
+            dialog.addMessage({
+                message: dialog.data("helpText"),
+                messageClass: 'info'
+            });
+            /* Reposition the dialog to the center of the screen after the help text is displayed. */
+            dialog.dialog({
+                position:{
+                    my: 'center',
+                    at: 'center',
+                    of: window
+                }
+            });
+        });
 
         /** Follow clicks on top level nav menus when not using a touch screen. */
         $(document).on('click', '.yukon-header .menu-title', function (ev) {
@@ -809,6 +825,11 @@ yukon.ui = (function () {
                     open: function () {
                         if (bigContent) {
                             popup.append(content);
+                        }
+                        if (popup.is('[data-help-text]') && !$(this).parent().children(".ui-dialog-titlebar").find(".icon-help").exists()) {
+                            $(this).parent().children(".ui-dialog-titlebar").prepend('<i class="icon icon-help fr js-dialog-help-text cp">');
+                            $(this).parent().children(".ui-dialog-titlebar").find('.icon-help').css('margin-right', '20px');
+                            $(this).parent().find(".ui-dialog-title").width("80%");
                         }
                         // Check for a focus element
                         mod.autofocus(popup);

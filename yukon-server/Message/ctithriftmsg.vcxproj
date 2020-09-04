@@ -392,6 +392,8 @@
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\DeviceCreation_constants.cpp" />
     <ClCompile Include="Serialization\Thrift\DeviceCreation_types.cpp" />
+    <ClCompile Include="Serialization\Thrift\FieldSimulator_constants.cpp" />
+    <ClCompile Include="Serialization\Thrift\FieldSimulator_types.cpp" />
     <ClCompile Include="Serialization\Thrift\LMCommand_constants.cpp">
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\LMCommand_types.cpp">
@@ -656,6 +658,8 @@
     <ClInclude Include="Serialization\Thrift\DBChange_types.h" />
     <ClInclude Include="Serialization\Thrift\DeviceCreation_constants.h" />
     <ClInclude Include="Serialization\Thrift\DeviceCreation_types.h" />
+    <ClInclude Include="Serialization\Thrift\FieldSimulator_constants.h" />
+    <ClInclude Include="Serialization\Thrift\FieldSimulator_types.h" />
     <ClInclude Include="Serialization\Thrift\LMCommand_constants.h" />
     <ClInclude Include="Serialization\Thrift\LMCommand_types.h" />
     <ClInclude Include="Serialization\Thrift\LMControlAreas_constants.h" />

@@ -718,6 +718,70 @@ GO
 
 INSERT INTO DBUpdates VALUES ('YUK-22665', '7.5.0', GETDATE());
 /* @end YUK-22665 */
+
+/* @start YUK-22749 */
+UPDATE Point SET StateGroupId = -16
+WHERE StateGroupId = 4
+AND PointType = 'Status' 
+AND PointOffset IN (1, 2, 3, 4, 5, 6, 7)
+AND PaObjectId IN (
+    SELECT PaObjectId FROM YukonPaObject 
+    WHERE Type IN ('RF Gateway', 'GWY-800', 'GWY-801', 'Virtual Gateway')
+);
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-22749', '7.5.0', GETDATE());
+/* @end YUK-22749 */
+
+/* @start YUK-22624 */
+/* @start-warning checkDirectoryAccess Yukon requires write access to Import and Export directories. Please grant Local Service user access to following directories. Press Start to resume execution. */
+SELECT Value FROM GlobalSetting WHERE Name 
+    IN ('SCHEDULE_PARAMETERS_EXPORT_PATH', 'SCHEDULE_PARAMETERS_IMPORT_PATH');
+/* @end-warning checkDirectoryAccess */
+
+/* @end YUK-22624 */
+
+/* @start YUK-22622 */
+/* @start-block */
+DECLARE @StartGear AS NUMERIC,
+        @ProgramId AS NUMERIC,
+        @StartGearNumber AS NUMERIC,
+        @GearCount AS NUMERIC;
+
+DECLARE startGearAndProgramIdCursor CURSOR STATIC FOR (
+    SELECT StartGear, ProgramID
+    FROM LMControlScenarioProgram 
+);
+
+BEGIN
+    OPEN startGearAndProgramIdCursor
+    FETCH NEXT FROM startGearAndProgramIdCursor INTO @StartGear, @ProgramId
+    WHILE (@@FETCH_STATUS = 0)
+    BEGIN
+        IF (@StartGear > 12)
+        BEGIN
+            SET @StartGearNumber = (SELECT GearNumber FROM LMProgramDirectGear WHERE GearID = @StartGear)
+            UPDATE LMControlScenarioProgram SET StartGear = @StartGearNumber WHERE StartGear = @StartGear AND ProgramID = @ProgramId
+        END
+        ELSE
+        BEGIN
+            SET @GearCount = (SELECT COUNT(GearID) FROM LMProgramDirectGear WHERE DeviceID = @ProgramId GROUP BY DeviceID)
+            IF (@StartGear > @GearCount)
+                BEGIN
+                    UPDATE LMControlScenarioProgram SET StartGear = 1 WHERE StartGear = @StartGear AND ProgramID = @ProgramId
+                END
+         END
+         FETCH NEXT FROM startGearAndProgramIdCursor INTO @StartGear, @ProgramId
+         END
+    CLOSE startGearAndProgramIdCursor;
+    DEALLOCATE startGearAndProgramIdCursor;
+END;
+
+GO
+/* @end-block */
+INSERT INTO DBUpdates VALUES ('YUK-22622', '7.5.0', GETDATE());
+/* @end YUK-22622 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

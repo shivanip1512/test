@@ -3,6 +3,7 @@ package com.cannontech.services.rfn.endpoint;
 import java.util.UUID;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -92,15 +93,6 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
             return;
         }
         
-        // If a send is in progress, a failure event should not interrupt
-        // the current upload. Only when the upload is complete (in Waiting
-        // Verification) should failure events be recorded
-        if (newStatus.getStatus() == ProgrammingStatus.FAILED && oldStatus.getStatus() == ProgrammingStatus.UPLOADING) {
-            log.info("Status recieved is failure but existing status is uploading. Discarding the record. \nNew Status {} \nExisting status {}",
-                     newStatus,
-                     oldStatus);
-            return;
-        }
         if (newStatus.getStatus() != ProgrammingStatus.IDLE) {
             if (oldStatus.getSource().isOldFirmware()) {
                 log.info("Status recieved is not idle, but existing status was old firmware. Discarding the record. \nNew Status {} \nExisting status {}",
@@ -110,6 +102,7 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
             }
         }
         try {
+            Instant timeoutThreshold = oldStatus.getLastUpdate().plus(Duration.standardHours(1));
             MeterProgram assignedProgram = meterProgrammingDao.getProgramByDeviceId(deviceId);
             if (!assignedProgram.getGuid().equals(newStatus.getReportedGuid())) {
                 if (newStatus.getStatus() == ProgrammingStatus.FAILED) {
@@ -124,8 +117,28 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
                             oldStatus);
                     return;
                 }
+                if (oldStatus.getStatus() == ProgrammingStatus.UPLOADING
+                        && request.getSource() == MeterProgramStatusArchiveRequest.Source.SM_STATUS_ARCHIVE
+                        && newStatus.getReportedGuid().equals(oldStatus.getReportedGuid())
+                        && newStatus.getLastUpdate().isBefore(timeoutThreshold)) {
+                    log.info("Status received appears to be a MeterInfoStatus issued while the meter is still uploading. Discarding the record.\nNew Status{} \nExisting status{}", 
+                            newStatus,
+                            oldStatus);
+                    return;
+                }
                 log.info("Status recieved is idle and guids are mismatched. Updating status to mismatched");
                 newStatus.setStatus(ProgrammingStatus.MISMATCHED);
+            } else {
+                // If a send is in progress, a failure event should only interrupt the current upload
+                //  after the timeout has passed.
+                if (oldStatus.getStatus() == ProgrammingStatus.UPLOADING
+                        && newStatus.getStatus() == ProgrammingStatus.FAILED
+                        && newStatus.getLastUpdate().isBefore(timeoutThreshold)) {
+                    log.info("Status recieved is failure, but existing status is uploading and timeout has not passed. Discarding the record. \nNew Status {} \nExisting status {}",
+                             newStatus,
+                             oldStatus);
+                    return;
+                }
             }
         } catch (@SuppressWarnings("unused") NotFoundException ex) {
             if (newStatus.getStatus() != ProgrammingStatus.IDLE) {

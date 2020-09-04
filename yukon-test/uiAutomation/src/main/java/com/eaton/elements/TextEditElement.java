@@ -7,6 +7,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
 
 public class TextEditElement extends EditElement {
 
@@ -28,11 +29,14 @@ public class TextEditElement extends EditElement {
     }
 
     public void clearInputValue() {
-        getEditElement().clear();
+        WebElement input = getEditElement();
+        SeleniumTestSetup.scrollToElement(input);
+        input.clear();
     }
 
     public void setInputValue(String value) {
         WebElement input = getEditElement();
+        SeleniumTestSetup.scrollToElement(input);
 
         input.click();
         input.clear();
@@ -55,5 +59,9 @@ public class TextEditElement extends EditElement {
         String by = "span[id='" + this.elementName + ".errors']";
         
         return this.driverExt.findElement(By.cssSelector(by), Optional.of(3)).getText();        
+    }
+    
+    public String getMaxLength() {
+        return getEditElement().getAttribute("maxLength");
     }
 }

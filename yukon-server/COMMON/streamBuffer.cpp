@@ -157,6 +157,11 @@ template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::op
 template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (const CtiDate& date)     { swapOrAppend(date.asString());   return static_cast<StreamBufferT&>(*this); }
 template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (const CtiTime& time)     { swapOrAppend(time.asString());   return static_cast<StreamBufferT&>(*this); }
 
+template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (const std::chrono::system_clock::time_point t)
+{
+    return *this << CtiTime(std::chrono::duration_cast<std::chrono::seconds>(t.time_since_epoch()).count());
+}
+
 template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (const std::chrono::milliseconds milliseconds)
 {
     swapOrAppend(commaFormatted(milliseconds.count()) + " ms");

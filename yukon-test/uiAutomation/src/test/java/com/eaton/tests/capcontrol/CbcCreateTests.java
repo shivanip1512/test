@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.Random;
 
 import org.openqa.selenium.WebDriver;
-import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -62,7 +61,7 @@ public class CbcCreateTests extends SeleniumTestSetup {
         Integer port = faker.number().numberBetween(1, 65535);
         Integer postCommWait = faker.number().numberBetween(1, 99999);
         Integer slaveAddress = faker.number().numberBetween(1,  65535);
-        this.createPage.getType().selectItemByText("CBC 8020");
+        this.createPage.getType().selectItemByValue("CBC_8020");
         this.createPage.getMasterAddress().setInputValue(String.valueOf(masterAddress));
         this.createPage.getSlaveAddress().setInputValue(slaveAddress.toString());
         this.createPage.getName().setInputValue(name);
