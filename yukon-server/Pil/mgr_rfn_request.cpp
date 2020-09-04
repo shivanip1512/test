@@ -290,6 +290,11 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
             {
                 const auto timeout = std::chrono::system_clock::now() + E2EDT_RMP_ADDITIONAL_BLOCK_TIMEOUT;
 
+                CTILOG_DEBUG(dout, "Updating Meter Programming expiration for " << rfnIdentifier << FormattedList::of(
+                    "GUID", guid,
+                    "Token", request->token,
+                    "Timeout", timeout));
+
                 _awaitingMeterProgrammingRequest.emplace(timeout, RfnRequestIdentifier { rfnIdentifier, request->token });
 
                 request->timeout = timeout;
@@ -305,6 +310,33 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
             {
                 rfnDevice->extractCommandResult(*command);
 
+                const auto itr = _meterProgrammingRequests.find(rfnIdentifier);
+                
+                if( itr != _meterProgrammingRequests.end() )
+                {
+                    if( itr->second.token == *message.token )
+                    {
+                        _meterProgrammingRequests.erase(itr);
+                        CTILOG_INFO(dout, "Received Meter Programming Set Response for " << rfnIdentifier << FormattedList::of(
+                            "Token",           itr->second.token,
+                            "Active GUID",     itr->second.guid,
+                            "Active timeout",  itr->second.timeout,
+                            "Received ID",     command->getMeterConfigurationID(),
+                            "Received status", command->getStatusCode()));
+                    }
+                    else
+                    {
+                        CTILOG_WARN(dout, "Received mismatched Meter Programming Set Response for " << rfnIdentifier << FormattedList::of(
+                            "Active token",    itr->second.token,
+                            "Active GUID",     itr->second.guid,
+                            "Active timeout",  itr->second.timeout,
+                            "Received token",  *message.token,
+                            "Received ID",     command->getMeterConfigurationID(),
+                            "Received status", command->getStatusCode()));
+                    }
+                }
+
+                //  TODO - filter this update based on whether we have an active meter programming request for the token
                 sendMeterProgramStatusUpdate( {
                         rfnIdentifier,
                         command->getMeterConfigurationID(),
@@ -412,15 +444,6 @@ RfnDeviceResult RfnRequestManager::handleCommandResponse(const CtiTime Now, cons
     try
     {
         commandResults = activeRequest.request.command->handleResponse(Now, activeRequest.response);
-
-        using RmpSetCommand = Devices::Commands::RfnMeterProgrammingSetConfigurationCommand;
-
-        if( auto meterProgrammingCommand = dynamic_cast<const RmpSetCommand*>(activeRequest.request.command.get()) )
-        {
-            _awaitingMeterProgrammingRequest.emplace(
-                std::chrono::system_clock::now() + E2EDT_RMP_INITIAL_TIMEOUT,
-                RfnRequestIdentifier { rfnIdentifier, activeRequest.request.rfnRequestId });
-        }
     }
     catch( const DeviceCommand::CommandException &ce )
     {
@@ -501,6 +524,24 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleConfirms()
             {
                 RfnCommandResultList results { { "One-way command sent" } };
 
+                using RmpSetCommand = Devices::Commands::RfnMeterProgrammingSetConfigurationCommand;
+
+                if( auto command = dynamic_cast<const RmpSetCommand*>(activeRequest.request.command.get()) )
+                {
+                    const auto timeout = std::chrono::system_clock::now() + E2EDT_RMP_INITIAL_TIMEOUT;
+
+                    _awaitingMeterProgrammingRequest.emplace(
+                        timeout, RfnRequestIdentifier{ confirm.rfnIdentifier, activeRequest.request.rfnRequestId });
+
+                    CTILOG_DEBUG(dout, "Adding Meter Programming expiration for " << confirm.rfnIdentifier << FormattedList::of(
+                        "GUID", command->getGuid(),
+                        "Token", activeRequest.request.rfnRequestId,
+                        "Timeout", timeout));
+
+                    _meterProgrammingRequests.insert_or_assign(
+                        confirm.rfnIdentifier, MeterProgrammingRequest { timeout, command->getGuid(), activeRequest.request.rfnRequestId });
+                }
+
                 _resultsPerTick.emplace_back(std::move(activeRequest.request), results);
 
                 completed.insert(confirm.rfnIdentifier);
@@ -552,6 +593,11 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
                     if( request.timeout <= Now )
                     {
                         constexpr auto YukonPrefix = static_cast<char>(Cti::MeterProgramming::GuidPrefixes::YukonProgrammed);
+
+                        CTILOG_INFO(dout, "Meter programming request timed out for device " << rfnId << FormattedList::of(
+                            "GUID",    request.guid,
+                            "Token",   request.token,
+                            "Timeout", request.timeout));
 
                         sendMeterProgramStatusUpdate({
                                 rfnId,

@@ -937,27 +937,10 @@ void processPostRequest(const E2eRequestSender e2eRequestSender, const ReplySend
             {
                 const auto [path, size] = *pathSize;
 
-                auto itr = meterProgrammingRequests.find(rfnIdentifier);
-
-                if( itr != meterProgrammingRequests.end() )
-                {
-                    if( itr->second.path == path )
-                    {
-                        CTILOG_INFO(dout, "Received duplicate path request, ignoring" << FormattedList::of(
-                            "Device", rfnIdentifier,
-                            "Path", path));
-
-                        return;
-                    }
-
-                    CTILOG_INFO(dout, "Replacing existing meter programming request" << FormattedList::of(
-                        "Device", rfnIdentifier,
-                        "Existing path", itr->second.path,
-                        "New path", path));
-
-                    itr->second.path = path;
-                    itr->second.initialToken = token;
-                }
+                CTILOG_INFO(dout, "Received Meter Programming Set Configuration request" << FormattedList::of(
+                    "Device", rfnIdentifier,
+                    "Path", path,
+                    "Size", size));
 
                 e2edt_request_packet newRequest;
 
@@ -967,8 +950,23 @@ void processPostRequest(const E2eRequestSender e2eRequestSender, const ReplySend
                 newRequest.path = path;
                 newRequest.token = idGenerator();
 
-                itr->second.currentToken = newRequest.token;
+                if( auto existingRequest = mapFindRef(meterProgrammingRequests, rfnIdentifier) )
+                {
+                    CTILOG_INFO(dout, "Replacing existing meter programming request" << FormattedList::of(
+                        "Device", rfnIdentifier,
+                        "Existing path", existingRequest->path,
+                        "New path", path));
 
+                    existingRequest->initialToken = token;
+                    existingRequest->currentToken = newRequest.token;
+                    existingRequest->path = path;
+                }
+                else
+                {
+                    meterProgrammingRequests.emplace(rfnIdentifier, MeterProgrammingRequest { token, newRequest.token, path });
+                }
+
+                e2eRequestSender(newRequest);
                 e2eRequestSender(newRequest);
 
                 return;
@@ -1001,7 +999,7 @@ auto ParseSetMeterProgram(const Bytes& payload, const RfnIdentifier & rfnId) -> 
 
         pos += 3;
 
-        if( pos + len >= end )
+        if( pos + len > end )
         {
             return std::nullopt;  //  error, buffer too small
         }

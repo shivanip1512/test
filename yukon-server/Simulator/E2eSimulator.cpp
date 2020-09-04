@@ -480,16 +480,27 @@ auto E2eSimulator::buildE2eDtRequest(const e2edt_request_packet& request) const 
     std::array<unsigned char, 1024> allOptions;
 
     size_t allOptionLength = allOptions.size();
-    
-    std::basic_string<unsigned char> path { request.path.cbegin(), request.path.cend() };
 
-    auto options = coap_split_path(path.data(), path.size(), allOptions.data(), &allOptionLength);
-
-    for( auto buf = allOptions.data(); options--; buf += coap_opt_size(buf) )
+    if( ! request.path.empty() )
     {
-        coap_add_option(request_pdu, COAP_OPTION_URI_PATH,
+        auto itr = request.path.cbegin();
+
+        if( *itr == '/' )
+        {
+            //  Trim off any leading slash - it's implicit
+            ++itr;
+        }
+    
+        const std::vector<unsigned char> path { itr, request.path.cend() };
+
+        auto options = coap_split_path(path.data(), path.size(), allOptions.data(), &allOptionLength);
+
+        for( auto buf = allOptions.data(); options--; buf += coap_opt_size(buf) )
+        {
+            coap_add_option(request_pdu, COAP_OPTION_URI_PATH,
                 coap_opt_length(buf),
                 coap_opt_value(buf));
+        }
     }
 
     if( request.block )
@@ -523,6 +534,8 @@ void E2eSimulator::sendE2eDataIndication(const E2eDataRequestMsg &requestMsg, co
     indication.security      = requestMsg.security;
 
     Bytes indicationBytes;
+
+    CTILOG_INFO(dout, "Sending E2eDataIndicationMsg to " << requestMsg.rfnIdentifier << "\n" << payload);
 
     e2eMessageFactory.serialize(indication, indicationBytes);
 

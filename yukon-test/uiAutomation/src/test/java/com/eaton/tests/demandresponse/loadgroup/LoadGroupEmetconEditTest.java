@@ -14,8 +14,8 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.LoadGroupEmetconEditPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupEmetconEditPage;
 import com.github.javafaker.Faker;
 
 public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
@@ -98,13 +98,13 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
         editPage.getName().setInputValue(name);
         // 36 = a_CCU-721
         editPage.getCommuncationRoute().selectItemByValue("36");
-        editPage.getaddressUsage().selectByValue("SILVER");
+        editPage.getaddressUsage().selectByValue("Silver Address");
         editPage.getGoldAddress().setInputValue("4");
         editPage.getSilverAddress().setInputValue("23");
-        editPage.getaddressrelayUsage().selectByValue("RELAY_ALL");
+        editPage.getaddressrelayUsage().selectByValue("All");
         editPage.getkWCapacity().setInputValue(String.valueOf(faker.number().randomDouble(3, 0, 99999)));
-        editPage.getDisableGroup().selectValue("yes");
-        editPage.getDisableControl().selectValue("yes");
+        editPage.getDisableGroup().selectValue("Yes");
+        editPage.getDisableControl().selectValue("Yes");
         editPage.getSaveBtn().click();
 
         LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
