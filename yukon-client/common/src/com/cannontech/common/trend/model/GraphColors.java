@@ -7,6 +7,7 @@ import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.exception.TypeNotSupportedException;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 
 /**
  * Provides colors for graphs.
@@ -32,7 +33,7 @@ public enum GraphColors {
         yukonColors = Arrays.stream(GraphColors.values())
                 .map(GraphColors::getYukonColor)
                 .toArray(YukonColorPalette[]::new);
-        com.google.common.collect.ImmutableMap.Builder<YukonColorPalette, GraphColors> dbBuilder = ImmutableMap.builder();
+        Builder<YukonColorPalette, GraphColors> dbBuilder = ImmutableMap.builder();
         for (GraphColors color : values()) {
             dbBuilder.put(color.getYukonColor(), color);
         }
