@@ -36,7 +36,7 @@ public class MeterWRL420cLDeleteTests extends SeleniumTestSetup {
 
         ConfirmModal modal = meterDetailsPage.showAndWaitConfirmDeleteModal();
 
-        modal.clickOkAndWait();
+        modal.clickOkAndWaitForModalToClose();
 
         waitForUrlToLoad(Urls.Ami.AMI_DASHBOARD, Optional.of(10));
 

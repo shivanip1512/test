@@ -60,7 +60,7 @@ public class MeterWRL420cDCreateTests extends SeleniumTestSetup {
         createModal.getManufacturer().setInputValue(manufacturer);
         createModal.getModel().setInputValue(model);
 
-        createModal.clickOkAndWait();
+        createModal.clickOkAndWaitForModalToClose();
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL, Optional.of(10));
 
