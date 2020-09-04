@@ -48,8 +48,13 @@ public class LoadGroupDigiSepEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpDigisepEdit_RequiredFieldsOnly_Successfully() {
-        String nameAfterEdit = "EditLdGrpDigiSe " + timeStamp;
+    public void ldGrpDigisepEdit_AllFields_Successfully() {
+        String nameBeforeEdit = "LdGrpDigiSep " + timeStamp;
+        String nameAfterEdit = "EditLdGrpDigiSep " + timeStamp;
+        builder.withName(nameBeforeEdit);
+        Pair<JSONObject, JSONObject> pair = builder.create();
+        JSONObject response = pair.getValue1();
+        int id = response.getInt("id");
 
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
         editPage.getName().setInputValue(nameAfterEdit);

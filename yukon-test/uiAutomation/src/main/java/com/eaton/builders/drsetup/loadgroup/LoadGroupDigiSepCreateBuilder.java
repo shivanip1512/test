@@ -51,7 +51,7 @@ public class LoadGroupDigiSepCreateBuilder {
         }
 
         public Builder withUtilityEnrollmentGroup(Optional<Integer> utilityEnrollmentGroup) {
-            this.utilityEnrollmentGroup = utilityEnrollmentGroup.orElse((int) faker.number().numberBetween(1, 255));
+            this.utilityEnrollmentGroup = utilityEnrollmentGroup.orElse(faker.number().numberBetween(1, 255));
             return this;
         }
 
@@ -71,12 +71,12 @@ public class LoadGroupDigiSepCreateBuilder {
         }
 
         public Builder withRampInMinutes(Optional<Integer> rampInMinutes) {
-            this.rampInMinutes = rampInMinutes.orElse((int) faker.number().numberBetween(-99999, 99999));
+            this.rampInMinutes = rampInMinutes.orElse(faker.number().numberBetween(-99999, 99999));
             return this;
         }
 
         public Builder withRampOutMinutes(Optional<Integer> rampOutMinutes) {
-            this.rampOutMinutes = rampOutMinutes.orElse((int) faker.number().numberBetween(-99999, 99999));
+            this.rampOutMinutes = rampOutMinutes.orElse(faker.number().numberBetween(-99999, 99999));
             return this;
         }
 
