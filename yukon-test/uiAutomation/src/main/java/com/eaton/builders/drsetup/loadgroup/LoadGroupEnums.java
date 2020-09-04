@@ -75,7 +75,7 @@ public class LoadGroupEnums {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
-    }   
+    }
 
     public enum AddressLevelMCT {
         BRONZE("BRONZE"),
@@ -177,7 +177,7 @@ public class LoadGroupEnums {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
-    }   
+    }
 
     public enum AddressUsageVersacom {
         UTILITY("UTILITY"),
@@ -318,6 +318,7 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
+
     public enum DigiSepDeviceClassEnum {
 
         HVAC_COMPRESSOR_FURNACE("HVAC_COMPRESSOR_FURNACE"),
@@ -342,8 +343,52 @@ public class LoadGroupEnums {
         public String getDeviceClassSet() {
             return this.deviceClassSet;
         }
-
+        
         public static DigiSepDeviceClassEnum getRandomDeviceClassSet() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
+    }
+
+    public enum PointId {
+        SCADA_OVERRIDE(4230),
+        CVR_MODE(4231),
+        CAPACITOR_BANK_STATE(4249),
+        REMOTE_CONTROL_MODE(4251),
+        OVUV_CONTROL(4255),
+        MANUAL_CONTROL_MODE(4265);
+
+        private final Integer pointUsageId;
+
+        PointId(Integer pointId) {
+            this.pointUsageId = pointId;
+        }
+
+        public Integer getPointId() {
+            return this.pointUsageId;
+        }
+
+        public static PointId getRandomPointId() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
+    }
+
+    public enum PointStartControlRawState {
+        TRUE(1),
+        FALSE(0);
+
+        private final Integer startControlRawState;
+
+        PointStartControlRawState(Integer startControlRawState) {
+            this.startControlRawState = startControlRawState;
+        }
+
+        public Integer getPointStartControlRawState() {
+            return this.startControlRawState;
+        }
+
+        public static PointStartControlRawState getRandomPointStartControlRawState() {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
