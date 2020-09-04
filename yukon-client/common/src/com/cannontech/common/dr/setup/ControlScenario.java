@@ -3,8 +3,11 @@ package com.cannontech.common.dr.setup;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import javax.validation.Valid;
+
 import org.apache.commons.collections4.CollectionUtils;
+
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -53,9 +56,9 @@ public class ControlScenario {
             programDetails.setProgramId(program.getProgramID());
             programDetails.setStartOffsetInMinutes(program.getStartOffset() / 60);
             programDetails.setStopOffsetInMinutes(program.getStopOffset() / 60);
-            LMDto gear = new LMDto();
-            List<LMDto> gears = new ArrayList<>(1);
-            gear.setId(program.getStartGear());
+            LMGearDto gear = new LMGearDto();
+            List<LMGearDto> gears = new ArrayList<>(1);
+            gear.setGearNumber(program.getStartGear());
             gears.add(gear);
             programDetails.setGears(gears);
             allPrograms.add(programDetails);
@@ -79,7 +82,7 @@ public class ControlScenario {
                 lmControlScenarioProgram.setProgramID(program.getProgramId());
                 lmControlScenarioProgram.setStartOffset(program.getStartOffsetInMinutes() * 60);
                 lmControlScenarioProgram.setStopOffset(program.getStopOffsetInMinutes() * 60);
-                lmControlScenarioProgram.setStartGear(program.getGears().get(0).getId());
+                lmControlScenarioProgram.setStartGear(program.getGears().get(0).getGearNumber());
                 controlScenario.getAllThePrograms().add(lmControlScenarioProgram);
             });
         }
