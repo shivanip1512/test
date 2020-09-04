@@ -29,6 +29,7 @@ BOOST_AUTO_TEST_CASE( test_setConfigurationCommand_request )
 
     BOOST_CHECK( command.isPost() );
     BOOST_CHECK( command.isOneWay() );
+    BOOST_CHECK_EQUAL( command.getGuid(), "7d444840-9dc0-11d1-b245-5ffdce74fad2" );
 
     // execute
     {
