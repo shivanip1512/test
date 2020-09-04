@@ -290,6 +290,11 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
             {
                 const auto timeout = std::chrono::system_clock::now() + E2EDT_RMP_ADDITIONAL_BLOCK_TIMEOUT;
 
+                CTILOG_DEBUG(dout, "Updating Meter Programming expiration for " << rfnIdentifier << FormattedList::of(
+                    "GUID", guid,
+                    "Token", request->token,
+                    "Timeout", timeout));
+
                 _awaitingMeterProgrammingRequest.emplace(timeout, RfnRequestIdentifier { rfnIdentifier, request->token });
 
                 request->timeout = timeout;
