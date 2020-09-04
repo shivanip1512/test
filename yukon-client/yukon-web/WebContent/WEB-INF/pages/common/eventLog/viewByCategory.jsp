@@ -79,8 +79,7 @@ $(function () {
 		<div id="events-container" data-url="${url}" data-static>
 			<c:choose>
 				<c:when test="${empty searchResult.resultList}">
-					<span class="empty-list"><i:inline
-							key="yukon.common.events.noResults" /></span>
+					<span class="empty-list"><i:inline key="yukon.common.events.noResults" /></span>
 				</c:when>
 				<c:otherwise>
 					<table class="compact-results-table">
