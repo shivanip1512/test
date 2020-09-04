@@ -3,11 +3,22 @@ package com.cannontech.dbtools.updater;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.attribute.AclEntry;
+import java.nio.file.attribute.AclFileAttributeView;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
@@ -93,6 +104,7 @@ public class DBUpdater extends MessageFrameAdaptor {
     public final static String[] CMD_LINE_PARAM_NAMES = { IRunnableDBTool.PROP_VALUE, "verbose", "nightly"};
     private static final String oracleDBPath = "/Client/DBScripts/oracle";
     private static final String sqlServerDBPath = "/Client/DBScripts/sqlserver";
+    private static final String LOCAL_SERVICE = "NT AUTHORITY\\LOCAL SERVICE";
     
     public DBUpdater() {
         super();
@@ -344,7 +356,18 @@ public class DBUpdater extends MessageFrameAdaptor {
                 getIMessageFrame().addOutput("     (IGNORING ERROR) : " + ex.getMessage());
             }
 
-        } else {
+        } else if (line_.isWarning()) {
+            String commandName = line_.getCommandName();
+            String warningMessage = line_.getWarningMessage();
+            try {
+                Method method = DBUpdater.class.getDeclaredMethod(commandName, Statement.class, String.class, String.class);
+                method.invoke(this, stat, cmd, warningMessage);
+            } catch (SecurityException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException
+                    | InvocationTargetException e) {
+                throw new RuntimeException(e.getCause());
+            }
+        }
+        else {
             stat.execute(cmd);
             line_.setSuccess(true);
             getIMessageFrame().addOutput("   SUCCESS : " + cmd);
@@ -356,6 +379,40 @@ public class DBUpdater extends MessageFrameAdaptor {
             }
         } catch (Exception e) {} // ain't no thang
     
+    }
+
+    /**
+     * Method to display warning message for invalid Import / Export directories while upgrading DB.
+     */
+    private void checkDirectoryAccess(Statement stat, String cmd, String warningMessage) throws SQLException, IOException {
+        List<String> invalidDirectories = new ArrayList<String>();
+        ResultSet resultSet = stat.executeQuery(cmd);
+        while (resultSet.next()) {
+            String value = resultSet.getString("value");
+            String[] directoryPaths = value.split(",");
+            for (String directoryPath : directoryPaths) {
+                File file = new File(directoryPath);
+                AclFileAttributeView attributeView = Files.getFileAttributeView(file.toPath(), AclFileAttributeView.class);
+                List<AclEntry> entry = attributeView.getAcl();
+                if (entry.stream()
+                         .map(e -> !e.principal().getName().equals(LOCAL_SERVICE))
+                         .findAny().get()) {
+                    invalidDirectories.add(directoryPath);
+                }
+            }
+        }
+        if (CollectionUtils.isNotEmpty(invalidDirectories)) {
+            getIMessageFrame().addOutput("");
+            getIMessageFrame().addOutput(
+                    " ************************************************************************** ");
+            getIMessageFrame().addOutput("   Warning Message:");
+            getIMessageFrame().addOutput("   " + warningMessage);
+            getIMessageFrame().addOutput("   " + StringUtils.join(invalidDirectories, ','));
+            getIMessageFrame().addOutput("");
+            getIMessageFrame().addOutput(
+                    " ************************************************************************** ");
+            throw new RuntimeException("Invalid Import/Export directories.");
+        }
     }
 
     private void processLine(UpdateLine line_, Connection conn) throws SQLException {

@@ -34,7 +34,7 @@ namespace Cti::Protocols::Coap {
     private:
 
         uint8_t szx;
-        BlockSize(uint8_t szx_) : szx { szx_ } {}
+        constexpr BlockSize(uint8_t szx_) : szx { szx_ } {}
     };
 
     struct Block
