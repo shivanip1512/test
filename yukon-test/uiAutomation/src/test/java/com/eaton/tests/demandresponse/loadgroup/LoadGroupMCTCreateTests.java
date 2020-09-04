@@ -200,7 +200,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         createPage.getName().setInputValue(name);
         createPage.getAddressLevel().selectItemByValue("MCT_ADDRESS");
 
-        SelectMCTMeterModal mctMeterModal = this.createPage.showAndWaitMCTMeter();
+        SelectMCTMeterModal mctMeterModal = createPage.showAndWaitMCTMeter();
         mctMeterModal.selectMeter("a_MCT-430A");
         mctMeterModal.clickOkAndWaitForModalToClose();
         createPage.getSaveBtn().click();

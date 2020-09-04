@@ -85,7 +85,7 @@ public class WebTable {
         List<WebElement> rows = new ArrayList<>();
         long startTime = System.currentTimeMillis();
 
-        while((rows.size() != 1) || (System.currentTimeMillis() - startTime) < 1000) {
+        while((rows.size() != 1) && (System.currentTimeMillis() - startTime) < 1000) {
             try {
                 table = getTable();
 
@@ -109,7 +109,7 @@ public class WebTable {
         WebElement anchorElement = null;
         long startTime = System.currentTimeMillis();
 
-        while ((row.isEmpty()) || (System.currentTimeMillis() - startTime) < 1000) {
+        while ((row.isEmpty()) && (System.currentTimeMillis() - startTime) < 1000) {
             try {
                 table = getTable();
 
@@ -133,7 +133,7 @@ public class WebTable {
         List<WebElement> rows = new ArrayList<>();
         long startTime = System.currentTimeMillis();
 
-        while((rows.size() != 1) || (System.currentTimeMillis() - startTime) < 3000) {
+        while((rows.size() != 1) && (System.currentTimeMillis() - startTime) < 3000) {
             try {
                 table = parent.findElement(By.cssSelector(".compact-results-table"));
 

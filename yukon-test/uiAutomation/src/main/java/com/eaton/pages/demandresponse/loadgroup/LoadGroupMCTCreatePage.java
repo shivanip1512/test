@@ -62,6 +62,5 @@ public class LoadGroupMCTCreatePage extends LoadGroupCreatePage {
         SeleniumTestSetup.waitUntilModalOpenByTitle("Select MCT Meter");
 
         return new SelectMCTMeterModal(this.driverExt, Optional.of("Select MCT Meter"), Optional.empty());
-    }
-
+    }    
 }
