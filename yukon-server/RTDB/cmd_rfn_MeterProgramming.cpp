@@ -199,6 +199,11 @@ namespace Cti::Devices::Commands {
         return true;
     }
 
+    std::string RfnMeterProgrammingSetConfigurationCommand::getGuid() const
+    {
+        return _guid;
+    }
+
     std::unique_ptr<RfnMeterProgrammingSetConfigurationCommand> RfnMeterProgrammingSetConfigurationCommand::handleUnsolicitedReply(const CtiTime now, const RfnResponsePayload & response)
     {
         validate( Condition( ! response.empty(), ClientErrors::DataMissing ) << "Empty response payload");
