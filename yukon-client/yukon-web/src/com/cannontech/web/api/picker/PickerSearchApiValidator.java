@@ -16,11 +16,5 @@ public class PickerSearchApiValidator extends SimpleValidator<PickerSearchCriter
 
         // Check if type is NULL
         YukonValidationUtils.checkIfFieldRequired("type", errors, searchCriteria.getType(), "type");
-
-        // Check if count is NULL
-        YukonValidationUtils.checkIfFieldRequired("count", errors, searchCriteria.getCount(), "count");
-
-        // Check if startCount is NULL
-        YukonValidationUtils.checkIfFieldRequired("startCount", errors, searchCriteria.getStartCount(), "startCount");
     }
 }
