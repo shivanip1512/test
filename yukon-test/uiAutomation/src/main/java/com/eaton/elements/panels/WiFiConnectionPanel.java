@@ -1,7 +1,6 @@
 package com.eaton.elements.panels;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.openqa.selenium.WebElement;
 
@@ -15,6 +14,8 @@ public class WiFiConnectionPanel extends BasePanel {
     private WebElement panel;
     private Button queryButton;
     private WebTable pointsTable;
+    private List<String> labelEntries;
+    private List<String> valueEntries;
     private String commStatusLabel;
     private String commStatusValue;
     private String rssiLabel;
@@ -26,40 +27,22 @@ public class WiFiConnectionPanel extends BasePanel {
         final int VALUE_INDEX = 2;
         
         this.driverExt = driverExt;
-        this.panel = initPanel();
-        if(panel == null) {
-        	queryButton = null;
-        	pointsTable = null;
-        	commStatusLabel = null;
-        	rssiLabel = null;
-        	commStatusValue = null;
-        	rssiValue = null;
-        	
-        } else {
-	        this.queryButton = new Button(this.driverExt, "Query", this.panel);
-	        this.pointsTable = new WebTable(driverExt, "name-value-table", panel);
-	        List<String> labelEntries = pointsTable.getDataRowsTextByCellIndex(LABEL_INDEX);
-	        this.commStatusLabel = labelEntries.get(0);
-	        this.rssiLabel = labelEntries.get(1);
-	        
-	        List<String> valueEntries = pointsTable.getDataRowsTextByCellIndex(VALUE_INDEX);
-	        this.commStatusValue = valueEntries.get(0);
-	        this.rssiValue = valueEntries.get(1);
-        }
+        this.panel = super.getPanel();
+       
+        this.queryButton = new Button(this.driverExt, "Query", this.panel);
+        this.pointsTable = new WebTable(driverExt, "name-value-table", panel);
+        this.labelEntries = pointsTable.getDataRowsTextByCellIndex(LABEL_INDEX);
+        this.commStatusLabel = labelEntries.get(0);
+        this.rssiLabel = labelEntries.get(1);
+        
+        this.valueEntries = pointsTable.getDataRowsTextByCellIndex(VALUE_INDEX);
+        this.commStatusValue = valueEntries.get(0);
+        this.rssiValue = valueEntries.get(1);
     }
     
     //================================================================================
     // Private Functions Section
-    //================================================================================
-    
-    private WebElement initPanel() {
-    	WebElement panel = null;
-    	try {
-    		panel = super.getPanel();
-    	} catch(NoSuchElementException e) {
-    	}
-    	return panel;
-    }
+    //================================================================================ 
     
     //================================================================================
     // Getters/Setters Section
@@ -75,6 +58,14 @@ public class WiFiConnectionPanel extends BasePanel {
     
     public WebTable getPointsTable() {
     	return pointsTable;
+    }
+    
+    public List<String> getLabelEntries() {
+    	return labelEntries;
+    }
+    
+    public List<String> getValueEntries() {
+    	return valueEntries;
     }
     
     public String getCommStatusLabel() {

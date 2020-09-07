@@ -1,6 +1,5 @@
 package com.eaton.elements.panels;
 
-import java.util.NoSuchElementException;
 
 import org.openqa.selenium.WebElement;
 
@@ -14,16 +13,7 @@ public class MeterEventsPanel extends BasePanel {
     public MeterEventsPanel(DriverExtensions driverExt, String panelName) {
         super(driverExt, panelName);
         this.driverExt = driverExt;
-        this.panel = initPanel();
-    }
-    
-    private WebElement initPanel() {
-    	WebElement panel = null;
-    	try {
-    		panel = super.getPanel();
-    	} catch(NoSuchElementException e) {
-    	}
-    	return panel;
+        this.panel = super.getPanel();
     }
     
     public WebElement getPanel() {

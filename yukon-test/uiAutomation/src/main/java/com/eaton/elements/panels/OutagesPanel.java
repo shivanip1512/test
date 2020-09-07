@@ -1,11 +1,9 @@
 package com.eaton.elements.panels;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.openqa.selenium.WebElement;
 
-import com.eaton.elements.Button;
 import com.eaton.elements.WebTable;
 import com.eaton.framework.DriverExtensions;
 
@@ -23,33 +21,17 @@ public class OutagesPanel extends BasePanel {
         final int VALUE_INDEX = 2;
         
         this.driverExt = driverExt;
-        this.panel = initPanel();
+        this.panel = super.getPanel();
         
-        if(panel == null) {
-            this.pointsTable = null;
-            this.labelEntries = null;
-            this.valueEntries = null;
-        	
-        } else { 
-            this.pointsTable = new WebTable(driverExt, "name-value-table", panel);
-            this.labelEntries = pointsTable.getDataRowsTextByCellIndex(LABEL_INDEX);
-            
-            this.valueEntries = pointsTable.getDataRowsTextByCellIndex(VALUE_INDEX);
-        }
+        this.pointsTable = new WebTable(driverExt, "name-value-table", panel);
+        this.labelEntries = pointsTable.getDataRowsTextByCellIndex(LABEL_INDEX);
+        
+        this.valueEntries = pointsTable.getDataRowsTextByCellIndex(VALUE_INDEX);
     }
     
     //================================================================================
     // Private Functions Section
     //================================================================================
-    
-    private WebElement initPanel() {
-    	WebElement panel = null;
-    	try {
-    		panel = super.getPanel();
-    	} catch(NoSuchElementException e) {
-    	}
-    	return panel;
-    }
     
     //================================================================================
     // Getters/Setters Section

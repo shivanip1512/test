@@ -5,20 +5,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.eaton.elements.modals.EditMeterModal;
 import com.eaton.framework.DriverExtensions;
-import com.eaton.framework.MeterConstants;
+import com.eaton.framework.MeterEnums;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.ami.MeterDetailsPage;
+import com.eaton.pages.ami.WRL420cDMeterDetailsPage;
 
 public class MeterWRL420cDEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
+    private WRL420cDMeterDetailsPage meterDetailsPage;
+    private static final int DEVICEID = 1262;
     private static final String METER = "Meter ";
     private static final String UPDATED = " updated successfully.";
     private static final String DATE_FORMAT = "ddMMyyyyHHmmss";
@@ -26,16 +29,20 @@ public class MeterWRL420cDEditTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        navigate(Urls.Ami.METER_DETAIL + DEVICEID);
+        meterDetailsPage = new WRL420cDMeterDetailsPage(driverExt, DEVICEID);
+    }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        refreshPage(meterDetailsPage);
     }
 
-    @Test(enabled = true, groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void meterWRL420cDEdit_nameOnlySuccess() {
-    	final int DEVICEID = 1262;
-        navigate(Urls.Ami.METER_DETAIL + DEVICEID);
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    public void meterWRL420cDEdit_NameOnly_Success() {
+    	
         String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT Edited " + MeterConstants.WRL420CD.getMeterType() + " " + timeStamp;
-
-        MeterDetailsPage meterDetailsPage = new MeterDetailsPage(driverExt, DEVICEID);
+        String name = "AT Edited " + MeterEnums.MeterType.WRL420CD.getMeterType() + " " + timeStamp;
 
         EditMeterModal editModal = meterDetailsPage.showMeterEditModal();
 
@@ -44,7 +51,7 @@ public class MeterWRL420cDEditTests extends SeleniumTestSetup {
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL + DEVICEID, Optional.of(10));
 
-        MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, DEVICEID);
+        WRL420cDMeterDetailsPage detailPage = new WRL420cDMeterDetailsPage(driverExt, DEVICEID);
 
         String userMsg = detailPage.getUserMessage();
 

@@ -5,14 +5,13 @@ import java.text.SimpleDateFormat;
 import java.util.Optional;
 import java.util.Random;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.eaton.elements.modals.CreateMeterModal;
 import com.eaton.framework.DriverExtensions;
-import com.eaton.framework.MeterConstants;
+import com.eaton.framework.MeterEnums;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
@@ -31,29 +30,27 @@ public class MeterWRL420cLCreateTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         driverExt = getDriverExt();
 
-        driver.get(getBaseUrl() + Urls.Ami.AMI_DASHBOARD);
+        navigate(Urls.Ami.AMI_DASHBOARD);
 
         amiDashboardPage = new AmiDashboardPage(driverExt);
         randomNum = getRandomNum();
     }
 
-    @Test(enabled = true, groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void meterWRL420cLCreate_allFieldsSuccess() {
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    public void meterWRL420cLCreate_AllFields_Success() {
 
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
         int meterNumber = randomNum.nextInt(999999);
         int serialNumber = randomNum.nextInt(99999999);
-        String manufacturer = MeterConstants.WRL420CL.getManufacturer();
-        String model = MeterConstants.WRL420CL.getModel();
+        String manufacturer = MeterEnums.MeterType.WRL420CL.getManufacturer().getManufacturer();
+        String model = MeterEnums.MeterType.WRL420CL.getModel();
         String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
 
-        String name = "AT " + MeterConstants.WRL420CL.getMeterType() + " Meter " + timeStamp;
-        createModal.getType().selectItemByTextSearch(MeterConstants.WRL420CL.getMeterType());
+        String name = "AT " + MeterEnums.MeterType.WRL420CL.getMeterType() + " Meter " + timeStamp;
+        createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.WRL420CL.getMeterType());
         createModal.getdeviceName().setInputValue(name);
         createModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
         createModal.getSerialNumber().setInputValue(String.valueOf(serialNumber));

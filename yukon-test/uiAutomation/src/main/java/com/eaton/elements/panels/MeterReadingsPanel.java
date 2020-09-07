@@ -1,8 +1,6 @@
 package com.eaton.elements.panels;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-
 import org.openqa.selenium.WebElement;
 
 import com.eaton.elements.Button;
@@ -24,36 +22,20 @@ public class MeterReadingsPanel extends BasePanel {
         final int VALUE_INDEX = 2;
         
         this.driverExt = driverExt;
-        this.panel = initPanel();
-        if(panel == null) {
-        	this.readButton = null;
-            this.pointsTable = null;
-            this.labelEntries = null;
-            this.valueEntries = null;
-        	
-        } else {
-        	this.readButton = new Button(driverExt, "Read", panel);
-            
-            this.pointsTable = new WebTable(driverExt, "name-value-table", panel);
-            this.labelEntries = pointsTable.getDataRowsTextByCellIndex(LABEL_INDEX);
-            
-            this.valueEntries = pointsTable.getDataRowsTextByCellIndex(VALUE_INDEX);
-        }
+        this.panel = super.getPanel();
+    	this.readButton = new Button(driverExt, "Read", panel);
         
+        this.pointsTable = new WebTable(driverExt, "name-value-table", panel);
+        this.labelEntries = pointsTable.getDataRowsTextByCellIndex(LABEL_INDEX);
+        
+        this.valueEntries = pointsTable.getDataRowsTextByCellIndex(VALUE_INDEX); 
     }
+   
     
     //================================================================================
     // Private Functions Section
     //================================================================================
     
-    private WebElement initPanel() {
-    	WebElement panel = null;
-    	try {
-    		panel = super.getPanel();
-    	} catch(NoSuchElementException e) {
-    	}
-    	return panel;
-    }
     
     //================================================================================
     // Getters/Setters Section

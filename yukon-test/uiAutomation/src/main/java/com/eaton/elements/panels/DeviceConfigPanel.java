@@ -1,7 +1,5 @@
 package com.eaton.elements.panels;
 
-import java.util.NoSuchElementException;
-
 import org.openqa.selenium.WebElement;
 
 import com.eaton.framework.DriverExtensions;
@@ -14,21 +12,12 @@ public class DeviceConfigPanel extends BasePanel {
     public DeviceConfigPanel(DriverExtensions driverExt, String panelName) {
         super(driverExt, panelName);
         this.driverExt = driverExt;
-        this.panel = initPanel();
+        this.panel = super.getPanel();
     }
     
     //================================================================================
     // Private Functions Section
     //================================================================================
-    
-    private WebElement initPanel() {
-    	WebElement panel = null;
-    	try {
-    		panel = super.getPanel();
-    	} catch(NoSuchElementException e) {
-    	}
-    	return panel;
-    }
     
     //================================================================================
     // Getters/Setters Section

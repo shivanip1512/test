@@ -5,14 +5,13 @@ import java.text.SimpleDateFormat;
 import java.util.Optional;
 import java.util.Random;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.eaton.elements.modals.CreateMeterModal;
 import com.eaton.framework.DriverExtensions;
-import com.eaton.framework.MeterConstants;
+import com.eaton.framework.MeterEnums;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
@@ -31,29 +30,32 @@ public class MeterWRL420cDCreateTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         driverExt = getDriverExt();
 
-        driver.get(getBaseUrl() + Urls.Ami.AMI_DASHBOARD);
+        navigate(Urls.Ami.AMI_DASHBOARD);
 
         amiDashboardPage = new AmiDashboardPage(driverExt);
         randomNum = getRandomNum();
     }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        refreshPage(amiDashboardPage);
+    }
 
-    @Test(enabled = true, groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void meterWRL420cDCreate_allFieldsSuccess() {
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    public void meterWRL420cDCreate_AllFields_Success() {
 
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
         int meterNumber = randomNum.nextInt(999999);
         int serialNumber = randomNum.nextInt(99999999);
-        String manufacturer = MeterConstants.WRL420CD.getManufacturer();
-        String model = MeterConstants.WRL420CD.getModel();
+        String manufacturer = MeterEnums.MeterType.WRL420CD.getManufacturer().getManufacturer();
+        String model = MeterEnums.MeterType.WRL420CD.getModel();
         String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
 
-        String name = "AT " + MeterConstants.WRL420CD.getMeterType() + " Meter " + timeStamp;
-        createModal.getType().selectItemByTextSearch(MeterConstants.WRL420CD.getMeterType());
+        String name = "AT " + MeterEnums.MeterType.WRL420CD.getMeterType() + " Meter " + timeStamp;
+        createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.WRL420CD.getMeterType());
         createModal.getdeviceName().setInputValue(name);
         createModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
         createModal.getSerialNumber().setInputValue(String.valueOf(serialNumber));
@@ -71,8 +73,5 @@ public class MeterWRL420cDCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(METER + name + CREATED);
     }
 
-    @AfterMethod(alwaysRun = true)
-    public void afterTest() {
-        refreshPage(amiDashboardPage);
-    }
+
 }
