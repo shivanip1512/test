@@ -2,7 +2,6 @@ package com.eaton.tests.demandresponse.loadgroup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 import org.javatuples.Pair;
@@ -10,8 +9,8 @@ import org.json.JSONObject;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums;
-import com.eaton.builders.drsetup.loadgroup.LoadGroupMCTCreateBuilder;
+import com.eaton.builders.drsetup.loadgroup.LoadGroupDigiSepCreateBuilder;
+import com.eaton.builders.drsetup.loadgroup.LoadGroupDigiSepCreateBuilder.Builder;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
@@ -20,11 +19,11 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 
-public class LoadGroupMCTDetailTest  extends SeleniumTestSetup {
+public class LoadGroupDigiSepDetailTest extends SeleniumTestSetup {
 	private DriverExtensions driverExt;
 	 private Integer id;
 	 private String name;
-	 private Integer routeId = 28;
+	 Builder builder;
 	 private LoadGroupDetailPage detailPage;
 	
 	 @BeforeClass(alwaysRun=true)
@@ -33,21 +32,11 @@ public class LoadGroupMCTDetailTest  extends SeleniumTestSetup {
 	 }
 	 
 	 @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	 public void ldGrpMCTDetail_DeleteLoadGroup_Success() {
-		 Pair<JSONObject, JSONObject> pair = new LoadGroupMCTCreateBuilder.Builder(Optional.empty())
-															  .withCommunicationRoute(routeId) 
-															  .withDisableControl(Optional.of(true))
-															  .withDisableGroup(Optional.of(true)) 
-															  .withKwCapacity(Optional.empty())
-															  .withAddress(34567)
-															  .withlevel(LoadGroupEnums.AddressLevelMCT.LEAD)
-															  .withRelayUsage(Arrays.asList(LoadGroupEnums.RelayUsage.RELAY_2,LoadGroupEnums.RelayUsage.RELAY_1 ))
-															  .create(); 
-															  
-		 JSONObject response = pair.getValue1(); 
-		 id = response.getInt("id");
-		 navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-				
+	 public void ldGrpDigiSepDetail_DeleteLoadGroup_Success() {
+		 builder = LoadGroupDigiSepCreateBuilder.buildLoadGroup();
+	     Pair<JSONObject, JSONObject> pair = builder.create();
+	     JSONObject response = pair.getValue1();
+	     id = response.getInt("id");
 	     name = response.getString("name");
 	     final String expected_msg = name + " deleted successfully.";
 	     navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
@@ -62,4 +51,5 @@ public class LoadGroupMCTDetailTest  extends SeleniumTestSetup {
 	     
 	     assertThat(userMsg).isEqualTo(expected_msg);
 	}
+
 }
