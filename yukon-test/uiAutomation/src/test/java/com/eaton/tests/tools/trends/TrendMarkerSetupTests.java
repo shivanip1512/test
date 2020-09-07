@@ -74,7 +74,7 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup {
         trendCreatePage.getTabElement().clickTabAndWait("Additional Options");
         TrendMarkerModal addMarkerModal = trendCreatePage.showAndWaitAddMarkerModal();
 
-        addMarkerModal.clickOkAndWait();
+        addMarkerModal.clickOk();
 
         String userMsg = addMarkerModal.getLabel().getValidationError();
 
@@ -103,7 +103,7 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup {
 
         addMarkerModal.getValue().setInputValue(value);
 
-        addMarkerModal.clickOkAndWait();
+        addMarkerModal.clickOk();
 
         String userMsg = addMarkerModal.getValue().getValidationError();
 

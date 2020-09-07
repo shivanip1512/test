@@ -189,7 +189,7 @@ public class TrendModel implements GraphDefines {
             tempSerie.setLabel(litePoints[i].getPointName());
 
             // Use valid graph Colors, reuses colors when all have been used
-            tempSerie.setColor(GraphColors.getNextDefaultColor(i));
+            tempSerie.setColor(GraphColors.getNextDefaultColor(i).getYukonColor());
             tempArray[i] = tempSerie;
         }
         setTrendSeries(tempArray);
@@ -218,7 +218,7 @@ public class TrendModel implements GraphDefines {
             tempSerie.setTypeMask(GDSTypes.BASIC_GRAPH_TYPE);
             tempSerie.setLabel(ptNames_[i]);
             // Use valid graph Colors, reuses colors when all have been used
-            tempSerie.setColor(GraphColors.getNextDefaultColor(i));
+            tempSerie.setColor(GraphColors.getNextDefaultColor(i).getYukonColor());
 
             tempArray[i] = tempSerie;
         }

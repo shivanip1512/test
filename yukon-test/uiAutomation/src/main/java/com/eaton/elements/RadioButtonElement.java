@@ -33,25 +33,13 @@ public class RadioButtonElement {
         this.elementName = elementName;
         this.parentElement = parentElement;
     }
-
-    public void setByValue(String value, boolean check) {
-        List<WebElement> btnList = this.driverExt.findElements(By.cssSelector(".radio-btn"), Optional.empty());
-
-        for (WebElement btn : btnList) {
-
-            List<WebElement> list = btn.findElements(By.cssSelector("input[name='" + elementName + "']"));
-            
-            if(!list.isEmpty()) {
-                WebElement el = list.get(0);
-                if(el.getAttribute("value").equals(value)) {
-                    String checked = el.getAttribute("checked");
-                    
-                    if ((checked == null && check) || (checked != null && !check)) {
-                        btn.findElement(By.cssSelector(".button")).click();
-                    }   
-                }
-            }                        
-        }
+    
+    public void selectByValue(String value) {
+        List<WebElement> list = this.driverExt.findElements(By.cssSelector(".radio-btn .b-label"), Optional.of(0));
+        
+        WebElement el = list.stream().filter(x -> x.getText().contains(value)).findFirst().orElseThrow();
+        
+        el.click();
     }
 
     public List<String> getValues() {
@@ -69,13 +57,11 @@ public class RadioButtonElement {
 
     private List<WebElement> getRadioButtons() {
         if (this.parentName != null) {
-            return this.driverExt.findElements(
-                    By.cssSelector("[aria-describedby='" + this.parentName + "'] input[name = '" + this.elementName + "']"),
-                    Optional.of(3));
+            return this.driverExt.findElements(By.cssSelector("[aria-describedby='" + this.parentName + "'] .radio-btn input[name = '" + this.elementName + "']"), Optional.of(3));
         } else if (this.parentElement != null) {
-            return this.parentElement.findElements(By.cssSelector("input[name = '" + this.elementName + "']"));
+            return this.parentElement.findElements(By.cssSelector(".radio-btn input[name = '" + this.elementName + "']"));
         } else {
-            return this.driverExt.findElements(By.cssSelector("input[name = '" + this.elementName + "']"), Optional.of(3));
+            return this.driverExt.findElements(By.cssSelector(".radio-btn input[name = '" + this.elementName + "']"), Optional.of(3));
         }
     }
 

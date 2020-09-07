@@ -75,7 +75,7 @@ public class LoadGroupEnums {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
-    }   
+    }
 
     public enum AddressLevelMCT {
         BRONZE("BRONZE"),
@@ -117,14 +117,14 @@ public class LoadGroupEnums {
         AWCTPTERMINAL(80),
         AXML(84);
 
-        private final int routeId;
+        private final int communicationRouteId;
 
-        RouteId(Integer routeId) {
-            this.routeId = routeId;
+        RouteId(Integer communicationRouteId) {
+            this.communicationRouteId = communicationRouteId;
         }
 
         public Integer getRouteId() {
-            return this.routeId;
+            return this.communicationRouteId;
         }
 
         public static RouteId getRandomRouteId() {
@@ -177,7 +177,7 @@ public class LoadGroupEnums {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
-    }   
+    }
 
     public enum AddressUsageVersacom {
         UTILITY("UTILITY"),
@@ -219,14 +219,14 @@ public class LoadGroupEnums {
         WILD_RICE("WILD_RICE"),
         NMPA("NMPA");
 
-        private final String AREA_CODE;
+        private final String areaCode;
 
         RippleAreaCode(String areaCode) {
-            this.AREA_CODE = areaCode;
+            this.areaCode = areaCode;
         }
 
         public String getAreaCode() {
-            return this.AREA_CODE;
+            return this.areaCode;
         }
 
         public static RippleAreaCode getRandomAreaCode() {
@@ -258,14 +258,14 @@ public class LoadGroupEnums {
         SIX_01("SIX_01"),
         SIX_06("SIX_06");
 
-        private final String GROUP;
+        private final String group;
 
         RippleGroup(String group) {
-            this.GROUP = group;
+            this.group = group;
         }
 
         public String getGroup() {
-            return this.GROUP;
+            return this.group;
         }
 
         public static RippleGroup getRandomGroup() {
@@ -275,20 +275,20 @@ public class LoadGroupEnums {
     }
 
     public enum RippleShedTime {
-        Continuous_Latch("0"),
-        Seven_minutes_30_seconds("450"),
-        Fifteen_minutes("900"),
-        Thirty_minutes("1800"),
-        One_hour("3600");
+        CONTINUOUS_LATCH("0"),
+        SEVEN_MINUTES_30SECOND("450"),
+        FIFTEEN_MINUTES("900"),
+        THIRTY_MINUTES("1800"),
+        ONE_HOUR("3600");
 
-        private final String SHED_TIME;
+        private final String shedTime;
 
         RippleShedTime(String shedTime) {
-            this.SHED_TIME = shedTime;
+            this.shedTime = shedTime;
         }
 
         public String getShedTime() {
-            return this.SHED_TIME;
+            return this.shedTime;
         }
 
         public static RippleShedTime getRandomShedTime() {
@@ -314,6 +314,81 @@ public class LoadGroupEnums {
         }
 
         public static ProtocolPriorityExpresscom getRandomProtocolPriority() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
+    }
+
+    public enum DigiSepDeviceClassEnum {
+
+        HVAC_COMPRESSOR_FURNACE("HVAC_COMPRESSOR_FURNACE"),
+        BASEBOARD_HEAT("BASEBOARD_HEAT"),
+        WATER_HEATER("WATER_HEATER"),
+        POOL_PUMP("POOL_PUMP"),
+        SMART_APPLIANCE("SMART_APPLIANCE"),
+        IRRIGATION_PUMP("IRRIGATION_PUMP"),
+        MANAGED_COMMERCIAL_INDUSTRIAL("IRRIGATION_PUMP"),
+        SIMPLE_RESIDENTIAL_ON_OFF("SIMPLE_RESIDENTIAL_ON_OFF"),
+        EXTERIOR_LIGHTING("EXTERIOR_LIGHTING"),
+        INTERIOR_LIGHTING("INTERIOR_LIGHTING"),
+        ELECTRIC_VEHICLE("ELECTRIC_VEHICLE"),
+        GENERATION_SYSTEMS("GENERATION_SYSTEMS");
+
+        private final String deviceClassSet;
+
+        DigiSepDeviceClassEnum(String deviceClassSet) {
+            this.deviceClassSet = deviceClassSet;
+        }
+
+        public String getDeviceClassSet() {
+            return this.deviceClassSet;
+        }
+        
+        public static DigiSepDeviceClassEnum getRandomDeviceClassSet() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
+    }
+
+    public enum PointId {
+        SCADA_OVERRIDE(4230),
+        CVR_MODE(4231),
+        CAPACITOR_BANK_STATE(4249),
+        REMOTE_CONTROL_MODE(4251),
+        OVUV_CONTROL(4255),
+        MANUAL_CONTROL_MODE(4265);
+
+        private final Integer pointUsageId;
+
+        PointId(Integer pointId) {
+            this.pointUsageId = pointId;
+        }
+
+        public Integer getPointId() {
+            return this.pointUsageId;
+        }
+
+        public static PointId getRandomPointId() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
+    }
+
+    public enum PointStartControlRawState {
+        TRUE(1),
+        FALSE(0);
+
+        private final Integer startControlRawState;
+
+        PointStartControlRawState(Integer startControlRawState) {
+            this.startControlRawState = startControlRawState;
+        }
+
+        public Integer getPointStartControlRawState() {
+            return this.startControlRawState;
+        }
+
+        public static PointStartControlRawState getRandomPointStartControlRawState() {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }

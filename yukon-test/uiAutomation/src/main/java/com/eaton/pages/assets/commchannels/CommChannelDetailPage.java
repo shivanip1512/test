@@ -3,9 +3,10 @@ package com.eaton.pages.assets.commchannels;
 import java.util.Optional;
 
 import com.eaton.elements.ActionBtnDropDownElement;
+import com.eaton.elements.Button;
 import com.eaton.elements.Section;
 import com.eaton.elements.modals.ConfirmModal;
-import com.eaton.elements.modals.CreateCommChannelModal;
+import com.eaton.elements.modals.commchannel.CreateCommChannelModal;
 import com.eaton.elements.modals.commchannel.EditCommChannelModal;
 import com.eaton.elements.panels.CommChannelInfoPanel;
 import com.eaton.elements.tabs.TabElement;
@@ -15,9 +16,7 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class CommChannelDetailPage extends PageBase {
-
-    private static final String CONFIRM_DIALOG = "yukon_dialog_confirm";
-
+    
     public CommChannelDetailPage(DriverExtensions driverExt, int id) {
         super(driverExt);
 
@@ -32,6 +31,10 @@ public class CommChannelDetailPage extends PageBase {
     public ActionBtnDropDownElement getActionBtn() {
         return new ActionBtnDropDownElement(this.driverExt);
     }
+    
+    public Button getEditBtn() {
+        return new Button(this.driverExt, "Edit", "action-area");
+    }
 
     public CommChannelInfoPanel getCommChannelInfoPanel() {
         return new CommChannelInfoPanel(this.driverExt, "Comm Channel Information");
@@ -45,18 +48,10 @@ public class CommChannelDetailPage extends PageBase {
         return new Section(this.driverExt, "Timing");
     }
 
-    public Section getGeneralSection() {
-        return new Section(this.driverExt, "General");
-    }
-
-    public Section getSharedSection() {
-        return new Section(this.driverExt, "Shared");
-    }
-
     public EditCommChannelModal showCommChannelEditModal(String modalTitle) {
-        getCommChannelInfoPanel().getEdit().click();
+        getEditBtn().getButton().click();      
 
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-edit-comm-channel-popup");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-edit-comm-channel-popup");
 
         return new EditCommChannelModal(this.driverExt, Optional.of(modalTitle), Optional.of("js-edit-comm-channel-popup"));
     }
@@ -64,7 +59,7 @@ public class CommChannelDetailPage extends PageBase {
     public ConfirmModal showDeleteCommChannelModal() {
         getActionBtn().clickAndSelectOptionByText("Delete");
 
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("yukon_dialog_confirm");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("yukon_dialog_confirm");
 
         return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of("yukon_dialog_confirm"));
     }
@@ -72,7 +67,7 @@ public class CommChannelDetailPage extends PageBase {
     public CreateCommChannelModal showCreateCommChannelModal() {
         getActionBtn().clickAndSelectOptionByText("Create");
 
-        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("js-create-comm-channel-popup");
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-create-comm-channel-popup");
 
         return new CreateCommChannelModal(this.driverExt, Optional.empty(), Optional.of("js-create-comm-channel-popup"));
     }

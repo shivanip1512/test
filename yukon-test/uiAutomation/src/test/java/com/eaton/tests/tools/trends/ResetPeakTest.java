@@ -103,7 +103,7 @@ public class ResetPeakTest extends SeleniumTestSetup {
         navigate(Urls.Tools.TREND_DETAILS + id);
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
-        resetPeakModal.getResetPeakForAllTrends().setByValue("true", true);
+        resetPeakModal.getResetPeakForAllTrends().selectByValue("Yes");
 
         resetPeakModal.clickOkAndWaitForModalToClose();        
         String actualUserMessage = detailsPage.getResetPeakMessage();
@@ -116,7 +116,7 @@ public class ResetPeakTest extends SeleniumTestSetup {
     public void trendResetPeak_ResetPeakForAllTrendsNo_Success() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
-        resetPeakModal.getResetPeakForAllTrends().setByValue("false", true);
+        resetPeakModal.getResetPeakForAllTrends().selectByValue("No");
         resetPeakModal.clickOkAndWaitForModalToClose();
 
         assertThat(detailsPage.getUserMessage()).contains("Reset peak performed successfully for " + trendName + ".");
@@ -136,7 +136,7 @@ public class ResetPeakTest extends SeleniumTestSetup {
     public void trendResetPeak_ResetPeakToSelectedDate_DateEnabled() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
-        resetPeakModal.getResetPeakTo().selectItemByText("Selected Date");
+        resetPeakModal.getResetPeakTo().selectItemByValue("SELECTED_DATE");
 
         assertThat(resetPeakModal.getDate().isPickerEnabled()).isTrue();
     }
@@ -145,7 +145,7 @@ public class ResetPeakTest extends SeleniumTestSetup {
     public void trendResetPeak_ResetPeakToFirstMonth_DateDisabled() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
-        resetPeakModal.getResetPeakTo().selectItemByText("First Date of Month");
+        resetPeakModal.getResetPeakTo().selectItemByValue("FIRST_DATE_OF_MONTH");
 
         assertThat(resetPeakModal.getDate().isPickerEnabled()).isFalse();
     }
@@ -154,7 +154,7 @@ public class ResetPeakTest extends SeleniumTestSetup {
     public void trendResetPeak_ResetPeakToFirstYear_DateDisabled() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
-        resetPeakModal.getResetPeakTo().selectItemByText("First Date of Year");
+        resetPeakModal.getResetPeakTo().selectItemByValue("FIRST_DATE_OF_YEAR");
 
         assertThat(resetPeakModal.getDate().isPickerEnabled()).isFalse();
     }
@@ -163,7 +163,7 @@ public class ResetPeakTest extends SeleniumTestSetup {
     public void trendResetPeak_ResetPeakToSelectedDate_SaveSuccess() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
-        resetPeakModal.getResetPeakTo().selectItemByText("Selected Date");
+        resetPeakModal.getResetPeakTo().selectItemByValue("SELECTED_DATE");
 
         resetPeakModal.getDate().setValue(LocalDate.now().minusDays(10).format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
         resetPeakModal.clickOkAndWaitForModalToClose();

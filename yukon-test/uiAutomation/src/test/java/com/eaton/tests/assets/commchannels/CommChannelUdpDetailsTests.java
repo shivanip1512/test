@@ -8,8 +8,8 @@ import java.util.Random;
 
 import org.assertj.core.api.SoftAssertions;
 import org.json.simple.JSONObject;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.eaton.elements.Section;
@@ -56,12 +56,14 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         jo.put("portNumber", portNumber);
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
         commChannelId = createResponse.path("id");
-    }
-
-    @BeforeMethod(alwaysRun = true)
-    public void beforeMethod() {
+        
         navigate(Urls.Assets.COMM_CHANNEL_DETAIL + commChannelId);
         detailPage = new CommChannelUdpDetailPage(driverExt, commChannelId);
+    }
+
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        refreshPage(detailPage);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
@@ -74,7 +76,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDetailsUdp_InfoTabLabelsCorrect() {
+    public void commChannelDetailsUdp_InfoTab_LabelsCorrect() {
         String infoTitle = "Info";
         detailPage.getTabElement().clickTabAndWait(infoTitle);
         List<String> labels = detailPage.getTabElement().getTabLabels(infoTitle);
@@ -89,7 +91,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDetailsUdp_InfoTabValuesCorrect() {        
+    public void commChannelDetailsUdp_InfoTab_ValuesCorrect() {        
         List<String> values = detailPage.getTabElement().getTabValues("Info");        
         
         softly.assertThat(values.size()).isEqualTo(5);
@@ -102,7 +104,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDetailsUdp_ConfigTabTimingSectionDisplayed() {
+    public void commChannelDetailsUdp_ConfigTabTimingSection_Displayed() {
         String infoTitle = "Configuration";
         
         detailPage.getTabElement().clickTabAndWait(infoTitle);
@@ -112,7 +114,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDetailsUdp_ConfigTabGeneralSectionDisplayed() {
+    public void commChannelDetailsUdp_ConfigTabGeneralSection_Displayed() {
         String infoTitle = "Configuration";
         
         detailPage.getTabElement().clickTabAndWait(infoTitle);
@@ -120,8 +122,9 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         
         assertThat(general.getSection()).isNotNull();
     }
+    
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDetailsUdp_ConfigTabSharedSectionDisplayed() {
+    public void commChannelDetailsUdp_ConfigTabSharedSection_Displayed() {
         String infoTitle = "Configuration";
         
         detailPage.getTabElement().clickTabAndWait(infoTitle);
@@ -131,7 +134,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDetailsUdp_ConfigTabLabelsCorrect() {
+    public void commChannelDetailsUdp_ConfigTab_LabelsCorrect() {
         String infoTitle = "Configuration";
 
         detailPage.getTabElement().clickTabAndWait(infoTitle);
@@ -151,8 +154,9 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         softly.assertThat(labels.get(9)).isEqualTo("Socket Number:");
         softly.assertAll();
     }
+    
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDetailsUdp_ConfigTabValuesCorrect() {
+    public void commChannelDetailsUdp_ConfigTab_ValuesCorrect() {
         detailPage.getTabElement().clickTabAndWait("Configuration");
 
         List<String> values = detailPage.getTabElement().getTabValues("Configuration");
@@ -173,7 +177,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
     }
         
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDeleteUdp_DeleteCommChannelSuccessfully() {
+    public void commChannelDeleteUdp_DeleteCommChannel_Successfully() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String deleteCommChannelName = "UDP Comm Channel " + timeStamp;
 
@@ -191,7 +195,6 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         
         navigate(Urls.Assets.COMM_CHANNEL_DETAIL + deleteCommChannelId);
         
-        detailPage = new CommChannelUdpDetailPage(driverExt, deleteCommChannelId);
         String expectedMessage = deleteCommChannelName +" deleted successfully.";
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
         deleteConfirmModal.clickOkAndWaitForModalToClose();

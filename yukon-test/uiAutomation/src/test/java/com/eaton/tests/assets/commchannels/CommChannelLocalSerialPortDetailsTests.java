@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Optional;
 
 import org.assertj.core.api.SoftAssertions;
 import org.json.simple.JSONObject;
@@ -28,7 +29,6 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
 
     private CommChannelLocalSerialPortDetailPage detailPage;
     private DriverExtensions driverExt;
-    private SoftAssertions softly;
     private Integer commChannelId;
     private String commChannelName;
     private JSONObject jo;
@@ -36,10 +36,9 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        softly = new SoftAssertions();
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        commChannelName = "Local Serial Port Comm Channel " + timeStamp;
+        commChannelName = "Local Serial Port " + timeStamp;
 
         // Creating one UDP port comm channel using hard coded json file.
         String payloadFile = System.getProperty("user.dir")
@@ -50,13 +49,14 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         jo.put("name", commChannelName);
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
         commChannelId = createResponse.path("id");
+        
+        navigate(Urls.Assets.COMM_CHANNEL_DETAIL + commChannelId);        
+        detailPage = new CommChannelLocalSerialPortDetailPage(driverExt, commChannelId);
     }
 
     @BeforeMethod(alwaysRun = true)
     public void beforeMethod() {
-        navigate(Urls.Assets.COMM_CHANNEL_DETAIL + commChannelId);
-        
-        detailPage = new CommChannelLocalSerialPortDetailPage(driverExt, commChannelId);
+        refreshPage(detailPage);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
@@ -65,26 +65,28 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         
         String actualPageTitle = detailPage.getPageTitle();
         
-        assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsLocalSerialPort_InfoTabLabelsCorrect() {
+    public void commChannelDetailsLocalSerialPort_InfoTab_LabelsCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         String infoTitle = "Info";
         detailPage.getTabElement().clickTabAndWait(infoTitle);
         List<String> labels = detailPage.getTabElement().getTabLabels(infoTitle);
 
         softly.assertThat(labels.size()).isEqualTo(5);
         softly.assertThat(labels.get(0)).isEqualTo("Name:");
-        softly.assertThat(labels.get(1)).contains("Type:");
-        softly.assertThat(labels.get(2)).contains("Physical Port:");
-        softly.assertThat(labels.get(3)).contains("Baud Rate:");
-        softly.assertThat(labels.get(4)).contains("Status:");
+        softly.assertThat(labels.get(1)).isEqualTo("Type:");
+        softly.assertThat(labels.get(2)).isEqualTo("Physical Port:");
+        softly.assertThat(labels.get(3)).isEqualTo("Baud Rate:");
+        softly.assertThat(labels.get(4)).isEqualTo("Status:");
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsLocalSerialPort_InfoTabValuesCorrect() {
+    public void commChannelDetailsLocalSerialPort_InfoTab_ValuesCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         List<String> values = detailPage.getTabElement().getTabValues("Info");
 
         softly.assertThat(values.size()).isEqualTo(5);
@@ -97,7 +99,7 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsLocalSerialPort_ConfigTabTimingSectionDisplayed() {
+    public void commChannelDetailsLocalSerialPort_ConfigTab_TimingSectionDisplayed() {
         String infoTitle = "Configuration";
         
         detailPage.getTabElement().clickTabAndWait(infoTitle);
@@ -107,34 +109,34 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsLocalSerialPort_ConfigTabGeneralSectionDisplayed() {
+    public void commChannelDetailsLocalSerialPort_ConfigTab_GeneralSectionDisplayed() {
         String infoTitle = "Configuration";
         
         detailPage.getTabElement().clickTabAndWait(infoTitle);
-        Section timing = detailPage.getGeneralSection();
+        Section general = detailPage.getGeneralSection();
         
-        assertThat(timing.getSection()).isNotNull();
+        assertThat(general.getSection()).isNotNull();
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsLocalSerialPort_ConfigTabSharedSectionDisplayed() {
+    public void commChannelDetailsLocalSerialPort_ConfigTab_SharedSectionDisplayed() {
         String infoTitle = "Configuration";
         
         detailPage.getTabElement().clickTabAndWait(infoTitle);
-        Section timing = detailPage.getSharedSection();
+        Section shared = detailPage.getSharedSection();
         
-        assertThat(timing.getSection()).isNotNull();
+        assertThat(shared.getSection()).isNotNull();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsLocalSerialPort_ConfigTabLabelsCorrect() {
+    public void commChannelDetailsLocalSerialPort_ConfigTab_LabelsCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         String infoTitle = "Configuration";
 
         detailPage.getTabElement().clickTabAndWait(infoTitle);
         List<String> labels = detailPage.getTabElement().getTabLabels(infoTitle);
 
         softly.assertThat(labels.size()).isEqualTo(9);
-
         softly.assertThat(labels.get(0)).isEqualTo("Protocol Wrap:");
         softly.assertThat(labels.get(1)).isEqualTo("Carrier Detect Wait:");
         softly.assertThat(labels.get(2)).isEqualTo("Pre Tx Wait:");
@@ -148,7 +150,8 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsLocalSerialPort_ConfigTabValuesCorrect() {
+    public void commChannelDetailsLocalSerialPort_ConfigTab_ValuesCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         detailPage.getTabElement().clickTabAndWait("Configuration");
 
         List<String> values = detailPage.getTabElement().getTabValues("Configuration");
@@ -163,7 +166,6 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         softly.assertThat(values.get(6)).isEqualTo("98  sec");
         softly.assertThat(values.get(7)).isEqualTo("ACS");
         softly.assertThat(values.get(8)).isEqualTo("100");
-
         softly.assertAll();
     }
     
@@ -173,8 +175,7 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         String deleteCommChannelName = "Local Serial Comm Channel " + timeStamp;
 
         // Creating one LocalSerial port comm channel using hard coded json file.
-        String payloadFile = System.getProperty("user.dir")
-                + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelLocalSerialPort.json";
+        String payloadFile = System.getProperty("user.dir") + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelLocalSerialPort.json";
 
         Object body = JsonFileHelper.parseJSONFile(payloadFile);
         jo = (JSONObject) body;
@@ -182,11 +183,17 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
         Integer deleteCommChannelId = createResponse.path("id");
         navigate(Urls.Assets.COMM_CHANNEL_DETAIL + deleteCommChannelId);
-        detailPage = new CommChannelLocalSerialPortDetailPage(driverExt, deleteCommChannelId);
-        String expectedMessage = deleteCommChannelName +" deleted successfully.";
+        
+        String expectedMessage = deleteCommChannelName + " deleted successfully.";
+        
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
-        deleteConfirmModal.clickOkAndWaitForModalToClose();;
+        
+        deleteConfirmModal.clickOk();
+        
+        waitForUrlToLoad(Urls.Assets.COMM_CHANNELS_LIST, Optional.empty());
+        
         CommChannelsListPage listPage = new CommChannelsListPage(driverExt);
+        
         String userMsg = listPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(expectedMessage);

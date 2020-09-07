@@ -5,11 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.text.SimpleDateFormat;
 import org.assertj.core.api.SoftAssertions;
 import org.json.simple.JSONObject;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.eaton.elements.modals.CreateCommChannelModal;
+import com.eaton.elements.modals.commchannel.CreateTcpCommChannelModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
@@ -41,23 +41,23 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
         jo = (JSONObject) body;
         jo.put("name", commChannelName);
         AssetsCreateRequestAPI.createCommChannel(body);
-    }
-
-    @BeforeMethod(alwaysRun = true)
-    public void beforeMethod() {
+        
         navigate(Urls.Assets.COMM_CHANNELS_LIST);
         listPage = new CommChannelsListPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannel_NameRequiredValidation() {
-        CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        refreshPage(listPage);
+    }
 
-        waitForLoadingSpinner();
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    public void createCommChannel_Name_RequiredValidation() {
+        CreateTcpCommChannelModal createModal = listPage.showAndWaitCreateTcpCommChannelModal();
 
         final String EXPECTED_MSG = "Name is required.";
 
-        createModal.clickOkAndWaitForModalToClose();
+        createModal.clickOk();
 
         String errorMsg = createModal.getName().getValidationError();
 
@@ -65,10 +65,8 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannel_NameInvalidCharValidation() {
-        CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
-
-        waitForLoadingSpinner();
+    public void createCommChannel_Name_InvalidCharValidation() {
+        CreateTcpCommChannelModal createModal = listPage.showAndWaitCreateTcpCommChannelModal();
 
         final String name = "Comm Channel / \\ , ' ";
 
@@ -76,7 +74,7 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
 
         createModal.getName().setInputValue(name);
 
-        createModal.clickOkAndWaitForModalToClose();
+        createModal.clickOkAndWaitForSpinner();
 
         String errorMsg = createModal.getName().getValidationError();
 
@@ -84,16 +82,14 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannel_UniqueNameValidation() {
-        CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
-
-        waitForLoadingSpinner();
+    public void createCommChannel_Name_AlreadyExistsValidation() {
+        CreateTcpCommChannelModal createModal = listPage.showAndWaitCreateTcpCommChannelModal();
 
         final String EXPECTED_MSG = "Name already exists";
 
         createModal.getName().setInputValue(commChannelName);
 
-        createModal.clickOkAndWaitForModalToClose();
+        createModal.clickOkAndWaitForSpinner();
 
         String errorMsg = createModal.getName().getValidationError();
 
@@ -101,16 +97,14 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannel_CancelNavigatesToCorrectUrl() {
-        CreateCommChannelModal createModal = listPage.showAndWaitCreateCommChannelModal();
-
-        waitForLoadingSpinner();
-
-        createModal.clickCancelAndWait();
-
+    public void createCommChannel_Cancel_NavigatesToCorrectUrl() {
         String EXPECTED_TITLE = "Comm Channels";
+        CreateTcpCommChannelModal createModal = listPage.showAndWaitCreateTcpCommChannelModal();
+
+        createModal.commChannelClickCancelAndWait();
+        
         String actualPageTitle = listPage.getPageTitle();
 
-        assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 }

@@ -108,6 +108,7 @@
     <div class="dn js-reset-peak-popup"
              data-popup
              data-dialog
+             data-width="500"
              data-title="${resetPeakLbl}"
              data-url="${renderResetPeakPopup}"
              data-load-event="yukon:tools:trend:resetPeakPopupLoaded"
