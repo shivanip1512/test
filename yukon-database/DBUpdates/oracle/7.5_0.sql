@@ -716,7 +716,6 @@ INSERT INTO DBUpdates VALUES ('YUK-22624', '7.5.0', SYSDATE);
 /* @start-warning checkDirectoryAccess Yukon requires write access to Import and Export directories. Please grant Local Service user access to following directories. Press Start to resume execution. */
 SELECT Value FROM GlobalSetting WHERE Name 
     IN ('SCHEDULE_PARAMETERS_EXPORT_PATH', 'SCHEDULE_PARAMETERS_IMPORT_PATH');
-/* @end-warning checkDirectoryAccess */
 
 /* @end YUK-22624 */
 
