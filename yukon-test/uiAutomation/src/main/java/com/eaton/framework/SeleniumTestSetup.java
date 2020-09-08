@@ -192,7 +192,7 @@ public class SeleniumTestSetup {
         while (!expectedUrlLoaded && (System.currentTimeMillis() - startTime) < waitTime) {
             String currentUrl = driver.getCurrentUrl();
 
-            expectedUrlLoaded = currentUrl.contains(expectedUrl);
+            expectedUrlLoaded = currentUrl.equals(getBaseUrl() + expectedUrl);
         }
 
         return expectedUrlLoaded;
@@ -218,6 +218,7 @@ public class SeleniumTestSetup {
             driver.navigate().refresh();
         } else {
             navigate(page.getPageUrl());
+            waitForUrlToLoad(page.getPageUrl(), Optional.empty());
         }
     }
 
@@ -325,9 +326,10 @@ public class SeleniumTestSetup {
     }
 
     public static void navigate(String url) {
-        SeleniumTestSetup.driver.navigate().to(getBaseUrl() + url);
+        String pageUrl = getBaseUrl() + url;
+        SeleniumTestSetup.driver.navigate().to(pageUrl);
 
-        waitForUrlToLoad(url, Optional.empty());
+        waitForUrlToLoad(pageUrl, Optional.empty());
     }
 
     public static void moveToElement(WebElement element) {

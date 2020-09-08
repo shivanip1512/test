@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.Optional;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.*;
 
 import com.eaton.elements.SearchBoxElement;
@@ -22,11 +21,8 @@ public class CommChannelGlobalSearchTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        WebDriver driver = getDriver();
         driverExt = getDriverExt();
-
-        driver.get(getBaseUrl() + Urls.HOME);
-        
+        navigate(Urls.HOME);
         globalSearchPage = new GlobalSearchPage(driverExt);
     }
 

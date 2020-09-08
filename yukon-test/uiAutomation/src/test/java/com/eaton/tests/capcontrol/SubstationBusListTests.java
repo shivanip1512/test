@@ -3,7 +3,6 @@ package com.eaton.tests.capcontrol;
 import java.util.List;
 
 import org.assertj.core.api.SoftAssertions;
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -16,22 +15,17 @@ import com.eaton.pages.capcontrol.SubstationBusListPage;
 public class SubstationBusListTests extends SeleniumTestSetup {
 
     private SubstationBusListPage listPage;
-    private SoftAssertions softly;
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
-        softly = new SoftAssertions();
-
-        driver.get(getBaseUrl() + Urls.CapControl.SUBSTATION_BUS_LIST);
-
+        navigate(Urls.CapControl.SUBSTATION_BUS_LIST);
         listPage = new SubstationBusListPage(driverExt);
     }
 
     @Test(groups = {TestConstants.Priority.MEDIUM, TestConstants.VoltVar.VOLT_VAR })
     public void substationBusList_columnHeadersCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         final int EXPECTED_COUNT = 3;
 
         List<String> headers = this.listPage.getTable().getListTableHeaders();
@@ -42,7 +36,6 @@ public class SubstationBusListTests extends SeleniumTestSetup {
         softly.assertThat(headers).contains("Name");
         softly.assertThat(headers).contains("Item Type");
         softly.assertThat(headers).contains("Description");
-        
         softly.assertAll();
     }
 }
