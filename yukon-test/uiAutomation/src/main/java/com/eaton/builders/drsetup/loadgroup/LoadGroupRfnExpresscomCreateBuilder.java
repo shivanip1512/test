@@ -9,7 +9,6 @@ import org.javatuples.Pair;
 import org.json.JSONObject;
 
 import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.RelayUsageExpresscom;
-import com.eaton.builders.drsetup.loadgroup.LoadGroupVersacomCreateBuilder.Builder;
 import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
 import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 import com.github.javafaker.Faker;

@@ -159,6 +159,7 @@ public class LoadGroupEnums {
         FEEDER("FEEDER"),
         ZIP("ZIP"),
         USER("USER"),
+        SERIAL("SERIAL"),
         LOAD("LOAD"),
         PROGRAM("PROGRAM"),
         SPLINTER("SPLINTER");
