@@ -112,7 +112,7 @@ public class LoadGroupRfnExpresscomCreateBuilder {
         }
 
         public Builder withKwCapacity(Optional<Double> kwCapacity) {
-            this.kwCapacity = kwCapacity.orElse(faker.number().randomDouble(3, 0, 99999));
+            this.kwCapacity = kwCapacity.orElse(faker.number().randomDouble(2, 0, 99999));
             return this;
         }
 
