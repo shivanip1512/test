@@ -29,12 +29,12 @@ public class ControlAreaCreateTests extends SeleniumTestSetup {
     }
     
     @AfterMethod(alwaysRun = true)
-    public void afterTest() {
+    public void afterMethod() {
         refreshPage(createPage);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void controlAreaCreate_pageTitleCorrect() {
+    public void controlAreaCreate_pageTitle_Correct() {
         final String EXPECTED_TITLE = "Create Control Area";
 
         String actualPageTitle = createPage.getPageTitle();
@@ -43,7 +43,7 @@ public class ControlAreaCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void controlAreaCreate_requiredFieldsOnlySuccess() {
+    public void controlAreaCreate_requiredFieldsOnly_Success() {
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 
