@@ -78,10 +78,10 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscomEdit_FieldValues_Correct() {
-        SoftAssertions softly = new SoftAssertions();;
+        SoftAssertions softly = new SoftAssertions();
         
-        softly.assertThat(editPage.getAddressUsage().isValueSelected("Serial")).isEqualTo(true);
-        softly.assertThat(editPage.getLoadAddressUsage().isValueSelected("Program")).isEqualTo(false);
+        softly.assertThat(editPage.getAddressUsage().isValueSelected("Serial")).isEqualTo(false);
+        softly.assertThat(editPage.getLoadAddressUsage().isValueSelected("Program")).isEqualTo(true);
         softly.assertThat(editPage.getkWCapacity().getInputValue()).isEqualTo("310.12");
         softly.assertThat(editPage.getDisableControl().getCheckedValue()).isEqualTo("No");
         softly.assertThat(editPage.getDisableGroup().getCheckedValue()).isEqualTo("No");

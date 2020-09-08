@@ -9,6 +9,7 @@ import org.javatuples.Pair;
 import org.json.JSONObject;
 
 import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.RelayUsageExpresscom;
+import com.eaton.builders.drsetup.loadgroup.LoadGroupVersacomCreateBuilder.Builder;
 import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
 import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 import com.github.javafaker.Faker;
@@ -26,6 +27,7 @@ public class LoadGroupRfnExpresscomCreateBuilder {
         private String feeder;
         private int zip;
         private int user;
+        private int serialAddress;
         private int program;
         private int splinter;
         private double kwCapacity;
@@ -84,6 +86,12 @@ public class LoadGroupRfnExpresscomCreateBuilder {
             return this;
         }
         
+        public Builder withSerial(Optional<Integer> serialAddress) {
+            this.serialAddress = serialAddress.orElse(faker.number().numberBetween(1, 999999));
+            addressUsageList.add(LoadGroupEnums.AddressUsageExpresscom.SERIAL);
+            return this;
+        }
+        
         public Builder withRelayUsage(Optional<List<LoadGroupEnums.RelayUsageExpresscom>> relayUsage) {
             List<LoadGroupEnums.RelayUsageExpresscom> relays = new ArrayList<>();
             relays.add(LoadGroupEnums.RelayUsageExpresscom.getRandomRelayUsage());
@@ -139,6 +147,7 @@ public class LoadGroupRfnExpresscomCreateBuilder {
             jo.put("feeder", this.feeder);
             jo.put("zip", this.zip);
             jo.put("user", this.user);
+            jo.put("serialNumber", this.serialAddress);
             jo.put("program", this.program);
             jo.put("splinter", this.splinter);
             jo.put("addressUsage", this.addressUsageList);
@@ -173,18 +182,19 @@ public class LoadGroupRfnExpresscomCreateBuilder {
 
     public static Builder buildDefaultRfnExpresscomLoadGroup() {
         return new LoadGroupRfnExpresscomCreateBuilder.Builder(Optional.empty())
-                .withProtocolPriority(Optional.empty())
-                .withDisableControl(Optional.empty())
-                .withDisableGroup(Optional.empty())
                 .withKwCapacity(Optional.empty())
+                .withDisableGroup(Optional.empty())
+                .withDisableControl(Optional.empty())
                 .withSpid(Optional.empty())
                 .withGeo(Optional.empty())
-                .withProgram(Optional.empty())
-                .withSplinter(Optional.empty())
                 .withSubstation(Optional.empty())
                 .withFeeder(Optional.empty())
-                .withUser(Optional.empty())
-                .withZip(Optional.empty());
-                //.withRelayUsage(Optional.empty());
+                .withZip(Optional.empty())
+                .withProgram(Optional.empty())
+                .withSplinter(Optional.empty())
+                //.withRelayUsage(Optional.empty())
+                .withProtocolPriority(Optional.empty());
+                
+                
     }
 }
