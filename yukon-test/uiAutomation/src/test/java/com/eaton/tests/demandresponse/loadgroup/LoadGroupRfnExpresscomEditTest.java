@@ -84,11 +84,11 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup {
         SoftAssertions softly = new SoftAssertions();
         Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup().create();
         JSONObject response = pair.getValue1();
-        id = response.getInt("id");
+        Integer editId = response.getInt("id");
         
-        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + editId + Urls.EDIT);
         
-        ExtractableResponse<?> getResponse = DrSetupGetRequest.getLoadGroup(id);
+        ExtractableResponse<?> getResponse = DrSetupGetRequest.getLoadGroup(editId);
         
         softly.assertThat(editPage.getAddressUsage().isValueSelected("Serial")).isEqualTo(false);
         softly.assertThat(editPage.getLoadAddressUsage().isValueSelected("Program")).isEqualTo(true);
