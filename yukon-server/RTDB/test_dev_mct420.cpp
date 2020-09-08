@@ -2859,17 +2859,12 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
         BOOST_CHECK_EQUAL(ClientErrors::None, mct420.beginExecuteRequest(&request, parse, vgList, retList, outList));
 
         BOOST_CHECK(vgList.empty());
-        BOOST_REQUIRE_EQUAL(retList.size(), 6);
+        BOOST_REQUIRE_EQUAL(retList.size(), 5);
         BOOST_REQUIRE_EQUAL(outList.size(), 5);
 
         auto retList_itr = retList.cbegin();
 
-        const auto verifyMsg = dynamic_cast<const CtiRequestMsg*>(*retList_itr++);
-        BOOST_REQUIRE(verifyMsg);
-        BOOST_CHECK_EQUAL(verifyMsg->CommandString(), "putconfig install all verify");
-        BOOST_CHECK_EQUAL(verifyMsg->getConnectionHandle(), testConnHandle);
-
-        BOOST_CHECK( std::all_of( retList_itr, retList.cend(), isSentOnRouteMsg ) );
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
     }
 
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
