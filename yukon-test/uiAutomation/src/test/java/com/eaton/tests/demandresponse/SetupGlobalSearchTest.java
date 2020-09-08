@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.Optional;
 
+import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -38,20 +39,22 @@ public class SetupGlobalSearchTest extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE, TestConstants.DemandResponse.SETUP })
     public void setupGlobalSearch_SearchAndSelectSetup_ResultNavigatesToSetupListPage() {
-        globalSearchPage.getSearchBoxElement().setSearchValueAndClickResult("Setup");
-        
-        boolean pageLoaded = waitForUrlToLoad(Urls.DemandResponse.SETUP, Optional.empty());
-        
-        assertThat(pageLoaded).isTrue();       
+        throw new SkipException("QA task created: QA-6229");
+//        globalSearchPage.getSearchBoxElement().setSearchValueAndClickResult("Setup");
+//        
+//        boolean pageLoaded = waitForUrlToLoad(Urls.DemandResponse.SETUP, Optional.empty());
+//        
+//        assertThat(pageLoaded).isTrue();       
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE, TestConstants.DemandResponse.SETUP })
     public void setupGlobalSearch_SearchSetupPartialText_ResultsContainSetup() {
-        SearchBoxElement searchBox = globalSearchPage.getSearchBoxElement();
-        
-        searchBox.setSearchValue("Set");
-        List<String> results = searchBox.getSearchResults();
-        
-        assertThat(results).contains("Setup");
+        throw new SkipException("QA task created: QA-6229");
+//        SearchBoxElement searchBox = globalSearchPage.getSearchBoxElement();
+//        
+//        searchBox.setSearchValue("Set");
+//        List<String> results = searchBox.getSearchResults();
+//        
+//        assertThat(results).contains("Setup");
     }        
 }
