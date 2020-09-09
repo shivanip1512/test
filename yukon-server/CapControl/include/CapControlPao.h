@@ -88,6 +88,8 @@ private:
     bool _disableFlag;
 
     long    _disabledStatePointId;
+    CtiTime _disabledStateUpdatedTime;
+
     Cti::CapControl::PointIdVector _pointIds;
 
     CtiCCOperationStats     _operationStats;
