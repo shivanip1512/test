@@ -31,27 +31,32 @@ public class SwitchBtnMultiSelectElement {
         String name = buttonName.replace(" ", "_");
         WebElement switchButton = getSwitchBtnByName(buttonName);
         WebElement switchBtn;
-        if(name.contains("Load_")) {
-            switchBtn= switchElement.findElement(By.cssSelector("input[id='" + name + "_chk']"));
+        if (name.contains("Load_")) {
+            switchBtn = switchElement.findElement(By.cssSelector("input[id='" + name + "_chk']"));
         } else {
             switchBtn = switchElement.findElement(By.cssSelector("input[id='" + name.toUpperCase() + "_chk']"));
         }
-        
+
         String isChecked = switchBtn.getAttribute("checked");
 
         if ((isChecked == null && checked) || (isChecked != null && !checked)) {
             switchButton.click();
         }
     }
-    
+
     public boolean isValueSelected(String name) {
         WebElement element = getSwitchBtn();
 
-        WebElement switchBtn = element.findElement(By.cssSelector("input[value='" + name.toUpperCase() + "']"));
-        
+        WebElement switchBtn;
+        if (name.contains("Load_")) {
+            switchBtn = element.findElement(By.cssSelector("input[id='" + name + "_chk']"));
+        } else {
+            switchBtn = element.findElement(By.cssSelector("input[id='" + name.toUpperCase() + "_chk']"));
+        }
+
         String isChecked = switchBtn.getAttribute("checked");
-        
-        return !Strings.isNullOrEmpty(isChecked);               
+
+        return !Strings.isNullOrEmpty(isChecked);
     }
 
     // This method should only be used for Load Group of type Ripple
@@ -65,7 +70,8 @@ public class SwitchBtnMultiSelectElement {
             switchButtonIdIndex = bitNo * 2;
         } else
             switchButtonIdIndex = bitNo - 1;
-        WebElement switchBtn = switchElement.findElement(By.cssSelector("input[id='" + elementName + "-chkbx_" + switchButtonIdIndex + "']"));
+        WebElement switchBtn = switchElement
+                .findElement(By.cssSelector("input[id='" + elementName + "-chkbx_" + switchButtonIdIndex + "']"));
 
         String isChecked = switchBtn.getAttribute("checked");
 
@@ -80,15 +86,15 @@ public class SwitchBtnMultiSelectElement {
         WebElement switchBtn = element.findElement(By.cssSelector("input[value='" + name.toUpperCase() + "']"));
 
         String disabled = switchBtn.getAttribute("disabled");
-        
-        return !Strings.isNullOrEmpty(disabled);                
+
+        return !Strings.isNullOrEmpty(disabled);
     }
 
     public boolean allValuesDisabled() {
         WebElement element = getSwitchBtn();
 
         List<WebElement> list = element.findElements(By.cssSelector("label .switch-btn-checkbox"));
-        
+
         boolean allDisabled = true;
         for (WebElement webElement : list) {
             String disabled = webElement.getAttribute("disabled");
