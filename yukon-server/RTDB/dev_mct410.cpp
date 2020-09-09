@@ -1755,7 +1755,7 @@ YukonError_t Mct410Device::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq,
         return ClientErrors::NoMethod;
     }
 
-    insertConfigReadOutMessage("getconfig freeze", *OutMessage, outList);
+    insertConfigReadOutMessage("getconfig install freeze", *OutMessage, outList);
 
     return ClientErrors::None;
 }
