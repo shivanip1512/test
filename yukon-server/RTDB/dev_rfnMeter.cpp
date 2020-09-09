@@ -352,26 +352,15 @@ YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg* pReq, CtiComman
             {
                 rfnRequests.emplace_back(std::make_unique<Commands::RfnConfigNotificationCommand>());
 
-                auto verifyRequest = std::make_unique<CtiRequestMsg>(*pReq);
-
-                verifyRequest->setConnectionHandle(pReq->getConnectionHandle());
-                verifyRequest->setCommandString("putconfig emetcon install all verify");
-
-                incrementGroupMessageCount(verifyRequest->UserMessageId(), verifyRequest->getConnectionHandle());
-
-                requestMsgs.push_back(std::move(verifyRequest));
-
                 return ClientErrors::None;
             }
         }
 
         bool notCurrent = false;
-        for( const auto & p : configMethods )
+        for( const auto& [part, method] : configMethods )
         {
-            const auto & part   = p.first;
-            const auto & method = p.second;
-
-            if( executeConfigInstallSingle( pReq, parse, returnMsgs, rfnRequests, part, method ) == ClientErrors::ConfigNotCurrent )
+            if( auto status = executeConfigInstallSingle( pReq, parse, returnMsgs, rfnRequests, part, method );
+                status != ClientErrors::None && status != ClientErrors::ConfigCurrent )
             {
                 notCurrent = true;
             }
@@ -380,17 +369,6 @@ YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg* pReq, CtiComman
         if( notCurrent )
         {
             return ClientErrors::ConfigNotCurrent;
-        }
-        else if( ! parse.isKeyValid("verify") )
-        {
-            auto verifyRequest = std::make_unique<CtiRequestMsg>(*pReq);
-
-            verifyRequest->setConnectionHandle(pReq->getConnectionHandle());
-            verifyRequest->setCommandString("putconfig emetcon install all verify");
-
-            incrementGroupMessageCount(verifyRequest->UserMessageId(), verifyRequest->getConnectionHandle());
-
-            requestMsgs.push_back(std::move(verifyRequest));
         }
     }
     else
