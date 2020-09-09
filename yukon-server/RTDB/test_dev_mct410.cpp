@@ -3337,16 +3337,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 4 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 3 );
         BOOST_REQUIRE_EQUAL( outList.size(), 3 );
 
-        auto retList_itr = retList.cbegin();
-        const auto verifyMsg = dynamic_cast<const CtiRequestMsg*>( *retList_itr++ );
-        BOOST_REQUIRE( verifyMsg );
-        BOOST_CHECK_EQUAL( verifyMsg->CommandString(), "putconfig install all verify" );
-        BOOST_CHECK_EQUAL( verifyMsg->getConnectionHandle(), testConnHandle );
-
-        BOOST_CHECK( std::all_of( retList_itr, retList.cend(), isSentOnRouteMsg ) );
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
     }
 
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_resume)

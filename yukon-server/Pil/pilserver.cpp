@@ -597,9 +597,22 @@ struct InMessageResultProcessor : Devices::DeviceHandler
 };
 
 
+std::unique_ptr<CtiRequestMsg> makeVerifyMsg(const int deviceId, long userMessageId, ConnectionHandle connectionHandle)
+{
+    auto verifyRequest = std::make_unique<CtiRequestMsg>(deviceId, "putconfig install all verify");
+
+    verifyRequest->setUserMessageId(userMessageId);
+    verifyRequest->setConnectionHandle(connectionHandle);
+
+    return std::move(verifyRequest);
+}
+
+
 void PilServer::handleInMessageResult(const INMESS &InMessage)
 {
     LONG id = InMessage.TargetID;
+    const string cmdstr(InMessage.Return.CommandStr);
+    const CtiCommandParser parse(cmdstr);
 
     // Checking the sequence since we will actually want the system device 0 for the Phase Detect cases
     if(id == 0 && !(InMessage.Sequence == Cti::Protocols::EmetconProtocol::PutConfig_PhaseDetectClear ||
@@ -653,12 +666,43 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
 
         try
         {
-            // Do some device dependant work on this Inbound message!
+            // Do some device dependent work on this Inbound message!
             DeviceRecord->invokeDeviceHandler(imrp);
         }
         catch(...)
         {
             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Process Result FAILED "<< DeviceRecord->getName());
+        }
+
+        if( auto devSingle = dynamic_cast<CtiDeviceSingle*>(DeviceRecord.get()) )
+        {
+            if( parse.getCommand() == GetConfigRequest
+                && parse.isKeyValid("install")
+                && ! parse.isKeyValid("verify") )
+            {
+                if( ! devSingle->getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection) )
+                {
+                    auto verifyMsg = makeVerifyMsg(
+                        InMessage.DeviceID,
+                        InMessage.Return.UserID,
+                        InMessage.Return.Connection);
+
+                    retList.push_back(verifyMsg.release());
+
+                    //  Set expectMore = true on any other return messages
+                    for( auto msg : retList )
+                    {
+                        if( auto returnMsg = dynamic_cast<CtiReturnMsg*>(msg) )
+                        {
+                            if( returnMsg->getConnectionHandle() == InMessage.Return.Connection
+                                && returnMsg->UserMessageId() == InMessage.Return.UserID )
+                            {
+                                returnMsg->setExpectMore(true);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         for( OUTMESS *OutMessage : imrp.outList )
@@ -669,15 +713,13 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
         imrp.outList.clear();
     }
 
-    if( retList.size() > 0 )
+    if( ! retList.empty() )
     {
         if((DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD) && vgList.size())
         {
             CTILOG_DEBUG(dout, "Device " << (DeviceRecord ? DeviceRecord->getName() : "UNKNOWN") << " has generated a dispatch return message. Data may be duplicated");
         }
 
-        string cmdstr(InMessage.Return.CommandStr);
-        CtiCommandParser parse( cmdstr );
         if(parse.getFlags() & CMD_FLAG_UPDATE)
         {
             for( CtiMessage *pMsg : retList )
@@ -725,17 +767,19 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
 
         for( const auto & commandResult : result.commandResults )
         {
+            const auto& requestParameters = result.request.parameters;
+
             auto retMsg =
                     std::make_unique<CtiReturnMsg>(
-                            result.request.parameters.deviceId,
-                            result.request.parameters.commandString,
+                            requestParameters.deviceId,
+                            requestParameters.commandString,
                             commandResult.description,
                             commandResult.status,
                             0,
                             MacroOffset::none,
                             0,
-                            result.request.parameters.groupMessageId,
-                            result.request.parameters.userMessageId);
+                            requestParameters.groupMessageId,
+                            requestParameters.userMessageId);
 
             anySuccess |= commandResult.status == ClientErrors::None;
 
@@ -774,11 +818,32 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
 
             retMsg->setResultString(retMsg->ResultString() + pointDataDescription.str());
 
-            dev.decrementGroupMessageCount(result.request.parameters.userMessageId, result.request.parameters.connectionHandle);
+            dev.decrementGroupMessageCount(requestParameters.userMessageId, requestParameters.connectionHandle);
 
-            if( dev.getGroupMessageCount(result.request.parameters.userMessageId, result.request.parameters.connectionHandle) )
+            if( dev.getGroupMessageCount(requestParameters.userMessageId, requestParameters.connectionHandle) )
             {
                 retMsg->setExpectMore(true);
+            }
+            else
+            {
+                //  This is the last return message - check to see if it was a get/putconfig install that needs a verify
+                CtiCommandParser parse{ requestParameters.commandString };
+
+                if( (parse.getCommand() == GetConfigRequest ||
+                     parse.getCommand() == PutConfigRequest)
+                    && parse.isKeyValid("install") 
+                    && ! parse.isKeyValid("verify") )
+                {
+                    auto verifyMsg =
+                        makeVerifyMsg(
+                            requestParameters.deviceId,
+                            requestParameters.userMessageId,
+                            requestParameters.connectionHandle);
+
+                    retList.push_back(verifyMsg.release());
+
+                    retMsg->setExpectMore(true);
+                }
             }
 
             vgList.push_back(retMsg->replicateMessage());

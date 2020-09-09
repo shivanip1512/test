@@ -497,9 +497,9 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
         };
 
     const std::vector< std::vector<bool> > returnExpectMoreExp {
-            { true, true, true, false }, // no config data             -> 4 error messages, NOTE: last expectMore expected to be false
-            { true, true, true },  // add temperature alarming config  -> 3 error message + 1 config sent message
-            { true }               // add channel config               -> 1 config sent message
+            { true, true, true, true, false }, // no config data             -> 5 error messages, NOTE: last expectMore expected to be false
+            { true, true, true, true },  // add temperature alarming config  -> 4 error message + 1 config sent message
+            { true }                     // add channel config               -> 1 config sent message
         };
 
     std::vector<int> requestMsgsRcv;
