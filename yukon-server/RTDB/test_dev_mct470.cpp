@@ -2531,17 +2531,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 10 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 9 );
         BOOST_REQUIRE_EQUAL( outList.size(), 9 );
 
-        auto retList_itr = retList.cbegin();
-
-        const auto verifyMsg = dynamic_cast<const CtiRequestMsg*>( *retList_itr++ );
-        BOOST_REQUIRE( verifyMsg );
-        BOOST_CHECK_EQUAL( verifyMsg->CommandString(), "putconfig install all verify" );
-        BOOST_CHECK_EQUAL( verifyMsg->getConnectionHandle(), testConnHandle );
-
-        BOOST_CHECK( std::all_of( retList_itr, retList.cend(), isSentOnRouteMsg ) );
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
     }
 
 
