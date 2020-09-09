@@ -7,8 +7,8 @@ import java.util.Optional;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 
 public enum AlarmType {
-    SECURITY_ALARM(0L, AlarmCategory.GW_ALARM, BuiltInAttribute.SECURITY_ALARM),
-    POWER_ALARM(1L, AlarmCategory.GW_ALARM, BuiltInAttribute.POWER_FAILURE),
+    POWER_ALARM(0L, AlarmCategory.GW_ALARM, BuiltInAttribute.POWER_FAILURE),
+    SECURITY_ALARM(1L, AlarmCategory.GW_ALARM, BuiltInAttribute.SECURITY_ALARM),
     RADIO_ALARM(2L, AlarmCategory.GW_ALARM, BuiltInAttribute.RADIO_FAILURE),
     TIME_SYNCHRONIZATION_ALARM(3L, AlarmCategory.GW_ALARM, BuiltInAttribute.TIME_SYNC_FAILED),
     EXTERNAL_ALARM(4L, AlarmCategory.GW_ALARM, BuiltInAttribute.DOOR_OPEN),
