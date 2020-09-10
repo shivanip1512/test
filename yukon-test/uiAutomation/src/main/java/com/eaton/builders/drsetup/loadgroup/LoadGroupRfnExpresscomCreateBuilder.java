@@ -191,7 +191,7 @@ public class LoadGroupRfnExpresscomCreateBuilder {
                 .withZip(Optional.empty())
                 .withProgram(Optional.empty())
                 .withSplinter(Optional.empty())
-                //.withRelayUsage(Optional.empty())
+                .withRelayUsage(Optional.empty())
                 .withProtocolPriority(Optional.empty());
                 
                 
