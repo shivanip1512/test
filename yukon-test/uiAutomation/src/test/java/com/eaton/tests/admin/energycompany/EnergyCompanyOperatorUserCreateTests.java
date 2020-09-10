@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.Optional;
 import java.util.Random;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -23,15 +22,12 @@ public class EnergyCompanyOperatorUserCreateTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
-        WebDriver driver = getDriver();        
         driverExt = getDriverExt();
-        
-        driver.get(getBaseUrl() + Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_CREATE + "64");
-
+        navigate(Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_CREATE + "64");
         createPage = new EnergyCompanyOperatorUserCreatePage(driverExt, 64);
     }
     
-    @AfterMethod
+    @AfterMethod(alwaysRun = true)
     public void afterMethod() {
         refreshPage(createPage);
     }

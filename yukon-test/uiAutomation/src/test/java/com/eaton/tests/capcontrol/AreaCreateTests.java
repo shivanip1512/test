@@ -29,7 +29,7 @@ public class AreaCreateTests extends SeleniumTestSetup {
         createPage = new AreaCreatePage(driverExt);
     }
     
-    @AfterMethod
+    @AfterMethod(alwaysRun = true)
     public void afterMethod() {
         refreshPage(createPage);
     }
