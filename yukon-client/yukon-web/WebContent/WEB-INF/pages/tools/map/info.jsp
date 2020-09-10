@@ -45,8 +45,17 @@
     <c:if test="${!empty sensorSN}">
         <tags:nameValue2 nameKey=".serialNumber">${fn:escapeXml(sensorSN)}</tags:nameValue2>
     </c:if>
-    <c:if test="${!empty primaryGateway}">
-        <tags:nameValue2 nameKey=".primaryGateway"><cti:paoDetailUrl yukonPao="${primaryGateway}" newTab="true">${fn:escapeXml(primaryGatewayName)}</cti:paoDetailUrl></tags:nameValue2>
+    <c:if test="${pao.paoIdentifier.paoType.isRfn()}">
+        <tags:nameValue2 nameKey=".primaryGateway">
+            <c:choose>
+                <c:when test="${!empty primaryGateway}">
+                    <cti:paoDetailUrl yukonPao="${primaryGateway}" newTab="true">${fn:escapeXml(primaryGatewayName)}</cti:paoDetailUrl>
+                </c:when>
+                <c:otherwise>
+                    <i:inline key="yukon.common.unknown"/>
+                </c:otherwise>
+            </c:choose>
+        </tags:nameValue2>
     </c:if>
     <c:if test="${!empty gatewayIPAddress}">
         <tags:nameValue2 nameKey=".ipAddress">${fn:escapeXml(gatewayIPAddress)}</tags:nameValue2>
