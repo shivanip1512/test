@@ -64,23 +64,32 @@ MetricIdLookup::MetricId MetricIdLookup::GetMetricId(const Attribute &attrib, co
     }
 }
 
-Attribute MetricIdLookup::GetAttribute(const MetricId metric, const DeviceTypes type)
+std::optional<Attribute> MetricIdLookup::FindAttribute(const MetricId metric, const DeviceTypes type)
 {
     //  First, look for the pao-specific override
-    if( auto attribute = mapFind(paoAttributes, {type, metric}) )
+    if( auto attribute = mapFind(paoAttributes, { type, metric }) )
     {
         return *attribute;
     }
 
     //  Then look for a global instance
-    try
+    if( auto attribute = mapFind(attributes.right, metric) )
     {
-        return attributes.right.at(metric);
+        return *attribute;
     }
-    catch( std::out_of_range )
+
+    return std::nullopt;
+}
+
+Attribute MetricIdLookup::GetAttribute(const MetricId metric, const DeviceTypes type)
+{
+    //  First, look for the pao-specific override
+    if( auto attribute = FindAttribute(metric, type) )
     {
-        throw AttributeMappingNotFound(metric);
+        return *attribute;
     }
+
+    throw AttributeMappingNotFound(metric);
 }
 
 auto MetricIdLookup::GetAttributeDescription(const MetricId metric, const DeviceTypes type) -> AttributeDescriptor
