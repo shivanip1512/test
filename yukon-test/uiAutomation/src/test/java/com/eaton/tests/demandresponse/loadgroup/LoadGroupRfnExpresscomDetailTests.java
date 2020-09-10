@@ -7,9 +7,12 @@ import java.util.Optional;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.javatuples.Pair;
+import org.json.JSONObject;
 
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.CopyLoadGroupModal;
+import com.eaton.builders.drsetup.loadgroup.LoadGroupRfnExpresscomCreateBuilder;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
@@ -20,6 +23,9 @@ import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
+    private Integer id;
+	private String name;
+	private LoadGroupDetailPage detailPage;
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
@@ -66,24 +72,24 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
     
-    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(enabled = true, groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscom_deleteSuccess() {
-        final String EXPECTED_MSG = "AT Delete RFN Expresscom Ldgrp deleted successfully.";
-        
-        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + "593");
-
-        LoadGroupDetailPage detailPage = new LoadGroupDetailPage(driverExt, 593);
-        
-        ConfirmModal  confirmModal = detailPage.showDeleteLoadGroupModal();
-        
-        confirmModal.clickOkAndWaitForModalToClose();
-        
-        waitForPageToLoad("Setup", Optional.empty());
-        
-        DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_GROUP);
-        
-        String userMsg = setupPage.getUserMessage();
-        
-        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+    	final String expected_msg = name + " deleted successfully.";
+        Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup().create();
+        JSONObject response = pair.getValue1();
+	    id = response.getInt("id");
+	    name = response.getString("name");
+	    
+	    navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
+	     
+	    detailPage = new LoadGroupDetailPage(driverExt, id);
+	    ConfirmModal  confirmModal = detailPage.showDeleteLoadGroupModal(); 
+	    confirmModal.clickOkAndWaitForModalToClose();
+	     
+	    waitForPageToLoad("Setup", Optional.empty());
+	    DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_GROUP);
+	    String userMsg = setupPage.getUserMessage();
+	     
+	    assertThat(userMsg).isEqualTo(expected_msg);
     }  
 }
