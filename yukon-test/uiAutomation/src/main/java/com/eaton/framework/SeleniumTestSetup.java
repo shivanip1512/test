@@ -176,41 +176,24 @@ public class SeleniumTestSetup {
     }
 
     public static boolean waitForUrlToLoad(String expectedUrl, Optional<Integer> timeOutSeconds) {
-        Integer timeOut = timeOutSeconds.orElse(null);
-
-        Integer waitTime;
-
-        if (timeOut == null) {
-            waitTime = 3000;
-        } else {
-            waitTime = timeOut;
-        }
+        Integer timeOut = timeOutSeconds.orElse(3000);
 
         long startTime = System.currentTimeMillis();
 
         boolean expectedUrlLoaded = false;
-        while (!expectedUrlLoaded && (System.currentTimeMillis() - startTime) < waitTime) {
+        while (!expectedUrlLoaded && ((System.currentTimeMillis() - startTime) < timeOut)) {
             String currentUrl = driver.getCurrentUrl();
 
-            expectedUrlLoaded = currentUrl.equals(getBaseUrl() + expectedUrl);
+            expectedUrlLoaded = currentUrl.contains(expectedUrl);
         }
 
         return expectedUrlLoaded;
     }
 
     public void waitForPageToLoad(String pageTitle, Optional<Integer> timeOutSeconds) {
-        Integer timeOut = timeOutSeconds.orElse(null);
+        Integer timeOut = timeOutSeconds.orElse(1);       
 
-        Integer waitTime;
-
-        if (timeOut == null) {
-            waitTime = 1;
-        } else {
-            waitTime = timeOut;
-        }
-
-        SeleniumTestSetup.driverExt.getDriverWait(Optional.of(waitTime))
-                .until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".page-heading"), pageTitle));
+        SeleniumTestSetup.driverExt.getDriverWait(Optional.of(timeOut)).until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".page-heading"), pageTitle));
     }
 
     public void refreshPage(PageBase page) {
@@ -218,7 +201,6 @@ public class SeleniumTestSetup {
             driver.navigate().refresh();
         } else {
             navigate(page.getPageUrl());
-            waitForUrlToLoad(page.getPageUrl(), Optional.empty());
         }
     }
 
