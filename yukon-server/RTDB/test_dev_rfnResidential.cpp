@@ -1992,14 +1992,14 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device )
             };
 
     const std::vector< std::vector<bool> > returnExpectMoreExp {
-            { true, true, true, true, true, true, true, false },
-                                                      // no config data                   -> 8 error messages, NOTE: last expectMore expected to be false
-            { true, true, true, true, true, true, true },
-                                                      // add demand freeze day config     -> 7 error messages
-            { true, true, true, true, true },         // add TOU config                   -> 5 error messages
-            { true, true, true },                     // add temperature alarming config  -> 3 error messages
-            { true },                                 // add channel config               -> config sent successfully
-            { true },                                 // add demand interval config       -> config sent successfully
+            { true, true, true, true, true, true, true, true, false },
+                                                            // no config data                   -> 9 error messages, NOTE: last expectMore expected to be false
+            { true, true, true, true, true, true, true, true },
+                                                            // add demand freeze day config     -> 8 error messages
+            { true, true, true, true, true, true },         // add TOU config                   -> 6 error messages
+            { true, true, true, true },                     // add temperature alarming config  -> 4 error messages
+            { true },                                       // add channel config               -> config sent successfully
+            { true },                                       // add demand interval config       -> config sent successfully
             };
 
     std::vector<int> requestMsgsRcv;
@@ -2263,10 +2263,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
     BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
 
     BOOST_CHECK_EQUAL( 1, rfnRequests.size() );
-    BOOST_REQUIRE_EQUAL( 1, requestMsgs.size() );
-
-    BOOST_CHECK_EQUAL(requestMsgs.front()->CommandString(), "putconfig emetcon install all verify");
-    BOOST_CHECK_EQUAL(requestMsgs.front()->UserMessageId(), 11235);
+    BOOST_CHECK_EQUAL( 0, requestMsgs.size() );
 
     std::vector<bool> expectMoreRcv;
     const std::vector<bool> expectMoreExp { true, true, true, true, true };
@@ -2295,7 +2292,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
 
     auto& command = rfnRequests.front();
 
-    BOOST_CHECK_EQUAL( 2, dut.getGroupMessageCount(request->UserMessageId(), request->getConnectionHandle()) );
+    BOOST_CHECK_EQUAL( 1, dut.getGroupMessageCount(request->UserMessageId(), request->getConnectionHandle()) );
 
     {
         // execute
@@ -2327,7 +2324,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
         dut.decrementGroupMessageCount(request->UserMessageId(), request->getConnectionHandle());
     }
 
-    BOOST_CHECK_EQUAL( 1, dut.getGroupMessageCount(request->UserMessageId(), request->getConnectionHandle() ) );
+    BOOST_CHECK_EQUAL( 0, dut.getGroupMessageCount(request->UserMessageId(), request->getConnectionHandle() ) );
 }
 
 BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
@@ -2465,15 +2462,15 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 
 
     const std::vector< std::vector<bool> > returnExpectMoreExp {
-            { true, true, true, true, true, true, true, true, true, false },
-                                                              // no config data                   -> 10 error messages, NOTE: last expectMore expected to be false
-            { true, true, true, true, true, true, true, true, true },
-                                                              // add remote disconnect config     -> 9 error messages
-            { true, true, true, true, true, true, true },     // add demand freeze day config     -> 7 error messages
-            { true, true, true, true, true },                 // add TOU config                   -> 5 error messages
-            { true, true, true },                             // add temperature alarming config  -> 3 error messages
-            { true },                                         // add channel config               -> config sent successfully
-            { true }                                          // add demand interval config       -> config sent successfully
+            { true, true, true, true, true, true, true, true, true, true, false },
+                                                                    // no config data                   -> 11 error messages, NOTE: last expectMore expected to be false
+            { true, true, true, true, true, true, true, true, true, true },
+                                                                    // add remote disconnect config     -> 10 error messages
+            { true, true, true, true, true, true, true, true },     // add demand freeze day config     -> 8 error messages
+            { true, true, true, true, true, true },                 // add TOU config                   -> 6 error messages
+            { true, true, true, true },                             // add temperature alarming config  -> 4 error messages
+            { true },                                               // add channel config               -> config sent successfully
+            { true }                                                // add demand interval config       -> config sent successfully
             };
 
     std::vector<int> requestMsgsRcv;
