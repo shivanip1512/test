@@ -518,20 +518,77 @@ BOOST_AUTO_TEST_CASE(test_dev_rfnMeter_putconfig_install_channel_unmapped_metric
 
     config_a_meter(cfg);
 
+    CtiCommandParser parse("putconfig install channelconfig verify");
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+
+    BOOST_CHECK_EQUAL(0, rfnRequests.size());
+    BOOST_REQUIRE_EQUAL(7, returnMsgs.size());
+
+    auto itr = returnMsgs.begin();
+
     {
-        CtiCommandParser parse("putconfig install channelconfig verify");
-
-        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
-
-        BOOST_CHECK_EQUAL(0, rfnRequests.size());
-        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
-
-        const auto& returnMsg = returnMsgs.front();
+        const auto& returnMsg = *itr++;
 
         BOOST_REQUIRE(returnMsg);
 
-        BOOST_CHECK_EQUAL(returnMsg->ResultString(), "Attribute mapping not found for metric ID 182");
-        BOOST_CHECK_EQUAL(returnMsg->Status(), ClientErrors::E2eErrorUnmapped);
+        BOOST_CHECK_EQUAL(returnMsg->ResultString(), "Midnight channel program mismatch.  Meter also contains PEAK_DEMAND_FROZEN, Unmapped metric ID 182");
+        BOOST_CHECK_EQUAL(returnMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(returnMsg->ExpectMore(), true);
+    }
+    {
+        const auto& returnMsg = *itr++;
+
+        BOOST_REQUIRE(returnMsg);
+
+        BOOST_CHECK_EQUAL(returnMsg->ResultString(), "Config: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DELIVERED_DEMAND");
+        BOOST_CHECK_EQUAL(returnMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(returnMsg->ExpectMore(), true);
+    }
+    {
+        const auto& returnMsg = *itr++;
+
+        BOOST_REQUIRE(returnMsg);
+
+        BOOST_CHECK_EQUAL(returnMsg->ResultString(), "Meter: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DELIVERED_DEMAND, PEAK_DEMAND_FROZEN, Unmapped metric ID 182");
+        BOOST_CHECK_EQUAL(returnMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(returnMsg->ExpectMore(), true);
+    }
+    {
+        const auto& returnMsg = *itr++;
+
+        BOOST_REQUIRE(returnMsg);
+
+        BOOST_CHECK_EQUAL(returnMsg->ResultString(), "Interval channel program mismatch.  Meter also contains DELIVERED_KWH, RECEIVED_KWH, PEAK_DEMAND_FROZEN");
+        BOOST_CHECK_EQUAL(returnMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(returnMsg->ExpectMore(), true);
+    }
+    {
+        const auto& returnMsg = *itr++;
+
+        BOOST_REQUIRE(returnMsg);
+
+        BOOST_CHECK_EQUAL(returnMsg->ResultString(), "Config: SUM_KWH, NET_KWH, DELIVERED_DEMAND");
+        BOOST_CHECK_EQUAL(returnMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(returnMsg->ExpectMore(), true);
+    }
+    {
+        const auto& returnMsg = *itr++;
+
+        BOOST_REQUIRE(returnMsg);
+
+        BOOST_CHECK_EQUAL(returnMsg->ResultString(), "Meter: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DELIVERED_DEMAND, PEAK_DEMAND_FROZEN");
+        BOOST_CHECK_EQUAL(returnMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(returnMsg->ExpectMore(), true);
+    }
+    {
+        const auto& returnMsg = *itr++;
+
+        BOOST_REQUIRE(returnMsg);
+
+        BOOST_CHECK_EQUAL(returnMsg->ResultString(), "Config channelconfig is NOT current.");
+        BOOST_CHECK_EQUAL(returnMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(returnMsg->ExpectMore(), false);
     }
 }
 

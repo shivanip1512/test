@@ -3,6 +3,8 @@
 #include "Attribute.h"
 #include "devicetypes.h"
 
+#include <boost/optional/optional_fwd.hpp>
+
 #include <set>
 
 namespace Cti {
@@ -29,6 +31,7 @@ public:
 
     static MetricId  GetMetricId (const Attribute &attrib, const DeviceTypes type);
 
+    static std::optional<Attribute> FindAttribute(const MetricId metric, const DeviceTypes type);
     static Attribute GetAttribute(const MetricId metric, const DeviceTypes type);
     static AttributeDescriptor GetAttributeDescription(const MetricId metric, const DeviceTypes type);
 
