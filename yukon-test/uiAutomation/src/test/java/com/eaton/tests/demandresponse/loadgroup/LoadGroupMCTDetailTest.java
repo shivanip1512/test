@@ -32,7 +32,7 @@ public class LoadGroupMCTDetailTest  extends SeleniumTestSetup {
 		 driverExt = getDriverExt();   
 	 }
 	 
-	 @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	 @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	 public void ldGrpMCTDetail_DeleteLoadGroup_Success() {
 		 Pair<JSONObject, JSONObject> pair = new LoadGroupMCTCreateBuilder.Builder(Optional.empty())
 															  .withCommunicationRoute(routeId) 

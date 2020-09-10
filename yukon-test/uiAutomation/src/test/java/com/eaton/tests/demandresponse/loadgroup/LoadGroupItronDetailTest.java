@@ -29,7 +29,7 @@ public class LoadGroupItronDetailTest  extends SeleniumTestSetup {
 		 driverExt = getDriverExt();   
 	 }
 	 
-	 @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	 @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	 public void ldGrpItronDetail_DeleteLoadGroup_Success() {
 		 Pair<JSONObject, JSONObject> pair = new LoadGroupItronCreateBuilder.Builder(Optional.empty())
 													.withKwCapacity(Optional.empty())

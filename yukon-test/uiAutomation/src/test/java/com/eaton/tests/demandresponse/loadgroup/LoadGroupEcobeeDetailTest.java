@@ -29,7 +29,7 @@ public class LoadGroupEcobeeDetailTest extends SeleniumTestSetup {
 		 driverExt = getDriverExt();   
 	 }
 	 
-	 @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	 @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	 public void ldGrpEcobeeDetail_DeleteLoadGroup_Success() {
 		 Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
 	     JSONObject response = pair.getValue1();

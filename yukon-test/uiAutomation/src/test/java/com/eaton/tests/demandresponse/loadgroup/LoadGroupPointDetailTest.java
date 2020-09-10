@@ -34,7 +34,7 @@ public class LoadGroupPointDetailTest  extends SeleniumTestSetup {
 		 driverExt = getDriverExt();   
 	 }
 	 
-	 @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	 @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	 public void ldGrpPointDetail_DeleteLoadGroup_Success() {
 		 builder = LoadGroupPointCreateBuilder.buildDefaultPointLoadGroup();
 		 String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

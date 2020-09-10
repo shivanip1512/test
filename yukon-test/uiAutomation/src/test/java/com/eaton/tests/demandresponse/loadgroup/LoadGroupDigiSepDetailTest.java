@@ -31,7 +31,7 @@ public class LoadGroupDigiSepDetailTest extends SeleniumTestSetup {
         driverExt = getDriverExt();
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpDigiSepDetail_DeleteLoadGroup_Success() {
         builder = LoadGroupDigiSepCreateBuilder.buildLoadGroup();
         Pair<JSONObject, JSONObject> pair = builder.create();

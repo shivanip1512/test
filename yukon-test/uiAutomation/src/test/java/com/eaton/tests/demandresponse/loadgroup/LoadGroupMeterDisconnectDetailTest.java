@@ -30,7 +30,7 @@ public class LoadGroupMeterDisconnectDetailTest extends SeleniumTestSetup {
 		 driverExt = getDriverExt();   
 	 }
 	 
-	 @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	 @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	 public void ldGrpMeterDisconnectDetail_DeleteLoadGroup_Success() {
 		 Pair<JSONObject, JSONObject> pair = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
 														.create();

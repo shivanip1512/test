@@ -31,7 +31,7 @@ public class LoadGroupRippleDetailTest extends SeleniumTestSetup {
 		 driverExt = getDriverExt();   
 	 }
 	 
-	 @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	 @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	 public void ldGrpRippleDetail_DeleteLoadGroup_Success() {
 		 builder = LoadGroupRippleCreateBuilder.buildDefaultRippleLoadGroup();
 		 Pair<JSONObject, JSONObject> pair = builder.create();
