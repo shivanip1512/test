@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -20,19 +21,23 @@ import com.eaton.pages.capcontrol.orphans.OrphansPage;
 public class RegulatorEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
+    private RegulatorEditPage editPage;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        navigate(Urls.CapControl.REGULATOR_EDIT + "671" + Urls.EDIT);
+        editPage = new RegulatorEditPage(driverExt, 671);
+    }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        refreshPage(editPage);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void regulatorEdit_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Regulator: AT Regulator";
-
-        navigate(Urls.CapControl.REGULATOR_EDIT + "671" + Urls.EDIT);
-
-        RegulatorEditPage editPage = new RegulatorEditPage(driverExt, 671);
 
         String actualPageTitle = editPage.getPageTitle();
 
@@ -43,8 +48,6 @@ public class RegulatorEditTests extends SeleniumTestSetup {
     public void regulatorEdit_requiredFieldsOnlySuccess() {
 
         navigate(Urls.CapControl.REGULATOR_EDIT + "490" + Urls.EDIT);
-
-        RegulatorEditPage editPage = new RegulatorEditPage(driverExt, 490);
 
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
 
@@ -70,8 +73,6 @@ public class RegulatorEditTests extends SeleniumTestSetup {
     public void regulatorEdit_deleteSuccess() {
 
         navigate(Urls.CapControl.REGULATOR_EDIT + "578" + Urls.EDIT);
-
-        RegulatorEditPage editPage = new RegulatorEditPage(driverExt, 578);
 
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
 

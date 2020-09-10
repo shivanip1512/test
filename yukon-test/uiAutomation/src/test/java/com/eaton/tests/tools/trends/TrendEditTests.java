@@ -48,7 +48,7 @@ public class TrendEditTests extends SeleniumTestSetup {
         editPage = new TrendEditPage(driverExt, Urls.Tools.TREND_EDIT, trendId);
     }
     
-    @AfterMethod
+    @AfterMethod(alwaysRun = true)
     public void afterMethod() {
         refreshPage(editPage);
     }

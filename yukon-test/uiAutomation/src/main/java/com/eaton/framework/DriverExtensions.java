@@ -30,6 +30,10 @@ public class DriverExtensions {
         return this.driver;
     }
     
+    /**
+     * @param timeOutSeconds if Optional.empty() then will wait 5 seconds or will use the amount of seconds passed in.
+     * @return WebDriverWait
+     */
     public WebDriverWait getDriverWait(Optional<Integer> timeOutSeconds) {
         Integer timeOut = timeOutSeconds.orElse(null);
         

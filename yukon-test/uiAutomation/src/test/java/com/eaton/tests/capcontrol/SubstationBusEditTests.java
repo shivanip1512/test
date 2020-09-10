@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -20,19 +21,25 @@ import com.eaton.pages.capcontrol.orphans.OrphansPage;
 public class SubstationBusEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
+    private SubstationBusEditPage editPage;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        
+        navigate(Urls.CapControl.SUBSTATION_BUS_EDIT + "667" + Urls.EDIT);
+
+        editPage = new SubstationBusEditPage(driverExt, 667);
+    }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterTest() {
+        refreshPage(editPage);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void substationBusEdit_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Bus: AT Substation Bus";
-
-        navigate(Urls.CapControl.SUBSTATION_BUS_EDIT + "667" + Urls.EDIT);
-
-        SubstationBusEditPage editPage = new SubstationBusEditPage(driverExt, 667);
 
         String actualPageTitle = editPage.getPageTitle();
 
@@ -44,8 +51,6 @@ public class SubstationBusEditTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = "Bus was saved successfully.";
 
         navigate(Urls.CapControl.SUBSTATION_BUS_EDIT + "430" + Urls.EDIT);
-
-        SubstationBusEditPage editPage = new SubstationBusEditPage(driverExt, 430);
 
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
 
@@ -68,8 +73,6 @@ public class SubstationBusEditTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = "Bus AT Delete Bus deleted successfully.";
 
         navigate(Urls.CapControl.SUBSTATION_BUS_EDIT + "574" + Urls.EDIT);
-
-        SubstationBusEditPage editPage = new SubstationBusEditPage(driverExt, 574);
 
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
 

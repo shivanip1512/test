@@ -3,7 +3,6 @@ package com.eaton.tests.demandresponse;
 import java.util.List;
 
 import org.assertj.core.api.SoftAssertions;
-import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -22,13 +21,8 @@ public class ControlAreaListTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
-        DriverExtensions driverExt = getDriverExt();
-        softly = new SoftAssertions();
-
-        driver.get(getBaseUrl() + Urls.DemandResponse.CONTROL_AREA);
-
+        DriverExtensions driverExt = getDriverExt();        
+        navigate(Urls.DemandResponse.CONTROL_AREA);
         listPage = new ControlAreaListPage(driverExt);
     }
 
@@ -38,12 +32,12 @@ public class ControlAreaListTests extends SeleniumTestSetup {
 
         String actualPageTitle = listPage.getPageTitle();
 
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE,
-                "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
+        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void controlAreaList_columnHeadersCorrect() {
+        softly = new SoftAssertions();
         final int EXPECTED_COUNT = 8;
 
         List<String> headers = this.listPage.getTable().getListTableHeaders();
@@ -56,7 +50,6 @@ public class ControlAreaListTests extends SeleniumTestSetup {
         softly.assertThat(headers).contains("ATKU");
         softly.assertThat(headers).contains("Priority");
         softly.assertThat(headers).contains("Time Window");
-
         softly.assertAll();
     }
 }

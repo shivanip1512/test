@@ -2,7 +2,6 @@ package com.eaton.tests.assets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -16,14 +15,10 @@ public class AssetsDashboardTests extends SeleniumTestSetup {
 
     private AssetDashboardPage assetsPage;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
-
-        driver.get(getBaseUrl() + Urls.Assets.DASHBOARD);
-
+        navigate(Urls.Assets.DASHBOARD);
         assetsPage = new AssetDashboardPage(driverExt);
     }
 

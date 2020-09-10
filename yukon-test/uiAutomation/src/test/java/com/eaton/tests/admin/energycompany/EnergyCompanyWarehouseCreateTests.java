@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -21,14 +20,16 @@ public class EnergyCompanyWarehouseCreateTests extends SeleniumTestSetup {
     private EnergyCompanyWarehouseCreatePage createPage;
     private DriverExtensions driverExt;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        WebDriver driver = getDriver();        
         driverExt = getDriverExt();
-        
-        driver.get(getBaseUrl() + Urls.Admin.ENERGY_COMPANY_WAREHOUSE_CREATE + "64");
-
+        navigate(Urls.Admin.ENERGY_COMPANY_WAREHOUSE_CREATE + "64");
         createPage = new EnergyCompanyWarehouseCreatePage(driverExt, 64);
+    }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {        
+        refreshPage(createPage);
     }
 
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
@@ -64,10 +65,5 @@ public class EnergyCompanyWarehouseCreateTests extends SeleniumTestSetup {
         String userMsg = listPage.getUserMessage();
         
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }    
-    
-    @AfterMethod(alwaysRun=true)
-    public void afterTest() {        
-        refreshPage(createPage);
-    }
+    }       
 }

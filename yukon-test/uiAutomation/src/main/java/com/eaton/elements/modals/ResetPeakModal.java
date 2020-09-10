@@ -49,11 +49,11 @@ public class ResetPeakModal extends BaseModal {
     }
 
     public String getHelpTextMessage() {
-        return this.driverExt.findElement(By.cssSelector(".js-help-text-message"), Optional.empty()).getText();
+        return this.driverExt.findElement(By.cssSelector("user-message"), Optional.empty()).getText();
     }
 
     public Boolean isHelpClosed() {
-        String classAttribute = getModal().findElement(By.cssSelector(".js-help-text-message")).getAttribute("class");
+        String classAttribute = getModal().findElement(By.cssSelector(".user-message")).getAttribute("class");
 
         return classAttribute.contains("dn");
     }

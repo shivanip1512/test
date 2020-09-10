@@ -26,6 +26,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
 
         driver.get(baseUrl + Urls.HOME);
 
+        navigate(Urls.HOME);
         page = new HomePage(driverExt);
     }
 
@@ -36,52 +37,3 @@ public class AdminMenuTests extends SeleniumTestSetup {
 
         assertThat(url).contains(Urls.Admin.CONFIGURATION);
     }
-
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Admin.ADMIN })
-    public void adminMenu_EnergyCompanyUrlCorrect() {
-
-        String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 1);
-
-        assertThat(url).contains(Urls.Admin.ENERGY_COMPANY);
-    }
-
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Admin.ADMIN })
-    public void adminMenu_MaintenanceUrlCorrect() {
-
-        String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 2);
-
-        assertThat(url).contains(Urls.Admin.MAINTENANCE);
-    }
-
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Admin.ADMIN })
-    public void adminMenu_MultiSpeakUrlCorrect() {
-
-        String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 3);
-
-        assertThat(url).contains(Urls.Admin.MULTI_SPEAK);
-    }
-
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Admin.ADMIN })
-    public void adminMenu_SubstationsUrlCorrect() {
-
-        String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 4);
-
-        assertThat(url).contains(Urls.Admin.SUBSTATIONS);
-    }
-
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Admin.ADMIN })
-    public void adminMenu_UsersAndGroupsUrlCorrect() {
-
-        String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 5);
-
-        assertThat(url).contains(Urls.Admin.USERS_AND_GROUPS);
-    }
-
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Admin.ADMIN })
-    public void adminMenu_ReportsUrlCorrect() {
-
-        String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 6);
-
-        assertThat(url).contains(Urls.Admin.REPORTS);
-    }
-}
