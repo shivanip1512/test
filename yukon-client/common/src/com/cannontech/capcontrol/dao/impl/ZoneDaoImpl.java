@@ -270,7 +270,27 @@ public class ZoneDaoImpl implements ZoneDao {
             return null;
         }
     }
-    
+
+    @Override
+    public Zone findZoneByZoneName(String zoneName) {
+
+        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        sqlBuilder.append("SELECT ZoneId,ZoneName,SubstationBusId,ParentId,GraphStartPosition, ZoneType");
+        sqlBuilder.append("FROM Zone");
+        sqlBuilder.append("WHERE ZoneName").eq(zoneName);
+
+        try {
+            Zone zone = yukonJdbcTemplate.queryForObject(sqlBuilder, zoneRowMapper);
+            List<RegulatorToZoneMapping> regulatorToZoneList = getRegulatorToZoneMappingsByZoneId(zone.getId());
+            zone.setRegulators(regulatorToZoneList);
+
+            return zone;
+        } catch (EmptyResultDataAccessException e) {
+            //Eating the exception and returning null.
+            return null;
+        }
+    }
+
     @Override
     public void save(Zone zone) {
         zoneTemplate.save(zone);
