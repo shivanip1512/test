@@ -241,7 +241,7 @@ public class SeleniumTestSetup {
         long startTime = System.currentTimeMillis();
 
         while (count.equals(0) && (System.currentTimeMillis() - startTime) < 2000) {
-            count = driverExt.findElements(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.empty()).size();
+            count = driverExt.findElements(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).size();
         }
     }
 
@@ -250,8 +250,8 @@ public class SeleniumTestSetup {
 
         long startTime = System.currentTimeMillis();
 
-        while (count.equals(1) && (System.currentTimeMillis()-startTime) < 2000) {
-            count = driverExt.findElements(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.empty()).size();
+        while (count.equals(1) && (System.currentTimeMillis() - startTime) < 2000) {
+            count = driverExt.findElements(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).size();
         }
     }
 
@@ -261,7 +261,7 @@ public class SeleniumTestSetup {
 
         while (found && (System.currentTimeMillis() - startTime) < 2000) {
 
-            String style = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.empty())
+            String style = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0))
                     .getAttribute("style");
 
             if (style.contains("display: none")) {
@@ -285,11 +285,9 @@ public class SeleniumTestSetup {
         long startTime = System.currentTimeMillis();
 
         while (!found && (System.currentTimeMillis() - startTime) < 2000) {
-            List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-labelledby^='ui-id']"),
-                    Optional.empty());
+            List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-labelledby^='ui-id']"), Optional.of(0));
 
-            Optional<WebElement> el = list.stream()
-                    .filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle)).findFirst();
+            Optional<WebElement> el = list.stream().filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle)).findFirst();
 
             if (el.isPresent()) {
                 return;
@@ -308,13 +306,11 @@ public class SeleniumTestSetup {
         long startTime = System.currentTimeMillis();
 
         while (found && (System.currentTimeMillis() - startTime) < 2000) {
-            List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-describedby^='ui-id']"),
-                    Optional.empty());
+            List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-describedby^='ui-id']"), Optional.of(0));
 
             try {
                 Optional<WebElement> el = list.stream()
-                        .filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle))
-                        .findFirst();
+                        .filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle)).findFirst();
 
                 if (!el.isPresent()) {
                     return;
