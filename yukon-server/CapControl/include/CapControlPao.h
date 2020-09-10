@@ -22,7 +22,7 @@ public:
     CapControlPao();
     CapControlPao(Cti::RowReader& rdr);
 
-    ~CapControlPao();
+    ~CapControlPao() = default;
 
     int getPaoId() const;
     void setPaoId(int paoId);
@@ -61,11 +61,12 @@ public:
 
     void restore( Cti::RowReader& rdr );
 
-    CapControlPao& operator=(const CapControlPao& right);
-
     void handlePointData( const CtiPointDataMsg & message );
 
 protected:
+
+    CapControlPao( const CapControlPao & ) = default;
+    CapControlPao & operator=( const CapControlPao & ) = default;
 
     void insertPointRegistration( std::set<long> & registrationIDs, const long pointID ) const;
 
@@ -78,6 +79,8 @@ private:
     virtual bool assignSpecializedPoint( const long pointID, const long pointOffset, const CtiPointType_t pointType );
     virtual void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) const;
     virtual void handleSpecializedPointData( const CtiPointDataMsg & message );
+
+    void handleDisableStatePointData( const CtiPointDataMsg & message );
 
     int _paoId;
     std::string _paoCategory;

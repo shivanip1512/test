@@ -27,11 +27,6 @@ CapControlPao::CapControlPao(Cti::RowReader& rdr)
     restore(rdr);
 }
 
-CapControlPao::~CapControlPao()
-{
-    _pointIds.clear();
-}
-
 void CapControlPao::restore(Cti::RowReader& rdr)
 {
     long paoID;
@@ -128,27 +123,6 @@ void CapControlPao::setDisableFlag(bool disableFlag, int priority)
 
         syncDisabledPoint( priority );
     }
-}
-
-CapControlPao& CapControlPao::operator=(const CapControlPao& right)
-{
-    if (this != &right)
-    {
-        _paoId = right._paoId;
-        _paoCategory = right._paoCategory;
-        _paoClass = right._paoClass;
-        _paoName = right._paoName;
-        _paoType = right._paoType;
-        _paoDescription = right._paoDescription;
-        _disableFlag = right._disableFlag;
-        _disabledStatePointId = right._disabledStatePointId;
-        _disabledStateUpdatedTime = right._disabledStateUpdatedTime;
-
-        _pointIds = right._pointIds;
-        _operationStats = right._operationStats;
-        _confirmationStats = right._confirmationStats;
-    }
-    return *this;
 }
 
 void CapControlPao::setDisabledStatePointId( const long newId, bool sendDisablePointMessage )
@@ -378,39 +352,13 @@ long desolveDisabledStateCommand( const std::string & paoType, const bool disabl
 
 void CapControlPao::handlePointData( const CtiPointDataMsg & message )
 {
-    const long   pointID = message.getId();
-    const double value   = message.getValue();
-    const CtiTime timestamp = message.getTime();
+    const long pointID = message.getId();
 
     handleSpecializedPointData( message );
 
     if ( pointID == getDisabledStatePointId() )
     {
-        CTILOG_DEBUG( dout, getPaoName() << " - Incoming point data for the disabled state point [PID: " << pointID
-                        << ", O: " << Cti::CapControl::Offset_PaoIsDisabled << "]." );
-
-        // ignore point updates with an older time than the last time the disable state point was updated
-
-        if ( timestamp > _disabledStateUpdatedTime )
-        {
-            const bool disabled = value;
-
-            if ( disabled != getDisableFlag() )
-            {
-                CtiCCExecutorFactory::createExecutor(
-                    new ItemCommand( desolveDisabledStateCommand( getPaoType(), disabled ),
-                                     getPaoId() ) )->execute();
-            }
-            else
-            {
-                CTILOG_DEBUG( dout, getPaoName() << " - Ignoring disabled state point data. Already in requested state: "
-                                << ( disabled ? "Dis" : "En" ) << "abled." );
-            }
-        }
-        else
-        {
-            CTILOG_DEBUG( dout, getPaoName() << " - Ignoring disabled state point data. Timestamp is old: " << timestamp );
-        }
+        handleDisableStatePointData( message );
     }
 }
 
@@ -419,5 +367,33 @@ void CapControlPao::handleSpecializedPointData( const CtiPointDataMsg & message 
 
 
 
+}
+
+void CapControlPao::handleDisableStatePointData( const CtiPointDataMsg & message )
+{
+    const CtiTime timestamp = message.getTime();
+
+    CTILOG_DEBUG( dout, getPaoName() << " - Incoming point data for the disabled state point [PID: " << message.getId()
+                    << ", O: " << Cti::CapControl::Offset_PaoIsDisabled << "]." );
+
+    if ( timestamp <= _disabledStateUpdatedTime )
+    {
+        CTILOG_DEBUG( dout, getPaoName() << " - Ignoring disabled state point data. Incoming point data timestamp: " << timestamp
+                        << " is not newer than the last state change time: " << _disabledStateUpdatedTime );
+        return;
+    }
+
+    const bool disabled = message.getValue();
+
+    if ( disabled == getDisableFlag() )
+    {
+        CTILOG_DEBUG( dout, getPaoName() << " - Ignoring disabled state point data. Already in requested state: "
+                        << ( disabled ? "Dis" : "En" ) << "abled." );
+        return;
+    }
+
+    CtiCCExecutorFactory::createExecutor(
+        new ItemCommand( desolveDisabledStateCommand( getPaoType(), disabled ),
+                         getPaoId() ) )->execute();
 }
 
