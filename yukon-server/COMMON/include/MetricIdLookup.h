@@ -3,8 +3,6 @@
 #include "Attribute.h"
 #include "devicetypes.h"
 
-#include <boost/optional/optional_fwd.hpp>
-
 #include <set>
 
 namespace Cti {
