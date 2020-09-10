@@ -291,8 +291,7 @@ public class SeleniumTestSetup {
             List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-describedby^='ui-id']"), Optional.of(0));
 
             try {
-                Optional<WebElement> el = list.stream()
-                        .filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle)).findFirst();
+                Optional<WebElement> el = list.stream().filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle)).findFirst();
 
                 if (!el.isPresent()) {
                     return;

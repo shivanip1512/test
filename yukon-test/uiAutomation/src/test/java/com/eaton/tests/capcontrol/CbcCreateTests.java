@@ -60,13 +60,16 @@ public class CbcCreateTests extends SeleniumTestSetup {
 
         String name = "AT CBC " + timeStamp;
         Integer serialNumber = faker.number().numberBetween(1, 65535);
+        Integer port = faker.number().numberBetween(1, 65535);
         Integer postCommWait = faker.number().numberBetween(1, 99999);
         Integer slaveAddress = faker.number().numberBetween(1,  65535);
         createPage.getType().selectItemByValue("CBC_8020");
         createPage.getName().setInputValue(name);
         createPage.getSerialNumber().setInputValue(serialNumber.toString());
         createPage.getMasterAddress().setInputValue(String.valueOf(masterAddress));
-        createPage.getSlaveAddress().setInputValue(slaveAddress.toString());        
+        createPage.getSlaveAddress().setInputValue(slaveAddress.toString());  
+        createPage.getIpAddress().setInputValue(faker.internet().ipV4Address());
+        createPage.getPort().setInputValue(port.toString());
         createPage.getPostCommWait().setInputValue(postCommWait.toString());
 
         createPage.getSaveBtn().click();
