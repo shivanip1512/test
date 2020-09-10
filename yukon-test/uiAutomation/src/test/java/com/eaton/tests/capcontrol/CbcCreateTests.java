@@ -67,7 +67,9 @@ public class CbcCreateTests extends SeleniumTestSetup {
         createPage.getName().setInputValue(name);
         createPage.getSerialNumber().setInputValue(serialNumber.toString());
         createPage.getMasterAddress().setInputValue(String.valueOf(masterAddress));
-        createPage.getSlaveAddress().setInputValue(slaveAddress.toString());  
+        createPage.getSlaveAddress().setInputValue(slaveAddress.toString());
+        //23 = a_TCP_Port
+        createPage.getCommChannel().selectItemByValue("23");
         createPage.getIpAddress().setInputValue(faker.internet().ipV4Address());
         createPage.getPort().setInputValue(port.toString());
         createPage.getPostCommWait().setInputValue(postCommWait.toString());
