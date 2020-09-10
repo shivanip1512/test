@@ -168,6 +168,8 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
     public void trendPointSetup_EditPoint_ValuesCorrect() {
+        //Taking longer to create a trend so need to add refresh here
+        refreshPage(trendEditPage);
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_MODAL_TITLE = "Edit " + POINT_NAME;
         
