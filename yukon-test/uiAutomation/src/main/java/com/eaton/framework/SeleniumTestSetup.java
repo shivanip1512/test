@@ -305,9 +305,16 @@ public class SeleniumTestSetup {
 
     public static void navigate(String url) {
         String pageUrl = getBaseUrl() + url;
-        SeleniumTestSetup.driver.navigate().to(pageUrl);
+        
+        boolean pageLoaded = false;
+        
+        long startTime = System.currentTimeMillis();
 
-        waitForUrlToLoad(pageUrl, Optional.empty());
+        while (!pageLoaded && (System.currentTimeMillis() - startTime) < 2000) {
+            SeleniumTestSetup.driver.navigate().to(pageUrl);
+
+            pageLoaded = waitForUrlToLoad(pageUrl, Optional.empty());
+        }
     }
 
     public static void moveToElement(WebElement element) {

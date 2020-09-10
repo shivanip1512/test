@@ -35,6 +35,7 @@ public class ControlAreaCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void controlAreaCreate_pageTitle_Correct() {
+        navigate(Urls.DemandResponse.CONTROL_AREA_CREATE);
         final String EXPECTED_TITLE = "Create Control Area";
 
         String actualPageTitle = createPage.getPageTitle();
