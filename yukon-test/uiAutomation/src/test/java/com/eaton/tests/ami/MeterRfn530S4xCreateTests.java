@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.Optional;
 import java.util.Random;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -31,14 +30,16 @@ public class MeterRfn530S4xCreateTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         driverExt = getDriverExt();
 
-        driver.get(getBaseUrl() + Urls.Ami.AMI_DASHBOARD);
-
+        navigate(Urls.Ami.AMI_DASHBOARD);
         amiDashboardPage = new AmiDashboardPage(driverExt);
         randomNum = getRandomNum();
+    }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterTest() {
+        refreshPage(amiDashboardPage);
     }
 
     @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
@@ -78,10 +79,5 @@ public class MeterRfn530S4xCreateTests extends SeleniumTestSetup {
         for (int i = 0; i < length; i++)
             sb.append(AB.charAt(rnd.nextInt(AB.length())));
         return sb.toString();
-    }
-
-    @AfterMethod(alwaysRun = true)
-    public void afterTest() {
-        refreshPage(amiDashboardPage);
     }
 }

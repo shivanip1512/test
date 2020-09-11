@@ -28,18 +28,20 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
     WebDriver driver;
     private DriverExtensions driverExt;
     private Random randomNum;
-    private SoftAssertions softly;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
         randomNum = getRandomNum();
-        softly = new SoftAssertions();
-        
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
         createPage = new LoadGroupVersacomCreatePage(driverExt);
     }
 
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        refreshPage(createPage);
+    }
+    
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreateVersacom_RequiredFieldsOnlySuccessfully() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -338,6 +340,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreateVersacom_AddressUsageSerial_SectionDivisionClassDisabled() {
+        SoftAssertions softly = new SoftAssertions();
         createPage.getType().selectItemByValue("LM_GROUP_VERSACOM");
         waitForLoadingSpinner();
 
@@ -351,6 +354,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreateVersacom_AddressUsageSectionDivisionClassSerialSelected_AddressingSectionClassDivisionDisabled() {
+        SoftAssertions softly = new SoftAssertions();
         createPage.getType().selectItemByValue("LM_GROUP_VERSACOM");
         waitForLoadingSpinner();
 
@@ -363,10 +367,5 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         softly.assertThat(createPage.getSectionAddress().isDisabled()).isFalse();
         softly.assertThat(createPage.getDivisionAddress().allValuesDisabled()).isTrue();
         softly.assertAll();
-    }
-
-    @AfterMethod(alwaysRun = true)
-    public void afterTest() {
-        refreshPage(createPage);
     }
 }

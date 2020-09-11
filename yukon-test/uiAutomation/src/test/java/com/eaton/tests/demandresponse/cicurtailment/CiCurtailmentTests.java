@@ -2,7 +2,6 @@ package com.eaton.tests.demandresponse.cicurtailment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -18,12 +17,8 @@ public class CiCurtailmentTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
-
-        driver.get(getBaseUrl() + Urls.DemandResponse.CI_CURTAILMENT);
-
+        navigate(Urls.DemandResponse.CI_CURTAILMENT);
         curtailmentPage = new CiCurtailmentPage(driverExt, null);
     }
 
