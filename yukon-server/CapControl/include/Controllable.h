@@ -17,7 +17,7 @@ public:
 
     Controllable(const Controllable & rhs);
 
-    ~Controllable();
+    virtual ~Controllable();
 
     Controllable & operator=(const Controllable & rhs);
 

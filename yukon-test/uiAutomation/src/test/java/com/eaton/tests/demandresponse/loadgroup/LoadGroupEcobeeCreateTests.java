@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.Optional;
 import java.util.Random;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -26,14 +25,9 @@ public class LoadGroupEcobeeCreateTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         driverExt = getDriverExt();
-
-        driver.get(getBaseUrl() + Urls.DemandResponse.LOAD_GROUP_CREATE);
-
+        navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
         createPage = new LoadGroupCreatePage(driverExt);
-
         randomNum = getRandomNum();
     }
 
@@ -44,7 +38,6 @@ public class LoadGroupEcobeeCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateEcobee_AllFieldsDisableFalseSuccessfully() {
-
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT ecobee " + timeStamp;
         double randomDouble = randomNum.nextDouble();
@@ -72,7 +65,6 @@ public class LoadGroupEcobeeCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateEcobee_CreateAllFieldsDisableTrueSuccessfully() {
-
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT ecobee " + timeStamp;
         double randomDouble = randomNum.nextDouble();

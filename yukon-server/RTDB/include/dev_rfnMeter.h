@@ -84,6 +84,7 @@ protected:
     void handleCommandResult( const Commands::RfnChannelIntervalRecording::SetConfigurationCommand       & cmd ) override;
 
     void handleCommandResult( const Commands::RfnMetrologyGetConfigurationCommand & cmd ) override;
+    void handleCommandResult( const Commands::RfnMetrologySetConfigurationCommand & cmd ) override;
 
     bool hasMetrologyLibrarySupport() const;
 

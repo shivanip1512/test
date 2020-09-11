@@ -1,7 +1,6 @@
 package com.eaton.tests;
 
 import static org.assertj.core.api.Assertions.*;
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
@@ -18,11 +17,9 @@ public class LoginTests extends SeleniumTestSetup {
     @Test(enabled = false)
     public void loginSuccessfully() {
         final String EXPECTED_TITLE = "Dashboard: Default Main Dashboard";
-        WebDriver driver = getDriver();        
         DriverExtensions driverExt = getDriverExt();
         
-        driver.get(SeleniumTestSetup.getBaseUrl() + Urls.LOGIN);
-
+        navigate(Urls.LOGIN);
         page = new LoginPage(driverExt);
 
         page.getUserName().setInputValue("ea");
