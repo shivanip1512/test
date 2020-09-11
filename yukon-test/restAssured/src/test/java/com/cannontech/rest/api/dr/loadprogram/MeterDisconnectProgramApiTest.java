@@ -53,7 +53,7 @@ public class MeterDisconnectProgramApiTest {
         ExtractableResponse<?> response = ApiCallHelper.post("saveLoadProgram", loadProgram);
         context.setAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME, loadProgram.getName());
         programId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
+        assertTrue("Status code should be 201", response.statusCode() == 201);
         assertTrue("Program Id should not be Null", programId != null);
         loadProgram.setProgramId(programId);
         context.setAttribute("expectedloadProgram", loadProgram);

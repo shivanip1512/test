@@ -236,7 +236,7 @@ public class LoadProgramSetupController {
                 return bindAndForward(loadProgram, selectedGearsIds, result, redirectAttributes);
             }
 
-            if (response.getStatusCode() == HttpStatus.OK) {
+            if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 HashMap<String, Integer> programIdMap = (HashMap<String, Integer>) response.getBody();
                 int programId = programIdMap.get("programId");
                 flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", loadProgram.getName()));

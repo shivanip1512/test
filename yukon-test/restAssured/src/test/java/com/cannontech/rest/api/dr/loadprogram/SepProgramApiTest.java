@@ -60,7 +60,7 @@ public class SepProgramApiTest {
         ExtractableResponse<?> response = ApiCallHelper.post("saveLoadProgram", loadProgram);
         context.setAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME, loadProgram.getName());
         programId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID);
-        assertTrue(response.statusCode() == 200, "Status code should be 200");
+        assertTrue(response.statusCode() == 201, "Status code should be 201");
         assertTrue(programId != null, "Program Id should not be Null");
         loadProgram.setProgramId(programId);
         context.setAttribute("expectedloadProgram", loadProgram);

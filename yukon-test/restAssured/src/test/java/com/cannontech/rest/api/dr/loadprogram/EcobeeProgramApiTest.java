@@ -57,7 +57,7 @@ public class EcobeeProgramApiTest {
         loadProgram.setNotification(null);
         // Create Load Program
         ExtractableResponse<?> response = ApiCallHelper.post("saveLoadProgram", loadProgram);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
+        assertTrue("Status code should be 201", response.statusCode() == 201);
         assertTrue("GROUP Id should not be Null", response.path("programId") != null);
 
         programId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID);
