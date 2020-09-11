@@ -37,14 +37,13 @@ public class TrendsListTests extends SeleniumTestSetup {
 
         navigate(Urls.Tools.TRENDS_LIST);
         listPage = new TrendsListPage(driverExt);
-    }
+    }    
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
     public void trendsList_Create_NavigatesToCorrectUrl() {
         final String EXPECTED_TITLE = "Create Trend";
 
         navigate(Urls.Tools.TRENDS_LIST);
-
         listPage.getActionBtn().clickAndSelectOptionByText("Create");
         String actualTitle = listPage.getPageTitle();
 

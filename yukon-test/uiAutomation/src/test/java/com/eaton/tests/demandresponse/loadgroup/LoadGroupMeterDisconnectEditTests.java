@@ -38,7 +38,7 @@ public class LoadGroupMeterDisconnectEditTests extends SeleniumTestSetup {
         editPage = new LoadGroupMeterDisconnectEditPage(driverExt, id);
     }
 
-    @AfterMethod
+    @AfterMethod(alwaysRun = true)
     public void afterMethod() {
         refreshPage(editPage);
     }

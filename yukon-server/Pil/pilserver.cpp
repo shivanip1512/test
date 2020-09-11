@@ -683,7 +683,7 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
                 if( ! devSingle->getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection) )
                 {
                     auto verifyMsg = makeVerifyMsg(
-                        InMessage.DeviceID,
+                        InMessage.TargetID,
                         InMessage.Return.UserID,
                         InMessage.Return.Connection);
 

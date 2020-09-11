@@ -83,33 +83,17 @@ yukon.widget.config = (function () {
                     }
                     //display upload popup if needed
                     if (data.displayUploadPopup) {
-                        var popup = $('#uploadPopup'),
-                            title = popup.data('title'),
-                            uploadBtnText = popup.data('upload-btn');
+                        var popup = $('#uploadPopup');
                         popup.attr('data-widget-id', widgetId);
-                        $('.js-upload-msg').text(data.popupMessage);
-                        popup.dialog({
-                            title: title,
-                            width: '400px',
-                            modal: true,
-                            buttons: yukon.ui.buttons({ okText: uploadBtnText, event: 'yukon:config:upload' })
-                        });
+                        popup.find('.js-upload-msg').text(data.popupMessage);
+                        yukon.ui.dialog(popup);
                     }
                 });
                 
             });
             
             $(document).on('click', '.js-out-of-sync', function () {
-                var popup = $('.js-out-of-sync-popup'),
-                    title = popup.data('title'),
-                    widgetContainer = $('.js-config-widget'),
-                    deviceId = widgetContainer.data('device-id');
-                popup.load(yukon.url('/deviceConfiguration/summary/' + deviceId + '/outOfSync'), function () {
-                    popup.dialog({
-                        title: title,
-                        width: 550
-                    });
-                });
+                yukon.ui.dialog($('.js-out-of-sync-popup'));
             });
             
             $(document).on('yukon:config:upload', function(event) {
