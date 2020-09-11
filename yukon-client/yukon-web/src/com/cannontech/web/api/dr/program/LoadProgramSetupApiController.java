@@ -65,10 +65,10 @@ public class LoadProgramSetupApiController {
         int paoId = loadProgramService.delete(id);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("id", paoId);
-        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
+        return new ResponseEntity<>(paoIdMap, HttpStatus.CREATED);
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("/copy/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> copy(@Valid @RequestBody LoadProgramCopy loadProgramCopy, @PathVariable int id) {
         int paoId = loadProgramService.copy(id, loadProgramCopy);

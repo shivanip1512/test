@@ -28,7 +28,7 @@ public class ApiURL {
     public static final String drAvailableNotificationGroupsUrl = "/dr/setup/loadProgram/availableNotificationGroups/";
     public static final String drAvailableDirectMemberControlsUrl = "/dr/setup/loadProgram/availableDirectMemberControls/";
     public static final String drLoadProgramDeleteUrl = "/dr/setup/loadProgram/";
-    public static final String drLoadProgramCopyUrl = "/dr/setup/loadProgram/";
+    public static final String drLoadProgramCopyUrl = "/dr/setup/loadProgram/copy/";
     public static final String drLoadProgramUpdateUrl = "/dr/setup/loadProgram/";
     public static final String drLoadProgramAvailableProgramsUrl = "/dr/setup/loadProgram/availablePrograms";
     public static final String drGetGearsForLoadProgram = "/dr/setup/loadProgram/getGearsForProgram/";

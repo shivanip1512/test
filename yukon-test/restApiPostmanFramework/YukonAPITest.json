@@ -2351,7 +2351,7 @@
 											"raw": "{  \r\n   \"name\":\"TestCopy\",\r\n   \"constraint\":{  \r\n      \"constraintId\":16\r\n   },\r\n   \"operationalState\":\"Timed\"\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/36516",
+											"raw": "{{api-url}}/api/dr/setup/loadProgram/copy/36516",
 											"host": [
 												"{{api-url}}"
 											],
@@ -2360,6 +2360,7 @@
 												"dr",
 												"setup",
 												"loadProgram",
+                                                "copy",
 												"36516"
 											]
 										}
