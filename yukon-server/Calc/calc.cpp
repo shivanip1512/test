@@ -11,12 +11,13 @@ extern ULONG _CALC_DEBUG;
 using namespace std;
 
 // static const strings
-const CHAR * CtiCalc::UpdateType_Periodic   = "On Timer";
-const CHAR * CtiCalc::UpdateType_AllChange  = "On All Change";
-const CHAR * CtiCalc::UpdateType_OneChange  = "On First Change";
-const CHAR * CtiCalc::UpdateType_Historical = "Historical";
-const CHAR * CtiCalc::UpdateType_PeriodicPlusUpdate = "On Timer+Change";
-const CHAR * CtiCalc::UpdateType_Constant   = "Constant";
+const std::string CtiCalc::UpdateType_Periodic   = "On Timer";
+const std::string CtiCalc::UpdateType_AllChange  = "On All Change";
+const std::string CtiCalc::UpdateType_OneChange  = "On First Change";
+const std::string CtiCalc::UpdateType_Historical = "Historical";
+const std::string CtiCalc::UpdateType_BackfilledHistorical = "Backfilled Historical";
+const std::string CtiCalc::UpdateType_PeriodicPlusUpdate = "On Timer+Change";
+const std::string CtiCalc::UpdateType_Constant   = "Constant";
 
 CtiCalc::CtiCalc( long pointId, const string &updateType, int updateInterval, const string &qualityFlag )
 {
@@ -58,6 +59,11 @@ CtiCalc::CtiCalc( long pointId, const string &updateType, int updateInterval, co
         _updateInterval = 0;
         _updateType = historical;
     }
+    else if( ciStringEqual(updateType, UpdateType_BackfilledHistorical) )
+    {
+        _updateInterval = 0;
+        _updateType = historical;
+    }
     else if( ciStringEqual(updateType,UpdateType_PeriodicPlusUpdate) )
     {
         _updateInterval = updateInterval;
@@ -81,25 +87,8 @@ CtiCalc::CtiCalc( long pointId, const string &updateType, int updateInterval, co
     }
 }
 
-CtiCalc &CtiCalc::operator=( CtiCalc &toCopy )
+void CtiCalc::appendComponent( std::unique_ptr<CtiCalcComponent> componentToAdd )
 {
-    //  make sure I'm squeaky clean to prevent memory leaks
-    cleanup( );
-
-    //  must do a deep copy;  components aren't common enough to justify a reference-counted shallow copy
-    for each( CtiCalcComponent *tmp in toCopy._components )
-    {
-        appendComponent(new CtiCalcComponent(*tmp));
-    }
-    _updateInterval = toCopy._updateInterval;
-    _pointId = toCopy._pointId;
-    _valid = toCopy._valid;
-    return *this;
-}
-
-void CtiCalc::appendComponent( CtiCalcComponent *componentToAdd )
-{
-    _components.push_back( componentToAdd );
     componentToAdd->passParent( this );
 
     if( !strcmp(componentToAdd->getFunctionName().c_str(), "Baseline") )
@@ -124,18 +113,13 @@ void CtiCalc::appendComponent( CtiCalcComponent *componentToAdd )
     {
         _regressionPtId = componentToAdd->getComponentPointId();
     }
-}
 
-
-void CtiCalc::cleanup( void )
-{
-    delete_container( _components );
-    _components.clear( );
+    _components.emplace_back(std::move(componentToAdd));
 }
 
 void CtiCalc::clearComponentDependencies( void )
 {
-    for each( CtiCalcComponent *tmpComponent in _components )
+    for( auto& tmpComponent : _components )
     {
         if ( CtiPointStoreElement* componentPointPtr = CtiPointStore::find(tmpComponent->getComponentPointId()) )
         {
@@ -177,7 +161,7 @@ double CtiCalc::calculate( int &calc_quality, CtiTime &calc_time, bool &calcVali
         /*
          *  Iterate this calc's components passing in each succesive result (through retVal).
          */
-        for each( CtiCalcComponent *tmpComponent in _components )
+        for( auto& tmpComponent : _components )
         {
             if( _valid &= tmpComponent->isValid( ) )  //  Entire calculation is only valid if each component is valid
             {
@@ -272,7 +256,7 @@ BOOL CtiCalc::ready( void )
                 }
                 break;
             case allUpdate:
-                for each( CtiCalcComponent *c in _components )
+                for( auto& c : _components )
                 {
                     isReady &= c->isUpdated( );
                 }
@@ -282,7 +266,7 @@ BOOL CtiCalc::ready( void )
                 isReady = TRUE;
                 break;
             case anyUpdate:
-                for each( CtiCalcComponent *c in _components )
+                for( auto& c : _components )
                 {
                     isReady |= c->isUpdated( );
                     if( isReady )
@@ -295,7 +279,7 @@ BOOL CtiCalc::ready( void )
                 {
                     if(CtiTime::now().seconds() >= getNextInterval())
                     {
-                        for each( CtiCalcComponent *c in _components )
+                        for( auto& c : _components )
                         {
                             isReady &= c->isUpdated( _updateType, CtiTime(getNextInterval()) );
                         }
@@ -370,7 +354,7 @@ long CtiCalc::findDemandAvgComponentPointId()
 {
     long returnPointId = 0;
     //  Iterate through all of the calculations in the collection
-    for each( CtiCalcComponent* tmpComponent in _components )
+    for( auto& tmpComponent : _components )
     {
         // 20050202 CGP // If the push operator was used, the point we choose will be the LAST one on the stack!
         if(tmpComponent->getComponentPointId() > 0)
@@ -586,7 +570,7 @@ set<long> CtiCalc::getComponentIDList()
 {
     set<long> componentIDList;
 
-    for each( CtiCalcComponent *tmpComponent in _components )
+    for( auto& tmpComponent : _components )
     {
         const long componentPointID = tmpComponent->getComponentPointId();
 

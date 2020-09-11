@@ -22,6 +22,8 @@
 #include "database_reader.h"
 #include "database_util.h"
 
+#include <memory>
+
 using namespace std;
 using Cti::ThreadStatusKeeper;
 using Cti::Database::DatabaseConnection;
@@ -1294,7 +1296,6 @@ void CtiCalculateThread::appendPointComponent( long pointID, string &componentTy
                                                string &operationType, double constantValue, string &functionName )
 {
     CtiCalc *targetCalcPoint = NULL;
-    CtiCalcComponent *newComponent = NULL;
     CtiPointStoreElement *tmpElementPtr = NULL;
     PointUpdateType updateType;
 
@@ -1340,8 +1341,13 @@ void CtiCalculateThread::appendPointComponent( long pointID, string &componentTy
     {
         //  insert parameters are (point, dependent, updatetype)
         tmpElementPtr = CtiPointStore::insert( componentPointID, pointID, updateType );
-        newComponent = CTIDBG_new CtiCalcComponent( componentType, componentPointID, operationType, constantValue, functionName );
-        targetCalcPoint->appendComponent( newComponent );
+        targetCalcPoint->appendComponent(
+            std::make_unique<CtiCalcComponent>(
+                componentType, 
+                componentPointID, 
+                operationType, 
+                constantValue, 
+                functionName));
     }
 }
 
