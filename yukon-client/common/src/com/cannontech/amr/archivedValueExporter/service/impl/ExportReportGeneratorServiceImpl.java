@@ -45,6 +45,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
+import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoData;
@@ -89,6 +90,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     @Autowired private ConfigurationSource configSource;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private StateGroupDao stateGroupDao;
+    @Autowired private PaoLocationDao paoLocationDao;
 
     public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
 
@@ -459,6 +461,12 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             }
         case RUNTIME:
             return getTimestamp(exportField, reportRunTime.toDate(), userContext, tzFormat);
+        case LATITUDE:
+            return getLatitude(pao, paoData);
+//            return StringUtils.isEmpty(paoData.getLatitude()) ? "45" : String.valueOf(paoLocationDao.getLocation(pao.getPaoIdentifier().getPaoId()).getLatitude());
+        case LONGITUDE:
+            return getLongitude(pao, paoData);
+//            return StringUtils.isEmpty(paoData.getLatitude()) ? "45" : String.valueOf(paoLocationDao.getLocation(pao.getPaoIdentifier().getPaoId()).getLongitude());
         default:
             throw new IllegalArgumentException(
                     exportField.getField().getType() + " is not currently supported in the export report process");
@@ -789,6 +797,8 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         paoData.setCarrierAddress(carrierAddress);
         paoData.setRouteName(routeName);
         paoData.setAddressOrSerialNumber(address);
+        paoData.setLatitude("43.9787");
+        paoData.setLongitude("15.3846");
 
         return ImmutableMap.of(paoIdentifier, paoData);
     }
@@ -809,5 +819,31 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     private String getPreviewPointState(YukonUserContext userContext) {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         return messageSourceAccessor.getMessage(previewPointStateKey);
+    }
+
+    /**
+     * Gets the quality. Returns "" if the quality was not found.
+     */
+    private String getLatitude(YukonPao pao, PaoData paoData) {
+        if (pao == null || (pao == null && paoData == null)) {
+            return "";
+        } else if (paoData.getLatitude() != null) {
+            return paoData.getLatitude();
+        }
+
+        return String.valueOf(paoLocationDao.getLocation(pao.getPaoIdentifier().getPaoId()).getLatitude());
+    }
+
+    /**
+     * Gets the quality. Returns "" if the quality was not found.
+     */
+    private String getLongitude(YukonPao pao, PaoData paoData) {
+        if (pao == null || (pao == null && paoData == null)) {
+            return "";
+        } else if (paoData.getLongitude() != null) {
+            return paoData.getLongitude();
+        }
+
+        return String.valueOf(paoLocationDao.getLocation(pao.getPaoIdentifier().getPaoId()).getLongitude());
     }
 }
