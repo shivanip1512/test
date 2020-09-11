@@ -29,7 +29,7 @@ public:
     typedef std::map<long, CtiCalc* >::iterator CtiCalcPointMapIterator;
 
 private:
-    CtiCalcPointMap _periodicPoints, _onUpdatePoints, _constantPoints, _historicalPoints;
+    CtiCalcPointMap _periodicPoints, _onUpdatePoints, _constantPoints, _historicalPoints, _backfilledPoints;
     CtiValDeque<long> _auAffectedPoints;
     CtiPtrDeque<CtiMultiMsg> _outbox;
     CtiCriticalSection _pointDataMutex;
