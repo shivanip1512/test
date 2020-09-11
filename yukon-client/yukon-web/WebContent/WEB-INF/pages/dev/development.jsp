@@ -54,7 +54,7 @@
                     <li><a href="<cti:url value="/dev/systemHealthMetricSimulator/home"/>">Fake System Health Metrics</a></li>
                     <li><a href="<cti:url value="/dev/paoDefinition"/>">Pao Definition Testing</a></li>
                     <li><a href="<cti:url value="/dev/smartNotificationsSimulator"/>">Smart Notifications Testing</a></li>
-                    <li><a href="<cti:url value="/dev/collectionActionsTesting"/>">Collection Actions Testing</a></li>
+                    <li><a href="<cti:url value="/dev/cacheManagement"/>">Cache Management</a></li>
                     <li><a href="<cti:url value="/dev/nest/home"/>">Nest Test</a></li>
                     <li><a href="<cti:url value="/dev/itron/itronSimulator"/>">Itron Simulator</a></li>
                     

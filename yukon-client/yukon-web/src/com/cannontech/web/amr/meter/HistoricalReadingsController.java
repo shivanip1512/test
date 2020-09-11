@@ -87,10 +87,10 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.service.CachedPointDataCorrelationService;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.tools.points.PointBackingBean;
-import com.cannontech.web.updater.point.CachedPointDataCorrelationService;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -180,7 +180,7 @@ public class HistoricalReadingsController {
         model.addAttribute("title", title);
         LitePoint litePoint = pointDao.getLitePoint(pointId);
         model.addAttribute("showTrend", !litePoint.getPointTypeEnum().isStatus());
-        cachedPointDataCorrelationService.correlateAndLog(pointId);
+        cachedPointDataCorrelationService.correlateAndLog(pointId, context);
         
         return "historicalReadings/view.jsp";
     }
