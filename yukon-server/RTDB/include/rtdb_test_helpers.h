@@ -616,8 +616,10 @@ void msgsEqual(
     auto resultStrings = returnMsgs | boost::adaptors::transformed( [](const std::unique_ptr<CtiReturnMsg> &msg){ return msg->ResultString(); } );
     auto resultStatuses = returnMsgs | boost::adaptors::transformed( []( const std::unique_ptr<CtiReturnMsg> &msg ){ return msg->Status(); } );
 
+    const std::vector<int> oracleStatuses( oracleMsgs.size(), status );
+
     BOOST_CHECK_EQUAL_RANGES( resultStrings, oracleMsgs );
-    BOOST_CHECK_EQUAL( resultStatuses.size(), boost::range::count( resultStatuses, status ) );
+    BOOST_CHECK_EQUAL_RANGES( resultStatuses, oracleStatuses );
 };
 
 auto extractExpectMore(const CtiDeviceSingle::ReturnMsgList & returnMsgs) 
