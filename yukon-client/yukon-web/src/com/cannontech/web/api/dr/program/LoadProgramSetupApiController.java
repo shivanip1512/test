@@ -56,7 +56,7 @@ public class LoadProgramSetupApiController {
         int paoId = loadProgramService.create(loadProgram);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("programId", paoId);
-        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
+        return new ResponseEntity<>(paoIdMap, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
@@ -65,7 +65,7 @@ public class LoadProgramSetupApiController {
         int paoId = loadProgramService.delete(id);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("id", paoId);
-        return new ResponseEntity<>(paoIdMap, HttpStatus.CREATED);
+        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
     @PostMapping("/copy/{id}")
