@@ -22,7 +22,7 @@ public:
     CapControlPao();
     CapControlPao(Cti::RowReader& rdr);
 
-    ~CapControlPao() = default;
+    virtual ~CapControlPao() = default;
 
     int getPaoId() const;
     void setPaoId(int paoId);
