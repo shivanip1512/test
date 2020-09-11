@@ -463,10 +463,8 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             return getTimestamp(exportField, reportRunTime.toDate(), userContext, tzFormat);
         case LATITUDE:
             return getLatitude(pao, paoData);
-//            return StringUtils.isEmpty(paoData.getLatitude()) ? "45" : String.valueOf(paoLocationDao.getLocation(pao.getPaoIdentifier().getPaoId()).getLatitude());
         case LONGITUDE:
             return getLongitude(pao, paoData);
-//            return StringUtils.isEmpty(paoData.getLatitude()) ? "45" : String.valueOf(paoLocationDao.getLocation(pao.getPaoIdentifier().getPaoId()).getLongitude());
         default:
             throw new IllegalArgumentException(
                     exportField.getField().getType() + " is not currently supported in the export report process");
@@ -822,7 +820,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     }
 
     /**
-     * Gets the quality. Returns "" if the quality was not found.
+     * Gets the Latitude. Returns "" if the latitude was not found.
      */
     private String getLatitude(YukonPao pao, PaoData paoData) {
         if (pao == null || (pao == null && paoData == null)) {
@@ -835,7 +833,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     }
 
     /**
-     * Gets the quality. Returns "" if the quality was not found.
+     * Gets the longitude. Returns "" if the longitude was not found.
      */
     private String getLongitude(YukonPao pao, PaoData paoData) {
         if (pao == null || (pao == null && paoData == null)) {
