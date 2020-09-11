@@ -278,8 +278,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
         waitForLoadingSpinner();
 
-        List<String> expectedLabels = new ArrayList<>(
-                List.of("Control Priority:", "kW Capacity:", "Disable Group:", "Disable Control:"));
+        List<String> expectedLabels = new ArrayList<>(List.of("Control Priority:", "kW Capacity:", "Disable Group:", "Disable Control:"));
         List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
         assertThat(expectedLabels).containsExactlyElementsOf(actualLabels);
@@ -331,8 +330,8 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
         waitForLoadingSpinner();
 
-        createPage.getGeographicalAddress().setTrueFalseByName("GEO", true);
-        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getGeographicalAddress().setTrueFalseById("GEO", true);
+        createPage.getUsage().setTrueFalseById("LOAD", true);
         createPage.getGeo().clearInputValue();
         createPage.getSaveBtn().click();
 
@@ -345,7 +344,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("GEO", true);
-        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseById("LOAD", true);
         createPage.getGeo().setInputValue("65535");
         createPage.getSaveBtn().click();
 
@@ -358,7 +357,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("GEO", true);
-        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseById("LOAD", true);
         createPage.getGeo().setInputValue("0");
         createPage.getSaveBtn().click();
 
@@ -371,7 +370,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("Substation", true);
-        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseById("LOAD", true);
         createPage.getSubstation().clearInputValue();
         createPage.getSaveBtn().click();
 
@@ -384,7 +383,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("Substation", true);
-        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseById("LOAD", true);
         createPage.getSubstation().setInputValue("65535");
         createPage.getSaveBtn().click();
 
@@ -396,8 +395,8 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
         waitForLoadingSpinner();
 
-        createPage.getGeographicalAddress().setTrueFalseByName("Substation", true);
-        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getGeographicalAddress().setTrueFalseById("SUBSTATION", true);
+        createPage.getUsage().setTrueFalseById("LOAD", true);
         createPage.getSubstation().setInputValue("0");
         createPage.getSaveBtn().click();
 
@@ -409,7 +408,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
         waitForLoadingSpinner();
 
-        createPage.getGeographicalAddress().setTrueFalseByName("Feeder", true);
+        createPage.getGeographicalAddress().setTrueFalseById("FEEDER", true);
         assertThat(createPage.getFeeder().getSwitchCount()).isEqualTo(16);
     }
 
@@ -427,7 +426,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("ZIP", true);
-        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseById("LOAD", true);
         createPage.getZip().clearInputValue();
         createPage.getSaveBtn().click();
 
@@ -440,7 +439,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("ZIP", true);
-        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseById("LOAD", true);
         createPage.getZip().setInputValue("16777219");
         createPage.getSaveBtn().click();
 
@@ -453,7 +452,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("ZIP", true);
-        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseById("LOAD", true);
         createPage.getZip().setInputValue("0");
         createPage.getSaveBtn().click();
 
@@ -466,7 +465,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("User", true);
-        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseById("LOAD", true);
         createPage.getUser().clearInputValue();
         createPage.getSaveBtn().click();
 
@@ -479,7 +478,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("User", true);
-        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseById("LOAD", true);
         createPage.getUser().setInputValue("65535");
         createPage.getSaveBtn().click();
 
@@ -492,7 +491,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("User", true);
-        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseById("LOAD", true);
         createPage.getUser().setInputValue("0");
         createPage.getSaveBtn().click();
 
@@ -505,7 +504,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("Serial", true);
-        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseById("LOAD", true);
         createPage.getSerial().clearInputValue();
         createPage.getSaveBtn().click();
 
@@ -518,7 +517,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("Serial", true);
-        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseById("LOAD", true);
         createPage.getSerial().setInputValue("1000000000");
         createPage.getSaveBtn().click();
 
@@ -531,7 +530,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         createPage.getGeographicalAddress().setTrueFalseByName("Serial", true);
-        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseById("LOAD", true);
         createPage.getSerial().setInputValue("-1");
         createPage.getSaveBtn().click();
 
@@ -543,7 +542,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = "At least 1 load group must be selected when LOAD usage is checked.";
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
 
-        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseById("LOAD", true);
 
         createPage.getSaveBtn().click();
 
@@ -555,14 +554,16 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateExpresscom_UsageLoadSelected_SendLoadsYes() {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
+        waitForLoadingSpinner();
 
-        createPage.getUsage().setTrueFalseByName("Load", true);
+        createPage.getUsage().setTrueFalseById("LOAD", true);
         assertThat(createPage.getSendLoadsInControlMessageText()).isEqualTo("Yes");
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateExpresscom_UsageLoadNotSelected_SendLoadsNo() {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
+        waitForLoadingSpinner();
 
         assertThat(createPage.getUsage().isValueSelected("Load")).isFalse();
         assertThat(createPage.getSendLoadsInControlMessageText()).isEqualTo("No");

@@ -43,6 +43,22 @@ public class SwitchBtnMultiSelectElement {
             switchButton.click();
         }
     }
+    
+    public void setTrueFalseById(String buttonId, boolean checked) {
+        WebElement switchElement = getSwitchBtn();
+        
+        List<WebElement> buttons = switchElement.findElements(By.cssSelector(".switch-btn"));
+        
+        WebElement el = buttons.stream().filter(x -> x.findElement(By.cssSelector("input[id='" + buttonId + "_chk']")).getAttribute("value").equals(buttonId)).findFirst().orElseThrow();
+        
+        WebElement switchButton = el.findElement(By.cssSelector("input[id='" + buttonId + "_chk']"));
+        
+        String isChecked = switchButton.getAttribute("checked");
+        
+        if ((isChecked == null && checked) || (isChecked != null && !checked)) {
+            el.findElement(By.cssSelector(".b-label")).click();
+        }
+    }
 
     public boolean isValueSelected(String name) {
         WebElement element = getSwitchBtn();

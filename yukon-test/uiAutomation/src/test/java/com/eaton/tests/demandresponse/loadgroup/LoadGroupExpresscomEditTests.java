@@ -205,13 +205,10 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
         softly.assertThat(editPage.getDisableGroup().getCheckedValue()).isEqualTo("No");
         softly.assertThat(editPage.getFeederValueString()).isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.feeder").toString());
         softly.assertThat(editPage.getGeo().getInputValue()).isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.geo").toString());
-        softly.assertThat(editPage.getkWCapacity().getInputValue())
-                .isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.kWCapacity").toString());
-        softly.assertThat(editPage.getProgram().getInputValue())
-                .isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.program").toString());
+        softly.assertThat(editPage.getkWCapacity().getInputValue()).isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.kWCapacity").toString());
+        softly.assertThat(editPage.getProgram().getInputValue()).isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.program").toString());
         String protocolPriorityRespense = getResponse.path("LM_GROUP_EXPRESSCOMM.protocolPriority").toString();
-        String protocolPriority = protocolPriorityRespense.substring(0, 1).toUpperCase()
-                + protocolPriorityRespense.substring(1).toLowerCase();
+        String protocolPriority = protocolPriorityRespense.substring(0, 1).toUpperCase() + protocolPriorityRespense.substring(1).toLowerCase();
         softly.assertThat(editPage.getControlPriority().getSelectedValue()).isEqualTo(protocolPriority);
         softly.assertThat(editPage.getGeographicalAddress().isValueSelected("GEO")).isEqualTo(true);
         softly.assertThat(editPage.getGeographicalAddress().isValueSelected("Substation")).isEqualTo(true);
@@ -230,14 +227,10 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
         softly.assertThat(editPage.getLoads().isValueSelected("Load_6")).isEqualTo(true);
         softly.assertThat(editPage.getLoads().isValueSelected("Load_7")).isEqualTo(false);
         softly.assertThat(editPage.getLoads().isValueSelected("Load_8")).isEqualTo(false);
-        softly.assertThat(editPage.getCommunicationRoute().getSelectedValue())
-                .isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.routeName").toString());
-        softly.assertThat(editPage.getSpid().getInputValue())
-                .isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.serviceProvider").toString());
-        softly.assertThat(editPage.getSplinter().getInputValue())
-                .isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.splinter").toString());
-        softly.assertThat(editPage.getSubstation().getInputValue())
-                .isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.substation").toString());
+        softly.assertThat(editPage.getCommunicationRoute().getSelectedValue()).isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.routeName").toString());
+        softly.assertThat(editPage.getSpid().getInputValue()).isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.serviceProvider").toString());
+        softly.assertThat(editPage.getSplinter().getInputValue()).isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.splinter").toString());
+        softly.assertThat(editPage.getSubstation().getInputValue()).isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.substation").toString());
         softly.assertThat(editPage.getUser().getInputValue()).isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.user").toString());
         softly.assertThat(editPage.getZip().getInputValue()).isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.zip").toString());
         softly.assertAll();
