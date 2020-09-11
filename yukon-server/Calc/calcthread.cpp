@@ -22,6 +22,8 @@
 #include "database_reader.h"
 #include "database_util.h"
 
+#include "std_helper.h"
+
 #include <memory>
 
 using namespace std;
@@ -1066,7 +1068,7 @@ void CtiCalculateThread::baselineThread( void )
 
 void CtiCalculateThread::appendCalcPoint( long pointID )
 {
-    CtiPointStore::insert( pointID, 0, undefined );
+    CtiPointStore::insert( pointID, 0, CalcUpdateType::Undefined );
 }
 
 std::vector<long> CtiCalculateThread::getPointDependencies() const
@@ -1258,24 +1260,27 @@ bool CtiCalculateThread::appendPoint( long pointid, string &updatetype, int upda
     newPoint = CTIDBG_new CtiCalc( pointid, updatetype, updateinterval, qualityFlag );
     switch( newPoint->getUpdateType( ) )
     {
-    case periodic:
-        inserted = _periodicPoints.insert( std::pair<long,CtiCalc*>(pointid, newPoint) );
-        break;
-    case allUpdate:
-    case anyUpdate:
-    case periodicPlusUpdate:
-        inserted = _onUpdatePoints.insert(   std::pair<long,CtiCalc*> (pointid, newPoint) );
-        break;
-    case constant:
-        inserted = _constantPoints.insert(   std::pair<long,CtiCalc*> (pointid, newPoint) );
-        break;
-    case historical:
-        inserted = _historicalPoints.insert( std::pair<long,CtiCalc*> (pointid, newPoint) );
-        break;
-    default:
+        case CalcUpdateType::Periodic:
+            inserted = _periodicPoints.emplace(pointid, newPoint);
+            break;
+        case CalcUpdateType::AllUpdate:
+        case CalcUpdateType::AnyUpdate:
+        case CalcUpdateType::PeriodicPlusUpdate:
+            inserted = _onUpdatePoints.emplace(pointid, newPoint);
+            break;
+        case CalcUpdateType::Constant:
+            inserted = _constantPoints.emplace(pointid, newPoint);
+            break;
+        case CalcUpdateType::Historical:
+            inserted = _historicalPoints.emplace(pointid, newPoint);
+            break;
+        case CalcUpdateType::BackfilledHistorical:
+            inserted = _backfilledPoints.emplace(pointid, newPoint);
+            break;
+        default:
         {
            CTILOG_ERROR(dout, "Attempt to insert unknown CtiCalc point type \""<< updatetype<< "\", "
-                   "value \""<< newPoint->getUpdateType() <<"\";  aborting point insert");
+                   "value \""<< static_cast<int>(newPoint->getUpdateType()) <<"\";  aborting point insert");
         }
 
         delete newPoint;
@@ -1296,28 +1301,27 @@ void CtiCalculateThread::appendPointComponent( long pointID, string &componentTy
                                                string &operationType, double constantValue, string &functionName )
 {
     CtiCalc *targetCalcPoint = NULL;
-    CtiPointStoreElement *tmpElementPtr = NULL;
-    PointUpdateType updateType;
+    CalcUpdateType updateType;
 
-    if( _periodicPoints.find( pointID ) != _periodicPoints.end() )
+    if( targetCalcPoint = Cti::mapFindPtr(_periodicPoints, pointID) )
     {
-        targetCalcPoint  = _periodicPoints[pointID];
-        updateType = periodic;
+        updateType = CalcUpdateType::Periodic;
     }
-    else if( _onUpdatePoints.find( pointID ) != _onUpdatePoints.end() )
+    else if( targetCalcPoint = Cti::mapFindPtr(_onUpdatePoints, pointID) )
     {
-        targetCalcPoint  = _onUpdatePoints[pointID];
         updateType = targetCalcPoint->getUpdateType();
     }
-    else if( _constantPoints.find( pointID ) != _constantPoints.end() )
+    else if( targetCalcPoint = Cti::mapFindPtr(_constantPoints, pointID) )
     {
-        targetCalcPoint  = _constantPoints[pointID];
-        updateType = constant;
+        updateType = CalcUpdateType::Constant;
     }
-    else if( _historicalPoints.find( pointID ) != _historicalPoints.end())
+    else if( targetCalcPoint = Cti::mapFindPtr(_historicalPoints, pointID) )
     {
-        targetCalcPoint = _historicalPoints[pointID];
-        updateType = historical;
+        updateType = CalcUpdateType::Historical;
+    }
+    else if( targetCalcPoint = Cti::mapFindPtr(_backfilledPoints, pointID) )
+    {
+        updateType = CalcUpdateType::Historical;
     }
     else if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
     {
@@ -1340,7 +1344,7 @@ void CtiCalculateThread::appendPointComponent( long pointID, string &componentTy
     if( targetCalcPoint != NULL )
     {
         //  insert parameters are (point, dependent, updatetype)
-        tmpElementPtr = CtiPointStore::insert( componentPointID, pointID, updateType );
+        CtiPointStore::insert( componentPointID, pointID, updateType );
         targetCalcPoint->appendComponent(
             std::make_unique<CtiCalcComponent>(
                 componentType, 

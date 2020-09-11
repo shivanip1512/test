@@ -42,38 +42,38 @@ CtiCalc::CtiCalc( long pointId, const string &updateType, int updateInterval, co
     {
         _updateInterval = updateInterval;
         setNextInterval (updateInterval);
-        _updateType = periodic;
+        _updateType = CalcUpdateType::Periodic;
     }
     else if( ciStringEqual(updateType,UpdateType_AllChange))
     {
         _updateInterval = 0;
-        _updateType = allUpdate;
+        _updateType = CalcUpdateType::AllUpdate;
     }
     else if( ciStringEqual(updateType,UpdateType_OneChange))
     {
         _updateInterval = 0;
-        _updateType = anyUpdate;
+        _updateType = CalcUpdateType::AnyUpdate;
     }
     else if( ciStringEqual(updateType,UpdateType_Historical))
     {
         _updateInterval = 0;
-        _updateType = historical;
+        _updateType = CalcUpdateType::Historical;
     }
     else if( ciStringEqual(updateType, UpdateType_BackfilledHistorical) )
     {
         _updateInterval = 0;
-        _updateType = historical;
+        _updateType = CalcUpdateType::BackfilledHistorical;
     }
     else if( ciStringEqual(updateType,UpdateType_PeriodicPlusUpdate) )
     {
         _updateInterval = updateInterval;
         setNextInterval (updateInterval);
-        _updateType = periodicPlusUpdate;
+        _updateType = CalcUpdateType::PeriodicPlusUpdate;
     }
     else if( ciStringEqual(updateType,UpdateType_Constant) )
     {
         _updateInterval = 0;
-        _updateType = constant;
+        _updateType = CalcUpdateType::Constant;
     }
     else
     {
@@ -91,25 +91,25 @@ void CtiCalc::appendComponent( std::unique_ptr<CtiCalcComponent> componentToAdd 
 {
     componentToAdd->passParent( this );
 
-    if( !strcmp(componentToAdd->getFunctionName().c_str(), "Baseline") )
+    if( componentToAdd->getFunctionName() == "Baseline" )
     {
         _isBaseline = true;
         _baselineId = componentToAdd->getComponentPointId();
     }
-    else if( !strcmp(componentToAdd->getFunctionName().c_str(), "Baseline Percent") )
+    else if( componentToAdd->getFunctionName() == "Baseline Percent" )
     {
         _isBaseline = true;
         _baselinePercentId = componentToAdd->getComponentPointId();
     }
-    else if( !strcmp(componentToAdd->getFunctionName().c_str(), "Regression") )
+    else if( componentToAdd->getFunctionName() == "Regression" )
     {
         if( CtiPointStoreElement* componentPointPtr = CtiPointStore::find(componentToAdd->getComponentPointId()) )
         {
             componentPointPtr->setUseRegression();
         }
     }
-    else if( !strcmp(componentToAdd->getFunctionName().c_str(), "Intervals To Value") ||
-             !strcmp(componentToAdd->getFunctionName().c_str(), "Linear Slope") )
+    else if( componentToAdd->getFunctionName() == "Intervals To Value" ||
+             componentToAdd->getFunctionName() == "Linear Slope" )
     {
         _regressionPtId = componentToAdd->getComponentPointId();
     }
@@ -222,7 +222,7 @@ double CtiCalc::pop( void )
 }
 
 
-PointUpdateType CtiCalc::getUpdateType( void )
+CalcUpdateType CtiCalc::getUpdateType( void )
 {
     return _updateType;
 }
@@ -245,7 +245,7 @@ BOOL CtiCalc::ready( void )
         {
             switch( _updateType )
             {
-            case periodic:
+            case CalcUpdateType::Periodic:
                 if(CtiTime::now().seconds() > getNextInterval())
                 {
                     isReady = TRUE;
@@ -255,17 +255,18 @@ BOOL CtiCalc::ready( void )
                     isReady = FALSE;
                 }
                 break;
-            case allUpdate:
+            case CalcUpdateType::AllUpdate:
                 for( auto& c : _components )
                 {
                     isReady &= c->isUpdated( );
                 }
                 break;
-            case historical:
-            case constant:
+            case CalcUpdateType::Historical:
+            case CalcUpdateType::BackfilledHistorical:
+            case CalcUpdateType::Constant:
                 isReady = TRUE;
                 break;
-            case anyUpdate:
+            case CalcUpdateType::AnyUpdate:
                 for( auto& c : _components )
                 {
                     isReady |= c->isUpdated( );
@@ -275,7 +276,7 @@ BOOL CtiCalc::ready( void )
                     }
                 }
                 break;
-            case periodicPlusUpdate:
+            case CalcUpdateType::PeriodicPlusUpdate:
                 {
                     if(CtiTime::now().seconds() >= getNextInterval())
                     {
@@ -321,7 +322,7 @@ BOOL CtiCalc::ready( void )
 *       once a minute at the top of the minute
 ********************************
 */
-CtiCalc& CtiCalc::setNextInterval( int aInterval )
+void CtiCalc::setNextInterval( int aInterval )
 {
     CtiTime timeNow;
     if(aInterval > 0)
@@ -329,9 +330,9 @@ CtiCalc& CtiCalc::setNextInterval( int aInterval )
         _nextInterval = nextScheduledTimeAlignedOnRate(timeNow, aInterval).seconds();
     }
     else
+    {
         _nextInterval = timeNow.seconds();
-
-    return *this;
+    }
 }
 
 
@@ -378,7 +379,7 @@ CtiTime CtiCalc::calcTimeFromComponentTime( const CtiTime &minTime, const CtiTim
 {
     CtiTime rtime;
 
-    if(getUpdateType() != periodic)
+    if(getUpdateType() != CalcUpdateType::Periodic)
     {
         rtime = maxTime;
     }
@@ -433,7 +434,7 @@ int CtiCalc::calcQualityFromComponentQuality( int qualityFlag, const CtiTime &mi
             component_quality = QuestionableQuality;
         }
 
-        if(getUpdateType() == periodicPlusUpdate)
+        if(getUpdateType() == CalcUpdateType::PeriodicPlusUpdate)
         {
             if(component_quality == NormalQuality && maxTime.seconds() - minTime.seconds() > getUpdateInterval())
             {

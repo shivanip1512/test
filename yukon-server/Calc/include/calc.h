@@ -8,7 +8,7 @@ class CtiCalc
 {
     std::vector<std::unique_ptr<CtiCalcComponent>>  _components;
     CtiStack<double>     _stack;
-    PointUpdateType      _updateType;
+    CalcUpdateType       _updateType;
     ULONG                _nextInterval;
     int                  _updateInterval;
     long                 _pointId, _baselineId, _baselinePercentId, _regressionPtId;
@@ -41,7 +41,7 @@ public:
     CtiCalc( long pointId, const std::string &updateType, int updateInterval, const std::string &qualityFlag );
 
     ULONG     getNextInterval() const;
-    CtiCalc&  setNextInterval (int interval);
+    void      setNextInterval (int interval);
     int      getUpdateInterval( ) const;
     long     getRegressionComponentId() const;
     int      getComponentCount();
@@ -70,7 +70,7 @@ public:
     void appendComponent( std::unique_ptr<CtiCalcComponent> componentToAdd );
     void cleanup( void );
     void clearComponentDependencies( void );
-    PointUpdateType getUpdateType( void );
+    CalcUpdateType getUpdateType( void );
     double calculate( int &calc_quality, CtiTime &calc_time, bool &calcValid );
     double figureDemandAvg(long secondsInAvg);
     BOOL ready( void );
