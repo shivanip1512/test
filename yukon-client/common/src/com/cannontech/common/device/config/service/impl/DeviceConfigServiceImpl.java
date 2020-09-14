@@ -660,6 +660,9 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
             newState.setLastActionStatus(FAILURE);
             newState.setCurrentState(OUT_OF_SYNC);
         } else {
+            if (requestType == DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY) {
+                newState.setCurrentState(OUT_OF_SYNC);
+            }
             newState.setLastActionStatus(FAILURE);
         }
         return newState;
