@@ -15,7 +15,7 @@ public class WarehousePanel extends BasePanel {
         super(driverExt, panelName);
         
         this.driverExt = driverExt;
-        this.panel = getPanel();
+        this.panel = super.getPanel();
     }
 
     public Button getCreateBtn() {

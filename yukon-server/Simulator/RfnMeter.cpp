@@ -395,6 +395,37 @@ void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySend
                 "56 00 00 00 00"));
             return;
         }
+        case 0x57:
+        {
+            if( request.size() >= 2 )
+            {
+                switch( request[1] )
+                {
+                    //  Write
+                    case 0x00:
+                        /*
+                        57 00 00
+
+                        58 00 00 00
+                        */
+                        sendReply(asBytes(
+                            "58 00 00 00"));
+                        return;
+
+                    //  Read
+                    case 0x01:
+                        /*
+                        57 01
+
+                        58 01 00 00
+                        */
+                        sendReply(asBytes(
+                            "58 01 00 00"));
+                        return;
+                }
+            }
+            return;
+        }
         case 0x60:
         {
             /*
@@ -436,7 +467,7 @@ void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySend
 
             69 06 00 00
             */
-            if( request.size() > 3 )
+            if( request[1] == 0x00 )
             {
                 sendReply(asBytes(
                     "69 00 00 00"));
@@ -513,6 +544,17 @@ void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySend
                 "04 00 00 00 29 00 00 00 31 00 00 00 73 00 07"));
             return;
         }
+        case 0x82:
+        {
+            /*
+            82 00 01 01 01 00
+
+            83 00 00 01 01 01 01 01
+            */
+            sendReply(asBytes(
+                "83 00 00 01 01 01 01 01"));
+            return;
+        }
         case 0x84:
         {
             sendReply(DataStreamingRead(request, rfnIdentifier));
@@ -587,7 +629,11 @@ Bytes processAggregateRequests(const Bytes& payload, const RfnIdentifier rfnIden
         return {};
     }
 
-    Bytes result { HeaderLength };
+    Bytes result;
+    
+    result.resize(HeaderLength);
+
+    auto replies = 0;
 
     for( auto index = 1; itr + RequestHeaderLength < request_end; ++index )
     {
@@ -599,7 +645,7 @@ Bytes processAggregateRequests(const Bytes& payload, const RfnIdentifier rfnIden
         const auto payloadLength = *itr++ << 8
                                  | *itr++;
 
-        if( itr + payloadLength >= request_end )
+        if( itr + payloadLength > request_end )
         {
             CTILOG_WARN(dout, "Ran out of bytes while processing aggregate message for " << rfnIdentifier << FormattedList::of(
                 "Position", itr - payload.begin(),
@@ -623,16 +669,11 @@ Bytes processAggregateRequests(const Bytes& payload, const RfnIdentifier rfnIden
             continue;
         }
 
-        Bytes reply;
+        PayloadOrStatus response;
 
         processGetRequest(
-            [&reply, rfnIdentifier](PayloadOrStatus&& result) {
-                if( const auto payload = std::get_if<Bytes>(&result) ) {
-                    reply = std::move(*payload);
-                }
-                else {
-                    CTILOG_WARN(dout, std::get<Coap::ResponseCode>(result) << " returned while processing component request for " << rfnIdentifier);
-                }
+            [&response, rfnIdentifier](PayloadOrStatus&& r) {
+                response = std::move(r);
             }, 
             [rfnIdentifier](Bytes&& delayed) {
                 CTILOG_WARN(dout, "Discarding delayed response generated for " << rfnIdentifier)
@@ -641,18 +682,41 @@ Bytes processAggregateRequests(const Bytes& payload, const RfnIdentifier rfnIden
             rfnIdentifier, 
             applicationServiceId);
 
-        if( ! reply.empty() )
+        if( const auto reply = std::get_if<Bytes>(&response) )
         {
+            CTILOG_DEBUG(dout, "Writing aggregate reply for " << rfnIdentifier << FormattedList::of(
+                "Request count", count,
+                "Request index", index,
+                "Context ID", (contextId_first << 8) | contextId_second,
+                "ASID", static_cast<unsigned char>(applicationServiceId),
+                "Reply size", reply->size()));
+
             result.push_back(contextId_first);
             result.push_back(contextId_second);
             result.push_back(static_cast<unsigned char>(applicationServiceId));
-            result.push_back(reply.size() >> 8);
-            result.push_back(reply.size());
-            boost::insert(result, result.end(), reply);
+            result.push_back(reply->size() >> 8);
+            result.push_back(reply->size());
+            boost::insert(result, result.end(), *reply);
+            ++replies;
+        }
+        else 
+        {
+            CTILOG_WARN(dout, std::get<Coap::ResponseCode>(response) << " returned while processing component request for " << rfnIdentifier << FormattedList::of(
+                "Request count", count,
+                "Request index", index,
+                "Context ID", (contextId_first << 8) | contextId_second,
+                "ASID", static_cast<unsigned char>(applicationServiceId)));
         }
     }
 
-    return {};
+    const auto payloadSize = result.size() - HeaderLength;
+
+    result[0] = 0x01;
+    result[1] = replies;
+    result[2] = payloadSize >> 8;
+    result[3] = payloadSize;
+
+    return result;
 }
 
 auto GetConfigNotification(const Bytes& payload, const RfnIdentifier& rfnId) -> std::optional<Bytes>;

@@ -56,8 +56,8 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
     private final YukonRowMapper<DeviceConfigSummaryDetail> detailRowMapper = rs -> {
         DeviceConfigSummaryDetail detail = new DeviceConfigSummaryDetail();
         detail.setAction(rs.getEnum("LastAction", LastAction.class));
-        detail.setActionEnd(rs.getInstant("LastActionStart"));
-        detail.setActionStart(rs.getInstant("LastActionEnd"));
+        detail.setActionStart(rs.getInstant("LastActionStart"));
+        detail.setActionEnd(rs.getInstant("LastActionEnd"));
         detail.setDevice(new DisplayableDevice(rs.getPaoIdentifier("PAObjectID", "Type"), rs.getString("PaoName")));
         Integer configId = rs.getNullableInt("DeviceConfigurationId");
         if (configId != null) {
