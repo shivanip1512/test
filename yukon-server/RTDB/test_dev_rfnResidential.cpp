@@ -33,6 +33,11 @@ struct test_RfnResidentialDevice : RfnResidentialDevice
     {
         return false;
     }
+
+    bool hasRfnFirmwareSupportIn(double version) const override
+    {
+        return true;
+    }
 };
 
 struct test_state_rfnResidential
@@ -1611,6 +1616,100 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_freezeday )
             BOOST_CHECK( dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay) );
 
             BOOST_CHECK_EQUAL( 7, dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay) );
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE(test_putconfig_install_metlib)
+{
+    test_RfnResidentialDevice dut;
+
+    dut.setDeviceType(TYPE_RFN410FX);
+
+    Cti::Test::test_DeviceConfig& cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    cfg.insertValue(RfnStrings::MetrologyLibraryEnabled, "true");
+
+    BOOST_CHECK(! dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled));
+
+    {
+        CtiCommandParser parse("putconfig install metlib");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+        {
+            const auto& returnMsg = *returnMsgs.front();
+
+            BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+            BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+        }
+
+        RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+        {
+            auto& command = *rfnRequest_itr++;
+
+            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+            std::vector<unsigned char> exp = boost::assign::list_of
+            (0x57)(0x00)(0x00);
+
+            BOOST_CHECK_EQUAL(rcv, exp);
+
+            std::vector<unsigned char> response = boost::assign::list_of
+            (0x58)(0x00)(0x00)(0x00);
+
+            command->handleResponse(CtiTime::now(), response);
+
+            dut.extractCommandResult(*command);
+
+            BOOST_CHECK(dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled));
+
+            BOOST_CHECK_EQUAL(true, dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled));
+        }
+    }
+
+    returnMsgs.clear();
+    rfnRequests.clear();
+
+    cfg.insertValue(RfnStrings::MetrologyLibraryEnabled, "false");
+
+    {
+        CtiCommandParser parse("putconfig install metlib");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+        {
+            const auto& returnMsg = *returnMsgs.front();
+
+            BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+            BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+        }
+
+        RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+        {
+            auto& command = *rfnRequest_itr++;
+
+            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+            std::vector<unsigned char> exp = boost::assign::list_of
+            (0x57)(0x00)(0x01);
+
+            BOOST_CHECK_EQUAL(rcv, exp);
+
+            std::vector<unsigned char> response = boost::assign::list_of
+            (0x58)(0x00)(0x00)(0x01);
+
+            command->handleResponse(CtiTime::now(), response);
+
+            dut.extractCommandResult(*command);
+
+            BOOST_CHECK(dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled));
+
+            BOOST_CHECK_EQUAL(false, dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled));
         }
     }
 }

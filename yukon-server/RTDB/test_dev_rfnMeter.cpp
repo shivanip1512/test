@@ -498,6 +498,101 @@ BOOST_AUTO_TEST_CASE(test_dev_rfnMeter_putconfig_install_channel_verify_extra)
 }
 
 /**
+This test does a "putconfig install channelconfig verify" with the device reporting a metric ID that has no attribute mapping in Yukon.
+*/
+BOOST_AUTO_TEST_CASE(test_dev_rfnMeter_putconfig_install_channel_unmapped_metric_id)
+{
+    test_RfnMeterDevice dut;
+
+    Cti::Test::test_DeviceConfig& cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+                                                         /* Device settings */
+    std::vector<unsigned long> paoMidnightMetrics = { 1, 2, 3, 4, 5, 9, 182 };
+    std::vector<unsigned long> paoIntervalMetrics = { 1, 2, 3, 4, 5, 9 };
+
+    dut.setID(1234, test_tag);
+    dut.setDynamicInfo(CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, paoMidnightMetrics);
+    dut.setDynamicInfo(CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, paoIntervalMetrics);
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, 123 * 60);
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds, 456 * 60);
+
+    config_a_meter(cfg);
+
+    CtiCommandParser parse("putconfig install channelconfig verify");
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+
+    BOOST_CHECK_EQUAL(0, rfnRequests.size());
+    BOOST_REQUIRE_EQUAL(7, returnMsgs.size());
+
+    auto itr = returnMsgs.begin();
+
+    {
+        const auto& returnMsg = *itr++;
+
+        BOOST_REQUIRE(returnMsg);
+
+        BOOST_CHECK_EQUAL(returnMsg->ResultString(), "Midnight channel program mismatch.  Meter also contains PEAK_DEMAND_FROZEN, Unmapped metric ID 182");
+        BOOST_CHECK_EQUAL(returnMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(returnMsg->ExpectMore(), true);
+    }
+    {
+        const auto& returnMsg = *itr++;
+
+        BOOST_REQUIRE(returnMsg);
+
+        BOOST_CHECK_EQUAL(returnMsg->ResultString(), "Config: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DELIVERED_DEMAND");
+        BOOST_CHECK_EQUAL(returnMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(returnMsg->ExpectMore(), true);
+    }
+    {
+        const auto& returnMsg = *itr++;
+
+        BOOST_REQUIRE(returnMsg);
+
+        BOOST_CHECK_EQUAL(returnMsg->ResultString(), "Meter: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DELIVERED_DEMAND, PEAK_DEMAND_FROZEN, Unmapped metric ID 182");
+        BOOST_CHECK_EQUAL(returnMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(returnMsg->ExpectMore(), true);
+    }
+    {
+        const auto& returnMsg = *itr++;
+
+        BOOST_REQUIRE(returnMsg);
+
+        BOOST_CHECK_EQUAL(returnMsg->ResultString(), "Interval channel program mismatch.  Meter also contains DELIVERED_KWH, RECEIVED_KWH, PEAK_DEMAND_FROZEN");
+        BOOST_CHECK_EQUAL(returnMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(returnMsg->ExpectMore(), true);
+    }
+    {
+        const auto& returnMsg = *itr++;
+
+        BOOST_REQUIRE(returnMsg);
+
+        BOOST_CHECK_EQUAL(returnMsg->ResultString(), "Config: SUM_KWH, NET_KWH, DELIVERED_DEMAND");
+        BOOST_CHECK_EQUAL(returnMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(returnMsg->ExpectMore(), true);
+    }
+    {
+        const auto& returnMsg = *itr++;
+
+        BOOST_REQUIRE(returnMsg);
+
+        BOOST_CHECK_EQUAL(returnMsg->ResultString(), "Meter: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DELIVERED_DEMAND, PEAK_DEMAND_FROZEN");
+        BOOST_CHECK_EQUAL(returnMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(returnMsg->ExpectMore(), true);
+    }
+    {
+        const auto& returnMsg = *itr++;
+
+        BOOST_REQUIRE(returnMsg);
+
+        BOOST_CHECK_EQUAL(returnMsg->ResultString(), "Config channelconfig is NOT current.");
+        BOOST_CHECK_EQUAL(returnMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(returnMsg->ExpectMore(), false);
+    }
+}
+
+/**
 This test does a "putconfig install channelconfig verify" and checks that it properly notices that the 
 device configuration is missing several midnight and interval channel settings.
 */
