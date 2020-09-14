@@ -11,8 +11,6 @@ import com.eaton.framework.DriverExtensions;
 public class WiFiConnectionPanel extends BasePanel {
 
     private DriverExtensions driverExt;
-    private WebElement panel;
-    private Button queryButton;
     private WebTable pointsTable;
     private List<String> labelEntries;
     private List<String> valueEntries;
@@ -27,9 +25,8 @@ public class WiFiConnectionPanel extends BasePanel {
         final int VALUE_INDEX = 2;
         
         this.driverExt = driverExt;
-        this.panel = super.getPanel();
+        WebElement panel = getPanel();
        
-        this.queryButton = new Button(this.driverExt, "Query", this.panel);
         this.pointsTable = new WebTable(driverExt, "name-value-table", panel);
         this.labelEntries = pointsTable.getDataRowsTextByCellIndex(LABEL_INDEX);
         this.commStatusLabel = labelEntries.get(0);
@@ -47,13 +44,9 @@ public class WiFiConnectionPanel extends BasePanel {
     //================================================================================
     // Getters/Setters Section
     //================================================================================
-    
-    public WebElement getPanel() {
-    	return panel;
-    }
 
     public Button getQueryButton() {
-        return queryButton;
+        return new Button(this.driverExt, "Query", getPanel());
     }
     
     public WebTable getPointsTable() {

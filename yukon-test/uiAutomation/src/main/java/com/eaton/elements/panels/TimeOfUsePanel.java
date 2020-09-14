@@ -10,7 +10,6 @@ import com.eaton.framework.DriverExtensions;
 public class TimeOfUsePanel extends BasePanel {
 
     private DriverExtensions driverExt;
-    private WebElement panel;
     private WebTable pointsTableA;
     private WebTable pointsTableB;
     private WebTable pointsTableC;
@@ -23,7 +22,7 @@ public class TimeOfUsePanel extends BasePanel {
         final int LABEL_INDEX = 1;
         final int VALUE_INDEX = 2;
         this.driverExt = driverExt;
-        this.panel = super.getPanel();
+        WebElement panel = super.getPanel();
         
         this.pointsTableA = new WebTable(driverExt, "name-value-table:nth-of-type(1)", panel);
         this.labelEntries = pointsTableA.getDataRowsTextByCellIndex(LABEL_INDEX);
@@ -46,10 +45,6 @@ public class TimeOfUsePanel extends BasePanel {
     //================================================================================
     // Getters/Setters Section
     //================================================================================
-    
-    public WebElement getPanel() {
-    	return panel;
-    }
     
     public WebTable getPointsTableA() {
     	return pointsTableA;

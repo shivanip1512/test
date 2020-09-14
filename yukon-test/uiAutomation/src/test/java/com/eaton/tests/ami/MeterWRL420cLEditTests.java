@@ -15,7 +15,6 @@ import com.eaton.framework.MeterEnums;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.ami.WRL420cDMeterDetailsPage;
 import com.eaton.pages.ami.WRL420cLMeterDetailsPage;
 
 public class MeterWRL420cLEditTests extends SeleniumTestSetup {

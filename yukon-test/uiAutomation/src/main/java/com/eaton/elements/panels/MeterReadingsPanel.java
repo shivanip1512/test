@@ -10,8 +10,6 @@ import com.eaton.framework.DriverExtensions;
 public class MeterReadingsPanel extends BasePanel {
 
     private DriverExtensions driverExt;
-    private WebElement panel;
-    private Button readButton;
     private WebTable pointsTable;
     private List<String> labelEntries;
     private List<String> valueEntries;
@@ -22,8 +20,7 @@ public class MeterReadingsPanel extends BasePanel {
         final int VALUE_INDEX = 2;
         
         this.driverExt = driverExt;
-        this.panel = super.getPanel();
-    	this.readButton = new Button(driverExt, "Read", panel);
+        WebElement panel = getPanel();
         
         this.pointsTable = new WebTable(driverExt, "name-value-table", panel);
         this.labelEntries = pointsTable.getDataRowsTextByCellIndex(LABEL_INDEX);
@@ -40,13 +37,9 @@ public class MeterReadingsPanel extends BasePanel {
     //================================================================================
     // Getters/Setters Section
     //================================================================================
-    
-    public WebElement getPanel() {
-    	return panel;
-    }
 
     public Button getReadButton() {
-        return readButton;
+        return new Button(driverExt, "Read", getPanel());
     }
     
     public WebTable getPointsTable() {
