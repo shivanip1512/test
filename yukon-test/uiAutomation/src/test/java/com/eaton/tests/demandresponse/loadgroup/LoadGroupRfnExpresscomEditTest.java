@@ -16,7 +16,7 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.LoadGroupRfnExpresscomEditPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupRfnExpresscomEditPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 
@@ -66,7 +66,7 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup {
         editPage.getName().setInputValue(name);
         editPage.getSpidAddress().setInputValue("251");
         editPage.getProgram().setInputValue("89");
-        editPage.getControPriority().selectItemByValue("MEDIUM");
+        editPage.getControlPriority().selectItemByValue("MEDIUM");
         editPage.getDisableGroup().selectValue("Yes");
         editPage.getDisableControl().selectValue("Yes");
         editPage.getSaveBtn().click();

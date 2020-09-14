@@ -1,4 +1,4 @@
-package com.eaton.pages.demandresponse;
+package com.eaton.pages.demandresponse.loadgroup;
 
 import com.eaton.elements.DropDownElement;
 import com.eaton.framework.DriverExtensions;
@@ -18,7 +18,7 @@ public class LoadGroupRfnExpresscomEditPage extends LoadGroupRfnExpresscomCreate
         controlPriority = new DropDownElement(this.driverExt, "protocolPriority");
     }
     
-    public DropDownElement getControPriority() {
+    public DropDownElement getControlPriority() {
         return controlPriority;
     }
 }

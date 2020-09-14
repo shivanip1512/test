@@ -8,13 +8,20 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.Urls;
 
 public class LoadGroupRfnExpresscomCreatePage extends LoadGroupCreatePage {
-
+	private DropDownElement controlPriority;
+	
     public LoadGroupRfnExpresscomCreatePage(DriverExtensions driverExt) {
         super(driverExt);
         requiresLogin = true;
         pageUrl = Urls.DemandResponse.LOAD_GROUP_CREATE;
+        
+        controlPriority = new DropDownElement(this.driverExt, "protocolPriority");
     }
 
+    public DropDownElement getControlPriority() {
+        return controlPriority;
+    }
+    
     // Address
     public SwitchBtnMultiSelectElement getAddressUsage() {
         WebElement section = getPageSection("Geographical Address").getSection();
