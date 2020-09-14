@@ -35,8 +35,9 @@
                     <span class="js-status"><i class="icon icon-spinner"></i></span>
                     <cti:msg2 var="actionsDisabledMessage" key=".actionsDisabledMessage"/>
                     <input id="actionsDisabledMessage" type="hidden" value="${actionsDisabledMessage}"/>
-                    <div class="dn js-out-of-sync-popup" data-dialog data-cancel-omit="true" data-title="<cti:msg2 key="yukon.web.modules.tools.configs.summary.outOfSync"/>" 
-                        data-width="600"></div>
+                    <cti:url var="outOfSyncUrl" value="/deviceConfiguration/summary/${deviceId}/outOfSync"/>
+                    <div class="dn js-out-of-sync-popup" data-title="<cti:msg2 key="yukon.web.modules.tools.configs.summary.outOfSync"/>" 
+                        data-width="550" data-url="${outOfSyncUrl}" data-destroy-dialog-on-close></div>
                 </tags:nameValue2>
                 
                 <cti:checkRolesAndProperties value="SEND_READ_CONFIG">
@@ -61,7 +62,8 @@
                     <cti:button nameKey="change" busy="true" classes="js-change-config js-config-action-btns fn vam" data-device-id="${deviceId}"/>
                     <cti:msg2 var="uploadTitle" key=".uploadPopup.title"/>
                     <cti:msg2 var="uploadButton" key=".upload.label"/>
-                    <div id="uploadPopup" data-dialog class="dn" data-title="${uploadTitle}" data-upload-btn="${uploadButton}">
+                    <div id="uploadPopup" data-dialog class="dn" data-title="${uploadTitle}" data-ok-text="${uploadButton}" data-event="yukon:config:upload"
+                        data-destroy-dialog-on-close data-width="400">
                         <span class=js-upload-msg></span>
                     </div>
                 </tags:nameValue2>

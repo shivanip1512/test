@@ -1,7 +1,6 @@
 package com.eaton.tests;
 
 import static org.assertj.core.api.Assertions.*;
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -17,12 +16,8 @@ public class HomeTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
-
-        driver.get(getBaseUrl() + Urls.HOME);
-
+        navigate(Urls.HOME);
         page = new HomePage(driverExt);
     }
 

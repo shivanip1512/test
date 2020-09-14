@@ -3,7 +3,6 @@ package com.eaton.tests.demandresponse;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.assertj.core.api.SoftAssertions;
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -20,13 +19,8 @@ public class DemandResponseDashboardTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
-        softly = new SoftAssertions();
-
-        driver.get(getBaseUrl() + Urls.DemandResponse.DASHBOARD);
-
+        navigate(Urls.DemandResponse.DASHBOARD);
         demandPage = new DemandResponseDashboardPage(driverExt);
     }
 
@@ -62,9 +56,10 @@ public class DemandResponseDashboardTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void demandResponseDashboard_actionsBtnDisplayedAndEnabled() {
+        softly = new SoftAssertions();
+        
         softly.assertThat(demandPage.getActionBtn().isEnabled()).isTrue();
         softly.assertThat(demandPage.getActionBtn().isDisplayed()).isTrue();
-
         softly.assertAll();
     }
 }

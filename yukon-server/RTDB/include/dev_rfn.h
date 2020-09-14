@@ -42,7 +42,7 @@ protected:
         };
     }
 
-    bool hasRfnFirmwareSupportIn( double minimumVersion ) const;
+    virtual bool hasRfnFirmwareSupportIn( double minimumVersion ) const;
 
     virtual bool areAggregateCommandsSupported() const;
 
