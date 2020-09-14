@@ -18,14 +18,16 @@ class CtiCalc
     bool                 _isBaseline;
     bool                 _reuseRegression;
 
-    // text from the database
-    static const std::string UpdateType_Periodic;
-    static const std::string UpdateType_AllChange;
-    static const std::string UpdateType_OneChange;
-    static const std::string UpdateType_Historical;
-    static const std::string UpdateType_BackfilledHistorical;
-    static const std::string UpdateType_PeriodicPlusUpdate;
-    static const std::string UpdateType_Constant;
+    struct UpdateTypes {
+        // text from the database
+        static const std::string Periodic;
+        static const std::string AllChange;
+        static const std::string OneChange;
+        static const std::string Historical;
+        static const std::string BackfilledHistorical;
+        static const std::string PeriodicPlusUpdate;
+        static const std::string Constant;
+    };
 
     CtiTime calcTimeFromComponentTime( const CtiTime &minTime, const CtiTime &maxTime );
     bool calcTimeFromComponentTime( CtiTime &componentTime, int componentQuality, CtiTime &minTime, CtiTime &maxTime );

@@ -11,13 +11,13 @@ extern ULONG _CALC_DEBUG;
 using namespace std;
 
 // static const strings
-const std::string CtiCalc::UpdateType_Periodic   = "On Timer";
-const std::string CtiCalc::UpdateType_AllChange  = "On All Change";
-const std::string CtiCalc::UpdateType_OneChange  = "On First Change";
-const std::string CtiCalc::UpdateType_Historical = "Historical";
-const std::string CtiCalc::UpdateType_BackfilledHistorical = "Backfilled Historical";
-const std::string CtiCalc::UpdateType_PeriodicPlusUpdate = "On Timer+Change";
-const std::string CtiCalc::UpdateType_Constant   = "Constant";
+const std::string CtiCalc::UpdateTypes::Periodic   = "On Timer";
+const std::string CtiCalc::UpdateTypes::AllChange  = "On All Change";
+const std::string CtiCalc::UpdateTypes::OneChange  = "On First Change";
+const std::string CtiCalc::UpdateTypes::Historical = "Historical";
+const std::string CtiCalc::UpdateTypes::BackfilledHistorical = "Backfilled Historical";
+const std::string CtiCalc::UpdateTypes::PeriodicPlusUpdate = "On Timer+Change";
+const std::string CtiCalc::UpdateTypes::Constant   = "Constant";
 
 CtiCalc::CtiCalc( long pointId, const string &updateType, int updateInterval, const string &qualityFlag )
 {
@@ -37,40 +37,40 @@ CtiCalc::CtiCalc( long pointId, const string &updateType, int updateInterval, co
         _calculateQuality = true;
     }
 
-    if( (ciStringEqual(updateType,UpdateType_Periodic))
+    if( (ciStringEqual(updateType,UpdateTypes::Periodic))
         && (updateInterval > 0) )
     {
         _updateInterval = updateInterval;
         setNextInterval (updateInterval);
         _updateType = CalcUpdateType::Periodic;
     }
-    else if( ciStringEqual(updateType,UpdateType_AllChange))
+    else if( ciStringEqual(updateType,UpdateTypes::AllChange))
     {
         _updateInterval = 0;
         _updateType = CalcUpdateType::AllUpdate;
     }
-    else if( ciStringEqual(updateType,UpdateType_OneChange))
+    else if( ciStringEqual(updateType,UpdateTypes::OneChange))
     {
         _updateInterval = 0;
         _updateType = CalcUpdateType::AnyUpdate;
     }
-    else if( ciStringEqual(updateType,UpdateType_Historical))
+    else if( ciStringEqual(updateType,UpdateTypes::Historical))
     {
         _updateInterval = 0;
         _updateType = CalcUpdateType::Historical;
     }
-    else if( ciStringEqual(updateType, UpdateType_BackfilledHistorical) )
+    else if( ciStringEqual(updateType, UpdateTypes::BackfilledHistorical) )
     {
         _updateInterval = 0;
         _updateType = CalcUpdateType::BackfilledHistorical;
     }
-    else if( ciStringEqual(updateType,UpdateType_PeriodicPlusUpdate) )
+    else if( ciStringEqual(updateType,UpdateTypes::PeriodicPlusUpdate) )
     {
         _updateInterval = updateInterval;
         setNextInterval (updateInterval);
         _updateType = CalcUpdateType::PeriodicPlusUpdate;
     }
-    else if( ciStringEqual(updateType,UpdateType_Constant) )
+    else if( ciStringEqual(updateType,UpdateTypes::Constant) )
     {
         _updateInterval = 0;
         _updateType = CalcUpdateType::Constant;
