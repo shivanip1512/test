@@ -74,11 +74,11 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
     
     @Test(enabled = true, groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscom_deleteSuccess() {
-    	final String expected_msg = name + " deleted successfully.";
-        Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup().create();
+    	Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup().create();
         JSONObject response = pair.getValue1();
 	    id = response.getInt("id");
 	    name = response.getString("name");
+	    final String expected_msg = name + " deleted successfully.";
 	    
 	    navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
 	     
