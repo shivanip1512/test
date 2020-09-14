@@ -1022,25 +1022,6 @@ YukonError_t Mct4xxDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParse
     {
         const auto readStatus = executeInstallReads(pReq, parse, OutMessage, vgList, retList, outList);
             
-        if( ! readStatus )
-        {
-            auto commandString = boost::replace_head_copy(pReq->CommandString(), 9, "putconfig");
-                
-            if( ! parse.isKeyValid("verify") )
-            {
-                commandString.append(" verify");
-            }
-
-            auto verifyRequest = std::make_unique<CtiRequestMsg>(*pReq);
-
-            verifyRequest->setConnectionHandle(pReq->getConnectionHandle());
-            verifyRequest->setCommandString(commandString);
-
-            incrementGroupMessageCount(verifyRequest->UserMessageId(), verifyRequest->getConnectionHandle());
-
-            retList.push_back(verifyRequest.release());
-        }
-
         return readStatus;
     }
 
@@ -1180,7 +1161,6 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
     if( parse.isKeyValid("install") )
     {
         found = true;
-        bool verify = parse.isKeyValid("verify");
 
         if( parse.getsValue("installvalue") == PutConfigPart_basic
             || parse.getsValue("installvalue") == PutConfigPart_all )
@@ -1893,7 +1873,7 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
 
     if( isVerify )
     {
-        decrementGroupMessageCount(pReq->GroupMessageId(), pReq->getConnectionHandle());
+        decrementGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle());
     }
 
     return ret;

@@ -1,11 +1,10 @@
-package com.eaton.pages.demandresponse;
+package com.eaton.pages.demandresponse.loadgroup;
 
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.RadioButtonElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.loadgroup.LoadGroupEditPage;
 
 public class LoadGroupEmetconEditPage extends LoadGroupEditPage {
     private TextEditElement goldAddress;

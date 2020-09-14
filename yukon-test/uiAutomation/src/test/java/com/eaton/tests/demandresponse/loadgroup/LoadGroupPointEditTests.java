@@ -47,9 +47,9 @@ public class LoadGroupPointEditTests extends SeleniumTestSetup {
         String editName = "AT Edit Point Ld group " + timeStamp;
         Pair<JSONObject, JSONObject> pair = new LoadGroupPointCreateBuilder.Builder(Optional.empty())
                 .withName(createName)
-                .withPointUsageId(Optional.of(PointId.Capacitor_Bank_State))
+                .withPointUsageId(Optional.of(PointId.CAPACITOR_BANK_STATE))
                 .withDeviceUsageId(Optional.empty())
-                .withPointStartControlRawState(Optional.of(LoadGroupEnums.PointStartControlRawState.False))
+                .withPointStartControlRawState(Optional.of(LoadGroupEnums.PointStartControlRawState.FALSE))
                 .withKwCapacity(Optional.of(67.0))
                 .withDisableControl(Optional.of(true))
                 .withDisableGroup(Optional.of(false))
@@ -69,12 +69,12 @@ public class LoadGroupPointEditTests extends SeleniumTestSetup {
         SelectPointModal pointGroupControlDevice = editPage.showAndWaitPointGroupControlDeviceModal();
         pointGroupControlDevice.selectPoint("SCADA Override", Optional.empty());
         pointGroupControlDevice.clickOkAndWaitForModalCloseDisplayNone();
-        // 1 = true
-        editPage.getControlStartState().selectItemByValue("1");
-
+        
         editPage.getkWCapacity().setInputValue(String.valueOf(capacity));
         editPage.getDisableGroup().selectValue("No");
         editPage.getDisableControl().selectValue("Yes");
+        // 1 = true
+        editPage.getControlStartState().selectItemByValue("1"); 
 
         editPage.getSaveBtn().click();
 

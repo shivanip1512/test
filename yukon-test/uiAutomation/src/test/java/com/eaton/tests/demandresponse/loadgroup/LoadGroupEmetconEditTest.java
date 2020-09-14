@@ -14,8 +14,8 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.LoadGroupEmetconEditPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupEmetconEditPage;
 import com.github.javafaker.Faker;
 
 public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
@@ -36,7 +36,7 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
         editPage = new LoadGroupEmetconEditPage(driverExt, id);
     }
 
-    @AfterMethod
+    @AfterMethod(alwaysRun = true)
     public void afterMethod() {
         refreshPage(editPage);
     }
