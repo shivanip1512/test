@@ -24,14 +24,12 @@ import com.cannontech.common.dr.program.setup.model.LoadProgramCopy;
 import com.cannontech.common.dr.program.setup.model.NotificationGroup;
 import com.cannontech.common.dr.program.setup.model.ProgramDirectMemberControl;
 import com.cannontech.common.dr.program.setup.model.ProgramGroup;
-import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.ProgramDetails;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.dr.loadprogram.service.LoadProgramSetupService;
-import com.cannontech.web.api.dr.setup.LMDeleteValidator;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -40,7 +38,6 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @RequestMapping("/dr/setup/loadProgram")
 public class LoadProgramSetupApiController {
     @Autowired private LoadProgramSetupService loadProgramService;
-    @Autowired LMDeleteValidator lmDeleteValidator;
     @Autowired LMProgramCopyValidator lmProgramCopyValidator;
     @Autowired LMProgramValidator lmProgramValidator;
 
