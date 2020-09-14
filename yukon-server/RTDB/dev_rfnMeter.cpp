@@ -702,7 +702,13 @@ YukonError_t RfnMeterDevice::compareChannels(
     {
         /* If we have device/config channels mismatched */
 
-        auto metric_to_string = [this](const MetricIdLookup::MetricId i) { return MetricIdLookup::GetAttribute(i, getDeviceType()).getName(); };
+        auto metric_to_string = [this](const MetricIdLookup::MetricId i) { 
+            if( auto attribute = MetricIdLookup::FindAttribute(i, getDeviceType()) )
+            {
+                return attribute->getName();
+            }
+            return "Unmapped metric ID " + std::to_string(i);
+        };
 
         PaoMetricIds cfgOnly, meterOnly;
 
