@@ -135,4 +135,8 @@ public class SwitchBtnMultiSelectElement {
 
         return switchElements.size();
     }
+    
+    public String getSwitchButtonValueString(String switchButtonId) {
+        return this.driverExt.findElement(By.cssSelector("#"+switchButtonId), Optional.empty()).getAttribute("value");
+    }
 }
