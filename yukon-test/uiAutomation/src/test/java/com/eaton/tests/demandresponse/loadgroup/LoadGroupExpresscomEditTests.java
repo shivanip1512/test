@@ -29,7 +29,6 @@ import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
-
 	WebDriver driver;
 	private DriverExtensions driverExt;
 	private Random randomNum;
@@ -60,7 +59,7 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
 		// 62 = ARTC
 		editPage.getCommunicationRoute().selectItemByValue("62");
 
-		editPage.getUsage().setTrueFalseByName("Splinter", true);
+		editPage.getUsage().setTrueFalseById("SPLINTER", true);
 		editPage.getSplinter().setInputValue(String.valueOf(randomNum.nextInt(254)));
 
 		editPage.getSaveBtn().click();
@@ -104,17 +103,26 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
 	public void ldGrpExpresscomEdit_AllFieldsWithoutSerialAddress_Successfully() {
 		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 		String editName = "AT Edit Expresscom Ld group " + timeStamp;
-		List<LoadGroupEnums.RelayUsageExpresscom> relayUsage = new ArrayList<>();
-		relayUsage.add(LoadGroupEnums.RelayUsageExpresscom.valueOf("LOAD_4"));
+		List<String> relayUsage = new ArrayList<>();
+		relayUsage.add(LoadGroupEnums.RelayUsageExpresscom.LOAD_4.getRelayUsageValue());
+		relayUsage.add(LoadGroupEnums.RelayUsageExpresscom.LOAD_6.getRelayUsageValue());		
 
 		Pair<JSONObject, JSONObject> pair = new LoadGroupExpresscomCreateBuilder.Builder(Optional.empty())
-				.withDisableControl(Optional.of(true)).withDisableGroup(Optional.of(false))
-				.withFeeder(Optional.of("1110001110001110")).withGeo(Optional.of(180)).withKwCapacity(Optional.of(89.0))
+				.withDisableControl(Optional.of(true))
+				.withDisableGroup(Optional.of(false))
+				.withFeeder(Optional.of("1110001110001110"))
+				.withGeo(Optional.of(180))
+				.withKwCapacity(Optional.of(89.0))
 				.withProgram(Optional.of(199))
 				.withProtocolPriority(Optional.of(LoadGroupEnums.ProtocolPriorityExpresscom.HIGHEST))
-				.withRelayUsage(Optional.of(relayUsage)).withRouteId(Optional.of(LoadGroupEnums.RouteId.AWCTPTERMINAL))
-				.withSpid(Optional.of(1000)).withSplinter(Optional.of(200)).withSubstation(Optional.of(65534))
-				.withUser(Optional.of(1)).withZip(Optional.of(16777214)).create();
+				.withRelayUsage(Optional.of(relayUsage))
+				.withRouteId(Optional.of(LoadGroupEnums.RouteId.AWCTPTERMINAL))
+				.withSpid(Optional.of(1000))
+				.withSplinter(Optional.of(200))
+				.withSubstation(Optional.of(65534))
+				.withUser(Optional.of(1))
+				.withZip(Optional.of(16777214))
+				.create();
 
 		final String EXPECTED_MSG = editName + " saved successfully.";
 		JSONObject response = pair.getValue1();
@@ -166,14 +174,16 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
 
 	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldGrpExpresscomEdit_FieldValues_Correct() {
-		List<LoadGroupEnums.RelayUsageExpresscom> relayUsage = new ArrayList<>();
-		relayUsage.add(LoadGroupEnums.RelayUsageExpresscom.valueOf("LOAD_1"));
-		relayUsage.add(LoadGroupEnums.RelayUsageExpresscom.valueOf("LOAD_6"));
+		List<String> relayUsage = new ArrayList<>();
+		relayUsage.add(LoadGroupEnums.RelayUsageExpresscom.LOAD_1.getRelayUsageValue());
+		relayUsage.add(LoadGroupEnums.RelayUsageExpresscom.LOAD_6.getRelayUsageValue());
 
 		SoftAssertions softly = new SoftAssertions();
 		Pair<JSONObject, JSONObject> pair = new LoadGroupExpresscomCreateBuilder.Builder(Optional.empty())
-				.withDisableControl(Optional.of(true)).withDisableGroup(Optional.of(false))
-				.withFeeder(Optional.of("1110001110001110")).withGeo(Optional.of(180)).withKwCapacity(Optional.of(89.0))
+				.withDisableControl(Optional.of(true))
+				.withDisableGroup(Optional.of(false))
+				.withFeeder(Optional.of("1110001110001110"))
+				.withGeo(Optional.of(180)).withKwCapacity(Optional.of(89.0))
 				.withProgram(Optional.of(50))
 				.withProtocolPriority(Optional.of(LoadGroupEnums.ProtocolPriorityExpresscom.HIGHEST))
 				.withRelayUsage(Optional.of(relayUsage)).withRouteId(Optional.of(LoadGroupEnums.RouteId.AWCTPTERMINAL))

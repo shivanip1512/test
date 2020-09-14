@@ -69,11 +69,15 @@ public class LoadGroupEnums {
         public String getRelayUsage() {
             return this.relayUsage;
         }
+        
+        public String getRelayUsageValue() {
+            return relayUsage;
+        }
 
-        public static RelayUsageExpresscom getRandomRelayUsage() {
+        public static String getRandomRelayUsage() {
 
             Random random = new Random();
-            return values()[random.nextInt(values().length)];
+            return values()[random.nextInt(values().length)].getRelayUsageValue();
         }
     }
 
