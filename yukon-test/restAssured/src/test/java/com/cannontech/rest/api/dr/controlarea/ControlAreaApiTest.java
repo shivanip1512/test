@@ -75,7 +75,7 @@ public class ControlAreaApiTest {
         MockControlArea controlArea = buildControlArea("controlAreaTest_Name");
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
         context.setAttribute("controlArea_Id", createResponse.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID));
-        assertTrue(createResponse.statusCode() == 200, "Status code should be 200");
+        assertTrue(createResponse.statusCode() == 201, "Status code should be 201");
         assertTrue(createResponse.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID) != null, "Control Area Id should not be Null");
         context.setAttribute("expectedControlArea", controlArea);
         Log.endTestCase("controlArea_01_CreateWithoutProgramAndTrigger");
@@ -201,7 +201,7 @@ public class ControlAreaApiTest {
                 loadProgram.getProgramId());
         ExtractableResponse<?> response = ApiCallHelper.post("saveControlArea", controlArea);
         Integer controlAreaId = response.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID);
-        assertTrue(response.statusCode() == 200, "Status code should be 200");
+        assertTrue(response.statusCode() == 201, "Status code should be 201");
         assertTrue(controlAreaId != null, "Control Area Id should not be Null");
         context.setAttribute("contArea_Name", controlArea.getName());
         context.setAttribute("contArea_Id", controlAreaId);

@@ -568,7 +568,7 @@
 									"raw": "{\n    \"name\": \"Area00991\",\n    \"controlInterval\": 0,\n    \"minResponseTime\": 0,\n    \"dailyDefaultState\": \"None\",\n    \"allTriggersActiveFlag\": false,\n    \"triggers\": [\n        {\n            \"triggerId\": 5,\n            \"triggerNumber\": 1,\n            \"triggerType\": \"THRESHOLD_POINT\",\n            \"triggerPointId\": 299981,\n            \"minRestoreOffset\": 0,\n            \"thresholdPointId\": 299981\n        }\n    ]\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/controlArea/create",
+									"raw": "{{api-url}}/api/dr/setup/controlArea",
 									"host": [
 										"{{api-url}}"
 									],
@@ -576,8 +576,7 @@
 										"api",
 										"dr",
 										"setup",
-										"controlArea",
-										"create"
+										"controlArea"
 									]
 								}
 							},
@@ -600,7 +599,7 @@
 									"raw": "{\n    \"name\": \"Area0099178\",\n    \"controlInterval\": 0,\n    \"minResponseTime\": 0,\n    \"dailyDefaultState\": \"None\",\n    \"allTriggersActiveFlag\": false,\n    \"triggers\": [\n        {\n            \"triggerId\": 6,\n            \"triggerNumber\": 1,\n            \"triggerType\": \"THRESHOLD_POINT\",\n            \"triggerPointId\": 299981,\n            \"minRestoreOffset\": 0,\n            \"thresholdPointId\": 299981\n        }\n    ]\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/controlArea/update/127476",
+									"raw": "{{api-url}}/api/dr/setup/controlArea/127476",
 									"host": [
 										"{{api-url}}"
 									],
@@ -609,7 +608,6 @@
 										"dr",
 										"setup",
 										"controlArea",
-										"update",
 										"127476"
 									]
 								}
@@ -633,7 +631,7 @@
 									"raw": "{\n\t\"name\" : \"Area0099178\"\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/controlArea/delete/127476",
+									"raw": "{{api-url}}/api/dr/setup/controlArea/{id}",
 									"host": [
 										"{{api-url}}"
 									],
@@ -642,8 +640,7 @@
 										"dr",
 										"setup",
 										"controlArea",
-										"delete",
-										"127476"
+										"{id}"
 									]
 								}
 							},

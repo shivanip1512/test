@@ -19,12 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.dr.setup.ControlArea;
-import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.dr.area.service.ControlAreaSetupService;
-import com.cannontech.web.api.dr.setup.LMDeleteValidator;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
@@ -34,21 +32,22 @@ public class ControlAreaSetupApiController {
 
     @Autowired private ControlAreaSetupService controlAreaService;
     @Autowired private ControlAreaSetupValidator controlAreaSetupValidator;
-    @Autowired private LMDeleteValidator lmDeleteValidator;
 
     @GetMapping("/{id}")
     public ResponseEntity<ControlArea> retrieve(@PathVariable int id) {
         return new ResponseEntity<>(controlAreaService.retrieve(id), HttpStatus.OK);
     }
 
-    @PostMapping("/create")
+    @PostMapping
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<HashMap<String, Integer>> create(@Valid @RequestBody ControlArea controlArea) {
         int controlAreaId = controlAreaService.create(controlArea);
-        return buildResponse(controlAreaId);
+        HashMap<String, Integer> paoIdMap = new HashMap<>();
+        paoIdMap.put("controlAreaId", controlAreaId);
+        return new ResponseEntity<>(paoIdMap, HttpStatus.CREATED);
     }
 
-    @PostMapping("/update/{id}")
+    @PostMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public ResponseEntity<HashMap<String, Integer>> update(@Valid @RequestBody ControlArea controlArea,
             @PathVariable int id) {
@@ -56,12 +55,13 @@ public class ControlAreaSetupApiController {
         return buildResponse(controlAreaId);
     }
 
-    @DeleteMapping("/delete/{controlAreaId}")
+    @DeleteMapping("/{controlAreaId}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.OWNER)
-    public ResponseEntity<HashMap<String, Integer>> delete(@Valid @RequestBody LMDelete lmDelete,
-            @PathVariable int controlAreaId) {
-        int areaId = controlAreaService.delete(controlAreaId, lmDelete.getName());
-        return buildResponse(areaId);
+    public ResponseEntity<Object> delete(@PathVariable int controlAreaId) {
+        int areaId = controlAreaService.delete(controlAreaId);
+        HashMap<String, Integer> paoIdMap = new HashMap<>();
+        paoIdMap.put("id", areaId);
+        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
     @GetMapping("/unAssignedPrograms")
@@ -85,11 +85,6 @@ public class ControlAreaSetupApiController {
     @InitBinder("controlArea")
     public void setupBinder(WebDataBinder binder) {
         binder.setValidator(controlAreaSetupValidator);
-    }
-
-    @InitBinder("LMDelete")
-    public void setupBinderDelete(WebDataBinder binder) {
-        binder.addValidators(lmDeleteValidator);
     }
     
 }

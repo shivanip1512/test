@@ -186,7 +186,7 @@ public class ControlAreaSetupController {
                 return bindAndForward(controlArea, result, redirectAttributes, model);
             }
 
-            if (response.getStatusCode() == HttpStatus.OK) {
+            if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 HashMap<String, Integer> controlAreaIdMap = (HashMap<String, Integer>) response.getBody();
                 int controlAreaId = controlAreaIdMap.get("controlAreaId");
                 controlAreaTriggerCache.invalidateAll(triggerIds);
