@@ -16,7 +16,8 @@ public enum CalcUpdateType implements DatabaseRepresentationSource, DisplayableE
     ON_TIMER("On Timer", true),
     ON_TIMER_AND_CHANGE("On Timer+Change", true),
     CONSTANT("Constant", false),
-    HISTORICAL("Historical", false);
+    HISTORICAL("Historical", false),
+    BACKFILLED_HISTORICAL("Backfilled Historical", false);
     
     private static String baseKey = "yukon.common.point.updateType.";
 
