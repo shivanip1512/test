@@ -25,8 +25,7 @@ public:
 
     } CtiCalcThreadInterruptReason;
 
-    typedef std::map<long, CtiCalc* > CtiCalcPointMap;
-    typedef std::map<long, CtiCalc* >::iterator CtiCalcPointMapIterator;
+    using CtiCalcPointMap = std::map<long, std::unique_ptr<CtiCalc>>;
 
 private:
     CtiCalcPointMap _periodicPoints, _onUpdatePoints, _constantPoints, _historicalPoints, _backfilledPoints;
@@ -68,7 +67,7 @@ private:
     Cti::CalcLogic::CalcWorkerThread    _baselineThreadFunc;
 
     void getCalcHistoricalLastUpdatedTime(PointTimeMap &dbTimeMap);
-    void getHistoricalTableData(CtiCalc *calcPoint, CtiTime &lastTime, DynamicTableData &data);
+    void getHistoricalTableData(CtiCalc& calcPoint, CtiTime &lastTime, DynamicTableData &data);
     void getHistoricalTableSinglePointData(long calcPoint, CtiTime &lastTime, DynamicTableSinglePointData &data);
     void setHistoricalPointStore(HistoricalPointValueMap &valueMap);
     void updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlistedPoints, PointTimeMap &updatedPoints);
@@ -80,7 +79,9 @@ private:
 public:
 
     CtiCalculateThread();
-    ~CtiCalculateThread();
+    ~CtiCalculateThread() = default;
+    CtiCalculateThread(const CtiCalculateThread&) = delete;
+    CtiCalculateThread& operator=(const CtiCalculateThread&) = delete;
 
     CtiCriticalSection outboxMux;
 
@@ -111,18 +112,9 @@ public:
 
     void sendConstants();
 
-    CtiCalcPointMap getPeriodicPointMap() const;
-    CtiCalcPointMap getOnUpdatePointMap() const;
-    CtiCalcPointMap getConstantPointMap() const;
-    CtiCalcPointMap getHistoricalPointMap() const;
-
-    void setPeriodicPointMap(const CtiCalcPointMap &);
-    void setOnUpdatePointMap(const CtiCalcPointMap &);
-    void setConstantPointMap(const CtiCalcPointMap &);
-    void setHistoricalPointMap(const CtiCalcPointMap &);
+    void stealPointMaps(CtiCalculateThread& victim);
 
     void clearPointMaps();
-    void clearAndDestroyPointMaps();
 
     void removePointStoreObject( const long aPointID );
 };

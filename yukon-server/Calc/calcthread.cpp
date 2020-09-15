@@ -48,38 +48,6 @@ CtiCalculateThread::CtiCalculateThread() :
 {
 }
 
-CtiCalculateThread::~CtiCalculateThread( void )
-{
-    try
-    {
-        _auAffectedPoints.clear();
-        if( !_periodicPoints.empty() )
-        {
-            delete_assoc_container(_periodicPoints);
-            _periodicPoints.clear();
-        }
-        if( !_onUpdatePoints.empty() )
-        {
-            delete_assoc_container(_onUpdatePoints);
-            _onUpdatePoints.clear();
-        }
-        if( !_constantPoints.empty() )
-        {
-            delete_assoc_container(_constantPoints);
-            _constantPoints.clear();
-        }
-        if( !_historicalPoints.empty() )
-        {
-            delete_assoc_container(_historicalPoints);
-            _historicalPoints.clear();
-        }
-    }
-    catch(...)
-    {
-        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-    }
-};
-
 void CtiCalculateThread::pointChange( long changedID, double newValue, const CtiTime newTime, unsigned newQuality, unsigned newTags )
 {
     try
@@ -168,7 +136,6 @@ void CtiCalculateThread::periodicThread( void )
         bool calcValid;
         float msLeftThisSecond;
         CtiTime newTime, tempTime;
-        CtiCalcPointMapIterator periodicIter;
         BOOL messageInMulti;
         clock_t now;
 
@@ -198,7 +165,6 @@ void CtiCalculateThread::periodicThread( void )
             now = clock( );
 
             long pointId;
-            CtiCalc *calcPoint;
             double newPointValue, oldPointValue;
 
             CtiMultiMsg *periodicMultiMsg = CTIDBG_new CtiMultiMsg;
@@ -208,13 +174,11 @@ void CtiCalculateThread::periodicThread( void )
 
             int calcQuality;
             CtiTime calcTime;
-            for( periodicIter = _periodicPoints.begin(); periodicIter != _periodicPoints.end()
-                 ; periodicIter++ )
+            for( auto& [id, calcPoint] : _periodicPoints )
             {
-                calcPoint = (*periodicIter).second;
-                if( calcPoint==NULL || !calcPoint->ready( ) )
+                if( ! calcPoint || ! calcPoint->ready() )
                 {
-                    continue;  // for
+                    continue;
                 }
 
                 messageInMulti = TRUE;
@@ -296,7 +260,6 @@ void CtiCalculateThread::onUpdateThread( void )
         char pointDescription[80];
         BOOL pointsInMulti;
         CtiMultiMsg *pChg;
-        CtiCalc *calcPoint;
 
         int calcQuality;
         CtiTime calcTime;
@@ -333,13 +296,14 @@ void CtiCalculateThread::onUpdateThread( void )
                 while( _auAffectedPoints.entries( ) )
                 {
                     recalcPointID = _auAffectedPoints.removeFirst( );
-                    std::map<long, CtiCalc* >::iterator itr = _onUpdatePoints.find(recalcPointID);
 
-                    calcPoint = (*itr).second;
+                    auto calcPoint = Cti::mapFindPtr(_onUpdatePoints, recalcPointID);
 
                     //  if not ready
-                    if( itr == _onUpdatePoints.end() || calcPoint == NULL || !calcPoint->ready( ) )
-                         continue;  // All the components are not ready.
+                    if( ! calcPoint || ! calcPoint->ready() )
+                    {
+                        continue;  // All the components are not ready.
+                    }
 
                     CtiPointStoreElement* calcPointPtr = CtiPointStore::find(calcPoint->getPointId());
 
@@ -485,8 +449,6 @@ void CtiCalculateThread::historicalThread( void )
         bool calcValid, reloaded = false;
         bool pointsInMulti;
         CtiMultiMsg *pChg;
-        CtiCalc *calcPoint;
-        CtiCalcPointMapIterator historicIter;
         PointTimeMap unlistedPoints, updatedPoints;
         DynamicTableData data;
         int frequencyInSeconds;
@@ -566,17 +528,20 @@ void CtiCalculateThread::historicalThread( void )
 
             reloaded = false;
 
-            for( historicIter = _historicalPoints.begin(); !reloaded && (historicIter != _historicalPoints.end()); )
+            for( auto& [id, calcPoint] : _historicalPoints )
             {
-                calcPoint = (*historicIter++).second;
-                if( calcPoint==NULL || !calcPoint->ready( ) )
+                if( reloaded )
                 {
-                    continue;  // for
+                    break;
+                }
+                if( ! calcPoint || ! calcPoint->ready() )
+                {
+                    continue;
                 }
 
                 if( calcPoint->isBaselineCalc() )
                 {
-                    continue;//for
+                    continue;
                 }
 
                 pointID = calcPoint->getPointId( );
@@ -591,7 +556,7 @@ void CtiCalculateThread::historicalThread( void )
                     unlistedPoints.insert(PointTimeMap::value_type(pointID, lastTime));
                 }
 
-                getHistoricalTableData(calcPoint, lastTime, data);
+                getHistoricalTableData(*calcPoint, lastTime, data);
 
                 //  Check for any outside interference that may have occurred during the DB load
                 if( wasPausedOrInterrupted(_historicalThreadFunc, pauseCount, CALLSITE) )
@@ -705,8 +670,6 @@ void CtiCalculateThread::baselineThread( void )
         bool calcValid, reloaded = false;
         BOOL pointsInMulti;
         CtiMultiMsg *pChg;
-        CtiCalc *calcPoint;
-        CtiCalcPointMapIterator historicIter;
         PointTimeMap unlistedPoints, updatedPoints;
         DynamicTableSinglePointData data;
         DynamicTableSinglePointData percentData;
@@ -788,17 +751,20 @@ void CtiCalculateThread::baselineThread( void )
 
             reloaded = false;
 
-            for( historicIter = _historicalPoints.begin(); !reloaded && (historicIter != _historicalPoints.end()); )
+            for( auto& [id, calcPoint] : _historicalPoints )
             {
-                calcPoint = (*historicIter++).second;
-                if( calcPoint==NULL || !calcPoint->ready( ) )
+                if( reloaded )
                 {
-                    continue;  // for
+                    break;
+                }
+                if( ! calcPoint || ! calcPoint->ready() )
+                {
+                    continue;
                 }
 
-                if( !calcPoint->isBaselineCalc() )
+                if( ! calcPoint->isBaselineCalc() )
                 {
-                    continue;//for
+                    continue;
                 }
 
                 pointID = calcPoint->getPointId( );
@@ -1254,46 +1220,27 @@ void CtiCalculateThread::resumeThreads()
 
 bool CtiCalculateThread::appendPoint( long pointid, string &updatetype, int updateinterval, string &qualityFlag )
 {
-    std::pair< std::map<long,CtiCalc*>::iterator , bool > inserted;
-
-    CtiCalc *newPoint;
-    newPoint = CTIDBG_new CtiCalc( pointid, updatetype, updateinterval, qualityFlag );
-    switch( newPoint->getUpdateType( ) )
+    auto newPoint = std::make_unique<CtiCalc>( pointid, updatetype, updateinterval, qualityFlag );
+    switch( newPoint->getUpdateType() )
     {
         case CalcUpdateType::Periodic:
-            inserted = _periodicPoints.emplace(pointid, newPoint);
-            break;
+            return _periodicPoints.emplace(pointid, std::move(newPoint)).second;
         case CalcUpdateType::AllUpdate:
         case CalcUpdateType::AnyUpdate:
         case CalcUpdateType::PeriodicPlusUpdate:
-            inserted = _onUpdatePoints.emplace(pointid, newPoint);
-            break;
+            return _onUpdatePoints.emplace(pointid, std::move(newPoint)).second;
         case CalcUpdateType::Constant:
-            inserted = _constantPoints.emplace(pointid, newPoint);
-            break;
+            return _constantPoints.emplace(pointid, std::move(newPoint)).second;
         case CalcUpdateType::Historical:
-            inserted = _historicalPoints.emplace(pointid, newPoint);
-            break;
+            return _historicalPoints.emplace(pointid, std::move(newPoint)).second;
         case CalcUpdateType::BackfilledHistorical:
-            inserted = _backfilledPoints.emplace(pointid, newPoint);
-            break;
-        default:
-        {
-           CTILOG_ERROR(dout, "Attempt to insert unknown CtiCalc point type \""<< updatetype<< "\", "
-                   "value \""<< static_cast<int>(newPoint->getUpdateType()) <<"\";  aborting point insert");
-        }
+            return _backfilledPoints.emplace(pointid, std::move(newPoint)).second;
+    }
 
-        delete newPoint;
-        newPoint = NULL;
-        break;
-    }
-    //was if( !inserted && newPoint != NULL )
-    if( !inserted.second && newPoint != NULL )
-    {
-        delete newPoint;
-        newPoint = NULL;
-    }
-    return inserted.second;
+    CTILOG_ERROR(dout, "Attempt to insert unknown CtiCalc point type \""<< updatetype<< "\", "
+            "value \""<< static_cast<int>(newPoint->getUpdateType()) <<"\";  aborting point insert");
+
+    return false;  
 }
 
 
@@ -1369,9 +1316,10 @@ BOOL CtiCalculateThread::isACalcPointID(const long aPointID)
     return _periodicPoints.count(aPointID)
         || _onUpdatePoints.count(aPointID)
         || _constantPoints.count(aPointID)
-        || _historicalPoints.count(aPointID);
+        || _historicalPoints.count(aPointID)
+        || _backfilledPoints.count(aPointID);
 }
-
+/*
 CtiCalculateThread::CtiCalcPointMap CtiCalculateThread::getPeriodicPointMap() const
 {
     return _periodicPoints;
@@ -1462,69 +1410,60 @@ void CtiCalculateThread::clearAndDestroyPointMaps()
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
+*/
+void CtiCalculateThread::stealPointMaps(CtiCalculateThread& victim)
+{
+    auto extractMap = [](CtiCalculateThread::CtiCalcPointMap& map)
+    {
+        CtiCalculateThread::CtiCalcPointMap tmp;
+        std::swap(tmp, map);
+        return std::move(tmp);
+    };
+
+    _periodicPoints = extractMap(victim._periodicPoints);
+    _onUpdatePoints = extractMap(victim._onUpdatePoints);
+    _constantPoints = extractMap(victim._constantPoints);
+    _historicalPoints = extractMap(victim._historicalPoints);
+    _backfilledPoints = extractMap(victim._backfilledPoints);
+}
 
 void CtiCalculateThread::clearPointMaps()
 {
-    if( _constantPoints.size() > 0 )
-    {
-        _constantPoints.clear();
-    }
-
-    if( _onUpdatePoints.size() > 0 )
-    {
-        _onUpdatePoints.clear();
-    }
-
-    if( _periodicPoints.size() > 0 )
-    {
-        _periodicPoints.clear();
-    }
-
-    if( _historicalPoints.size() > 0 )
-    {
-        _historicalPoints.clear();
-    }
+    _constantPoints.clear();
+    _onUpdatePoints.clear();
+    _periodicPoints.clear();
+    _historicalPoints.clear();
+    _backfilledPoints.clear();
 }
 
 void CtiCalculateThread::removePointStoreObject( const long aPointID )
 {
-    CtiCalc *targetCalcPoint = NULL;
-    CtiPointStoreElement *tmpElementPtr = NULL;
+    const auto maps = {
+            &_periodicPoints,
+            &_onUpdatePoints,
+            &_constantPoints,
+            &_historicalPoints,
+            &_backfilledPoints };
 
-    if( _periodicPoints.find( aPointID ) != _periodicPoints.end() )
+    for( auto map : maps )
     {
-        targetCalcPoint  = _periodicPoints[aPointID];
+        if( auto targetCalcPoint = Cti::mapFindPtr(*map, aPointID) )
+        {
+            targetCalcPoint->clearComponentDependencies();
+
+            CtiPointStore::remove(aPointID);
+        }
     }
-    else if( _onUpdatePoints.find( aPointID ) != _onUpdatePoints.end() )
-    {
-        targetCalcPoint  = _onUpdatePoints[aPointID];
-    }
-    else if( _constantPoints.find( aPointID ) != _constantPoints.end() )
-    {
-        targetCalcPoint  = _constantPoints[aPointID];
-    }
-    else if( _historicalPoints.find( aPointID ) != _historicalPoints.end())
-    {
-        targetCalcPoint = _historicalPoints[aPointID];
-    }
-    else if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
+
+    if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
     {
         CTILOG_DEBUG(dout, "Can't find calc point \""<< aPointID <<"\" in either point collection (historical point?)");
-        return;
-    }
-
-    if( targetCalcPoint )
-    {
-        targetCalcPoint->clearComponentDependencies();
-
-        CtiPointStore::remove( aPointID );
     }
 }
 
 void CtiCalculateThread::sendConstants()
 {
     long pointId;
-    CtiCalc *calcPoint;
     double pointValue, oldPointValue;
 
     CtiMultiMsg *pMultiMsg = CTIDBG_new CtiMultiMsg;
@@ -1535,14 +1474,9 @@ void CtiCalculateThread::sendConstants()
     int calcQuality;
     CtiTime calcTime;
 
-
-    CtiCalcPointMapIterator constIter;
-
-    for( constIter = _constantPoints.begin() ; constIter != _constantPoints.end(); constIter++ )
+    for( auto& [id, calcPoint] : _constantPoints )
     {
-        calcPoint = (*constIter).second;
-
-        if( calcPoint!=NULL )
+        if( calcPoint )
         {
             messageInMulti = TRUE;
             pointId = calcPoint->getPointId( );
@@ -1640,7 +1574,7 @@ void CtiCalculateThread::getCalcHistoricalLastUpdatedTime(PointTimeMap &dbTimeMa
 
 }
 
-void CtiCalculateThread::getHistoricalTableData(CtiCalc *calcPoint, CtiTime &lastTime, DynamicTableData &data)
+void CtiCalculateThread::getHistoricalTableData(CtiCalc& calcPoint, CtiTime &lastTime, DynamicTableData &data)
 {
     data.clear();
     long pointid;
@@ -1648,14 +1582,14 @@ void CtiCalculateThread::getHistoricalTableData(CtiCalc *calcPoint, CtiTime &las
     double value;
     DynamicTableDataIter iter;
 
-    if( calcPoint->getComponentIDList().empty() )
+    if( calcPoint.getComponentIDList().empty() )
     {
         return;
     }
 
     try
     {
-        set<long> compIDList = calcPoint->getComponentIDList();
+        set<long> compIDList = calcPoint.getComponentIDList();
 
         static const string sqlIds = "SELECT RPH.POINTID, RPH.TIMESTAMP, RPH.VALUE "
                                      "FROM RAWPOINTHISTORY RPH "
