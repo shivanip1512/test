@@ -55,6 +55,8 @@ var yg = {
         paging : '.paging-area .previous-page .button, .paging-area .next-page .button, .paging-area .page-size a'
     },
     
+    colors: JSON.parse('<cti:getYukonColorPaletteJson/>'),
+    
     text: {
         cancel: '<cti:msg2 key="yukon.web.components.button.cancel.label"/>',
         close: '<cti:msg2 key="yukon.web.components.button.close.label"/>',

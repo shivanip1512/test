@@ -1,5 +1,6 @@
 package com.cannontech.common;
 
+import java.util.Map.Entry;
 import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.i18n.DisplayableEnum;
@@ -7,27 +8,28 @@ import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
+//TODO: Let's add some javadocs to this file stating where the hex strings are located.
+//Something similar to the comments in the colors.less file, so that we know exactly where to go to add a new color.
 public enum YukonColorPalette implements DatabaseRepresentationSource, DisplayableEnum {
 
-    BLACK("#000000", ColorId.BLACK_ID),
-    BLUE("#0088f2", ColorId.BLUE_ID, true),
-    BLUE_LIGHT("#4d8ec4", ColorId.BLUE_LIGHT_ID),
-    GREEN("#2ca618", ColorId.GREEN_ID, true),
-    GREEN_LIGHT("#74cc63", ColorId.GREEN_LIGHT_ID),
-    GRAY("#7b8387", ColorId.GRAY_ID, true),
-    GRAY_LIGHT("#d5d8da", ColorId.GRAY_LIGHT_ID),
-    ORANGE("#e99012", ColorId.ORANGE_ID, true),
-    PURPLE("#b779f4", ColorId.PURPLE_ID, true),
-    RED("#c53637", ColorId.RED_ID),
-    RED_LIGHT("#da7777", ColorId.RED_LIGHT_ID),
-    SAGE("#b2c98d", ColorId.SAGE_ID, true),
-    SKY("#abd7e1", ColorId.SKY_ID, true),
-    TEAL("#00b2a9", ColorId.TEAL_ID, true),
-    WHITE("#ffffff", ColorId.WHITE_ID),
-    WINE("#ce8799", ColorId.WINE_ID, true),
-    YELLOW("#f0cb2f", ColorId.YELLOW_ID, true);
+    BLACK(ColorId.BLACK_ID),
+    BLUE(ColorId.BLUE_ID, true),
+    BLUE_LIGHT(ColorId.BLUE_LIGHT_ID),
+    GREEN( ColorId.GREEN_ID, true),
+    GREEN_LIGHT(ColorId.GREEN_LIGHT_ID),
+    GRAY( ColorId.GRAY_ID, true),
+    GRAY_LIGHT( ColorId.GRAY_LIGHT_ID),
+    ORANGE(ColorId.ORANGE_ID, true),
+    PURPLE(ColorId.PURPLE_ID, true),
+    RED(ColorId.RED_ID),
+    RED_LIGHT(ColorId.RED_LIGHT_ID),
+    SAGE(ColorId.SAGE_ID, true),
+    SKY(ColorId.SKY_ID, true),
+    TEAL(ColorId.TEAL_ID, true),
+    WHITE(ColorId.WHITE_ID),
+    WINE(ColorId.WINE_ID, true),
+    YELLOW(ColorId.YELLOW_ID, true);
 
-    private final String hexValue;
     private final int colorId;  //database id
     private boolean primary;
     
@@ -42,8 +44,8 @@ public enum YukonColorPalette implements DatabaseRepresentationSource, Displayab
         lookupById = dbBuilder.build();
         
         Builder<String, YukonColorPalette> hexColorLookupBuilder = ImmutableMap.builder();
-        for (YukonColorPalette color : values()) {
-            hexColorLookupBuilder.put(color.getHexValue(), color);
+        for (Entry<YukonColorPalette, String> entry : ColorsFileReader.colorHexValueMap.entrySet()) {
+            hexColorLookupBuilder.put(entry.getValue(), entry.getKey());
         }
         lookupByHexColorValue = hexColorLookupBuilder.build();
     }
@@ -68,21 +70,19 @@ public enum YukonColorPalette implements DatabaseRepresentationSource, Displayab
         static final int GREEN_LIGHT_ID = 16;
     };
     
-    private YukonColorPalette(String hexValue, int colorId) {
-        this.hexValue = hexValue;
+    private YukonColorPalette(int colorId) {
         this.colorId = colorId;
         this.primary = false;
     }
     
-    private YukonColorPalette(String hexValue, int colorId, boolean primary) {
-        this.hexValue = hexValue;
+    private YukonColorPalette(int colorId, boolean primary) {
         this.colorId = colorId;
         this.primary = primary;
     }
     
     
     public String getHexValue() {
-        return hexValue;
+        return ColorsFileReader.colorHexValueMap.get(this);
     }
 
     public int getColorId() {
@@ -108,7 +108,7 @@ public enum YukonColorPalette implements DatabaseRepresentationSource, Displayab
     }
     
     public java.awt.Color getAwtColor() {
-        return java.awt.Color.decode(this.hexValue);
+        return java.awt.Color.decode(this.getHexValue());
     }
     
     public boolean isPrimary() {

@@ -13,8 +13,8 @@ import com.google.common.collect.ImmutableMap.Builder;
  * Provides colors for graphs.
  */
 public enum GraphColors {
-    BLACK(YukonColorPalette.BLACK),
     BLUE(YukonColorPalette.BLUE),
+    BLACK(YukonColorPalette.BLACK),
     GRAY(YukonColorPalette.GRAY),
     GREEN(YukonColorPalette.GREEN),
     ORANGE(YukonColorPalette.ORANGE),
