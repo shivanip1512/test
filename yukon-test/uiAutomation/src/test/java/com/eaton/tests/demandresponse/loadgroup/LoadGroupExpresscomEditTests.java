@@ -62,7 +62,7 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
         // 62 = ARTC
         editPage.getCommunicationRoute().selectItemByValue("62");
 
-        editPage.getUsage().setTrueFalseByName("Splinter", true);
+        editPage.getUsage().setTrueFalseByLabel("Splinter", "SPLINTER", true);
         editPage.getSplinter().setInputValue(String.valueOf(randomNum.nextInt(254)));
 
         editPage.getSaveBtn().click();
@@ -91,8 +91,8 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
         editPage = new LoadGroupExpresscomEditPage(driverExt, id);
 
         editPage.getName().setInputValue(editName);
-        editPage.getGeographicalAddress().setTrueFalseByName("Serial", false);
-        editPage.getGeographicalAddress().setTrueFalseByName("User", true);
+        editPage.getGeographicalAddress().setTrueFalseByLabel("Serial", "SERIAL", false);
+        editPage.getGeographicalAddress().setTrueFalseByLabel("User", "USER", true);
         editPage.getUser().setInputValue(String.valueOf(randomNum.nextInt(65534)));
         editPage.getSaveBtn().click();
 
@@ -122,31 +122,31 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
         // 62 = ARTC
         editPage.getCommunicationRoute().selectItemByValue("62");
 
-        editPage.getUsage().setTrueFalseByName("Splinter", true);
+        editPage.getUsage().setTrueFalseByLabel("Splinter", "SPLINTER", true);
         double randomDouble = randomNum.nextDouble();
         int randomInt = randomNum.nextInt(9999);
         double capacity = randomDouble + randomInt;
 
-        editPage.getGeographicalAddress().setTrueFalseByName("GEO", true);
-        editPage.getGeographicalAddress().setTrueFalseByName("Substation", true);
-        editPage.getGeographicalAddress().setTrueFalseByName("Feeder", true);
-        editPage.getGeographicalAddress().setTrueFalseByName("ZIP", true);
-        editPage.getGeographicalAddress().setTrueFalseByName("User", true);
+        editPage.getGeographicalAddress().setTrueFalseByLabel("GEO", "GEO", true);
+        editPage.getGeographicalAddress().setTrueFalseByLabel("Substation", "SUBSTATION", true);
+        editPage.getGeographicalAddress().setTrueFalseByLabel("Feeder", "FEEDER", true);
+        editPage.getGeographicalAddress().setTrueFalseByLabel("ZIP", "ZIP", true);
+        editPage.getGeographicalAddress().setTrueFalseByLabel("User", "USER", true);
 
         editPage.getSpid().setInputValue(String.valueOf(randomNum.nextInt(65534)));
         editPage.getGeo().setInputValue(String.valueOf(randomNum.nextInt(65534)));
         editPage.getSubstation().setInputValue(String.valueOf(randomNum.nextInt(65534)));
-        editPage.getFeeder().setTrueFalseByName("10", true);
+        editPage.getFeeder().setTrueFalseByLabel("10", "10", true);
         editPage.getZip().setInputValue(String.valueOf(randomNum.nextInt(65534)));
         editPage.getUser().setInputValue(String.valueOf(randomNum.nextInt(65534)));
 
-        editPage.getUsage().setTrueFalseByName("Program", true);
-        editPage.getUsage().setTrueFalseByName("Splinter", true);
-        editPage.getUsage().setTrueFalseByName("Load", true);
+        editPage.getUsage().setTrueFalseByLabel("Program", "PROGRAM", true);
+        editPage.getUsage().setTrueFalseByLabel("Splinter", "SPLINTER", true);
+        editPage.getUsage().setTrueFalseByLabel("Load", "LOAD", true);
         ConfirmModal confirmModal = new ConfirmModal(driverExt, Optional.empty(), Optional.of("addressing-popup"));
         confirmModal.clickOkAndWaitForSpinner();
 
-        editPage.getLoads().setTrueFalseByName("Load 8", true);
+        editPage.getLoads().setTrueFalseByLabel("Load 8", "Load_8", true);
         editPage.getProgram().setInputValue(String.valueOf(randomNum.nextInt(254)));
         editPage.getSplinter().setInputValue(String.valueOf(randomNum.nextInt(254)));
 

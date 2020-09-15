@@ -26,32 +26,32 @@ public class SwitchBtnMultiSelectElement {
         this.parentElement = parentElement;
     }
 
-    public void setTrueFalseByName(String buttonName, boolean checked) {
-        WebElement switchElement = getSwitchBtn();
-        String name = buttonName.replace(" ", "_");
-        WebElement switchButton = getSwitchBtnByName(buttonName);
-        WebElement switchBtn;
-        if (name.contains("Load_")) {
-            switchBtn = switchElement.findElement(By.cssSelector("input[id='" + name + "_chk']"));
-        } else {
-            switchBtn = switchElement.findElement(By.cssSelector("input[id='" + name.toUpperCase() + "_chk']"));
-        }
-
-        String isChecked = switchBtn.getAttribute("checked");
-
-        if ((isChecked == null && checked) || (isChecked != null && !checked)) {
-            switchButton.click();
-        }
-    }
+//    public void setTrueFalseByName(String buttonName, boolean checked) {
+//        WebElement switchElement = getSwitchBtn();
+//        String name = buttonName.replace(" ", "_");
+//        WebElement switchButton = getSwitchBtnByName(buttonName);
+//        WebElement switchBtn;
+//        if (name.contains("Load_")) {
+//            switchBtn = switchElement.findElement(By.cssSelector("input[id='" + name + "_chk']"));
+//        } else {
+//            switchBtn = switchElement.findElement(By.cssSelector("input[id='" + name.toUpperCase() + "_chk']"));
+//        }
+//
+//        String isChecked = switchBtn.getAttribute("checked");
+//
+//        if ((isChecked == null && checked) || (isChecked != null && !checked)) {
+//            switchButton.click();
+//        }
+//    }    
     
-    public void setTrueFalseById(String buttonId, boolean checked) {
+    public void setTrueFalseByLabel(String label, String id, boolean checked) {
         WebElement switchElement = getSwitchBtn();
         
         List<WebElement> buttons = switchElement.findElements(By.cssSelector(".switch-btn"));
         
-        WebElement el = buttons.stream().filter(x -> x.findElement(By.cssSelector("input[id='" + buttonId + "_chk']")).getAttribute("value").equals(buttonId)).findFirst().orElseThrow();
+        WebElement el = buttons.stream().filter(x -> x.findElement(By.cssSelector(".b-label")).getText().contains(label)).findFirst().orElseThrow();
         
-        WebElement switchButton = el.findElement(By.cssSelector("input[id='" + buttonId + "_chk']"));
+        WebElement switchButton = el.findElement(By.cssSelector("input[id='" + id + "_chk']"));
         
         String isChecked = switchButton.getAttribute("checked");
         
