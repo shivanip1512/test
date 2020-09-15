@@ -311,7 +311,7 @@ void CtiCalcLogicService::Run( )
                     calcThread.reset();
                 }
 
-                unique_ptr<CtiCalculateThread> tempCalcThread( new CtiCalculateThread );
+                auto tempCalcThread = std::make_unique<CtiCalculateThread>();
 
                 if( ! readCalcPoints( tempCalcThread.get() ))
                 {
@@ -328,12 +328,7 @@ void CtiCalcLogicService::Run( )
                         // try it again
                         if(calcThread)
                         {
-                            tempCalcThread->setPeriodicPointMap(calcThread->getPeriodicPointMap());
-                            tempCalcThread->setOnUpdatePointMap(calcThread->getOnUpdatePointMap());
-                            tempCalcThread->setConstantPointMap(calcThread->getConstantPointMap());
-                            tempCalcThread->setHistoricalPointMap(calcThread->getHistoricalPointMap());
-
-                            calcThread->clearPointMaps();
+                            tempCalcThread->stealPointMaps(*calcThread);
                         }
                         else
                         {
@@ -1128,7 +1123,7 @@ void CtiCalcLogicService::updateCalcData()
             CTILOG_DEBUG(dout, "DBUpdate done changing points");
         }
 
-        calcThread->clearAndDestroyPointMaps();
+        calcThread->clearPointMaps();
         readCalcPoints(calcThread.get());
         _registerForPoints();
 
