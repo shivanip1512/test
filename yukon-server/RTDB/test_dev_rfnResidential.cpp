@@ -1564,6 +1564,182 @@ BOOST_AUTO_TEST_CASE( test_tou_critical_peak_tomorrow )
     }
 }
 
+BOOST_AUTO_TEST_CASE( test_putconfig_install_demand )
+{
+    test_RfnResidentialDevice dut;
+
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    cfg.insertValue( RfnStrings::demandInterval, "5" );
+
+    dut.setDeviceType(TYPE_RFN410FX);
+
+    BOOST_CHECK( ! dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval) );
+
+    CtiCommandParser parse("putconfig install demand");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+    const auto& returnMsgPtr = returnMsgs.front();
+    
+    BOOST_REQUIRE( returnMsgPtr );
+    
+    const auto& returnMsg = *returnMsgPtr;
+
+    BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+    BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+
+    const auto& command = rfnRequests.front();
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+    std::vector<unsigned char> exp { 
+            0x62, 0x05 };
+
+    BOOST_CHECK_EQUAL( rcv, exp );
+
+    std::vector<unsigned char> response{
+            0x63, 0x00 };
+
+    command->handleResponse( CtiTime::now(), response );
+
+    dut.extractCommandResult( *command );
+
+    BOOST_CHECK( dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval) );
+
+    BOOST_CHECK_EQUAL( 5, dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval) );
+}
+
+BOOST_AUTO_TEST_CASE( test_putconfig_install_demand_configCurrent )
+{
+    test_RfnResidentialDevice dut;
+
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    cfg.insertValue( RfnStrings::demandInterval, "5" );
+
+    dut.setDeviceType(TYPE_RFN410FX);
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval, 5);
+
+    CtiCommandParser parse("putconfig install demand");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+    BOOST_CHECK_EQUAL  ( 0, rfnRequests.size() );
+
+    const auto & returnMsg = *returnMsgs.front();
+
+    BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+    BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config demand is current." );
+}
+
+BOOST_AUTO_TEST_CASE(test_putconfig_install_demand_force)
+{
+    test_RfnResidentialDevice dut;
+
+    Cti::Test::test_DeviceConfig& cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    cfg.insertValue(RfnStrings::demandInterval, "5");
+
+    dut.setDeviceType(TYPE_RFN410FX);
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval, 5);
+
+    CtiCommandParser parse("putconfig install demand force");
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+    const auto& returnMsgPtr = returnMsgs.front();
+
+    BOOST_REQUIRE(returnMsgPtr);
+
+    const auto& returnMsg = *returnMsgPtr;
+
+    BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+    BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+
+    const auto& command = rfnRequests.front();
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+    std::vector<unsigned char> exp{
+            0x62, 0x05 };
+
+    BOOST_CHECK_EQUAL(rcv, exp);
+
+    std::vector<unsigned char> response{
+            0x63, 0x00 };
+
+    command->handleResponse(CtiTime::now(), response);
+
+    dut.extractCommandResult(*command);
+
+    BOOST_CHECK(dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval));
+
+    BOOST_CHECK_EQUAL(5, dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval));
+}
+
+BOOST_AUTO_TEST_CASE(test_putconfig_install_demand_verify)
+{
+    test_RfnResidentialDevice dut;
+
+    Cti::Test::test_DeviceConfig& cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    cfg.insertValue(RfnStrings::demandInterval, "5");
+
+    dut.setDeviceType(TYPE_RFN410FX);
+
+    BOOST_CHECK(! dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval));
+
+    {
+        CtiCommandParser parse("putconfig install demand verify");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_CHECK_EQUAL(0, rfnRequests.size());
+
+        const auto& returnMsg = *returnMsgs.front();
+
+        BOOST_CHECK_EQUAL(returnMsg.Status(), 219);
+        BOOST_CHECK_EQUAL(returnMsg.ResultString(), "Config demand is NOT current.");
+    }
+    returnMsgs.clear();
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval, 7);
+    {
+        CtiCommandParser parse("putconfig install demand verify");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_CHECK_EQUAL(0, rfnRequests.size());
+
+        const auto& returnMsg = *returnMsgs.front();
+
+        BOOST_CHECK_EQUAL(returnMsg.Status(), 219);
+        BOOST_CHECK_EQUAL(returnMsg.ResultString(), "Config demand is NOT current.");
+    }
+    returnMsgs.clear();
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval, 5);
+    {
+        CtiCommandParser parse("putconfig install demand verify");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_CHECK_EQUAL(0, rfnRequests.size());
+
+        const auto& returnMsg = *returnMsgs.front();
+
+        BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+        BOOST_CHECK_EQUAL(returnMsg.ResultString(), "Config demand is current.");
+    }
+}
+
 BOOST_AUTO_TEST_CASE( test_putconfig_install_freezeday )
 {
     test_RfnResidentialDevice dut;
