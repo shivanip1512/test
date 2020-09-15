@@ -184,7 +184,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportPage_SupportSection_ThreadDump_DisplayedAndCorrectLink() {
+    public void supportDetails_SupportPagesThreadDumpLink_Correct() {
         softly = new SoftAssertions();
         softly.assertThat(supportPageTitles).contains("Thread Dump");
         softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.THREAD_DUMP);
@@ -196,13 +196,13 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     // ================================================================================
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportPage_ManualsSection_PageCountCorrect() {
+    public void supportDetails_ManualsPageCount_Correct() {
         final int EXPECTED_COUNT = 1;
         assertThat(supportPage.getManualsSectionPageList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportPage_ManualsSection_YukonManuals_DisplayedAndCorrectLink() {
+    public void supportDetails_ManualsYukonManualsLink_Correct() {
         softly = new SoftAssertions();
         softly.assertThat(manualsPageTitles).contains("Yukon Manuals");
         softly.assertThat(manualsPageLinks).contains(Urls.Manuals.YUKON_MANUALS);
@@ -214,22 +214,21 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     // ================================================================================
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportPage_TodaysLogsSection_PageCountCorrect() {
+    public void supportDetails_TodaysLogsPageCount_Correct() {
         final int EXPECTED_COUNT = 13;
         assertThat(supportPage.getTodaysLogsSectionPageList().getSimpleListItems().size()).isGreaterThanOrEqualTo(EXPECTED_COUNT);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportPage_TodaysLogsSection_Calc_DisplayedAndCorrectLink() {
+    public void supportDetails_TodaysLogsCalcLink_Correct() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Calc");
-        softly.assertThat(todaysLogsPageLinks).contains(
-                baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.CALC_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
+        softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.CALC_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportPage_TodaysLogsSection_Capcontrol_DisplayedAndCorrectLink() {
+    public void supportDetails_TodaysLogsCapcontrol_Correct() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Capcontrol");
         softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.CAPCONTROL_LOG
@@ -238,7 +237,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportPage_TodaysLogsSection_Dispatch_DisplayedAndCorrectLink() {
+    public void supportDetails_TodaysLogsDispatch_Correct() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Dispatch");
         softly.assertThat(todaysLogsPageLinks).contains(
@@ -247,7 +246,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportPage_TodaysLogsSection_Fdr_DisplayedAndCorrectLink() {
+    public void supportDetails_TodaysLogsFdr_Correct() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Fdr");
         softly.assertThat(todaysLogsPageLinks).contains(
@@ -256,7 +255,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportPage_TodaysLogsSection_LoadManagement_DisplayedAndCorrectLink() {
+    public void supportDetails_TodaysLogsLoadManagement_Correct() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Loadmanagement");
         softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.LOADMANGEMENT_LOG
@@ -265,7 +264,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportPage_TodaysLogsSection_Macs_DisplayedAndCorrectLink() {
+    public void supportDetails_TodaysLogsMacs_Correct() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Macs");
         softly.assertThat(todaysLogsPageLinks).contains(
@@ -274,7 +273,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportPage_TodaysLogsSection_MessageBroker_DisplayedAndCorrectLink() {
+    public void supportDetails_TodaysLogsMessageBroker_Correct() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("MessageBroker");
         softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.MESSAGE_BROKER_LOG
@@ -283,7 +282,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportPage_TodaysLogsSection_NotificationServer_DisplayedAndCorrectLink() {
+    public void supportDetails_TodaysLogsNotificationServer_Correct() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("NotificationServer");
         softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.NOTIFICATION_SERVER_LOG
@@ -292,7 +291,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportPage_TodaysLogsSection_Porter_DisplayedAndCorrectLink() {
+    public void supportDetails_TodaysLogsPorter_Correct() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Porter");
         softly.assertThat(todaysLogsPageLinks).contains(
@@ -301,7 +300,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportPage_TodaysLogsSection_Scanner_DisplayedAndCorrectLink() {
+    public void supportDetails_TodaysLogsScanner_Correct() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Scanner");
         softly.assertThat(todaysLogsPageLinks).contains(
@@ -310,7 +309,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportPage_TodaysLogsSection_ServiceManager_DisplayedAndCorrectLink() {
+    public void supportDetails_TodaysLogsServiceManager_Correct() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("ServiceManager");
         softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.SERVICE_MANAGER_LOG
@@ -319,7 +318,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportPage_TodaysLogsSection_Watchdog_DisplayedAndCorrectLink() {
+    public void supportDetails_TodaysLogsWatchdog_Correct() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Watchdog");
         softly.assertThat(todaysLogsPageLinks).contains(
@@ -328,7 +327,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportPage_TodaysLogsSection_Webserver_DisplayedAndCorrectLink() {
+    public void supportDetails_TodaysLogsWebserver_Correct() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Webserver");
         softly.assertThat(todaysLogsPageLinks).contains(
@@ -337,7 +336,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportPage_TodaysLogsSection_ViewAllLogs_DisplayedAndCorrectLink() {
+    public void supportDetails_TodaysLogsViewAllLogs_Correct() {
         softly = new SoftAssertions();
 
         softly.assertThat(supportPage.getViewAllLogsText()).isEqualTo("View All Logs");
@@ -351,7 +350,8 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     // ================================================================================
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportPage_DatabaseInfo_DatabaseValidation_DisplayedAndCorrectLink() {
+    public void supportDetails_DBInfoDBValidation_Correct() {
+        softly = new SoftAssertions();
         softly.assertThat(supportPage.getDatabaseValidationText()).isEqualTo("Database Validation");
         softly.assertThat(supportPage.getDatabaseValidationLink()).isEqualTo(baseUrl + Urls.Support.DATABASE_VALIDATION);
         softly.assertAll();
