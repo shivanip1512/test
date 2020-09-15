@@ -24,25 +24,7 @@ public class SwitchBtnMultiSelectElement {
         this.driverExt = driverExt;
         this.elementName = elementName;
         this.parentElement = parentElement;
-    }
-
-//    public void setTrueFalseByName(String buttonName, boolean checked) {
-//        WebElement switchElement = getSwitchBtn();
-//        String name = buttonName.replace(" ", "_");
-//        WebElement switchButton = getSwitchBtnByName(buttonName);
-//        WebElement switchBtn;
-//        if (name.contains("Load_")) {
-//            switchBtn = switchElement.findElement(By.cssSelector("input[id='" + name + "_chk']"));
-//        } else {
-//            switchBtn = switchElement.findElement(By.cssSelector("input[id='" + name.toUpperCase() + "_chk']"));
-//        }
-//
-//        String isChecked = switchBtn.getAttribute("checked");
-//
-//        if ((isChecked == null && checked) || (isChecked != null && !checked)) {
-//            switchButton.click();
-//        }
-//    }    
+    }    
     
     public void setTrueFalseByLabel(String label, String id, boolean checked) {
         WebElement switchElement = getSwitchBtn();
