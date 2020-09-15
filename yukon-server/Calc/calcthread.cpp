@@ -39,6 +39,11 @@ extern BOOL  UserQuit;
 extern bool _shutdownOnThreadTimeout;
 extern bool _runCalcBaseline;
 
+namespace {
+    std::string makeUpdateText(long pointId) {
+        return "calc point " + std::to_string(pointId) + " update";
+    }
+}
 
 CtiCalculateThread::CtiCalculateThread() :
     _periodicThreadFunc  (Cti::WorkerThread::Function([this]{ periodicThread();   }).name("periodicThread")),
@@ -168,7 +173,6 @@ void CtiCalculateThread::periodicThread( void )
             double newPointValue, oldPointValue;
 
             CtiMultiMsg *periodicMultiMsg = CTIDBG_new CtiMultiMsg;
-            char pointDescription[80];
 
             messageInMulti = FALSE;
 
@@ -206,7 +210,7 @@ void CtiCalculateThread::periodicThread( void )
                     newPointValue = oldPointValue;
                 }
 
-                sprintf( pointDescription, "calc point %ld update", pointId );
+                const auto pointDescription = makeUpdateText(pointId);
 
                 CtiPointDataMsg *pointData = CTIDBG_new CtiPointDataMsg(pointId, newPointValue, calcQuality, InvalidPointType, pointDescription);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
                 pointData->setTime(calcTime);
@@ -257,7 +261,6 @@ void CtiCalculateThread::onUpdateThread( void )
         bool calcValid;
         long pointIDChanged, recalcPointID;
         double recalcValue, oldCalcValue;
-        char pointDescription[80];
         BOOL pointsInMulti;
         CtiMultiMsg *pChg;
 
@@ -379,8 +382,7 @@ void CtiCalculateThread::onUpdateThread( void )
                     if( pData != NULL )
                     {
                         pointsInMulti = TRUE;
-                        sprintf( pointDescription, "calc point %ld update", recalcPointID );
-                        pData->setString(pointDescription);
+                        pData->setString(makeUpdateText(recalcPointID));
                         pChg->getData( ).push_back( pData );
                     }
 
@@ -451,9 +453,8 @@ void CtiCalculateThread::historicalThread( void )
         CtiMultiMsg *pChg;
         PointTimeMap unlistedPoints, updatedPoints;
         DynamicTableData data;
-        int frequencyInSeconds;
-        int initialDays;
-        char var[256];
+        int frequencyInSeconds = 60 * 60;  //  60 minutes
+        int initialDays = 0;  //  0 days
 
         int calcQuality;
         CtiTime nextCalcTime;
@@ -461,24 +462,18 @@ void CtiCalculateThread::historicalThread( void )
         CtiTime now, lastTime, start;
         ThreadStatusKeeper threadStatus("CalcLogicSvc HistoricalThread");
 
-        strcpy(var, "CALC_HISTORICAL_FREQUENCY_IN_SECONDS");
-        if( 0 != (frequencyInSeconds = gConfigParms.getValueAsInt(var,0)) )
+        constexpr auto keyFrequency = "CALC_HISTORICAL_FREQUENCY_IN_SECONDS";
+        if( const auto val = gConfigParms.findValueAsInt(keyFrequency) )
         {
-            CTILOG_INFO(dout, var <<":  "<< frequencyInSeconds);
-        }
-        else
-        {
-            frequencyInSeconds = 60*60;//60 minutes
+            frequencyInSeconds = *val;
+            CTILOG_INFO(dout, keyFrequency <<":  "<< frequencyInSeconds);
         }
 
-        strcpy(var, "CALC_HISTORICAL_INITIAL_DAYS_CALCULATED");
-        if( 0 != (initialDays = gConfigParms.getValueAsInt(var,0)) )
+        constexpr auto keyInitialDays = "CALC_HISTORICAL_INITIAL_DAYS_CALCULATED";
+        if( const auto val = gConfigParms.findValueAsInt(keyInitialDays) )
         {
-            CTILOG_INFO(dout, var << ":  " << initialDays);
-        }
-        else
-        {
-            initialDays = 0;//0 days
+            initialDays = *val;
+            CTILOG_INFO(dout, keyInitialDays << ":  " << initialDays);
         }
 
         while( true )
@@ -524,7 +519,6 @@ void CtiCalculateThread::historicalThread( void )
             long componentCount;
             double newPointValue;
             CtiTime calcTime;
-            char pointDescription[80];
 
             reloaded = false;
 
@@ -596,7 +590,7 @@ void CtiCalculateThread::historicalThread( void )
                         }
 
 
-                        sprintf( pointDescription, "calc point %ld update", pointID );
+                        const auto pointDescription = makeUpdateText(pointID);
 
                         CtiPointDataMsg *pointData = CTIDBG_new CtiPointDataMsg(pointID, newPointValue, NormalQuality, InvalidPointType, pointDescription);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
                         pointData->setTime(iter->first);//The time these points were entered in the historical log
@@ -676,7 +670,6 @@ void CtiCalculateThread::baselineThread( void )
         DatesSet curtailedDates;
         int frequencyInSeconds = 24*60*60;//24 hours;
         int initialDays = 30;//30 days
-        char var[256];
 
         ThreadStatusKeeper threadStatus("CalcLogicSvc BaselineThread");
 
@@ -693,10 +686,11 @@ void CtiCalculateThread::baselineThread( void )
             nextCalcTime.addDays(-1);//Should let us run immediately
         }
 
-        strcpy(var, "CALC_BASELINE_INITIAL_DAYS_CALCULATED");
-        if( 30 != (initialDays = gConfigParms.getValueAsInt(var,30)) )
+        const auto keyBaselineDays = "CALC_BASELINE_INITIAL_DAYS_CALCULATED";
+        if( const auto var = gConfigParms.findValueAsInt(keyBaselineDays) )
         {
-            CTILOG_INFO(dout, var <<":  "<< initialDays);
+            initialDays = *var;
+            CTILOG_INFO(dout, keyBaselineDays <<":  "<< initialDays);
         }
 
         while( true )
@@ -747,7 +741,6 @@ void CtiCalculateThread::baselineThread( void )
             long pointID, baselinePercentID, baselineID;
             double newPointValue;
             CtiTime calcTime;
-            char pointDescription[80];
 
             reloaded = false;
 
@@ -941,7 +934,7 @@ void CtiCalculateThread::baselineThread( void )
                             }
                             pointValue = pointValue/baselineDataPtr->usedDays;
 
-                            sprintf( pointDescription, "calc point %ld update", pointID );
+                            const auto pointDescription = makeUpdateText(pointID);
                             CtiPointDataMsg *pointData = CTIDBG_new CtiPointDataMsg(pointID, pointValue, NormalQuality, InvalidPointType, pointDescription, TAG_POINT_MUST_ARCHIVE);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
                             pointData->setTime(pointTime.addMinutes(60));//The time these points will appear in historical
 
@@ -1376,7 +1369,6 @@ void CtiCalculateThread::sendConstants()
     double pointValue, oldPointValue;
 
     CtiMultiMsg *pMultiMsg = CTIDBG_new CtiMultiMsg;
-    char pointDescription[80];
     BOOL messageInMulti = FALSE;
 
     bool calcValid;
@@ -1416,7 +1408,7 @@ void CtiCalculateThread::sendConstants()
                 pointValue = oldPointValue;
             }
 
-            sprintf( pointDescription, "calc point %ld update", pointId );
+            const auto pointDescription = makeUpdateText(pointId);
 
             CtiPointDataMsg *pointData = CTIDBG_new CtiPointDataMsg(pointId, pointValue, ConstantQuality, InvalidPointType, pointDescription);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
 
