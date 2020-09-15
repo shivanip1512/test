@@ -69,7 +69,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getFeederAddress().setTrueFalseByName("1", true);
 
         createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
-        createPage.getProgramLoadAddress().setInputValue("10");
+        createPage.getProgram().setInputValue("10");
 
         createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
 
@@ -348,10 +348,10 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
-        createPage.getProgramLoadAddress().setInputValue("0");
+        createPage.getProgram().setInputValue("0");
         createPage.getSaveBtn().click();
 
-        assertThat(createPage.getProgramLoadAddress().getValidationError()).isEqualTo("Must be between 1 and 254.");
+        assertThat(createPage.getProgram().getValidationError()).isEqualTo("Must be between 1 and 254.");
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -359,10 +359,10 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
-        createPage.getProgramLoadAddress().setInputValue("255");
+        createPage.getProgram().setInputValue("255");
         createPage.getSaveBtn().click();
 
-        assertThat(createPage.getProgramLoadAddress().getValidationError()).isEqualTo("Must be between 1 and 254.");
+        assertThat(createPage.getProgram().getValidationError()).isEqualTo("Must be between 1 and 254.");
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -372,7 +372,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getLoadAddressUsage().setTrueFalseByName("Program", true);
         createPage.getSaveBtn().click();
 
-        assertThat(createPage.getProgramLoadAddress().getValidationError()).isEqualTo("Program is required.");
+        assertThat(createPage.getProgram().getValidationError()).isEqualTo("Program is required.");
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -380,10 +380,10 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getLoadAddressUsage().setTrueFalseByName("Splinter", true);
-        createPage.getSplinterLoadAddress().setInputValue("0");
+        createPage.getSplinter().setInputValue("0");
         createPage.getSaveBtn().click();
 
-        assertThat(createPage.getSplinterLoadAddress().getValidationError()).isEqualTo("Must be between 1 and 254.");
+        assertThat(createPage.getSplinter().getValidationError()).isEqualTo("Must be between 1 and 254.");
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -391,10 +391,10 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         createPage.getLoadAddressUsage().setTrueFalseByName("Splinter", true);
-        createPage.getSplinterLoadAddress().setInputValue("255");
+        createPage.getSplinter().setInputValue("255");
         createPage.getSaveBtn().click();
 
-        assertThat(createPage.getSplinterLoadAddress().getValidationError()).isEqualTo("Must be between 1 and 254.");
+        assertThat(createPage.getSplinter().getValidationError()).isEqualTo("Must be between 1 and 254.");
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -404,6 +404,6 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getLoadAddressUsage().setTrueFalseByName("Splinter", true);
         createPage.getSaveBtn().click();
 
-        assertThat(createPage.getSplinterLoadAddress().getValidationError()).isEqualTo("Splinter is required.");
+        assertThat(createPage.getSplinter().getValidationError()).isEqualTo("Splinter is required.");
     }
 }
