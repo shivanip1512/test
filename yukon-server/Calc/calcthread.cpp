@@ -78,11 +78,11 @@ void CtiCalculateThread::pointChange( long changedID, double newValue, const Cti
             {
                 pointPtr->setPointValue( newValue, newTime, newQuality, newTags );      // Update the pointStore.
 
-                for each( const long pointid in pointPtr->getDependents( ) )
+                for( const long pointid : pointPtr->getDependents() )
                 {
                     if( pointid )
                     {
-                        _auAffectedPoints.append(pointid);
+                        _auAffectedPoints.push(pointid);
                     }
                 }
             }
@@ -172,7 +172,7 @@ void CtiCalculateThread::periodicThread( void )
             long pointId;
             double newPointValue, oldPointValue;
 
-            CtiMultiMsg *periodicMultiMsg = CTIDBG_new CtiMultiMsg;
+            auto periodicMultiMsg = std::make_unique<CtiMultiMsg>();
 
             messageInMulti = FALSE;
 
@@ -228,17 +228,13 @@ void CtiCalculateThread::periodicThread( void )
             {
                 {
                     CtiLockGuard<CtiCriticalSection> calcMsgGuard(outboxMux);
-                    _outbox.append( periodicMultiMsg );
+                    _outbox.emplace(std::move(periodicMultiMsg));
                 }
 
                 if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                 {
                     CTILOG_DEBUG(dout, "periodicThread posting a message - took "<< (clock( ) - now) <<" ticks");
                 }
-            }
-            else
-            {
-                delete periodicMultiMsg;
             }
 
             newTime = tempTime;
@@ -262,7 +258,6 @@ void CtiCalculateThread::onUpdateThread( void )
         long pointIDChanged, recalcPointID;
         double recalcValue, oldCalcValue;
         BOOL pointsInMulti;
-        CtiMultiMsg *pChg;
 
         int calcQuality;
         CtiTime calcTime;
@@ -285,20 +280,21 @@ void CtiCalculateThread::onUpdateThread( void )
 
                 Cti::WorkerThread::sleepFor(Cti::Timing::Chrono::milliseconds(250));
             }
-            while( !_auAffectedPoints.entries( ) );
+            while( _auAffectedPoints.empty() );
 
             _onUpdateThreadFunc.waitForResume();
 
-            pChg = CTIDBG_new CtiMultiMsg;
+            auto pChg = std::make_unique<CtiMultiMsg>();
             pointsInMulti = FALSE;
 
             //  get the mutex while we're accessing the _auAffectedPoints collection
             //  (it's accessed by pointChange as well)
             {
                 CtiLockGuard<CtiCriticalSection> msgLock(_pointDataMutex);
-                while( _auAffectedPoints.entries( ) )
+                while( ! _auAffectedPoints.empty( ) )
                 {
-                    recalcPointID = _auAffectedPoints.removeFirst( );
+                    recalcPointID = _auAffectedPoints.front();  
+                    _auAffectedPoints.pop();
 
                     auto calcPoint = Cti::mapFindPtr(_onUpdatePoints, recalcPointID);
 
@@ -397,7 +393,7 @@ void CtiCalculateThread::onUpdateThread( void )
             {
                 {
                     CtiLockGuard<CtiCriticalSection> outboxGuard(outboxMux);
-                    _outbox.append( pChg );
+                    _outbox.emplace(std::move(pChg));
                 }
 
                 //  i kinda want to keep away from having a hold on both of the mutexes, as a little programming error
@@ -406,10 +402,6 @@ void CtiCalculateThread::onUpdateThread( void )
                 {
                     CTILOG_DEBUG(dout, "onUpdateThread posting a message");
                 }
-            }
-            else
-            {
-                delete pChg;
             }
         }
     }
@@ -450,7 +442,6 @@ void CtiCalculateThread::historicalThread( void )
     {
         bool calcValid, reloaded = false;
         bool pointsInMulti;
-        CtiMultiMsg *pChg;
         PointTimeMap unlistedPoints, updatedPoints;
         DynamicTableData data;
         int frequencyInSeconds = 60 * 60;  //  60 minutes
@@ -502,7 +493,7 @@ void CtiCalculateThread::historicalThread( void )
 
             start = start.now();
 
-            pChg = CTIDBG_new CtiMultiMsg;
+            auto pChg = std::make_unique<CtiMultiMsg>();
             pointsInMulti = FALSE;
 
             PointTimeMap dbTimeMap;
@@ -630,17 +621,13 @@ void CtiCalculateThread::historicalThread( void )
             {
                 {
                     CtiLockGuard<CtiCriticalSection> outboxGuard(outboxMux);
-                    _outbox.append( pChg );
+                    _outbox.emplace(std::move(pChg));
                 }
 
                 if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                 {
                     CTILOG_DEBUG(dout, "historical posting a message");
                 }
-            }
-            else
-            {
-                delete pChg;
             }
 
             CTILOG_INFO(dout, "Historical Calculation completed in "<< start.now().seconds()-start.seconds() << " seconds" <<
@@ -663,7 +650,6 @@ void CtiCalculateThread::baselineThread( void )
     {
         bool calcValid, reloaded = false;
         BOOL pointsInMulti;
-        CtiMultiMsg *pChg;
         PointTimeMap unlistedPoints, updatedPoints;
         DynamicTableSinglePointData data;
         DynamicTableSinglePointData percentData;
@@ -719,7 +705,7 @@ void CtiCalculateThread::baselineThread( void )
 
             start = start.now();
 
-            pChg = CTIDBG_new CtiMultiMsg;
+            auto pChg = std::make_unique<CtiMultiMsg>();
             pointsInMulti = FALSE;
 
             PointTimeMap dbTimeMap;
@@ -998,17 +984,13 @@ void CtiCalculateThread::baselineThread( void )
             {
                 {
                     CtiLockGuard<CtiCriticalSection> outboxGuard(outboxMux);
-                    _outbox.append( pChg );
+                    _outbox.emplace(std::move(pChg));
                 }
 
                 if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                 {
                     CTILOG_DEBUG(dout, "baseline posting a message");
                 }
-            }
-            else
-            {
-                delete pChg;
             }
 
             CTILOG_INFO(dout, "Baseline Calculation completed in "<< start.now().seconds()-start.seconds() <<" seconds"<<
@@ -1368,7 +1350,7 @@ void CtiCalculateThread::sendConstants()
     long pointId;
     double pointValue, oldPointValue;
 
-    CtiMultiMsg *pMultiMsg = CTIDBG_new CtiMultiMsg;
+    auto pMultiMsg = std::make_unique<CtiMultiMsg>();
     BOOL messageInMulti = FALSE;
 
     bool calcValid;
@@ -1422,12 +1404,8 @@ void CtiCalculateThread::sendConstants()
     {
         {
             CtiLockGuard<CtiCriticalSection> calcMsgGuard(outboxMux);
-            _outbox.append( pMultiMsg );
+            _outbox.emplace(std::move(pMultiMsg));
         }
-    }
-    else
-    {
-        delete pMultiMsg;
     }
 }
 

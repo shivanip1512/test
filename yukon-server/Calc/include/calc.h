@@ -1,13 +1,13 @@
 #pragma once
 
-#include "ctiqueues.h"
-
 #include "calccomponent.h"
+
+#include <stack>
 
 class CtiCalc
 {
     std::vector<std::unique_ptr<CtiCalcComponent>>  _components;
-    CtiStack<double>     _stack;
+    std::stack<double>   _stack;
     CalcUpdateType       _updateType;
     ULONG                _nextInterval;
     int                  _updateInterval;
