@@ -48,7 +48,7 @@ public class NetworkManagerWatcher extends ServiceStatusWatchdogImpl {
     @Override
     public List<WatchdogWarnings> watch() {
         ServiceStatus connectionStatus = getNetworkManagerStatus();
-        log.info("Status of network manager " + connectionStatus);
+        log.info("Communication status of network manager and yukon " + connectionStatus);
         return generateWarning(WatchdogWarningType.YUKON_NETWORK_MANAGER, connectionStatus);
     }
 
