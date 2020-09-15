@@ -16,7 +16,6 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.joda.time.DateTime;
@@ -44,13 +43,11 @@ import com.cannontech.amr.archivedValueExporter.service.impl.ExportReportGenerat
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.dao.MockMeterDaoImpl;
 import com.cannontech.amr.meter.model.YukonMeter;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.MockAttributeServiceImpl;
 import com.cannontech.common.pao.definition.model.PaoData;
 import com.cannontech.common.pao.definition.model.PaoData.OptionalField;
-import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.service.PaoSelectionService;

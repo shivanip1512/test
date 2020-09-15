@@ -319,7 +319,6 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
 
     /**
      * Builds and returns a list of strings each representing one row of data for the report.
-     * @param paoLocationLookupTable 
      * 
      * @throws IOException
      */
@@ -346,7 +345,6 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
 
     /**
      * Builds and returns a list of strings each representing one row of data for the report.
-     * @param paoLocationLookupTable 
      * 
      * @throws IOException
      */
@@ -380,7 +378,6 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
 
     /**
      * This method generates one row to the given report.
-     * @param paoLocationLookupTable 
      */
     private String generateReportRow(ExportFormat format,
             YukonPao pao,
@@ -419,7 +416,6 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
 
     /**
      * This method translates the information supplied along with the export field to get the desired data from the report row.
-     * @param paoLocationLookupTable 
      */
     public String getValue(ExportField exportField,
             YukonPao pao,
@@ -835,7 +831,6 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
 
     /**
      * Gets the Latitude. Returns "" if the latitude was not found.
-     * @param paoLocationLookupTable 
      */
     private String getLatitude(YukonPao pao, PaoData paoData, Map<PaoIdentifier, PaoLocation> paoLocationLookupTable) {
         if (pao == null || (pao == null && paoData == null)) {
@@ -850,13 +845,10 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         }
 
         return "";
-
-//        return String.valueOf(paoLocationDao.getLocation(pao.getPaoIdentifier().getPaoId()).getLatitude());
     }
 
     /**
      * Gets the longitude. Returns "" if the longitude was not found.
-     * @param paoLocationLookupTable 
      */
     private String getLongitude(YukonPao pao, PaoData paoData, Map<PaoIdentifier, PaoLocation> paoLocationLookupTable) {
         if (pao == null || (pao == null && paoData == null)) {
@@ -871,7 +863,5 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         }
 
         return "";
-
-//        return String.valueOf(paoLocationDao.getLocation(pao.getPaoIdentifier().getPaoId()).getLongitude());
     }
 }
