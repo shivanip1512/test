@@ -149,7 +149,7 @@ double CtiCalc::calculate( int &calc_quality, CtiTime &calc_time, bool &calcVali
                 CTILOG_ERROR(dout, "Calc Point ID:"<< _pointId <<"; Not found");
             }
         }
-        _stack.clear();     // Start with a blank stack.
+        _stack = {};     // Start with a blank stack.
         push( retVal );     // Prime the stack with a zero value (should effectively clear it).
 
         bool solidTime = false;             // If time is "solid" all components are the same time stamp.
@@ -201,14 +201,14 @@ double CtiCalc::calculate( int &calc_quality, CtiTime &calc_time, bool &calcVali
 bool CtiCalc::push( double val )
 {
     _stack.push( val );
-    return( _stack.entries() == 2 );    // Was this the first push (after the push(retVal = 0) stack primer)?
+    return( _stack.size() == 2 );    // Was this the first push (after the push(retVal = 0) stack primer)?
 }
 
 
 double CtiCalc::pop( void )
 {
     double val;
-    if( !_stack.isEmpty( ) )
+    if( ! _stack.empty( ) )
     {
         val = _stack.top( );
         _stack.pop( );

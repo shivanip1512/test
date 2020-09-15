@@ -543,7 +543,7 @@ void CtiCalcLogicService::_outputThread()
                 {
                     CtiLockGuard<CtiCriticalSection> outboxGuard(calcThread->outboxMux);
 
-                    while( calcThread->outboxEntries( ) )
+                    while( calcThread->hasOutboxEntries( ) )
                     {
                         outboxEntries.emplace_back(calcThread->getOutboxEntry());
                     }
@@ -570,7 +570,7 @@ void CtiCalcLogicService::_outputThread()
             {
                 if( entry && entry->getCount() > 0 )
                 {
-                    dispatchConnection->WriteConnQue( entry.release(), CALLSITE );
+                    dispatchConnection->WriteConnQue( std::move(entry), CALLSITE );
                 }
             }
         }

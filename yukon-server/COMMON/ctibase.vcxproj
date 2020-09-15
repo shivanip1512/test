@@ -550,7 +550,6 @@
     <ClInclude Include="include\ctidate.h" />
     <ClInclude Include="include\ctidbgmem.h" />
     <ClInclude Include="include\ctipcptrqueue.h" />
-    <ClInclude Include="include\ctiqueues.h" />
     <ClInclude Include="include\ctitime.h" />
     <ClInclude Include="include\ctitokenizer.h" />
     <ClInclude Include="include\database_connection.h" />

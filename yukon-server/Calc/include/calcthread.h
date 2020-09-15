@@ -4,7 +4,6 @@
 
 #include "calc.h"
 #include "pointstore.h"
-#include "ctiqueues.h"
 
 #include "CalcWorkerThread.h"
 
@@ -29,8 +28,8 @@ public:
 
 private:
     CtiCalcPointMap _periodicPoints, _onUpdatePoints, _constantPoints, _historicalPoints, _backfilledPoints;
-    CtiValDeque<long> _auAffectedPoints;
-    CtiPtrDeque<CtiMultiMsg> _outbox;
+    std::queue<long> _auAffectedPoints;
+    std::queue<std::unique_ptr<CtiMultiMsg>> _outbox;
     CtiCriticalSection _pointDataMutex;
 
     struct BaselineData
@@ -98,8 +97,8 @@ public:
     long numberOfLoadedCalcPoints() { return (_periodicPoints.size() + _onUpdatePoints.size() + _constantPoints.size() + _historicalPoints.size()); };
 
 
-    int outboxEntries( void )   {   return _outbox.entries( ); };
-    CtiMultiMsg *getOutboxEntry( void )                         {   return _outbox.popFront( ); };
+    bool hasOutboxEntries( void )                        {  return ! _outbox.empty();  }
+    std::unique_ptr<CtiMultiMsg> getOutboxEntry( void )  {  auto msg = std::move(_outbox.front());  _outbox.pop();  return std::move(msg);  }
 
     std::vector<long> getPointDependencies() const;
 
