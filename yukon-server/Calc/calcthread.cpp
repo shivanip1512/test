@@ -454,7 +454,8 @@ void CtiCalculateThread::historicalThread( void )
         ThreadStatusKeeper threadStatus("CalcLogicSvc HistoricalThread");
 
         constexpr auto keyFrequency = "CALC_HISTORICAL_FREQUENCY_IN_SECONDS";
-        if( const auto val = gConfigParms.findValueAsInt(keyFrequency) )
+        if( const auto val = gConfigParms.findValueAsInt(keyFrequency);
+            val && *val )
         {
             frequencyInSeconds = *val;
             CTILOG_INFO(dout, keyFrequency <<":  "<< frequencyInSeconds);
@@ -1336,6 +1337,8 @@ void CtiCalculateThread::removePointStoreObject( const long aPointID )
             targetCalcPoint->clearComponentDependencies();
 
             CtiPointStore::remove(aPointID);
+
+            return;
         }
     }
 
