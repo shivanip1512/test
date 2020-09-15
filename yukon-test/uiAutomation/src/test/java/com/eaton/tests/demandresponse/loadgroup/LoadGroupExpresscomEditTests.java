@@ -30,8 +30,6 @@ import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
-
-    WebDriver driver;
     private DriverExtensions driverExt;
     private Random randomNum;
     private Integer id;
@@ -169,9 +167,9 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpExpresscomEdit_FieldValues_Correct() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        List<LoadGroupEnums.RelayUsageExpresscom> relayUsage = new ArrayList<>();
-        relayUsage.add(LoadGroupEnums.RelayUsageExpresscom.Load_6);
-        relayUsage.add(LoadGroupEnums.RelayUsageExpresscom.Load_1);
+        List<String> relayUsage = new ArrayList<>();
+        relayUsage.add(LoadGroupEnums.RelayUsageExpresscom.LOAD_6.getRelayUsageValue());
+        relayUsage.add(LoadGroupEnums.RelayUsageExpresscom.LOAD_1.getRelayUsageValue());
 
         SoftAssertions softly = new SoftAssertions();
         Pair<JSONObject, JSONObject> pair = new LoadGroupExpresscomCreateBuilder.Builder(Optional.empty())

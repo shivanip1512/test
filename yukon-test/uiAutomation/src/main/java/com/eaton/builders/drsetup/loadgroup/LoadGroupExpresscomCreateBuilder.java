@@ -8,7 +8,6 @@ import java.util.Optional;
 import org.javatuples.Pair;
 import org.json.JSONObject;
 
-import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.RelayUsageExpresscom;
 import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
 import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 import com.github.javafaker.Faker;
@@ -32,7 +31,7 @@ public class LoadGroupExpresscomCreateBuilder {
         private double kwCapacity;
         private boolean disableGroup;
         private boolean disableControl;
-        private List<RelayUsageExpresscom> relayUsage;
+        private List<String> relayUsage;
         private String protocolPriority;
         List<LoadGroupEnums.AddressUsageExpresscom> addressUsageList = new ArrayList<>();
         private Integer serialAddress;
@@ -93,8 +92,8 @@ public class LoadGroupExpresscomCreateBuilder {
             return this;
         }
         
-        public Builder withRelayUsage(Optional<List<LoadGroupEnums.RelayUsageExpresscom>> relayUsage) {
-            List<LoadGroupEnums.RelayUsageExpresscom> relays = new ArrayList<>();
+        public Builder withRelayUsage(Optional<List<String>> relayUsage) {
+            List<String> relays = new ArrayList<>();
             relays.add(LoadGroupEnums.RelayUsageExpresscom.getRandomRelayUsage());
             this.relayUsage = relayUsage.orElse(relays);
             addressUsageList.add(LoadGroupEnums.AddressUsageExpresscom.LOAD);

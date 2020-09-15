@@ -1,6 +1,5 @@
 package com.eaton.pages.demandresponse.loadgroup;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.openqa.selenium.By;
