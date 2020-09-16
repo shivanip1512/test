@@ -244,7 +244,7 @@ public class SeleniumTestSetup {
                     .getAttribute("style");
 
             if (style.contains("display: none")) {
-                return;
+                break;
             }
         }
     }
@@ -268,7 +268,7 @@ public class SeleniumTestSetup {
             Optional<WebElement> el = list.stream().filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle)).findFirst();
 
             if (el.isPresent()) {
-                return;
+                break;
             }
         }
     }
@@ -289,7 +289,7 @@ public class SeleniumTestSetup {
                 Optional<WebElement> el = list.stream().filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle)).findFirst();
 
                 if (!el.isPresent()) {
-                    return;
+                    break;
                 }
             } catch (StaleElementReferenceException ex) {
 
