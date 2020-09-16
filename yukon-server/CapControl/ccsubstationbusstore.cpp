@@ -6805,6 +6805,12 @@ void CtiCCSubstationBusStore::handleSubstationDBChange(long reloadId, BYTE reloa
         CtiCCSubstationPtr station = findSubstationByPAObjectID(reloadId);
         if (station != NULL)
         {
+            for ( long subbusID : station->getCCSubIds() )
+            {
+                reloadMonitorPointsFromDatabase(subbusID, &_paobject_capbank_map, &_paobject_feeder_map,
+                                                &_paobject_subbus_map, &_pointid_capbank_map, &_pointid_subbus_map);
+            }
+
             addVectorIdsToSet(station->getCCSubIds(), modifiedBusIdsSet);
             modifiedStationIdsSet.insert(reloadId);
             if (station->getDisableFlag())
