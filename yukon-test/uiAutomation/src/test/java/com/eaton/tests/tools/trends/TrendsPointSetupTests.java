@@ -44,7 +44,7 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
         trendName = response.getString("name");
         POINT_NAME = "Analog Point for Create Trend";
 
-        navigate(Urls.Tools.TREND_EDIT + trendId);
+        navigate(Urls.Tools.TREND_EDIT + trendId + Urls.EDIT);
         trendEditPage = new TrendEditPage(driverExt, Urls.Tools.TREND_EDIT, trendId);
     }
 
@@ -169,7 +169,7 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
     public void trendPointSetup_EditPoint_ValuesCorrect() {
         //Taking longer to create a trend so need to add refresh here
-        refreshPage(trendEditPage);
+        //refreshPage(trendEditPage);
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_MODAL_TITLE = "Edit " + POINT_NAME;
         
