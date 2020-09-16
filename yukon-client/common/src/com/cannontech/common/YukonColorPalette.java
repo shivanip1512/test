@@ -8,8 +8,7 @@ import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-//TODO: Let's add some javadocs to this file stating where the hex strings are located.
-//Something similar to the comments in the colors.less file, so that we know exactly where to go to add a new color.
+//The hex value for these colors is defined in colors.less file.
 public enum YukonColorPalette implements DatabaseRepresentationSource, DisplayableEnum {
 
     BLACK(ColorId.BLACK_ID),

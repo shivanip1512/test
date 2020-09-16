@@ -1,6 +1,5 @@
 package com.cannontech.common;
 
-import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,11 +31,10 @@ public class ColorsFileReader {
             while (variableNameMatcher.find() && valueMatcher.find()) {
                 colorHexValueMapBuilder.put(YukonColorPalette.valueOf(variableNameMatcher.group(1).toUpperCase()), valueMatcher.group(1));
             }
-        } catch (IOException e) {
-            log.error(e);
-        } 
+        } catch (Exception e) {
+            log.error("An Exception occured while reading colors.less file.", e);
+            System.exit(1);
+        }
         colorHexValueMap = colorHexValueMapBuilder.build();
-        //TODO: Remove this.
-        log.info("#####" + colorHexValueMap);
     }
 }
