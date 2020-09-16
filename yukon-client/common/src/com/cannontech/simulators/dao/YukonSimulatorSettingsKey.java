@@ -140,7 +140,11 @@ public enum YukonSimulatorSettingsKey {
     NEST_FILE_NAME("", InputTypeFactory.stringType(), SimulatorType.NEST),
     NEST_VERSION(1, InputTypeFactory.integerType(), SimulatorType.NEST),
    
-    DEMAND_RESET_STATUS_ARCHIVE("SUCCESS", InputTypeFactory.stringType(), SimulatorType.STATUS_ARCHIVE)
+    DEMAND_RESET_STATUS_ARCHIVE("SUCCESS", InputTypeFactory.stringType(), SimulatorType.STATUS_ARCHIVE),
+    
+    CACHE_CORRELATION_FREQUENCY_HOURS("4", InputTypeFactory.stringType(), SimulatorType.CACHE_CORRELATION),
+    CACHE_CORRELATION_NOTIFICATION_EMAIL("", InputTypeFactory.stringType(), SimulatorType.CACHE_CORRELATION),
+    CACHE_CORRELATION_GROUPS("/All Meters", InputTypeFactory.stringType(), SimulatorType.CACHE_CORRELATION)
     ;
     
     private final Object defaultValue;

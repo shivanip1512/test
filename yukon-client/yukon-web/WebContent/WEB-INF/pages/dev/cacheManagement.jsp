@@ -12,12 +12,11 @@
         </form>
     </tags:sectionContainer>
     <tags:sectionContainer title="Cache Correlation">
-	    Compares point data in PointUpdateBackingService, AsyncDynamicDataSource and latest value in RPH, if there is a mismatch, generates CSV file with results.
+	    Compares point data in PointUpdateBackingService, AsyncDynamicDataSource and latest value in RPH, if there is a mismatch, generates CSV file with results. File location ${location}.
 	    Notifies dispatch to log its values if mismatch is found. 
 	    <form action="correlatePointData">
             <p>&nbsp;</p>
-            <tags:deviceGroupPicker inputName="deviceSubGroups"
-                multi="true" inputValue="${groups}" classes="fl" />
+            <tags:deviceGroupPicker inputName="deviceSubGroups" multi="true" classes="fl" />
             <p>&nbsp;</p>
             <div class="page-action-area stacked">
                 <cti:button label="Correlate Point Data" type="Submit" />
@@ -26,12 +25,24 @@
     </tags:sectionContainer>
     <tags:sectionContainer title="Cache Correlation Schedule">
         <form action="scheduleCorrelationOfPointData">
-            <p>&nbsp;</p>
-            <p>Runs on the group selected every X hours, if mismatch found sends an email.</p>
+            <p>Checks devices in a group every ${hours} hours, if mismatch found, sends an email. File location ${location}. <b>This task will only run if the email is present.</b></c:if></p>
             <tags:deviceGroupPicker inputName="deviceSubGroups"
                 multi="true" inputValue="${groups}" classes="fl" />
-            <input type="text" name="Hours" size="35" value="A">
-            <input type="text" name="Email" size="35" value="B">
+            <p>&nbsp;</p>
+            <tags:nameValueContainer tableClass="natural-width">
+                <tags:nameValue name="Hours">
+                    <input name="hours" type="text"
+                        style="width: 45px;"
+                        value="${hours}">
+                </tags:nameValue>
+            </tags:nameValueContainer>
+            <tags:nameValueContainer tableClass="natural-width">
+                <tags:nameValue name="Email">
+                    <input name="email" type="text"
+                        style="width: 200px;"
+                        value="${email}">
+                </tags:nameValue>
+            </tags:nameValueContainer>
             <div class="page-action-area stacked">
                 <cti:button label="Schedule" type="Submit" />
             </div>

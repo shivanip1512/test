@@ -25,6 +25,7 @@ public enum SimulatorType {
     SMART_NOTIFICATION,
     STATUS_ARCHIVE,
     DEVICE_ARCHIVE,
-    NEST
+    NEST,
+    CACHE_CORRELATION
     ;
 }

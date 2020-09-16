@@ -3,7 +3,6 @@ package com.cannontech.web.common.service;
 import java.util.List;
 
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.common.service.impl.CachedPointDataCorrelationServiceImpl.CorrelationSummary;
 
 public interface CachedPointDataCorrelationService {
     
@@ -15,7 +14,13 @@ public interface CachedPointDataCorrelationService {
 
     /**
      * Correlates data across RPH/Caches/DynamicDispatchs and logs results.
-     * Returns and logs details of mismatches.
+     * Returns true if mismatches found.
+     * @throws Exception 
      */
-    List<CorrelationSummary> correlateAndLog(List<Integer> deviceIds, YukonUserContext userContext);
+    boolean correlateAndLog(List<Integer> deviceIds, YukonUserContext userContext) throws Exception;
+
+    /**
+     * Schedules or reschedules device correlation, email with instructions will be sent if mismatches are found.
+     */
+    void reschedule(Integer initialDelay);
 }

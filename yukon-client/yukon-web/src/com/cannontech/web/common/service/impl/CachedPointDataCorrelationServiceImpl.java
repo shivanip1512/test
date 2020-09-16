@@ -1,37 +1,60 @@
 package com.cannontech.web.common.service.impl;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+import javax.mail.internet.InternetAddress;
+
 import org.apache.commons.compress.utils.Sets;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Minutes;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.util.StringUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.util.Command;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.tools.email.EmailMessage;
+import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.service.CachedPointDataCorrelationService;
 import com.cannontech.web.updater.point.PointUpdateBackingService;
@@ -49,8 +72,53 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
     @Autowired private DispatchClientConnection dispatch;
     @Autowired private PointDao pointDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-  //  private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private ServerDatabaseCache dbCache;
+    @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
+    @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
+    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private EmailService emailService;
+    private ScheduledFuture<?> futureSchedule;
 
+    @PostConstruct
+    public void schedule() {
+        reschedule(Minutes.minutes(5).getMinutes());
+    }
+
+    @Override
+    public void reschedule(Integer initialDelay) {
+        if(futureSchedule != null) {
+            futureSchedule.cancel(true);
+            futureSchedule = null;
+        }
+        
+        String email = yukonSimulatorSettingsDao
+                .getStringValue(YukonSimulatorSettingsKey.CACHE_CORRELATION_NOTIFICATION_EMAIL);
+        if(StringUtils.isEmpty(email)) {
+            return;
+        }
+        String hours = yukonSimulatorSettingsDao
+                .getStringValue(YukonSimulatorSettingsKey.CACHE_CORRELATION_FREQUENCY_HOURS);
+        String groups = yukonSimulatorSettingsDao
+                .getStringValue(YukonSimulatorSettingsKey.CACHE_CORRELATION_GROUPS);
+        futureSchedule = executor.scheduleAtFixedRate(() -> {
+            Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(List.of(groups));
+            List<Integer> deviceIds = deviceGroupService.getDevices(deviceGroups).stream()
+                    .map(device -> device.getDeviceId()).collect(Collectors.toList());
+            try {
+                boolean hasMismatch = correlateAndLog(deviceIds, YukonUserContext.system);
+                if (hasMismatch) {
+                    EmailMessage emailMessage = new EmailMessage(InternetAddress.parse(email),
+                            CtiUtilities.getIPAddress() + " Data correlation task found mismatches.",
+                            "File located at " + CtiUtilities.getCacheCollerationDirPath() + ".");
+                    emailService.sendMessage(emailMessage);
+                }
+            } catch (Exception e) {
+                log.error(e);
+            }
+        }, initialDelay, Integer.valueOf(hours), TimeUnit.HOURS);
+    }
+        
     @Override
     public void correlateAndLog(int pointId, YukonUserContext userContext) {
         boolean isErrorReportingEnabled = globalSettingDao.getBoolean(GlobalSettingType.ERROR_REPORTING);
@@ -67,7 +135,7 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
     }
     
     @Override
-    public List<CorrelationSummary> correlateAndLog(List<Integer> deviceIds, YukonUserContext userContext) {
+    public boolean correlateAndLog(List<Integer> deviceIds, YukonUserContext userContext) throws Exception {
         List<CorrelationSummary> summary = new ArrayList<>();
         
         List<LitePoint> points = pointDao.getLitePointsByDeviceIds(deviceIds);
@@ -76,7 +144,8 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
                 .stream().collect(Collectors.groupingBy(value -> value.getId()));
         
         if(history.isEmpty()) {
-            return summary;
+            log.info("Device data correlation complete. No mismatches found.");
+            return false;
         }
         
         Set<Integer> pointIds = history.keySet();
@@ -94,7 +163,7 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
         log.info("Got asyncDataSourceValues cached values {}", asyncDataSourceValues.size());
 
         pointIds.forEach(pointId -> {
-            //2 latest history values
+            //2 latest RPH values
             List<PointValueQualityHolder> historicalValues = history.get(pointId);
             LitePoint point = pointIdsToPoint.get(pointId);
             PointValueQualityHolder pointUpdateBackingServiceCachedValue = pointUpdateBackingServiceCachedValues.get(pointId);
@@ -105,8 +174,59 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
                 summary.add(result);
             }
         });
+        if(summary.isEmpty()) {
+            log.info("Device data correlation complete. No mismatches found.");
+            return false;
+        }
         summary.sort(Comparator.comparingInt(value -> value.getPoint().getPaobjectID()));
-        return summary;
+        createFile(summary, userContext);
+        return true;
+    }
+    
+    private void createFile(List<CorrelationSummary> summary, YukonUserContext userContext) throws Exception {
+        List<List<String>> dataRows = getDataRows(summary);
+        String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        String fileName = "CacheCorrelation_"+ now + ".csv";
+        List<String> result = new ArrayList<>();
+        result.add(String.join(",", getHeader()));
+        dataRows.forEach(row -> result.add(row.stream()
+                .map(value -> StringEscapeUtils.escapeCsv(value))
+                .collect(Collectors.joining (","))));
+        FileUtils.writeLines(new File(CtiUtilities.getCacheCollerationDirPath(), fileName), result);
+        log.info("Device data correlation complete. Mismatches found. File generated: {}",
+                CtiUtilities.getCacheCollerationDirPath() + File.separator + fileName);
+    }
+        
+    private List<String> getHeader() {
+        ArrayList<String> header = new ArrayList<>();
+        header.add("Device Id");
+        header.add("Device Name");
+        header.add("Point Id");
+        header.add("Point Name");
+        header.add("Update Backing Service Cache");
+        header.add("Async Data Source Cache");
+        header.add("DYNAMICPOINTDISPATCH");
+        header.add("RPH Value #1");
+        header.add("RPH Value #2");
+        return header;
+    }
+    
+    private List<List<String>> getDataRows(List<CorrelationSummary> summary) {
+        ArrayList<List<String>> rows = new ArrayList<>();
+        summary.forEach(s -> {
+            ArrayList<String> row = new ArrayList<>();
+            row.add(String.valueOf(s.getPoint().getPaobjectID()));
+            row.add(dbCache.getAllPaosMap().get(s.getPoint().getPaobjectID()).getPaoName());
+            row.add(String.valueOf(s.getPoint().getLiteID()));
+            row.add(s.getPoint().getPointName());
+            row.add(s.getPointUpdateCacheFormattedValue());
+            row.add(s.getAsyncDataSourceFormattedValue());
+            row.add(s.getDispatchValue());
+            row.add(s.getHistoricalValue1());
+            row.add(s.getHistoricalValue2());
+            rows.add(row);
+        });
+        return rows;
     }
     
     /**
@@ -124,13 +244,13 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
         PointValueQualityHolder asyncDataSourceValue = asyncDataSource.getPointValue(point.getPointID());
 
 
-     /*  if (true) {
-      //test download without matches
+       if (true) {
+            // test file creation without mismatches
             CorrelationSummary summary = new CorrelationSummary(userContext, point, pointUpdateBackingServiceCachedValue,
                     historicalValues,
-                    asyncDataSourceValue);
+                    asyncDataSourceValue, dispatchValue);
             return summary;
-        }*/
+        }
         
         return checkForMatch(point, userContext, pointUpdateBackingServiceCachedValue, historicalValues, asyncDataSourceValue, dispatchValue);
     }
@@ -140,11 +260,21 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
             List<PointValueQualityHolder> historicalValues,
             PointValueQualityHolder asyncDataSourceValue, 
             PointValueQualityHolder dispatchValue) {
+        
+        if (true) {
+            // test file creation without mismatches
+            CorrelationSummary summary = new CorrelationSummary(userContext, point, pointUpdateBackingServiceCachedValue,
+                    historicalValues,
+                    asyncDataSourceValue, dispatchValue);
+            return summary;
+        }
+        
         if (!isMatched(historicalValues.get(0), pointUpdateBackingServiceCachedValue, asyncDataSourceValue, userContext)) {
             notifyDispatch(point.getPointID(), historicalValues.toString() + "," + pointUpdateBackingServiceCachedValue + ","
                     + asyncDataSourceValue);
             // found a problem, returning object with information
-            CorrelationSummary summary = new CorrelationSummary(userContext, point, pointUpdateBackingServiceCachedValue,
+            CorrelationSummary summary = new CorrelationSummary(userContext, point, 
+                    pointUpdateBackingServiceCachedValue,
                     historicalValues,
                     asyncDataSourceValue, 
                     dispatchValue);
@@ -154,7 +284,7 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
         return null;
     }
 
-    public class CorrelationSummary {
+    private class CorrelationSummary {
         private LitePoint point;
         private PointValueQualityHolder pointUpdateBackingServiceCachedValue;
         private List<PointValueQualityHolder> historicalValues;
@@ -303,7 +433,7 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
             }
         });
 
-        log.info("Points:{} Success:{} Failure:{} RPH rows returned:{}", pointIds.size(),
+        log.info("RPH: Points:{} Success:{} Failure:{} RPH rows returned:{}", pointIds.size(),
                 proccessed.get(), unproccessed.get(),
                 values.size());
         return values;
@@ -337,5 +467,6 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
         log.info("Points:{} DYNAMICPOINTDISPATCH rows returned:{}", pointIds.size(), values.size());
         return values;
     }
+    
     
 }
