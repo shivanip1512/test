@@ -209,9 +209,9 @@ public class SeleniumTestSetup {
 
         long startTime = System.currentTimeMillis();
 
-        while (!display.equals("display: none;") && (System.currentTimeMillis() - startTime) < 2000) {
+        while (!display.equals("display: none;") && ((System.currentTimeMillis() - startTime) < 2000)) {
             try {
-                display = driverExt.findElement(By.id("modal-glass"), Optional.empty()).getAttribute("style");
+                display = driverExt.findElement(By.id("modal-glass"), Optional.of(0)).getAttribute("style");
             } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
             }
         }
@@ -222,7 +222,7 @@ public class SeleniumTestSetup {
 
         long startTime = System.currentTimeMillis();
 
-        while (count.equals(0) && (System.currentTimeMillis() - startTime) < 2000) {
+        while (count.equals(0) && ((System.currentTimeMillis() - startTime) < 2000)) {
             count = driverExt.findElements(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).size();
         }
     }
@@ -232,7 +232,7 @@ public class SeleniumTestSetup {
 
         long startTime = System.currentTimeMillis();
 
-        while (count.equals(1) && (System.currentTimeMillis() - startTime) < 2000) {
+        while (count.equals(1) && ((System.currentTimeMillis() - startTime) < 2000)) {
             count = driverExt.findElements(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).size();
         }
     }
@@ -241,7 +241,7 @@ public class SeleniumTestSetup {
         boolean found = true;
         long startTime = System.currentTimeMillis();
 
-        while (found && (System.currentTimeMillis() - startTime) < 2000) {
+        while (found && ((System.currentTimeMillis() - startTime) < 2000)) {
 
             String style = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0))
                     .getAttribute("style");
@@ -266,7 +266,7 @@ public class SeleniumTestSetup {
         boolean found = false;
         long startTime = System.currentTimeMillis();
 
-        while (!found && (System.currentTimeMillis() - startTime) < 2000) {
+        while (!found && ((System.currentTimeMillis() - startTime) < 2000)) {
             List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-labelledby^='ui-id']"), Optional.of(0));
 
             Optional<WebElement> el = list.stream().filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle)).findFirst();
@@ -287,7 +287,7 @@ public class SeleniumTestSetup {
         boolean found = true;
         long startTime = System.currentTimeMillis();
 
-        while (found && (System.currentTimeMillis() - startTime) < 2000) {
+        while (found && ((System.currentTimeMillis() - startTime) < 2000)) {
             List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-describedby^='ui-id']"), Optional.of(0));
 
             try {
