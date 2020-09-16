@@ -15,7 +15,7 @@ public class LoginTests extends SeleniumTestSetup {
 
     //TODO need to refactor this test class
     @Test(enabled = false)
-    public void loginSuccessfully() {
+    public void loging_ValidLogin_Success() {
         final String EXPECTED_TITLE = "Dashboard: Default Main Dashboard";
         DriverExtensions driverExt = getDriverExt();
         
