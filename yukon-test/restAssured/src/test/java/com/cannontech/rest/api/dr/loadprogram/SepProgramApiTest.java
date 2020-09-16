@@ -281,7 +281,7 @@ public class SepProgramApiTest {
         assertTrue(createResponse.path("message").equals("Validation error"), "Expected message should be - Validation error");
         assertTrue(
                 createResponse.path("fieldErrors.code[0]")
-                        .equals("Cannot be blank or include any of the following characters: / \\ , ' \" |"),
+                        .equals("Name must not contain any of the following characters: / \\ , \u0027 \" |."),
                 "Expected code in response is not correct");
         Log.endTestCase("SepProgram_10_NameWithSpecialChars");
     }

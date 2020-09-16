@@ -191,7 +191,7 @@ public class MeterDisconnectProgramApiTest {
         assertTrue("Status code should be 422", createResponse.statusCode() == 422);
         assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct", createResponse.path("fieldErrors.code[0]")
-                .equals("Cannot be blank or include any of the following characters: / \\ , ' \" |"));
+                .equals("Name must not contain any of the following characters: / \\ , \u0027 \" |."));
     }
 
     /**
