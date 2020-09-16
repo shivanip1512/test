@@ -14,18 +14,18 @@ import com.github.javafaker.Faker;
 
 import io.restassured.response.ExtractableResponse;
 
-public class LoadGroupRfnExpresscomCreateBuilder {
+public class LoadGroupExpresscomCreateBuilder {
     public static class Builder {
         private Faker faker = new Faker();
         private static final String PARENTTYPE = "LM_GROUP_EXPRESSCOMM";
         private String name;
+        private Integer routeId;
         private int spid;
         private int geo;
         private int substation;
         private String feeder;
         private int zip;
         private int user;
-        private int serialAddress;
         private int program;
         private int splinter;
         private double kwCapacity;
@@ -34,6 +34,7 @@ public class LoadGroupRfnExpresscomCreateBuilder {
         private List<String> relayUsage;
         private String protocolPriority;
         List<LoadGroupEnums.AddressUsageExpresscom> addressUsageList = new ArrayList<>();
+        private Integer serialAddress;
 
         public Builder(Optional<String> name) {
             String u = UUID.randomUUID().toString();
@@ -44,6 +45,13 @@ public class LoadGroupRfnExpresscomCreateBuilder {
 
         public Builder withName(String name) {
             this.name = name;
+            return this;
+        }
+        
+        public Builder withRouteId(Optional<LoadGroupEnums.RouteId> routeId) {
+            LoadGroupEnums.RouteId randomRelayUsage = routeId.orElse(LoadGroupEnums.RouteId.getRandomRouteId());
+
+            this.routeId = randomRelayUsage.getRouteId();
             return this;
         }
 
@@ -84,12 +92,6 @@ public class LoadGroupRfnExpresscomCreateBuilder {
             return this;
         }
         
-        public Builder withSerial(Optional<Integer> serialAddress) {
-            this.serialAddress = serialAddress.orElse(faker.number().numberBetween(1, 999999));
-            addressUsageList.add(LoadGroupEnums.AddressUsageExpresscom.SERIAL);
-            return this;
-        }
-        
         public Builder withRelayUsage(Optional<List<String>> relayUsage) {
             List<String> relays = new ArrayList<>();
             relays.add(LoadGroupEnums.RelayUsageExpresscom.getRandomRelayUsage());
@@ -111,7 +113,7 @@ public class LoadGroupRfnExpresscomCreateBuilder {
         }
 
         public Builder withKwCapacity(Optional<Double> kwCapacity) {
-            this.kwCapacity = kwCapacity.orElse(faker.number().randomDouble(2, 0, 99999));
+            this.kwCapacity = kwCapacity.orElse(faker.number().randomDouble(3, 0, 99999));
             return this;
         }
 
@@ -132,19 +134,26 @@ public class LoadGroupRfnExpresscomCreateBuilder {
             this.protocolPriority = randomProtocolPriority.getProtocolPriority();
             return this;
         }
+        
+        public Builder withSerial(Optional<Integer> serialAddress) {
+            this.serialAddress = serialAddress.orElse(faker.number().numberBetween(1, 99999));
+            addressUsageList.add(LoadGroupEnums.AddressUsageExpresscom.SERIAL);
+            return this;
+        }
 
         public JSONObject build() {
             JSONObject j = new JSONObject();
 
             JSONObject jo = new JSONObject();
             jo.put("name", this.name);
-            jo.put("type", "LM_GROUP_RFN_EXPRESSCOMM");
+            jo.put("type", "LM_GROUP_EXPRESSCOMM");
+            jo.put("routeId", this.routeId);
             jo.put("serviceProvider", this.spid);
             jo.put("geo", this.geo);
             jo.put("substation", this.substation);
             jo.put("feeder", this.feeder);
-            jo.put("zip", this.zip);
             jo.put("user", this.user);
+            jo.put("zip", this.zip);
             jo.put("serialNumber", this.serialAddress);
             jo.put("program", this.program);
             jo.put("splinter", this.splinter);
@@ -178,19 +187,14 @@ public class LoadGroupRfnExpresscomCreateBuilder {
 
     }
 
-    public static Builder buildDefaultRfnExpresscomLoadGroup() {
-        return new LoadGroupRfnExpresscomCreateBuilder.Builder(Optional.empty())
-                .withKwCapacity(Optional.empty())
-                .withDisableGroup(Optional.empty())
+    public static Builder buildDefaultExpresscomLoadGroup() {
+        return new LoadGroupExpresscomCreateBuilder.Builder(Optional.empty())
+                .withProtocolPriority(Optional.empty())
                 .withDisableControl(Optional.empty())
+                .withDisableGroup(Optional.empty())
+                .withKwCapacity(Optional.empty())
                 .withSpid(Optional.empty())
-                .withGeo(Optional.empty())
-                .withSubstation(Optional.empty())
-                .withFeeder(Optional.empty())
-                .withZip(Optional.empty())
                 .withProgram(Optional.empty())
-                .withSplinter(Optional.empty())
-                .withRelayUsage(Optional.empty())
-                .withProtocolPriority(Optional.empty());
+        .withRouteId(Optional.empty());
     }
 }

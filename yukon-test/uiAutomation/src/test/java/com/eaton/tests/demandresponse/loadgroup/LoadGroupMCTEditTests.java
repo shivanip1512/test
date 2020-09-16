@@ -60,7 +60,7 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
         editPage.getCommunicationRoute().selectItemByValue("36");
         editPage.getAddressLevel().selectItemByValue("BRONZE");
         editPage.getAddress().setInputValue("123");
-        editPage.getRelayUsage().setTrueFalseByName("Relay 3", true);
+        editPage.getRelayUsage().setTrueFalseByLabel("Relay 3", "RELAY_3", true);
         editPage.getkWCapacity().setInputValue("400");
         editPage.getDisableGroup().selectValue("Yes");
         editPage.getDisableControl().selectValue("Yes");
@@ -101,7 +101,7 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
         mctMeterModal.selectMeter("a_MCT-430A");
         mctMeterModal.clickOkAndWaitForModalCloseDisplayNone();;
         
-        editPage.getRelayUsage().setTrueFalseByName("Relay 2", false);
+        editPage.getRelayUsage().setTrueFalseByLabel("Relay 2", "RELAY_2", false);
         editPage.getkWCapacity().setInputValue("870");
         editPage.getDisableGroup().selectValue("No");
         editPage.getDisableControl().selectValue("No");

@@ -65,11 +65,11 @@ public class LoadGroupRfnExpresscomCreatePage extends LoadGroupCreatePage {
         return new SwitchBtnMultiSelectElement(this.driverExt, "loadaddressing", section);
     }
 
-    public TextEditElement getProgram() {
+    public TextEditElement getProgramLoadAddress() {
         return new TextEditElement(this.driverExt, "program");
     }
 
-    public TextEditElement getSplinter() {
+    public TextEditElement getSplinterLoadAddress() {
         return new TextEditElement(this.driverExt, "splinter");
     }
 
