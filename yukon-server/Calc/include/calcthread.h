@@ -68,7 +68,7 @@ private:
     void getCalcHistoricalLastUpdatedTime(PointTimeMap &dbTimeMap);
     void getHistoricalTableData(CtiCalc& calcPoint, CtiTime &lastTime, DynamicTableData &data);
     void getHistoricalTableSinglePointData(long calcPoint, CtiTime &lastTime, DynamicTableSinglePointData &data);
-    void setHistoricalPointStore(HistoricalPointValueMap &valueMap);
+    void setHistoricalPointStore(const HistoricalPointValueMap& valueMap);
     void updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlistedPoints, PointTimeMap &updatedPoints);
     void getCalcBaselineMap(PointBaselineMap &baselineMap);
     void getBaselineMap(BaselineMap &baselineMap);
