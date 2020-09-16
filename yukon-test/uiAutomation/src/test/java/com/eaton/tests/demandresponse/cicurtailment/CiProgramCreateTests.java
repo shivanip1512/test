@@ -23,7 +23,7 @@ public class CiProgramCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ciProgramCreate_pageTitleCorrect() {
+    public void ciProgramCreate_PageTitle_Correct() {
         final String EXPECTED_TITLE = "Create Program";
 
         String actualPageTitle = createPage.getPageTitle();

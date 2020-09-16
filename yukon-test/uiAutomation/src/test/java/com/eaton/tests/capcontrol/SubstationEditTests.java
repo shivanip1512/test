@@ -36,7 +36,7 @@ public class SubstationEditTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void substationEdit_pageTitleCorrect() {
+    public void substationEdit_PageTitle_Correct() {
         final String EXPECTED_TITLE = "Edit Substation: AT Substation";
 
         String actualPageTitle = editPage.getPageTitle();
@@ -45,7 +45,7 @@ public class SubstationEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void substationEdit_requiredFieldsOnlySuccess() {
+    public void substationEdit_RequiredFieldsOnly_Success() {
         final String EXPECTED_MSG = "Substation was saved successfully.";
 
         navigate(Urls.CapControl.SUBSTATION_EDIT + "451" + Urls.EDIT);
@@ -67,7 +67,7 @@ public class SubstationEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void substationEdit_deleteSubstationSuccess() {
+    public void substationEdit_Delete_Success() {
         final String EXPECTED_MSG = "Substation AT Delete Substation deleted successfully.";
 
         navigate(Urls.CapControl.SUBSTATION_EDIT + "573" + Urls.EDIT);

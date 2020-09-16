@@ -44,7 +44,7 @@ public class EnergyCompanyCreateTests extends SeleniumTestSetup {
     }
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void energyCompanyCreate_requiredFieldsOnly_Success() {
+    public void energyCompanyCreate_RequiredFieldsOnly_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String companyName = "AT Energy Company " + timeStamp;
         
@@ -69,6 +69,4 @@ public class EnergyCompanyCreateTests extends SeleniumTestSetup {
         
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }    
-    
-
 }

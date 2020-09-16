@@ -38,7 +38,7 @@ public class SetupGlobalSearchTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE, TestConstants.DemandResponse.SETUP })
-    public void setupGlobalSearch_SearchAndSelectSetup_ResultNavigatesToSetupListPage() {
+    public void setupGlobalSearch_SearchAndSelectSetupResult_NavigatesToSetupListPage() {
         throw new SkipException("QA task created: QA-6229");
 //        globalSearchPage.getSearchBoxElement().setSearchValueAndClickResult("Setup");
 //        
@@ -48,7 +48,7 @@ public class SetupGlobalSearchTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE, TestConstants.DemandResponse.SETUP })
-    public void setupGlobalSearch_SearchSetupPartialText_ResultsContainSetup() {
+    public void setupGlobalSearch_SearchSetupPartialTextResult_ContainsSetup() {
         throw new SkipException("QA task created: QA-6229");
 //        SearchBoxElement searchBox = globalSearchPage.getSearchBoxElement();
 //        

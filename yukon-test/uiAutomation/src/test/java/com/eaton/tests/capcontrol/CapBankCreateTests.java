@@ -35,7 +35,7 @@ public class CapBankCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void capBankCreate_pageTitleCorrect() {
+    public void capBankCreate_PageTitle_Correct() {
         final String EXPECTED_TITLE = "Create CapBank";
 
         String actualPageTitle = createPage.getPageTitle();
@@ -45,7 +45,7 @@ public class CapBankCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void capBankCreate_requiredFieldsOnlySuccess() {
+    public void capBankCreate_RequiredFieldsOnly_Success() {
         final String EXPECTED_MSG = "CapBank was saved successfully.";
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

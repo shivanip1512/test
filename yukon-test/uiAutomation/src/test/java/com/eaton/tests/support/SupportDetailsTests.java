@@ -50,7 +50,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN })
-    public void supportDetails_pageTitle_Correct() {
+    public void supportDetails_PageTitle_Correct() {
         final String EXPECTED_TITLE = "Support";
 
         String actualPageTitle = supportPage.getPageTitle();
@@ -63,7 +63,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     // ================================================================================
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_SupportPagesCount_Correct() {
+    public void supportDetails_SupportPages_CountCorrect() {
         throw new SkipException("Related to Development Defect: YUK-22612");
 //        final int EXPECTED_COUNT = 15;
 //        assertThat(supportPage.getSupportSectionPageList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);

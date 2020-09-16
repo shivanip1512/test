@@ -58,7 +58,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
-    public void trendCreate_AllFields_Successfully() {
+    public void trendCreate_AllFields_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Trend " + timeStamp;
 
@@ -95,7 +95,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
-    public void trendCreate_RequiredFieldsOnly_Successfully() {
+    public void trendCreate_RequiredFieldsOnly_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Trend " + timeStamp;
 

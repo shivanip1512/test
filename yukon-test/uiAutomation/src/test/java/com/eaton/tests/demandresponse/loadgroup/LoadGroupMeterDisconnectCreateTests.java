@@ -29,14 +29,14 @@ public class LoadGroupMeterDisconnectCreateTests extends SeleniumTestSetup {
         createPage = new LoadGroupCreatePage(driverExt);
         randomNum = getRandomNum();
     }
-    
+
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
         refreshPage(createPage);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateMeterDisconnect_AllFieldsDisableFalse_Successfully() {
+    public void ldGrpCreateMeterDisconnect_AllFieldsDisableFalse_Success() {
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Meter Disconnect " + timeStamp;
@@ -64,7 +64,7 @@ public class LoadGroupMeterDisconnectCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateMeterDisconnect_AllFieldsDisableTrue_Successfully() {
+    public void ldGrpCreateMeterDisconnect_AllFieldsDisableTrue_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Meter Disconnect " + timeStamp;
         double randomDouble = randomNum.nextDouble();
@@ -90,5 +90,5 @@ public class LoadGroupMeterDisconnectCreateTests extends SeleniumTestSetup {
         String userMsg = detailsPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }   
+    }
 }

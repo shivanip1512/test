@@ -32,7 +32,7 @@ public class LoadGroupDigiSepDetailTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpDigiSepDetail_DeleteLoadGroup_Success() {
+    public void ldGrpDigiSepDetail_Delete_Success() {
         builder = LoadGroupDigiSepCreateBuilder.buildLoadGroup();
         Pair<JSONObject, JSONObject> pair = builder.create();
         JSONObject response = pair.getValue1();

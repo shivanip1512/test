@@ -36,7 +36,7 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void loadProgramCreate_pageTitleCorrect() {
+    public void loadProgramCreate_PageTitle_Correct() {
         final String EXPECTED_TITLE = "Create Load Program";
 
         String actualPageTitle = createPage.getPageTitle();
@@ -45,7 +45,7 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void loadProgramCreate_requiredFieldsOnlySuccess() {
+    public void loadProgramCreate_RequiredFieldsOnly_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT LM Direct Program " + timeStamp;
 

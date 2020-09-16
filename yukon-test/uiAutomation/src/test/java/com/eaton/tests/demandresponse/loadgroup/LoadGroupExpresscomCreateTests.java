@@ -68,7 +68,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_WithSerialAddress_Successfully() {
+    public void ldGrpCreateExpresscom_WithSerialAddress_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Expresscom with Serial" + timeStamp;
 
@@ -152,7 +152,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_GeneralSectionTitleCorrect() {
+    public void ldGrpCreateExpresscom_GeneralSection_TitleCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
         waitForLoadingSpinner();
         Section generalSection = createPage.getPageSection("General");
@@ -161,7 +161,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_GeneralSectionLabelsCorrect() {
+    public void ldGrpCreateExpresscom_GeneralSection_LabelsCorrect() {
         String sectionName = "General";
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -172,7 +172,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_GeographicalAddress_SectionTitleCorrect() {
+    public void ldGrpCreateExpresscom_GeographicalAddressSection_TitleCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
         waitForLoadingSpinner();
         Section generalSection = createPage.getPageSection("Geographical Address");
@@ -181,7 +181,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_GeographicalAddressSectionLabelsCorrect() {
+    public void ldGrpCreateExpresscom_GeographicalAddressSection_LabelsCorrect() {
         String sectionName = "Geographical Address";
         String expectedLabels = "Address Usage:";
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
@@ -192,7 +192,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_GeographicalAddressing_SectionTitleCorrect() {
+    public void ldGrpCreateExpresscom_GeographicalAddressingSection_TitleCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
         waitForLoadingSpinner();
 
@@ -202,7 +202,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_GeographicalAddressing_SectionLabelsCorrect() {
+    public void ldGrpCreateExpresscom_GeographicalAddressingSection_LabelsCorrect() {
         String sectionName = "Geographical Addressing";
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
 
@@ -221,7 +221,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_LoadAddress_SectionTitleCorrect() {
+    public void ldGrpCreateExpresscom_LoadAddressSection_TitleCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
         waitForLoadingSpinner();
 
@@ -230,7 +230,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_LoadAddressSectionLabelsCorrect() {
+    public void ldGrpCreateExpresscom_LoadAddressSection_LabelsCorrect() {
         String sectionName = "Load Address";
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -241,7 +241,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_LoadAddressingSectionTitleCorrect() {
+    public void ldGrpCreateExpresscom_LoadAddressingSection_TitleCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
         waitForLoadingSpinner();
 
@@ -250,7 +250,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_LoadAddressingSectionLabelsCorrect() {
+    public void ldGrpCreateExpresscom_LoadAddressingSection_LabelsCorrect() {
         String sectionName = "Load Addressing";
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
 
@@ -264,7 +264,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_OptionalAttributesSectionTitleCorrect() {
+    public void ldGrpCreateExpresscom_OptionalAttributesSection_TitleCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
         waitForLoadingSpinner();
 
@@ -273,7 +273,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_OptionalAttributesSectionLabelsCorrect() {
+    public void ldGrpCreateExpresscom_OptionalAttributesSection_LabelsCorrect() {
         String sectionName = "Optional Attributes";
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -552,7 +552,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_UsageLoadSelected_SendLoadsYes() {
+    public void ldGrpCreateExpresscom_UsageLoadSelected_SendLoadsSetToYes() {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
         waitForLoadingSpinner();
 
@@ -561,7 +561,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_UsageLoadNotSelected_SendLoadsNo() {
+    public void ldGrpCreateExpresscom_UsageLoadNotSelected_SendLoadsSetToNo() {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
         waitForLoadingSpinner();
 
@@ -570,7 +570,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_UsageLoadAndProgramSelected_SelectYes_SendLoadsYes() {
+    public void ldGrpCreateExpresscom_UsageLoadAndProgramSelectedSelectYes_SendLoadsSetToYes() {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
 
         createPage.getUsage().setTrueFalseByLabel("Load", "LOAD",  true);
@@ -581,7 +581,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_UsageLoadAndProgramSelected_SelectNo_LoadUnselectedSendLoadsNo() {
+    public void ldGrpCreateExpresscom_UsageLoadAndProgramSelectedSelectNo_LoadUnselectedSendLoadsSetToNo() {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
 
         createPage.getUsage().setTrueFalseByLabel("Load", "LOAD", true);
@@ -594,7 +594,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_UsageLoadAndSplinterSelected_SelectYes_sendLoadsYes() {
+    public void ldGrpCreateExpresscom_UsageLoadAndSplinterSelectedSelectYes_SendLoadsSetToYes() {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
 
         createPage.getUsage().setTrueFalseByLabel("Load", "LOAD", true);
@@ -609,7 +609,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_UsageLoadAndSplinterSelected_SelectNo_LoadUnselectedSendLoadNo() {
+    public void ldGrpCreateExpresscom_UsageLoadAndSplinterSelectedSelectNo_LoadUnselectedSendLoadSetToNo() {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
 
         createPage.getUsage().setTrueFalseByLabel("Load", "LOAD", true);

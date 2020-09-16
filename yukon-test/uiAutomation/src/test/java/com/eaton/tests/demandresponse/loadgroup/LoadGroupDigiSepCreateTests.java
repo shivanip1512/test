@@ -43,7 +43,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateDigiSEP_AllFieldsSuccessfully() {
+    public void ldGrpCreateDigiSEP_AllFields_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT DigiSep " + timeStamp;
         double randomDouble = randomNum.nextDouble();

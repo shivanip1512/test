@@ -38,7 +38,7 @@ public class CommChannelTcpCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannelTcp_AllFieldsSuccess() {
+    public void createCommChannelTcp_AllFields_Success() {
         CreateTcpCommChannelModal createModal = listPage.showAndWaitCreateTcpCommChannelModal();
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -64,7 +64,7 @@ public class CommChannelTcpCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannelTcp_LabelsCorrect() {
+    public void createCommChannelTcp_Labels_Correct() {
         SoftAssertions softly = new SoftAssertions();
         CreateTcpCommChannelModal createModal = listPage.showAndWaitCreateTcpCommChannelModal();
 

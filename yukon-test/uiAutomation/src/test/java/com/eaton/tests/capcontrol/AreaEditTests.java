@@ -38,7 +38,7 @@ public class AreaEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void areaEdit_pageTitleCorrect() {
+    public void areaEdit_PageTitle_Correct() {
         final String EXPECTED_TITLE = "Edit Area: AT Area";
 
         String actualPageTitle = editPage.getPageTitle();
@@ -47,7 +47,7 @@ public class AreaEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void areaEdit_requiredFieldsOnlySuccess() {
+    public void areaEdit_RequiredFieldsOnly_Success() {
         final String EXPECTED_MSG = "Area was saved successfully.";
 
         navigate(Urls.CapControl.AREA_EDIT + "449" + Urls.EDIT);
@@ -69,7 +69,7 @@ public class AreaEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void areaEdit_deleteSuccess() {
+    public void areaEdit_Delete_Success() {
         final String EXPECTED_MSG = "Area AT Delete Area Deleted successfully.";
 
         navigate(Urls.CapControl.AREA_EDIT + "579" + Urls.EDIT);

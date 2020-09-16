@@ -46,7 +46,7 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpEcobeeEdit_pageTitleCorrect() {
+    public void ldGrpEcobeeEdit_PageTitle_Correct() {
         final String EXPECTED_TITLE = "Edit Load Group: " + name;
 
         String actualPageTitle = editPage.getPageTitle();
@@ -55,7 +55,7 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpEcobeeEdit_requiredFieldsOnlySuccess() {
+    public void ldGrpEcobeeEdit_RequiredFieldsOnly_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited Ecobee Ldgrp " + timeStamp;
         final String EXPECTED_MSG = name + " saved successfully.";
@@ -79,7 +79,7 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpEcobeeEdit_name_requiredValidation() {
+    public void ldGrpEcobeeEdit_Name_RequiredValidation() {
         final String EXPECTED_MSG = "Name is required.";
 
         editPage.getName().setInputValue(" ");
@@ -90,7 +90,7 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpEcobeeEdit_name_alreadyExists() {
+    public void ldGrpEcobeeEdit_Name_UniqueValidation() {
         Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
         JSONObject response = pair.getValue1();
 
@@ -106,7 +106,7 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpEcobeeEdit_name_invalidChars() {
+    public void ldGrpEcobeeEdit_Name_InvalidCharsValidation() {
         final String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
 
         editPage.getName().setInputValue("/eco,|group ");
@@ -117,7 +117,7 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpEcobeeEdit_kWCapacity_minValidation() {
+    public void ldGrpEcobeeEdit_KwCapacity_MinValueValidation() {
         final String EXPECTED_MSG = "Must be between 0 and 99,999.999.";
 
         editPage.getkWCapacity().setInputValue("-1");
@@ -128,7 +128,7 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpEcobeeEdit_kWCapacity_maxValidation() {
+    public void ldGrpEcobeeEdit_KwCapacity_MaxValueValidation() {
         final String EXPECTED_MSG = "Must be between 0 and 99,999.999.";
 
         editPage.getkWCapacity().setInputValue("100000.00");
@@ -139,7 +139,7 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpEcobeeEdit_cancelNavigatesCorrectly() {
+    public void ldGrpEcobeeEdit_Cancel_NavigatesToCorrectUrl() {
         final String EXPECTED_MSG = "Load Group: " + name;
         editPage.getCancelBtn().click();
 
@@ -152,7 +152,7 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpEcobeeEdit_updateAllFieldsSuccess() {
+    public void ldGrpEcobeeEdit_AllFields_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited Ecobee Ldgrp " + timeStamp;
         final String EXPECTED_MSG = name + " saved successfully.";
@@ -175,21 +175,21 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpEcobeeEdit_generalSectionTitleCorrect() {
+    public void ldGrpEcobeeEdit_GeneralSection_TitleCorrect() {
 
         Section general = editPage.getPageSection("General");
         assertThat(general.getSection()).isNotNull();
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpEcobeeEdit_optionalAttributeSectionTitleCorrect() {
+    public void ldGrpEcobeeEdit_OptionalAttributeSection_TitleCorrect() {
 
         Section optAttr = editPage.getPageSection("Optional Attributes");
         assertThat(optAttr.getSection()).isNotNull();
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpEcobeeEdit_generalSectionLabelsCorrect() {
+    public void ldGrpEcobeeEdit_GeneralSection_LabelsCorrect() {
         String sectionName = "General";
         List<String> expectedLabels = new ArrayList<>(List.of("Name:", "Type:"));
 
@@ -199,7 +199,7 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpEcobeeEdit_optionalAttrSectionLabelsCorrect() {
+    public void ldGrpEcobeeEdit_OptionalAttrSection_LabelsCorrect() {
         String sectionName = "Optional Attributes";
         List<String> expectedLabels = new ArrayList<>(List.of("kW Capacity:", "Disable Group:", "Disable Control:"));
 

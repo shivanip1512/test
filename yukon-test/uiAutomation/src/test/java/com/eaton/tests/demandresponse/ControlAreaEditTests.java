@@ -25,7 +25,7 @@ public class ControlAreaEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void controlAreaEdit_pageTitleCorrect() {
+    public void controlAreaEdit_PageTitle_Correct() {
         final String EXPECTED_TITLE = "Edit Control Area: AT Control Area";
 
         navigate(Urls.DemandResponse.CONTROL_AREA_EDIT + "662" + Urls.EDIT);
@@ -37,7 +37,7 @@ public class ControlAreaEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void controlAreaEdit_requiredFieldsOnlySuccess() {
+    public void controlAreaEdit_RequiredFieldsOnly_Success() {
         navigate(Urls.DemandResponse.CONTROL_AREA_EDIT + "514" + Urls.EDIT);
 
         ControlAreaEditPage editPage = new ControlAreaEditPage(driverExt, 514);

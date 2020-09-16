@@ -142,7 +142,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateMCT_Address_Required() {
+    public void ldGrpCreateMCT_Address_RequiredValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_MCT");
         waitForLoadingSpinner();
         createPage.getAddress().clearInputValue();
@@ -152,7 +152,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateMCT_MCTAddressLabelDefaultValue() {
+    public void ldGrpCreateMCT_MCTAddressLabelDefaultValue_Correct() {
         createPage.getType().selectItemByValue("LM_GROUP_MCT");
         waitForLoadingSpinner();
 
@@ -162,7 +162,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateMCT_MCTAddress_Required() {
+    public void ldGrpCreateMCT_MCTAddress_RequiredValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_MCT");
         waitForLoadingSpinner();
 
@@ -173,7 +173,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateMCT_MCTAddress_ValueSelectedCorrect() {
+    public void ldGrpCreateMCT_MCTAddressValueSelected_Correct() {
         createPage.getType().selectItemByValue("LM_GROUP_MCT");
         waitForLoadingSpinner();
 
@@ -187,7 +187,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateMct_RequiredFieldsWithMctAddressSuccess() {
+    public void ldGrpCreateMct_RequiredFieldsWithMctAddress_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT MCT " + timeStamp;
         final String EXPECTED_MSG = name + " saved successfully.";

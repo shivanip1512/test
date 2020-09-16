@@ -38,7 +38,7 @@ public class LoadGroupItronCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateItron_AllFieldsDisableTrue_Successful() {
+    public void ldGrpCreateItron_AllFieldsDisableTrue_Success() {
         JSONObject jo = new LoadGroupItronCreateBuilder.Builder(Optional.empty())
                 .withKwCapacity(Optional.empty())
                 .withRelay(Optional.empty())
@@ -73,7 +73,7 @@ public class LoadGroupItronCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateItron_RequiredFields_SavedSuccessfully() {
+    public void ldGrpCreateItron_RequiredFields_Success() {
         JSONObject jo = new LoadGroupItronCreateBuilder.Builder(Optional.empty())
                 .build();
 
@@ -97,7 +97,7 @@ public class LoadGroupItronCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateItron_RelayDropDown_ValuesCorrect() {
+    public void ldGrpCreateItron_Relay_ValuesCorrect() {
         List<String> expectedRelayValues = new ArrayList<>(List.of("1", "2", "3", "4", "5", "6", "7", "8"));
 
         createPage.getType().selectItemByValue(TYPE);

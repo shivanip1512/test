@@ -36,7 +36,7 @@ public class FeederEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void feederEdit_pageTitleCorrect() {
+    public void feederEdit_PageTitle_Correct() {
         final String EXPECTED_TITLE = "Edit Feeder: AT Feader";
 
         String actualPageTitle = editPage.getPageTitle();
@@ -45,7 +45,7 @@ public class FeederEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void feederEdit_requiredFieldsOnlySuccess() {
+    public void feederEdit_RequiredFieldsOnly_Success() {
         final String EXPECTED_MSG = "Feeder was saved successfully.";
 
         navigate(Urls.CapControl.FEEDER_EDIT + "458" + Urls.EDIT);
@@ -67,7 +67,7 @@ public class FeederEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void feederEdit_deleteFeederSuccess() {
+    public void feederEdit_Delete_Success() {
         final String EXPECTED_MSG = "Feeder AT Delete Feeder deleted successfully.";
 
         navigate(Urls.CapControl.FEEDER_EDIT + "575" + Urls.EDIT);

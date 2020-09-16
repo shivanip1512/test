@@ -27,7 +27,7 @@ public class ScenariosListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void scenarioList_pageTitleCorrect() {
+    public void scenarioList_PageTitle_Correct() {
         final String EXPECTED_TITLE = "Scenarios";
 
         String actualPageTitle = listPage.getPageTitle();
@@ -36,7 +36,7 @@ public class ScenariosListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void scenarioList_columnHeadersCorrect() {
+    public void scenarioList_ColumnHeaders_Correct() {
         softly = new SoftAssertions();
         final int EXPECTED_COUNT = 2;
 

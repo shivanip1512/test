@@ -63,7 +63,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_ModalTitleCorrect() {
+    public void commChannelUdpEdit_ModalTitle_Correct() {
         String expectedModalTitle = "Edit " + commChannelName;
         
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
@@ -101,7 +101,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_PortNumber_MinValidation() {
+    public void commChannelUdpEdit_PortNumber_MinValueValidation() {
         String EXPECTED_MSG = "Port Number must be between 1 and 65,535.";
         String portNumber = "0";
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
@@ -115,7 +115,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_PortNumber_MaxValidation() {
+    public void commChannelUdpEdit_PortNumber_MaxValueValidation() {
         String EXPECTED_MSG = "Port Number must be between 1 and 65,535.";
         String portNumber = "65536";
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
@@ -338,7 +338,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_TabTitlesCorrect() {
+    public void commChannelUdpEdit_TabTitles_Correct() {
         SoftAssertions softly = new SoftAssertions();
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
 
@@ -432,7 +432,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
     }	
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_NameAlreadyExistsValidation() {
+    public void commChannelUdpEdit_Name_AlreadyExistsValidation() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String commChannelNameUdp = "UDP Comm Channel " + timeStamp;
         String EXPECTED_MSG = "Name already exists";
@@ -465,7 +465,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_ConfigTab_TimingSectionDisplayed() {
+    public void commChannelUdpEdit_ConfigTabTimingSection_Displayed() {
         String tabName = "Configuration";
 
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
@@ -477,7 +477,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_ConfigTab_SharingSectionDisplayed() {
+    public void commChannelUdpEdit_ConfigTabSharingSection_Displayed() {
         String tabName = "Configuration";
 
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
@@ -490,7 +490,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })	
-    public void commChannelUdpEdit_AllFieldsSuccess() {	
+    public void commChannelUdpEdit_AllFields_Success() {	
         SoftAssertions softly = new SoftAssertions();
         randomNum = getRandomNum();
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

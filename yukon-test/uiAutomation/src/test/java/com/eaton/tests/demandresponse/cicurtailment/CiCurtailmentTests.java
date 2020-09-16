@@ -23,7 +23,7 @@ public class CiCurtailmentTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ciCurtailment_pageTitleCorrect() {
+    public void ciCurtailment_PageTitle_Correct() {
         final String EXPECTED_TITLE = "Commercial Curtailment";
 
         String actualPageTitle = curtailmentPage.getPageTitle();

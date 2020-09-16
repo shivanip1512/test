@@ -28,7 +28,7 @@ public class MeterRfn530S4xEditTests extends SeleniumTestSetup {
     }
 
     @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
-    public void meterRfn530S4xEdit_nameOnlySuccess() {
+    public void meterRfn530S4xEdit_RequiredFieldsOnly_Success() {
         navigate(Urls.Ami.METER_DETAIL + "587");
         String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited RFN-530S4x " + timeStamp;

@@ -38,7 +38,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreate_TitleCorrect() {
+    public void ldGrpCreate_PageTitle_Correct() {
         final String EXPECTED_TITLE = "Create Load Group";
 
         String actualPageTitle = createPage.getPageTitle();
@@ -47,21 +47,21 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreate_NameRequiredValidation() {
+    public void ldGrpCreate_Name_RequiredValidation() {
         createPage.getSaveBtn().click();
 
         assertThat(createPage.getName().getValidationError()).isEqualTo("Name is required.");
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreate_TypeRequiredValidation() {
+    public void ldGrpCreate_Type_RequiredValidation() {
         createPage.getSaveBtn().click();
 
         assertThat(createPage.getType().getValidationError()).isEqualTo("Type is required.");
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreate_NameInvalidCharValidation() {
+    public void ldGrpCreate_Name_InvalidCharValidation() {
 
         createPage.getName().setInputValue("test/,");
         createPage.getSaveBtn().click();
@@ -71,7 +71,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreate_CancelButtonNavigatesToCorrectUrl() {
+    public void ldGrpCreate_Cancel_NavigatesToCorrectUrl() {
         createPage.getCancelBtn().click();
 
         String actualUrl = getCurrentUrl();
@@ -80,7 +80,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreate_kWCapacityRequired() {
+    public void ldGrpCreate_KwCapacity_RequiredValidation() {
 
         createPage.getType().selectItemByIndex(2);
         createPage.getkWCapacity().setInputValue("");
@@ -90,7 +90,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreate_kWCapacityMaxRangeValidation() {
+    public void ldGrpCreate_KwCapacity_MaxRangeValidation() {
         
         createPage.getType().selectItemByIndex(2);
         createPage.getkWCapacity().setInputValue("1000000");
@@ -100,7 +100,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreate_kWCapacityMinRangeValidation() {
+    public void ldGrpCreate_KwCapacity_MinRangeValidation() {
 
         createPage.getType().selectItemByIndex(2);
         createPage.getkWCapacity().setInputValue("-1");
@@ -127,7 +127,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreate_TypeDropDown_ExpectedValuesCorrect() {
+    public void ldGrpCreate_TypeDropDownExpected_ValuesCorrect() {
         List<String> expectedDropDownValues = new ArrayList<>(List.of("Select", "Digi SEP Group", "ecobee Group", "Emetcon Group", "Expresscom Group", "Honeywell Group",
                 "Itron Group", "MCT Group", "Meter Disconnect Group", "Point Group", "RFN Expresscom Group", "Ripple Group",
                 "Versacom Group"));

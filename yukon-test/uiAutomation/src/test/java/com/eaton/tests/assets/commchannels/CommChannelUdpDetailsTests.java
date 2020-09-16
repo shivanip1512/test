@@ -67,7 +67,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDetailsUdp_PageTitleCorrect() {
+    public void commChannelDetailsUdp_PageTitle_Correct() {
         String EXPECTED_TITLE = commChannelName;
         
         String actualPageTitle = detailPage.getPageTitle();
@@ -177,7 +177,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
     }
         
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDeleteUdp_DeleteCommChannel_Successfully() {
+    public void commChannelDeleteUdp_Delete_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String deleteCommChannelName = "UDP Comm Channel " + timeStamp;
 

@@ -59,7 +59,7 @@ public class LoadGroupHoneyWellEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpHoneywellEdit_AllFields_Successfully() {
+    public void ldGrpHoneywellEdit_AllFields_Success() {
         Pair<JSONObject, JSONObject> pair = new LoadGroupHoneywellCreateBuilder.Builder(Optional.empty())
                 .withKwCapacity(Optional.empty())
                 .create();

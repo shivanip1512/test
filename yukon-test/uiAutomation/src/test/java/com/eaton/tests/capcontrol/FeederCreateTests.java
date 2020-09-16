@@ -35,7 +35,7 @@ public class FeederCreateTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void feederCreate_pageTitleCorrect() {
+    public void feederCreate_PageTitle_Correct() {
         final String EXPECTED_TITLE = "Create Feeder";
 
         String actualPageTitle = createPage.getPageTitle();
@@ -44,7 +44,7 @@ public class FeederCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void feederCreate_requiredFieldsOnlySuccess() {
+    public void feederCreate_RequiredFieldsOnly_Success() {
         final String EXPECTED_MSG = "Feeder was saved successfully.";
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

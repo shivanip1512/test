@@ -18,38 +18,37 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 
-public class LoadGroupItronDetailTest  extends SeleniumTestSetup {
-	private DriverExtensions driverExt;
-	 private Integer id;
-	 private String name;
-	 private LoadGroupDetailPage detailPage;
-	
-	 @BeforeClass(alwaysRun=true)
-	 public void beforeClass() {
-		 driverExt = getDriverExt();   
-	 }
-	 
-	 @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	 public void ldGrpItronDetail_DeleteLoadGroup_Success() {
-		 Pair<JSONObject, JSONObject> pair = new LoadGroupItronCreateBuilder.Builder(Optional.empty())
-													.withKwCapacity(Optional.empty())
-													.withRelay(Optional.empty())
-													.create();
-	     JSONObject response = pair.getValue1();
-	     id = response.getInt("id");
-	     name = response.getString("name");
-	     final String expected_msg = name + " deleted successfully.";
-	     navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
-	     
-	     detailPage = new LoadGroupDetailPage(driverExt, id);
-	     ConfirmModal  confirmModal = detailPage.showDeleteLoadGroupModal(); 
-	     confirmModal.clickOkAndWaitForModalToClose();
-	     
-	     waitForPageToLoad("Setup", Optional.empty());
-	     DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_GROUP);
-	     String userMsg = setupPage.getUserMessage();
-	     
-	     assertThat(userMsg).isEqualTo(expected_msg);
-	}
+public class LoadGroupItronDetailTest extends SeleniumTestSetup {
+    private DriverExtensions driverExt;
+    private Integer id;
+    private String name;
+    private LoadGroupDetailPage detailPage;
 
+    @BeforeClass(alwaysRun = true)
+    public void beforeClass() {
+        driverExt = getDriverExt();
+    }
+
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpItronDetail_Delete_Success() {
+        Pair<JSONObject, JSONObject> pair = new LoadGroupItronCreateBuilder.Builder(Optional.empty())
+                .withKwCapacity(Optional.empty())
+                .withRelay(Optional.empty())
+                .create();
+        JSONObject response = pair.getValue1();
+        id = response.getInt("id");
+        name = response.getString("name");
+        final String expected_msg = name + " deleted successfully.";
+        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
+
+        detailPage = new LoadGroupDetailPage(driverExt, id);
+        ConfirmModal confirmModal = detailPage.showDeleteLoadGroupModal();
+        confirmModal.clickOkAndWaitForModalToClose();
+
+        waitForPageToLoad("Setup", Optional.empty());
+        DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_GROUP);
+        String userMsg = setupPage.getUserMessage();
+
+        assertThat(userMsg).isEqualTo(expected_msg);
+    }
 }

@@ -38,17 +38,18 @@ public class LoadGroupDigiSepEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpDigisepEdit_PageTitleCorrect() {
+    public void ldGrpDigisepEdit_PageTitle_Correct() {
         final String EXPECTED_TITLE = "Edit Load Group: " + name;
         String actualPageTitle;
 
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
         actualPageTitle = editPage.getPageTitle();
+        
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpDigisepEdit_AllFields_Successfully() {
+    public void ldGrpDigisepEdit_AllFields_Success() {
         String nameBeforeEdit = "LdGrpDigiSep " + timeStamp;
         String nameAfterEdit = "EditLdGrpDigiSep " + timeStamp;
         builder.withName(nameBeforeEdit);
@@ -64,6 +65,7 @@ public class LoadGroupDigiSepEditTests extends SeleniumTestSetup {
         editPage.getRampOutTime().setInputValue("7000");
         editPage.getkWCapacity().setInputValue("500");
         editPage.getSaveBtn().click();
+        
         assertThat(editPage.getUserMessage()).isEqualTo(nameAfterEdit + " saved successfully.");
     }
 }

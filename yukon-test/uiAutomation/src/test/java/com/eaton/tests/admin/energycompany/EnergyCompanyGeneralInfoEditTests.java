@@ -25,7 +25,7 @@ public class EnergyCompanyGeneralInfoEditTests extends SeleniumTestSetup {
     }
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void energyCompanyGeneralInfoEdit_pageTitleCorrect() {
+    public void energyCompanyGeneralInfoEdit_PageTitle_Correct() {
         final String EXPECTED_TITLE = "Edit General Info: QA_Test";
         
         navigate(Urls.Admin.ENERGY_COMPANY_GENERAL_INFO + "64");
@@ -44,7 +44,7 @@ public class EnergyCompanyGeneralInfoEditTests extends SeleniumTestSetup {
     }
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void energyCompanyGeneralInfoEdit_deleteEnergyComapnySuccess() {
+    public void energyCompanyGeneralInfoEdit_DeleteEnergyComapny_Success() {
         final String NAME = "AT Delete EC";
         final String EXPECTED_MSG = "The energy company " + NAME + " was deleted successfully.";
         
@@ -74,5 +74,4 @@ public class EnergyCompanyGeneralInfoEditTests extends SeleniumTestSetup {
         
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }   
-
 }

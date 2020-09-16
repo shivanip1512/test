@@ -36,7 +36,7 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpVersacomEdit_RequiredFieldsOnly_Successfully() {
+    public void ldGrpVersacomEdit_RequiredFieldsOnly_Success() {
         Pair<JSONObject, JSONObject> pair = new LoadGroupVersacomCreateBuilder.Builder(Optional.empty())
                 .withRouteId(Optional.of(LoadGroupEnums.RouteId.ACCU710A))
                 .withUtilityAddress(Optional.empty())
@@ -77,7 +77,7 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpVersacomEdit_SerialAddressToSectionClass_Successfully() {
+    public void ldGrpVersacomEdit_SerialAddressToSectionClass_Success() {
         builder = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup();
         Pair<JSONObject, JSONObject> pair = builder
                 .withSerial(Optional.of(567))
@@ -110,7 +110,7 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpVersacomEdit_AddressUsageToSerial_Successfully() {
+    public void ldGrpVersacomEdit_AddressUsageToSerial_Success() {
         builder = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup();
         Pair<JSONObject, JSONObject> pair = builder
                 .create();

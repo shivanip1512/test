@@ -65,7 +65,7 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTerminalServer_PageTitleCorrect() {
+    public void commChannelDetailsTerminalServer_PageTitle_Correct() {
         String EXPECTED_TITLE = commChannelName;
         
         String actualPageTitle = detailPage.getPageTitle();
@@ -106,7 +106,7 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTerminalServer_ConfigTab_TimingSectionDisplayed() {
+    public void commChannelDetailsTerminalServer_ConfigTabTimingSection_Displayed() {
         String infoTitle = "Configuration";
         
         detailPage.getTabElement().clickTabAndWait(infoTitle);
@@ -116,7 +116,7 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTerminalServer_ConfigTab_GeneralSectionDisplayed() {
+    public void commChannelDetailsTerminalServer_ConfigTabGeneralSection_Displayed() {
         String infoTitle = "Configuration";
         
         detailPage.getTabElement().clickTabAndWait(infoTitle);
@@ -126,7 +126,7 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTerminalServer_ConfigTab_SharedSectionDisplayed() {
+    public void commChannelDetailsTerminalServer_ConfigTabSharedSection_Displayed() {
         String infoTitle = "Configuration";
         
         detailPage.getTabElement().clickTabAndWait(infoTitle);
@@ -177,7 +177,7 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDeleteTerminalServer_DeleteCommChannelSuccessfully() {
+    public void commChannelDeleteTerminalServer_Delete_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String deleteCommChannelName = "Terminal Server " + timeStamp;
         String expectedMessage = deleteCommChannelName +" deleted successfully.";

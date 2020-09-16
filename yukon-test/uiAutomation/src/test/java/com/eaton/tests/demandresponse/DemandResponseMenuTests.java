@@ -24,7 +24,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void demandResponseMenu_dashboardUrlCorrect() {
+    public void demandResponseMenu_DashboardUrl_Correct() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 0);
 
@@ -32,7 +32,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void demandResponseMenu_scenariosUrlCorrect() {
+    public void demandResponseMenu_ScenariosUrl_Correct() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 1);
 
@@ -40,7 +40,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void demandResponseMenu_controlAreasUrlCorrect() {
+    public void demandResponseMenu_ControlAreasUrl_Correct() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 2);
 
@@ -48,7 +48,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void demandResponseMenu_programsUrlCorrect() {
+    public void demandResponseMenu_ProgramsUrl_Correct() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 3);
 
@@ -56,7 +56,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void demandResponseMenu_loadGroupsUrlCorrect() {
+    public void demandResponseMenu_LoadGroupsUrl_Correct() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 4);
 
@@ -64,7 +64,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void demandResponseMenu_setupUrlCorrect() {
+    public void demandResponseMenu_SetupUrl_Correct() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 5);
 
@@ -72,7 +72,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void demandResponseMenu_ciCurtailmentUrlCorrect() {
+    public void demandResponseMenu_CiCurtailmentUrl_Correct() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 6);
 
@@ -80,7 +80,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void demandResponseMenu_bulkUpdateUrlCorrect() {
+    public void demandResponseMenu_BulkUpdateUrl_Correct() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 7);
 
@@ -88,7 +88,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void demandResponseMenu_reportsUrlCorrect() {
+    public void demandResponseMenu_ReportsUrl_Correct() {
 
         String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 8);
 

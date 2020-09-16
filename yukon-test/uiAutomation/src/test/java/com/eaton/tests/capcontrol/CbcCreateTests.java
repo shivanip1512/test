@@ -42,7 +42,7 @@ public class CbcCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void cbcCreate_pageTitle_Correct() {
+    public void cbcCreate_PageTitle_Correct() {
         final String EXPECTED_TITLE = "Create CBC";
 
         String actualPageTitle = createPage.getPageTitle();
@@ -51,7 +51,7 @@ public class CbcCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void cbcCreate_requiredFieldsOnly_Success() {
+    public void cbcCreate_RequiredFieldsOnly_Success() {
         final String EXPECTED_MSG = "CBC was successfully saved.";
 
         int masterAddress = randomNum.nextInt(65000);

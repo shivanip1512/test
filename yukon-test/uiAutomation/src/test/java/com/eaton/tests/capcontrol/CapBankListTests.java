@@ -30,7 +30,7 @@ public class CapBankListTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.VoltVar.VOLT_VAR })
-    public void capBankList_columnHeadersCorrect() {
+    public void capBankList_ColumnHeaders_Correct() {
         SoftAssertions softly = new SoftAssertions();
         final int EXPECTED_COUNT = 3;
 

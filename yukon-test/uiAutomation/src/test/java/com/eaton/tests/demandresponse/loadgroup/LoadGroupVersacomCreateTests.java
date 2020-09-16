@@ -43,7 +43,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreateVersacom_RequiredFieldsOnlySuccessfully() {
+    public void ldGrpCreateVersacom_RequiredFieldsOnly_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Versacom " + timeStamp;
 
@@ -64,7 +64,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreateVersacom_AllFieldsSuccessfullyWithSerialAddress() {        
+    public void ldGrpCreateVersacom_AllFieldsyWithSerialAddress_Success() {        
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());        
         String name = "AT Versacom " + timeStamp;
         double randomDouble = randomNum.nextDouble();
@@ -259,7 +259,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreateVersacom_UtilityAddress_DefaultValueValidation() {
+    public void ldGrpCreateVersacom_UtilityAddress_DefaultValueCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_VERSACOM");
         waitForLoadingSpinner();
 
@@ -339,7 +339,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreateVersacom_AddressUsageSerial_SectionDivisionClassDisabled() {
+    public void ldGrpCreateVersacom_AddressUsageSerial_SectionClassDivisionDisabled() {
         SoftAssertions softly = new SoftAssertions();
         createPage.getType().selectItemByValue("LM_GROUP_VERSACOM");
         waitForLoadingSpinner();

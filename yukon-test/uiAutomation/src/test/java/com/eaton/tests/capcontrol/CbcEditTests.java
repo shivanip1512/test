@@ -38,7 +38,7 @@ public class CbcEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void cbcEdit_pageTitleCorrect() {
+    public void cbcEdit_PageTitle_Correct() {
         final String EXPECTED_TITLE = "Edit CBC: AT CBC";
 
         String actualPageTitle = editPage.getPageTitle();
@@ -47,7 +47,7 @@ public class CbcEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void cbcEdit_requiredFieldsOnlySuccess() {
+    public void cbcEdit_RequiredFieldsOnly_Success() {
         final String EXPECTED_MSG = "CBC was successfully saved.";
 
         navigate(Urls.CapControl.CBC_EDIT + "563" + Urls.EDIT);
@@ -69,7 +69,7 @@ public class CbcEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void cbcEdit_deleteCbcSuccess() {
+    public void cbcEdit_Delete_Success() {
         final String EXPECTED_MSG = "Deleted CBC";
 
         navigate(Urls.CapControl.CBC_EDIT + "577" + Urls.EDIT);
