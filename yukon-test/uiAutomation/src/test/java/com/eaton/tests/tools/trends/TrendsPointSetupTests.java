@@ -62,7 +62,7 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
         assertThat(actualModalTitle).isEqualTo(EXPECTED_MODAL_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS})
     public void trendPointSetup_Labels_Correct() {
         SoftAssertions softly = new SoftAssertions();
 

@@ -218,36 +218,33 @@ public class SeleniumTestSetup {
     }
 
     public static void waitUntilModalOpenByDescribedBy(String describedBy) {
-        Integer count = 0;
-
+        Integer count;
         long startTime = System.currentTimeMillis();
-
-        while (count.equals(0) && (System.currentTimeMillis() - startTime) < 2000) {
+        
+        do {
             count = driverExt.findElements(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).size();
-        }
+        } while(count.equals(0) && ((System.currentTimeMillis() - startTime) < 2000));
     }
 
     public static void waitUntilModalClosedByDescribedBy(String describedBy) {
-        Integer count = 1;
-
-        long startTime = System.currentTimeMillis();
-
-        while (count.equals(1) && (System.currentTimeMillis() - startTime) < 2000) {
+        long startTime = System.currentTimeMillis();        
+        Integer count;
+        
+        do {
             count = driverExt.findElements(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).size();
-        }
+        } while(count.equals(1) && ((System.currentTimeMillis() - startTime) < 2000));
     }
 
     public static void waitUntilModalClosedDisplayNone(String describedBy) {
-        boolean found = true;
         long startTime = System.currentTimeMillis();
 
-        while (found && (System.currentTimeMillis() - startTime) < 2000) {
+        while ((System.currentTimeMillis() - startTime) < 2000) {
 
             String style = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0))
                     .getAttribute("style");
 
             if (style.contains("display: none")) {
-                found = false;
+                return;
             }
         }
     }
@@ -263,10 +260,9 @@ public class SeleniumTestSetup {
      *                   can not use method waitUntilModalVisibleByDescribedBy
      */
     public static void waitUntilModalOpenByTitle(String modalTitle) {
-        boolean found = false;
         long startTime = System.currentTimeMillis();
 
-        while (!found && (System.currentTimeMillis() - startTime) < 2000) {
+        while ((System.currentTimeMillis() - startTime) < 2000) {
             List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-labelledby^='ui-id']"), Optional.of(0));
 
             Optional<WebElement> el = list.stream().filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle)).findFirst();
@@ -284,10 +280,9 @@ public class SeleniumTestSetup {
      *                   can not use method waitUntilModalClosedByDescribedBy
      */
     public static void waitUntilModalClosedByTitle(String modalTitle) {
-        boolean found = true;
         long startTime = System.currentTimeMillis();
 
-        while (found && (System.currentTimeMillis() - startTime) < 2000) {
+        while ((System.currentTimeMillis() - startTime) < 2000) {
             List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-describedby^='ui-id']"), Optional.of(0));
 
             try {

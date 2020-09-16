@@ -3,6 +3,7 @@ package com.eaton.elements.modals;
 import java.util.Optional;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.RadioButtonElement;
@@ -40,8 +41,22 @@ public class ResetPeakModal extends BaseModal {
         return resetPeakForAllTrends;
     }
 
-    public void clickHelpIcon() {
-        this.driverExt.findElement(By.cssSelector(".icon-help"), Optional.empty()).click();
+    public void clickHelpIconAndWait() {
+        this.driverExt.findElement(By.cssSelector(".icon-help"), Optional.of(0)).click();
+        
+        WebElement el = this.driverExt.findElement(By.cssSelector(".user-message.info"), Optional.of(0));
+        
+        boolean open = false;
+        long startTime = System.currentTimeMillis();
+
+        while (!open && ((System.currentTimeMillis() - startTime) < 1000)) {
+
+            String at = el.getAttribute("dn");
+
+            if (at == null) {
+                open = true;
+            }
+        }
     }
 
     public void clickHelpCloseIcon() {
@@ -49,11 +64,11 @@ public class ResetPeakModal extends BaseModal {
     }
 
     public String getHelpTextMessage() {
-        return this.driverExt.findElement(By.cssSelector("user-message"), Optional.empty()).getText();
+        return this.driverExt.findElement(By.cssSelector(".user-message.info"), Optional.of(0)).getText();
     }
 
     public Boolean isHelpClosed() {
-        String classAttribute = getModal().findElement(By.cssSelector(".user-message")).getAttribute("class");
+        String classAttribute = getModal().findElement(By.cssSelector(".user-message.info")).getAttribute("class");
 
         return classAttribute.contains("dn");
     }
