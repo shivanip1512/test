@@ -73,13 +73,13 @@ public class ItronDeviceDataParserTest {
     }
     
     @Test
-    public void validateRowParsingForPayloadValuedEvent() {
-        String[] rowData = rowData("type: 0, log event ID: 32925 (0x809D) - Vendor-specific or Unknown, payload:  data(00F0000000)");
+    public void validateRowParsingForPayloadValuedEventWithMultiplier() {
+        String[] rowData = rowData("type: 0, log event ID: 32925 (0x809D) - Vendor-specific or Unknown, payload:  data(0960000000)");
         Collection<PointData> data = parseRow(BuiltInAttribute.AVERAGE_VOLTAGE, rowData);
         Assert.assertEquals(1, data.size());
         PointData pointData = (PointData) data.toArray()[0];
         double value = pointData.getValue();
-        Assert.assertEquals(240, value, .1);
+        Assert.assertEquals(240.0, value, .1);
     }
 
     @Test
