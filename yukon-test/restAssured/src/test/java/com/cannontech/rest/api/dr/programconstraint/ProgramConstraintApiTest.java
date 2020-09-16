@@ -184,8 +184,8 @@ public class ProgramConstraintApiTest {
                 "Expected message should be: Validation error");
         assertTrue(
                 ValidationHelper.validateFieldError(createResponse, "name",
-                        "Cannot be blank or include any of the following characters: / \\ , ' \" |"),
-                "Expected Error not found:" + "Cannot be blank or include any of the following characters: / \\ , ' \" |");
+                        "Name must not contain any of the following characters: / \\ , ' \" |."),
+                "Expected Error not found:" + "Name must not contain any of the following characters: / \\ , ' \" |.");
         Log.endTestCase("programConstraint_08_NameWithSpecialCharValidation");
     }
 
