@@ -506,7 +506,6 @@ void CtiCalculateThread::historicalThread( void )
                 continue;
             }
 
-            PointTimeMap::iterator dbTimeMapIter;
             long pointID;
             long componentCount;
             double newPointValue;
@@ -532,9 +531,9 @@ void CtiCalculateThread::historicalThread( void )
 
                 pointID = calcPoint->getPointId( );
 
-                if( (dbTimeMapIter = dbTimeMap.find( pointID )) != dbTimeMap.end() )//Entry is in the database
+                if( const auto dbTime = Cti::mapFind(dbTimeMap, pointID) )//Entry is in the database
                 {
-                    lastTime = dbTimeMapIter->second;
+                    lastTime = *dbTime;
                 }
                 else
                 {
@@ -554,14 +553,13 @@ void CtiCalculateThread::historicalThread( void )
 
                 componentCount = calcPoint->getComponentCount();
 
-                DynamicTableDataIter iter;
                 CtiTime newTime = (unsigned long)0;
-                for( iter = data.begin(); iter!=data.end(); iter++ )
+                for( const auto& [dynamicTime, dynamicValues] : data )
                 {
-                    if( iter->second.size() == componentCount )
+                    if( dynamicValues.size() == componentCount )
                     {
                         //This means all the necessary points in historical have been updated, we can do a calc
-                        setHistoricalPointStore(iter->second);//Takes the value/paoid pair and sets the values in the point store
+                        setHistoricalPointStore(dynamicValues);//Takes the value/paoid pair and sets the values in the point store
 
                         CtiPointStoreElement* calcPointPtr = CtiPointStore::find(calcPoint->getPointId());
 
@@ -581,12 +579,11 @@ void CtiCalculateThread::historicalThread( void )
                             newPointValue = 0;
                         }
 
-
                         const auto pointDescription = makeUpdateText(pointID);
 
                         CtiPointDataMsg *pointData = CTIDBG_new CtiPointDataMsg(pointID, newPointValue, NormalQuality, InvalidPointType, pointDescription);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
-                        pointData->setTime(iter->first);//The time these points were entered in the historical log
-                        newTime = iter->first;//we do this in order of time, so the last one is the time we want.
+                        pointData->setTime(dynamicTime);//The time these points were entered in the historical log
+                        newTime = dynamicTime;//we do this in order of time, so the last one is the time we want.
 
                         pChg->getData( ).push_back( pointData );
                         pointsInMulti = TRUE;
@@ -597,8 +594,7 @@ void CtiCalculateThread::historicalThread( void )
                         }
                     }
                 }
-                PointTimeMap::iterator Tpair = unlistedPoints.find(calcPoint->getPointId());
-                if( newTime > (unsigned long)0 && Tpair == unlistedPoints.end() )
+                if( newTime > (unsigned long)0 && unlistedPoints.count(calcPoint->getPointId()) == 0 )
                 {
                     updatedPoints.insert(PointTimeMap::value_type(calcPoint->getPointId(), newTime));
                 }
@@ -1244,7 +1240,7 @@ void CtiCalculateThread::appendPointComponent( long pointID, string &componentTy
     }
     else if( targetCalcPoint = Cti::mapFindPtr(_backfilledPoints, pointID) )
     {
-        updateType = CalcUpdateType::Historical;
+        updateType = CalcUpdateType::BackfilledHistorical;
     }
     else if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
     {
@@ -1576,13 +1572,18 @@ void CtiCalculateThread::getHistoricalTableSinglePointData(long calcPoint, CtiTi
     }
 }
 
-void CtiCalculateThread::setHistoricalPointStore(HistoricalPointValueMap &valueMap)
+void CtiCalculateThread::setHistoricalPointStore(const HistoricalPointValueMap& valueMap)
 {
-    HistoricalPointValueMap::iterator iter;
-    for( iter = valueMap.begin(); iter != valueMap.end(); iter++ )
+    for( const auto [id, value] : valueMap )
     {
-        CtiPointStoreElement* calcPointPtr = CtiPointStore::find(iter->first);
-        calcPointPtr->setHistoricValue(iter->second);
+        if( const auto calcPointPtr = CtiPointStore::find(id) )
+        {
+            calcPointPtr->setHistoricValue(value);
+        }
+        else
+        {
+            CTILOG_ERROR(dout, "Could not find ID " << id << " in the CtiPointStore, could not set value " << value);
+        }
     }
 }
 
