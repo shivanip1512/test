@@ -51,14 +51,14 @@ public class LoadGroupEnums {
     }
 
     public enum RelayUsageExpresscom {
-    	Load_1("Load_1"),
-    	Load_2("Load_2"),
-    	Load_3("Load_3"),
-    	Load_4("Load_4"),
-    	Load_5("Load_5"),
-    	Load_6("Load_6"),
-    	Load_7("Load_7"),
-    	Load_8("Load_8");
+    	LOAD_1("Load_1"),
+        LOAD_2("Load_2"),
+        LOAD_3("Load_3"),
+        LOAD_4("Load_4"),
+        LOAD_5("Load_5"),
+        LOAD_6("Load_6"),
+        LOAD_7("Load_7"),
+        LOAD_8("Load_8");
 
         private final String relayUsage;
 
@@ -69,11 +69,15 @@ public class LoadGroupEnums {
         public String getRelayUsage() {
             return this.relayUsage;
         }
+        
+        public String getRelayUsageValue() {
+            return relayUsage;
+        }
 
-        public static RelayUsageExpresscom getRandomRelayUsage() {
+        public static String getRandomRelayUsage() {
 
             Random random = new Random();
-            return values()[random.nextInt(values().length)];
+            return values()[random.nextInt(values().length)].getRelayUsageValue();
         }
     }
 
@@ -344,7 +348,7 @@ public class LoadGroupEnums {
         public String getDeviceClassSet() {
             return this.deviceClassSet;
         }
-        
+
         public static DigiSepDeviceClassEnum getRandomDeviceClassSet() {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
