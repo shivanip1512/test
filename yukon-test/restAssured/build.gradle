@@ -53,7 +53,7 @@ ext {
 test {
     useTestNG() {
         useDefaultListeners = true
-        suites 'src/test/resources/testSuiteFiles/documentationSuites/documentation.xml'
+        suites suites ('src/test/resources/testSuiteFiles/documentationSuites/documentation.xml','src\test\resources\testSuiteFiles\testAutomationSuites\TestSuite.xml')
     }
 }
 asciidoctor {
