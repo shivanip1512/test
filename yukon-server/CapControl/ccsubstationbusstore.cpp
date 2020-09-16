@@ -6802,21 +6802,20 @@ void CtiCCSubstationBusStore::handleSubstationDBChange(long reloadId, BYTE reloa
                                      &_pointid_station_map, &_substation_area_map,
                            &_substation_specialarea_map, &_ccSubstations);
 
-        CtiCCSubstationPtr station = findSubstationByPAObjectID(reloadId);
-        if (station != NULL)
+        if ( auto station = findSubstationByPAObjectID( reloadId ) )
         {
             for ( long subbusID : station->getCCSubIds() )
             {
                 reloadMonitorPointsFromDatabase(subbusID, &_paobject_capbank_map, &_paobject_feeder_map,
                                                 &_paobject_subbus_map, &_pointid_capbank_map, &_pointid_subbus_map);
             }
-
             addVectorIdsToSet(station->getCCSubIds(), modifiedBusIdsSet);
             modifiedStationIdsSet.insert(reloadId);
             if (station->getDisableFlag())
+            {
                 station->checkForAndStopVerificationOnChildSubBuses(capMessages);
+            }
         }
-
     }
 }
 
