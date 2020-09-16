@@ -26,11 +26,17 @@ public class SwitchBtnYesNoElement {
     }
     
     public void selectValue(String value) {
-        List<WebElement> list = getSwitchBtn().findElements(By.cssSelector(".b-label"));
-        
-        WebElement el = list.stream().filter(x -> x.getText().contains(value)).findFirst().orElseThrow();
-        
-        el.click();
+    	String checkedStatus = getCheckedValue();
+
+		if (checkedStatus.contentEquals(value)) {
+			return;
+		} else {
+			List<WebElement> list = getSwitchBtn().findElements(By.cssSelector(".b-label"));
+
+			WebElement el = list.stream().filter(x -> x.getText().contains(value)).findFirst().orElseThrow();
+
+			el.click();
+		}
     }
     
     public WebElement getSwitchBtn() {                

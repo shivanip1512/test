@@ -15,7 +15,6 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.assets.virtualdevices.VirtualDevicesListPage;
-import com.eaton.pages.tools.trends.TrendsListPage;
 import com.github.javafaker.Faker;
 
 public class VirtualDevicesCreateTests extends SeleniumTestSetup {
@@ -28,6 +27,7 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         navigate(Urls.Assets.VIRTUAL_DEVICES);
+        faker = SeleniumTestSetup.getFaker();
         listPage = new VirtualDevicesListPage(driverExt);
     }
     
@@ -37,7 +37,7 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
-    public void virtualDevices_Create_FieldValidation() {
+    public void virtualDevicesCreate_Labels_Correct() {
         SoftAssertions softly = new SoftAssertions();
         CreateVirtualDeviceModal createModal = listPage.showAndWaitCreateVirtualDeviceModal();
         List<String> labels = createModal.getVirtualDeviceModelLabels();
@@ -55,7 +55,7 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
 //    }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
-    public void virtualDevicesCreate_Name_InvalidCharsValidation() {
+    public void virtualDevicesCreate_Name_InvalidCharValidation() {
         String name = "AT Virtual Devices " + "/ \\ , ' \" |";
 
         final String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
@@ -68,25 +68,14 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void virtualDevicesCreate_Name_MaxLength60Chars() {
-        String name = "AT Virtual Devices " + faker.number().digits(60);
-
-        final String EXPECTED_MSG = name + " saved successfully.";
-
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    public void virtualDevicesCreate_Name_MaxLength60Validation() {
         CreateVirtualDeviceModal createModal = listPage.showAndWaitCreateVirtualDeviceModal();
-        createModal.getName().setInputValue(name);
-        createModal.clickOk();
-
-        TrendsListPage listPage = new TrendsListPage(driverExt);
-
-        String userMsg = listPage.getUserMessage();
-
-        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+        assertThat(createModal.getName().getMaxLength()).isEqualTo("60");
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendCreate_Name_RequiredValidation() {
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    public void virtualDevicesCreate_Name_RequiredValidation() {
         final String EXPECTED_MSG = "Name is required.";
 
         CreateVirtualDeviceModal createModal = listPage.showAndWaitCreateVirtualDeviceModal();
@@ -97,10 +86,33 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
     
-//    virtualDevices_Create_FieldValidation
-//    virtualDevices_Create_VirtualDeviceEnabled
-//    virtualDevices_Create_VirtualDeviceDisabled
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    public void virtualDevicesCreate_Enabled_Success() {
+    	String name = "AT Virtual Device" + faker.number().digits(10);
 
+        final String EXPECTED_MSG = name + " saved successfully.";
+        CreateVirtualDeviceModal createModal = listPage.showAndWaitCreateVirtualDeviceModal();
+        createModal.getName().setInputValue(name);
+        createModal.getStatus().selectValue("Enabled");
+        createModal.clickOk();
+        
+        String userMsg = listPage.getUserMessage();
 
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+    }
+    
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    public void virtualDevicesCreate_Disabled_Success() {
+    	String name = "AT Virtual Device" + faker.number().digits(10);
 
+        final String EXPECTED_MSG = name + " saved successfully.";
+        CreateVirtualDeviceModal createModal = listPage.showAndWaitCreateVirtualDeviceModal();
+        createModal.getName().setInputValue(name);
+        createModal.getStatus().selectValue("Disabled");
+        createModal.clickOk();
+        
+        String userMsg = listPage.getUserMessage();
+
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+    }
 }
