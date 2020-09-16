@@ -43,13 +43,10 @@ public class ZoneDtoValidator extends SimpleValidator<AbstractZone> {
         }
         
         Zone existingZone = zoneDao.findZoneByZoneName(zoneDto.getName());
-        if (zoneDto.getZoneId() == null) {
-            if (existingZone != null) {
-                errors.rejectValue("name", "yukon.web.modules.capcontrol.ivvc.zoneWizard.error.duplicateZoneName");
+        if (existingZone != null) {
+            if (zoneDto.getZoneId() == null || !existingZone.getId().equals(zoneDto.getZoneId())) {
+                errors.rejectValue("name", "yukon.web.error.nameConflict");
             }
-        } else {
-            if (!existingZone.getId().equals(zoneDto.getZoneId())) {
-                errors.rejectValue("name", "yukon.web.modules.capcontrol.ivvc.zoneWizard.error.duplicateZoneName");            }
         }
     }
 

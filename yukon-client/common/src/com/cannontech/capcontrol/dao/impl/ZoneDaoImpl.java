@@ -275,9 +275,9 @@ public class ZoneDaoImpl implements ZoneDao {
     public Zone findZoneByZoneName(String zoneName) {
 
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-        sqlBuilder.append("SELECT ZoneId,ZoneName,SubstationBusId,ParentId,GraphStartPosition, ZoneType");
+        sqlBuilder.append("SELECT ZoneId, ZoneName, SubstationBusId, ParentId, GraphStartPosition, ZoneType");
         sqlBuilder.append("FROM Zone");
-        sqlBuilder.append("WHERE ZoneName").eq(zoneName);
+        sqlBuilder.append("WHERE UPPER(ZoneName)").eq(zoneName.toUpperCase());
 
         try {
             Zone zone = yukonJdbcTemplate.queryForObject(sqlBuilder, zoneRowMapper);
