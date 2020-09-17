@@ -56,7 +56,7 @@ public class DirectProgramApiTest {
                 gearTypes, programConstraint.getId());
         loadProgram.setName("Auto_LmHoneywellProgramTest");
         loadProgram.setNotification(null);
-        ExtractableResponse<?> response = ApiCallHelper.post("saveLoadProgram", loadProgram);
+        ExtractableResponse<?> response = ApiCallHelper.post("loadPrograms", loadProgram);
         context.setAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME, loadProgram.getName());
         programId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID);
         assertTrue(response.statusCode() == 201, "Status code should be 201. Actual status code : " + response.statusCode());
@@ -73,7 +73,7 @@ public class DirectProgramApiTest {
     public void DirectProgram_02_Get(ITestContext context) {
 
         MockLoadProgram expectedLoadProgram = (MockLoadProgram) context.getAttribute("expectedloadProgram");
-        ExtractableResponse<?> response = ApiCallHelper.get("getLoadProgram", programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.get("loadPrograms", "/" + programId.toString());
         assertTrue(response.statusCode() == 200, "Status code should be 200");
         MockLoadProgram actualLoadProgram = response.as(MockLoadProgram.class);
 
@@ -99,10 +99,10 @@ public class DirectProgramApiTest {
         updateLoadProgram.setName(name);
         updateLoadProgram.getGears().get(0).setGearName(gearName);
 
-        ExtractableResponse<?> response = ApiCallHelper.put("updateLoadProgram", updateLoadProgram, programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.put("loadPrograms", updateLoadProgram, "/" +programId.toString());
         assertTrue(response.statusCode() == 200, "Status code should be 200");
 
-        ExtractableResponse<?> getUpdatedResponse = ApiCallHelper.get("getLoadProgram", programId.toString());
+        ExtractableResponse<?> getUpdatedResponse = ApiCallHelper.get("loadPrograms", "/" + programId.toString());
         assertTrue(getUpdatedResponse.statusCode() == 200, "Status code should be 200");
         MockLoadProgram updatedLoadProgram = getUpdatedResponse.as(MockLoadProgram.class);
         assertTrue(updatedLoadProgram.getName().equals(name), "Name should be " + name);
@@ -118,7 +118,7 @@ public class DirectProgramApiTest {
         MockLoadProgramCopy loadProgramCopy = LoadProgramSetupHelper.buildLoadProgramCopyRequest(MockPaoType.LM_DIRECT_PROGRAM,
                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
 
-        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyLoadProgram", loadProgramCopy, programId.toString() + "/copy");
+        ExtractableResponse<?> copyResponse = ApiCallHelper.post("loadPrograms", loadProgramCopy, "/" +programId.toString() + "/copy");
         assertTrue(copyResponse.statusCode() == 200, "Status code should be 200");
         assertTrue(copyResponse.path("programId") != null, "Program Id should not be Null");
         context.setAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME, loadProgramCopy.getName());
@@ -131,7 +131,7 @@ public class DirectProgramApiTest {
     @Test(dependsOnMethods = { "DirectProgram_01_Create" })
     public void DirectProgram_05_Delete(ITestContext context) {
 
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteLoadProgram", programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.delete("loadPrograms", "/" +programId.toString());
         assertTrue(response.statusCode() == 200, "Status code should be 200");
         assertTrue(response.path("id").equals(programId), "Expected programId to be deleted is not correct.");
     }
@@ -160,7 +160,7 @@ public class DirectProgramApiTest {
                 programConstraint.getId());
         loadProgram.setName("DirectProgramTest_" + gearCycle);
         loadProgram.setNotification(null);
-        ExtractableResponse<?> response = ApiCallHelper.post("saveLoadProgram", loadProgram);
+        ExtractableResponse<?> response = ApiCallHelper.post("loadPrograms", loadProgram);
         assertTrue(response.statusCode() == 201, "Status code should be 201. Actual status code : " + response.statusCode());
         assertTrue(response.path("programId") != null, "Program Id should not be Null");
 
@@ -192,7 +192,7 @@ public class DirectProgramApiTest {
 
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setName(" ");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -209,7 +209,7 @@ public class DirectProgramApiTest {
 
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setName("TestNameMoreThanSixtyCharacter_TestNameMoreThanSixtyCharacter");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -226,7 +226,7 @@ public class DirectProgramApiTest {
 
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setName("Test,//Test");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -245,7 +245,7 @@ public class DirectProgramApiTest {
 
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setName(context.getAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME).toString());
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -262,7 +262,7 @@ public class DirectProgramApiTest {
 
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setTriggerOffset((double) -1);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -279,7 +279,7 @@ public class DirectProgramApiTest {
 
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setTriggerOffset((double) 100000);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -296,7 +296,7 @@ public class DirectProgramApiTest {
 
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setRestoreOffset((double) -10000);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -313,7 +313,7 @@ public class DirectProgramApiTest {
 
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setRestoreOffset((double) 100000);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -331,7 +331,7 @@ public class DirectProgramApiTest {
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setAssignedGroups(null);
         mockLoadProgram.setNotification(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -350,7 +350,7 @@ public class DirectProgramApiTest {
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setGears(null);
         mockLoadProgram.setNotification(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -368,7 +368,7 @@ public class DirectProgramApiTest {
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setConstraint(null);
         mockLoadProgram.setNotification(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -387,7 +387,7 @@ public class DirectProgramApiTest {
         mockLoadProgram.getGears().get(0).setGearName("");
         mockLoadProgram.setNotification(null);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -406,7 +406,7 @@ public class DirectProgramApiTest {
         mockLoadProgram.getControlWindow().getControlWindowOne().setAvailableStartTimeInMinutes(-1);
         mockLoadProgram.setNotification(null);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -427,7 +427,7 @@ public class DirectProgramApiTest {
         mockLoadProgram.getControlWindow().getControlWindowOne().setAvailableStopTimeInMinutes(-1);
         mockLoadProgram.setNotification(null);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -448,7 +448,7 @@ public class DirectProgramApiTest {
         mockLoadProgram.getControlWindow().getControlWindowOne().setAvailableStartTimeInMinutes(1440);
         mockLoadProgram.setNotification(null);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -469,7 +469,7 @@ public class DirectProgramApiTest {
         mockLoadProgram.getControlWindow().getControlWindowOne().setAvailableStopTimeInMinutes(1441);
         mockLoadProgram.setNotification(null);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -501,7 +501,7 @@ public class DirectProgramApiTest {
         loadProgram.setName("Auto_ProgramTest");
         loadProgram.setNotification(null);
         loadProgram.getAssignedGroups().get(0).setGroupId(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", loadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", loadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -522,7 +522,7 @@ public class DirectProgramApiTest {
         // Delete LoadPrograms
         for (Map.Entry<Integer, String> map : programs.entrySet()) {
             deleteObject.setName(map.getValue().toString());
-            ExtractableResponse<?> response = ApiCallHelper.delete("deleteLoadProgram", deleteObject, map.getKey().toString());
+            ExtractableResponse<?> response = ApiCallHelper.delete("loadPrograms", "/" + map.getKey().toString());
             softAssert.assertTrue(response.statusCode() == 200, "Status code should be 200. Delete copied LoadProgram failed.");
         }
 
