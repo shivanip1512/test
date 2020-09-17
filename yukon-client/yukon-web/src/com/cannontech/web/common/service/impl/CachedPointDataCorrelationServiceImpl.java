@@ -244,13 +244,13 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
         PointValueQualityHolder asyncDataSourceValue = asyncDataSource.getPointValue(point.getPointID());
 
 
-       if (true) {
+    /*   if (true) {
             // test file creation without mismatches
             CorrelationSummary summary = new CorrelationSummary(userContext, point, pointUpdateBackingServiceCachedValue,
                     historicalValues,
                     asyncDataSourceValue, dispatchValue);
             return summary;
-        }
+        }*/
         
         return checkForMatch(point, userContext, pointUpdateBackingServiceCachedValue, historicalValues, asyncDataSourceValue, dispatchValue);
     }
@@ -261,13 +261,13 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
             PointValueQualityHolder asyncDataSourceValue, 
             PointValueQualityHolder dispatchValue) {
         
-        if (true) {
+      /*  if (true) {
             // test file creation without mismatches
             CorrelationSummary summary = new CorrelationSummary(userContext, point, pointUpdateBackingServiceCachedValue,
                     historicalValues,
                     asyncDataSourceValue, dispatchValue);
             return summary;
-        }
+        }*/
         
         if (!isMatched(historicalValues.get(0), pointUpdateBackingServiceCachedValue, asyncDataSourceValue, userContext)) {
             notifyDispatch(point.getPointID(), historicalValues.toString() + "," + pointUpdateBackingServiceCachedValue + ","
