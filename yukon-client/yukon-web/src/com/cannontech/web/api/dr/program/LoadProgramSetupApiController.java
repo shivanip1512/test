@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +36,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @RestController
 @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
-@RequestMapping("/dr/setup/loadProgram")
+@RequestMapping("/dr/loadPrograms")
 public class LoadProgramSetupApiController {
     @Autowired private LoadProgramSetupService loadProgramService;
     @Autowired LMProgramCopyValidator lmProgramCopyValidator;
@@ -65,7 +66,7 @@ public class LoadProgramSetupApiController {
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
-    @PostMapping("/copy/{id}")
+    @PostMapping("/{id}/copy")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> copy(@Valid @RequestBody LoadProgramCopy loadProgramCopy, @PathVariable int id) {
         int paoId = loadProgramService.copy(id, loadProgramCopy);
@@ -74,7 +75,7 @@ public class LoadProgramSetupApiController {
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public ResponseEntity<Object> update(@Valid @RequestBody LoadProgram loadProgram, @PathVariable int id) {
         int paoId = loadProgramService.update(id, loadProgram);

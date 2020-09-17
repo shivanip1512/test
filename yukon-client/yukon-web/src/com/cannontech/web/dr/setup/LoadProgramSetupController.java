@@ -126,7 +126,7 @@ public class LoadProgramSetupController {
     public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramRetrieveUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramUrl + "/" + id);
             model.addAttribute("mode", PageEditMode.VIEW);
             LoadProgram loadProgram = retrieveProgram(userContext, request, id, url);
             if (loadProgram == null) {
@@ -153,7 +153,7 @@ public class LoadProgramSetupController {
     public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramRetrieveUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramUrl + "/" + id);
             model.addAttribute("mode", PageEditMode.EDIT);
             LoadProgram loadProgram = retrieveProgram(userContext, request, id, url);
 
@@ -210,13 +210,16 @@ public class LoadProgramSetupController {
 
         try {
             String url;
+            ResponseEntity<? extends Object> response;
             if (loadProgram.getProgramId() == null) {
-                url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramSaveUrl);
+                url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramUrl);
+                response = saveProgram(userContext, request, url, loadProgram, HttpMethod.POST);
             } else {
                 url = helper.findWebServerUrl(request, userContext,
-                    ApiURL.drLoadProgramUpdateUrl + loadProgram.getProgramId());
+                    ApiURL.drLoadProgramUrl + "/" + loadProgram.getProgramId());
+                response = saveProgram(userContext, request, url, loadProgram, HttpMethod.PUT);
             }
-            ResponseEntity<? extends Object> response = saveProgram(userContext, request, url, loadProgram, HttpMethod.POST);
+            
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(loadProgram, "loadProgram");
                 result = helper.populateBindingError(result, error, response);
@@ -263,7 +266,7 @@ public class LoadProgramSetupController {
             FlashScope flash, HttpServletRequest request) {
 
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramDeleteUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramUrl + "/" + id);
             ResponseEntity<? extends Object> response = deleteProgram(userContext, request, url, lmDelete);
 
             if (response.getStatusCode() == HttpStatus.OK) {
@@ -289,7 +292,7 @@ public class LoadProgramSetupController {
             HttpServletResponse servletResponse) throws IOException {
         Map<String, String> json = new HashMap<>();
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramCopyUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramUrl + "/" + id + "/copy");
             ResponseEntity<? extends Object> response = copyProgram(userContext, request, url, programCopy, HttpMethod.POST);
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
