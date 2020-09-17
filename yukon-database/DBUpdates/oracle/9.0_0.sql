@@ -13,9 +13,9 @@ BEGIN
     SELECT COUNT(*) INTO v_count FROM (SELECT ZoneName, COUNT(*) AS temp_count FROM Zone GROUP BY ZoneName HAVING COUNT(*) > 1);
     IF v_count > 0 THEN
         v_newLine := CHR(13) || CHR(10);
-        v_errorText := 'IVVC Zone Names are now required to be unique' || v_newLine
+        v_errorText := 'IVVC Zone Names are now required to be unique.' || v_newLine
             || 'Setup has detected that IVVC Zones with duplicate names are present in the system.' || v_newLine
-            || 'In order to proceed with the update this must be manually resolved' || v_newLine
+            || 'In order to proceed with the update this must be manually resolved.' || v_newLine
             || 'More information can be found in YUK-22834.' || v_newLine
             || 'To locate Zones that have duplicated names you can use the query below:' || v_newLine
             || 'SELECT ZoneName, COUNT(*) AS NumberOfOccurences FROM Zone GROUP BY ZoneName HAVING COUNT(*) > 1';

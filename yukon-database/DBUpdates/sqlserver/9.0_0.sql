@@ -11,9 +11,9 @@ BEGIN
 IF @DuplicateZones > 0
     BEGIN
         DECLARE @NewLine CHAR(2) = CHAR(13) + CHAR(10);
-        DECLARE @ErrorText VARCHAR(1024) = 'IVVC Zone Names are now required to be unique' + @NewLine
+        DECLARE @ErrorText VARCHAR(1024) = 'IVVC Zone Names are now required to be unique.' + @NewLine
             + 'Setup has detected that IVVC Zones with duplicate names are present in the system.' + @NewLine
-            + 'In order to proceed with the update this must be manually resolved' + @NewLine
+            + 'In order to proceed with the update this must be manually resolved.' + @NewLine
             + 'More information can be found in YUK-22834.' + @NewLine
             + 'To locate Zones that have duplicated names you can use the query below:' + @NewLine
             + 'SELECT ZoneName, COUNT(*) AS NumberOfOccurences FROM Zone GROUP BY ZoneName HAVING COUNT(*) > 1';
