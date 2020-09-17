@@ -100,7 +100,7 @@ public class EcobeeProgramApiTest {
         updateLoadProgram.setName(name);
         updateLoadProgram.getGears().get(0).setGearName(gearName);
 
-        ExtractableResponse<?> response = ApiCallHelper.post("updateLoadProgram", updateLoadProgram, programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.put("updateLoadProgram", updateLoadProgram, programId.toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
         ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("getLoadProgram", programId.toString());
@@ -116,7 +116,7 @@ public class EcobeeProgramApiTest {
         MockLoadProgramCopy loadProgramCopy = LoadProgramSetupHelper.buildLoadProgramCopyRequest(MockPaoType.LM_ECOBEE_PROGRAM,
                                                                                                  (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
 
-        ExtractableResponse<?> response = ApiCallHelper.post("copyLoadProgram", loadProgramCopy, programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.post("copyLoadProgram", loadProgramCopy, programId.toString() + "/copy");
         assertTrue("Status code should be 200", response.statusCode() == 200);
         assertTrue("Program Id should not be Null", response.path("programId") != null);
         assertTrue("Copy Program Id should be different", !response.path("programId").toString().equals(programId));
@@ -132,7 +132,7 @@ public class EcobeeProgramApiTest {
         MockLMDto deleteObject = MockLMDto.builder().name((String) context.getAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME)).build();
 
         // Delete LoadProgram created
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteLoadProgram", deleteObject, programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.delete("deleteLoadProgram", programId.toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
         // Delete LoadGroup created
@@ -140,10 +140,8 @@ public class EcobeeProgramApiTest {
         deleteObject.setName(loadGroup.getName());
         ExtractableResponse<?> response1 = ApiCallHelper.delete("deleteloadgroup", deleteObject, loadGroup.getId().toString());
         assertTrue("Status code should be 200", response1.statusCode() == 200);
-
         // Delete Copy LoadProgram
-        deleteObject = MockLMDto.builder().name((String) context.getAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME)).build();
-        ExtractableResponse<?> response2 = ApiCallHelper.delete("deleteLoadProgram", deleteObject, context.getAttribute("copyPgmId").toString());
+        ExtractableResponse<?> response2 = ApiCallHelper.delete("deleteLoadProgram", context.getAttribute("copyPgmId").toString());
         assertTrue("Status code should be 200", response2.statusCode() == 200);
         Log.endTestCase("loadPgmEcobee_05_Delete");
     }
@@ -212,7 +210,7 @@ public class EcobeeProgramApiTest {
         Log.startTestCase("loadPgmEcobee_08_CopyWithInvalidGroupId");
         MockLoadProgramCopy loadProgramCopy = LoadProgramSetupHelper.buildLoadProgramCopyRequest(MockPaoType.LM_ECOBEE_PROGRAM, programId);
 
-        ExtractableResponse<?> response = ApiCallHelper.post("copyLoadProgram", loadProgramCopy, "999999");
+        ExtractableResponse<?> response = ApiCallHelper.post("copyLoadProgram", loadProgramCopy, "999999"+"/copy");
         assertTrue("Status code should be 400", response.statusCode() == 400);
         assertTrue("Expected message should be - Validation error", response.path("message").equals("A PAObject with id 999999 cannot be found."));
 

@@ -99,7 +99,7 @@ public class DirectProgramApiTest {
         updateLoadProgram.setName(name);
         updateLoadProgram.getGears().get(0).setGearName(gearName);
 
-        ExtractableResponse<?> response = ApiCallHelper.post("updateLoadProgram", updateLoadProgram, programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.put("updateLoadProgram", updateLoadProgram, programId.toString());
         assertTrue(response.statusCode() == 200, "Status code should be 200");
 
         ExtractableResponse<?> getUpdatedResponse = ApiCallHelper.get("getLoadProgram", programId.toString());
@@ -118,7 +118,7 @@ public class DirectProgramApiTest {
         MockLoadProgramCopy loadProgramCopy = LoadProgramSetupHelper.buildLoadProgramCopyRequest(MockPaoType.LM_DIRECT_PROGRAM,
                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
 
-        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyLoadProgram", loadProgramCopy, programId.toString());
+        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyLoadProgram", loadProgramCopy, programId.toString() + "/copy");
         assertTrue(copyResponse.statusCode() == 200, "Status code should be 200");
         assertTrue(copyResponse.path("programId") != null, "Program Id should not be Null");
         context.setAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME, loadProgramCopy.getName());
@@ -131,12 +131,9 @@ public class DirectProgramApiTest {
     @Test(dependsOnMethods = { "DirectProgram_01_Create" })
     public void DirectProgram_05_Delete(ITestContext context) {
 
-        MockLMDto deleteObject = MockLMDto.builder()
-                .name((String) context.getAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME)).build();
-
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteLoadProgram", deleteObject, programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.delete("deleteLoadProgram", programId.toString());
         assertTrue(response.statusCode() == 200, "Status code should be 200");
-        assertTrue(response.path("programId").equals(programId), "Expected programId to be deleted is not correct.");
+        assertTrue(response.path("id").equals(programId), "Expected programId to be deleted is not correct.");
     }
 
     /**
@@ -164,7 +161,7 @@ public class DirectProgramApiTest {
         loadProgram.setName("DirectProgramTest_" + gearCycle);
         loadProgram.setNotification(null);
         ExtractableResponse<?> response = ApiCallHelper.post("saveLoadProgram", loadProgram);
-        assertTrue(response.statusCode() == 200, "Status code should be 200. Actual status code : " + response.statusCode());
+        assertTrue(response.statusCode() == 201, "Status code should be 201. Actual status code : " + response.statusCode());
         assertTrue(response.path("programId") != null, "Program Id should not be Null");
 
         loadProgram.setProgramId(response.path("programId"));

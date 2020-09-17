@@ -103,7 +103,7 @@ public class ItronProgramApiTest {
         updateLoadProgram.setName(name);
         updateLoadProgram.getGears().get(0).setGearName(gearName);
 
-        ExtractableResponse<?> response = ApiCallHelper.post("updateLoadProgram", updateLoadProgram,
+        ExtractableResponse<?> response = ApiCallHelper.put("updateLoadProgram", updateLoadProgram,
                 programId.toString());
         Assert.assertTrue(response.statusCode() == 200, "Status code should be 200");
 
@@ -127,7 +127,7 @@ public class ItronProgramApiTest {
                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
 
         ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyLoadProgram", loadProgramCopy,
-                programId.toString());
+                programId.toString() + "/copy");
         Assert.assertTrue(copyResponse.statusCode() == 200, "Status code should be 200");
         Assert.assertTrue(copyResponse.path("programId") != null, "Program Id should not be Null");
         context.setAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME, loadProgramCopy.getName());
@@ -141,12 +141,9 @@ public class ItronProgramApiTest {
     @Test(dependsOnMethods = { "ItronProgram_01_Create" })
     public void ItronProgram_05_Delete(ITestContext context) {
 
-        MockLMDto deleteObject = MockLMDto.builder()
-                .name((String) context.getAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME)).build();
-
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteLoadProgram", deleteObject, programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.delete("deleteLoadProgram",  programId.toString());
         Assert.assertTrue(response.statusCode() == 200, "Status code should be 200");
-        Assert.assertTrue(response.path("programId").equals(programId),
+        Assert.assertTrue(response.path("id").equals(programId),
                 "Expected programId to be deleted is not correct.");
     }
 
@@ -514,8 +511,7 @@ public class ItronProgramApiTest {
         // Delete Copied LoadProgram
         MockLMDto deleteObject = MockLMDto.builder()
                 .name((String) context.getAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME)).build();
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteLoadProgram", deleteObject,
-                copyProgramId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.delete("deleteLoadProgram", copyProgramId.toString());
         softAssert.assertTrue(response.statusCode() == 200,
                 "Status code should be 200. Delete copied LoadProgram failed.");
 

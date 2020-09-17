@@ -103,7 +103,7 @@ public class HoneywellProgramApiTest {
         updateLoadProgram.setName(name);
         updateLoadProgram.getGears().get(0).setGearName(gearName);
 
-        ExtractableResponse<?> response = ApiCallHelper.post("updateLoadProgram", updateLoadProgram, programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.put("updateLoadProgram", updateLoadProgram, programId.toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
         ExtractableResponse<?> getUpdatedResponse = ApiCallHelper.get("getLoadProgram", programId.toString());
@@ -122,7 +122,7 @@ public class HoneywellProgramApiTest {
         MockLoadProgramCopy loadProgramCopy = LoadProgramSetupHelper.buildLoadProgramCopyRequest(MockPaoType.LM_HONEYWELL_PROGRAM,
                                                                                                  (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
 
-        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyLoadProgram", loadProgramCopy, programId.toString());
+        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyLoadProgram", loadProgramCopy, programId.toString() + "/copy");
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
         assertTrue("Program Id should not be Null", copyResponse.path("programId") != null);
         context.setAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME, loadProgramCopy.getName());
@@ -135,11 +135,9 @@ public class HoneywellProgramApiTest {
     @Test(dependsOnMethods = { "HoneywellProgram_01_Create" })
     public void HoneywellProgram_05_Delete(ITestContext context) {
 
-        MockLMDto deleteObject = MockLMDto.builder().name((String) context.getAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME)).build();
-
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteLoadProgram", deleteObject, programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.delete("deleteLoadProgram", programId.toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        assertTrue("Expected programId to be deleted is not correct.", response.path("programId").equals(programId));
+        assertTrue("Expected programId to be deleted is not correct.", response.path("id").equals(programId));
     }
 
     /**

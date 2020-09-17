@@ -105,7 +105,7 @@ public class SepProgramApiTest {
         updateLoadProgram.setName(name);
         updateLoadProgram.getGears().get(0).setGearName(gearName);
 
-        ExtractableResponse<?> response = ApiCallHelper.post("updateLoadProgram", updateLoadProgram, programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.put("updateLoadProgram", updateLoadProgram, programId.toString());
         assertTrue(response.statusCode() == 200, "Status code should be 200");
 
         ExtractableResponse<?> getUpdatedResponse = ApiCallHelper.get("getLoadProgram", programId.toString());
@@ -127,7 +127,7 @@ public class SepProgramApiTest {
         Log.startTestCase("SepProgram_04_Copy");
         MockLoadProgramCopy loadProgramCopy = LoadProgramSetupHelper.buildLoadProgramCopyRequest(MockPaoType.LM_SEP_PROGRAM,
                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
-        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyLoadProgram", loadProgramCopy, programId.toString());
+        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyLoadProgram", loadProgramCopy, programId.toString() + "/copy");
         assertTrue(copyResponse.statusCode() == 200, "Status code should be 200");
         assertTrue(copyResponse.path("programId") != null, "Program Id should not be Null");
 
@@ -164,11 +164,9 @@ public class SepProgramApiTest {
     public void SepProgram_06_Delete(ITestContext context) {
 
         Log.startTestCase("SepProgram_06_Delete");
-        MockLMDto deleteObject = MockLMDto.builder()
-                .name((String) context.getAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME)).build();
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteLoadProgram", deleteObject, programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.delete("deleteLoadProgram", programId.toString());
         assertTrue(response.statusCode() == 200, "Status code should be 200");
-        assertTrue(response.path("programId").equals(programId), "Expected programId to be deleted is not correct");
+        assertTrue(response.path("id").equals(programId), "Expected programId to be deleted is not correct");
         Log.startTestCase("SepProgram_06_Delete");
     }
 
@@ -197,7 +195,7 @@ public class SepProgramApiTest {
         ExtractableResponse<?> response = ApiCallHelper.post("saveLoadProgram", loadProgram);
         context.setAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME, loadProgram.getName());
 
-        assertTrue(response.statusCode() == 200, "Status code should be 200. Actual status code : " + response.statusCode());
+        assertTrue(response.statusCode() == 201, "Status code should be 201. Actual status code : " + response.statusCode());
         assertTrue(response.path("programId") != null, "Program Id should not be Null");
         loadProgram.setProgramId(response.path("programId"));
 
@@ -207,7 +205,7 @@ public class SepProgramApiTest {
         ExtractableResponse<?> deleteLdPrgmResponse = ApiCallHelper.delete("deleteLoadProgram", deleteObject,
                 response.path("programId").toString());
         assertTrue(deleteLdPrgmResponse.statusCode() == 200, "Status code should be 200");
-        assertTrue(deleteLdPrgmResponse.path("programId").equals(response.path("programId")),
+        assertTrue(deleteLdPrgmResponse.path("id").equals(response.path("programId")),
                 "Expected programId to be deleted is not correct");
         Log.endTestCase("SepProgram_07_CreateWithDifferentGears");
 
