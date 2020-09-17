@@ -38,13 +38,13 @@ public class YukonColorPaletteTest {
     }
     
     @Test
-    public void testYukonColorPaletteColors() throws IOException {
+    public void testYukonColorPaletteColors() {
         Set<String> colorsDifference = Sets.difference(yukonColorPaletteEnumValues, colorsDefinedInFile);
         assertTrue("Found colors in YukonColorPalette.java that are not defined in colors.less file. These colors and their values must be defined in colors.less file.: " + colorsDifference, colorsDifference.isEmpty());
     }
     
     @Test
-    public void testColorsFromFile() throws IOException {
+    public void testColorsFromFile() {
         Set<String> colorsDifference = Sets.difference(colorsDefinedInFile, yukonColorPaletteEnumValues);
         assertTrue("Found colors in colors.less file that are not defined in YukonColorPalette. Define an enum value in YukonColorPalette for these colors.: " + colorsDifference, colorsDifference.isEmpty());
     }

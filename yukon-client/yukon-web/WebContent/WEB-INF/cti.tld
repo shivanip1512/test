@@ -574,7 +574,7 @@
     <name>getYukonColorPaletteJson</name>
     <tag-class>com.cannontech.web.taglib.GetYukonColorPaletteJson</tag-class>
     <body-content>empty</body-content>
-    <description>Returns the JSON for YukoColorPallette</description>
+    <description>Returns the JSON for YukonColorPalette.</description>
   </tag>
   
   <tag>
