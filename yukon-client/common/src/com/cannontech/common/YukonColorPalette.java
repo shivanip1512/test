@@ -1,6 +1,5 @@
 package com.cannontech.common;
 
-import java.util.Map.Entry;
 import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.i18n.DisplayableEnum;
@@ -33,7 +32,6 @@ public enum YukonColorPalette implements DatabaseRepresentationSource, Displayab
     private boolean primary;
     
     private final static ImmutableMap<Integer, YukonColorPalette> lookupById;
-    private final static ImmutableMap<String, YukonColorPalette> lookupByHexColorValue;
     
     static {
         Builder<Integer, YukonColorPalette> dbBuilder = ImmutableMap.builder();
@@ -41,12 +39,6 @@ public enum YukonColorPalette implements DatabaseRepresentationSource, Displayab
             dbBuilder.put(color.colorId, color);
         }
         lookupById = dbBuilder.build();
-        
-        Builder<String, YukonColorPalette> hexColorLookupBuilder = ImmutableMap.builder();
-        for (Entry<YukonColorPalette, String> entry : ColorsFileReader.colorHexValueMap.entrySet()) {
-            hexColorLookupBuilder.put(entry.getValue(), entry.getKey());
-        }
-        lookupByHexColorValue = hexColorLookupBuilder.build();
     }
     
     class ColorId {
@@ -103,7 +95,7 @@ public enum YukonColorPalette implements DatabaseRepresentationSource, Displayab
     }
     
     public static YukonColorPalette getColorByHexValue(String hexValue) {
-        return lookupByHexColorValue.get(hexValue);
+        return ColorsFileReader.lookupByHexColorValue.get(hexValue);
     }
     
     public java.awt.Color getAwtColor() {

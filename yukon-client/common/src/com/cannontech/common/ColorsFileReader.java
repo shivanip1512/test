@@ -1,5 +1,7 @@
 package com.cannontech.common;
 
+import java.io.IOException;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,6 +17,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 public class ColorsFileReader {
     
     public final static ImmutableMap<YukonColorPalette, String> colorHexValueMap;
+    public final static ImmutableMap<String, YukonColorPalette> lookupByHexColorValue;
     
     private static final Logger log = YukonLogManager.getLogger(ColorsFileReader.class);
     
@@ -31,10 +34,15 @@ public class ColorsFileReader {
             while (variableNameMatcher.find() && valueMatcher.find()) {
                 colorHexValueMapBuilder.put(YukonColorPalette.valueOf(variableNameMatcher.group(1).toUpperCase()), valueMatcher.group(1));
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("An Exception occured while reading colors.less file.", e);
-            System.exit(1);
         }
         colorHexValueMap = colorHexValueMapBuilder.build();
+        
+        Builder<String, YukonColorPalette> hexColorLookupBuilder = ImmutableMap.builder();
+        for (Entry<YukonColorPalette, String> entry : colorHexValueMap.entrySet()) {
+            hexColorLookupBuilder.put(entry.getValue(), entry.getKey());
+        }
+        lookupByHexColorValue = hexColorLookupBuilder.build();
     }
 }
