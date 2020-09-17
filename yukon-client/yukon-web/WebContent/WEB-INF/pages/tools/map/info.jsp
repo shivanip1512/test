@@ -18,7 +18,9 @@
                 <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${pao.paoIdentifier.paoId}"/>
             </c:if>
             <cm:dropdown icon="icon-cog" triggerClasses="js-cog-menu fr">
-                <cm:dropdownOption key=".mapDevice" classes="js-device-map" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
+                <c:if test="${showMapDevice}">
+                    <cm:dropdownOption key=".mapDevice" classes="js-device-map" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
+                </c:if>
                 <c:if test="${pao.paoIdentifier.paoType.isRfn()}">
                     <cm:dropdownOption key=".viewNeighbors" classes="js-device-neighbors" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
                     <c:if test="${!pao.paoIdentifier.paoType.isRfGateway()}">
