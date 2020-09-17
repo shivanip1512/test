@@ -25,7 +25,7 @@ public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void siteMapAmiDetails_pageTitleCorrect() {
+    public void siteMapAmiDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Site Map";
 
         String actualPageTitle = siteMapPage.getPageTitle();

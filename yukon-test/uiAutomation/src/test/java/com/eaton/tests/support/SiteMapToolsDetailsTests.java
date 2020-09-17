@@ -26,7 +26,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
-    public void siteMapToolsDetails_PageTitle_Correct() {
+    public void siteMapToolsDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Site Map";
 
         String actualPageTitle = siteMapPage.getPageTitle();

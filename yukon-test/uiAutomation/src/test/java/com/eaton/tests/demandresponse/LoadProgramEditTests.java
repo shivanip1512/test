@@ -26,7 +26,7 @@ public class LoadProgramEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void loadProgramEdit_PageTitle_Correct() {
+    public void loadProgramEdit_Page_TitleCorrect() {
         final String PROGRAM_NAME = "AT Load Program";
         final String EXPECTED_TITLE = "Edit Load Program: " + PROGRAM_NAME;
         

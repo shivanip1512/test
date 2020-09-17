@@ -44,7 +44,7 @@ public class LoadGroupMeterDisconnectEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpMeterDisconnectEdit_PageTitle_Correct() {
+    public void ldGrpMeterDisconnectEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Load Group: " + name;
 
         String actualPageTitle = editPage.getPageTitle();

@@ -35,7 +35,7 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void substationBusCreate_PageTitle_Correct() {
+    public void substationBusCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Bus";
 
         String actualPageTitle = createPage.getPageTitle();

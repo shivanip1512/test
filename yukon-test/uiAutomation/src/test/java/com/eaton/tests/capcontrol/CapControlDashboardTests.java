@@ -30,7 +30,7 @@ public class CapControlDashboardTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void capControlDashboard_PageTitle_Correct() {
+    public void capControlDashboard_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Volt/Var Dashboard";
 
         String actualPageTitle = dashboardPage.getPageTitle();

@@ -64,7 +64,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_ModalTitle_Correct() {
+    public void commChannelTerminalServerEdit_Modal_TitleCorrect() {
         String expectedModalTitle = "Edit " + commChannelName;
         EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
         String actualModalTitle = editModal.getModalTitle();
@@ -100,7 +100,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit__Name_AlreadyExitsValidation() {
+    public void commChannelTerminalServerEdit_Name_AlreadyExitsValidation() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String exprectedMsg = "Name already exists";
         String name = "Terminal Server " + timeStamp;
@@ -138,7 +138,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_TabTitles_Correct() {
+    public void commChannelTerminalServerEdit_Tab_TitlesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 

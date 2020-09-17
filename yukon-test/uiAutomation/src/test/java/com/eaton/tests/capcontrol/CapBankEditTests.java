@@ -38,7 +38,7 @@ public class CapBankEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void capBankEdit_PageTitle_Correct() {
+    public void capBankEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit CapBank: AT Cap Bank";
 
         String actualPageTitle = editPage.getPageTitle();

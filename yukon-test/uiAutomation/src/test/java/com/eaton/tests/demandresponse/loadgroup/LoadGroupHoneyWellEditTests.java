@@ -49,7 +49,7 @@ public class LoadGroupHoneyWellEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpHoneywellEdit_PageTitle_Correct() {
+    public void ldGrpHoneywellEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Load Group: " + name;
         String actualPageTitle;
 

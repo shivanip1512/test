@@ -60,7 +60,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTcp_PageTitle_Correct() {
+    public void commChannelDetailsTcp_Page_TitleCorrect() {
         String EXPECTED_TITLE = commChannelName;
         
         String actualPageTitle = detailPage.getPageTitle();
@@ -69,7 +69,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTcp_TabTitles_Correct() {
+    public void commChannelDetailsTcp_Tab_TitlesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         List<String> titles = detailPage.getTabElement().getTitles();
 
@@ -153,7 +153,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTcp_PanelTitle_Correct() {
+    public void commChannelDetailsTcp_Panel_TitleCorrect() {
         String expectedPanelText = "Comm Channel Information";
 
         String actualPanelText = detailPage.getCommChannelInfoPanel().getPanelName();
@@ -183,7 +183,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDeleteTcp_DeleteTitle_Correct() {
+    public void commChannelDeleteTcp_Delete_TitleCorrect() {
         String expectedModalTitle = "Confirm Delete";
 
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();

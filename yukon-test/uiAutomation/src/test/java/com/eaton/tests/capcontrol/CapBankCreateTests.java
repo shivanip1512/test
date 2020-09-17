@@ -35,7 +35,7 @@ public class CapBankCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void capBankCreate_PageTitle_Correct() {
+    public void capBankCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create CapBank";
 
         String actualPageTitle = createPage.getPageTitle();

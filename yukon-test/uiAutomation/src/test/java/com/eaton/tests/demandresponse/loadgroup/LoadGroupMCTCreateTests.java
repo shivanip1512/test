@@ -152,7 +152,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateMCT_MCTAddressLabelDefaultValue_Correct() {
+    public void ldGrpCreateMCT_MCTAddressLabel_DefaultValueCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_MCT");
         waitForLoadingSpinner();
 
@@ -173,7 +173,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateMCT_MCTAddressValueSelected_Correct() {
+    public void ldGrpCreateMCT_MCTAddress_ValueSelectedCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_MCT");
         waitForLoadingSpinner();
 

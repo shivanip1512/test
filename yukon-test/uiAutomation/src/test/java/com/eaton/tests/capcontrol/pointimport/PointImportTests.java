@@ -23,7 +23,7 @@ public class PointImportTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.VoltVar.VOLT_VAR })
-    public void pointImport_PageTitle_Correct() {
+    public void pointImport_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Point Import";
 
         String actualPageTitle = importPage.getPageTitle();

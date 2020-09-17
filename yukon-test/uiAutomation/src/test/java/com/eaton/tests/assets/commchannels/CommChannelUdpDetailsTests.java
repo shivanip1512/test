@@ -67,7 +67,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDetailsUdp_PageTitle_Correct() {
+    public void commChannelDetailsUdp_Page_TitleCorrect() {
         String EXPECTED_TITLE = commChannelName;
         
         String actualPageTitle = detailPage.getPageTitle();

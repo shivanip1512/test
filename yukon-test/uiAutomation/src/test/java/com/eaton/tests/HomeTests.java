@@ -22,14 +22,14 @@ public class HomeTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL })    
-    public void home_SupportUrl_Correct() {
+    public void home_Support_UrlCorrect() {
         String url = page.getUtilityUrl("Support");
 
         assertThat(url).contains(Urls.SUPPORT);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL })    
-    public void home_SiteMapUrl_Correct() {
+    public void home_SiteMap_UrlCorrect() {
         String url = page.getUtilityUrl("Site Map");
 
         assertThat(url).contains(Urls.SITE_MAP);

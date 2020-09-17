@@ -22,7 +22,7 @@ public class AmiDashboardTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
-    public void amiDashboard_PageTitle_Correct() {
+    public void amiDashboard_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Dashboard: Default AMI Dashboard";
         
         String actualPageTitle = amiPage.getPageTitle();

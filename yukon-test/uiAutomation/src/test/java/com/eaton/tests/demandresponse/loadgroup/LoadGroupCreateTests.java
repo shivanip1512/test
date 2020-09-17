@@ -38,7 +38,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreate_PageTitle_Correct() {
+    public void ldGrpCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Load Group";
 
         String actualPageTitle = createPage.getPageTitle();
@@ -127,7 +127,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreate_TypeDropDownExpected_ValuesCorrect() {
+    public void ldGrpCreate_Type_ValuesCorrect() {
         List<String> expectedDropDownValues = new ArrayList<>(List.of("Select", "Digi SEP Group", "ecobee Group", "Emetcon Group", "Expresscom Group", "Honeywell Group",
                 "Itron Group", "MCT Group", "Meter Disconnect Group", "Point Group", "RFN Expresscom Group", "Ripple Group",
                 "Versacom Group"));

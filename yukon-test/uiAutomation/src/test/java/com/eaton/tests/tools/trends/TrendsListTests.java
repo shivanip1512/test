@@ -90,7 +90,7 @@ public class TrendsListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TOOLS, TestConstants.Tools.TRENDS })
-    public void trendsList_DeleteTrend_Success() {
+    public void trendsList_Delete_Success() {
         Pair<JSONObject, JSONObject> pair = TrendCreateService.buildAndCreateTrendAllFields();
 
         JSONObject response = pair.getValue1();

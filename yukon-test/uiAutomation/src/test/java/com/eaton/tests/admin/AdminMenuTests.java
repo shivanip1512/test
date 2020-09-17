@@ -23,7 +23,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Admin.ADMIN })
-    public void adminMenu_ConfigurationUrl_Correct() {
+    public void adminMenu_Configuration_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 0);
 
@@ -31,7 +31,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Admin.ADMIN })
-    public void adminMenu_EnergyCompanyUrl_Correct() {
+    public void adminMenu_EnergyCompany_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 1);
 
@@ -39,7 +39,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Admin.ADMIN })
-    public void adminMenu_MaintenanceUrl_Correct() {
+    public void adminMenu_Maintenance_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 2);
 
@@ -47,7 +47,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Admin.ADMIN })
-    public void adminMenu_MultiSpeakUrl_Correct() {
+    public void adminMenu_MultiSpeak_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 3);
 
@@ -55,7 +55,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Admin.ADMIN })
-    public void adminMenu_SubstationsUrl_Correct() {
+    public void adminMenu_Substations_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 4);
 
@@ -63,7 +63,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Admin.ADMIN })
-    public void adminMenu_UsersAndGroupsUrl_Correct() {
+    public void adminMenu_UsersAndGroups_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 5);
 
@@ -71,7 +71,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Admin.ADMIN })
-    public void adminMenu_ReportsUrl_Correct() {
+    public void adminMenu_Reports_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 6);
 

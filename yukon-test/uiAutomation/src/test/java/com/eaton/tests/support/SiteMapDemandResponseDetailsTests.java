@@ -26,7 +26,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL })
-    public void siteMapDemandResponseDetails_PageTitle_Correct() {
+    public void siteMapDemandResponseDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Site Map";
 
         String actualPageTitle = siteMapPage.getPageTitle();

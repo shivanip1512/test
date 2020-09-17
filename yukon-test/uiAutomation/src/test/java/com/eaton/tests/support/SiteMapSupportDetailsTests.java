@@ -26,7 +26,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-    public void siteMapSupportDetails_PageTitle_Correct() {
+    public void siteMapSupportDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Site Map";
 
         String actualPageTitle = siteMapPage.getPageTitle();

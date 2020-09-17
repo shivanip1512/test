@@ -26,7 +26,7 @@ public class SiteMapVoltVarDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.VoltVar.VOLT_VAR })
-    public void siteMapVoltVarDetails_PageTitle_Correct() {
+    public void siteMapVoltVarDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Site Map";
 
         String actualPageTitle = siteMapPage.getPageTitle();
@@ -42,7 +42,7 @@ public class SiteMapVoltVarDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.VoltVar.VOLT_VAR })
-    public void siteMapVoltVarDetails_CcSection_CountCorrect() {
+    public void siteMapVoltVarDetails_CcSectionPage_CountCorrect() {
         final int EXPECTED_COUNT = 10;
 
         assertThat(siteMapPage.getCCSectionSimpleList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);

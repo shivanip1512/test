@@ -23,7 +23,7 @@ public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
     }
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void energyCompanyOperatorUserEdit_PageTitle_Correct() {
+    public void energyCompanyOperatorUserEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Operator User: automation";
         
         navigate(Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_EDIT + "64" + Urls.Admin.ENERGY_COMPANY_OPERATOR_LOGIN_ID + "212");
@@ -36,7 +36,7 @@ public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
     } 
 
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void energyCompanyOperatorUserEdit_DeleteOperatorUser_Success() {
+    public void energyCompanyOperatorUserEdit_Delete_Success() {
         final String EXPECTED_USER_MSG = "Successfully deleted the user.";
         
         navigate(Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_EDIT + "64" + Urls.Admin.ENERGY_COMPANY_OPERATOR_LOGIN_ID + "302");

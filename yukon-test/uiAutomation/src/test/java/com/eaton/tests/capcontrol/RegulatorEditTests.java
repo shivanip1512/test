@@ -36,7 +36,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void regulatorEdit_PageTitle_Correct() {
+    public void regulatorEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Regulator: AT Regulator";
 
         String actualPageTitle = editPage.getPageTitle();

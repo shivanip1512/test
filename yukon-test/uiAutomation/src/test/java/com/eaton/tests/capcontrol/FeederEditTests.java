@@ -36,7 +36,7 @@ public class FeederEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void feederEdit_PageTitle_Correct() {
+    public void feederEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Feeder: AT Feader";
 
         String actualPageTitle = editPage.getPageTitle();

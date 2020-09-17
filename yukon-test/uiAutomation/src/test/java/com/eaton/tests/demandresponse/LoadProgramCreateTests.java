@@ -36,7 +36,7 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void loadProgramCreate_PageTitle_Correct() {
+    public void loadProgramCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Load Program";
 
         String actualPageTitle = createPage.getPageTitle();

@@ -25,7 +25,7 @@ public class ScenarioEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void scenarioEdit_PageTitle_Correct() {
+    public void scenarioEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Scenario: AT Scenario";
 
         navigate(Urls.DemandResponse.SCENARIO_EDIT + "663" + Urls.EDIT);

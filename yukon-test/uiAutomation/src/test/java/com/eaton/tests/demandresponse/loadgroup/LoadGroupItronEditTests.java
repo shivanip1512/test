@@ -46,7 +46,7 @@ public class LoadGroupItronEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpItronEdit_PageTitle_Correct() {
+    public void ldGrpItronEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Load Group: " + name;
 
         String actualPageTitle = editPage.getPageTitle();

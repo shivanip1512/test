@@ -27,7 +27,7 @@ public class ControlAreaListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void controlAreaList_PageTitle_Correct() {
+    public void controlAreaList_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Control Areas";
 
         String actualPageTitle = listPage.getPageTitle();

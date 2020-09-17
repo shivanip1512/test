@@ -33,7 +33,7 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpRfnExpresscom_PageTitle_Correct() {
+    public void ldGrpRfnExpresscom_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Load Group: AT Load Group";
 
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + "664");

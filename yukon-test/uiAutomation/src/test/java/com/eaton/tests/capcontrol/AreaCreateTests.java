@@ -35,7 +35,7 @@ public class AreaCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void areaCreate_PageTitle_Correct() {
+    public void areaCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Area";
 
         String actualPageTitle = createPage.getPageTitle();

@@ -80,7 +80,7 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpRfnExpresscomEdit_FieldValues_Correct() {
+    public void ldGrpRfnExpresscomEdit_Field_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup().create();
         JSONObject response = pair.getValue1();

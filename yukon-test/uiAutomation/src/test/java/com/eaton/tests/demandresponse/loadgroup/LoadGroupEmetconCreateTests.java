@@ -42,7 +42,7 @@ public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreateEmetcon_eAllFields_Success() {        
+    public void ldGrpCreateEmetcon_AllFields_Success() {        
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT emetcon " + timeStamp;
         double randomDouble = randomNum.nextDouble();   

@@ -23,14 +23,14 @@ public class AmiMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
-    public void amiMenu_DashboardUrl_Correct() {
+    public void amiMenu_Dashboard_UrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 0);
 
         assertThat(url).contains(Urls.Ami.DASHBOARD);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
-    public void amiMenu_BillingUrl_Correct() {
+    public void amiMenu_Billing_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 1);
 
@@ -38,7 +38,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
-    public void amiMenu_MeterProgrammingUrl_Correct() {
+    public void amiMenu_MeterProgramming_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 2);
 
@@ -46,7 +46,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
-    public void amiMenu_BulkImportUrl_Correct() {
+    public void amiMenu_BulkImport_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 3);
 
@@ -54,7 +54,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
-    public void amiMenu_BulkUpdateUrl_Correct() {
+    public void amiMenu_BulkUpdate_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 4);
 
@@ -62,7 +62,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
-    public void amiMenu_LegacyImporterUrl_Correct() {
+    public void amiMenu_LegacyImporter_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 5);
 
@@ -70,7 +70,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
-    public void amiMenu_PointImportUrl_Correct() {
+    public void amiMenu_PointImport_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 6);
 
@@ -78,7 +78,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Ami.AMI })
-    public void amiMenu_ReportsUrl_Correct() {
+    public void amiMenu_Reports_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 7);
 

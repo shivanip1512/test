@@ -63,7 +63,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_ModalTitle_Correct() {
+    public void commChannelUdpEdit_Modal_TitleCorrect() {
         String expectedModalTitle = "Edit " + commChannelName;
         
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
@@ -338,7 +338,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelUdpEdit_TabTitles_Correct() {
+    public void commChannelUdpEdit_Tab_TitlesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
 

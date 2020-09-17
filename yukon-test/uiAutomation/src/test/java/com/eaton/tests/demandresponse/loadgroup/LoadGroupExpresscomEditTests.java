@@ -164,7 +164,7 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpExpresscomEdit_FieldValues_Correct() {
+    public void ldGrpExpresscomEdit_Field_ValuesCorrect() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         List<String> relayUsage = new ArrayList<>();
         relayUsage.add(LoadGroupEnums.RelayUsageExpresscom.LOAD_6.getRelayUsageValue());

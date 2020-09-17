@@ -34,7 +34,7 @@ public class SubstationCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void substationCreate_PageTitle_Correct() {
+    public void substationCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Substation";
 
         String actualPageTitle = createPage.getPageTitle();

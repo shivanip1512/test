@@ -35,7 +35,7 @@ public class EnergyCompanyCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void energyCompanyCreate_PageTitle_Correct() {
+    public void energyCompanyCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Energy Company";
         
         String actualPageTitle = createPage.getPageTitle();

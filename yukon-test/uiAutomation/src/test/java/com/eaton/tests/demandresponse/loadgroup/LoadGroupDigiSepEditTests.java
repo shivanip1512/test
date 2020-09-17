@@ -38,7 +38,7 @@ public class LoadGroupDigiSepEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpDigisepEdit_PageTitle_Correct() {
+    public void ldGrpDigisepEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Load Group: " + name;
         String actualPageTitle;
 

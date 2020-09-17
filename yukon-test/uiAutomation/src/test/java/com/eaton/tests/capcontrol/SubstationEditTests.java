@@ -36,7 +36,7 @@ public class SubstationEditTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void substationEdit_PageTitle_Correct() {
+    public void substationEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Substation: AT Substation";
 
         String actualPageTitle = editPage.getPageTitle();

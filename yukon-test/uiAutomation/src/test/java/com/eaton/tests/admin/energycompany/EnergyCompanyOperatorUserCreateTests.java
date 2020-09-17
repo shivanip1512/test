@@ -33,7 +33,7 @@ public class EnergyCompanyOperatorUserCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void energyCompanyOperatorUserCreate_PageTitle_Correct() {
+    public void energyCompanyOperatorUserCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Operator User";
         
         String actualPageTitle = createPage.getPageTitle();

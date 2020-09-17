@@ -44,7 +44,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_RequiredFieldsOnly_Successfully() {
+    public void ldGrpCreateExpresscom_RequiredFieldsOnly_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Expresscom Required" + timeStamp;
 
@@ -96,7 +96,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateExpresscom_AllFieldsWithoutSerialAddress_Successfully() {
+    public void ldGrpCreateExpresscom_AllFieldsWithoutSerialAddress_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Expresscom without Serial" + timeStamp;
         double randomDouble = randomNum.nextDouble();

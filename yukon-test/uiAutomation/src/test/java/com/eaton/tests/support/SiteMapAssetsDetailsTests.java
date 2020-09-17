@@ -26,7 +26,7 @@ public class SiteMapAssetsDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
-    public void siteMatpAssetsDetails_pageTitleCorrect() {
+    public void siteMatpAssetsDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Site Map";
 
         String actualPageTitle = siteMapPage.getPageTitle();

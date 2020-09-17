@@ -39,7 +39,7 @@ public class UsersAndGroupsDetailsTests extends SeleniumTestSetup {
     }
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
-    public void userAndGroupsDetails_PageTitle_Correct() {
+    public void userAndGroupsDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "User and Groups";
         
         String actualPageTitle = page.getPageTitle();

@@ -76,7 +76,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelList_PageTitle_Correct() {
+    public void commChannelList_Page_TitleCorrect() {
         String EXPECTED_TITLE = "Comm Channels";
 
         String actualPageTitle = listPage.getPageTitle();
@@ -98,7 +98,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelList_NameLink_Correct() {
+    public void commChannelList_Name_LinkCorrect() {
         WebTableRow row = listPage.getTable().getDataRowByName(udpCommChannelName);
         String link = row.getCellLinkByIndex(0);
 
@@ -106,7 +106,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelList_SortNamesAsc_Correct() {
+    public void commChannelList_NameSortAsc_Correct() {
         Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
 
         navigate(Urls.Assets.COMM_CHANNEL_NAME_ASC);
@@ -117,7 +117,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelList_SortNamesDesc_Correct() {
+    public void commChannelList_NameSortDesc_Correct() {
         Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
         Collections.reverse(names);
 
@@ -129,7 +129,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelList_SortTypesAsc_Correct() {
+    public void commChannelList_TypeSortAsc_Correct() {
         Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
 
         navigate(Urls.Assets.COMM_CHANNEL_TYPE_ASC);
@@ -141,7 +141,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelList_SortTypesDesc_Correct() {
+    public void commChannelList_TypeSortDesc_Correct() {
         Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
         Collections.reverse(types);
         navigate(Urls.Assets.COMM_CHANNEL_TYPE_DESC);
@@ -152,7 +152,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelList_SortStatusesAsc_Correct() {
+    public void commChannelList_StatusesSortAsc_Correct() {
         Collections.sort(statuses, String.CASE_INSENSITIVE_ORDER);
 
         navigate(Urls.Assets.COMM_CHANNEL_STATUS_ASC);
@@ -163,7 +163,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelList_SortStatusesDesc_Correct() {
+    public void commChannelList_StatusesSortDesc_Correct() {
         Collections.sort(statuses, String.CASE_INSENSITIVE_ORDER);
         Collections.reverse(statuses);
 

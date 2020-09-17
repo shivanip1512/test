@@ -34,7 +34,7 @@ public class ControlAreaCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void controlAreaCreate_PageTitle_Correct() {
+    public void controlAreaCreate_Page_TitleCorrect() {
         navigate(Urls.DemandResponse.CONTROL_AREA_CREATE);
         final String EXPECTED_TITLE = "Create Control Area";
 

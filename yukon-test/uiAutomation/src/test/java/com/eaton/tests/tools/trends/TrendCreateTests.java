@@ -49,7 +49,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
-    public void trendCreate_PageTitle_Correct() {
+    public void trendCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Trend";
 
         String actualPageTitle = createPage.getPageTitle();
@@ -112,7 +112,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendCreate_TabTitles_Correct() {
+    public void trendCreate_Tab_TitlesCorrect() {
         SoftAssertions softly = new SoftAssertions();
 
         List<String> titles = createPage.getTabElement().getTitles();
@@ -124,7 +124,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendCreate_GeneralSectionTitle_Correct() {
+    public void trendCreate_GeneralSection_TitleCorrect() {
         String tab = "Setup";
 
         createPage.getTabElement().clickTabAndWait(tab);
@@ -135,7 +135,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendCreate_GeneralSectionLabels_Correct() {
+    public void trendCreate_GeneralSection_LabelsCorrect() {
         String tab = "Setup";
 
         createPage.getTabElement().clickTabAndWait(tab);
@@ -147,7 +147,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendCreate_PointSetupSectionTitle_Correct() {
+    public void trendCreate_PointSetupSection_TitleCorrect() {
         String tab = "Setup";
 
         createPage.getTabElement().clickTabAndWait(tab);
@@ -158,7 +158,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendCreate_PointSectionTableHeaders_Correct() {
+    public void trendCreate_PointSection_TableHeadersCorrect() {
         String tab = "Setup";
 
         createPage.getTabElement().clickTabAndWait(tab);
@@ -170,7 +170,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendCreate_MarkerSetupSectionTitle_Correct() {
+    public void trendCreate_MarkerSetupSection_TitleCorrect() {
         String tab = "Additional Options";
 
         createPage.getTabElement().clickTabAndWait(tab);

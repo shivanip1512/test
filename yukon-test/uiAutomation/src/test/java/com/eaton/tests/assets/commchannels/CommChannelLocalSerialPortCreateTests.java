@@ -62,7 +62,7 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannelLocalSerialPort_LabelsCorrect() {
+    public void createCommChannelLocalSerialPort_Labels_Correct() {
         SoftAssertions softly = new SoftAssertions();
         CreateLocalSerialPortCommChannelModal createModal = listPage.showAndWaitCreateLocalSerialPortCommChannelModal();
 

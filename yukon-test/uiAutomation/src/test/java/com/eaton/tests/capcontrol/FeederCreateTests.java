@@ -35,7 +35,7 @@ public class FeederCreateTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void feederCreate_PageTitle_Correct() {
+    public void feederCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Feeder";
 
         String actualPageTitle = createPage.getPageTitle();

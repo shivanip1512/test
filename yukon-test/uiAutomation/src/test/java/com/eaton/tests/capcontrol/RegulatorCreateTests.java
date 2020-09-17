@@ -35,7 +35,7 @@ public class RegulatorCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void regulatorCreate_PageTitle_Correct() {
+    public void regulatorCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Regulator";
 
         String actualPageTitle = createPage.getPageTitle();

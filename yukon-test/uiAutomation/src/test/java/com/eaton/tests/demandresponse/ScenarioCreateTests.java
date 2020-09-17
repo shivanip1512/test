@@ -34,7 +34,7 @@ public class ScenarioCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void scenarioCreate_PageTitle_Correct() {
+    public void scenarioCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Scenario";
 
         String actualPageTitle = createPage.getPageTitle();

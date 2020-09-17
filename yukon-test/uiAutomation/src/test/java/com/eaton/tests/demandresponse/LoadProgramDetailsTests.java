@@ -27,7 +27,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void loadPrgoramDetails_PageTitle_Correct() {
+    public void loadPrgoramDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Load Program: AT Load Program";
 
         navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "665");

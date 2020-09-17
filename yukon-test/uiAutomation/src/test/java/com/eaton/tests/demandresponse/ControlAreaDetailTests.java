@@ -25,7 +25,7 @@ public class ControlAreaDetailTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void controlAreaDetail_PageTitle_Correct() {
+    public void controlAreaDetail_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Control Area: AT Control Area";
 
         navigate(Urls.DemandResponse.CONTROL_AREA_DETAILS + "662");

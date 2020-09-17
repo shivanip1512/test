@@ -38,7 +38,7 @@ public class AreaEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void areaEdit_PageTitle_Correct() {
+    public void areaEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Area: AT Area";
 
         String actualPageTitle = editPage.getPageTitle();

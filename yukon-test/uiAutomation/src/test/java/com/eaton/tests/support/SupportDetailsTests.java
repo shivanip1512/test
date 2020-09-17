@@ -50,7 +50,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN })
-    public void supportDetails_PageTitle_Correct() {
+    public void supportDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Support";
 
         String actualPageTitle = supportPage.getPageTitle();
@@ -70,7 +70,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_SupportPagesBatteryNodeAnalysis_Correct() {
+    public void supportDetails_SupportPagesBatteryNodeAnalysis_LinkCorrect() {
 
         throw new SkipException("Development Defect created: YUK-22612");
 //        softly = new SoftAssertions();
@@ -80,7 +80,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportPage_SupportPagesDataStreamingDeviceAttributes_Correct() {
+    public void supportPage_SupportPagesDataStreamingDeviceAttributes_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(supportPageTitles).contains("Data Streaming Device Attributes");
         softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.DATA_STREAMING_DEVICE_ATTRIBUTES);
@@ -88,7 +88,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_SupportPagesDBMigration_Correct() {
+    public void supportDetails_SupportPagesDBMigration_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(supportPageTitles).contains("Database Migration");
         softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.DATABASE_MIGRATION);
@@ -96,7 +96,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_SupportPagesDeviceDefinitions_Correct() {
+    public void supportDetails_SupportPagesDeviceDefinitions_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(supportPageTitles).contains("Device Definitions");
         softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.DEVICE_DEFINITIONS);
@@ -104,7 +104,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_SupportPagesErrorCodes_Correct() {
+    public void supportDetails_SupportPagesErrorCodes_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(supportPageTitles).contains("Error Codes");
         softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.ERROR_CODES);
@@ -112,7 +112,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_SupportPagesEventLog_Correct() {
+    public void supportDetails_SupportPagesEventLog_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(supportPageTitles).contains("Event Log");
         softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.EVENT_LOG);
@@ -120,7 +120,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_SupportPagesFileExportHistory_Correct() {
+    public void supportDetails_SupportPagesFileExportHistory_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(supportPageTitles).contains("File Export History");
         softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.FILE_EXPORT_HISTORY);
@@ -128,7 +128,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_SupportPagesLocalizationHelper_Correct() {
+    public void supportDetails_SupportPagesLocalizationHelper_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(supportPageTitles).contains("Localization Helper");
         softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.LOCALIZATION_HELPER);
@@ -136,7 +136,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_SupportPagesLogExplorerLink_Correct() {
+    public void supportDetails_SupportPagesLogExplorerLink_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(supportPageTitles).contains("Log Explorer");
         softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.LOG_EXPLORER);
@@ -144,7 +144,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_SupportPagesManageIndexesLink_Correct() {
+    public void supportDetails_SupportPagesManageIndexesLink_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(supportPageTitles).contains("Manage Indexes");
         softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.MANAGE_INDEXES);
@@ -152,7 +152,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_SupportPagesRouteUsageLink_Correct() {
+    public void supportDetails_SupportPagesRouteUsageLink_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(supportPageTitles).contains("Route Usage");
         softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.ROUTE_USAGE);
@@ -160,7 +160,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_SupportPagesSystemHealthLink_Correct() {
+    public void supportDetails_SupportPagesSystemHealthLink_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(supportPageTitles).contains("System Health");
         softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.SYSTEM_HEALTH);
@@ -168,7 +168,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_SupportPagesSystemInfoLink_Correct() {
+    public void supportDetails_SupportPagesSystemInfoLink_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(supportPageTitles).contains("System Info");
         softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.SYSTEM_INFO);
@@ -176,7 +176,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_SupportPagesThirdPartyLibrariesLink_Correct() {
+    public void supportDetails_SupportPagesThirdPartyLibrariesLink_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(supportPageTitles).contains("Third Party Libraries");
         softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.THIRD_PARTY_LIBRARIES);
@@ -184,7 +184,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_SupportPagesThreadDumpLink_Correct() {
+    public void supportDetails_SupportPagesThreadDumpLink_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(supportPageTitles).contains("Thread Dump");
         softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.THREAD_DUMP);
@@ -196,13 +196,13 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     // ================================================================================
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_ManualsPageCount_Correct() {
+    public void supportDetails_ManualsPages_CountCorrect() {
         final int EXPECTED_COUNT = 1;
         assertThat(supportPage.getManualsSectionPageList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_ManualsYukonManualsLink_Correct() {
+    public void supportDetails_ManualsYukonManualsLink_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(manualsPageTitles).contains("Yukon Manuals");
         softly.assertThat(manualsPageLinks).contains(Urls.Manuals.YUKON_MANUALS);
@@ -214,13 +214,13 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     // ================================================================================
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_TodaysLogsPageCount_Correct() {
+    public void supportDetails_TodaysLogsPages_CountCorrect() {
         final int EXPECTED_COUNT = 13;
         assertThat(supportPage.getTodaysLogsSectionPageList().getSimpleListItems().size()).isGreaterThanOrEqualTo(EXPECTED_COUNT);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_TodaysLogsCalcLink_Correct() {
+    public void supportDetails_TodaysLogsCalcLink_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Calc");
         softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.CALC_LOG + supportPage.getCurrentLogTimeStamp() + ".log");
@@ -228,7 +228,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_TodaysLogsCapcontrol_Correct() {
+    public void supportDetails_TodaysLogsCapcontrol_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Capcontrol");
         softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.CAPCONTROL_LOG
@@ -237,7 +237,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_TodaysLogsDispatch_Correct() {
+    public void supportDetails_TodaysLogsDispatch_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Dispatch");
         softly.assertThat(todaysLogsPageLinks).contains(
@@ -246,7 +246,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_TodaysLogsFdr_Correct() {
+    public void supportDetails_TodaysLogsFdr_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Fdr");
         softly.assertThat(todaysLogsPageLinks).contains(
@@ -255,7 +255,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_TodaysLogsLoadManagement_Correct() {
+    public void supportDetails_TodaysLogsLoadManagement_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Loadmanagement");
         softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.LOADMANGEMENT_LOG
@@ -264,7 +264,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_TodaysLogsMacs_Correct() {
+    public void supportDetails_TodaysLogsMacs_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Macs");
         softly.assertThat(todaysLogsPageLinks).contains(
@@ -273,7 +273,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_TodaysLogsMessageBroker_Correct() {
+    public void supportDetails_TodaysLogsMessageBroker_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("MessageBroker");
         softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.MESSAGE_BROKER_LOG
@@ -282,7 +282,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_TodaysLogsNotificationServer_Correct() {
+    public void supportDetails_TodaysLogsNotificationServer_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("NotificationServer");
         softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.NOTIFICATION_SERVER_LOG
@@ -291,7 +291,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_TodaysLogsPorter_Correct() {
+    public void supportDetails_TodaysLogsPorter_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Porter");
         softly.assertThat(todaysLogsPageLinks).contains(
@@ -300,7 +300,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_TodaysLogsScanner_Correct() {
+    public void supportDetails_TodaysLogsScanner_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Scanner");
         softly.assertThat(todaysLogsPageLinks).contains(
@@ -309,7 +309,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_TodaysLogsServiceManager_Correct() {
+    public void supportDetails_TodaysLogsServiceManager_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("ServiceManager");
         softly.assertThat(todaysLogsPageLinks).contains(baseUrl + Urls.Support.LOGGING_VIEW + Urls.Support.SERVICE_MANAGER_LOG
@@ -318,7 +318,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_TodaysLogsWatchdog_Correct() {
+    public void supportDetails_TodaysLogsWatchdog_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Watchdog");
         softly.assertThat(todaysLogsPageLinks).contains(
@@ -327,7 +327,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_TodaysLogsWebserver_Correct() {
+    public void supportDetails_TodaysLogsWebserver_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(todaysLogsPageTitles).contains("Webserver");
         softly.assertThat(todaysLogsPageLinks).contains(
@@ -336,7 +336,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_TodaysLogsViewAllLogs_Correct() {
+    public void supportDetails_TodaysLogsViewAllLogs_LinkCorrect() {
         softly = new SoftAssertions();
 
         softly.assertThat(supportPage.getViewAllLogsText()).isEqualTo("View All Logs");
@@ -350,7 +350,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
     // ================================================================================
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_DBInfoDBValidation_Correct() {
+    public void supportDetails_DBInfoDBValidation_LinkCorrect() {
         softly = new SoftAssertions();
         softly.assertThat(supportPage.getDatabaseValidationText()).isEqualTo("Database Validation");
         softly.assertThat(supportPage.getDatabaseValidationLink()).isEqualTo(baseUrl + Urls.Support.DATABASE_VALIDATION);

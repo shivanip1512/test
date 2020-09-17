@@ -54,7 +54,7 @@ public class TrendEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void editTrend_PageTitle_Correct() {
+    public void editTrend_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Trend: " + trendName;
         String actualPageTitle;
 

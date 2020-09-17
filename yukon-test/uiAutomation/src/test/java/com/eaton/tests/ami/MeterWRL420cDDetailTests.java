@@ -44,43 +44,21 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
     // ================================================================================
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void meterWRL420cLDetail_PanelCount_Correct() {
+    public void meterWRL420cLDetail_Panel_CountCorrect() {
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(meterDetailsPage.getPanels().getPanels().size()).isEqualTo(12);
-        softly.assertThat(
-                meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.METER_INFO_PANEL_INDEX).getPanelName())
-                .isEqualTo("Meter Information");
-        softly.assertThat(
-                meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.METER_READINGS_PANEL_INDEX).getPanelName())
-                .isEqualTo("Meter Readings");
-        softly.assertThat(
-                meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.WIFI_CONNECTION_PANEL_INDEX).getPanelName())
-                .isEqualTo("Wi-Fi Connection");
-        softly.assertThat(
-                meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.NETWORK_INFO_PANEL_INDEX).getPanelName())
-                .isEqualTo("Network Information");
-        softly.assertThat(meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.NOTES_PANEL_INDEX).getPanelName())
-                .isEqualTo("Notes");
-        softly.assertThat(
-                meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.DEVICE_GROUP_PANEL_INDEX).getPanelName())
-                .isEqualTo("Device Groups");
-        softly.assertThat(
-                meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.METER_TREND_PANEL_INDEX).getPanelName())
-                .isEqualTo("Meter Trend");
-        softly.assertThat(
-                meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.DISCONNECT_PANEL_INDEX).getPanelName())
-                .isEqualTo("Disconnect");
-        softly.assertThat(
-                meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.METER_EVENTS_PANEL_INDEX).getPanelName())
-                .isEqualTo("Meter Events");
-        softly.assertThat(
-                meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.OUTAGES_PANEL_INDEX).getPanelName())
-                .isEqualTo("Outages");
-        softly.assertThat(meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.TOU_PANEL_INDEX).getPanelName())
-                .isEqualTo("Time of Use");
-        softly.assertThat(
-                meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.DEVICE_CONFIG_INDEX).getPanelName())
-                .isEqualTo("Device Configuration");
+        softly.assertThat(meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.METER_INFO_PANEL_INDEX).getPanelName()).isEqualTo("Meter Information");
+        softly.assertThat(meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.METER_READINGS_PANEL_INDEX).getPanelName()).isEqualTo("Meter Readings");
+        softly.assertThat(meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.WIFI_CONNECTION_PANEL_INDEX).getPanelName()).isEqualTo("Wi-Fi Connection");
+        softly.assertThat(meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.NETWORK_INFO_PANEL_INDEX).getPanelName()).isEqualTo("Network Information");
+        softly.assertThat(meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.NOTES_PANEL_INDEX).getPanelName()).isEqualTo("Notes");
+        softly.assertThat(meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.DEVICE_GROUP_PANEL_INDEX).getPanelName()).isEqualTo("Device Groups");
+        softly.assertThat(meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.METER_TREND_PANEL_INDEX).getPanelName()).isEqualTo("Meter Trend");
+        softly.assertThat(meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.DISCONNECT_PANEL_INDEX).getPanelName()).isEqualTo("Disconnect");
+        softly.assertThat(meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.METER_EVENTS_PANEL_INDEX).getPanelName()).isEqualTo("Meter Events");
+        softly.assertThat(meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.OUTAGES_PANEL_INDEX).getPanelName()).isEqualTo("Outages");
+        softly.assertThat(meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.TOU_PANEL_INDEX).getPanelName()).isEqualTo("Time of Use");
+        softly.assertThat(meterDetailsPage.getPanels().getPanels().get(WRL420cDMeterDetailsPage.DEVICE_CONFIG_INDEX).getPanelName()).isEqualTo("Device Configuration");
         softly.assertAll();
     }
 
@@ -89,7 +67,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
     // ================================================================================
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void meterWRL420cDDetail_MeterInfoLabels_Correct() {
+    public void meterWRL420cDDetail_MeterInfo_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(meterDetailsPage.getMeterInfoPanel().getLabelEntries().size()).isEqualTo(7);
         softly.assertThat(meterDetailsPage.getMeterInfoPanel().getLabelEntries().get(0)).contains("Device Name");
@@ -103,19 +81,16 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void meterWRL420cDDetail_MeterInfoValues_Correct() {
+    public void meterWRL420cDDetail_MeterInfo_ValuesCorrect() {
 
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(meterDetailsPage.getMeterInfoPanel().getValueEntries().size()).isEqualTo(7);
         softly.assertThat(meterDetailsPage.getMeterInfoPanel().getValueEntries().get(0)).contains("AT Detail WRL-420cD");
         softly.assertThat(meterDetailsPage.getMeterInfoPanel().getValueEntries().get(1)).contains("53100000");
-        softly.assertThat(meterDetailsPage.getMeterInfoPanel().getValueEntries().get(2))
-                .contains(MeterEnums.MeterType.WRL420CD.getMeterType());
+        softly.assertThat(meterDetailsPage.getMeterInfoPanel().getValueEntries().get(2)).contains(MeterEnums.MeterType.WRL420CD.getMeterType());
         softly.assertThat(meterDetailsPage.getMeterInfoPanel().getValueEntries().get(3)).contains("53100000");
-        softly.assertThat(meterDetailsPage.getMeterInfoPanel().getValueEntries().get(4))
-                .contains(MeterEnums.MeterType.WRL420CD.getManufacturer().getManufacturer());
-        softly.assertThat(meterDetailsPage.getMeterInfoPanel().getValueEntries().get(5))
-                .contains(MeterEnums.MeterType.WRL420CD.getModel());
+        softly.assertThat(meterDetailsPage.getMeterInfoPanel().getValueEntries().get(4)).contains(MeterEnums.MeterType.WRL420CD.getManufacturer().getManufacturer());
+        softly.assertThat(meterDetailsPage.getMeterInfoPanel().getValueEntries().get(5)).contains(MeterEnums.MeterType.WRL420CD.getModel());
         softly.assertThat(meterDetailsPage.getMeterInfoPanel().getValueEntries().get(6)).contains("Enabled");
         softly.assertAll();
     }
@@ -125,7 +100,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
     // ================================================================================
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void meterWRL420cDDetail_MeterReadingsLabels_Correct() {
+    public void meterWRL420cDDetail_MeterReadings_LabelsCorrect() {
 
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(meterDetailsPage.getMeterReadingsPanel().getLabelEntries().size()).isEqualTo(6);
@@ -139,21 +114,16 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void meterWRL420cDDetail_MeterReadingsValues_Correct() {
+    public void meterWRL420cDDetail_MeterReadings_ValuesCorrect() {
 
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(meterDetailsPage.getMeterReadingsPanel().getValueEntries().size()).isEqualTo(6);
-        softly.assertThat(meterDetailsPage.getMeterReadingsPanel().getValueEntries().get(0))
-                .contains("16,717.612 kWH 08/26/2020 13:40:36");
-        softly.assertThat(meterDetailsPage.getMeterReadingsPanel().getValueEntries().get(1))
-                .contains("16,717.612 kWH 08/26/2020 13:40:36");
+        softly.assertThat(meterDetailsPage.getMeterReadingsPanel().getValueEntries().get(0)).contains("16,717.612 kWH 08/26/2020 13:40:36");
+        softly.assertThat(meterDetailsPage.getMeterReadingsPanel().getValueEntries().get(1)).contains("16,717.612 kWH 08/26/2020 13:40:36");
         softly.assertThat(meterDetailsPage.getMeterReadingsPanel().getValueEntries().get(2)).contains("0.000");
-        softly.assertThat(meterDetailsPage.getMeterReadingsPanel().getValueEntries().get(3))
-                .contains("3.245 kW 08/26/2020 13:41:39");
-        softly.assertThat(meterDetailsPage.getMeterReadingsPanel().getValueEntries().get(4))
-                .contains("0.166 kW 08/26/2020 13:40:36");
-        softly.assertThat(meterDetailsPage.getMeterReadingsPanel().getValueEntries().get(5))
-                .contains("243.4 Volts 08/26/2020 13:41:11");
+        softly.assertThat(meterDetailsPage.getMeterReadingsPanel().getValueEntries().get(3)).contains("3.245 kW 08/26/2020 13:41:39");
+        softly.assertThat(meterDetailsPage.getMeterReadingsPanel().getValueEntries().get(4)).contains("0.166 kW 08/26/2020 13:40:36");
+        softly.assertThat(meterDetailsPage.getMeterReadingsPanel().getValueEntries().get(5)).contains("243.4 Volts 08/26/2020 13:41:11");
         softly.assertAll();
     }
 
@@ -162,7 +132,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
     // ================================================================================
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void meterWRL420cDDetail_WiFiConnectionLabels_Correct() {
+    public void meterWRL420cDDetail_WiFiConnection_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(meterDetailsPage.getWiFiConnectionPanel().getLabelEntries().size()).isEqualTo(2);
         softly.assertThat(meterDetailsPage.getWiFiConnectionPanel().getLabelEntries().get(0)).contains("Communication Status");
@@ -171,14 +141,12 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void meterWRL420cDDetail_WiFiConnectionValues_Correct() {
+    public void meterWRL420cDDetail_WiFiConnection_ValuesCorrect() {
 
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(meterDetailsPage.getWiFiConnectionPanel().getValueEntries().size()).isEqualTo(2);
-        softly.assertThat(meterDetailsPage.getWiFiConnectionPanel().getValueEntries().get(0))
-                .contains("Connected  08/26/2020 13:42:56");
-        softly.assertThat(meterDetailsPage.getWiFiConnectionPanel().getValueEntries().get(1))
-                .contains("-43 dBm 08/26/2020 13:42:30");
+        softly.assertThat(meterDetailsPage.getWiFiConnectionPanel().getValueEntries().get(0)).contains("Connected  08/26/2020 13:42:56");
+        softly.assertThat(meterDetailsPage.getWiFiConnectionPanel().getValueEntries().get(1)).contains("-43 dBm 08/26/2020 13:42:30");
         softly.assertAll();
     }
 
@@ -203,14 +171,14 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
     // ================================================================================
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void meterWRL420cDDetail_DisconnectLabels_Correct() {
+    public void meterWRL420cDDetail_Disconnect_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(meterDetailsPage.getDisconnectPanel().getLabelEntries().size()).isEqualTo(1);
         softly.assertThat(meterDetailsPage.getDisconnectPanel().getLabelEntries().get(0)).contains("Disconnect Status");
         softly.assertAll();
     }
 
-    public void meterWRL420cDDetail_DisconnectValues_Correct() {
+    public void meterWRL420cDDetail_Disconnect_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(meterDetailsPage.getDisconnectPanel().getValueEntries().size()).isEqualTo(1);
         softly.assertThat(meterDetailsPage.getDisconnectPanel().getValueEntries().get(0)).contains("08/26/2020 13:43:21");
@@ -226,7 +194,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
     // ================================================================================
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void meterWRL420cDDetail_OutagesLabels_Correct() {
+    public void meterWRL420cDDetail_Outages_LabelsCorrect() {
         throw new SkipException("Development Defect: YUK-22819");
 //    	final int EXPECTED_COUNT = 3;
 //    	final int RFN_BLINK_COUNT_ROW = 0;
@@ -245,7 +213,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void meterWRL420cDDetail_OutagesValues_Correct() {
+    public void meterWRL420cDDetail_Outages_ValuesCorrect() {
         throw new SkipException("Development Defect: YUK-22819");
 //    	final int EXPECTED_COUNT = 3;
 //    	final int RFN_BLINK_COUNT_ROW = 0;
@@ -268,7 +236,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
     // ================================================================================
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void meterWRL420cDDetail_TimeOfUseLabels_Correct() {
+    public void meterWRL420cDDetail_TimeOfUse_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(meterDetailsPage.getTimeOfUsePanel().getLabelEntries().size()).isEqualTo(8);
         softly.assertThat(meterDetailsPage.getTimeOfUsePanel().getLabelEntries().get(0)).contains("Usage Rate A");
@@ -282,20 +250,16 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    public void meterWRL420cDDetail_TimeOfUseValues_Correct() {
+    public void meterWRL420cDDetail_TimeOfUse_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(meterDetailsPage.getTimeOfUsePanel().getValueEntries().size()).isEqualTo(8);
-        softly.assertThat(meterDetailsPage.getTimeOfUsePanel().getValueEntries().get(0))
-                .contains("4,682.123 kWH 08/26/2020 13:54:28");
+        softly.assertThat(meterDetailsPage.getTimeOfUsePanel().getValueEntries().get(0)).contains("4,682.123 kWH 08/26/2020 13:54:28");
         softly.assertThat(meterDetailsPage.getTimeOfUsePanel().getValueEntries().get(1)).contains("3.245 kW 08/26/2020 13:46:21");
-        softly.assertThat(meterDetailsPage.getTimeOfUsePanel().getValueEntries().get(2))
-                .contains("3,682.360 kWH 08/26/2020 13:54:33");
+        softly.assertThat(meterDetailsPage.getTimeOfUsePanel().getValueEntries().get(2)).contains("3,682.360 kWH 08/26/2020 13:54:33");
         softly.assertThat(meterDetailsPage.getTimeOfUsePanel().getValueEntries().get(3)).contains("2.537 kW 08/26/2020 13:46:21");
-        softly.assertThat(meterDetailsPage.getTimeOfUsePanel().getValueEntries().get(4))
-                .contains("4,527.000 kWH 08/26/2020 13:54:38");
+        softly.assertThat(meterDetailsPage.getTimeOfUsePanel().getValueEntries().get(4)).contains("4,527.000 kWH 08/26/2020 13:54:38");
         softly.assertThat(meterDetailsPage.getTimeOfUsePanel().getValueEntries().get(5)).contains("3.127 kW 08/26/2020 13:46:22");
-        softly.assertThat(meterDetailsPage.getTimeOfUsePanel().getValueEntries().get(6))
-                .contains("3,826.130 kWH 08/26/2020 13:54:59");
+        softly.assertThat(meterDetailsPage.getTimeOfUsePanel().getValueEntries().get(6)).contains("3,826.130 kWH 08/26/2020 13:54:59");
         softly.assertThat(meterDetailsPage.getTimeOfUsePanel().getValueEntries().get(7)).contains("2.845 kW 08/26/2020 13:46:23");
         softly.assertAll();
     }

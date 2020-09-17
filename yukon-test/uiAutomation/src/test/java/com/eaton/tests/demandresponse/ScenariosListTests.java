@@ -27,7 +27,7 @@ public class ScenariosListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void scenarioList_PageTitle_Correct() {
+    public void scenarioList_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Scenarios";
 
         String actualPageTitle = listPage.getPageTitle();

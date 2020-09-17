@@ -23,7 +23,7 @@ public class GroupListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void groupList_PageTitle_Correct() {
+    public void groupList_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Groups";
 
         String actualPageTitle = listPage.getPageTitle();

@@ -56,7 +56,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTcpEdit_ModalTitle_Correct() {
+    public void commChannelTcpEdit_Modal_TitleCorrect() {
         String expectedModalTitle = "Edit " + commChannelName;
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
         String actualModalTitle = editModal.getModalTitle();
@@ -127,7 +127,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTcpEdit_TabTitles_Correct() {
+    public void commChannelTcpEdit_Tab_TitlesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 

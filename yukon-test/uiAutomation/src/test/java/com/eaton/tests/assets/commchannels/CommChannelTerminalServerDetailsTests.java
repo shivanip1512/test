@@ -65,7 +65,7 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTerminalServer_PageTitle_Correct() {
+    public void commChannelDetailsTerminalServer_Page_TitleCorrect() {
         String EXPECTED_TITLE = commChannelName;
         
         String actualPageTitle = detailPage.getPageTitle();

@@ -38,7 +38,7 @@ public class CbcEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void cbcEdit_PageTitle_Correct() {
+    public void cbcEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit CBC: AT CBC";
 
         String actualPageTitle = editPage.getPageTitle();

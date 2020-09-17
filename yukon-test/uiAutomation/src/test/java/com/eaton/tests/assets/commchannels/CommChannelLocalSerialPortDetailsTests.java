@@ -60,7 +60,7 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsLocalSerialPort_PageTitle_Correct() {
+    public void commChannelDetailsLocalSerialPort_Page_TitleCorrect() {
         String EXPECTED_TITLE = commChannelName;
         
         String actualPageTitle = detailPage.getPageTitle();

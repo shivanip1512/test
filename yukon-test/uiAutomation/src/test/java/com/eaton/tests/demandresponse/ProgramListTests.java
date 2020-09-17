@@ -27,7 +27,7 @@ public class ProgramListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void programList_PageTitle_Correct() {
+    public void programList_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Programs";
 
         String actualPageTitle = listPage.getPageTitle();

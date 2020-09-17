@@ -26,7 +26,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void siteMapAdminDetails_PageTitle_Correct() {
+    public void siteMapAdminDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Site Map";
 
         String actualPageTitle = siteMapPage.getPageTitle();
@@ -42,7 +42,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void siteMapAdminDetails_AdminSection_ItemCountCorrect() {
+    public void siteMapAdminDetails_AdminSection_CountCorrect() {
         final int EXPECTED_COUNT = 17;
 
         assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);

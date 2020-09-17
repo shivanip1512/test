@@ -46,7 +46,7 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpEcobeeEdit_PageTitle_Correct() {
+    public void ldGrpEcobeeEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Load Group: " + name;
 
         String actualPageTitle = editPage.getPageTitle();

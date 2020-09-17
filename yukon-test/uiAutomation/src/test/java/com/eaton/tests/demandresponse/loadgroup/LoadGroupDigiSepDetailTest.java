@@ -51,5 +51,4 @@ public class LoadGroupDigiSepDetailTest extends SeleniumTestSetup {
 
         assertThat(userMsg).isEqualTo(expected_msg);
     }
-
 }

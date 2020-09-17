@@ -53,7 +53,7 @@ public class LoadGroupMeterDisconnectDetailTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpItronDetail_DeleteModalConfirmMessage_Correct() {
+    public void ldGrpItronDetail_DeleteModal_ConfirmMessageCorrect() {
         Pair<JSONObject, JSONObject> pair = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
                 .create();
         JSONObject response = pair.getValue1();
