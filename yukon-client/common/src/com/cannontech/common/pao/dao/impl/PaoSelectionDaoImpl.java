@@ -126,7 +126,7 @@ public class PaoSelectionDaoImpl implements PaoSelectionDao {
                     sql.append("LEFT JOIN RFNAddress RFNA ON RFNA.DeviceId = YP.PaobjectId");
                 }
                 if (needsCoordinates) {
-                    sql.append("LEFT JOIN PaoLocation pLoc on YP.PaobjectId = pLoc.PaobjectId");
+                    sql.append("LEFT JOIN PaoLocation PLOC on YP.PaobjectId = PLOC.PaobjectId");
                 }
 
                 sql.append("WHERE YP.PaobjectId").in(subList);

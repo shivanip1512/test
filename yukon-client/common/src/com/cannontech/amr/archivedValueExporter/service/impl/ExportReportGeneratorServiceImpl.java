@@ -606,7 +606,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 pointValueQualityHolder = findPointValueQualityHolder(pao, field, attributeData);
             }
 
-            String value = getValue(field, pao, paoData, null, pointValueQualityHolder, userContext, // needs to get the lat long table
+            String value = getValue(field, pao, paoData, null, pointValueQualityHolder, userContext,
                     format.getDateTimeZoneFormat(), unitMeasureLookupTable, now);
 
             if (StringUtils.isEmpty(value) && field.getField().getType() != FieldType.PLAIN_TEXT) {
