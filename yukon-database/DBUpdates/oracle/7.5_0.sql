@@ -730,21 +730,23 @@ DECLARE
 
 BEGIN
     OPEN startGearAndProgramIdCursor;
-    LOOP
-        FETCH startGearAndProgramIdCursor INTO Start_Gear, Program_Id;
-        IF Start_Gear > '12' THEN
-           SELECT GearNumber INTO Start_Gear_Number FROM LMProgramDirectGear WHERE GearID = Start_Gear;
-           UPDATE LMControlScenarioProgram 
-           SET StartGear = Start_Gear_Number
-           WHERE StartGear = Start_Gear AND ProgramID = Program_Id;
-        ELSE
-            SELECT Count(GearID) INTO Gear_Count FROM LMProgramDirectGear WHERE DeviceID = Program_Id GROUP BY DeviceID;
-            IF(Start_Gear > Gear_Count) THEN
-                 UPDATE LMControlScenarioProgram SET StartGear = 1 WHERE StartGear = Start_Gear AND ProgramID = Program_Id;
-            END IF;
-        END IF; 
-        EXIT WHEN startGearAndProgramIdCursor%NOTFOUND; 
-    END LOOP;
+    IF startGearAndProgramIdCursor%Found THEN
+        LOOP
+            FETCH startGearAndProgramIdCursor INTO Start_Gear, Program_Id;
+            IF Start_Gear > '12' THEN
+                SELECT GearNumber INTO Start_Gear_Number FROM LMProgramDirectGear WHERE GearID = Start_Gear;
+                UPDATE LMControlScenarioProgram 
+                SET StartGear = Start_Gear_Number
+                WHERE StartGear = Start_Gear AND ProgramID = Program_Id;
+            ELSE
+                SELECT Count(GearID) INTO Gear_Count FROM LMProgramDirectGear WHERE DeviceID = Program_Id GROUP BY DeviceID;
+                IF(Start_Gear > Gear_Count) THEN
+                    UPDATE LMControlScenarioProgram SET StartGear = 1 WHERE StartGear = Start_Gear AND ProgramID = Program_Id;
+                END IF;
+            END IF; 
+            EXIT WHEN startGearAndProgramIdCursor%NOTFOUND; 
+        END LOOP;
+    END IF;
     CLOSE startGearAndProgramIdCursor;
 END;
 /* @end-block */
