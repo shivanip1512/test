@@ -18,7 +18,9 @@
                 <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${pao.paoIdentifier.paoId}"/>
             </c:if>
             <cm:dropdown icon="icon-cog" triggerClasses="js-cog-menu fr">
-                <cm:dropdownOption key=".mapDevice" classes="js-device-map" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
+                <c:if test="${showMapDevice}">
+                    <cm:dropdownOption key=".mapDevice" classes="js-device-map" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
+                </c:if>
                 <c:if test="${pao.paoIdentifier.paoType.isRfn()}">
                     <cm:dropdownOption key=".viewNeighbors" classes="js-device-neighbors" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
                     <c:if test="${!pao.paoIdentifier.paoType.isRfGateway()}">
@@ -45,8 +47,17 @@
     <c:if test="${!empty sensorSN}">
         <tags:nameValue2 nameKey=".serialNumber">${fn:escapeXml(sensorSN)}</tags:nameValue2>
     </c:if>
-    <c:if test="${!empty primaryGateway}">
-        <tags:nameValue2 nameKey=".primaryGateway"><cti:paoDetailUrl yukonPao="${primaryGateway}" newTab="true">${fn:escapeXml(primaryGatewayName)}</cti:paoDetailUrl></tags:nameValue2>
+    <c:if test="${pao.paoIdentifier.paoType.isRfn()}">
+        <tags:nameValue2 nameKey=".primaryGateway">
+            <c:choose>
+                <c:when test="${!empty primaryGateway}">
+                    <cti:paoDetailUrl yukonPao="${primaryGateway}" newTab="true">${fn:escapeXml(primaryGatewayName)}</cti:paoDetailUrl>
+                </c:when>
+                <c:otherwise>
+                    <i:inline key="yukon.common.unknown"/>
+                </c:otherwise>
+            </c:choose>
+        </tags:nameValue2>
     </c:if>
     <c:if test="${!empty gatewayIPAddress}">
         <tags:nameValue2 nameKey=".ipAddress">${fn:escapeXml(gatewayIPAddress)}</tags:nameValue2>
