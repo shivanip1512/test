@@ -1,22 +1,15 @@
 package com.eaton.tests.admin.energycompany;
 
 import static org.assertj.core.api.Assertions.*;
-import java.text.SimpleDateFormat;
-import java.util.Optional;
 
-import org.openqa.selenium.WebDriver;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.eaton.elements.modals.SelectUserGroupModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.framework.test.annotation.CustomTestNgAnnotations;
 import com.eaton.pages.admin.energycompany.EnergyCompanyCreatePage;
-import com.eaton.pages.admin.energycompany.EnergyCompanyGeneralInfoPage;
 
 public class EnergyCompanyCreateTests extends SeleniumTestSetup {
 
@@ -25,11 +18,8 @@ public class EnergyCompanyCreateTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
-        WebDriver driver = getDriver();        
         driverExt = getDriverExt();
-        
-        driver.get(getBaseUrl() + Urls.Admin.CREATE_ENERGY_COMPANY);
-
+        navigate(Urls.Admin.CREATE_ENERGY_COMPANY);
         createPage = new EnergyCompanyCreatePage(driverExt);
     }
 

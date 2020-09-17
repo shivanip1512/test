@@ -10,6 +10,7 @@ namespace Cti::Devices::Commands
 
 namespace
 {
+using MetrologyState = RfnMetrologyCommand::MetrologyState;
 
 struct Statuses
 {
@@ -28,14 +29,14 @@ static const std::map<unsigned char, Statuses>  statusCodesDecoder
 
 struct States
 {
-    RfnMetrologyCommand::State state;
+    MetrologyState state;
     std::string description;
 };
 
 static const std::map<unsigned char, States>  stateDecoder
 {
-    { 0x00, { RfnMetrologyCommand::Enable,  "Enable"    } },
-    { 0x01, { RfnMetrologyCommand::Disable, "Disable"   } }
+    { 0x00, { MetrologyState::Enable,  "Enable"    } },
+    { 0x01, { MetrologyState::Disable, "Disable"   } }
 };
 
 static const std::set<DeviceTypes>  supportedDeviceTypes
@@ -122,9 +123,9 @@ RfnCommandResult RfnMetrologyCommand::predecodeCommand(const CtiTime now, const 
 
 /////
 
-RfnMetrologySetConfigurationCommand::RfnMetrologySetConfigurationCommand( State state )
+RfnMetrologySetConfigurationCommand::RfnMetrologySetConfigurationCommand( MetrologyState state )
     :   RfnMetrologyCommand( Operation_SetConfiguration ),
-        _disable( state == Disable )
+        _disable( state == MetrologyState::Disable )
 {
     // empty
 }
@@ -161,6 +162,13 @@ RfnCommandResult RfnMetrologySetConfigurationCommand::decodeCommand(const CtiTim
     return result;
 }
 
+auto RfnMetrologySetConfigurationCommand::getMetrologyState() const -> MetrologyState
+{
+    return _disable 
+        ? MetrologyState::Disable 
+        : MetrologyState::Enable;
+}
+
 /////
 
 RfnMetrologyGetConfigurationCommand::RfnMetrologyGetConfigurationCommand()
@@ -195,7 +203,7 @@ RfnCommandResult RfnMetrologyGetConfigurationCommand::decodeCommand(const CtiTim
     return result;
 }
 
-std::optional<RfnMetrologyCommand::State> RfnMetrologyGetConfigurationCommand::getMetrologyState() const
+auto RfnMetrologyGetConfigurationCommand::getMetrologyState() const -> std::optional<MetrologyState>
 {
     return _metrologyState;
 }

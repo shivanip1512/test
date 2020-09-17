@@ -8,10 +8,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.SkipException;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.eaton.elements.Section;
@@ -26,7 +25,6 @@ import com.eaton.pages.demandresponse.loadgroup.LoadGroupMCTCreatePage;
 public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
 
     private LoadGroupMCTCreatePage createPage;
-    WebDriver driver;
     private DriverExtensions driverExt;
     private Random randomNum;
 
@@ -39,8 +37,8 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         createPage = new LoadGroupMCTCreatePage(driverExt);
     }
 
-    @BeforeMethod(alwaysRun = true)
-    public void beforeTest() {
+    @AfterMethod(alwaysRun = true)
+    public void afterTest() {
         refreshPage(createPage);
     }
 
@@ -59,7 +57,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
         createPage.getName().setInputValue(name);
         createPage.getAddress().setInputValue("2");
-        createPage.getRelayUsage().setTrueFalseByName("Relay 2", true);
+        createPage.getRelayUsage().setTrueFalseByLabel("Relay 2", "RELAY_2", true);
 
         createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
         createPage.getDisableGroup().selectValue("Yes");

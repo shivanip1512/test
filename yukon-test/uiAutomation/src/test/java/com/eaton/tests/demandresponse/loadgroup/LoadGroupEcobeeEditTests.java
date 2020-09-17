@@ -40,14 +40,13 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
         editPage = new LoadGroupEditPage(driverExt, id);
     }
 
-    @AfterMethod
+    @AfterMethod(alwaysRun = true)
     public void afterMethod() {
         refreshPage(editPage);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpEcobeeEdit_pageTitleCorrect() {
-
         final String EXPECTED_TITLE = "Edit Load Group: " + name;
 
         String actualPageTitle = editPage.getPageTitle();

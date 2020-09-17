@@ -2,7 +2,6 @@ package com.eaton.tests.capcontrol;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -19,12 +18,9 @@ public class CapControlMenuTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
 
-        driver.get(getBaseUrl() + Urls.HOME);
-
+        navigate(Urls.HOME);
         page = new HomePage(driverExt);
     }
 

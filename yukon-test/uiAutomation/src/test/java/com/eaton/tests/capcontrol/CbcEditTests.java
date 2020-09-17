@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -20,19 +21,25 @@ import com.eaton.pages.capcontrol.orphans.OrphansPage;
 public class CbcEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
+    private CbcEditPage editPage;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        
+        navigate(Urls.CapControl.CBC_EDIT + "670" + Urls.EDIT);
+
+        editPage = new CbcEditPage(driverExt, 670);
+    }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        refreshPage(editPage);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void cbcEdit_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit CBC: AT CBC";
-
-        navigate(Urls.CapControl.CBC_EDIT + "670" + Urls.EDIT);
-
-        CbcEditPage editPage = new CbcEditPage(driverExt, 670);
 
         String actualPageTitle = editPage.getPageTitle();
 
@@ -44,8 +51,6 @@ public class CbcEditTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = "CBC was successfully saved.";
 
         navigate(Urls.CapControl.CBC_EDIT + "563" + Urls.EDIT);
-
-        CbcEditPage editPage = new CbcEditPage(driverExt, 563);
 
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
 
@@ -68,8 +73,6 @@ public class CbcEditTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = "Deleted CBC";
 
         navigate(Urls.CapControl.CBC_EDIT + "577" + Urls.EDIT);
-
-        CbcEditPage editPage = new CbcEditPage(driverExt, 577);
 
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
 

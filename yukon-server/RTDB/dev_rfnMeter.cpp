@@ -702,7 +702,13 @@ YukonError_t RfnMeterDevice::compareChannels(
     {
         /* If we have device/config channels mismatched */
 
-        auto metric_to_string = [this](const MetricIdLookup::MetricId i) { return MetricIdLookup::GetAttribute(i, getDeviceType()).getName(); };
+        auto metric_to_string = [this](const MetricIdLookup::MetricId i) { 
+            if( auto attribute = MetricIdLookup::FindAttribute(i, getDeviceType()) )
+            {
+                return attribute->getName();
+            }
+            return "Unmapped metric ID " + std::to_string(i);
+        };
 
         PaoMetricIds cfgOnly, meterOnly;
 
@@ -1008,10 +1014,10 @@ YukonError_t RfnMeterDevice::executePutConfigMetrology(CtiRequestMsg *pReq, CtiC
             }
             else
             {
-                RfnMetrologyCommand::State  metrologyLibraryState
+                const auto metrologyLibraryState
                     = *configMetrologyLibraryEnabled
-                        ? RfnMetrologyCommand::Enable
-                        : RfnMetrologyCommand::Disable;
+                        ? RfnMetrologyCommand::MetrologyState::Enable
+                        : RfnMetrologyCommand::MetrologyState::Disable;
 
                 rfnRequests.push_back( std::make_unique<RfnMetrologySetConfigurationCommand>( metrologyLibraryState ) );
 
@@ -1051,13 +1057,21 @@ YukonError_t RfnMeterDevice::executeGetConfigMetrology(CtiRequestMsg *pReq, CtiC
 
 void RfnMeterDevice::handleCommandResult( const Commands::RfnMetrologyGetConfigurationCommand & cmd )
 {
-    using Commands::RfnMetrologyCommand;
+    using MetrologyState = Commands::RfnMetrologyCommand::MetrologyState;
 
     if ( const auto state = cmd.getMetrologyState() )
     {
         setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled,
-                        state == RfnMetrologyCommand::Enable );
+                        state == MetrologyState::Enable );
     }
+}
+
+void RfnMeterDevice::handleCommandResult(const Commands::RfnMetrologySetConfigurationCommand& cmd)
+{
+    using MetrologyState = Commands::RfnMetrologyCommand::MetrologyState;
+
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled,
+                    cmd.getMetrologyState() == MetrologyState::Enable );
 }
 
 }

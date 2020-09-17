@@ -21,7 +21,7 @@ repositories {
 dependencies {
 	implementation group: 'com.google.inject', name: 'guice', version: '4.2.3'
 
-    implementation group: 'org.testng', name: 'testng', version: '7.3.0'
+    implementation group: 'org.testng', name: 'testng', version: '7.1.0'
     
 	implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.141.59'
 	

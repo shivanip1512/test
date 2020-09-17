@@ -41,6 +41,9 @@ var yg = {
     },
     
     highcharts_options: {
+        lang: {
+            thousandsSep: ","
+        },
         global: {
             useUTC: false,
             timezoneOffset : new Date().getTimezoneOffset()
