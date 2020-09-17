@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -87,6 +88,11 @@ public class CacheManagementController {
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.CACHE_CORRELATION_GROUPS,  Arrays.stream(deviceSubGroups)
                 .collect(Collectors.joining(",")));
         cachedPointDataCorrelationService.reschedule(0);
+		if (StringUtils.isEmpty(email)) {
+			flash.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Cache Correlation Schedule is stopped."));
+		} else {
+			flash.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Cache Correlation Schedule is updated."));
+		}
         return "redirect:cacheManagement";
     }
 }

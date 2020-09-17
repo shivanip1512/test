@@ -3,6 +3,7 @@ package com.cannontech.web.common.service.impl;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -95,16 +96,19 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
         String email = yukonSimulatorSettingsDao
                 .getStringValue(YukonSimulatorSettingsKey.CACHE_CORRELATION_NOTIFICATION_EMAIL);
         if(StringUtils.isEmpty(email)) {
+            log.info("Removed correlation task");
             return;
         }
         String hours = yukonSimulatorSettingsDao
                 .getStringValue(YukonSimulatorSettingsKey.CACHE_CORRELATION_FREQUENCY_HOURS);
         String groups = yukonSimulatorSettingsDao
                 .getStringValue(YukonSimulatorSettingsKey.CACHE_CORRELATION_GROUPS);
+        log.info("Rescheduled correlation task to run every {} hours.", hours);
         futureSchedule = executor.scheduleAtFixedRate(() -> {
-            Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(List.of(groups));
+            Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(Arrays.asList(groups.split(",")));
             List<Integer> deviceIds = deviceGroupService.getDevices(deviceGroups).stream()
                     .map(device -> device.getDeviceId()).collect(Collectors.toList());
+            log.info("Running correlation task on {} devices.", deviceIds.size());
             try {
                 boolean hasMismatch = correlateAndLog(deviceIds, YukonUserContext.system);
                 if (hasMismatch) {
@@ -313,18 +317,12 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
             return formatValue(historicalValues.get(0));
         }
 
-        public String getHistoricalValue2() {
-            if (historicalValues.size() > 1) {
-                return formatValue(historicalValues.get(1));
-            }
-            return "";
-        }
+		public String getHistoricalValue2() {
+			return historicalValues.size() > 1 ? formatValue(historicalValues.get(1)) : "";
+		}
 
         public String getDispatchValue() {
-            if (dispatchValue != null) {
-                return formatValue(dispatchValue);
-            }
-            return "";
+            return formatValue(dispatchValue);
         }
         
         public String getAsyncDataSourceFormattedValue() {
@@ -354,14 +352,15 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
         }
 
         private String formatValue(PointValueQualityHolder value) {
-            String valueString;
+        	if (value == null) {
+        		return "";
+        	}
             try {
-                valueString = pointFormattingService.getValueString(value, Format.SHORT, userContext) + " "
+                return pointFormattingService.getValueString(value, Format.SHORT, userContext) + " "
                         + pointFormattingService.getValueString(value, Format.DATE, userContext);
             } catch (IllegalArgumentException e) {
-                valueString = pointFormattingService.getValueString(value, Format.RAWVALUE, userContext);
+                return pointFormattingService.getValueString(value, Format.RAWVALUE, userContext);
             }
-            return valueString;
         }
     }
 
