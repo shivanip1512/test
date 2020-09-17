@@ -235,7 +235,7 @@ public class DirectProgramApiTest {
                 "Expected message should be - Validation error");
         assertTrue(
                 ValidationHelper.validateFieldError(createResponse, "name",
-                        "Name must not contain any of the following characters: / \\ , \u0027 \" |."),
+                        "Name must not contain any of the following characters: / \\ , ' \" |."),
                 "Expected code in response is not correct");
     }
 

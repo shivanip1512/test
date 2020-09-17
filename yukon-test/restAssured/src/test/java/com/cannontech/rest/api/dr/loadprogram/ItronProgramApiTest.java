@@ -194,7 +194,7 @@ public class ItronProgramApiTest {
      */
     @Test
     public void ItronProgram_08_NameWithSpecialChars() {
-        String expectedErrorMsg = "Name must not contain any of the following characters: / \\ , \u0027 \" |.";
+        String expectedErrorMsg = "Name must not contain any of the following characters: / \\ , ' \" |.";
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setName("Test,//Test");
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
