@@ -23,13 +23,18 @@ public class EnergyCompanyOperatorUserCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        
+        setRefreshPage(false);
         navigate(Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_CREATE + "64");
         createPage = new EnergyCompanyOperatorUserCreatePage(driverExt, 64);
     }
     
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(createPage);
+        if(getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
@@ -43,6 +48,7 @@ public class EnergyCompanyOperatorUserCreateTests extends SeleniumTestSetup {
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
     public void energyCompanyOperatorUserCreate_AllFields_Success() {
+        setRefreshPage(true);
         final String EXPECTED_USER_MSG = "Successfully created the user.";
         final String PASSWORD = "Atoperator1";
         

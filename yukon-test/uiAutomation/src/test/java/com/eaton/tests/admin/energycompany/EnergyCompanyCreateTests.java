@@ -25,13 +25,19 @@ public class EnergyCompanyCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        
+        setRefreshPage(false);
         navigate(Urls.Admin.CREATE_ENERGY_COMPANY);
         createPage = new EnergyCompanyCreatePage(driverExt);
     }
     
     @AfterMethod(alwaysRun=true)
-    public void afterMethod() {        
-        refreshPage(createPage);
+    public void afterMethod() {
+        if (getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        
+        setRefreshPage(false);
     }
 
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
@@ -45,6 +51,7 @@ public class EnergyCompanyCreateTests extends SeleniumTestSetup {
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
     public void energyCompanyCreate_RequiredFieldsOnly_Success() {
+        setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String companyName = "AT Energy Company " + timeStamp;
         

@@ -1,9 +1,6 @@
 package com.eaton.tests.ami;
 
 import static org.assertj.core.api.Assertions.*;
-
-import java.util.Optional;
-
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -17,6 +14,8 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.ami.AmiDashboardPage;
 import com.eaton.pages.ami.WRL420cLMeterDetailsPage;
+
+import java.util.Optional;
 
 import org.assertj.core.api.SoftAssertions;
 
@@ -37,7 +36,7 @@ public class MeterWRL420cLDetailTests extends SeleniumTestSetup {
 
     @BeforeMethod(alwaysRun = true)
     public void beforeMethod() {
-        if(getRefreshPage() == true) {
+        if(getRefreshPage()) {
             refreshPage(meterDetailsPage);
         }
             
@@ -297,26 +296,26 @@ public class MeterWRL420cLDetailTests extends SeleniumTestSetup {
     // Actions Section
     // ================================================================================
 
-//    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-//    public void meterWRL420cLDetail_Delete_Success() {
-//        setRefreshPage(false);
-//        final int DEVICEID = 1233;
-//        final String EXPECTED_MSG = "Meter AT Delete " + MeterEnums.MeterType.WRL420CL.getMeterType() + " deleted successfully.";
-//
-//        navigate(Urls.Ami.METER_DETAIL + DEVICEID);
-//
-//        WRL420cLMeterDetailsPage meterDetailsPage = new WRL420cLMeterDetailsPage(driverExt, DEVICEID);
-//
-//        ConfirmModal modal = meterDetailsPage.showAndWaitConfirmDeleteModal();
-//
-//        modal.clickOkAndWaitForModalToClose();
-//
-//        waitForUrlToLoad(Urls.Ami.AMI_DASHBOARD, Optional.of(10));
-//
-//        AmiDashboardPage dashboardPage = new AmiDashboardPage(driverExt);
-//
-//        String userMsg = dashboardPage.getUserMessage();
-//
-//        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-//    }
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    public void meterWRL420cLDetail_Delete_Success() {
+        setRefreshPage(false);
+        final int DEVICEID = 1233;
+        final String EXPECTED_MSG = "Meter AT Delete " + MeterEnums.MeterType.WRL420CL.getMeterType() + " deleted successfully.";
+
+        navigate(Urls.Ami.METER_DETAIL + DEVICEID);
+
+        WRL420cLMeterDetailsPage meterDetailsPage = new WRL420cLMeterDetailsPage(driverExt, DEVICEID);
+
+        ConfirmModal modal = meterDetailsPage.showAndWaitConfirmDeleteModal();
+
+        modal.clickOkAndWaitForModalToClose();
+
+        waitForUrlToLoad(Urls.Ami.AMI_DASHBOARD, Optional.of(10));
+
+        AmiDashboardPage dashboardPage = new AmiDashboardPage(driverExt);
+
+        String userMsg = dashboardPage.getUserMessage();
+
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+    }
 }

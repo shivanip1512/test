@@ -21,7 +21,6 @@ import com.eaton.rest.api.drsetup.JsonFileHelper;
 import io.restassured.response.ExtractableResponse;
 
 public class CommChannelsListTests extends SeleniumTestSetup {
-
     private CommChannelsListPage listPage;
     private DriverExtensions driverExt;
     private List<String> names;
@@ -33,6 +32,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);        
 
         String[] tcpChannel = { "123", "TCP_port", "1@tcp" };
         String[] udpChannel = { "channeludp", "UDPport", "2$udp" };
@@ -72,7 +72,10 @@ public class CommChannelsListTests extends SeleniumTestSetup {
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(listPage);
+        if(getRefreshPage()) {
+            refreshPage(listPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
@@ -107,6 +110,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelList_NameSortAsc_Correct() {
+        setRefreshPage(true);
         Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
 
         navigate(Urls.Assets.COMM_CHANNEL_NAME_ASC);
@@ -118,6 +122,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelList_NameSortDesc_Correct() {
+        setRefreshPage(true);
         Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
         Collections.reverse(names);
 
@@ -130,6 +135,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelList_TypeSortAsc_Correct() {
+        setRefreshPage(true);
         Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
 
         navigate(Urls.Assets.COMM_CHANNEL_TYPE_ASC);
@@ -142,6 +148,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelList_TypeSortDesc_Correct() {
+        setRefreshPage(true);
         Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
         Collections.reverse(types);
         navigate(Urls.Assets.COMM_CHANNEL_TYPE_DESC);
@@ -153,6 +160,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelList_StatusesSortAsc_Correct() {
+        setRefreshPage(true);
         Collections.sort(statuses, String.CASE_INSENSITIVE_ORDER);
 
         navigate(Urls.Assets.COMM_CHANNEL_STATUS_ASC);
@@ -164,6 +172,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelList_StatusesSortDesc_Correct() {
+        setRefreshPage(true);
         Collections.sort(statuses, String.CASE_INSENSITIVE_ORDER);
         Collections.reverse(statuses);
 
@@ -176,6 +185,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
     public void commChannelList_Create_OpensCorrectModal() {
+        setRefreshPage(true);
         String EXPECTED_CREATE_MODEL_TITLE = "Create Comm Channel";
         CreateTcpCommChannelModal createModel = listPage.showAndWaitCreateTcpCommChannelModal();
         String actualCreateModelTitle = createModel.getModalTitle();

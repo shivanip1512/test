@@ -23,13 +23,17 @@ public class EnergyCompanyWarehouseCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         navigate(Urls.Admin.ENERGY_COMPANY_WAREHOUSE_CREATE + "64");
         createPage = new EnergyCompanyWarehouseCreatePage(driverExt, 64);
     }
     
     @AfterMethod(alwaysRun = true)
-    public void afterMethod() {        
-        refreshPage(createPage);
+    public void afterMethod() {
+        if(getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
@@ -43,6 +47,7 @@ public class EnergyCompanyWarehouseCreateTests extends SeleniumTestSetup {
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
     public void energyCompanyWarehouseCreate_AllFields_Success() {
+        setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String wareHouseName = "AT EC Warehouse " + timeStamp;
         

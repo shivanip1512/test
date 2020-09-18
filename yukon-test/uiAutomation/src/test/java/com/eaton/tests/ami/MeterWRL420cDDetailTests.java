@@ -37,7 +37,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        if (getRefreshPage() == true) {
+        if (getRefreshPage()) {
             refreshPage(meterDetailsPage);
         }
         
