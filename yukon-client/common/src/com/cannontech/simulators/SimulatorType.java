@@ -26,6 +26,6 @@ public enum SimulatorType {
     STATUS_ARCHIVE,
     DEVICE_ARCHIVE,
     NEST,
-    CACHE_CORRELATION
+    POINT_DATA_CACHE_CORRELATION
     ;
 }

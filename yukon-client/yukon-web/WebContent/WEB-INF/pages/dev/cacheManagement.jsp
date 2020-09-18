@@ -11,7 +11,7 @@
             </div>
         </form>
     </tags:sectionContainer>
-    <tags:sectionContainer title="Cache Correlation">
+    <tags:sectionContainer title="Point Data Cache Correlation">
 	    Compares point data in PointUpdateBackingService, AsyncDynamicDataSource and latest value in RPH, if there is a mismatch, generates CSV file with results. File location ${location}.
 	    Notifies dispatch to log its values if mismatch is found. 
 	    <form action="correlatePointData">
@@ -23,7 +23,7 @@
             </div>
         </form>
     </tags:sectionContainer>
-    <tags:sectionContainer title="Cache Correlation Schedule">
+    <tags:sectionContainer title="Point Data Cache Correlation Schedule">
         <form action="scheduleCorrelationOfPointData">
             <p>Checks devices in a group every ${hours} hours, if mismatch found, sends an email. File location ${location}. <b>This task will only run if the email is present.</b></c:if></p>
             <tags:deviceGroupPicker inputName="deviceSubGroups"

@@ -142,9 +142,9 @@ public enum YukonSimulatorSettingsKey {
    
     DEMAND_RESET_STATUS_ARCHIVE("SUCCESS", InputTypeFactory.stringType(), SimulatorType.STATUS_ARCHIVE),
     
-    CACHE_CORRELATION_FREQUENCY_HOURS("4", InputTypeFactory.stringType(), SimulatorType.CACHE_CORRELATION),
-    CACHE_CORRELATION_NOTIFICATION_EMAIL("", InputTypeFactory.stringType(), SimulatorType.CACHE_CORRELATION),
-    CACHE_CORRELATION_GROUPS("/All Meters", InputTypeFactory.stringType(), SimulatorType.CACHE_CORRELATION)
+    POINT_DATA_CACHE_CORRELATION_FREQUENCY_HOURS("4", InputTypeFactory.stringType(), SimulatorType.POINT_DATA_CACHE_CORRELATION),
+    POINT_DATA_CACHE_CORRELATION_NOTIFICATION_EMAIL("", InputTypeFactory.stringType(), SimulatorType.POINT_DATA_CACHE_CORRELATION),
+    POINT_DATA_CACHE_CORRELATION_GROUPS("/System/Meters/All Meters", InputTypeFactory.stringType(), SimulatorType.POINT_DATA_CACHE_CORRELATION)
     ;
     
     private final Object defaultValue;

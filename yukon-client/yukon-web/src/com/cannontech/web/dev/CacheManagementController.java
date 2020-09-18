@@ -36,11 +36,11 @@ public class CacheManagementController {
     @RequestMapping("cacheManagement")
     public String cacheManagement(ModelMap model) {
         String email = yukonSimulatorSettingsDao
-                .getStringValue(YukonSimulatorSettingsKey.CACHE_CORRELATION_NOTIFICATION_EMAIL);
+                .getStringValue(YukonSimulatorSettingsKey.POINT_DATA_CACHE_CORRELATION_NOTIFICATION_EMAIL);
         String hours = yukonSimulatorSettingsDao
-                .getStringValue(YukonSimulatorSettingsKey.CACHE_CORRELATION_FREQUENCY_HOURS);
+                .getStringValue(YukonSimulatorSettingsKey.POINT_DATA_CACHE_CORRELATION_FREQUENCY_HOURS);
         String groups = yukonSimulatorSettingsDao
-                .getStringValue(YukonSimulatorSettingsKey.CACHE_CORRELATION_GROUPS);
+                .getStringValue(YukonSimulatorSettingsKey.POINT_DATA_CACHE_CORRELATION_GROUPS);
         model.addAttribute("email", email);
         model.addAttribute("hours", hours);
         model.addAttribute("groups", List.of(groups.split(",")));
@@ -83,15 +83,15 @@ public class CacheManagementController {
     public String scheduleCorrelationOfPointData(String[] deviceSubGroups, String hours,
             String email, FlashScope flash,
             YukonUserContext userContext) {
-        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.CACHE_CORRELATION_NOTIFICATION_EMAIL, email);
-        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.CACHE_CORRELATION_FREQUENCY_HOURS, hours);
-        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.CACHE_CORRELATION_GROUPS,  Arrays.stream(deviceSubGroups)
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.POINT_DATA_CACHE_CORRELATION_NOTIFICATION_EMAIL, email);
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.POINT_DATA_CACHE_CORRELATION_FREQUENCY_HOURS, hours);
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.POINT_DATA_CACHE_CORRELATION_GROUPS,  Arrays.stream(deviceSubGroups)
                 .collect(Collectors.joining(",")));
         cachedPointDataCorrelationService.reschedule(0);
 		if (StringUtils.isEmpty(email)) {
-			flash.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Cache Correlation Schedule is stopped."));
+			flash.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Point Data Cache Correlation Schedule is deleted."));
 		} else {
-			flash.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Cache Correlation Schedule is updated."));
+			flash.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Point Data Cache Correlation Schedule is updated."));
 		}
         return "redirect:cacheManagement";
     }

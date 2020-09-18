@@ -94,15 +94,15 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
         }
         
         String email = yukonSimulatorSettingsDao
-                .getStringValue(YukonSimulatorSettingsKey.CACHE_CORRELATION_NOTIFICATION_EMAIL);
+                .getStringValue(YukonSimulatorSettingsKey.POINT_DATA_CACHE_CORRELATION_NOTIFICATION_EMAIL);
         if(StringUtils.isEmpty(email)) {
-            log.info("Removed correlation task");
+            log.info("Data Cache Correlation task is not started, email is empty");
             return;
         }
         String hours = yukonSimulatorSettingsDao
-                .getStringValue(YukonSimulatorSettingsKey.CACHE_CORRELATION_FREQUENCY_HOURS);
+                .getStringValue(YukonSimulatorSettingsKey.POINT_DATA_CACHE_CORRELATION_FREQUENCY_HOURS);
         String groups = yukonSimulatorSettingsDao
-                .getStringValue(YukonSimulatorSettingsKey.CACHE_CORRELATION_GROUPS);
+                .getStringValue(YukonSimulatorSettingsKey.POINT_DATA_CACHE_CORRELATION_GROUPS);
         log.info("Rescheduled correlation task to run every {} hours.", hours);
         futureSchedule = executor.scheduleAtFixedRate(() -> {
             Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(Arrays.asList(groups.split(",")));
@@ -112,8 +112,9 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
             try {
                 boolean hasMismatch = correlateAndLog(deviceIds, YukonUserContext.system);
                 if (hasMismatch) {
+                	log.info("Mismatches found. Sending email.");
                     EmailMessage emailMessage = new EmailMessage(InternetAddress.parse(email),
-                            CtiUtilities.getIPAddress() + " Data correlation task found mismatches.",
+                            CtiUtilities.getIPAddress() + " Point Data Cache Correlation task found mismatches.",
                             "File located at " + CtiUtilities.getCacheCollerationDirPath() + ".");
                     emailService.sendMessage(emailMessage);
                 }
