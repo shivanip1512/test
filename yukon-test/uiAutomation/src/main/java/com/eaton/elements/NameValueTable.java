@@ -12,18 +12,30 @@ public class NameValueTable {
 
     private DriverExtensions driverExt;
     WebElement parentElement;
+    Integer index;
     
-    public NameValueTable(DriverExtensions driverExt, WebElement parentElement) {
+    /**
+     * @param driverExt - pass in the driveExt so can select elements
+     * @param parentElement - the parent element of the table
+     * @param index - this is optional, use if there are multiple name value tables for a single parent
+     */
+    public NameValueTable(DriverExtensions driverExt, WebElement parentElement, Optional<Integer> index) {
         this.driverExt = driverExt;
         this.parentElement = parentElement;
+        
+        this.index = index.orElse(0);
     }
     
     private WebElement getTable() {
+        List<WebElement> list;
+        
         if (this.parentElement != null) {
-            return this.parentElement.findElement(By.cssSelector(".name-value-table"));
+            list = this.parentElement.findElements(By.cssSelector(".name-value-table"));
         } else {
-            return this.driverExt.findElement(By.cssSelector(".name-value-table"), Optional.of(3)); 
+            list = this.driverExt.findElements(By.cssSelector(".name-value-table"), Optional.of(3));
         }
+        
+        return list.get(this.index);
     }
     
     public Integer getLabelCount() {
@@ -58,6 +70,6 @@ public class NameValueTable {
             label = labels.get(index).getText();
         } while(label.contains("loading") && ((System.currentTimeMillis() - startTime) < 2000));
         
-        return labels.get(index).getText();
+        return label.trim();
     }
 }

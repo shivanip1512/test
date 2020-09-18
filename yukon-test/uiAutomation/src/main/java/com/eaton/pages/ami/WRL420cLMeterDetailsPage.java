@@ -71,19 +71,19 @@ public class WRL420cLMeterDetailsPage extends PageBase {
     }
     
     public MeterEventsPanel getMeterEventsPanel() {
-        return new MeterEventsPanel(this.driverExt, getPanelList().getListOfPanelNames().get(8));
+        return new MeterEventsPanel(this.driverExt, getPanelList().getListOfPanelNames().get(7));
     }
     
     public OutagesPanel getOutagesPanel() {
-        return new OutagesPanel(this.driverExt, getPanelList().getListOfPanelNames().get(9));
+        return new OutagesPanel(this.driverExt, getPanelList().getListOfPanelNames().get(8));
     }
     
     public TimeOfUsePanel getTimeOfUsePanel() {
-        return new TimeOfUsePanel(this.driverExt, getPanelList().getListOfPanelNames().get(10));
+        return new TimeOfUsePanel(this.driverExt, getPanelList().getListOfPanelNames().get(9));
     }
     
     public DeviceConfigPanel getDeviceConfigPanel() {
-        return new DeviceConfigPanel(this.driverExt, getPanelList().getListOfPanelNames().get(11));
+        return new DeviceConfigPanel(this.driverExt, getPanelList().getListOfPanelNames().get(10));
     }
     
     public EditMeterModal showMeterEditModal() {

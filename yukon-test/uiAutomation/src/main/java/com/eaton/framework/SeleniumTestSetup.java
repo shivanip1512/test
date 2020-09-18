@@ -45,6 +45,8 @@ public class SeleniumTestSetup {
     private static String screenShotPath;
 
     private static Faker faker;
+    
+    private boolean refreshPage = false;
 
     @BeforeSuite(alwaysRun = true)
     public static void beforeSuite() {
@@ -314,6 +316,14 @@ public class SeleniumTestSetup {
     public static void scrollToElement(WebElement element) {
         JavascriptExecutor je = (JavascriptExecutor) driver;
         je.executeScript("arguments[0].scrollIntoView(true);", element);
+    }
+    
+    public boolean getRefreshPage() {
+        return refreshPage;
+    }
+    
+    public void setRefreshPage(boolean refreshPage) {
+        this.refreshPage = refreshPage;
     }
 
     @AfterSuite(alwaysRun = true)
