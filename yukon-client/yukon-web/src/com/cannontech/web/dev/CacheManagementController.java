@@ -85,14 +85,17 @@ public class CacheManagementController {
             YukonUserContext userContext) {
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.POINT_DATA_CACHE_CORRELATION_NOTIFICATION_EMAIL, email);
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.POINT_DATA_CACHE_CORRELATION_FREQUENCY_HOURS, hours);
-        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.POINT_DATA_CACHE_CORRELATION_GROUPS,  Arrays.stream(deviceSubGroups)
-                .collect(Collectors.joining(",")));
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.POINT_DATA_CACHE_CORRELATION_GROUPS,
+                Arrays.stream(deviceSubGroups)
+                        .collect(Collectors.joining(",")));
         cachedPointDataCorrelationService.reschedule(0);
-		if (StringUtils.isEmpty(email)) {
-			flash.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Point Data Cache Correlation Schedule is deleted."));
-		} else {
-			flash.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Point Data Cache Correlation Schedule is updated."));
-		}
+        if (StringUtils.isEmpty(email)) {
+            flash.setConfirm(
+                    YukonMessageSourceResolvable.createDefaultWithoutCode("Point Data Cache Correlation Schedule is deleted."));
+        } else {
+            flash.setConfirm(
+                    YukonMessageSourceResolvable.createDefaultWithoutCode("Point Data Cache Correlation Schedule is updated."));
+        }
         return "redirect:cacheManagement";
     }
 }

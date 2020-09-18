@@ -112,7 +112,7 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
             try {
                 boolean hasMismatch = correlateAndLog(deviceIds, YukonUserContext.system);
                 if (hasMismatch) {
-                	log.info("Mismatches found. Sending email.");
+                    log.info("Mismatches found. Sending email.");
                     EmailMessage emailMessage = new EmailMessage(InternetAddress.parse(email),
                             CtiUtilities.getIPAddress() + " Point Data Cache Correlation task found mismatches.",
                             "File located at " + CtiUtilities.getCacheCollerationDirPath() + ".");
