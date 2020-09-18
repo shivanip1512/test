@@ -31,6 +31,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         randomNum = getRandomNum();
         
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
@@ -39,11 +40,15 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(createPage);
+        if(getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateDigiSEP_AllFields_Success() {
+        setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT DigiSep " + timeStamp;
         double randomDouble = randomNum.nextDouble();
@@ -80,7 +85,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
     public void ldGrpCreateDigiSEP_DeviceClass_RequiredValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_DIGI_SEP");
         waitForLoadingSpinner();
-
+        
         createPage.getSaveBtn().click();
 
         assertThat(createPage.getDeviceClass().getValidationError()).isEqualTo("At least one device class set must be assigned.");
@@ -91,6 +96,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByValue("LM_GROUP_DIGI_SEP");
         waitForLoadingSpinner();
 
+        createPage.getUtilityEnrollmentGroup().clearInputValue();
         createPage.getSaveBtn().click();
 
         assertThat(createPage.getUtilityEnrollmentGroup().getValidationError()).isEqualTo("Utility Enrollment Group is required.");

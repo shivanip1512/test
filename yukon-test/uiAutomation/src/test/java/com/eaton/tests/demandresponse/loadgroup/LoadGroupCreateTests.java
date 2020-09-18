@@ -2,23 +2,23 @@ package com.eaton.tests.demandresponse.loadgroup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import org.json.simple.JSONObject;
+import org.javatuples.Pair;
+import org.json.JSONObject;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.eaton.builders.drsetup.loadgroup.LoadGroupEcobeeCreateBuilder;
 import com.eaton.elements.Section;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupCreatePage;
-import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
-import com.eaton.rest.api.drsetup.JsonFileHelper;
 
 public class LoadGroupCreateTests extends SeleniumTestSetup {
 
@@ -52,13 +52,16 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_Name_RequiredValidation() {
+        createPage.getName().clearInputValue();
+        
         createPage.getSaveBtn().click();
 
         assertThat(createPage.getName().getValidationError()).isEqualTo("Name is required.");
     }
-
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_Type_RequiredValidation() {
+        createPage.getType().selectItemByIndex(0);
+        
         createPage.getSaveBtn().click();
 
         assertThat(createPage.getType().getValidationError()).isEqualTo("Type is required.");
@@ -137,17 +140,10 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_Name_UniqueValidation() {
-        // API test data. Creating Load group using hard coded json file, to be changed when builder pattern is implemented.
-        String payloadFile = System.getProperty("user.dir") + "\\src\\test\\resources\\payload\\payload.loadgroup\\ecobee.json";
-        
-        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "Unique " + timeStamp;
-        
-        JSONObject jo;
-        JSONObject body = (JSONObject) JsonFileHelper.parseJSONFile(payloadFile);
-        jo = (JSONObject) body.get("LM_GROUP_ECOBEE");
-        jo.put("name", name);
-        DrSetupCreateRequest.createLoadGroup(body);
+        Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty())
+                .create();
+        JSONObject response = pair.getValue1();
+        String name = response.getString("name");
 
         createPage.getName().setInputValue(name);
         createPage.getType().selectItemByValue("LM_GROUP_ECOBEE");
