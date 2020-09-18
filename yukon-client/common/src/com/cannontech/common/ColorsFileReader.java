@@ -16,8 +16,8 @@ import com.google.common.collect.ImmutableMap.Builder;
 
 public class ColorsFileReader {
     
-    public final static ImmutableMap<YukonColorPalette, String> colorHexValueMap;
-    public final static ImmutableMap<String, YukonColorPalette> lookupByHexColorValue;
+    private final static ImmutableMap<YukonColorPalette, String> lookupByYukonColor;
+    private final static ImmutableMap<String, YukonColorPalette> lookupByHexValue;
     
     private static final Logger log = YukonLogManager.getLogger(ColorsFileReader.class);
     
@@ -37,12 +37,20 @@ public class ColorsFileReader {
         } catch (IOException e) {
             log.error("An Exception occured while reading colors.less file.", e);
         }
-        colorHexValueMap = colorHexValueMapBuilder.build();
+        lookupByYukonColor = colorHexValueMapBuilder.build();
         
         Builder<String, YukonColorPalette> hexColorLookupBuilder = ImmutableMap.builder();
-        for (Entry<YukonColorPalette, String> entry : colorHexValueMap.entrySet()) {
+        for (Entry<YukonColorPalette, String> entry : lookupByYukonColor.entrySet()) {
             hexColorLookupBuilder.put(entry.getValue(), entry.getKey());
         }
-        lookupByHexColorValue = hexColorLookupBuilder.build();
+        lookupByHexValue = hexColorLookupBuilder.build();
+    }
+    
+    public static String getHexColor(YukonColorPalette yukonColor) {
+        return lookupByYukonColor.get(yukonColor);
+    }
+    
+    public static YukonColorPalette getYukonColor(String hexValue) {
+        return lookupByHexValue.get(hexValue);
     }
 }

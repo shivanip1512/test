@@ -13,9 +13,9 @@ public enum YukonColorPalette implements DatabaseRepresentationSource, Displayab
     BLACK(ColorId.BLACK_ID),
     BLUE(ColorId.BLUE_ID, true),
     BLUE_LIGHT(ColorId.BLUE_LIGHT_ID),
-    GREEN( ColorId.GREEN_ID, true),
+    GREEN(ColorId.GREEN_ID, true),
     GREEN_LIGHT(ColorId.GREEN_LIGHT_ID),
-    GRAY( ColorId.GRAY_ID, true),
+    GRAY(ColorId.GRAY_ID, true),
     GRAY_LIGHT( ColorId.GRAY_LIGHT_ID),
     ORANGE(ColorId.ORANGE_ID, true),
     PURPLE(ColorId.PURPLE_ID, true),
@@ -73,7 +73,7 @@ public enum YukonColorPalette implements DatabaseRepresentationSource, Displayab
     
     
     public String getHexValue() {
-        return ColorsFileReader.colorHexValueMap.get(this);
+        return ColorsFileReader.getHexColor(this);
     }
 
     public int getColorId() {
@@ -95,7 +95,7 @@ public enum YukonColorPalette implements DatabaseRepresentationSource, Displayab
     }
     
     public static YukonColorPalette getColorByHexValue(String hexValue) {
-        return ColorsFileReader.lookupByHexColorValue.get(hexValue);
+        return ColorsFileReader.getYukonColor(hexValue);
     }
     
     public java.awt.Color getAwtColor() {
