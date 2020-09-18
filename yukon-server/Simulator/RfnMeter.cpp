@@ -466,16 +466,27 @@ void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySend
             68 06 00
 
             69 06 00 00
+
+                OR
+
+            68 02 00
+
+            69 02 00 00
             */
-            if( request[1] == 0x00 )
+            switch( request[1] )
             {
-                sendReply(asBytes(
-                    "69 00 00 00"));
-            }
-            else
-            {
-                sendReply(asBytes(
-                    "69 06 00 00"));
+                case 0x00:
+                    sendReply(asBytes(
+                        "69 00 00 00"));
+                    break;
+                case 0x02:
+                    sendReply(asBytes(
+                        "69 02 00 00"));
+                    break;
+                case 0x06:
+                    sendReply(asBytes(
+                        "69 06 00 00"));
+                    break;
             }
             return;
         }
@@ -516,18 +527,60 @@ void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySend
             10 a0 00 08 
             */
             sendReply(asBytes(
-                "79 00 00 01 02 00 ad 2b 00 01 00 00 00 03 00 00 "
-                "00 04 00 00 00 29 00 00 00 05 00 00 00 07 00 00 "
-                "01 00 00 08 00 09 00 00 01 00 00 08 00 f0 00 00 "
-                "01 00 00 08 00 31 00 00 00 33 00 00 01 00 00 08 "
-                "00 73 00 07 03 e9 00 00 03 eb 00 00 03 ec 00 00 "
-                "03 ef 00 00 04 e8 00 08 03 f1 00 00 04 e8 00 08 "
-                "07 d1 00 00 07 d3 00 00 07 d4 00 00 07 d7 00 00 "
-                "08 d0 00 08 07 d9 00 00 08 d0 00 08 0b b9 00 00 "
-                "0b bb 00 00 0b bc 00 00 0b bf 00 00 0c b8 00 08 "
-                "0b c1 00 00 0c b8 00 08 0f a1 00 00 0f a3 00 00 "
-                "0f a4 00 00 0f a7 00 00 10 a0 00 08 0f a9 00 00 "
-                "10 a0 00 08"));
+                "79 00 00 01 02"
+                    " 00 cd"  //  payload size
+                    " 33"     //  channel count
+                        " 00 01 00 00"
+                        " 00 02 00 00"
+                        " 00 03 00 00"
+                        " 00 04 00 00"
+                        " 00 29 00 00"
+                        " 00 2a 00 00"
+                        " 00 05 00 00"
+                        " 00 07 00 00"
+                        " 01 00 00 08"
+                        " 00 09 00 00"
+                        " 01 00 00 08"
+                        " 00 f0 00 00"
+                        " 01 00 00 08"
+                        " 00 31 00 00"
+                        " 00 33 00 00"
+                        " 01 00 00 08"
+                        " 00 73 00 07"
+                        " 00 81 00 00"
+                        " 00 82 00 00"
+                        " 03 e9 00 00"
+                        " 03 ea 00 00"
+                        " 03 eb 00 00"
+                        " 03 ec 00 00"
+                        " 03 ef 00 00"
+                        " 04 e8 00 08"
+                        " 03 f1 00 00"
+                        " 04 e8 00 08"
+                        " 07 d1 00 00"
+                        " 07 d2 00 00"
+                        " 07 d3 00 00"
+                        " 07 d4 00 00"
+                        " 07 d7 00 00"
+                        " 08 d0 00 08"
+                        " 07 d9 00 00"
+                        " 08 d0 00 08"
+                        " 0b b9 00 00"
+                        " 0b ba 00 00"
+                        " 0b bb 00 00"
+                        " 0b bc 00 00"
+                        " 0b bf 00 00"
+                        " 0c b8 00 08"
+                        " 0b c1 00 00"
+                        " 0c b8 00 08"
+                        " 0f a1 00 00"
+                        " 0f a2 00 00"
+                        " 0f a3 00 00"
+                        " 0f a4 00 00"
+                        " 0f a7 00 00"
+                        " 10 a0 00 08"
+                        " 0f a9 00 00"
+                        " 10 a0 00 08"));
             return;
         }
         case 0x7a:
@@ -539,9 +592,36 @@ void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySend
             7b 00 00 01 02 19 06 00 01 00 00 00 03 00 00 00
             04 00 00 00 29 00 00 00 31 00 00 00 73 00 07 
             */
-            sendReply(asBytes(
-                "7b 00 00 01 02 19 06 00 01 00 00 00 03 00 00 00 "
-                "04 00 00 00 29 00 00 00 31 00 00 00 73 00 07"));
+            if( rfnIdentifier.model == "C2SX-SD" )
+            {
+                sendReply(asBytes(
+                    "7b 00 00 01 02"
+                        " 21"
+                        " 08"
+                            " 00 01 00 00"
+                            " 00 02 00 00"
+                            " 00 03 00 00"
+                            " 00 05 00 00"
+                            " 00 29 00 00"
+                            " 00 2a 00 00"
+                            " 00 31 00 00"
+                            " 00 73 00 07"));
+            }
+            else
+            {
+                sendReply(asBytes(
+                    "7b 00 00 01 02"
+                        " 21"
+                        " 08"
+                            " 00 01 00 00"
+                            " 00 02 00 00"
+                            " 00 03 00 00"
+                            " 00 04 00 00"
+                            " 00 29 00 00"
+                            " 00 2a 00 00"
+                            " 00 31 00 00"
+                            " 00 73 00 07"));
+            }
             return;
         }
         case 0x82:
@@ -552,7 +632,7 @@ void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySend
             83 00 00 01 01 01 01 01
             */
             sendReply(asBytes(
-                "83 00 00 01 01 01 01 01"));
+                "83 00 00 01 01 01 01 00"));
             return;
         }
         case 0x84:
