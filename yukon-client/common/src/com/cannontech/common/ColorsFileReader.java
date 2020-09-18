@@ -35,7 +35,8 @@ public class ColorsFileReader {
                 colorHexValueMapBuilder.put(YukonColorPalette.valueOf(variableNameMatcher.group(1).toUpperCase()), valueMatcher.group(1));
             }
         } catch (IOException e) {
-            log.error("An Exception occured while reading colors.less file.", e);
+            log.error(e);
+            throw new RuntimeException("An Exception occured while reading colors.less file." , e);
         }
         lookupByYukonColor = colorHexValueMapBuilder.build();
         
