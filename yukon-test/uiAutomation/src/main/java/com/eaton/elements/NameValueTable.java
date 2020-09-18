@@ -68,7 +68,7 @@ public class NameValueTable {
         
         do {
             label = labels.get(index).getText();
-        } while(label.contains("loading") && ((System.currentTimeMillis() - startTime) < 2000));
+        } while(label.contains("loading") && ((System.currentTimeMillis() - startTime) < 5000));
         
         return label.trim();
     }
