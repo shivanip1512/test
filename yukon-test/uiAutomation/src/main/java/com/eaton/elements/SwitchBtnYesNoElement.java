@@ -25,19 +25,16 @@ public class SwitchBtnYesNoElement {
         this.elementName = elementName;
     }
     
-    public void selectValue(String value) {
-    	String checkedStatus = getCheckedValue();
+	public void selectValue(String value) {
 
-		if (checkedStatus.contentEquals(value)) {
-			return;
-		} else {
+		if (!(getCheckedValue().contentEquals(value))) {
 			List<WebElement> list = getSwitchBtn().findElements(By.cssSelector(".b-label"));
 
 			WebElement el = list.stream().filter(x -> x.getText().contains(value)).findFirst().orElseThrow();
 
 			el.click();
 		}
-    }
+	}
     
     public WebElement getSwitchBtn() {                
         if (parentElement != null) {

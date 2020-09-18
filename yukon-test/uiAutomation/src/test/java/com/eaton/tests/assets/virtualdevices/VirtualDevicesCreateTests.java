@@ -40,7 +40,7 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
     public void virtualDevicesCreate_Labels_Correct() {
         SoftAssertions softly = new SoftAssertions();
         CreateVirtualDeviceModal createModal = listPage.showAndWaitCreateVirtualDeviceModal();
-        List<String> labels = createModal.getVirtualDeviceModelLabels();
+        List<String> labels = createModal.getFieldLabels();
 
         softly.assertThat(labels.size()).isEqualTo(2);
         softly.assertThat(labels.get(0)).isEqualTo("Name:");
@@ -87,7 +87,7 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
-    public void virtualDevicesCreate_Enabled_Success() {
+    public void virtualDevicesCreate_AllFieldsEnabled_Success() {
     	String name = "AT Virtual Device" + faker.number().digits(10);
 
         final String EXPECTED_MSG = name + " saved successfully.";
@@ -102,7 +102,7 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
-    public void virtualDevicesCreate_Disabled_Success() {
+    public void virtualDevicesCreate_AllFieldsDisabled_Success() {
     	String name = "AT Virtual Device" + faker.number().digits(10);
 
         final String EXPECTED_MSG = name + " saved successfully.";

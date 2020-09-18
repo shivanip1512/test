@@ -11,29 +11,30 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class VirtualDevicesListPage extends PageBase {
-    private ActionBtnDropDownElement actionBtn;
-    
-    public VirtualDevicesListPage(DriverExtensions driverExt) {
-        super(driverExt);
-        
-        requiresLogin = true;
-        pageUrl = Urls.Assets.VIRTUAL_DEVICES;
-        actionBtn = new ActionBtnDropDownElement(this.driverExt);
-    }
+	private ActionBtnDropDownElement actionBtn;
 
-public WebTable getTable() {
-    return new WebTable(driverExt, "compact-results-table");
-}
+	public VirtualDevicesListPage(DriverExtensions driverExt) {
+		super(driverExt);
 
-public ActionBtnDropDownElement getActionBtn() {
-    return actionBtn;
-}
+		requiresLogin = true;
+		pageUrl = Urls.Assets.VIRTUAL_DEVICES;
+		actionBtn = new ActionBtnDropDownElement(this.driverExt);
+	}
 
-public CreateVirtualDeviceModal showAndWaitCreateVirtualDeviceModal() {        
-    actionBtn.clickAndSelectOptionByText("Create");
-    
-    SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-create-virtual-device-popup");
-    
-    return new CreateVirtualDeviceModal(this.driverExt, Optional.empty(), Optional.of("js-create-virtual-device-popup"));
-}  
+	public WebTable getTable() {
+		return new WebTable(driverExt, "compact-results-table");
+	}
+
+	public ActionBtnDropDownElement getActionBtn() {
+		return actionBtn;
+	}
+
+	public CreateVirtualDeviceModal showAndWaitCreateVirtualDeviceModal() {
+		actionBtn.clickAndSelectOptionByText("Create");
+
+		SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-create-virtual-device-popup");
+
+		return new CreateVirtualDeviceModal(this.driverExt, Optional.empty(),
+				Optional.of("js-create-virtual-device-popup"));
+	}
 }
