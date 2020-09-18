@@ -38,37 +38,37 @@ import com.google.common.math.LongMath;
  */
 public enum ItronDataEventType {
     //Event where the value and attribute are known and defined. decode() is not used for these enums.
-    MEMORY_MAP_LOST(0x8081, BuiltInAttribute.MEMORY_MAP_LOST, 0, 0, 1, 1.0),
-    CONFIGURATION_UPDATED_HASH(0x808A, BuiltInAttribute.CONFIGURATION_UPDATED_HASH, 0, 0, 1, 1.0),
+    MEMORY_MAP_LOST(0x8081, BuiltInAttribute.MEMORY_MAP_LOST, 0, 0, 1),
+    CONFIGURATION_UPDATED_HASH(0x808A, BuiltInAttribute.CONFIGURATION_UPDATED_HASH, 0, 0, 1),
     
     //Events where the Relay Number for the Attribute is obtained from the payload.
-    LOAD_ON(0x0014, null, 0, 1, 3, 1.0),
-    LOAD_OFF(0x0015, null, 0, 1, 2, 1.0),
-    SHED_START(0x0018, null, 0, 1, 1, 1.0),
-    SHED_END(0x0019, null, 0, 1, 0, 1.0),
-    CALL_FOR_COOL_ON(0x8098, null, 0, 1, 1, 1.0),
-    CALL_FOR_COOL_OFF(0x8099, null, 0, 1, 0, 1.0),
+    LOAD_ON(0x0014, null, 0, 1, 3),
+    LOAD_OFF(0x0015, null, 0, 1, 2),
+    SHED_START(0x0018, null, 0, 1, 1),
+    SHED_END(0x0019, null, 0, 1, 0),
+    CALL_FOR_COOL_ON(0x8098, null, 0, 1, 1),
+    CALL_FOR_COOL_OFF(0x8099, null, 0, 1, 0),
 
     //Events where the values are obtained from the payload.
     AVERAGE_VOLTAGE(0x809D, BuiltInAttribute.AVERAGE_VOLTAGE, 0, 2, null, 0.1),
-    EVENT_SUPERSEDED(0x0012, BuiltInAttribute.EVENT_SUPERSEDED, 0, 4, null, 1.0),
-    FIRMWARE_UPDATE(0x0009, BuiltInAttribute.FIRMWARE_VERSION, 0, 2, null, 1.0),
-    RADIO_LINK_QUALITY(0x808B, BuiltInAttribute.RADIO_LINK_QUALITY, 0, 1, null, 1.0),
-    EVENT_RECEIVED(0x8097, BuiltInAttribute.EVENT_RECEIVED, 0, 4, null, 1.0),
-    EVENT_STARTED (0x000E, BuiltInAttribute.EVENT_STARTED, 0, 4, null, 1.0),
-    EVENT_CANCELLED (0x0010, BuiltInAttribute.EVENT_CANCELLED, 0, 4, null, 1.0),
-    EVENT_STOPPED (0x000F, BuiltInAttribute.EVENT_STOPPED, 0, 4, null, 1.0),
+    EVENT_SUPERSEDED(0x0012, BuiltInAttribute.EVENT_SUPERSEDED, 0, 4, null),
+    FIRMWARE_UPDATE(0x0009, BuiltInAttribute.FIRMWARE_VERSION, 0, 2, null),
+    RADIO_LINK_QUALITY(0x808B, BuiltInAttribute.RADIO_LINK_QUALITY, 0, 1, null),
+    EVENT_RECEIVED(0x8097, BuiltInAttribute.EVENT_RECEIVED, 0, 4, null),
+    EVENT_STARTED (0x000E, BuiltInAttribute.EVENT_STARTED, 0, 4, null),
+    EVENT_CANCELLED (0x0010, BuiltInAttribute.EVENT_CANCELLED, 0, 4, null),
+    EVENT_STOPPED (0x000F, BuiltInAttribute.EVENT_STOPPED, 0, 4, null),
 
     //Events where the values increment current count
-    POWER_FAIL(0x0000, BuiltInAttribute.BLINK_COUNT, 0, 1, null, 1.0),
-    LINE_UNDER_FREQUENCY(0x8083, BuiltInAttribute.TOTAL_LUF_COUNT, 0, 1, null, 1.0),
-    LINE_UNDER_VOLTAGE(0x8084, BuiltInAttribute.TOTAL_LUV_COUNT, 0, 1, null, 1.0),
+    POWER_FAIL(0x0000, BuiltInAttribute.BLINK_COUNT, 0, 1, null),
+    LINE_UNDER_FREQUENCY(0x8083, BuiltInAttribute.TOTAL_LUF_COUNT, 0, 1, null),
+    LINE_UNDER_VOLTAGE(0x8084, BuiltInAttribute.TOTAL_LUV_COUNT, 0, 1, null),
     
     //Events that rely on two events to complete point data
     MIN_VOLTAGE(0x809C, BuiltInAttribute.MINIMUM_VOLTAGE, 0, 2, null, 0.1),
-    MIN_VOLTAGE_TIME(0x809E, BuiltInAttribute.MINIMUM_VOLTAGE, 0, 4, null, 1.0),
+    MIN_VOLTAGE_TIME(0x809E, BuiltInAttribute.MINIMUM_VOLTAGE, 0, 4, null),
     MAX_VOLTAGE(0x809B, BuiltInAttribute.MAXIMUM_VOLTAGE, 0, 2, null, 0.1),
-    MAX_VOLTAGE_TIME(0x809F, BuiltInAttribute.MAXIMUM_VOLTAGE, 0, 4, null, 1.0),
+    MAX_VOLTAGE_TIME(0x809F, BuiltInAttribute.MAXIMUM_VOLTAGE, 0, 4, null),
     ;
     
     private final Long eventIdHex;
@@ -117,8 +117,14 @@ public enum ItronDataEventType {
             itronEventTypeFromHexMap.put(eventType.eventIdHex, eventType);
         }
     }
-    
-    ItronDataEventType(long eventIdHex, BuiltInAttribute attribute, int firstByteIndex, int numOfBytes, Integer value, Double multiplier) {
+
+    // This will be used for enums that use the default multiplier value of 1.0
+    ItronDataEventType(long eventIdHex, BuiltInAttribute attribute, int firstByteIndex, int numOfBytes, Integer value) {
+        this(eventIdHex, attribute, firstByteIndex, numOfBytes, value, 1.0);
+        
+    }
+
+    ItronDataEventType(long eventIdHex, BuiltInAttribute attribute, int firstByteIndex, int numOfBytes, Integer value, double multiplier) {
         this.eventIdHex = eventIdHex;
         this.attribute = attribute;
         this.firstByteIndex = firstByteIndex;
