@@ -46,4 +46,15 @@ public class Section {
         }
         return names;
     }    
+    
+    public List<String> getSectionValues() {
+
+        List<WebElement> nameElements = getSection().findElements(By.cssSelector("table tr .value"));
+        List<String> names = new ArrayList<>();    
+
+        for (WebElement element : nameElements) {
+            names.add(element.getText());
+        }
+        return names;
+    } 
 }
