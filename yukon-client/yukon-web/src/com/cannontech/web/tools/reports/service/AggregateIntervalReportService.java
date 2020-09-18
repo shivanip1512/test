@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.core.dao.NotFoundException;
@@ -11,7 +12,7 @@ import com.cannontech.user.YukonUserContext;
 
 public interface AggregateIntervalReportService {
 
-    enum IncompleteIntervalData implements DisplayableEnum {
+    enum MissingIntervalData implements DisplayableEnum {
         SKIP,
         BLANK,
         PARTIAL,
@@ -21,11 +22,11 @@ public interface AggregateIntervalReportService {
 
         @Override
         public String getFormatKey() {
-            return keyPrefix + "incompleteIntervalData." + name();
+            return keyPrefix + "missingIntervalData." + name();
         }
     }
     
-    enum Aggregation implements DisplayableEnum {
+    enum Operation implements DisplayableEnum {
         ADD,
         MAX;
 
@@ -33,28 +34,20 @@ public interface AggregateIntervalReportService {
 
         @Override
         public String getFormatKey() {
-            return keyPrefix + "aggregation." + name();
+            return keyPrefix + "operation." + name();
         }
     }
 
     class AggregateIntervalReportFilter {
-        private List<Integer> deviceIds;
+        private List<PaoIdentifier> devices;
         private String deviceGroup;
         private Attribute attribute;
         private Instant startDate;
         private Instant endDate;
         private TimeIntervals interval;
-        private IncompleteIntervalData incompleteIntervalData;
-        private Integer incompleteIntervalDataValue;
-        private Aggregation aggregation;
-
-        public List<Integer> getDeviceIds() {
-            return deviceIds;
-        }
-
-        public void setDeviceIds(List<Integer> deviceIds) {
-            this.deviceIds = deviceIds;
-        }
+        private MissingIntervalData missingIntervalData;
+        private String missingIntervalDataValue;
+        private Operation operation;
 
         public Attribute getAttribute() {
             return attribute;
@@ -88,30 +81,6 @@ public interface AggregateIntervalReportService {
             this.interval = interval;
         }
 
-        public IncompleteIntervalData getIncompleteIntervalData() {
-            return incompleteIntervalData;
-        }
-
-        public void setIncompleteIntervalData(IncompleteIntervalData incompleteIntervalData) {
-            this.incompleteIntervalData = incompleteIntervalData;
-        }
-
-        public Integer getIncompleteIntervalDataValue() {
-            return incompleteIntervalDataValue;
-        }
-
-        public void setIncompleteIntervalDataValue(Integer incompleteIntervalDataValue) {
-            this.incompleteIntervalDataValue = incompleteIntervalDataValue;
-        }
-
-        public Aggregation getAggregation() {
-            return aggregation;
-        }
-
-        public void setAggregation(Aggregation aggregation) {
-            this.aggregation = aggregation;
-        }
-
         public String getDeviceGroup() {
             return deviceGroup;
         }
@@ -119,12 +88,40 @@ public interface AggregateIntervalReportService {
         public void setDeviceGroup(String deviceGroup) {
             this.deviceGroup = deviceGroup;
         }
+
+        public MissingIntervalData getMissingIntervalData() {
+            return missingIntervalData;
+        }
+
+        public void setMissingIntervalData(MissingIntervalData missingIntervalData) {
+            this.missingIntervalData = missingIntervalData;
+        }
+
+        public Operation getOperation() {
+            return operation;
+        }
+
+        public void setOperation(Operation operation) {
+            this.operation = operation;
+        }
+
+        public List<PaoIdentifier> getDevices() {
+            return devices;
+        }
+
+        public void setDevices(List<PaoIdentifier> devices) {
+            this.devices = devices;
+        }
+
+        public String getMissingIntervalDataValue() {
+            return missingIntervalDataValue;
+        }
+
+        public void setMissingIntervalDataValue(String missingIntervalDataValue) {
+            this.missingIntervalDataValue = missingIntervalDataValue;
+        }
     }
 
-    default List<TimeIntervals> getIntervals() {
-        return List.of(TimeIntervals.HOURS_1, TimeIntervals.MINUTES_15, TimeIntervals.MINUTES_30, TimeIntervals.DAYS_1);
-    }
-    
     /**
      * Returns the list if rows that represent a row in CSV file. The data is formatted and ready to be written to CSV file.
      * 
