@@ -76,14 +76,14 @@ public class TimeRefreshGearApiTest {
     @Test
     public void timeRefreshGear_02_InvalidRefreshShedType() {
 
-        String errorMsg = "Invalid Refresh Shed Time value.";
+        String errorMsg = "Invalid Refresh Shed Type value.";
         mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.CountDown);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.refreshShedTime", errorMsg),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.refreshShedType", errorMsg),
                 "Expected Error not found: " + errorMsg);
     }
 

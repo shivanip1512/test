@@ -172,8 +172,8 @@ public class EcobeeProgramApiTest {
     public Object[][] getProgramNameData() {
 
         return new Object[][] { { "", "Name is required.", 422 },
-                { "Test\\@SpecialChar", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
-                { "Test,SpecialChar", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
+                { "Test\\@SpecialChar", "Name must not contain any of the following characters: / \\ , ' \" |.", 422 },
+                { "Test,SpecialChar", "Name must not contain any of the following characters: / \\ , ' \" |.", 422 },
                 { "TestNameMoreThanSixtyCharacter_TestNameMoreThanSixtyCharacters", "Exceeds maximum length of 60.", 422 } };
     }
 
