@@ -19,14 +19,18 @@ public class CapControlDashboardTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         DriverExtensions driverExt = getDriverExt();
-
+        setRefreshPage(false);
+        
         navigate(Urls.CapControl.DASHBOARD);
         dashboardPage = new CapControlDashboardPage(driverExt);
     }
     
     @AfterMethod()
     public void afterMethod() {
-        refreshPage(dashboardPage);
+        if(getRefreshPage()) {
+            refreshPage(dashboardPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })

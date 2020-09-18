@@ -28,13 +28,17 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
         createPage = new LoadGroupCreatePage(driverExt);
     }
 
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
-        refreshPage(createPage);
+        if(getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
@@ -62,7 +66,6 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_Name_InvalidCharValidation() {
-
         createPage.getName().setInputValue("test/,");
         createPage.getSaveBtn().click();
 
@@ -72,6 +75,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_Cancel_NavigatesToCorrectUrl() {
+        setRefreshPage(true);
         createPage.getCancelBtn().click();
 
         String actualUrl = getCurrentUrl();
@@ -81,7 +85,6 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_KwCapacity_RequiredValidation() {
-
         createPage.getType().selectItemByIndex(2);
         createPage.getkWCapacity().setInputValue("");
         createPage.getSaveBtn().click();
@@ -91,7 +94,6 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_KwCapacity_MaxRangeValidation() {
-        
         createPage.getType().selectItemByIndex(2);
         createPage.getkWCapacity().setInputValue("1000000");
         createPage.getSaveBtn().click();
@@ -101,7 +103,6 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_KwCapacity_MinRangeValidation() {
-
         createPage.getType().selectItemByIndex(2);
         createPage.getkWCapacity().setInputValue("-1");
         createPage.getSaveBtn().click();
@@ -111,14 +112,12 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_GeneralSection_TitleCorrect() {
-
         Section general = createPage.getPageSection("General");
         assertThat(general.getSection()).isNotNull();
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_OptionalAttributeSection_TitleCorrect() {
-
         createPage.getType().selectItemByIndex(2);
         createPage.getkWCapacity().clearInputValue();
         

@@ -24,6 +24,7 @@ public class CapBankCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
 
         navigate(Urls.CapControl.CAP_BANK_CREATE);
         createPage = new CapBankCreatePage(driverExt);
@@ -31,7 +32,10 @@ public class CapBankCreateTests extends SeleniumTestSetup {
     
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
-        refreshPage(createPage);
+        if(getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
@@ -46,6 +50,7 @@ public class CapBankCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void capBankCreate_RequiredFieldsOnly_Success() {
+        setRefreshPage(true);
         final String EXPECTED_MSG = "CapBank was saved successfully.";
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

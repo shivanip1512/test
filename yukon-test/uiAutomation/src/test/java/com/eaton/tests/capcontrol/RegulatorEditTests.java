@@ -26,13 +26,17 @@ public class RegulatorEditTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         navigate(Urls.CapControl.REGULATOR_EDIT + "671" + Urls.EDIT);
         editPage = new RegulatorEditPage(driverExt, 671);
     }
     
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(editPage);
+        if(getRefreshPage()) {
+            refreshPage(editPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
@@ -46,7 +50,8 @@ public class RegulatorEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void regulatorEdit_RequiredFieldsOnly_Success() {
-
+        setRefreshPage(true);
+        
         navigate(Urls.CapControl.REGULATOR_EDIT + "490" + Urls.EDIT);
 
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
@@ -71,6 +76,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
 
     @Test(enabled = false, groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void regulatorEdit_Delete_Success() {
+        setRefreshPage(true);
 
         navigate(Urls.CapControl.REGULATOR_EDIT + "578" + Urls.EDIT);
 

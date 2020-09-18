@@ -26,6 +26,7 @@ public class CapBankEditTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         
         navigate(Urls.CapControl.CAP_BANK_EDIT + "669" + Urls.EDIT);
 
@@ -34,7 +35,10 @@ public class CapBankEditTests extends SeleniumTestSetup {
     
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
-        refreshPage(editPage);
+        if(getRefreshPage()) {
+            refreshPage(editPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
@@ -48,6 +52,7 @@ public class CapBankEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void capBankEdit_RequiredFieldsOnly_Success() {
+        setRefreshPage(true);
         final String EXPECTED_MSG = "CapBank was saved successfully.";
 
         navigate(Urls.CapControl.CAP_BANK_EDIT + "459" + Urls.EDIT);
@@ -70,6 +75,7 @@ public class CapBankEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void capBankEdit_Delete_Success() {
+        setRefreshPage(true);
         final String EXPECTED_MSG = "CapBank AT Delete CapBank deleted successfully.";
 
         navigate(Urls.CapControl.CAP_BANK_EDIT + "576" + Urls.EDIT);

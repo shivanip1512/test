@@ -24,14 +24,18 @@ public class FeederCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-
+        setRefreshPage(false);
+        
         navigate(Urls.CapControl.FEEDER_CREATE);
         createPage = new FeederCreatePage(driverExt);
     }
 
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
-        refreshPage(createPage);
+        if(getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        setRefreshPage(false);
     }
     
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
@@ -45,6 +49,7 @@ public class FeederCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void feederCreate_RequiredFieldsOnly_Success() {
+        setRefreshPage(true);
         final String EXPECTED_MSG = "Feeder was saved successfully.";
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

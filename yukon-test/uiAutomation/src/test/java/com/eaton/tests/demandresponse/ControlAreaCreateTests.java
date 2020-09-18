@@ -24,13 +24,17 @@ public class ControlAreaCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         navigate(Urls.DemandResponse.CONTROL_AREA_CREATE);
         createPage = new ControlAreaCreatePage(driverExt);
     }
     
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(createPage);
+        if(getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -45,6 +49,7 @@ public class ControlAreaCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void controlAreaCreate_RequiredFieldsOnly_Success() {
+        setRefreshPage(true);
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 

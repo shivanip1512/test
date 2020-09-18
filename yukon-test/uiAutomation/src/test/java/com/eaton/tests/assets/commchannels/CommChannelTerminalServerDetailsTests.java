@@ -26,9 +26,8 @@ import com.eaton.rest.api.drsetup.JsonFileHelper;
 import io.restassured.response.ExtractableResponse;
 
 public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
-
     private CommChannelTerminalServerDetailPage detailPage;
-    private DriverExtensions driverExt;
+    private DriverExtensions driverExt;    
     private Integer commChannelId;
     private String commChannelName;
     private JSONObject jo;
@@ -38,7 +37,8 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-
+        setRefreshPage(false);
+        
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         commChannelName = "Terminal Server Comm Channel " + timeStamp;
 
@@ -61,7 +61,10 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(detailPage);
+        if(getRefreshPage()) {
+            refreshPage(detailPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
@@ -178,6 +181,7 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
     public void commChannelDeleteTerminalServer_Delete_Success() {
+        setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String deleteCommChannelName = "Terminal Server " + timeStamp;
         String expectedMessage = deleteCommChannelName +" deleted successfully.";

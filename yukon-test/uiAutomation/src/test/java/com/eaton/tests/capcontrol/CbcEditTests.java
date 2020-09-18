@@ -26,6 +26,7 @@ public class CbcEditTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         
         navigate(Urls.CapControl.CBC_EDIT + "670" + Urls.EDIT);
 
@@ -34,7 +35,10 @@ public class CbcEditTests extends SeleniumTestSetup {
     
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(editPage);
+        if(getRefreshPage()) {
+            refreshPage(editPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
@@ -48,6 +52,7 @@ public class CbcEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void cbcEdit_RequiredFieldsOnly_Success() {
+        setRefreshPage(true);
         final String EXPECTED_MSG = "CBC was successfully saved.";
 
         navigate(Urls.CapControl.CBC_EDIT + "563" + Urls.EDIT);
@@ -70,6 +75,7 @@ public class CbcEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void cbcEdit_Delete_Success() {
+        setRefreshPage(true);
         final String EXPECTED_MSG = "Deleted CBC";
 
         navigate(Urls.CapControl.CBC_EDIT + "577" + Urls.EDIT);

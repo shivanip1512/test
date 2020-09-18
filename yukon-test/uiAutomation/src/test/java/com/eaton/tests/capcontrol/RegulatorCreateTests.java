@@ -24,14 +24,18 @@ public class RegulatorCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-
+        setRefreshPage(false);
+        
         navigate(Urls.CapControl.REGULATOR_CREATE);
         createPage = new RegulatorCreatePage(driverExt);
     }
     
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
-        refreshPage(createPage);
+        if(getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
@@ -45,6 +49,7 @@ public class RegulatorCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void regulatorCreate_RequiredFieldsOnly_Success() {
+        setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 
         String name = "AT Regulator " + timeStamp;

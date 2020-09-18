@@ -28,17 +28,20 @@ public class CbcCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-
+        setRefreshPage(false);
+        
         navigate(Urls.CapControl.CBC_CREATE);
 
         createPage = new CbcCreatePage(driverExt);
-
         randomNum = getRandomNum();
     }
     
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
-        refreshPage(createPage);
+        if(getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
@@ -52,6 +55,7 @@ public class CbcCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void cbcCreate_RequiredFieldsOnly_Success() {
+        setRefreshPage(true);
         final String EXPECTED_MSG = "CBC was successfully saved.";
 
         int masterAddress = randomNum.nextInt(65000);

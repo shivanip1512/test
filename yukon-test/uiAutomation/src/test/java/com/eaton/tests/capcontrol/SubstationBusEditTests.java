@@ -26,6 +26,7 @@ public class SubstationBusEditTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         
         navigate(Urls.CapControl.SUBSTATION_BUS_EDIT + "667" + Urls.EDIT);
 
@@ -34,7 +35,10 @@ public class SubstationBusEditTests extends SeleniumTestSetup {
     
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
-        refreshPage(editPage);
+        if(getRefreshPage()) {
+            refreshPage(editPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
@@ -48,6 +52,7 @@ public class SubstationBusEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void substationBusEdit_RequiredFieldsOnly_Success() {
+        setRefreshPage(true);
         final String EXPECTED_MSG = "Bus was saved successfully.";
 
         navigate(Urls.CapControl.SUBSTATION_BUS_EDIT + "430" + Urls.EDIT);
@@ -70,6 +75,7 @@ public class SubstationBusEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void substationBusEdit_Delete_Success() {
+        setRefreshPage(true);
         final String EXPECTED_MSG = "Bus AT Delete Bus deleted successfully.";
 
         navigate(Urls.CapControl.SUBSTATION_BUS_EDIT + "574" + Urls.EDIT);
