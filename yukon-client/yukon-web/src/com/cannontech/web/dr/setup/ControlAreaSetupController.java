@@ -100,7 +100,7 @@ public class ControlAreaSetupController {
     public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request, @DefaultSort(dir = Direction.asc, sort = "startPriority") SortingParameters sorting) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drControlAreaRetrieveUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drControlAreaUrl + "/" + id);
             model.addAttribute("mode", PageEditMode.VIEW);
             ControlArea controlArea = retrieveControlArea(userContext, request, id, url);
             if (controlArea == null) {
@@ -126,7 +126,7 @@ public class ControlAreaSetupController {
     public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drControlAreaRetrieveUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drControlAreaUrl + "/" + id);
             model.addAttribute("mode", PageEditMode.EDIT);
             ControlArea controlArea = retrieveControlArea(userContext, request, id, url);
             if (controlArea == null) {
@@ -157,10 +157,13 @@ public class ControlAreaSetupController {
 
         try {
             String url;
+            ResponseEntity<? extends Object> response;
             if (controlArea.getControlAreaId() == null) {
-                url = helper.findWebServerUrl(request, userContext, ApiURL.drControlAreaCreateUrl);
+                url = helper.findWebServerUrl(request, userContext, ApiURL.drControlAreaUrl);
+                response = saveControlArea(userContext, request, url, controlArea, HttpMethod.POST);
             } else {
-                url = helper.findWebServerUrl(request, userContext, ApiURL.drControlAreaUpdateUrl + controlArea.getControlAreaId());
+                url = helper.findWebServerUrl(request, userContext, ApiURL.drControlAreaUrl + "/" + controlArea.getControlAreaId());
+                response = saveControlArea(userContext, request, url, controlArea, HttpMethod.PUT);
             }
             List<ControlAreaTrigger> triggers = new ArrayList<>(2);
             CollectionUtils.emptyIfNull(triggerIds)
@@ -168,8 +171,6 @@ public class ControlAreaSetupController {
                                triggers.add(controlAreaTriggerCache.asMap().get(id));
             });
             controlArea.setTriggers(triggers);
-            ResponseEntity<? extends Object> response =
-                    saveControlArea(userContext, request, url, controlArea, HttpMethod.POST);
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(controlArea, "controlArea");
                 result = helper.populateBindingError(result, error, response);
@@ -213,7 +214,7 @@ public class ControlAreaSetupController {
             FlashScope flash, HttpServletRequest request) {
 
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drControlAreaDeleteUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drControlAreaUrl + "/" + id);
             ResponseEntity<? extends Object> response = deleteControlArea(userContext, request, url, lmDelete);
 
             if (response.getStatusCode() == HttpStatus.OK) {
@@ -414,7 +415,7 @@ public class ControlAreaSetupController {
     public String sortAssignedProgram(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request, @DefaultSort(dir = Direction.asc, sort = "startPriority") SortingParameters sorting) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drControlAreaRetrieveUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drControlAreaUrl + "/" + id);
             ControlArea controlArea = retrieveControlArea(userContext, request, id, url);
             if (controlArea == null) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "controlArea.retrieve.error"));

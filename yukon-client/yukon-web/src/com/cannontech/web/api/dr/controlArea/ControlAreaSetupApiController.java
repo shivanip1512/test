@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +28,7 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
 @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
-@RequestMapping("/dr/setup/controlArea")
+@RequestMapping("/dr/controlAreas")
 public class ControlAreaSetupApiController {
 
     @Autowired private ControlAreaSetupService controlAreaService;
@@ -47,7 +48,7 @@ public class ControlAreaSetupApiController {
         return new ResponseEntity<>(paoIdMap, HttpStatus.CREATED);
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public ResponseEntity<HashMap<String, Integer>> update(@Valid @RequestBody ControlArea controlArea,
             @PathVariable int id) {
