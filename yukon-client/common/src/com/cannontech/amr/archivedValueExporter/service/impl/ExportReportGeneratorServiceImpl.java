@@ -460,9 +460,9 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         case RUNTIME:
             return getTimestamp(exportField, reportRunTime.toDate(), userContext, tzFormat);
         case LATITUDE:
-            return getLatitude(pao, paoData);
+            return StringUtils.isEmpty(paoData.getLatitude()) ? StringUtils.EMPTY : paoData.getLatitude();
         case LONGITUDE:
-            return getLongitude(pao, paoData);
+            return StringUtils.isEmpty(paoData.getLongitude()) ? StringUtils.EMPTY : paoData.getLongitude();
         default:
             throw new IllegalArgumentException(
                     exportField.getField().getType() + " is not currently supported in the export report process");
@@ -815,31 +815,5 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     private String getPreviewPointState(YukonUserContext userContext) {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         return messageSourceAccessor.getMessage(previewPointStateKey);
-    }
-
-    /**
-     * Gets the Latitude. Returns "" if the latitude was not found.
-     */
-    private String getLatitude(YukonPao pao, PaoData paoData) {
-        if (pao == null || (pao == null && paoData == null)) {
-            return "";
-        } else if (paoData.getLatitude() != null) {
-            return paoData.getLatitude();
-        }
-
-        return "";
-    }
-
-    /**
-     * Gets the longitude. Returns "" if the longitude was not found.
-     */
-    private String getLongitude(YukonPao pao, PaoData paoData) {
-        if (pao == null || (pao == null && paoData == null)) {
-            return "";
-        } else if (paoData.getLongitude() != null) {
-            return paoData.getLongitude();
-        }
-
-        return "";
     }
 }
