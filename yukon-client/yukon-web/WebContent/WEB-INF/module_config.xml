@@ -1799,7 +1799,7 @@
           <page name="jsTesting" type="BASIC"/>
           <page name="paoDefinitionTesting" type="BASIC"/>
           <page name="smartNotificationsSimulator" type="BASIC"/>
-          <page name="collectionActionsTesting" type="BASIC"/>
+          <page name="cacheManagement" type="BASIC"/>
           <page name="itronSimulator" type="BASIC"/>
           <page name="jmsApis" type="BASIC"/>
           <page name="nest" type="BASIC">

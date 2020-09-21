@@ -459,6 +459,10 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             }
         case RUNTIME:
             return getTimestamp(exportField, reportRunTime.toDate(), userContext, tzFormat);
+        case LATITUDE:
+            return StringUtils.isEmpty(paoData.getLatitude()) ? StringUtils.EMPTY : paoData.getLatitude();
+        case LONGITUDE:
+            return StringUtils.isEmpty(paoData.getLongitude()) ? StringUtils.EMPTY : paoData.getLongitude();
         default:
             throw new IllegalArgumentException(
                     exportField.getField().getType() + " is not currently supported in the export report process");
@@ -789,6 +793,8 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         paoData.setCarrierAddress(carrierAddress);
         paoData.setRouteName(routeName);
         paoData.setAddressOrSerialNumber(address);
+        paoData.setLatitude("43.9787");
+        paoData.setLongitude("15.3846");
 
         return ImmutableMap.of(paoIdentifier, paoData);
     }

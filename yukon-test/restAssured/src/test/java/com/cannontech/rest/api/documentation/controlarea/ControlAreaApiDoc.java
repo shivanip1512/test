@@ -80,12 +80,12 @@ public class ControlAreaApiDoc {
         gearTypes.add(MockGearControlMethod.TimeRefresh);
 
         loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_DIRECT_PROGRAM, loadGroups, gearTypes, programConstraint.getId());
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", loadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", loadProgram);
         Integer programId = createResponse.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID);
         loadProgram.setProgramId(programId);
 
         assertTrue("Program Id should not be Null", programId != null);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
     }
 
     /**
