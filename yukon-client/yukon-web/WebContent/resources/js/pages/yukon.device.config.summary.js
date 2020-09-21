@@ -55,6 +55,18 @@ yukon.deviceConfig.summary = (function () {
                 window.location = yukon.url('/deviceConfiguration/summary/download?' + data);
             });
             
+            $(document).on('click', '.js-filter-configs', function() {
+                var tableContainer = $('#results-container'),
+                    form = $('#filter-form');
+                form.ajaxSubmit({
+                    success: function(data, status, xhr, $form) {
+                        tableContainer.html(data);
+                        tableContainer.data('url', yukon.url('/deviceConfiguration/summary/filter?' + form.serialize()));
+                        yukon.ui.unbusy($('.js-filter-configs'));
+                    }
+                });   
+            });
+            
             _initialized = true;
 
         },
