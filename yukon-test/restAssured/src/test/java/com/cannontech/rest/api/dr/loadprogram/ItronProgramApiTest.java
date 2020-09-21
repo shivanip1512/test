@@ -53,10 +53,10 @@ public class ItronProgramApiTest {
                 loadGroups, gearTypes, programConstraint.getId());
         loadProgram.setName("Auto_LmItronProgramTest");
         loadProgram.setNotification(null);
-        ExtractableResponse<?> response = ApiCallHelper.post("saveLoadProgram", loadProgram);
+        ExtractableResponse<?> response = ApiCallHelper.post("loadPrograms", loadProgram);
         context.setAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME, loadProgram.getName());
         programId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID);
-        Assert.assertTrue(response.statusCode() == 200, "Status code should be 200");
+        Assert.assertTrue(response.statusCode() == 201, "Status code should be 201");
         Assert.assertTrue(programId != null, "Program Id should not be Null");
         loadProgram.setProgramId(programId);
         context.setAttribute("expectedloadProgram", loadProgram);
@@ -71,7 +71,7 @@ public class ItronProgramApiTest {
     public void ItronProgram_02_Get(ITestContext context) {
 
         MockLoadProgram expectedLoadProgram = (MockLoadProgram) context.getAttribute("expectedloadProgram");
-        ExtractableResponse<?> response = ApiCallHelper.get("getLoadProgram", programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.get("loadPrograms", "/" + programId.toString());
 
         Assert.assertTrue(response.statusCode() == 200, "Status code should be 200");
         MockLoadProgram actualLoadProgram = response.as(MockLoadProgram.class);
@@ -103,11 +103,10 @@ public class ItronProgramApiTest {
         updateLoadProgram.setName(name);
         updateLoadProgram.getGears().get(0).setGearName(gearName);
 
-        ExtractableResponse<?> response = ApiCallHelper.post("updateLoadProgram", updateLoadProgram,
-                programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.put("loadPrograms", updateLoadProgram, "/" +programId.toString());
         Assert.assertTrue(response.statusCode() == 200, "Status code should be 200");
 
-        ExtractableResponse<?> getUpdatedResponse = ApiCallHelper.get("getLoadProgram", programId.toString());
+        ExtractableResponse<?> getUpdatedResponse = ApiCallHelper.get("loadPrograms", "/" + programId.toString());
         Assert.assertTrue(getUpdatedResponse.statusCode() == 200, "Status code should be 200");
         MockLoadProgram updatedLoadProgram = getUpdatedResponse.as(MockLoadProgram.class);
         Assert.assertTrue(updatedLoadProgram.getName().equals(name), "Name should be " + name);
@@ -126,8 +125,7 @@ public class ItronProgramApiTest {
                 MockPaoType.LM_ITRON_PROGRAM,
                 (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
 
-        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyLoadProgram", loadProgramCopy,
-                programId.toString());
+        ExtractableResponse<?> copyResponse = ApiCallHelper.post("loadPrograms", loadProgramCopy, "/" +programId.toString() + "/copy");
         Assert.assertTrue(copyResponse.statusCode() == 200, "Status code should be 200");
         Assert.assertTrue(copyResponse.path("programId") != null, "Program Id should not be Null");
         context.setAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME, loadProgramCopy.getName());
@@ -141,12 +139,9 @@ public class ItronProgramApiTest {
     @Test(dependsOnMethods = { "ItronProgram_01_Create" })
     public void ItronProgram_05_Delete(ITestContext context) {
 
-        MockLMDto deleteObject = MockLMDto.builder()
-                .name((String) context.getAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME)).build();
-
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteLoadProgram", deleteObject, programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.delete("loadPrograms", "/" + programId.toString());
         Assert.assertTrue(response.statusCode() == 200, "Status code should be 200");
-        Assert.assertTrue(response.path("programId").equals(programId),
+        Assert.assertTrue(response.path("id").equals(programId),
                 "Expected programId to be deleted is not correct.");
     }
 
@@ -161,7 +156,7 @@ public class ItronProgramApiTest {
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setName(" ");
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         Assert.assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         Assert.assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message value is 'Validation error'");
@@ -179,7 +174,7 @@ public class ItronProgramApiTest {
         String expectedErrorMsg = "Exceeds maximum length of 60.";
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setName("TestNameMoreThanSixtyCharacter_TestNameMoreThanSixtyCharacter");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         Assert.assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
 
         Assert.assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -197,7 +192,7 @@ public class ItronProgramApiTest {
         String expectedErrorMsg = "Name must not contain any of the following characters: / \\ , ' \" |.";
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setName("Test,//Test");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         Assert.assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         Assert.assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message value is 'Validation error'");
@@ -214,7 +209,7 @@ public class ItronProgramApiTest {
         String expectedErrorMsg = "Name must be unique.";
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setName(context.getAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME).toString());
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         Assert.assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
 
         Assert.assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -233,7 +228,7 @@ public class ItronProgramApiTest {
         String expectedErrorMsg = "Must be between 0 and 100,000.";
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setTriggerOffset((double) -1);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         Assert.assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
 
         Assert.assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -252,7 +247,7 @@ public class ItronProgramApiTest {
         String expectedErrorMsg = "Must be between 0 and 100,000.";
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setTriggerOffset((double) 100000);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         Assert.assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
 
         Assert.assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -271,7 +266,7 @@ public class ItronProgramApiTest {
         String expectedErrorMsg = "Must be between -10,000 and 100,000.";
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setRestoreOffset((double) -10000);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         Assert.assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
 
         Assert.assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -289,7 +284,7 @@ public class ItronProgramApiTest {
         String expectedErrorMsg = "Must be between -10,000 and 100,000.";
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setRestoreOffset((double) 100000);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         Assert.assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
 
         Assert.assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -309,7 +304,7 @@ public class ItronProgramApiTest {
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setAssignedGroups(null);
         mockLoadProgram.setNotification(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         Assert.assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
 
         Assert.assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -329,7 +324,7 @@ public class ItronProgramApiTest {
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setGears(null);
         mockLoadProgram.setNotification(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         Assert.assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
 
         Assert.assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -349,7 +344,7 @@ public class ItronProgramApiTest {
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setConstraint(null);
         mockLoadProgram.setNotification(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         Assert.assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
 
         Assert.assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -370,7 +365,7 @@ public class ItronProgramApiTest {
         mockLoadProgram.getGears().get(0).setGearName("");
         mockLoadProgram.setNotification(null);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         Assert.assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
 
         Assert.assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -392,7 +387,7 @@ public class ItronProgramApiTest {
         mockLoadProgram.getControlWindow().getControlWindowOne().setAvailableStartTimeInMinutes(-1);
         mockLoadProgram.setNotification(null);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         Assert.assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
 
         Assert.assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -416,7 +411,7 @@ public class ItronProgramApiTest {
         mockLoadProgram.getControlWindow().getControlWindowOne().setAvailableStopTimeInMinutes(-1);
         mockLoadProgram.setNotification(null);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         Assert.assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
 
         Assert.assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -439,7 +434,7 @@ public class ItronProgramApiTest {
         mockLoadProgram.getControlWindow().getControlWindowOne().setAvailableStartTimeInMinutes(1440);
         mockLoadProgram.setNotification(null);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         Assert.assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
 
         Assert.assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -462,7 +457,7 @@ public class ItronProgramApiTest {
         mockLoadProgram.getControlWindow().getControlWindowOne().setAvailableStopTimeInMinutes(1441);
         mockLoadProgram.setNotification(null);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         Assert.assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         Assert.assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message value is 'Validation error'");
@@ -494,7 +489,7 @@ public class ItronProgramApiTest {
         loadProgram.setName("Auto_ProgramTest");
         loadProgram.setNotification(null);
         loadProgram.getAssignedGroups().get(0).setGroupId(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", loadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", loadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -514,8 +509,7 @@ public class ItronProgramApiTest {
         // Delete Copied LoadProgram
         MockLMDto deleteObject = MockLMDto.builder()
                 .name((String) context.getAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME)).build();
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteLoadProgram", deleteObject,
-                copyProgramId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.delete("loadPrograms", "/" +  copyProgramId.toString());
         softAssert.assertTrue(response.statusCode() == 200,
                 "Status code should be 200. Delete copied LoadProgram failed.");
 

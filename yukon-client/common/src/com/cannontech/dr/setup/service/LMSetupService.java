@@ -16,11 +16,17 @@ public interface LMSetupService<T1, T2> {
      * Retrieve LM objects based on id.
      */
     T1 retrieve(int id);
-
+    
     /**
      * Delete the LM object.
      */
-    int delete(int id, String name);
+    default int delete(int id, String name) {
+        return 0;
+    }
+   
+    default int delete(int id) {
+        return 0;
+    }
 
     /**
      * Copy the LM object.

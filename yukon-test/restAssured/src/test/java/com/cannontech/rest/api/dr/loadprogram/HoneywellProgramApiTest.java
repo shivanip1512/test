@@ -56,10 +56,10 @@ public class HoneywellProgramApiTest {
                                                                                      programConstraint.getId());
         loadProgram.setName("Auto_LmHoneywellProgramTest");
         loadProgram.setNotification(null);
-        ExtractableResponse<?> response = ApiCallHelper.post("saveLoadProgram", loadProgram);
+        ExtractableResponse<?> response = ApiCallHelper.post("loadPrograms", loadProgram);
         context.setAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME, loadProgram.getName());
         programId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
+        assertTrue("Status code should be 201", response.statusCode() == 201);
         assertTrue("Program Id should not be Null", programId != null);
         loadProgram.setProgramId(programId);
         context.setAttribute("expectedloadProgram", loadProgram);
@@ -73,7 +73,7 @@ public class HoneywellProgramApiTest {
     public void HoneywellProgram_02_Get(ITestContext context) {
 
         MockLoadProgram expectedLoadProgram = (MockLoadProgram) context.getAttribute("expectedloadProgram");
-        ExtractableResponse<?> response = ApiCallHelper.get("getLoadProgram", programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.get("loadPrograms", "/" + programId.toString());
 
         assertTrue("Status code should be 200", response.statusCode() == 200);
         MockLoadProgram actualLoadProgram = response.as(MockLoadProgram.class);
@@ -103,10 +103,10 @@ public class HoneywellProgramApiTest {
         updateLoadProgram.setName(name);
         updateLoadProgram.getGears().get(0).setGearName(gearName);
 
-        ExtractableResponse<?> response = ApiCallHelper.post("updateLoadProgram", updateLoadProgram, programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.put("loadPrograms", updateLoadProgram, "/" +programId.toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
-        ExtractableResponse<?> getUpdatedResponse = ApiCallHelper.get("getLoadProgram", programId.toString());
+        ExtractableResponse<?> getUpdatedResponse = ApiCallHelper.get("loadPrograms", "/" + programId.toString());
         assertTrue("Status code should be 200", getUpdatedResponse.statusCode() == 200);
         MockLoadProgram updatedLoadProgram = getUpdatedResponse.as(MockLoadProgram.class);
         assertTrue("Name should be " + name, updatedLoadProgram.getName().equals(name));
@@ -122,7 +122,7 @@ public class HoneywellProgramApiTest {
         MockLoadProgramCopy loadProgramCopy = LoadProgramSetupHelper.buildLoadProgramCopyRequest(MockPaoType.LM_HONEYWELL_PROGRAM,
                                                                                                  (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
 
-        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyLoadProgram", loadProgramCopy, programId.toString());
+        ExtractableResponse<?> copyResponse = ApiCallHelper.post("loadPrograms", loadProgramCopy, "/" +programId.toString() + "/copy");
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
         assertTrue("Program Id should not be Null", copyResponse.path("programId") != null);
         context.setAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME, loadProgramCopy.getName());
@@ -135,11 +135,9 @@ public class HoneywellProgramApiTest {
     @Test(dependsOnMethods = { "HoneywellProgram_01_Create" })
     public void HoneywellProgram_05_Delete(ITestContext context) {
 
-        MockLMDto deleteObject = MockLMDto.builder().name((String) context.getAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME)).build();
-
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteLoadProgram", deleteObject, programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.delete("loadPrograms", "/" + programId.toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
-        assertTrue("Expected programId to be deleted is not correct.", response.path("programId").equals(programId));
+        assertTrue("Expected programId to be deleted is not correct.", response.path("id").equals(programId));
     }
 
     /**
@@ -150,7 +148,7 @@ public class HoneywellProgramApiTest {
 
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setName(" ");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue("Status code should be 422", createResponse.statusCode() == 422);
         assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct", createResponse.path("fieldErrors.code[0]").equals("Name is required."));
@@ -165,7 +163,7 @@ public class HoneywellProgramApiTest {
 
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setName("TestNameMoreThanSixtyCharacter_TestNameMoreThanSixtyCharacter");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue("Status code should be 422", createResponse.statusCode() == 422);
         assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct", createResponse.path("fieldErrors.code[0]").equals("Exceeds maximum length of 60."));
@@ -180,7 +178,7 @@ public class HoneywellProgramApiTest {
 
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setName("Test,//Test");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue("Status code should be 422", createResponse.statusCode() == 422);
         assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct",
@@ -196,7 +194,7 @@ public class HoneywellProgramApiTest {
 
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setName(context.getAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME).toString());
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue("Status code should be 422", createResponse.statusCode() == 422);
         assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct", createResponse.path("fieldErrors.code[0]").equals("Name must be unique."));
@@ -211,7 +209,7 @@ public class HoneywellProgramApiTest {
 
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setTriggerOffset((double) -1);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue("Status code should be 422", createResponse.statusCode() == 422);
         assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct", createResponse.path("fieldErrors.code[0]").equals("Must be between 0 and 100,000."));
@@ -226,7 +224,7 @@ public class HoneywellProgramApiTest {
 
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setTriggerOffset((double) 100000);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue("Status code should be 422", createResponse.statusCode() == 422);
         assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct", createResponse.path("fieldErrors.code[0]").equals("Must be between 0 and 100,000."));
@@ -241,7 +239,7 @@ public class HoneywellProgramApiTest {
 
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setRestoreOffset((double) -10000);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue("Status code should be 422", createResponse.statusCode() == 422);
         assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct", createResponse.path("fieldErrors.code[0]").equals("Must be between -10,000 and 100,000."));
@@ -256,7 +254,7 @@ public class HoneywellProgramApiTest {
 
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setRestoreOffset((double) 100000);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue("Status code should be 422", createResponse.statusCode() == 422);
         assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct", createResponse.path("fieldErrors.code[0]").equals("Must be between -10,000 and 100,000."));
@@ -272,7 +270,7 @@ public class HoneywellProgramApiTest {
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setAssignedGroups(null);
         mockLoadProgram.setNotification(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue("Status code should be 422", createResponse.statusCode() == 422);
         assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct",
@@ -288,7 +286,7 @@ public class HoneywellProgramApiTest {
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setGears(null);
         mockLoadProgram.setNotification(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue("Status code should be 422", createResponse.statusCode() == 422);
         assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct", createResponse.path("globalErrors.code[0]").equals("Program must contain 1 or more gears."));
@@ -304,7 +302,7 @@ public class HoneywellProgramApiTest {
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setConstraint(null);
         mockLoadProgram.setNotification(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue("Status code should be 422", createResponse.statusCode() == 422);
         assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct", createResponse.path("fieldErrors.code[0]").equals("Program Constraint is required."));
@@ -321,7 +319,7 @@ public class HoneywellProgramApiTest {
         mockLoadProgram.getGears().get(0).setGearName("");
         mockLoadProgram.setNotification(null);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue("Status code should be 422", createResponse.statusCode() == 422);
         assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct", createResponse.path("fieldErrors.code[1]").equals("Gear Name is required."));
@@ -338,7 +336,7 @@ public class HoneywellProgramApiTest {
         mockLoadProgram.getControlWindow().getControlWindowOne().setAvailableStartTimeInMinutes(-1);
         mockLoadProgram.setNotification(null);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue("Status code should be 422", createResponse.statusCode() == 422);
         assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct", createResponse.path("fieldErrors.code[1]").equals("Must be between 0 and 1,439."));
@@ -355,7 +353,7 @@ public class HoneywellProgramApiTest {
         mockLoadProgram.getControlWindow().getControlWindowOne().setAvailableStopTimeInMinutes(-1);
         mockLoadProgram.setNotification(null);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue("Status code should be 422", createResponse.statusCode() == 422);
         assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct", createResponse.path("fieldErrors.code[1]").equals("Must be between 0 and 1,440."));
@@ -372,7 +370,7 @@ public class HoneywellProgramApiTest {
         mockLoadProgram.getControlWindow().getControlWindowOne().setAvailableStartTimeInMinutes(1440);
         mockLoadProgram.setNotification(null);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue("Status code should be 422", createResponse.statusCode() == 422);
         assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct", createResponse.path("fieldErrors.code[1]").equals("Must be between 0 and 1,439."));
@@ -389,7 +387,7 @@ public class HoneywellProgramApiTest {
         mockLoadProgram.getControlWindow().getControlWindowOne().setAvailableStopTimeInMinutes(1441);
         mockLoadProgram.setNotification(null);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue("Status code should be 422", createResponse.statusCode() == 422);
         assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct", createResponse.path("fieldErrors.code[1]").equals("Must be between 0 and 1,440."));
@@ -417,7 +415,7 @@ public class HoneywellProgramApiTest {
         loadProgram.setName("Auto_ProgramTest");
         loadProgram.setNotification(null);
         loadProgram.getAssignedGroups().get(0).setGroupId(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", loadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", loadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -435,7 +433,7 @@ public class HoneywellProgramApiTest {
         SoftAssert softAssert = new SoftAssert();
         // Delete Copied LoadProgram
         MockLMDto deleteObject = MockLMDto.builder().name((String) context.getAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME)).build();
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteLoadProgram", deleteObject, copyProgramId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.delete("loadPrograms", "/" + copyProgramId.toString());
         softAssert.assertTrue(response.statusCode() == 200, "Status code should be 200. Delete copied LoadProgram failed.");
 
         // Delete LoadGroup which have been created for Load Program

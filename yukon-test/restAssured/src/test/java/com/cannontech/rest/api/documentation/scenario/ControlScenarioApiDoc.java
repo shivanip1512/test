@@ -102,14 +102,14 @@ public class ControlScenarioApiDoc {
 
             loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_DIRECT_PROGRAM, loadGroups, gearTypes,
                     programConstraint.getId());
-            ExtractableResponse<?> loadProgramResponse = ApiCallHelper.post("saveLoadProgram", loadProgram);
+            ExtractableResponse<?> loadProgramResponse = ApiCallHelper.post("loadPrograms", loadProgram);
 
             loadProgram.setProgramId(loadProgramResponse.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID));
             assertTrue("Program Id should not be Null", loadProgram.getProgramId() != null);
-            assertTrue("Status code should be 200", loadProgramResponse.statusCode() == 200);
+            assertTrue("Status code should be 201", loadProgramResponse.statusCode() == 201);
 
-            ExtractableResponse<?> response = ApiCallHelper.get("getLoadProgram",
-                    loadProgramResponse.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString());
+            ExtractableResponse<?> response = ApiCallHelper.get("loadPrograms", 
+                    "/" + loadProgramResponse.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString());
             assertTrue(response.statusCode() == 200, "Status code should be 200");
             loadProgram = response.as(MockLoadProgram.class);
 

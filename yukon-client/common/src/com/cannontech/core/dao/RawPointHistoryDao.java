@@ -376,15 +376,6 @@ public interface RawPointHistoryDao {
         BlockingQueue<PointValueHolder> queue, AtomicBoolean isCompleted);
 
     /**
-     * Returns recent values. This method shouldn't be used it will be removed in the future.
-     * 
-     * @param pointId
-     * @param rows - number of values to return
-     */
-    @Deprecated
-    List<PointValueQualityHolder> getMostRecentValues(int pointId, int rows);
-
-    /**
      * Method to get a list of point values for a given point and time period (it includes the point values for disabled paos).
      * StartDate is always exclusive, stopDate is inclusive.
      * Ordering is always timestamp asc, changeid asc
