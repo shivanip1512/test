@@ -105,12 +105,12 @@ public class EcobeeProgramGearApiDoc {
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(ecobeeCycleDescriptor),
                                                  programIdDescriptor,
                                                  loadProgram,
-                                                 "saveLoadProgram");
+                                                 "loadPrograms");
 
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        assertTrue("Status code should be 201", response.statusCode() == 201);
+        ApiCallHelper.delete("loadPrograms", "/" + paoId);
     }
     
     @Test
@@ -137,12 +137,12 @@ public class EcobeeProgramGearApiDoc {
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(ecobeeSetpointDescriptor),
                                                  programIdDescriptor,
                                                  loadProgram,
-                                                 "saveLoadProgram");
+                                                 "loadPrograms");
 
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        assertTrue("Status code should be 201", response.statusCode() == 201);
+        ApiCallHelper.delete("loadPrograms", "/" + paoId);
     }
 
     @AfterClass

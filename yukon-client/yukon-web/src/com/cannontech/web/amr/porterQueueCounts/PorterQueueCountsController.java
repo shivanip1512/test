@@ -97,7 +97,7 @@ public class PorterQueueCountsController {
         json.put("name", "Queue Counts");
         json.put("series", seriesList);
         List<Map<String, Object>> yAxis = new ArrayList<>();
-        ImmutableMap<String, ImmutableMap<String, String>> labels = ImmutableMap.of("style", ImmutableMap.of("color", "#555"));
+        ImmutableMap<String, ImmutableMap<String, String>> labels = ImmutableMap.of("style", ImmutableMap.of("color", YukonColorPalette.GRAY.getHexValue()));
         yAxisProperties.put("labels", labels);
         yAxisProperties.put("opposite", false);
         yAxisProperties.put("softMin", 0);

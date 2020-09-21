@@ -112,12 +112,12 @@ public class DirectProgramGearApiDoc {
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(timeRefreshDescriptor),
                                                  programIdDescriptor,
                                                  loadProgram,
-                                                 "saveLoadProgram");
+                                                 "loadPrograms");
 
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        assertTrue("Status code should be 201", response.statusCode() == 201);
+        ApiCallHelper.delete("loadPrograms", "/" + paoId);
     }
 
     @Test
@@ -154,12 +154,12 @@ public class DirectProgramGearApiDoc {
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(smartCycleDescriptor),
                                                  programIdDescriptor,
                                                  loadProgram,
-                                                 "saveLoadProgram");
+                                                 "loadPrograms");
 
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        assertTrue("Status code should be 201", response.statusCode() == 201);
+        ApiCallHelper.delete("loadPrograms", "/" + paoId);
     }
 
     @Test
@@ -191,12 +191,12 @@ public class DirectProgramGearApiDoc {
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(masterCycleDescriptor),
                                                  programIdDescriptor,
                                                  loadProgram,
-                                                 "saveLoadProgram");
+                                                 "loadPrograms");
 
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        assertTrue("Status code should be 201", response.statusCode() == 201);
+        ApiCallHelper.delete("loadPrograms", "/" + paoId);
     }
 
     @Test
@@ -234,12 +234,12 @@ public class DirectProgramGearApiDoc {
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(trueCycleDescriptor),
                                                  programIdDescriptor,
                                                  loadProgram,
-                                                 "saveLoadProgram");
+                                                 "loadPrograms");
 
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        assertTrue("Status code should be 201", response.statusCode() == 201);
+        ApiCallHelper.delete("loadPrograms", "/" + paoId);
     }
 
     @Test
@@ -278,11 +278,11 @@ public class DirectProgramGearApiDoc {
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(magnitudeCycleDescriptor),
                                                  programIdDescriptor,
                                                  loadProgram,
-                                                 "saveLoadProgram");
+                                                 "loadPrograms");
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        assertTrue("Status code should be 201", response.statusCode() == 201);
+        ApiCallHelper.delete("loadPrograms", "/" + paoId);
     }
 
     @Test
@@ -322,11 +322,11 @@ public class DirectProgramGearApiDoc {
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(targetCycleDescriptor),
                                                  programIdDescriptor,
                                                  loadProgram,
-                                                 "saveLoadProgram");
+                                                 "loadPrograms");
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        assertTrue("Status code should be 201", response.statusCode() == 201);
+        ApiCallHelper.delete("loadPrograms", "/" + paoId);
     }
 
 
@@ -365,11 +365,11 @@ public class DirectProgramGearApiDoc {
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(thermostatGearDescriptor),
                                                  programIdDescriptor,
                                                  loadProgram,
-                                                 "saveLoadProgram");
+                                                 "loadPrograms");
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        assertTrue("Status code should be 201", response.statusCode() == 201);
+        ApiCallHelper.delete("loadPrograms", "/" + paoId);
     }
 
     @Test
@@ -401,11 +401,11 @@ public class DirectProgramGearApiDoc {
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(simpleThermostatGearDescriptor),
                                                  programIdDescriptor,
                                                  loadProgram,
-                                                 "saveLoadProgram");
+                                                 "loadPrograms");
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        assertTrue("Status code should be 200", response.statusCode() == 201);
+        ApiCallHelper.delete("loadPrograms", "/" + paoId);
     }
 
     @Test
@@ -427,11 +427,11 @@ public class DirectProgramGearApiDoc {
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(latchingGearDescriptor),
                                                  programIdDescriptor,
                                                  loadProgram,
-                                                 "saveLoadProgram");
+                                                 "loadPrograms");
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        assertTrue("Status code should be 201", response.statusCode() == 201);
+        ApiCallHelper.delete("loadPrograms", "/" + paoId);
     }
 
     @Test
@@ -459,12 +459,12 @@ public class DirectProgramGearApiDoc {
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(beatThePeakGearDescriptor),
                                                  programIdDescriptor,
                                                  loadProgram,
-                                                 "saveLoadProgram");
+                                                 "loadPrograms");
 
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        assertTrue("Status code should be 201", response.statusCode() == 201);
+        ApiCallHelper.delete("loadPrograms", "/" + paoId);
     }
 
     @Test
@@ -497,12 +497,12 @@ public class DirectProgramGearApiDoc {
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(rotationGearDescriptor),
                                                  programIdDescriptor,
                                                  loadProgram,
-                                                 "saveLoadProgram");
+                                                 "loadPrograms");
 
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        assertTrue("Status code should be 200", response.statusCode() == 201);
+        ApiCallHelper.delete("loadPrograms", "/" + paoId);
     }
 
     @Test
@@ -526,12 +526,12 @@ public class DirectProgramGearApiDoc {
         Response response = getResponseForCreate(LoadProgramSetupHelper.mergeProgramFieldDescriptors(noControlGearDescriptor),
                                                  programIdDescriptor,
                                                  loadProgram,
-                                                 "saveLoadProgram");
+                                                 "loadPrograms");
 
         paoId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID).toString();
         assertTrue("Program Id should not be Null", paoId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        ApiCallHelper.delete(Integer.parseInt(paoId), loadProgram.getName(), "deleteLoadProgram");
+        assertTrue("Status code should be 200", response.statusCode() == 201);
+        ApiCallHelper.delete("loadPrograms", "/" + paoId);
     }
 
     @AfterClass

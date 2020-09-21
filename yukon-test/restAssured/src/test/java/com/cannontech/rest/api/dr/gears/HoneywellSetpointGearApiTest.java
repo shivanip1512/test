@@ -35,7 +35,7 @@ public class HoneywellSetpointGearApiTest {
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.getGears().get(0).setGearName("");
         
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -52,7 +52,7 @@ public class HoneywellSetpointGearApiTest {
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.getGears().get(0).setGearName("GearNameLenghthMoreThan30Characters");
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -72,7 +72,7 @@ public class HoneywellSetpointGearApiTest {
 
         mockHoneywellSetpointGearFields.setSetpointOffset(-11);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -92,7 +92,7 @@ public class HoneywellSetpointGearApiTest {
 
         mockHoneywellSetpointGearFields.setSetpointOffset(11);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -112,7 +112,7 @@ public class HoneywellSetpointGearApiTest {
 
         mockHoneywellSetpointGearFields.setMandatory(null);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -132,7 +132,7 @@ public class HoneywellSetpointGearApiTest {
 
         mockHoneywellSetpointGearFields.setCapacityReduction(-2);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -152,7 +152,7 @@ public class HoneywellSetpointGearApiTest {
 
         mockHoneywellSetpointGearFields.setCapacityReduction(101);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -172,7 +172,7 @@ public class HoneywellSetpointGearApiTest {
 
         mockHoneywellSetpointGearFields.setWhenToChangeFields(null);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -195,7 +195,7 @@ public class HoneywellSetpointGearApiTest {
         mockHoneywellSetpointGearFields.getWhenToChangeFields().setWhenToChange(MockWhenToChange.Priority);
         mockHoneywellSetpointGearFields.getWhenToChangeFields().setChangePriority(-1);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -216,7 +216,7 @@ public class HoneywellSetpointGearApiTest {
         mockHoneywellSetpointGearFields.getWhenToChangeFields().setWhenToChange(MockWhenToChange.Priority);
         mockHoneywellSetpointGearFields.getWhenToChangeFields().setChangePriority(100000);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -237,7 +237,7 @@ public class HoneywellSetpointGearApiTest {
         mockHoneywellSetpointGearFields.getWhenToChangeFields().setWhenToChange(MockWhenToChange.Duration);
         mockHoneywellSetpointGearFields.getWhenToChangeFields().setChangeDurationInMinutes(-1);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -259,7 +259,7 @@ public class HoneywellSetpointGearApiTest {
         mockHoneywellSetpointGearFields.getWhenToChangeFields().setWhenToChange(MockWhenToChange.Duration);
         mockHoneywellSetpointGearFields.getWhenToChangeFields().setChangeDurationInMinutes(100000);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -280,7 +280,7 @@ public class HoneywellSetpointGearApiTest {
 
         mockHoneywellSetpointGearFields.getWhenToChangeFields().setWhenToChange(MockWhenToChange.TriggerOffset);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -303,7 +303,7 @@ public class HoneywellSetpointGearApiTest {
         mockHoneywellSetpointGearFields.getWhenToChangeFields().setWhenToChange(MockWhenToChange.TriggerOffset);
         mockHoneywellSetpointGearFields.getWhenToChangeFields().setTriggerNumber(0);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -324,7 +324,7 @@ public class HoneywellSetpointGearApiTest {
         mockHoneywellSetpointGearFields.getWhenToChangeFields().setWhenToChange(MockWhenToChange.TriggerOffset);
         mockHoneywellSetpointGearFields.getWhenToChangeFields().setTriggerNumber(100000);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -345,7 +345,7 @@ public class HoneywellSetpointGearApiTest {
         mockHoneywellSetpointGearFields.getWhenToChangeFields().setWhenToChange(MockWhenToChange.TriggerOffset);
         mockHoneywellSetpointGearFields.getWhenToChangeFields().setTriggerOffset(-100005.000000);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -368,7 +368,7 @@ public class HoneywellSetpointGearApiTest {
         mockHoneywellSetpointGearFields.getWhenToChangeFields().setWhenToChange(MockWhenToChange.TriggerOffset);
         mockHoneywellSetpointGearFields.getWhenToChangeFields().setTriggerOffset(100005.000000);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
@@ -390,7 +390,7 @@ public class HoneywellSetpointGearApiTest {
 
         mockHoneywellSetpointGearFields.setHowToStopControl(null);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
