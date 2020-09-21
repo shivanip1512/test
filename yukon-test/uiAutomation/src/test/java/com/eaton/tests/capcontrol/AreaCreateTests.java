@@ -24,6 +24,7 @@ public class AreaCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         
         navigate(Urls.CapControl.AREA_CREATE);
         createPage = new AreaCreatePage(driverExt);
@@ -31,11 +32,14 @@ public class AreaCreateTests extends SeleniumTestSetup {
     
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(createPage);
+        if(getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void areaCreate_pageTitle_Correct() {
+    public void areaCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Area";
 
         String actualPageTitle = createPage.getPageTitle();
@@ -45,6 +49,7 @@ public class AreaCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void areaCreate_RequiredFieldsOnly_Success() {
+        setRefreshPage(true);
         final String EXPECTED_MSG = "Area was saved successfully.";
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

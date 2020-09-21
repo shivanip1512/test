@@ -24,72 +24,72 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
     private Integer id;
-	private String name;
-	private LoadGroupDetailPage detailPage;
+    private String name;
+    private LoadGroupDetailPage detailPage;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        driverExt = getDriverExt();                
+        driverExt = getDriverExt();
     }
 
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpRfnExpresscom_pageTitleCorrect() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpRfnExpresscom_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Load Group: AT Load Group";
-        
+
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + "664");
-        
+
         LoadGroupDetailPage editPage = new LoadGroupDetailPage(driverExt, 664);
 
         String actualPageTitle = editPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
-    
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpRfnExpresscom_copySuccess() {
-        
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpRfnExpresscom_Copy_Success() {
+
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + "592");
 
         LoadGroupDetailPage detailPage = new LoadGroupDetailPage(driverExt, 592);
-        
+
         CopyLoadGroupModal modal = detailPage.showCopyLoadGroupModal();
-        
+
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
         String name = "AT Copied RFN Expresscom Ldgrp " + timeStamp;
-        
+
         final String EXPECTED_MSG = name + " copied successfully.";
-        
+
         modal.getName().setInputValue(name);
-        
+
         modal.clickOkAndWaitForModalToClose();
-        
+
         waitForPageToLoad("Load Group: " + name, Optional.of(8));
-        
+
         LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt, 592);
-        
+
         String userMsg = detailsPage.getUserMessage();
-        
+
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
-    
+
     @Test(enabled = true, groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpRfnExpresscom_deleteSuccess() {
-    	Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup().create();
+    public void ldGrpRfnExpresscom_Delete_Success() {
+        Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup().create();
         JSONObject response = pair.getValue1();
-	    id = response.getInt("id");
-	    name = response.getString("name");
-	    final String expected_msg = name + " deleted successfully.";
-	    
-	    navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
-	     
-	    detailPage = new LoadGroupDetailPage(driverExt, id);
-	    ConfirmModal  confirmModal = detailPage.showDeleteLoadGroupModal(); 
-	    confirmModal.clickOkAndWaitForModalToClose();
-	     
-	    waitForPageToLoad("Setup", Optional.empty());
-	    DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_GROUP);
-	    String userMsg = setupPage.getUserMessage();
-	     
-	    assertThat(userMsg).isEqualTo(expected_msg);
-    }  
+        id = response.getInt("id");
+        name = response.getString("name");
+        final String expected_msg = name + " deleted successfully.";
+
+        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
+
+        detailPage = new LoadGroupDetailPage(driverExt, id);
+        ConfirmModal confirmModal = detailPage.showDeleteLoadGroupModal();
+        confirmModal.clickOkAndWaitForModalToClose();
+
+        waitForPageToLoad("Setup", Optional.empty());
+        DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_GROUP);
+        String userMsg = setupPage.getUserMessage();
+
+        assertThat(userMsg).isEqualTo(expected_msg);
+    }
 }

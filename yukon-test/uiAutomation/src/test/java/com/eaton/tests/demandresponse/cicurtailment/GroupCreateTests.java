@@ -23,7 +23,7 @@ public class GroupCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void groupCreate_pageTitleCorrect() {
+    public void groupCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Group";
 
         String actualPageTitle = createPage.getPageTitle();

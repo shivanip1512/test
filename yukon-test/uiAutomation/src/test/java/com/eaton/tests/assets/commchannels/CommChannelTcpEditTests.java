@@ -56,7 +56,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTcpEdit_ModalTitleCorrect() {
+    public void commChannelTcpEdit_Modal_TitleCorrect() {
         String expectedModalTitle = "Edit " + commChannelName;
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
         String actualModalTitle = editModal.getModalTitle();
@@ -115,7 +115,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTcpEdit_Cancel_NavigatesCorrectly() {
+    public void commChannelTcpEdit_Cancel_NavigatesToCorrectUrl() {
         String EXPECTED_TITLE = commChannelName;
 
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
@@ -127,7 +127,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTcpEdit_TabTitlesCorrect() {
+    public void commChannelTcpEdit_Tab_TitlesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 
@@ -367,7 +367,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTcpEdit_ConfigTab_TimingSectionDisplayed() {
+    public void commChannelTcpEdit_ConfigTabTimingSection_Displayed() {
         String tabName = "Configuration";
 
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
@@ -379,7 +379,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTcpEdit_AllFieldsSuccess() {
+    public void commChannelTcpEdit_AllFields_Success() {
         SoftAssertions softly = new SoftAssertions();
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "TCP  " + timeStamp;

@@ -34,7 +34,7 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpMCTEdit_AllFields_WithBronzeAddress_Successfully() {
+    public void ldGrpMCTEdit_AllFieldsWithBronzeAddress_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited MCT Ldgrp " + timeStamp;
         final String EXPECTED_MSG = name + " saved successfully.";
@@ -48,7 +48,7 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
                 .withlevel(LoadGroupEnums.AddressLevelMCT.MCT_ADDRESS)
                 .withRelayUsage(Arrays.asList(LoadGroupEnums.RelayUsage.RELAY_2))
                 .create();
-        
+
         JSONObject response = pair.getValue1();
         id = response.getInt("id");
 
@@ -56,7 +56,7 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
 
         editPage = new LoadGroupMCTEditPage(driverExt, id);
         editPage.getName().setInputValue(name);
-        //36 = a_CCU-721
+        // 36 = a_CCU-721
         editPage.getCommunicationRoute().selectItemByValue("36");
         editPage.getAddressLevel().selectItemByValue("BRONZE");
         editPage.getAddress().setInputValue("123");
@@ -73,7 +73,7 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpMCTEdit_AllFields_WithMCTAddress_Successfully() {
+    public void ldGrpMCTEdit_AllFieldsWithMCTAddress_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited MCT Ldgrp " + timeStamp;
         final String EXPECTED_MSG = name + " saved successfully.";
@@ -99,8 +99,8 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
         editPage.getAddressLevel().selectItemByValue("MCT_ADDRESS");
         SelectMCTMeterModal mctMeterModal = this.editPage.showAndWaitMCTMeter();
         mctMeterModal.selectMeter("a_MCT-430A");
-        mctMeterModal.clickOkAndWaitForModalCloseDisplayNone();;
-        
+        mctMeterModal.clickOkAndWaitForModalCloseDisplayNone();
+
         editPage.getRelayUsage().setTrueFalseByLabel("Relay 2", "RELAY_2", false);
         editPage.getkWCapacity().setInputValue("870");
         editPage.getDisableGroup().selectValue("No");

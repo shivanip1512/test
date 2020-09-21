@@ -22,21 +22,21 @@ public class HomeTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL })    
-    public void support_UrlCorrect() {
+    public void home_Support_UrlCorrect() {
         String url = page.getUtilityUrl("Support");
 
         assertThat(url).contains(Urls.SUPPORT);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL })    
-    public void siteMap_UrlCorrect() {
+    public void home_SiteMap_UrlCorrect() {
         String url = page.getUtilityUrl("Site Map");
 
         assertThat(url).contains(Urls.SITE_MAP);
     }
 
     @Test(groups = { TestConstants.Priority.LOW })
-    public void versionDisplayed() {
+    public void home_Version_Displayed() {
         assertThat(page.versionDisplayed()).isTrue();
     }
 }

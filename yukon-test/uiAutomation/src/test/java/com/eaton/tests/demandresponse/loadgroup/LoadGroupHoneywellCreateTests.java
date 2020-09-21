@@ -37,7 +37,7 @@ public class LoadGroupHoneywellCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void loadGroupCreateHoneywell_AllFieldsDisableFalseSuccess() {
+    public void loadGroupCreateHoneywell_AllFieldsDisableFalse_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "Honeywell Group " + timeStamp;
         double randomDouble = randomNum.nextDouble();
@@ -62,7 +62,7 @@ public class LoadGroupHoneywellCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void loadGroupCreateHoneywell_AllFieldsDisableTrueSuccess() {
+    public void loadGroupCreateHoneywell_AllFieldsDisableTrue_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "Honeywell Group " + timeStamp;
         double randomDouble = randomNum.nextDouble();

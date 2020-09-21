@@ -17,7 +17,7 @@ public class ActionBtnDropDownElement {
     }
 
     public WebElement getActionBtn() {
-        return this.driverExt.findElement(By.cssSelector(".page-actions #b-page-actions button"), Optional.empty());
+        return this.driverExt.findElement(By.cssSelector(".page-actions #b-page-actions button"), Optional.of(0));
     }
 
     public void click() {
@@ -35,8 +35,7 @@ public class ActionBtnDropDownElement {
     public void clickAndSelectOptionByText(String text) {
         click();
 
-        WebElement element = this.driverExt.findElement(By.cssSelector(".dropdown-menu[style*='display: block;']"),
-                Optional.of(3));
+        WebElement element = this.driverExt.findElement(By.cssSelector(".dropdown-menu[style*='display: block;']"), Optional.of(3));
 
         List<WebElement> options = element.findElements(By.cssSelector(".dropdown-option-label"));
 

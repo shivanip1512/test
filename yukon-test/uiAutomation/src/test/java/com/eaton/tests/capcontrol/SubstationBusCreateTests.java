@@ -24,6 +24,7 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
 
         navigate(Urls.CapControl.SUBSTATION_BUS_CREATE);
         createPage = new SubstationBusCreatePage(driverExt);
@@ -31,11 +32,14 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
     
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
-        refreshPage(createPage);
+        if(getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void substationBusCreate_pageTitleCorrect() {
+    public void substationBusCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Bus";
 
         String actualPageTitle = createPage.getPageTitle();
@@ -44,7 +48,8 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void substationBusCreate_requiredFieldsOnlySuccess() {
+    public void substationBusCreate_RequiredFieldsOnly_Success() {
+        setRefreshPage(false);
         final String EXPECTED_MSG = "Bus was saved successfully.";
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

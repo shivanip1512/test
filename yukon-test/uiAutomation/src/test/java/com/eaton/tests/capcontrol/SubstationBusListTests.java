@@ -24,7 +24,7 @@ public class SubstationBusListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = {TestConstants.Priority.MEDIUM, TestConstants.VoltVar.VOLT_VAR })
-    public void substationBusList_columnHeadersCorrect() {
+    public void substationBusList_ColumnHeaders_Correct() {
         SoftAssertions softly = new SoftAssertions();
         final int EXPECTED_COUNT = 3;
 

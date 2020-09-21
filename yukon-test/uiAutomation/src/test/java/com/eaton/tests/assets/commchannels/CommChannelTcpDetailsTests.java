@@ -36,7 +36,8 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-
+        setRefreshPage(false);
+        
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         commChannelName = "TCP Comm Channel " + timeStamp;
 
@@ -56,11 +57,14 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(detailPage);
+        if(getRefreshPage()) {
+            refreshPage(detailPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTcp_PageTitleCorrect() {
+    public void commChannelDetailsTcp_Page_TitleCorrect() {
         String EXPECTED_TITLE = commChannelName;
         
         String actualPageTitle = detailPage.getPageTitle();
@@ -69,7 +73,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTcp_TabTitlesCorrect() {
+    public void commChannelDetailsTcp_Tab_TitlesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         List<String> titles = detailPage.getTabElement().getTitles();
 
@@ -108,7 +112,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTcp_ConfigTab_TimingSectionDisplayed() {
+    public void commChannelDetailsTcp_ConfigTabTimingSection_Displayed() {
         String infoTitle = "Configuration";
 
         detailPage.getTabElement().clickTabAndWait(infoTitle);
@@ -153,7 +157,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTcp_PanelTitleCorrect() {
+    public void commChannelDetailsTcp_Panel_TitleCorrect() {
         String expectedPanelText = "Comm Channel Information";
 
         String actualPanelText = detailPage.getCommChannelInfoPanel().getPanelName();
@@ -162,7 +166,8 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTcp_Edit_NavigatesCorrectly() {
+    public void commChannelDetailsTcp_Edit_NavigatesToCorrectUrl() {
+        setRefreshPage(true);
         String expectedModalTitle = "Edit " + commChannelName;
 
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
@@ -173,7 +178,8 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsTCP_Create_NavigatesCorrectly() {
+    public void commChannelDetailsTCP_Create_NavigatesToCorrectUrl() {
+        setRefreshPage(true);
         String expectedModalTitle = "Create Comm Channel";
 
         CreateCommChannelModal createModal = detailPage.showCreateCommChannelModal();
@@ -183,7 +189,8 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDeleteTcp_DeleteTitleCorrect() {
+    public void commChannelDeleteTcp_Delete_TitleCorrect() {
+        setRefreshPage(true);
         String expectedModalTitle = "Confirm Delete";
 
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
@@ -194,7 +201,8 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDeleteTcp_DeleteConfirmMessageCorrect() {
+    public void commChannelDeleteTcp_DeleteConfirmMessage_Correct() {
+        setRefreshPage(true);
         String expectedModalMessage = "Are you sure you want to delete \"" + commChannelName + "\"?";
 
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
@@ -205,7 +213,8 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDeleteTcp_CancelDeleteNavigatesCorrectly() {
+    public void commChannelDeleteTcp_CancelDelete_NavigatesToCorrectUrl() {
+        setRefreshPage(true);
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
 
         deleteConfirmModal.clickCancelBtnByNameAndWait();
@@ -214,7 +223,8 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDeleteTcp_CloseDeleteNavigatesCorrectly() {
+    public void commChannelDeleteTcp_CloseDelete_NavigatesToCorrectUrl() {
+        setRefreshPage(true);
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
 
         deleteConfirmModal.clickCloseAndWait();
@@ -223,7 +233,8 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDeleteTcp_DeleteSuccessfully() {
+    public void commChannelDeleteTcp_Delete_Success() {
+        setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "TCP Comm Channel " + timeStamp;
 

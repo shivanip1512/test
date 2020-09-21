@@ -25,7 +25,7 @@ public class MeterRfn530S4xDetailTests extends SeleniumTestSetup {
     }
 
     @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
-    public void meterRfn530S4xDetail_deleteSuccess() {
+    public void meterRfn530S4xDetail_Delete_Success() {
         final String EXPECTED_MSG = "Meter AT Delete RFN-530S4x deleted successfully.";
 
         navigate(Urls.Ami.METER_DETAIL + "588");

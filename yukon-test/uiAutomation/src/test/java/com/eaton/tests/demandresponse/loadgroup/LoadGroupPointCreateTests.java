@@ -16,7 +16,6 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.framework.test.annotation.CustomTestNgAnnotations;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupPointCreatePage;
 
@@ -28,6 +27,7 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         randomNum = getRandomNum();
 
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
@@ -36,12 +36,15 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
 
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
-        refreshPage(createPage);
+        if(getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    @CustomTestNgAnnotations(refreshPage = true, urlToRefresh = Urls.DemandResponse.LOAD_GROUP_CREATE)
-    public void ldGrpCreatePoint_AllFields_Successfully() {
+    public void ldGrpCreatePoint_AllFields_Success() {
+        setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Point " + timeStamp;
         double randomDouble = randomNum.nextDouble();
@@ -74,8 +77,7 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    @CustomTestNgAnnotations(refreshPage = false)
-    public void ldGrpCreatePoint_PointGroupSectionTitleCorrect() {
+    public void ldGrpCreatePoint_PointGroupSection_TitleCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_POINT");
         waitForLoadingSpinner();
         Section section = createPage.getPageSection("Point Group");
@@ -84,8 +86,7 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    @CustomTestNgAnnotations(refreshPage = false)
-    public void ldGrpCreatePoint_PointGroupSectionLabelsCorrect() {
+    public void ldGrpCreatePoint_PointGroupSection_LabelsCorrect() {
         String sectionName = "Point Group";
         String expectedLabels = "Control Device Point:";
         createPage.getType().selectItemByValue("LM_GROUP_POINT");
@@ -97,7 +98,6 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    @CustomTestNgAnnotations(refreshPage = false)
     public void ldGrpCreatePoint_ControlDevicePoint_RequiredValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_POINT");
         waitForLoadingSpinner();
@@ -108,7 +108,6 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    @CustomTestNgAnnotations(refreshPage = false)
     public void ldGrpCreatePoint_ControlDevicePointLabel_DefaultValueCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_POINT");
         waitForLoadingSpinner();
@@ -117,8 +116,8 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    @CustomTestNgAnnotations(refreshPage = false)
     public void ldGrpCreatePoint_ControlDevicePointLabel_UpdatedCorrectly() {
+        setRefreshPage(true);
         createPage.getType().selectItemByValue("LM_GROUP_POINT");
         waitForLoadingSpinner();
 

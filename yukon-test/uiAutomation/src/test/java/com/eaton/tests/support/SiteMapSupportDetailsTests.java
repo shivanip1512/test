@@ -3,7 +3,6 @@ package com.eaton.tests.support;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.assertj.core.api.SoftAssertions;
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -27,7 +26,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-    public void siteMapSupportDetails_pageTitleCorrect() {
+    public void siteMapSupportDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Site Map";
 
         String actualPageTitle = siteMapPage.getPageTitle();
@@ -36,33 +35,21 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-    public void siteMapSupportDetails_pageHasSupportSection() {
+    public void siteMapSupportDetails_SupportSection_Displayed() {
         Section supportSection = siteMapPage.getSupportSection();
 
         assertThat(supportSection).isNotNull();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-    public void siteMapSupportDetails_pageSupportSectionItemCountCorrect() {
+    public void siteMapSupportDetails_SupportSection_CountCorrect() {
         final int EXPECTED_COUNT = 16;
 
         assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);
     }
 
-//    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-//    public void siteMapSupportDetails_pageBatteryNodeAnalysisLinkCorrect() {
-//        softly = new SoftAssertions();
-//        final String EXPECTED_ANCHOR = "Battery Node Analysis";
-//        final String EXPECTED_LINK = Urls.Support.BATTERY_NODE_ANALYSIS;
-//        final int POSITION = 0;
-//
-//        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-//        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
-//        softly.assertAll();
-//    }
-
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-    public void siteMapSupportDetails_pageDataStreamingDeviceAttributesLinkCorrect() {
+    public void siteMapSupportDetails_DataStreamingDeviceAttributes_LinkCorrect() {
         softly = new SoftAssertions();
     	final String EXPECTED_ANCHOR = "Data Streaming Device Attributes";
         final String EXPECTED_LINK = Urls.Support.DATA_STREAMING_DEVICE_ATTRIBUTES;
@@ -74,7 +61,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-    public void siteMapSupportDetails_pageDatabaseMigrationLinkCorrect() {
+    public void siteMapSupportDetails_DatabaseMigration_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Database Migration";
         final String EXPECTED_LINK = Urls.Support.DATABASE_MIGRATION;
@@ -86,7 +73,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-    public void siteMapSupportDetails_pageDatabaseValidationLinkCorrect() {
+    public void siteMapSupportDetails_DatabaseValidation_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Database Validation";
         final String EXPECTED_LINK = Urls.Support.DATABASE_VALIDATION;
@@ -98,7 +85,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-    public void siteMapSupportDetails_pageDeviceDefinitionsLinkCorrect() {
+    public void siteMapSupportDetails_DeviceDefinitions_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Device Definitions";
         final String EXPECTED_LINK = Urls.Support.DEVICE_DEFINITIONS;
@@ -110,7 +97,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-    public void siteMapSupportDetails_pageErrorCodesLinkCorrect() {
+    public void siteMapSupportDetails_ErrorCodes_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Error Codes";
         final String EXPECTED_LINK = Urls.Support.ERROR_CODES;
@@ -122,7 +109,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-    public void siteMapSupportDetails_pageEventLogLinkCorrect() {
+    public void siteMapSupportDetails_EventLog_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Event Log";
         final String EXPECTED_LINK = Urls.Support.EVENT_LOG;
@@ -134,7 +121,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-    public void siteMapSupportDetails_pageFileExportHistoryLinkCorrect() {
+    public void siteMapSupportDetails_FileExportHistory_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "File Export History";
         final String EXPECTED_LINK = Urls.Support.FILE_EXPORT_HISTORY;
@@ -146,7 +133,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-    public void siteMapSupportDetails_pageLocalizationHelperLinkCorrect() {
+    public void siteMapSupportDetails_LocalizationHelper_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Localization Helper";
         final String EXPECTED_LINK = Urls.Support.LOCALIZATION_HELPER;
@@ -158,7 +145,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-    public void siteMapSupportDetails_pageLogExplorerLinkCorrect() {
+    public void siteMapSupportDetails_LogExplorer_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Log Explorer";
         final String EXPECTED_LINK = Urls.Support.LOG_EXPLORER;
@@ -170,7 +157,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-    public void siteMapSupportDetails_pageManageIndexesLinkCorrect() {
+    public void siteMapSupportDetails_ManageIndexes_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Manage Indexes";
         final String EXPECTED_LINK = Urls.Support.MANAGE_INDEXES;
@@ -182,7 +169,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-    public void siteMapSupportDetails_pageRouteUsageLinkCorrect() {
+    public void siteMapSupportDetails_RouteUsage_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Route Usage";
         final String EXPECTED_LINK = Urls.Support.ROUTE_USAGE;
@@ -194,7 +181,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-    public void siteMapSupportDetails_pageSupportLinkCorrect() {
+    public void siteMapSupportDetails_Support_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Support";
         final String EXPECTED_LINK = Urls.SUPPORT;
@@ -206,7 +193,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-    public void siteMapSupportDetails_pageSystemHealthLinkCorrect() {
+    public void siteMapSupportDetails_SystemHealth_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "System Health";
         final String EXPECTED_LINK = Urls.Support.SYSTEM_HEALTH;
@@ -218,7 +205,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-    public void siteMapSupportDetails_pageSystemInfoLinkCorrect() {
+    public void siteMapSupportDetails_SystemInfo_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "System Info";
         final String EXPECTED_LINK = Urls.Support.SYSTEM_INFO;
@@ -230,7 +217,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-    public void siteMapSupportDetails_pageThirdPartyLibrariesLinkCorrect() {
+    public void siteMapSupportDetails_ThirdPartyLibraries_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Third Party Libraries";
         final String EXPECTED_LINK = Urls.Support.THIRD_PARTY_LIBRARIES;
@@ -242,7 +229,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-    public void siteMapSupportDetails_pageThreadDumpLinkCorrect() {
+    public void siteMapSupportDetails_ThreadDump_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Thread Dump";
         final String EXPECTED_LINK = Urls.Support.THREAD_DUMP;
