@@ -31,6 +31,7 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         randomNum = getRandomNum();
         
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
@@ -39,11 +40,15 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
 
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
-        refreshPage(createPage);
+        if(getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        setRefreshPage(false);
     }
     
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateRipple_AllFields_Success() {
+        setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Ripple " + timeStamp;
         double randomDouble = randomNum.nextDouble();

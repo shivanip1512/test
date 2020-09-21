@@ -31,6 +31,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         randomNum = getRandomNum();
         
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
@@ -39,11 +40,15 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
 
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
-        refreshPage(createPage);
+        if(getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateMCT_RequiredFieldsWithBronzeAddress_Success() {
+        setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT MCT " + timeStamp;
         double randomDouble = randomNum.nextDouble();
@@ -53,8 +58,8 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = name + " saved successfully.";
 
         createPage.getType().selectItemByValue("LM_GROUP_MCT");
-
         waitForLoadingSpinner();
+        
         createPage.getName().setInputValue(name);
         createPage.getAddress().setInputValue("2");
         createPage.getRelayUsage().setTrueFalseByLabel("Relay 2", "RELAY_2", true);
@@ -131,7 +136,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
 //        String name = "AT MCT " + timeStamp;
 //        String expectedErrorMsg = "Must be between 1 and 2,147,483,647.";
 //
-//        createPage.getType().selectItemByText("LM_GROUP_MCT");
+//        createPage.getType().selectItemByValue("LM_GROUP_MCT");
 //        waitForLoadingSpinner();
 //
 //        createPage.getName().setInputValue(name);
@@ -174,6 +179,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateMCT_MCTAddress_ValueSelectedCorrect() {
+        setRefreshPage(true);
         createPage.getType().selectItemByValue("LM_GROUP_MCT");
         waitForLoadingSpinner();
 
@@ -188,6 +194,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateMct_RequiredFieldsWithMctAddress_Success() {
+        setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT MCT " + timeStamp;
         final String EXPECTED_MSG = name + " saved successfully.";

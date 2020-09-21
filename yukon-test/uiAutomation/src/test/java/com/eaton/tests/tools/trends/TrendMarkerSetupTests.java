@@ -35,7 +35,7 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup {
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(trendCreatePage);
+        refreshPage(trendCreatePage);    
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })

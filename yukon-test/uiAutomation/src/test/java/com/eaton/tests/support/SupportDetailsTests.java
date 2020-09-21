@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.assertj.core.api.SoftAssertions;
-import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -58,26 +57,23 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    // ================================================================================
-    // Support Pages Section
-    // ================================================================================
-
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_SupportPages_CountCorrect() {
-        throw new SkipException("Related to Development Defect: YUK-22612");
-//        final int EXPECTED_COUNT = 15;
-//        assertThat(supportPage.getSupportSectionPageList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);
-    }
-
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void supportDetails_SupportPagesBatteryNodeAnalysis_LinkCorrect() {
-
-        throw new SkipException("Development Defect created: YUK-22612");
-//        softly = new SoftAssertions();
-//        softly.assertThat(supportPageTitles).contains("Battery Node Analysis");
-//        softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.BATTERY_NODE_ANALYSIS);
-//        softly.assertAll();
-    }
+//    Defect YUK-22612 was closed and they will not fix so these tests will need to be done another way
+//    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+//    public void supportDetails_SupportPages_CountCorrect() {
+//        throw new SkipException("Related to Development Defect: YUK-22612");
+////        final int EXPECTED_COUNT = 15;
+////        assertThat(supportPage.getSupportSectionPageList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);
+//    }
+//
+//    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+//    public void supportDetails_SupportPagesBatteryNodeAnalysis_LinkCorrect() {
+//
+//        throw new SkipException("Development Defect created: YUK-22612");
+////        softly = new SoftAssertions();
+////        softly.assertThat(supportPageTitles).contains("Battery Node Analysis");
+////        softly.assertThat(supportPageLinks).contains(baseUrl + Urls.Support.BATTERY_NODE_ANALYSIS);
+////        softly.assertAll();
+//    }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
     public void supportPage_SupportPagesDataStreamingDeviceAttributes_LinkCorrect() {

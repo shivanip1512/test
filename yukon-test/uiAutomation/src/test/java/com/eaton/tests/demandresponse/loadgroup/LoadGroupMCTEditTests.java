@@ -100,7 +100,6 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
         SelectMCTMeterModal mctMeterModal = this.editPage.showAndWaitMCTMeter();
         mctMeterModal.selectMeter("a_MCT-430A");
         mctMeterModal.clickOkAndWaitForModalCloseDisplayNone();
-        ;
 
         editPage.getRelayUsage().setTrueFalseByLabel("Relay 2", "RELAY_2", false);
         editPage.getkWCapacity().setInputValue("870");

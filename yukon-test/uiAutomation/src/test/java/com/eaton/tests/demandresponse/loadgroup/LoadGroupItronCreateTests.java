@@ -28,17 +28,22 @@ public class LoadGroupItronCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
         createPage = new LoadGroupItronCreatePage(driverExt);
     }
     
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
-        refreshPage(createPage);
+        if(getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateItron_AllFieldsDisableTrue_Success() {
+        setRefreshPage(true);
         JSONObject jo = new LoadGroupItronCreateBuilder.Builder(Optional.empty())
                 .withKwCapacity(Optional.empty())
                 .withRelay(Optional.empty())
@@ -74,6 +79,7 @@ public class LoadGroupItronCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateItron_RequiredFields_Success() {
+        setRefreshPage(true);
         JSONObject jo = new LoadGroupItronCreateBuilder.Builder(Optional.empty())
                 .build();
 

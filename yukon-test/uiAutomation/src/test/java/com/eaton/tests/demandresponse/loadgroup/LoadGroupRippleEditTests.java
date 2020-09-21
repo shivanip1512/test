@@ -28,7 +28,6 @@ public class LoadGroupRippleEditTests extends SeleniumTestSetup {
     private DriverExtensions driverExt;
     private Random randomNum;
     Builder builder;
-    private Integer id;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
@@ -50,7 +49,7 @@ public class LoadGroupRippleEditTests extends SeleniumTestSetup {
         Pair<JSONObject, JSONObject> pair = builder
                 .create();
         JSONObject response = pair.getValue1();
-        id = response.getInt("id");
+        Integer id = response.getInt("id");
 
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
         editPage = new LoadGroupRippleEditPage(driverExt, id);

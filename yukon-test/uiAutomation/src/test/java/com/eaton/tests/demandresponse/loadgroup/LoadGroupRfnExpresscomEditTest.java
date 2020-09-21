@@ -31,9 +31,10 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup().create();
+        Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup()
+                .create();
         JSONObject response = pair.getValue1();
-        this.id = response.getInt("id");
+        id = response.getInt("id");
 
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
         editPage = new LoadGroupRfnExpresscomEditPage(driverExt, id);
@@ -82,7 +83,8 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscomEdit_Field_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
-        Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup().create();
+        Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup()
+                .create();
         JSONObject response = pair.getValue1();
         Integer editId = response.getInt("id");
 
@@ -93,20 +95,13 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup {
         softly.assertThat(editPage.getAddressUsage().isValueSelected("Serial")).isEqualTo(false);
         softly.assertThat(editPage.getLoadAddressUsage().isValueSelected("Program")).isEqualTo(true);
         softly.assertThat(editPage.getName().getInputValue()).isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.name").toString());
-        softly.assertThat(editPage.getkWCapacity().getInputValue())
-                .isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.kWCapacity").toString());
-        softly.assertThat(editPage.getSpidAddress().getInputValue())
-                .isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.serviceProvider").toString());
-        softly.assertThat(editPage.getGeoAddress().getInputValue())
-                .isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.geo").toString());
-        softly.assertThat(editPage.getSubstationAddress().getInputValue())
-                .isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.substation").toString());
-        softly.assertThat(editPage.getZipAddress().getInputValue())
-                .isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.zip").toString());
-        softly.assertThat(editPage.getProgramLoadAddress().getInputValue())
-                .isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.program").toString());
-        softly.assertThat(editPage.getSplinterLoadAddress().getInputValue())
-                .isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.splinter").toString());
+        softly.assertThat(editPage.getkWCapacity().getInputValue()).isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.kWCapacity").toString());
+        softly.assertThat(editPage.getSpidAddress().getInputValue()).isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.serviceProvider").toString());
+        softly.assertThat(editPage.getGeoAddress().getInputValue()).isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.geo").toString());
+        softly.assertThat(editPage.getSubstationAddress().getInputValue()).isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.substation").toString());
+        softly.assertThat(editPage.getZipAddress().getInputValue()).isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.zip").toString());
+        softly.assertThat(editPage.getProgramLoadAddress().getInputValue()).isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.program").toString());
+        softly.assertThat(editPage.getSplinterLoadAddress().getInputValue()).isEqualTo(getResponse.path("LM_GROUP_EXPRESSCOMM.splinter").toString());
         softly.assertThat(editPage.getDisableControl().getCheckedValue()).isEqualTo("No");
         softly.assertThat(editPage.getDisableGroup().getCheckedValue()).isEqualTo("No");
         softly.assertAll();

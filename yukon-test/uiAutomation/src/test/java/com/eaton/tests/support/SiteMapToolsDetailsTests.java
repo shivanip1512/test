@@ -180,30 +180,6 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-//    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
-//    public void siteMapToolsDetails_PowerSupplierLoads_LinkCorrect() {
-//        softly = new SoftAssertions();
-//        final String EXPECTED_ANCHOR = "Power Supplier Loads";
-//        final String EXPECTED_LINK = Urls.Tools.POWER_SUPPLIER_LOADS;
-//        final int POSITION = 10;
-//
-//        softly.assertThat(siteMapPage.getToolsSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-//        softly.assertThat(siteMapPage.getToolsSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
-//        softly.assertAll();
-//    }
-//
-//    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
-//    public void siteMapToolsDetails_ProbabilityForPeakLoad_LinkCorrect() {
-//        softly = new SoftAssertions();
-//        final String EXPECTED_ANCHOR = "Probability For Peak Load";
-//        final String EXPECTED_LINK = Urls.Tools.PROBABILITY_PEAK_LOAD;
-//        final int POSITION = 11;
-//
-//        softly.assertThat(siteMapPage.getToolsSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-//        softly.assertThat(siteMapPage.getToolsSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
-//        softly.assertAll();
-//    }
-
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
     public void siteMapToolsDetails_RecentResults_LinkCorrect() {
         softly = new SoftAssertions();

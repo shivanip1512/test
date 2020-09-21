@@ -1,5 +1,8 @@
 package com.eaton.framework;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -301,10 +304,18 @@ public class SeleniumTestSetup {
 
     public static void navigate(String url) {
         String pageUrl = getBaseUrl() + url;
-        
+            
         driver.get(pageUrl);
-        
         waitForUrlToLoad(pageUrl, Optional.empty());
+    }
+    
+    public static int getResponseCode(String urlString) throws IOException {
+        URL u = new URL(urlString); 
+        HttpURLConnection huc =  (HttpURLConnection)  u.openConnection(); 
+        huc.setRequestMethod("GET"); 
+        huc.connect(); 
+        
+        return huc.getResponseCode();
     }
 
     public static void moveToElement(WebElement element) {

@@ -21,20 +21,20 @@ import com.eaton.pages.demandresponse.loadgroup.LoadGroupItronEditPage;
 
 public class LoadGroupItronEditTests extends SeleniumTestSetup {
     private DriverExtensions driverExt;
-    private Integer id;
     private String name;
     private LoadGroupItronEditPage editPage;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         Pair<JSONObject, JSONObject> pair = new LoadGroupItronCreateBuilder.Builder(Optional.empty())
                 .withKwCapacity(Optional.empty())
                 .withRelay(Optional.empty())
                 .create();
 
         JSONObject response = pair.getValue1();
-        id = response.getInt("id");
+        Integer id = response.getInt("id");
         name = response.getString("name");
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
         editPage = new LoadGroupItronEditPage(driverExt, id);
@@ -42,7 +42,10 @@ public class LoadGroupItronEditTests extends SeleniumTestSetup {
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(editPage);
+        if(getRefreshPage()) {
+            refreshPage(editPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -56,6 +59,7 @@ public class LoadGroupItronEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpItronEdit_AllFields_Success() {
+        setRefreshPage(true);
         String u = UUID.randomUUID().toString();
         String uuid = u.replace("-", "");
         String name = "AT LG Edit " + uuid;
@@ -67,16 +71,18 @@ public class LoadGroupItronEditTests extends SeleniumTestSetup {
         Pair<JSONObject, JSONObject> pair = new LoadGroupItronCreateBuilder.Builder(Optional.empty())
                 .withKwCapacity(Optional.empty())
                 .withRelay(Optional.empty())
+                .withDisableControl(Optional.of(false))
+                .withDisableGroup(Optional.of(false))
                 .create();
 
         JSONObject response = pair.getValue1();
-        id = response.getInt("id");
+        Integer editId = response.getInt("id");
         relay = response.getInt("virtualRelayId");
 
         kwCapacity = response.getDouble("kWCapacity");
         kwCapacity = kwCapacity + 1.0;
 
-        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + editId + Urls.EDIT);
 
         editPage.getName().setInputValue(name);
 

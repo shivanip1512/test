@@ -20,8 +20,6 @@ import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 
 public class LoadGroupMeterDisconnectDetailTest extends SeleniumTestSetup {
     private DriverExtensions driverExt;
-    private Integer id;
-    private String name;
     private LoadGroupDetailPage detailPage;
 
     @BeforeClass(alwaysRun = true)
@@ -34,10 +32,10 @@ public class LoadGroupMeterDisconnectDetailTest extends SeleniumTestSetup {
         Pair<JSONObject, JSONObject> pair = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
                 .create();
         JSONObject response = pair.getValue1();
-        id = response.getInt("id");
-        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
 
-        name = response.getString("name");
+        Integer id = response.getInt("id"); 
+        String name = response.getString("name");
+        
         final String expected_msg = name + " deleted successfully.";
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
 
@@ -57,10 +55,9 @@ public class LoadGroupMeterDisconnectDetailTest extends SeleniumTestSetup {
         Pair<JSONObject, JSONObject> pair = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
                 .create();
         JSONObject response = pair.getValue1();
-        id = response.getInt("id");
-        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
 
-        name = response.getString("name");
+        Integer id = response.getInt("id"); 
+        String name = response.getString("name");
         final String expected_msg = "Are you sure you want to delete " + "\"" + name + "\"" + "?";
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
 

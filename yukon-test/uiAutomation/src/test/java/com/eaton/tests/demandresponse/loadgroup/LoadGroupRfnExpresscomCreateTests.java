@@ -38,8 +38,8 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @AfterMethod(alwaysRun = true)
-    public void afterTest() {        
-        refreshPage(createPage);        
+    public void afterTest() { 
+        refreshPage(createPage);    
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })

@@ -25,24 +25,30 @@ import com.eaton.pages.demandresponse.loadgroup.LoadGroupEditPage;
 public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
-    private Integer id;
     private String name;
     private LoadGroupEditPage editPage;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
+        setRefreshPage(false);
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        name = "Before Class " + timeStamp;
+        Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.of(name))
+                .create();
         JSONObject response = pair.getValue1();
-        id = response.getInt("id");
-        name = response.getString("name");
+        Integer id = response.getInt("id");
+        //name = response.getString("name");
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
         editPage = new LoadGroupEditPage(driverExt, id);
     }
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(editPage);
+        if(getRefreshPage()) {
+            refreshPage(editPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -56,20 +62,23 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpEcobeeEdit_RequiredFieldsOnly_Success() {
+        setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT Edited Ecobee Ldgrp " + timeStamp;
-        final String EXPECTED_MSG = name + " saved successfully.";
-
-        Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
+        String newName = "AT Ecobee Required " + timeStamp;
+        String editName = "AT Ecobee Edited Required " + timeStamp;
+        final String EXPECTED_MSG = editName + " saved successfully.";        
+        
+        Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.of(newName))
+                .create();
         JSONObject response = pair.getValue1();
-        id = response.getInt("id");
-        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+        Integer editId = response.getInt("id");
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + editId + Urls.EDIT);
 
-        editPage.getName().setInputValue(name);
+        editPage.getName().setInputValue(editName);
 
         editPage.getSaveBtn().click();
 
-        waitForPageToLoad("Load Group: " + name, Optional.empty());
+        waitForPageToLoad("Load Group: " + editName, Optional.empty());
 
         LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
 
@@ -82,23 +91,25 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
     public void ldGrpEcobeeEdit_Name_RequiredValidation() {
         final String EXPECTED_MSG = "Name is required.";
 
-        editPage.getName().setInputValue(" ");
+        editPage.getName().clearInputValue();
         editPage.getSaveBtn().click();
 
         String actualMsg = editPage.getName().getValidationError();
         assertThat(EXPECTED_MSG).isEqualTo(actualMsg);
     }
 
+    //TODO: remove the refresh once defect is fixed
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpEcobeeEdit_Name_UniqueValidation() {
-        Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
-        JSONObject response = pair.getValue1();
-
-        String name = response.getString("name");
+        setRefreshPage(true);
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String newName = "AT Unique Name " + timeStamp;
+        new LoadGroupEcobeeCreateBuilder.Builder(Optional.of(newName))
+                .create();
 
         final String EXPECTED_MSG = "Name must be unique.";
 
-        editPage.getName().setInputValue(name);
+        editPage.getName().setInputValue(newName);
         editPage.getSaveBtn().click();
 
         String actualMsg = editPage.getName().getValidationError();
@@ -140,6 +151,7 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpEcobeeEdit_Cancel_NavigatesToCorrectUrl() {
+        setRefreshPage(true);
         final String EXPECTED_MSG = "Load Group: " + name;
         editPage.getCancelBtn().click();
 
@@ -153,16 +165,20 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpEcobeeEdit_AllFields_Success() {
+        setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT Edited Ecobee Ldgrp " + timeStamp;
-        final String EXPECTED_MSG = name + " saved successfully.";
+        String newName = "AT All Fields " + timeStamp;
+        String editName = "AT Edited Ecobee Ldgrp " + timeStamp;
+        final String EXPECTED_MSG = editName + " saved successfully.";
 
-        Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
+        Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.of(newName))
+                .create();
+        
         JSONObject response = pair.getValue1();
-        id = response.getInt("id");
-        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+        Integer editId = response.getInt("id");
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + editId + Urls.EDIT);
 
-        editPage.getName().setInputValue(name);
+        editPage.getName().setInputValue(editName);
         editPage.getkWCapacity().setInputValue("2345");
         editPage.getDisableGroup().selectValue("Yes");
         editPage.getDisableControl().selectValue("Yes");
@@ -207,5 +223,4 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
 
         assertThat(expectedLabels).containsExactlyElementsOf(actualLabels);
     }
-
 }

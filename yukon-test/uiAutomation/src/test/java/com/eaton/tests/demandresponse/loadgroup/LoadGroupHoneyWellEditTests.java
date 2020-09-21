@@ -29,6 +29,7 @@ public class LoadGroupHoneyWellEditTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         
         Pair<JSONObject, JSONObject> pair = new LoadGroupHoneywellCreateBuilder.Builder(Optional.empty())
                 .withKwCapacity(Optional.empty())
@@ -45,7 +46,10 @@ public class LoadGroupHoneyWellEditTests extends SeleniumTestSetup {
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(editPage);
+        if(getRefreshPage()) {
+            refreshPage(editPage);
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -60,8 +64,11 @@ public class LoadGroupHoneyWellEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpHoneywellEdit_AllFields_Success() {
+        setRefreshPage(true);
         Pair<JSONObject, JSONObject> pair = new LoadGroupHoneywellCreateBuilder.Builder(Optional.empty())
                 .withKwCapacity(Optional.empty())
+                .withDisableControl(Optional.empty())
+                .withDisableControl(Optional.empty())
                 .create();
         
         JSONObject response = pair.getValue1();

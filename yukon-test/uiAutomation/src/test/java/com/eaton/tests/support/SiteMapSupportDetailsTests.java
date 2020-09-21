@@ -48,18 +48,6 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
         assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);
     }
 
-//    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
-//    public void siteMapSupportDetails_BatteryNodeAnalysis_LinkCorrect() {
-//        softly = new SoftAssertions();
-//        final String EXPECTED_ANCHOR = "Battery Node Analysis";
-//        final String EXPECTED_LINK = Urls.Support.BATTERY_NODE_ANALYSIS;
-//        final int POSITION = 0;
-//
-//        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
-//        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
-//        softly.assertAll();
-//    }
-
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
     public void siteMapSupportDetails_DataStreamingDeviceAttributes_LinkCorrect() {
         softly = new SoftAssertions();

@@ -28,19 +28,19 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     private TrendEditPage editPage;
     private DriverExtensions driverExt;
-    private int trendId;
     private String trendName;
     private String timeStamp;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         
         Pair<JSONObject, JSONObject> pair = TrendCreateService.buildAndCreateTrendAllFields();
         
         JSONObject response = pair.getValue1();
         
-        trendId = response.getInt("trendId");
+        int trendId = response.getInt("trendId");
         trendName = response.getString("name");
         timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 
@@ -50,7 +50,10 @@ public class TrendEditTests extends SeleniumTestSetup {
     
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(editPage);
+        if(getRefreshPage()) {
+            refreshPage(editPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
@@ -64,6 +67,7 @@ public class TrendEditTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
     public void editTrend_AllFields_Success() {
+        setRefreshPage(true);
         String editTrendName = "EditTrendTest " + timeStamp;
         
         Pair<JSONObject, JSONObject> responses = TrendCreateService.buildAndCreateTrendAllFields();
@@ -81,7 +85,8 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_Name_RequiredValidation() {
-        editPage.getName().setInputValue("");
+        setRefreshPage(true);
+        editPage.getName().clearInputValue();
         editPage.getSave().click();
         
         assertThat(editPage.getName().getValidationError()).isEqualTo("Name is required.");
@@ -89,6 +94,7 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_Name_AlreadyExistsValidation() {
+        setRefreshPage(true);
         Pair<JSONObject, JSONObject> responses = TrendCreateService.buildAndCreateTrendOnlyRequiredFields();
         
         JSONObject response = responses.getValue1();
@@ -103,7 +109,8 @@ public class TrendEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
-    public void editTrend_RemovePoint_Success() {        
+    public void editTrend_RemovePoint_Success() {    
+        setRefreshPage(true);
         Pair<JSONObject, JSONObject> responses = TrendCreateService.buildAndCreateTrendWithPoint(Optional.empty(), Optional.empty());
         
         JSONObject response = responses.getValue1();
@@ -121,6 +128,7 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_RemoveMarker_Success() {
+        setRefreshPage(true);
         Pair<JSONObject, JSONObject> responses = TrendCreateService.buildAndCreateTrendWithMarker();
         
         JSONObject response = responses.getValue1();
@@ -139,6 +147,7 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_AddPoint_Success() {
+        setRefreshPage(true);
         Pair<JSONObject, JSONObject> responses = TrendCreateService.buildAndCreateTrendOnlyRequiredFields();
         
         JSONObject response = responses.getValue1();
@@ -159,6 +168,7 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_AddMarker_Success() {
+        setRefreshPage(true);
         Pair<JSONObject, JSONObject> responses = TrendCreateService.buildAndCreateTrendOnlyRequiredFields();
         
         JSONObject response = responses.getValue1();
@@ -180,6 +190,7 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_EditPoint_Success() {
+        setRefreshPage(true);
         Pair<JSONObject, JSONObject> responses = TrendCreateService.buildAndCreateTrendWithPoint(Optional.empty(), Optional.empty());
         
         JSONObject response = responses.getValue1();
@@ -200,6 +211,7 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
     public void editTrend_EditMarker_Success() {
+        setRefreshPage(true);
         Pair<JSONObject, JSONObject> pair = TrendCreateService.buildAndCreateTrendWithMarker();
         
         JSONObject response = pair.getValue1();
@@ -225,14 +237,12 @@ public class TrendEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
     public void editTrend_Cancel_NavigatesToCorrectUrl() {
-        String expectedURL = getBaseUrl() + Urls.Tools.TRENDS_LIST;
+        setRefreshPage(true);
 
         editPage.getCancel().click();
 
-        waitForUrlToLoad(Urls.Tools.TRENDS_LIST, Optional.empty());
+        Boolean loaded = waitForUrlToLoad(Urls.Tools.TRENDS_LIST, Optional.empty());
         
-        String actualURL = getCurrentUrl();
-
-        assertThat(actualURL).isEqualTo(expectedURL);
+        assertThat(loaded).isTrue();
     }
 }

@@ -28,6 +28,7 @@ public class LoadGroupMeterDisconnectEditTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         Pair<JSONObject, JSONObject> pair = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
                 .create();
 
@@ -40,7 +41,10 @@ public class LoadGroupMeterDisconnectEditTests extends SeleniumTestSetup {
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(editPage);
+        if(getRefreshPage()) {
+            refreshPage(editPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -54,6 +58,7 @@ public class LoadGroupMeterDisconnectEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpMeterDisconnectEdit_AllFields_Success() {
+        setRefreshPage(true);
         String u = UUID.randomUUID().toString();
         String uuid = u.replace("-", "");
         String name = "AT LG Edit " + uuid;
@@ -86,5 +91,4 @@ public class LoadGroupMeterDisconnectEditTests extends SeleniumTestSetup {
 
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
-
 }

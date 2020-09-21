@@ -30,6 +30,7 @@ public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         new SoftAssertions();
         randomNum = getRandomNum();
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
@@ -38,11 +39,15 @@ public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
 
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
-        refreshPage(createPage);
+        if(getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        setRefreshPage(false);
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpCreateEmetcon_AllFields_Success() {        
+    public void ldGrpCreateEmetcon_AllFields_Success() { 
+        setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT emetcon " + timeStamp;
         double randomDouble = randomNum.nextDouble();   

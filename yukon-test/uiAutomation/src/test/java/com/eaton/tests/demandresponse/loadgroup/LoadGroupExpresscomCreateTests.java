@@ -33,7 +33,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         randomNum = getRandomNum();
-        
+
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
         createPage = new LoadGroupExpresscomPage(driverExt, Urls.DemandResponse.LOAD_GROUP_CREATE);
     }
@@ -42,7 +42,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     public void afterTest() {
         refreshPage(createPage);
     }
-    
+
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateExpresscom_RequiredFieldsOnly_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -53,7 +53,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getName().setInputValue(name);
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
         waitForLoadingSpinner();
-        
+
         createPage.getUsage().setTrueFalseByLabel("Splinter", "SPLINTER", true);
         createPage.getSplinter().setInputValue(String.valueOf(randomNum.nextInt(254)));
 
@@ -77,13 +77,13 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getName().setInputValue(name);
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
         waitForLoadingSpinner();
-        
-        //55 = a_REPEATER-801
+
+        // 55 = a_REPEATER-801
         createPage.getCommunicationRoute().selectItemByValue("55");
         createPage.getGeographicalAddress().setTrueFalseByLabel("Serial", "SERIAL", true);
         createPage.getSerial().setInputValue(String.valueOf(randomNum.nextInt(999999999)));
         createPage.getUsage().setTrueFalseByLabel("Load", "LOAD", true);
-        createPage.getLoads().setTrueFalseByLabel("Load 8", "Load_8" ,true);
+        createPage.getLoads().setTrueFalseByLabel("Load 8", "Load_8", true);
 
         createPage.getSaveBtn().click();
 
@@ -108,10 +108,10 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getName().setInputValue(name);
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
         waitForLoadingSpinner();
-        
-        //62 = a_RTC
+
+        // 62 = a_RTC
         createPage.getCommunicationRoute().selectItemByValue("62");
-        
+
         createPage.getGeographicalAddress().setTrueFalseByLabel("GEO", "GEO", true);
         createPage.getGeographicalAddress().setTrueFalseByLabel("Substation", "SUBSTATION", true);
         createPage.getGeographicalAddress().setTrueFalseByLabel("Feeder", "FEEDER", true);
@@ -129,7 +129,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getUsage().setTrueFalseByLabel("Splinter", "SPLINTER", true);
         createPage.getUsage().setTrueFalseByLabel("Load", "LOAD", true);
         ConfirmModal confirmModal = new ConfirmModal(driverExt, Optional.empty(), Optional.of("addressing-popup"));
-        confirmModal.clickOkAndWaitForSpinner();        
+        confirmModal.clickOkAndWaitForSpinner();
 
         createPage.getLoads().setTrueFalseByLabel("Load 8", "Load_8", true);
         createPage.getProgram().setInputValue(String.valueOf(randomNum.nextInt(254)));
@@ -257,7 +257,8 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getUsage().setTrueFalseByLabel("Program", "PROGRAM", true);
         createPage.getUsage().setTrueFalseByLabel("Splinter", "SPLINTER", true);
 
-        List<String> expectedLabels = new ArrayList<>(List.of("Send Loads in Control Message:", "Loads:", "Program:", "Splinter:"));
+        List<String> expectedLabels = new ArrayList<>(
+                List.of("Send Loads in Control Message:", "Loads:", "Program:", "Splinter:"));
         List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
         assertThat(expectedLabels).containsExactlyElementsOf(actualLabels);
@@ -278,7 +279,8 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
         waitForLoadingSpinner();
 
-        List<String> expectedLabels = new ArrayList<>(List.of("Control Priority:", "kW Capacity:", "Disable Group:", "Disable Control:"));
+        List<String> expectedLabels = new ArrayList<>(
+                List.of("Control Priority:", "kW Capacity:", "Disable Group:", "Disable Control:"));
         List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
         assertThat(expectedLabels).containsExactlyElementsOf(actualLabels);
@@ -547,7 +549,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getSaveBtn().click();
 
         String userMsg = createPage.getUserMessage();
-        
+
         assertThat(EXPECTED_MSG).isEqualTo(userMsg);
     }
 
@@ -573,7 +575,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     public void ldGrpCreateExpresscom_UsageLoadAndProgramSelectedSelectYes_SendLoadsSetToYes() {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
 
-        createPage.getUsage().setTrueFalseByLabel("Load", "LOAD",  true);
+        createPage.getUsage().setTrueFalseByLabel("Load", "LOAD", true);
         createPage.getUsage().setTrueFalseByLabel("Program", "PROGRAM", true);
         ConfirmModal confirmModal = new ConfirmModal(driverExt, Optional.empty(), Optional.of("addressing-popup"));
         confirmModal.clickCancelAndWait();
@@ -588,7 +590,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getUsage().setTrueFalseByLabel("Program", "PROGRAM", true);
         ConfirmModal confirmModal = new ConfirmModal(driverExt, Optional.empty(), Optional.of("addressing-popup"));
         confirmModal.clickOkAndWaitForSpinner();
-        
+
         assertThat(createPage.getUsage().isValueSelected("Load")).isFalse();
         assertThat(createPage.getSendLoadsInControlMessageText()).isEqualTo("No");
     }
@@ -604,10 +606,10 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         confirmModal.clickCancelAndWait();
         createPage.getUsage().setTrueFalseByLabel("Splinter", "SPLINTER", true);
         confirmModal.clickCancelAndWait();
-        
+
         assertThat(createPage.getSendLoadsInControlMessageText()).isEqualTo("Yes");
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpCreateExpresscom_UsageLoadAndSplinterSelectedSelectNo_LoadUnselectedSendLoadSetToNo() {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
@@ -618,7 +620,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         confirmModal.clickCancelAndWait();
         createPage.getUsage().setTrueFalseByLabel("Splinter", "SPLINTER", true);
         confirmModal.clickOkAndWaitForSpinner();
-        
+
         assertThat(createPage.getUsage().isValueSelected("Load")).isFalse();
         assertThat(createPage.getSendLoadsInControlMessageText()).isEqualTo("No");
     }
