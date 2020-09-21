@@ -50,9 +50,8 @@ public class ControlAreaApiTest {
         // Delete Load Program
         lmDeleteObject = MockLMDto.builder().name(loadProgram.getName()).build();
         Log.info("Delete Load Group is : " + lmDeleteObject);
-        ExtractableResponse<?> deleteProgramResponse = ApiCallHelper.delete("deleteLoadProgram",
-                lmDeleteObject,
-                loadProgram.getProgramId().toString());
+        ExtractableResponse<?> deleteProgramResponse = ApiCallHelper.delete("loadPrograms",
+                "/" + loadProgram.getProgramId().toString());
         assertTrue(deleteProgramResponse.statusCode() == 200, "Status code should be 200");
 
         // Delete Load Group
@@ -607,11 +606,11 @@ public class ControlAreaApiTest {
         loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_ECOBEE_PROGRAM, loadGroups, gearTypes,
                 programConstraint.getId());
         loadProgram.setNotification(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", loadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", loadProgram);
         Integer programId = createResponse.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID);
         loadProgram.setProgramId(programId);
 
-        assertTrue(createResponse.statusCode() == 200, "Status code should be 200");
+        assertTrue(createResponse.statusCode() == 201, "Status code should be 201");
         assertTrue(programId != null, "Program Id should not be Null");
 
     }

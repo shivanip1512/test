@@ -39,7 +39,7 @@ public class ApiURL {
     public static final String drSeasonScheduleUrl = "/dr/setup/constraint/getSeasonSchedules";
 
     public static final String drControlAreaUrl = "/dr/controlAreas";
-    public static final String drNormalStateUrl = "/dr/controlArea/normalState/";
+    public static final String drNormalStateUrl = "/dr/controlAreas/normalState/";
 
     public static final String drControlScenarioRetrieveUrl = "/dr/setup/controlScenario/";
     public static final String drControlScenarioCreateUrl = "/dr/setup/controlScenario/create";
