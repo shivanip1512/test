@@ -1,3 +1,5 @@
+ @import (less) "classpath:com/cannontech/colors.less";
+ 
 /*
     This file defines the basic look and feel of Yukon.
     This file can be included on consumer pages to reuse container styles.
@@ -40,13 +42,6 @@
 @primary-color: #06c;
 @font-color: #555;
 @visited-color: #04a;
-
-@red: #d14836;
-@green: #2ca618;
-@orange: #e99012;
-@grey: #7b8387;
-@blue: #0088f2;
-@white: #ffffff;
 
 @border-radius: 2px;
 @form-control-height: 26px;
@@ -148,7 +143,7 @@ a,
 .bg-color-green { background-color: @green; }
 .bg-color-orange { background-color: @orange; }
 .bg-color-blue { background-color: @blue; }
-.bg-color-grey { background-color: @grey; }
+.bg-color-grey { background-color: @gray; }
 
 
 /* FORM FIELDS */
@@ -991,7 +986,7 @@ ol.error{ list-style-type: none; }
 .grey, 
 .disabled, 
 .disabled a { 
-    color: @grey !important; 
+    color: @gray !important; 
     cursor: default;
 }
 
@@ -1007,7 +1002,7 @@ ol.error{ list-style-type: none; }
 .green-background { background: @green; }
 .blue-background { background: @blue; }
 .orange-background { background: @orange; }
-.grey-background { background: @grey; }
+.grey-background { background: @gray; }
 
 .small-rectangle { 
     width: 20px;
