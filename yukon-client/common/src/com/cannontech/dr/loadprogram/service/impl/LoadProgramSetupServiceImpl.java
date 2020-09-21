@@ -139,12 +139,10 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
     @Override
     @Transactional
-    public int delete(int programId, String programName) {
+    public int delete(int programId) {
         LiteYukonPAObject loadProgram = dbCache.getAllLMPrograms().stream()
-                                                                  .filter( program -> program.getLiteID() == programId 
-                                                                                     && program.getPaoName().equalsIgnoreCase(programName))
-                                                                  .findFirst()
-                                                                  .orElseThrow(() -> new NotFoundException("Id and Name combination not found"));;
+                                                                  .filter( program -> program.getLiteID() == programId)
+                                                                  .findFirst().orElseThrow(() -> new NotFoundException("Id not found"));;
         Integer paoId = Integer.valueOf(ServletUtils.getPathVariable("id"));
         if (programDao.getByProgramIds(Collections.singletonList(paoId)).size() > 0) {
             String message = "You cannot delete the load management program '" + loadProgram.getPaoName()

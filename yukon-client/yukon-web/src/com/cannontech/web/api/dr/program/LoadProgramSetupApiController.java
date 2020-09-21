@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,23 +25,20 @@ import com.cannontech.common.dr.program.setup.model.LoadProgramCopy;
 import com.cannontech.common.dr.program.setup.model.NotificationGroup;
 import com.cannontech.common.dr.program.setup.model.ProgramDirectMemberControl;
 import com.cannontech.common.dr.program.setup.model.ProgramGroup;
-import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.ProgramDetails;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.dr.loadprogram.service.LoadProgramSetupService;
-import com.cannontech.web.api.dr.setup.LMDeleteValidator;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @RestController
 @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
-@RequestMapping("/dr/setup/loadProgram")
+@RequestMapping("/dr/loadPrograms")
 public class LoadProgramSetupApiController {
     @Autowired private LoadProgramSetupService loadProgramService;
-    @Autowired LMDeleteValidator lmDeleteValidator;
     @Autowired LMProgramCopyValidator lmProgramCopyValidator;
     @Autowired LMProgramValidator lmProgramValidator;
 
@@ -50,25 +48,25 @@ public class LoadProgramSetupApiController {
         return new ResponseEntity<>(loadProgram, HttpStatus.OK);
     }
 
-    @PostMapping("/create")
+    @PostMapping
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> create(@Valid @RequestBody LoadProgram loadProgram) {
         int paoId = loadProgramService.create(loadProgram);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("programId", paoId);
-        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
+        return new ResponseEntity<>(paoIdMap, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.OWNER)
-    public ResponseEntity<Object> delete(@RequestBody LMDelete lmDelete, @PathVariable int id) {
-        int paoId = loadProgramService.delete(id, lmDelete.getName());
+    public ResponseEntity<Object> delete(@PathVariable int id) {
+        int paoId = loadProgramService.delete(id);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
-        paoIdMap.put("programId", paoId);
+        paoIdMap.put("id", paoId);
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
-    @PostMapping("/copy/{id}")
+    @PostMapping("/{id}/copy")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> copy(@Valid @RequestBody LoadProgramCopy loadProgramCopy, @PathVariable int id) {
         int paoId = loadProgramService.copy(id, loadProgramCopy);
@@ -77,7 +75,7 @@ public class LoadProgramSetupApiController {
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
-    @PostMapping("/update/{id}")
+    @PutMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public ResponseEntity<Object> update(@Valid @RequestBody LoadProgram loadProgram, @PathVariable int id) {
         int paoId = loadProgramService.update(id, loadProgram);
@@ -144,11 +142,6 @@ public class LoadProgramSetupApiController {
         return new ResponseEntity<>(loadProgramService.getGearsForProgram(programId), HttpStatus.OK);
     }
 
-    @InitBinder("LMDelete")
-    public void setupBinderDelete(WebDataBinder binder) {
-        binder.addValidators(lmDeleteValidator);
-    }
-    
     @InitBinder("loadProgramCopy")
     public void setupBinderProgramCopy(WebDataBinder binder) {
         binder.addValidators(lmProgramCopyValidator);
