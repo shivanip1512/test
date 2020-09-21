@@ -26,17 +26,21 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
         createPage = new LoadProgramCreatePage(driverExt);
     }
     
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
-        refreshPage(createPage);
+        if(getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void loadProgramCreate_pageTitleCorrect() {
+    public void loadProgramCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Load Program";
 
         String actualPageTitle = createPage.getPageTitle();
@@ -45,7 +49,8 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void loadProgramCreate_requiredFieldsOnlySuccess() {
+    public void loadProgramCreate_RequiredFieldsOnly_Success() {
+        setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT LM Direct Program " + timeStamp;
 

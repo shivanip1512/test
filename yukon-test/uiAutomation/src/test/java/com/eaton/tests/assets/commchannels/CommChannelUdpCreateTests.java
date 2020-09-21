@@ -38,7 +38,7 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannelUdp_AllFieldsSuccess() {
+    public void createCommChannelUdp_AllFields_Success() {
         CreateUdpCommChannelModal createModal = listPage.showAndWaitCreateUdpCommChannelModal();
                 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -65,7 +65,7 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannelUdp_LabelsCorrect() {
+    public void createCommChannelUdp_Labels_Correct() {
         SoftAssertions softly = new SoftAssertions();
         CreateUdpCommChannelModal createModal = listPage.showAndWaitCreateUdpCommChannelModal();
 
@@ -84,7 +84,7 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannelUdp_PortNumber_MinValidation() {
+    public void createCommChannelUdp_PortNumber_MinValueValidation() {
         CreateUdpCommChannelModal createModal = listPage.showAndWaitCreateUdpCommChannelModal();
 
         createModal.getType().selectItemByValue("UDPPORT");
@@ -104,7 +104,7 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannelUdp_PortNumber_MaxValidation() {
+    public void createCommChannelUdp_PortNumber_MaxValueValidation() {
         CreateUdpCommChannelModal createModal = listPage.showAndWaitCreateUdpCommChannelModal();
 
         createModal.getType().selectItemByValue("UDPPORT");

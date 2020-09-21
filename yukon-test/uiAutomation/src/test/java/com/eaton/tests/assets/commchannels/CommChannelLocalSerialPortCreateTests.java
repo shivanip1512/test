@@ -35,7 +35,7 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannelLocalSerialPort_AllFieldsSuccess() {
+    public void createCommChannelLocalSerialPort_AllFields_Success() {
         CreateLocalSerialPortCommChannelModal createModal = listPage.showAndWaitCreateLocalSerialPortCommChannelModal();
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -62,7 +62,7 @@ public class CommChannelLocalSerialPortCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannelLocalSerialPort_LabelsCorrect() {
+    public void createCommChannelLocalSerialPort_Labels_Correct() {
         SoftAssertions softly = new SoftAssertions();
         CreateLocalSerialPortCommChannelModal createModal = listPage.showAndWaitCreateLocalSerialPortCommChannelModal();
 

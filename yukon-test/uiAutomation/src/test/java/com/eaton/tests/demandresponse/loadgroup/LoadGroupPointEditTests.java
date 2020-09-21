@@ -40,7 +40,7 @@ public class LoadGroupPointEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpPointEdit_AllFields_Successfully() {
+    public void ldGrpPointEdit_AllFields_Success() {
         builder = LoadGroupPointCreateBuilder.buildDefaultPointLoadGroup();
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String createName = "AT Create Point Ld group " + timeStamp;
@@ -69,12 +69,12 @@ public class LoadGroupPointEditTests extends SeleniumTestSetup {
         SelectPointModal pointGroupControlDevice = editPage.showAndWaitPointGroupControlDeviceModal();
         pointGroupControlDevice.selectPoint("SCADA Override", Optional.empty());
         pointGroupControlDevice.clickOkAndWaitForModalCloseDisplayNone();
-        
+
         editPage.getkWCapacity().setInputValue(String.valueOf(capacity));
         editPage.getDisableGroup().selectValue("No");
         editPage.getDisableControl().selectValue("Yes");
         // 1 = true
-        editPage.getControlStartState().selectItemByValue("1"); 
+        editPage.getControlStartState().selectItemByValue("1");
 
         editPage.getSaveBtn().click();
 

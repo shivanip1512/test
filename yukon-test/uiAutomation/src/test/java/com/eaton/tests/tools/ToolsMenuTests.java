@@ -24,77 +24,77 @@ public class ToolsMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TOOLS })
-    public void toolsMenu_collectionActionsUrlCorrect() {
+    public void toolsMenu_CollectionActions_UrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(TOOLS_INDEX, 0);
         
         assertThat(url).contains(Urls.Tools.COLLECTION_ACTIONS);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TOOLS })
-    public void toolsMenu_commanderUrlCorrect() {
+    public void toolsMenu_Commander_UrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(TOOLS_INDEX, 1);
 
         assertThat(url).contains(Urls.Tools.COMMANDER);
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TOOLS })
-    public void toolsMenu_dataExportActionsUrlCorrect() {
+    public void toolsMenu_DataExportActions_UrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(TOOLS_INDEX, 2);
 
         assertThat(url).contains(Urls.Tools.DATA_EXPORTER);
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TOOLS })
-    public void toolsMenu_dataStreamingUrlCorrect() {
+    public void toolsMenu_DataStreaming_UrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(TOOLS_INDEX, 3);
 
         assertThat(url).contains(Urls.Tools.DATA_STREAMING);
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TOOLS })
-    public void toolsMenu_dataViewerUrlCorrect() {
+    public void toolsMenu_DataViewer_UrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(TOOLS_INDEX, 4);
 
         assertThat(url).contains(Urls.Tools.DATA_VIEWER);
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TOOLS })
-    public void toolsMenu_deviceConfigurationUrlCorrect() {
+    public void toolsMenu_DeviceConfiguration_UrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(TOOLS_INDEX, 5);
 
         assertThat(url).contains(Urls.Tools.DEVICE_CONFIGURATION);
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TOOLS })
-    public void toolsMenu_deviceGroupsUrlCorrect() {
+    public void toolsMenu_DeviceGroups_UrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(TOOLS_INDEX, 6);
 
         assertThat(url).contains(Urls.Tools.DEVICE_GROUP);
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TOOLS })
-    public void toolsMenu_schedulesUrlCorrect() {
+    public void toolsMenu_Schedules_UrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(TOOLS_INDEX, 7);
 
         assertThat(url).contains(Urls.Tools.SCHEDULES);
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TOOLS })
-    public void toolsMenu_scriptsUrlCorrect() {
+    public void toolsMenu_Scripts_UrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(TOOLS_INDEX, 8);
 
         assertThat(url).contains(Urls.Tools.SCRIPTS);
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TOOLS })
-    public void toolsMenu_trendsUrlCorrect() {
+    public void toolsMenu_Trends_UrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(TOOLS_INDEX, 9);
 
         assertThat(url).contains(Urls.Tools.TRENDS_LIST);
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TOOLS })
-    public void toolsMenu_reportsUrlCorrect() {
+    public void toolsMenu_Reports_UrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(TOOLS_INDEX, 10);
 
         assertThat(url).contains(Urls.Tools.REPORTS);

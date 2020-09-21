@@ -39,7 +39,7 @@ public class MeterWRL420cDEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void meterWRL420cDEdit_NameOnly_Success() {
+    public void meterWRL420cDEdit_RequiredFieldsOnly_Success() {
     	
         String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited " + MeterEnums.MeterType.WRL420CD.getMeterType() + " " + timeStamp;

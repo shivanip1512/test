@@ -36,6 +36,7 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         commChannelName = "Local Serial Port " + timeStamp;
@@ -56,11 +57,14 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(detailPage);
+        if(getRefreshPage()) {
+            refreshPage(detailPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsLocalSerialPort_PageTitleCorrect() {
+    public void commChannelDetailsLocalSerialPort_Page_TitleCorrect() {
         String EXPECTED_TITLE = commChannelName;
         
         String actualPageTitle = detailPage.getPageTitle();
@@ -99,7 +103,7 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsLocalSerialPort_ConfigTab_TimingSectionDisplayed() {
+    public void commChannelDetailsLocalSerialPort_ConfigTabTimingSection_Displayed() {
         String infoTitle = "Configuration";
         
         detailPage.getTabElement().clickTabAndWait(infoTitle);
@@ -109,7 +113,7 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsLocalSerialPort_ConfigTab_GeneralSectionDisplayed() {
+    public void commChannelDetailsLocalSerialPort_ConfigTabGeneralSection_Displayed() {
         String infoTitle = "Configuration";
         
         detailPage.getTabElement().clickTabAndWait(infoTitle);
@@ -119,7 +123,7 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelDetailsLocalSerialPort_ConfigTab_SharedSectionDisplayed() {
+    public void commChannelDetailsLocalSerialPort_ConfigTabSharedSection_Displayed() {
         String infoTitle = "Configuration";
         
         detailPage.getTabElement().clickTabAndWait(infoTitle);
@@ -170,7 +174,8 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
-    public void commChannelDeleteLocalSerial_DeleteCommChannelSuccessfully() {
+    public void commChannelDeleteLocalSerial_Delete_Success() {
+        setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String deleteCommChannelName = "Local Serial Comm Channel " + timeStamp;
 

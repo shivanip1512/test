@@ -20,46 +20,46 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 
-public class LoadGroupMCTDetailTest  extends SeleniumTestSetup {
-	private DriverExtensions driverExt;
-	 private Integer id;
-	 private String name;
-	 private Integer routeId = 28;
-	 private LoadGroupDetailPage detailPage;
-	
-	 @BeforeClass(alwaysRun=true)
-	 public void beforeClass() {
-		 driverExt = getDriverExt();   
-	 }
-	 
-	 @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	 public void ldGrpMCTDetail_DeleteLoadGroup_Success() {
-		 Pair<JSONObject, JSONObject> pair = new LoadGroupMCTCreateBuilder.Builder(Optional.empty())
-															  .withCommunicationRoute(routeId) 
-															  .withDisableControl(Optional.of(true))
-															  .withDisableGroup(Optional.of(true)) 
-															  .withKwCapacity(Optional.empty())
-															  .withAddress(34567)
-															  .withlevel(LoadGroupEnums.AddressLevelMCT.LEAD)
-															  .withRelayUsage(Arrays.asList(LoadGroupEnums.RelayUsage.RELAY_2,LoadGroupEnums.RelayUsage.RELAY_1 ))
-															  .create(); 
-															  
-		 JSONObject response = pair.getValue1(); 
-		 id = response.getInt("id");
-		 navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-				
-	     name = response.getString("name");
-	     final String expected_msg = name + " deleted successfully.";
-	     navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
-	     
-	     detailPage = new LoadGroupDetailPage(driverExt, id);
-	     ConfirmModal  confirmModal = detailPage.showDeleteLoadGroupModal(); 
-	     confirmModal.clickOkAndWaitForModalToClose();
-	     
-	     waitForPageToLoad("Setup", Optional.empty());
-	     DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_GROUP);
-	     String userMsg = setupPage.getUserMessage();
-	     
-	     assertThat(userMsg).isEqualTo(expected_msg);
-	}
+public class LoadGroupMCTDetailTest extends SeleniumTestSetup {
+    private DriverExtensions driverExt;
+    private Integer id;
+    private String name;
+    private Integer routeId = 28;
+    private LoadGroupDetailPage detailPage;
+
+    @BeforeClass(alwaysRun = true)
+    public void beforeClass() {
+        driverExt = getDriverExt();
+    }
+
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpMCTDetail_Delete_Success() {
+        Pair<JSONObject, JSONObject> pair = new LoadGroupMCTCreateBuilder.Builder(Optional.empty())
+                .withCommunicationRoute(routeId)
+                .withDisableControl(Optional.of(true))
+                .withDisableGroup(Optional.of(true))
+                .withKwCapacity(Optional.empty())
+                .withAddress(34567)
+                .withlevel(LoadGroupEnums.AddressLevelMCT.LEAD)
+                .withRelayUsage(Arrays.asList(LoadGroupEnums.RelayUsage.RELAY_2, LoadGroupEnums.RelayUsage.RELAY_1))
+                .create();
+
+        JSONObject response = pair.getValue1();
+        id = response.getInt("id");
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
+
+        name = response.getString("name");
+        final String expected_msg = name + " deleted successfully.";
+        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
+
+        detailPage = new LoadGroupDetailPage(driverExt, id);
+        ConfirmModal confirmModal = detailPage.showDeleteLoadGroupModal();
+        confirmModal.clickOkAndWaitForModalToClose();
+
+        waitForPageToLoad("Setup", Optional.empty());
+        DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_GROUP);
+        String userMsg = setupPage.getUserMessage();
+
+        assertThat(userMsg).isEqualTo(expected_msg);
+    }
 }

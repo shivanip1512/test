@@ -38,8 +38,8 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @AfterMethod(alwaysRun = true)
-    public void afterTest() {        
-        refreshPage(createPage);        
+    public void afterTest() { 
+        refreshPage(createPage);    
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -236,7 +236,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void LoadGroupRfnExpresscom_GeographicalAddress_SectionTitleCorrect() {
+    public void LoadGroupRfnExpresscom_GeographicalAddressSection_TitleCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         Section generalSection = createPage.getPageSection("Geographical Address");
@@ -245,7 +245,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void LoadGroupRfnExpresscom_GeographicalAddress_SectionLabelsCorrect() {
+    public void LoadGroupRfnExpresscom_GeographicalAddressSection_LabelsCorrect() {
         String sectionName = "Geographical Address";
         String expectedLabels = "Address Usage:";
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
@@ -257,7 +257,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void LoadGroupRfnExpresscom_GeographicalAddressing_SectionTitleCorrect() {
+    public void LoadGroupRfnExpresscom_GeographicalAddressingSection_TitleCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         Section generalSection = createPage.getPageSection("Geographical Addressing");
@@ -266,7 +266,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void LoadGroupRfnExpresscom_GeographicalAddressing_SectionLabelsCorrect() {
+    public void LoadGroupRfnExpresscom_GeographicalAddressingSection_LabelsCorrect() {
         String sectionName = "Geographical Addressing";
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -284,7 +284,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void LoadGroupRfnExpresscom_LoadAddress_SectionTitleCorrect() {
+    public void LoadGroupRfnExpresscom_LoadAddressSection_TitleCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
         Section generalSection = createPage.getPageSection("Load Address");
@@ -293,7 +293,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void LoadGroupRfnExpresscom_LoadAddress_SectionLabelsCorrect() {
+    public void LoadGroupRfnExpresscom_LoadAddressSection_LabelsCorrect() {
         String sectionName = "Load Address";
         String expectedLabels = "Usage:";
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
@@ -305,7 +305,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void LoadGroupRfnExpresscom_LoadAddressing_SectionLabelsCorrect() {
+    public void LoadGroupRfnExpresscom_LoadAddressingSection_LabelsCorrect() {
         String sectionName = "Load Addressing";
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -320,7 +320,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void LoadGroupRfnExpresscom_LoadAddressing_SectionTitleCorrect() {
+    public void LoadGroupRfnExpresscom_LoadAddressingSection_TitleCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
 
@@ -330,7 +330,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void LoadGroupRfnExpresscom_OptionalAttributes_SectionLabelsCorrect() {
+    public void LoadGroupRfnExpresscom_OptionalAttributesSection_LabelsCorrect() {
         String sectionName = "Optional Attributes";
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();

@@ -35,7 +35,7 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup {
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(trendCreatePage);
+        refreshPage(trendCreatePage);    
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
@@ -51,7 +51,7 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendMarkerSetup_AddMarkerLabels_Correct() {
+    public void trendMarkerSetup_AddMarker_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
 
         trendCreatePage.getTabElement().clickTabAndWait("Additional Options");
@@ -131,7 +131,7 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendMarkerSetup_EditMarkerFieldValues_Correct() {
+    public void trendMarkerSetup_EditMarkerField_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
 
         Pair<JSONObject, JSONObject> pair = TrendCreateService.buildAndCreateTrendWithMarker();
