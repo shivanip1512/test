@@ -102,6 +102,9 @@ public class DeviceConfigurationSummaryController {
     @GetMapping("filter")
     public String filter(@DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, @DefaultItemsPerPage(value=250) PagingParameters paging,
                        ModelMap model, @ModelAttribute DeviceConfigSummaryFilter filter, String[] deviceSubGroups, YukonUserContext userContext) {
+        if(filter.getConfigurationIds().isEmpty()) {
+            filter.getConfigurationIds().add(DEVICE_CONFIG_ASSIGNED_TO_ANY);
+        }
         boolean assignedToAny = filter.getConfigurationIds() != null && filter.getConfigurationIds().contains(DEVICE_CONFIG_ASSIGNED_TO_ANY);
         boolean unassigned = filter.getConfigurationIds() != null && filter.getConfigurationIds().contains(DEVICE_CONFIG_UNASSIGNED);
         setFilterValues(filter, deviceSubGroups);
