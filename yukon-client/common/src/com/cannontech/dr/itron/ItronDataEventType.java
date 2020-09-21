@@ -50,7 +50,7 @@ public enum ItronDataEventType {
     CALL_FOR_COOL_OFF(0x8099, null, 0, 1, 0),
 
     //Events where the values are obtained from the payload.
-    AVERAGE_VOLTAGE(0x809D, BuiltInAttribute.AVERAGE_VOLTAGE, 0, 2, null),
+    AVERAGE_VOLTAGE(0x809D, BuiltInAttribute.AVERAGE_VOLTAGE, 0, 2, null, 0.1),
     EVENT_SUPERSEDED(0x0012, BuiltInAttribute.EVENT_SUPERSEDED, 0, 4, null),
     FIRMWARE_UPDATE(0x0009, BuiltInAttribute.FIRMWARE_VERSION, 0, 2, null),
     RADIO_LINK_QUALITY(0x808B, BuiltInAttribute.RADIO_LINK_QUALITY, 0, 1, null),
@@ -65,9 +65,9 @@ public enum ItronDataEventType {
     LINE_UNDER_VOLTAGE(0x8084, BuiltInAttribute.TOTAL_LUV_COUNT, 0, 1, null),
     
     //Events that rely on two events to complete point data
-    MIN_VOLTAGE(0x809C, BuiltInAttribute.MINIMUM_VOLTAGE, 0, 2, null),
+    MIN_VOLTAGE(0x809C, BuiltInAttribute.MINIMUM_VOLTAGE, 0, 2, null, 0.1),
     MIN_VOLTAGE_TIME(0x809E, BuiltInAttribute.MINIMUM_VOLTAGE, 0, 4, null),
-    MAX_VOLTAGE(0x809B, BuiltInAttribute.MAXIMUM_VOLTAGE, 0, 2, null),
+    MAX_VOLTAGE(0x809B, BuiltInAttribute.MAXIMUM_VOLTAGE, 0, 2, null, 0.1),
     MAX_VOLTAGE_TIME(0x809F, BuiltInAttribute.MAXIMUM_VOLTAGE, 0, 4, null),
     ;
     
@@ -76,6 +76,7 @@ public enum ItronDataEventType {
     private final int firstByteIndex;
     private final int numOfBytes;
     private final Integer value;
+    private final double internalMultiplier;
     
     private static final Logger log = YukonLogManager.getLogger(ItronDataEventType.class);
     private static final DateTime year2000 = new DateTime(2000, 1, 1, 0, 0, 0);
@@ -116,13 +117,20 @@ public enum ItronDataEventType {
             itronEventTypeFromHexMap.put(eventType.eventIdHex, eventType);
         }
     }
-    
+
+    // This will be used for enums that use the default multiplier value of 1.0
     ItronDataEventType(long eventIdHex, BuiltInAttribute attribute, int firstByteIndex, int numOfBytes, Integer value) {
+        this(eventIdHex, attribute, firstByteIndex, numOfBytes, value, 1.0);
+        
+    }
+
+    ItronDataEventType(long eventIdHex, BuiltInAttribute attribute, int firstByteIndex, int numOfBytes, Integer value, double multiplier) {
         this.eventIdHex = eventIdHex;
         this.attribute = attribute;
         this.firstByteIndex = firstByteIndex;
         this.numOfBytes = numOfBytes;
         this.value = value; //Corresponds to the value in the point's state group
+        internalMultiplier = multiplier;
     }
     
     public static ItronDataEventType getFromHex(long hex) {
@@ -234,7 +242,7 @@ public enum ItronDataEventType {
             return currentValue + 1;
         } else {
             // Event has to be decoded
-            return decode(byteArray);
+            return decode(byteArray) * internalMultiplier;
         }
     }
     /**
@@ -281,7 +289,7 @@ public enum ItronDataEventType {
             pointData = new PointData();
             
             // Put either the time or the value into the pointdata
-            insertValueOrTime(pointData, isValue, byteArray, 0.1);
+            insertValueOrTime(pointData, isValue, byteArray, internalMultiplier);
             
             String key = keyPrefix + name();
             log.debug("Caching incomplete data. Key: {}", key);
@@ -293,7 +301,7 @@ public enum ItronDataEventType {
         log.debug("Invalidating cache key: {}", cacheKey);
         voltageCache.invalidate(cacheKey);
         // Put the second part (time or value) into the pointdata
-        insertValueOrTime(pointData, isValue, byteArray, 0.1);
+        insertValueOrTime(pointData, isValue, byteArray, internalMultiplier);
         log.debug("Completed point data - date: " + pointData.getPointDataTimeStamp() + ", value: " + pointData.getValue());
         return Optional.of(pointData);
     }
