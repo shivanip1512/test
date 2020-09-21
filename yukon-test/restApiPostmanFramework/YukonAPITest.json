@@ -1920,15 +1920,14 @@
 											"raw": "{\n    \"name\": \"LMDirectTest001\",\n    \"type\": \"LM_DIRECT_PROGRAM\",\n    \"operationalState\": \"Automatic\",\n    \"constraint\": {\n        \"constraintId\": 2,\n        \"constraintName\": \"123444\"\n    },\n    \"triggerOffset\": 12,\n    \"restoreOffset\": 21,\n    \"gears\": [\n        {\n            \"gearName\": \"GearTimeRefresh\",\n            \"gearNumber\": 1,\n            \"controlMethod\": \"TimeRefresh\",\n            \"fields\": {\n                \"refreshShedTime\": \"FixedShedTime\",\n                \"shedTime\": 3600,\n                \"numberOfGroups\": 0,\n                \"sendRate\": 1800,\n                \"groupSelectionMethod\": \"LastControlled\",\n                \"howToStopControl\": \"TimeIn\",\n                \"stopCommandRepeat\": 0,\n                \"capacityReduction\": 100,\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        },\n        {\n            \"gearName\": \"GearSmartCycle\",\n            \"gearNumber\": 2,\n            \"controlMethod\": \"SmartCycle\",\n            \"fields\": {\n                \"noRamp\": false,\n                \"controlPercent\": 50,\n                \"cyclePeriodInMinutes\": 30,\n                \"cycleCountSendType\": \"FixedCount\",\n                \"maxCycleCount\": 0,\n                \"startingPeriodCount\": 8,\n                \"sendRate\": 3600,\n                \"stopCommandRepeat\": 0,\n                \"howToStopControl\": \"StopCycle\",\n                \"capacityReduction\": 100,\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        },\n        {\n            \"gearName\": \"GearMasterCycle\",\n            \"gearNumber\": 3,\n            \"controlMethod\": \"MasterCycle\",\n            \"fields\": {\n                \"controlPercent\": 50,\n                \"cyclePeriodInMinutes\": 30,\n                \"groupSelectionMethod\": \"LastControlled\",\n                \"howToStopControl\": \"TimeIn\",\n                \"capacityReduction\": 100,\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        },\n        {\n            \"gearName\": \"GearRotation\",\n            \"gearNumber\": 4,\n            \"controlMethod\": \"Rotation\",\n            \"fields\": {\n                \"shedTime\": 300,\n                \"numberOfGroups\": 0,\n                \"sendRate\": 1800,\n                \"groupSelectionMethod\": \"LastControlled\",\n                \"howToStopControl\": \"TimeIn\",\n                \"capacityReduction\": 100,\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        },\n        {\n            \"gearName\": \"GearTrueCycle\",\n            \"gearNumber\": 5,\n            \"controlMethod\": \"TrueCycle\",\n            \"fields\": {\n                \"noRamp\": false,\n                \"controlPercent\": 50,\n                \"cyclePeriodInMinutes\": 30,\n                \"cycleCountSendType\": \"FixedCount\",\n                \"maxCycleCount\": 0,\n                \"startingPeriodCount\": 8,\n                \"sendRate\": 3600,\n                \"stopCommandRepeat\": 0,\n                \"howToStopControl\": \"StopCycle\",\n                \"capacityReduction\": 100,\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        },\n        {\n            \"gearName\": \"GearMagnitude\",\n            \"gearNumber\": 6,\n            \"controlMethod\": \"MagnitudeCycle\",\n            \"fields\": {\n                \"noRamp\": false,\n                \"controlPercent\": 50,\n                \"cyclePeriodInMinutes\": 30,\n                \"cycleCountSendType\": \"FixedCount\",\n                \"maxCycleCount\": 0,\n                \"startingPeriodCount\": 8,\n                \"sendRate\": 3600,\n                \"stopCommandRepeat\": 0,\n                \"howToStopControl\": \"StopCycle\",\n                \"capacityReduction\": 100,\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        },\n        {\n            \"gearName\": \"GearTargetCycle\",\n            \"gearNumber\": 7,\n            \"controlMethod\": \"TargetCycle\",\n            \"fields\": {\n                \"noRamp\": false,\n                \"controlPercent\": 50,\n                \"cycleCountSendType\": \"FixedCount\",\n                \"maxCycleCount\": 0,\n                \"startingPeriodCount\": 8,\n                \"sendRate\": 3600,\n                \"stopCommandRepeat\": 0,\n                \"howToStopControl\": \"StopCycle\",\n                \"capacityReduction\": 100,\n                \"kWReduction\": 0,\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                },\n                \"cyclePeriodInMinutes\": 30\n            }\n        },\n        {\n            \"gearName\": \"GearSimpleThermo\",\n            \"gearNumber\": 9,\n            \"controlMethod\": \"SimpleThermostatRamping\",\n            \"fields\": {\n                \"mode\": \"COOL\",\n                \"randomStartTimeInMinutes\": 60,\n                \"preOpTemp\": 4,\n                \"preOpTimeInMinutes\": 120,\n                \"preOpHoldInMinutes\": 120,\n                \"rampPerHour\": 0.4,\n                \"max\": 4,\n                \"rampOutTimeInMinutes\": 120,\n                \"maxRuntimeInMinutes\": 480,\n                \"howToStopControl\": \"TimeIn\",\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        },\n        {\n            \"gearName\": \"GearBeatThePeak\",\n            \"gearNumber\": 10,\n            \"controlMethod\": \"BeatThePeak\",\n            \"fields\": {\n                \"indicator\": \"Yellow\",\n                \"timeoutInMinutes\": 0,\n                \"resendInMinutes\": 0,\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        },\n        {\n            \"gearName\": \"GearNoControl\",\n            \"gearNumber\": 11,\n            \"controlMethod\": \"NoControl\",\n            \"fields\": {\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        }\n    ],\n    \"assignedGroups\": [\n        {\n            \"groupId\": 11705,\n            \"groupName\": \"E1\",\n            \"type\": \"LM_GROUP_EMETCON\"\n        }\n    ],\n    \"notification\": {\n        \"programStartInMinutes\": 34,\n        \"programStopInMinutes\": 56,\n        \"notifyOnAdjust\": true,\n        \"enableOnSchedule\": true,\n        \"assignedNotificationGroups\": [\n            {\n                \"notificationGrpID\": 2,\n                \"notificationGrpName\": \"Jess Notification\"\n            }\n        ]\n    }\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram",
+											"raw": "{{api-url}}/api/dr/loadPrograms",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram"
+												"loadPrograms"
 											]
 										}
 									},
@@ -1951,15 +1950,14 @@
 											"raw": "{\n    \"programId\": 55,\n    \"name\": \"SEP Program\",\n    \"type\": \"LM_SEP_PROGRAM\",\n    \"operationalState\": \"Automatic\",\n    \"constraint\": {\n        \"constraintId\": 0,\n        \"constraintName\": \"Default Constraint\"\n    },\n    \"triggerOffset\": 0,\n    \"restoreOffset\": 0,\n    \"gears\": [\n        {\n            \"gearId\": 0,\n            \"gearName\": \"SEP Cycle\",\n            \"gearNumber\": 1,\n            \"controlMethod\": \"SepCycle\",\n            \"fields\": {\n                \"rampIn\": true,\n                \"rampOut\": true,\n                \"trueCycle\": true,\n                \"controlPercent\": 50,\n                \"criticality\": 6,\n                \"howToStopControl\": \"TimeIn\",\n                \"capacityReduction\": 100,\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        },\n        {\n            \"gearId\": 204,\n            \"gearName\": \"SEPTempOffset\",\n            \"gearNumber\": 2,\n            \"controlMethod\": \"SepTemperatureOffset\",\n            \"fields\": {\n                \"rampIn\": true,\n                \"rampOut\": true,\n                \"celsiusOrFahrenheit\": \"FAHRENHEIT\",\n                \"mode\": \"HEAT\",\n                \"offset\": 1,\n                \"criticality\": 6,\n                \"howToStopControl\": \"TimeIn\",\n                \"capacityReduction\": 100,\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        },\n        {\n            \"gearId\": 205,\n            \"gearName\": \"NoControl\",\n            \"gearNumber\": 3,\n            \"controlMethod\": \"NoControl\",\n            \"fields\": {\n                \"whenToChangeFields\": {\n                    \"whenToChange\": \"None\"\n                }\n            }\n        }\n    ],\n    \"assignedGroups\": [\n        {\n            \"groupId\": 54,\n            \"groupName\": \"DigiSEP\",\n            \"groupOrder\": 1,\n            \"type\": \"LM_GROUP_DIGI_SEP\"\n        }\n    ]\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram",
+											"raw": "{{api-url}}/api/dr/loadPrograms",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram"
+												"loadPrograms"
 											]
 										}
 									},
@@ -1982,15 +1980,14 @@
 											"raw": "{\r\n    \"name\": \"TestEcobeeSetpoint\",\r\n    \"type\": \"LM_ECOBEE_PROGRAM\",\r\n    \"operationalState\": \"Automatic\",\r\n    \"constraint\": {\r\n        \"constraintId\": 0\r\n    },\r\n    \"triggerOffset\": 1.0,\r\n    \"restoreOffset\": 2.0,\r\n    \"gears\": [\r\n        {\r\n            \"gearName\": \"EcobeeSetpoint Gear1\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"EcobeeSetpoint\",\r\n            \"fields\": {\r\n                \"mandatory\": true,\r\n                \"setpointOffset\": -9,\r\n                \"mode\": \"HEAT\",\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"gearName\": \"EcobeeSetpoint Gear2\",\r\n            \"gearNumber\": 2,\r\n            \"controlMethod\": \"EcobeeSetpoint\",\r\n            \"fields\": {\r\n                \"mandatory\": true,\r\n                \"setpointOffset\": 7,\r\n                \"mode\": \"HEAT\",\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        }\r\n        \r\n    ],\r\n    \"controlWindow\": {\r\n        \"controlWindowOne\": {\r\n            \"availableStartTimeInMinutes\": 120,\r\n            \"availableStopTimeInMinutes\": 300\r\n        }\r\n    },\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 214777,\r\n            \"groupName\": \"ecobeeLoadGroup\",\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        }\r\n    ],\r\n    \"notification\": {\r\n        \"notifyOnAdjust\": false,\r\n        \"enableOnSchedule\": false,\r\n        \"assignedNotificationGroups\": [\r\n            {\r\n                \"notificationGrpID\": 2,\r\n                \"notificationGrpName\": \"Jess Notification\"\r\n            }\r\n        ]\r\n    }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram",
+											"raw": "{{api-url}}/api/dr/loadPrograms",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram"
+												"loadPrograms"
 											]
 										}
 									},
@@ -2013,15 +2010,14 @@
 											"raw": "{\r\n    \"name\": \"Honeywell Program001\",\r\n    \"type\": \"LM_HONEYWELL_PROGRAM\",\r\n    \"operationalState\": \"Timed\",\r\n    \"constraint\": {\r\n        \"constraintId\": 0,\r\n        \"constraintName\": \"Default Constraint\"\r\n    },\r\n    \"triggerOffset\": 0.0,\r\n    \"restoreOffset\": 0.0,\r\n    \"gears\": [\r\n        {\r\n            \"gearName\": \"HW Cycle\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"HoneywellCycle\",\r\n            \"fields\": {\r\n                \"rampInOut\": true,\r\n                \"controlPercent\": 50,\r\n                \"cyclePeriodInMinutes\": 30,\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"gearName\": \"HW Setpoint\",\r\n            \"gearNumber\": 2,\r\n            \"controlMethod\": \"HoneywellSetpoint\",\r\n            \"fields\": {\r\n                \"mandatory\": true,\r\n                \"setpointOffset\": 3,\r\n                \"mode\": \"COOL\",\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        }\r\n    ],\r\n    \"controlWindow\": {\r\n        \"controlWindowOne\": {\r\n            \"availableStartTimeInMinutes\": 540,\r\n            \"availableStopTimeInMinutes\": 360\r\n        },\r\n        \"controlWindowTwo\": {\r\n            \"availableStartTimeInMinutes\": 660,\r\n            \"availableStopTimeInMinutes\": 22\r\n        }\r\n    },\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 15851,\r\n            \"groupName\": \"LM_GROUP_HONEYWELL_Name\",\r\n            \"groupOrder\": 1,\r\n            \"type\": \"LM_GROUP_HONEYWELL\"\r\n        }\r\n    ]\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram",
+											"raw": "{{api-url}}/api/dr/loadPrograms",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram"
+												"loadPrograms"
 											]
 										}
 									},
@@ -2044,15 +2040,14 @@
 											"raw": "{\r\n    \"name\": \"Meter Disconnect Program001\",\r\n    \"type\": \"LM_METER_DISCONNECT_PROGRAM\",\r\n    \"operationalState\": \"Automatic\",\r\n    \"constraint\": {\r\n        \"constraintId\": 2,\r\n        \"constraintName\": \"constraint1\"\r\n    },\r\n    \"triggerOffset\": 11.0,\r\n    \"restoreOffset\": 0.0,\r\n    \"gears\": [\r\n        {\r\n            \"gearName\": \"gear001\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"MeterDisconnect\"\r\n        }\r\n    ],\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 15006,\r\n            \"groupName\": \"testmd01\",\r\n            \"groupOrder\": 1,\r\n            \"type\": \"LM_GROUP_METER_DISCONNECT\"\r\n        },\r\n        {\r\n            \"groupId\": 14949,\r\n            \"groupName\": \"testmd02\",\r\n            \"groupOrder\": 2,\r\n            \"type\": \"LM_GROUP_METER_DISCONNECT\"\r\n        }\r\n    ]\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram",
+											"raw": "{{api-url}}/api/dr/loadPrograms",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram"
+												"loadPrograms"
 											]
 										}
 									},
@@ -2075,15 +2070,14 @@
 											"raw": "{\r\n    \"name\": \"LM_DIRECT_PROGRAM_TEST1\",\r\n    \"type\": \"LM_DIRECT_PROGRAM\",\r\n    \"operationalState\": \"Automatic\",\r\n     \"constraint\": {\r\n        \"constraintId\": 2,\r\n        \"constraintName\": \"123444\"\r\n    },\r\n    \"triggerOffset\": 67,\r\n    \"restoreOffset\": 77,\r\n    \"gears\": [\r\n        {\r\n           \r\n            \"gearName\": \"GearSmartCycle\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"SmartCycle\",\r\n            \"fields\": {\r\n                \"noRamp\": false,\r\n                \"controlPercent\": 50,\r\n                \"cyclePeriodInMinutes\": 30,\r\n                \"cycleCountSendType\": \"FixedCount\",\r\n                \"maxCycleCount\": 0,\r\n                \"startingPeriodCount\": 8,\r\n                \"sendRate\": 3600,\r\n                \"stopCommandRepeat\": 0,\r\n                \"howToStopControl\": \"StopCycle\",\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        }\r\n    ],\r\n    \"controlWindow\": {\r\n        \"controlWindowOne\": {\r\n            \"availableStartTimeInMinutes\": 186,\r\n            \"availableStopTimeInMinutes\": 366\r\n        },\r\n        \"controlWindowTwo\": {\r\n            \"availableStartTimeInMinutes\": 425,\r\n            \"availableStopTimeInMinutes\": 546\r\n        }\r\n    },\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 36099,\r\n            \"groupName\": \"abc\",\r\n            \"groupOrder\": 1,\r\n            \"type\": \"LM_GROUP_METER_DISCONNECT\"\r\n        }\r\n    ],\r\n    \"notification\": {\r\n        \"programStartInMinutes\": 44,\r\n        \"programStopInMinutes\": 45,\r\n        \"notifyOnAdjust\": true,\r\n        \"enableOnSchedule\": true,\r\n        \"assignedNotificationGroups\": [\r\n            {\r\n                \"notificationGrpID\": 2,\r\n                \"notificationGrpName\": \"Jess Notification\"\r\n            }\r\n        ]\r\n    }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram",
+											"raw": "{{api-url}}/api/dr/loadPrograms",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram"
+												"loadPrograms"
 											]
 										}
 									},
@@ -2102,15 +2096,14 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/38830",
+											"raw": "{{api-url}}/api/dr/loadPrograms/38830",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
+												"loadPrograms",
 												"38830"
 											]
 										}
@@ -2142,15 +2135,14 @@
 											"raw": "{\r\n    \"programId\": 16519,\r\n    \"name\": \"LMSEPProgram002\",\r\n    \"type\": \"LM_SEP_PROGRAM\",\r\n    \"operationalState\": \"Automatic\",\r\n    \"constraint\": {\r\n        \"constraintId\": 2,\r\n        \"constraintName\": \"constraint1\"\r\n    },\r\n    \"triggerOffset\": 0.0,\r\n    \"restoreOffset\": 0.0,\r\n    \"gears\": [\r\n        {\r\n            \"gearId\": 38,\r\n            \"gearName\": \"NoControlGear001\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"NoControl\",\r\n            \"fields\": {\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"Duration\",\r\n                    \"changeDurationInMinutes\": 100\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"gearId\": 39,\r\n            \"gearName\": \"NoControlGear002\",\r\n            \"gearNumber\": 2,\r\n            \"controlMethod\": \"NoControl\",\r\n            \"fields\": {\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        }\r\n    ],\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 15547,\r\n            \"groupName\": \"ControlDep\",\r\n            \"groupOrder\": 1,\r\n            \"type\": \"LM_GROUP_DIGI_SEP\"\r\n        }\r\n    ]\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/16519",
+											"raw": "{{api-url}}/api/dr/loadPrograms/16519",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
+												"loadPrograms",
 												"16519"
 											]
 										}
@@ -2174,15 +2166,14 @@
 											"raw": "{\r\n    \"programId\": 16611,\r\n    \"name\": \"Ecobeeprogram0002\",\r\n    \"type\": \"LM_ECOBEE_PROGRAM\",\r\n    \"operationalState\": \"Timed\",\r\n    \"constraint\": {\r\n        \"constraintId\": 0,\r\n        \"constraintName\": \"Default Constraint\"\r\n    },\r\n    \"triggerOffset\": 0.0,\r\n    \"restoreOffset\": 0.0,\r\n    \"gears\": [\r\n        {\r\n            \"gearId\": 71,\r\n            \"gearName\": \"ecobeegear\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"EcobeeCycle\",\r\n            \"fields\": {\r\n                \"mandatory\": true,\r\n                \"rampIn\": true,\r\n                \"rampOut\": true,\r\n                \"controlPercent\": 5,\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 1,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"TriggerOffset\",\r\n                    \"triggerNumber\": 1,\r\n                    \"triggerOffset\": 0.0\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"gearId\": 72,\r\n            \"gearName\": \"ecobeegear\",\r\n            \"gearNumber\": 2,\r\n            \"controlMethod\": \"EcobeeCycle\",\r\n            \"fields\": {\r\n                \"mandatory\": true,\r\n                \"rampIn\": true,\r\n                \"rampOut\": true,\r\n                \"controlPercent\": 5,\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 1,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"gearId\": 73,\r\n            \"gearName\": \"ecobeegear\",\r\n            \"gearNumber\": 3,\r\n            \"controlMethod\": \"EcobeeCycle\",\r\n            \"fields\": {\r\n                \"mandatory\": true,\r\n                \"rampIn\": true,\r\n                \"rampOut\": true,\r\n                \"controlPercent\": 50,\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 1,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        }\r\n    ],\r\n    \"controlWindow\": {\r\n        \"controlWindowOne\": {\r\n            \"availableStartTimeInMinutes\": 0,\r\n            \"availableStopTimeInMinutes\": 16\r\n        },\r\n        \"controlWindowTwo\": {\r\n            \"availableStartTimeInMinutes\": 0,\r\n            \"availableStopTimeInMinutes\": 420\r\n        }\r\n    },\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 15549,\r\n            \"groupName\": \"dd\",\r\n            \"groupOrder\": 1,\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        },\r\n        {\r\n            \"groupId\": 16359,\r\n            \"groupName\": \"dddd\",\r\n            \"groupOrder\": 2,\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        },\r\n        {\r\n            \"groupId\": 15764,\r\n            \"groupName\": \"ds\",\r\n            \"groupOrder\": 3,\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        },\r\n        {\r\n            \"groupId\": 15876,\r\n            \"groupName\": \"LM_GROUP_ECOBEE_Name\",\r\n            \"groupOrder\": 4,\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        },\r\n        {\r\n            \"groupId\": 15852,\r\n            \"groupName\": \"LM_GROUP_ECOBEE_Name_Update\",\r\n            \"groupOrder\": 5,\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        },\r\n        {\r\n            \"groupId\": 12996,\r\n            \"groupName\": \"test ecobee group\",\r\n            \"groupOrder\": 6,\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        },\r\n        {\r\n            \"groupId\": 15284,\r\n            \"groupName\": \"Test_Ecobee234\",\r\n            \"groupOrder\": 7,\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        }\r\n    ]\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/16611",
+											"raw": "{{api-url}}/api/dr/loadPrograms/16611",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
+												"loadPrograms",
 												"16611"
 											]
 										}
@@ -2206,15 +2197,14 @@
 											"raw": "{\r\n    \"programId\": 1234,\r\n    \"name\": \"Honeywell Program001\",\r\n    \"type\": \"LM_ECOBEE_PROGRAM\",\r\n    \"operationalState\": \"Timed\",\r\n    \"constraint\": {\r\n        \"constraintId\": 0,\r\n        \"constraintName\": \"Default Constraint\"\r\n    },\r\n    \"triggerOffset\": 0.0,\r\n    \"restoreOffset\": 0.0,\r\n    \"gears\": [\r\n        {\r\n            \"gearId\": 11,\r\n            \"gearName\": \"HW Cycle\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"HoneywellCycle\",\r\n            \"fields\": {\r\n                \"rampInOut\": true,\r\n                \"controlPercent\": 50,\r\n                \"cyclePeriodInMinutes\": 30,\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"gearId\": 22,\r\n            \"gearName\": \"HW Setpoint\",\r\n            \"gearNumber\": 2,\r\n            \"controlMethod\": \"HoneywellSetpoint\",\r\n            \"fields\": {\r\n                \"mandatory\": true,\r\n                \"setpointOffset\": 3,\r\n                \"mode\": \"COOL\",\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        }\r\n    ],\r\n    \"controlWindow\": {\r\n        \"controlWindowOne\": {\r\n            \"availableStartTimeInMinutes\": 540,\r\n            \"availableStopTimeInMinutes\": 360\r\n        },\r\n        \"controlWindowTwo\": {\r\n            \"availableStartTimeInMinutes\": 660,\r\n            \"availableStopTimeInMinutes\": 22\r\n        }\r\n    },\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 15851,\r\n            \"groupName\": \"LM_GROUP_HONEYWELL_Name\",\r\n            \"groupOrder\": 1,\r\n            \"type\": \"LM_GROUP_HONEYWELL\"\r\n        }\r\n    ]\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/16611",
+											"raw": "{{api-url}}/api/dr/loadPrograms/16611",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
+												"loadPrograms",
 												"16611"
 											]
 										}
@@ -2238,15 +2228,14 @@
 											"raw": "{\r\n    \"programId\": 57,\r\n    \"name\": \"Air Conditioning001\",\r\n    \"type\": \"LM_DIRECT_PROGRAM\",\r\n    \"operationalState\": \"Automatic\",\r\n    \"constraint\": {\r\n        \"constraintId\": 0,\r\n        \"constraintName\": \"Default Constraint\"\r\n    },\r\n    \"triggerOffset\": 0.0,\r\n    \"restoreOffset\": 0.0,\r\n    \"gears\": [\r\n        {\r\n            \"gearId\": 69,\r\n            \"gearName\": \"New Gear\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"TimeRefresh\",\r\n            \"fields\": {\r\n                \"refreshShedTime\": \"FixedShedTime\",\r\n                \"shedTime\": 3600,\r\n                \"numberOfGroups\": 0,\r\n                \"sendRate\": 1800,\r\n                \"groupSelectionMethod\": \"LastControlled\",\r\n                \"howToStopControl\": \"TimeIn\",\r\n                \"stopCommandRepeat\": 5,\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"Duration\",\r\n                    \"changeDurationInMinutes\": 5\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"gearId\": 43,\r\n            \"gearName\": \"N\",\r\n            \"gearNumber\": 2,\r\n            \"controlMethod\": \"MasterCycle\",\r\n            \"fields\": {\r\n                \"controlPercent\": 50,\r\n                \"cyclePeriodInMinutes\": 30,\r\n                \"groupSelectionMethod\": \"LastControlled\",\r\n                \"rampInPercent\": 12,\r\n                \"rampInIntervalInSeconds\": 154,\r\n                \"howToStopControl\": \"TimeIn\",\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"gearId\": 243,\r\n            \"gearName\": \"ert\",\r\n            \"gearNumber\": 3,\r\n            \"controlMethod\": \"TimeRefresh\",\r\n            \"fields\": {\r\n                \"refreshShedTime\": \"FixedShedTime\",\r\n                \"shedTime\": 3600,\r\n                \"numberOfGroups\": 0,\r\n                \"sendRate\": 1800,\r\n                \"groupSelectionMethod\": \"LastControlled\",\r\n                \"howToStopControl\": \"TimeIn\",\r\n                \"stopCommandRepeat\": 0,\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"gearId\": 244,\r\n            \"gearName\": \"ts\",\r\n            \"gearNumber\": 4,\r\n            \"controlMethod\": \"TargetCycle\",\r\n            \"fields\": {\r\n                \"noRamp\": false,\r\n                \"controlPercent\": 50,\r\n                \"cycleCountSendType\": \"FixedCount\",\r\n                \"maxCycleCount\": 0,\r\n                \"startingPeriodCount\": 8,\r\n                \"sendRate\": 3600,\r\n                \"stopCommandRepeat\": 0,\r\n                \"howToStopControl\": \"StopCycle\",\r\n                \"capacityReduction\": 100,\r\n                \"kWReduction\": 0.0,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                },\r\n                \"cyclePeriodInMinutes\": 30\r\n            }\r\n        }\r\n    ],\r\n    \"controlWindow\": {\r\n        \"controlWindowOne\": {\r\n            \"availableStartTimeInMinutes\": 0,\r\n            \"availableStopTimeInMinutes\": 0\r\n        },\r\n        \"controlWindowTwo\": {\r\n            \"availableStartTimeInMinutes\": 0,\r\n            \"availableStopTimeInMinutes\": 0\r\n        }\r\n    },\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 51,\r\n            \"groupName\": \"Emetcon\",\r\n            \"groupOrder\": 1,\r\n            \"type\": \"LM_GROUP_EMETCON\"\r\n        }\r\n    ]\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/57",
+											"raw": "{{api-url}}/api/dr/loadPrograms/57",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
+												"loadPrograms",
 												"57"
 											]
 										}
@@ -2270,15 +2259,14 @@
 											"raw": "{\r\n    \"programId\": 17288,\r\n    \"name\": \"Meter Disconnect Program002\",\r\n    \"type\": \"LM_METER_DISCONNECT_PROGRAM\",\r\n    \"operationalState\": \"Automatic\",\r\n    \"constraint\": {\r\n        \"constraintId\": 2,\r\n        \"constraintName\": \"constraint1\"\r\n    },\r\n    \"triggerOffset\": 11.0,\r\n    \"restoreOffset\": 0.0,\r\n    \"gears\": [\r\n        {\r\n            \"gearId\": 256,\r\n            \"gearName\": \"aaa\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"MeterDisconnect\"\r\n        }\r\n    ],\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 15006,\r\n            \"groupName\": \"abc1\",\r\n            \"groupOrder\": 1,\r\n            \"type\": \"LM_GROUP_METER_DISCONNECT\"\r\n        },\r\n        {\r\n            \"groupId\": 14949,\r\n            \"groupName\": \"ABC\",\r\n            \"groupOrder\": 2,\r\n            \"type\": \"LM_GROUP_METER_DISCONNECT\"\r\n        }\r\n    ]\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/17288",
+											"raw": "{{api-url}}/api/dr/loadPrograms/17288",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
+												"loadPrograms",
 												"17288"
 											]
 										}
@@ -2302,15 +2290,14 @@
 											"raw": "{\r\n    \"programId\": 16506,\r\n    \"name\": \"LMProgramItron002\",\r\n    \"type\": \"LM_ITRON_PROGRAM\",\r\n    \"operationalState\": \"ManualOnly\",\r\n    \"constraint\": {\r\n        \"constraintId\": 2,\r\n        \"constraintName\": \"constraint1\"\r\n    },\r\n    \"triggerOffset\": 0.0,\r\n    \"restoreOffset\": 0.0,\r\n    \"gears\": [\r\n        {\r\n            \"gearId\": 258,\r\n            \"gearName\": \"GearItron\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"ItronCycle\",\r\n            \"fields\": {\r\n                \"cycleType\": \"STANDARD\",\r\n                \"rampIn\": true,\r\n                \"rampOut\": true,\r\n                \"dutyCyclePercent\": 50,\r\n                \"dutyCyclePeriodInMinutes\": 30,\r\n                \"criticality\": 100,\r\n                \"capacityReduction\": 100,\r\n                \"howToStopControl\": \"Restore\",\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        }\r\n    ],\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 15157,\r\n            \"groupName\": \"A008\",\r\n            \"groupOrder\": 1,\r\n            \"type\": \"LM_GROUP_ITRON\"\r\n        }\r\n    ]\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/16506",
+											"raw": "{{api-url}}/api/dr/loadPrograms/16506",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
+												"loadPrograms",
 												"16506"
 											]
 										}
@@ -2351,15 +2338,14 @@
 											"raw": "{  \r\n   \"name\":\"TestCopy\",\r\n   \"constraint\":{  \r\n      \"constraintId\":16\r\n   },\r\n   \"operationalState\":\"Timed\"\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/36516/copy",
+											"raw": "{{api-url}}/api/dr/loadPrograms/36516/copy",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
+												"loadPrograms",
                                                 "36516",
                                                 "copy"
 											]
@@ -2390,15 +2376,14 @@
 										"method": "DELETE",
 										"header": [],
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadProgram/{id}",
+											"raw": "{{api-url}}/api/dr/loadPrograms/{id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadProgram",
+												"loadPrograms",
 												"{id}"
 											]
 										}
