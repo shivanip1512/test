@@ -27,6 +27,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.StringUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -79,6 +81,7 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private EmailService emailService;
+    @Autowired private ConfigurationSource configSource;
     private ScheduledFuture<?> futureSchedule;
 
     @PostConstruct
@@ -91,6 +94,12 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
         if(futureSchedule != null) {
             futureSchedule.cancel(true);
             futureSchedule = null;
+        }
+        
+        if (configSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE)) {
+            yukonSimulatorSettingsDao.initYukonSimulatorSettings();
+        } else {
+            return;
         }
         
         String email = yukonSimulatorSettingsDao
@@ -318,9 +327,9 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
             return formatValue(historicalValues.get(0));
         }
 
-		public String getHistoricalValue2() {
-			return historicalValues.size() > 1 ? formatValue(historicalValues.get(1)) : "";
-		}
+                public String getHistoricalValue2() {
+                        return historicalValues.size() > 1 ? formatValue(historicalValues.get(1)) : "";
+                }
 
         public String getDispatchValue() {
             return formatValue(dispatchValue);
@@ -353,9 +362,9 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
         }
 
         private String formatValue(PointValueQualityHolder value) {
-        	if (value == null) {
-        		return "";
-        	}
+                if (value == null) {
+                        return "";
+                }
             try {
                 return pointFormattingService.getValueString(value, Format.SHORT, userContext) + " "
                         + pointFormattingService.getValueString(value, Format.DATE, userContext);
