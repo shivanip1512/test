@@ -251,17 +251,15 @@ public class ControlScenarioApiTest {
         // Delete Control Area
         deleteObject = MockLMDto.builder().name(context.getAttribute("controlAreaName").toString()).build();
         Log.info("Delete Control Area is : " + deleteObject);
-        ExtractableResponse<?> deleteAreaResponse = ApiCallHelper.delete("deleteControlArea",
-                deleteObject,
-                context.getAttribute("controlAreaId").toString());
+        ExtractableResponse<?> deleteAreaResponse = ApiCallHelper.delete("controlAreas",
+               "/" +  context.getAttribute("controlAreaId").toString());
         softAssert.assertTrue(deleteAreaResponse.statusCode() == 200, "Status code should be 200, delete Control Area failed.");
 
         // Delete Load Program
         deleteObject = MockLMDto.builder().name(loadProgram.getName()).build();
         Log.info("Delete Load Program is : " + deleteObject);
-        ExtractableResponse<?> deleteProgramResponse = ApiCallHelper.delete("deleteLoadProgram",
-                deleteObject,
-                loadProgram.getProgramId().toString());
+        ExtractableResponse<?> deleteProgramResponse = ApiCallHelper.delete("loadPrograms",
+               "/" + loadProgram.getProgramId().toString());
         softAssert.assertTrue(deleteProgramResponse.statusCode() == 200,
                 "Status code should be 200, delete Load Program failed.");
 
@@ -440,7 +438,7 @@ public class ControlScenarioApiTest {
                 "Expected message should be - Validation error");
         assertTrue(
                 ValidationHelper.validateFieldError(createResponse, "name",
-                        "Cannot be blank or include any of the following characters: / \\ , ' \" |"),
+                        "Name must not contain any of the following characters: / \\ , ' \" |."),
                 "Expected code in response is not correct");
     }
 
@@ -522,17 +520,15 @@ public class ControlScenarioApiTest {
         // Delete Control Area
         deleteObject = MockLMDto.builder().name(context.getAttribute("controlAreaName").toString()).build();
         Log.info("Delete Control Area is : " + deleteObject);
-        ExtractableResponse<?> deleteAreaResponse = ApiCallHelper.delete("deleteControlArea",
-                deleteObject,
-                context.getAttribute("controlAreaId").toString());
+        ExtractableResponse<?> deleteAreaResponse = ApiCallHelper.delete("controlAreas",
+                "/" + context.getAttribute("controlAreaId").toString());
         softAssert.assertTrue(deleteAreaResponse.statusCode() == 200, "Status code should be 200");
 
         // Delete Load Program
         deleteObject = MockLMDto.builder().name(loadProgram.getName()).build();
         Log.info("Delete Load Program is : " + deleteObject);
-        ExtractableResponse<?> deleteProgramResponse = ApiCallHelper.delete("deleteLoadProgram",
-                deleteObject,
-                loadProgram.getProgramId().toString());
+        ExtractableResponse<?> deleteProgramResponse = ApiCallHelper.delete("loadPrograms",
+                "/" + loadProgram.getProgramId().toString());
         softAssert.assertTrue(deleteProgramResponse.statusCode() == 200, "Status code should be 200");
 
         // Delete Load Group
@@ -601,9 +597,9 @@ public class ControlScenarioApiTest {
     public void assignProgramToControlArea(ITestContext context) {
         MockControlArea controlArea = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD_POINT,
                 loadProgram.getProgramId());
-        ExtractableResponse<?> response = ApiCallHelper.post("saveControlArea", controlArea);
+        ExtractableResponse<?> response = ApiCallHelper.post("controlAreas", controlArea);
         Integer controlAreaId = response.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID);
-        assertTrue(response.statusCode() == 200, "Status code should be 200");
+        assertTrue(response.statusCode() == 201, "Status code should be 201");
         assertTrue(controlAreaId != null, "Control Area Id should not be Null");
         context.setAttribute("controlAreaName", controlArea.getName());
         context.setAttribute("controlAreaId", controlAreaId);
@@ -626,11 +622,11 @@ public class ControlScenarioApiTest {
         loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_ECOBEE_PROGRAM, loadGroups, gearTypes,
                 programConstraint.getId());
         loadProgram.setNotification(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", loadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", loadProgram);
         Integer programId = createResponse.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID);
         loadProgram.setProgramId(programId);
 
-        assertTrue(createResponse.statusCode() == 200, "Status code should be 200");
+        assertTrue(createResponse.statusCode() == 201, "Status code should be 201");
         assertTrue(programId != null, "Program Id should not be Null");
 
     }
