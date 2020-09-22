@@ -27,8 +27,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.StringUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -81,7 +79,6 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private EmailService emailService;
-    @Autowired private ConfigurationSource configSource;
     private ScheduledFuture<?> futureSchedule;
 
     @PostConstruct
@@ -94,12 +91,6 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
         if(futureSchedule != null) {
             futureSchedule.cancel(true);
             futureSchedule = null;
-        }
-        
-        if (configSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE)) {
-            yukonSimulatorSettingsDao.initYukonSimulatorSettings();
-        } else {
-            return;
         }
         
         String email = yukonSimulatorSettingsDao
