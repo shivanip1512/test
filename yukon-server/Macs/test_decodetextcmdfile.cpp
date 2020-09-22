@@ -229,10 +229,10 @@ BOOST_AUTO_TEST_CASE(test_validateAndDecodeLine_4)
             "set MessagePriority 5 ; PutConfig xcom assign serial 100000003 s 315 p 100 r 2 load 1"
         },{   
             "4,100000003,spid 315,load 3 p100 s2",
-            "set MessagePriority 5 ; PutConfig xcom assign serial 100000003 s 315 p 100 r 200 load 3"
+            "set MessagePriority 5 ; PutConfig xcom assign serial 100000003 s 315 p 100 r 2 load 3"
         },{   
             "4,100000003,spid 315,load 1 s200 p1",
-            "set MessagePriority 5 ; PutConfig xcom assign serial 100000003 s 315 p 100 r 200 load 1"
+            "set MessagePriority 5 ; PutConfig xcom assign serial 100000003 s 315 p 1 r 200 load 1"
         },{   
             "4,100000003,spid 315,load 3 p1 s200",
             "set MessagePriority 5 ; PutConfig xcom assign serial 100000003 s 315 p 1 r 200 load 3"
