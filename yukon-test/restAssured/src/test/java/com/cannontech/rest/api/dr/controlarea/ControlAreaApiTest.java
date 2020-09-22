@@ -43,17 +43,15 @@ public class ControlAreaApiTest {
         // Delete Control Area
         MockLMDto lmDeleteObject = MockLMDto.builder().name(context.getAttribute("controlAreaName").toString()).build();
         Log.info("Delete Load Group is : " + lmDeleteObject);
-        ExtractableResponse<?> deleteAreaResponse = ApiCallHelper.delete("deleteControlArea",
-                lmDeleteObject,
-                context.getAttribute("controlAreaId").toString());
+        ExtractableResponse<?> deleteAreaResponse = ApiCallHelper.delete("controlAreas",
+                "/" + context.getAttribute("controlAreaId").toString());
         assertTrue(deleteAreaResponse.statusCode() == 200, "Status code should be 200");
 
         // Delete Load Program
         lmDeleteObject = MockLMDto.builder().name(loadProgram.getName()).build();
         Log.info("Delete Load Group is : " + lmDeleteObject);
-        ExtractableResponse<?> deleteProgramResponse = ApiCallHelper.delete("deleteLoadProgram",
-                lmDeleteObject,
-                loadProgram.getProgramId().toString());
+        ExtractableResponse<?> deleteProgramResponse = ApiCallHelper.delete("loadPrograms",
+                "/" + loadProgram.getProgramId().toString());
         assertTrue(deleteProgramResponse.statusCode() == 200, "Status code should be 200");
 
         // Delete Load Group
@@ -73,9 +71,9 @@ public class ControlAreaApiTest {
         Log.startTestCase("controlArea_01_CreateWithoutProgramAndTrigger");
 
         MockControlArea controlArea = buildControlArea("controlAreaTest_Name");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlAreas", controlArea);
         context.setAttribute("controlArea_Id", createResponse.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID));
-        assertTrue(createResponse.statusCode() == 200, "Status code should be 200");
+        assertTrue(createResponse.statusCode() == 201, "Status code should be 201");
         assertTrue(createResponse.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID) != null, "Control Area Id should not be Null");
         context.setAttribute("expectedControlArea", controlArea);
         Log.endTestCase("controlArea_01_CreateWithoutProgramAndTrigger");
@@ -90,8 +88,8 @@ public class ControlAreaApiTest {
         Log.startTestCase("controlArea_02_Get");
         Log.info("Control Area Id of Control Area is : " + context.getAttribute("controlArea_Id"));
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("getControlArea",
-                context.getAttribute("controlArea_Id").toString());
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("controlAreas",
+                "/" + context.getAttribute("controlArea_Id").toString());
         assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
 
         MockControlArea controlAreaGetResponse = getResponse.as(MockControlArea.class);
@@ -127,13 +125,13 @@ public class ControlAreaApiTest {
 
         context.setAttribute("controlArea_Name", name);
 
-        ExtractableResponse<?> updatedResponse = ApiCallHelper.post("updateControlArea",
+        ExtractableResponse<?> updatedResponse = ApiCallHelper.put("controlAreas",
                 controlArea,
-                context.getAttribute("controlArea_Id").toString());
+                "/" + context.getAttribute("controlArea_Id").toString());
         assertTrue(updatedResponse.statusCode() == 200, "Status code should be 200");
 
-        ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("getControlArea",
-                context.getAttribute("controlArea_Id").toString());
+        ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("controlAreas",
+                "/" + context.getAttribute("controlArea_Id").toString());
 
         MockControlArea updatedControlAreaResponse = getupdatedResponse.as(MockControlArea.class);
         assertTrue(name.equals(updatedControlAreaResponse.getName()), "Name Should be : " + name);
@@ -154,7 +152,7 @@ public class ControlAreaApiTest {
         Log.startTestCase("controlArea_05_Name_Is_Same_Validation");
 
         MockControlArea controlArea = buildControlArea("controlAreaTest_Name");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlAreas", controlArea);
 
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -176,14 +174,13 @@ public class ControlAreaApiTest {
         MockLMDto lmDeleteObject = MockLMDto.builder().name(context.getAttribute("controlArea_Name").toString()).build();
 
         Log.info("Delete Load Group is : " + lmDeleteObject);
-        ExtractableResponse<?> deleteResponse = ApiCallHelper.delete("deleteControlArea",
-                lmDeleteObject,
-                context.getAttribute("controlArea_Id").toString());
+        ExtractableResponse<?> deleteResponse = ApiCallHelper.delete("controlAreas",
+                "/" + context.getAttribute("controlArea_Id").toString());
         assertTrue(deleteResponse.statusCode() == 200, "Status code should be 200");
 
         // Get request to validate load group is deleted
-        ExtractableResponse<?> getDeletedLoadGroupResponse = ApiCallHelper.get("getControlArea",
-                context.getAttribute("controlArea_Id").toString());
+        ExtractableResponse<?> getDeletedLoadGroupResponse = ApiCallHelper.get("controlAreas",
+                "/" + context.getAttribute("controlArea_Id").toString());
         assertTrue(getDeletedLoadGroupResponse.statusCode() == 400, "Status code should be 400");
         assertTrue(ValidationHelper.validateErrorMessage(getDeletedLoadGroupResponse, "Control area Id not found"),
                 "Expected error message Should contains Text: " + "Control area Id not found");
@@ -199,9 +196,9 @@ public class ControlAreaApiTest {
         createLoadProgram();
         MockControlArea controlArea = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD_POINT,
                 loadProgram.getProgramId());
-        ExtractableResponse<?> response = ApiCallHelper.post("saveControlArea", controlArea);
+        ExtractableResponse<?> response = ApiCallHelper.post("controlAreas", controlArea);
         Integer controlAreaId = response.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID);
-        assertTrue(response.statusCode() == 200, "Status code should be 200");
+        assertTrue(response.statusCode() == 201, "Status code should be 201");
         assertTrue(controlAreaId != null, "Control Area Id should not be Null");
         context.setAttribute("contArea_Name", controlArea.getName());
         context.setAttribute("contArea_Id", controlAreaId);
@@ -224,7 +221,7 @@ public class ControlAreaApiTest {
         MockControlArea controlArea = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD_POINT,
                 loadProgram.getProgramId());
         controlArea.setTriggers(triggers);
-        ExtractableResponse<?> response = ApiCallHelper.post("saveControlArea", controlArea);
+        ExtractableResponse<?> response = ApiCallHelper.post("controlAreas", controlArea);
         MockApiError error = response.as(MockApiError.class);
         List<MockApiGlobalError> globalError = error.getGlobalErrors();
         assertTrue(response.statusCode() == 422, "Status code should be " + 422);
@@ -253,7 +250,7 @@ public class ControlAreaApiTest {
         MockControlArea controlArea = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD_POINT,
                 loadProgram.getProgramId());
         controlArea.setTriggers(triggers);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlAreas", controlArea);
 
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -274,7 +271,7 @@ public class ControlAreaApiTest {
         Log.startTestCase("controlArea_06_Name_As_Blank_Validation");
 
         MockControlArea controlArea = buildControlArea("");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlAreas", controlArea);
 
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -294,7 +291,7 @@ public class ControlAreaApiTest {
         Log.startTestCase("controlArea_07_Name_With_Special_Characters_Validation");
 
         MockControlArea controlArea = buildControlArea("controlAreaTest_\"Name");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlAreas", controlArea);
 
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -316,7 +313,7 @@ public class ControlAreaApiTest {
         Log.startTestCase("controlArea_08_Name_With_MoreThan_Sixty_Characters_Validation");
 
         MockControlArea controlArea = buildControlArea("TestControlAreaName_MoreThanSixtyCharacter_TestControlAreaNames");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlAreas", controlArea);
 
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -335,7 +332,7 @@ public class ControlAreaApiTest {
         MockControlArea controlArea = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD,
                 loadProgram.getProgramId());
         controlArea.getTriggers().get(0).setThreshold((double) 1000000);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlAreas", controlArea);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -353,7 +350,7 @@ public class ControlAreaApiTest {
         MockControlArea controlArea = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD,
                 loadProgram.getProgramId());
         controlArea.getTriggers().get(0).setThreshold((double) -1000000);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlAreas", controlArea);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -371,7 +368,7 @@ public class ControlAreaApiTest {
         MockControlArea controlArea = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD,
                 loadProgram.getProgramId());
         controlArea.getTriggers().get(0).setThreshold(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlAreas", controlArea);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -387,7 +384,7 @@ public class ControlAreaApiTest {
         MockControlArea controlArea = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD_POINT,
                 loadProgram.getProgramId());
         controlArea.getTriggers().get(0).setMinRestoreOffset(-100000.0000);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlAreas", controlArea);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -405,7 +402,7 @@ public class ControlAreaApiTest {
         MockControlArea controlArea = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD_POINT,
                 loadProgram.getProgramId());
         controlArea.getTriggers().get(0).setMinRestoreOffset(100000.0000);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlAreas", controlArea);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -423,7 +420,7 @@ public class ControlAreaApiTest {
         MockControlArea controlArea = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD_POINT,
                 loadProgram.getProgramId());
         controlArea.getProgramAssignment().get(0).setStartPriority(1025);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlAreas", controlArea);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -439,7 +436,7 @@ public class ControlAreaApiTest {
         MockControlArea controlArea = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD_POINT,
                 loadProgram.getProgramId());
         controlArea.getProgramAssignment().get(0).setStartPriority(0);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlAreas", controlArea);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -455,7 +452,7 @@ public class ControlAreaApiTest {
         MockControlArea controlArea = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD_POINT,
                 loadProgram.getProgramId());
         controlArea.getProgramAssignment().get(0).setStopPriority(1025);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlAreas", controlArea);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -471,7 +468,7 @@ public class ControlAreaApiTest {
         MockControlArea controlArea = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD_POINT,
                 loadProgram.getProgramId());
         controlArea.getProgramAssignment().get(0).setStopPriority(0);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlAreas", controlArea);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -488,8 +485,8 @@ public class ControlAreaApiTest {
     
         MockLMDto deleteObject = MockLMDto.builder().name(context.getAttribute("contArea_Name").toString()).build();
         Log.info("Delete Control Area is : " + deleteObject);
-        ExtractableResponse<?> deleteAreaResponse = ApiCallHelper.delete("deleteControlArea",
-                deleteObject,context.getAttribute("contArea_Id").toString());
+        ExtractableResponse<?> deleteAreaResponse = ApiCallHelper.delete("controlAreas",
+                "/" + context.getAttribute("contArea_Id").toString());
         assertTrue(deleteAreaResponse.statusCode() == 200, "Status code should be 200");
     } 
 
@@ -503,23 +500,23 @@ public class ControlAreaApiTest {
         MockControlArea control_Area = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD_POINT,
                 loadProgram.getProgramId());
    
-        ExtractableResponse<?> response = ApiCallHelper.post("saveControlArea", control_Area);
+        ExtractableResponse<?> response = ApiCallHelper.post("controlAreas", control_Area);
         context.setAttribute("controlAreaId", response.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID));
         assertTrue(response.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID) != null, "Control Area Id should not be Null");
-        assertTrue(response.statusCode() == 200, "Status code should be 200");
+        assertTrue(response.statusCode() == 201, "Status code should be 201");
         
         //update control area by unassigned Load Program
         control_Area.setProgramAssignment(null);
-        ExtractableResponse<?> updatedResponse = ApiCallHelper.post("updateControlArea",
-                control_Area, context.getAttribute("controlAreaId").toString());
+        ExtractableResponse<?> updatedResponse = ApiCallHelper.put("controlAreas",
+                control_Area, "/" +context.getAttribute("controlAreaId").toString());
         Integer controlAreaId = updatedResponse.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID);   
         assertTrue(updatedResponse.statusCode() == 200, "Status code should be 200");
         context.setAttribute("controlAreaName", control_Area.getName());
         context.setAttribute("controlAreaId", controlAreaId);
      
         // Get request to validate load program is removed
-        ExtractableResponse<?> getRemovedLoadProgramResponse = ApiCallHelper.get("getControlArea",
-                context.getAttribute("controlAreaId").toString());
+        ExtractableResponse<?> getRemovedLoadProgramResponse = ApiCallHelper.get("controlAreas",
+                "/" + context.getAttribute("controlAreaId").toString());
         MockControlArea controlAreaGetResponse = getRemovedLoadProgramResponse.as(MockControlArea.class);
         assertTrue(controlAreaGetResponse.getProgramAssignment() == null, "ProgramAssignment value Should be : null");
     }
@@ -537,10 +534,10 @@ public class ControlAreaApiTest {
         String name = "controlAreaUpdateValidation";
         control_Area.setName(name);
         context.setAttribute("controlArea_Name", name);
-        ExtractableResponse<?> response = ApiCallHelper.post("saveControlArea", control_Area);
+        ExtractableResponse<?> response = ApiCallHelper.post("controlAreas", control_Area);
         context.setAttribute("controlArea_Id", response.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID));
        
-        assertTrue(response.statusCode() == 200, "Status code should be 200");
+        assertTrue(response.statusCode() == 201, "Status code should be 201");
         assertTrue(response.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID) != null, "Control Area Id should not be Null");
 
         //control scenario creation
@@ -551,8 +548,8 @@ public class ControlAreaApiTest {
 
         //update controlarea by unassigned Load Program
         control_Area.setProgramAssignment(null);
-        ExtractableResponse<?> updatedResponseCA = ApiCallHelper.post("updateControlArea",
-                control_Area, context.getAttribute("controlArea_Id").toString());
+        ExtractableResponse<?> updatedResponseCA = ApiCallHelper.put("controlAreas",
+                control_Area, "/" + context.getAttribute("controlArea_Id").toString());
         assertTrue(updatedResponseCA.statusCode() == 400, "Status code should be 400"); 
         
         assertTrue(ValidationHelper.validateErrorMessage(updatedResponseCA, 
@@ -569,8 +566,8 @@ public class ControlAreaApiTest {
     
      MockLMDto deleteObject = MockLMDto.builder().name(context.getAttribute("controlArea_Name").toString()).build();
         Log.info("Delete Control Area is : " + deleteObject);
-        ExtractableResponse<?> deleteAreaResponse = ApiCallHelper.delete("deleteControlArea",
-                deleteObject,context.getAttribute("controlArea_Id").toString());
+        ExtractableResponse<?> deleteAreaResponse = ApiCallHelper.delete("controlAreas",
+                "/" + context.getAttribute("controlArea_Id").toString());
         assertTrue(deleteAreaResponse.statusCode() == 400, "Status code should be 400");
         assertTrue(ValidationHelper.validateErrorMessage(deleteAreaResponse, 
                 "A program on this control area is assigned to a scenario. Program must be removed from scenario before it can be removed from a control area."),
@@ -609,11 +606,11 @@ public class ControlAreaApiTest {
         loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_ECOBEE_PROGRAM, loadGroups, gearTypes,
                 programConstraint.getId());
         loadProgram.setNotification(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", loadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", loadProgram);
         Integer programId = createResponse.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID);
         loadProgram.setProgramId(programId);
 
-        assertTrue(createResponse.statusCode() == 200, "Status code should be 200");
+        assertTrue(createResponse.statusCode() == 201, "Status code should be 201");
         assertTrue(programId != null, "Program Id should not be Null");
 
     }
