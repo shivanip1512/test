@@ -83,9 +83,6 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
     public SearchResults<DeviceConfigSummaryDetail> getSummary(DeviceConfigSummaryFilter filter, PagingParameters paging,
             SortBy sortBy, Direction direction) {
         log.debug("filter:{}", filter);
-        if (!filter.isDisplayUnassigned() && CollectionUtils.isEmpty(filter.getConfigurationIds())) {
-            return new SearchResults<>();
-        }
         SqlStatementBuilder allRowsSql = buildSummarySelect(filter, sortBy, direction, false);
         SqlStatementBuilder countSql = buildSummarySelect(filter, null, null, true);
         int totalCount = jdbcTemplate.queryForInt(countSql);
@@ -152,8 +149,9 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("JOIN DeviceConfiguration dc ON dc.DeviceConfigurationID = scdm.DeviceConfigurationId");
         sql.append("LEFT JOIN CommandRequestExecResult crer ON crer.CommandRequestExecId = dcs.CommandRequestExecId AND dcs.PAObjectID=crer.DeviceId");
         sql.append("WHERE ypo.type").in_k(getSupportedPaoTypes());
-        sql.append("AND scdm.DeviceConfigurationId").in(filter.getConfigurationIds());
-        
+        if(!filter.isDisplayAll()) {
+            sql.append("AND scdm.DeviceConfigurationId").in(filter.getConfigurationIds());
+        }
         if (filter.getStateSelection() == StateSelection.ALL) {
             sql.append("AND (CurrentState").in_k(filter.getStateSelection().getStates());
             sql.append("OR LastActionStatus").eq_k(LastActionStatus.IN_PROGRESS).append(")");
@@ -172,13 +170,13 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
             sql.append("SELECT count(PaObjectId)");
             sql.append("FROM (");
         }
-        if (filter.isDisplayAssigned()) {
+        if (filter.isDisplayAssigned() || filter.isDisplayAll()) {
             sql.append(buildStateSelect(filter, selectCount));
-            if (filter.isDisplayUnassigned()) {
+            if (filter.isDisplayUnassigned() || filter.isDisplayAll()) {
                 sql.append("UNION");
             }
         }
-        if (filter.isDisplayUnassigned()) {
+        if (filter.isDisplayUnassigned() || filter.isDisplayAll()) {
             sql.append(buildUnassignSelect(filter, selectCount));
         }
         addGroupsAndOrderBy(filter, sortBy, direction, sql);
