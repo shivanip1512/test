@@ -536,15 +536,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/controlArea/38139",
+									"raw": "{{api-url}}/api/dr/controlAreas/38139",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"controlArea",
+										"controlAreas",
 										"38139"
 									]
 								}
@@ -568,16 +567,14 @@
 									"raw": "{\n    \"name\": \"Area00991\",\n    \"controlInterval\": 0,\n    \"minResponseTime\": 0,\n    \"dailyDefaultState\": \"None\",\n    \"allTriggersActiveFlag\": false,\n    \"triggers\": [\n        {\n            \"triggerId\": 5,\n            \"triggerNumber\": 1,\n            \"triggerType\": \"THRESHOLD_POINT\",\n            \"triggerPointId\": 299981,\n            \"minRestoreOffset\": 0,\n            \"thresholdPointId\": 299981\n        }\n    ]\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/controlArea/create",
+									"raw": "{{api-url}}/api/dr/controlAreas",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"controlArea",
-										"create"
+										"controlAreas"
 									]
 								}
 							},
@@ -586,7 +583,7 @@
 						{
 							"name": "Update",
 							"request": {
-								"method": "POST",
+								"method": "PUT",
 								"header": [
 									{
 										"key": "Content-Type",
@@ -600,16 +597,14 @@
 									"raw": "{\n    \"name\": \"Area0099178\",\n    \"controlInterval\": 0,\n    \"minResponseTime\": 0,\n    \"dailyDefaultState\": \"None\",\n    \"allTriggersActiveFlag\": false,\n    \"triggers\": [\n        {\n            \"triggerId\": 6,\n            \"triggerNumber\": 1,\n            \"triggerType\": \"THRESHOLD_POINT\",\n            \"triggerPointId\": 299981,\n            \"minRestoreOffset\": 0,\n            \"thresholdPointId\": 299981\n        }\n    ]\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/controlArea/update/127476",
+									"raw": "{{api-url}}/api/dr/controlAreas/127476",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"controlArea",
-										"update",
+										"controlAreas",
 										"127476"
 									]
 								}
@@ -633,17 +628,15 @@
 									"raw": "{\n\t\"name\" : \"Area0099178\"\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/controlArea/delete/127476",
+									"raw": "{{api-url}}/api/dr/setup/controlAreas/{id}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"controlArea",
-										"delete",
-										"127476"
+										"controlAreas",
+										"{id}"
 									]
 								}
 							},
@@ -655,14 +648,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/dr/setup/controlArea/normalState/{id}",
+									"raw": "{{api-url}}/dr/controlAreas/normalState/{id}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"dr",
-										"setup",
-										"controlArea",
+										"controlAreas",
 										"normalState",
 										"{id}"
 									]

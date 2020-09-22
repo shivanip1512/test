@@ -38,11 +38,8 @@ public class ApiURL {
     public static final String drHolidayScheduleUrl = "/dr/setup/constraint/getHolidaySchedules";
     public static final String drSeasonScheduleUrl = "/dr/setup/constraint/getSeasonSchedules";
 
-    public static final String drControlAreaRetrieveUrl = "/dr/setup/controlArea/";
-    public static final String drControlAreaCreateUrl = "/dr/setup/controlArea/create";
-    public static final String drControlAreaUpdateUrl = "/dr/setup/controlArea/update/";
-    public static final String drControlAreaDeleteUrl = "/dr/setup/controlArea/delete/";
-    public static final String drNormalStateUrl = "/dr/setup/controlArea/normalState/";
+    public static final String drControlAreaUrl = "/dr/controlAreas";
+    public static final String drNormalStateUrl = "/dr/controlAreas/normalState/";
 
     public static final String drControlScenarioRetrieveUrl = "/dr/setup/controlScenario/";
     public static final String drControlScenarioCreateUrl = "/dr/setup/controlScenario/create";
