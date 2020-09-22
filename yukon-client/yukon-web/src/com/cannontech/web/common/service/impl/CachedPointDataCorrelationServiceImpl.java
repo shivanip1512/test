@@ -308,7 +308,7 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
 
         public CorrelationSummary(YukonUserContext userContext, LitePoint point,
                 PointValueQualityHolder pointUpdateBackingServiceCachedValue,
-                List<PointValueQualityHolder> historicalValues, 
+                List<PointValueQualityHolder> historicalValues,
                 PointValueQualityHolder asyncDataSourceValue,
                 PointValueQualityHolder dispatchValue) {
             this.userContext = userContext;
@@ -327,14 +327,14 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
             return formatValue(historicalValues.get(0));
         }
 
-                public String getHistoricalValue2() {
-                        return historicalValues.size() > 1 ? formatValue(historicalValues.get(1)) : "";
-                }
+        public String getHistoricalValue2() {
+            return historicalValues.size() > 1 ? formatValue(historicalValues.get(1)) : "";
+        }
 
         public String getDispatchValue() {
             return formatValue(dispatchValue);
         }
-        
+
         public String getAsyncDataSourceFormattedValue() {
             return formatValue(asyncDataSourceValue);
         }
@@ -344,9 +344,11 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
         }
 
         public void logMismatch() {
-            StringBuffer buffer = new StringBuffer("Cached values do not match historical values. Notifying Dispatch to log information pointId:" + point.getLiteID());
-            buffer.append(" Point name: "+  point.getPointName());
-            buffer.append(" Type: "+  point.getPointTypeEnum());
+            StringBuffer buffer = new StringBuffer(
+                    "Cached values do not match historical values. Notifying Dispatch to log information pointId:"
+                            + point.getLiteID());
+            buffer.append(" Point name: " + point.getPointName());
+            buffer.append(" Type: " + point.getPointTypeEnum());
             buffer.append(getLogString(pointUpdateBackingServiceCachedValue, "PointUpdateBackingService cache"));
             buffer.append(getLogString(asyncDataSourceValue, "AsyncDynamicDataSource cache"));
             buffer.append(getLogString(dispatchValue, "DYNAMICPOINTDISPATCH"));
@@ -356,15 +358,15 @@ public class CachedPointDataCorrelationServiceImpl implements CachedPointDataCor
 
         private String getLogString(PointValueQualityHolder value, String description) {
             if (value != null) {
-               return " ["+ description + ": " + formatValue(value)+"]";
+                return " [" + description + ": " + formatValue(value) + "]";
             }
             return "";
         }
 
         private String formatValue(PointValueQualityHolder value) {
-                if (value == null) {
-                        return "";
-                }
+            if (value == null) {
+                return "";
+            }
             try {
                 return pointFormattingService.getValueString(value, Format.SHORT, userContext) + " "
                         + pointFormattingService.getValueString(value, Format.DATE, userContext);
