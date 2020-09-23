@@ -247,12 +247,15 @@ BOOST_AUTO_TEST_CASE(test_validateAndDecodeLine_4)
 
     for ( auto & test : tests )
     {
-        auto decodedCommand = std::make_unique<std::string>();
+        BOOST_TEST_CONTEXT( "Input case: " << test.input )
+        {
+            auto decodedCommand = std::make_unique<std::string>();
 
-        const bool result = validateAndDecodeLine( test.input, TEXT_CMD_FILE_SPECIFY_EXPRESSCOM, decodedCommand.get(), "<unused>" );
+            const bool result = validateAndDecodeLine( test.input, TEXT_CMD_FILE_SPECIFY_EXPRESSCOM, decodedCommand.get(), "<unused>" );
 
-        BOOST_CHECK_EQUAL( test.expectedOutput, *decodedCommand );
-        BOOST_CHECK_EQUAL( result, true );
+            BOOST_CHECK_EQUAL( test.expectedOutput, *decodedCommand );
+            BOOST_CHECK_EQUAL( result, true );
+        }
     }
 }
 
