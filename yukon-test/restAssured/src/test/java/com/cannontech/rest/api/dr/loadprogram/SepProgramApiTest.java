@@ -575,7 +575,7 @@ public class SepProgramApiTest {
         // Delete Copied LoadProgram
         MockLMDto deleteObject = MockLMDto.builder()
                 .name((String) context.getAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME)).build();
-        ExtractableResponse<?> response = ApiCallHelper.delete("loadPrograms", "/" +copyProgramId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.delete("loadPrograms", "/" + copyProgramId.toString());
         softAssert.assertTrue(response.statusCode() == 200, "Status code should be 200. Delete copied LoadProgram failed.");
 
         // Delete LoadGroup which have been created for Load Program
@@ -585,11 +585,8 @@ public class SepProgramApiTest {
         softAssert.assertTrue(deleteLdGrpResponse.statusCode() == 200, "Status code should be 200. Delete LoadGroup failed.");
 
         // Delete Program Constraint which have been created for Load Program
-        MockLMDto deleteConstraint = MockLMDto.builder()
-                .name(context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME).toString()).build();
-        ExtractableResponse<?> deletePrgmCnstResponse = ApiCallHelper.delete("deleteProgramConstraint",
-                deleteConstraint,
-                context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID).toString());
+        ExtractableResponse<?> deletePrgmCnstResponse = ApiCallHelper.delete("programConstraints",
+                "/" + context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID).toString());
         softAssert.assertTrue(deletePrgmCnstResponse.statusCode() == 200, "Status code should be 200. Delete Program Constraint failed.");
         softAssert.assertAll();
         Log.endTestCase("tearDown");

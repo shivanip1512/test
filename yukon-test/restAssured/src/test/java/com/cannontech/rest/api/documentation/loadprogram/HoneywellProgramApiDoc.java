@@ -92,7 +92,7 @@ public class HoneywellProgramApiDoc {
     @Test(dependsOnMethods={"honeywellAssignedLoadGroup_Create"})
     public void programConstraint_Create(ITestContext context) {
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         Integer constraintId = createResponse.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID);
         context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID, constraintId);
         context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME, programConstraint.getName());
@@ -274,9 +274,8 @@ public class HoneywellProgramApiDoc {
      */
     @Test(dependsOnMethods={"assignedLoadGroup_Delete"})
     public void programConstraint_Delete(ITestContext context) {
-        ExtractableResponse<?> response = ApiCallHelper.delete((Integer)context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID),
-                                                               (String)context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME),
-                                                               "deleteProgramConstraint");
+        ExtractableResponse<?> response = ApiCallHelper.delete("programConstraints", 
+                "/" + (context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID)));
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 }

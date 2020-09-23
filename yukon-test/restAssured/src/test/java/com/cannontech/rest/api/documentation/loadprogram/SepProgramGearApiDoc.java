@@ -98,7 +98,7 @@ public class SepProgramGearApiDoc {
      */
     public void programConstraint_Create() {
         programConstraint = ProgramConstraintHelper.buildProgramConstraint();
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         Integer constraintId = createResponse.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID);
         programConstraint.setId(constraintId);
         assertTrue("Constraint Id should not be Null", constraintId != null);
@@ -171,7 +171,7 @@ public class SepProgramGearApiDoc {
 
     @AfterClass
     public void cleanUp() {
-        ApiCallHelper.delete(programConstraint.getId(), programConstraint.getName(), "deleteProgramConstraint");
+        ApiCallHelper.delete("programConstraints", "/" + programConstraint.getId().toString());
         loadGroups.forEach(group -> {
             ApiCallHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
         });
