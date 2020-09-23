@@ -104,7 +104,7 @@ public class LoadGroupHoneywellDetailTest extends SeleniumTestSetup {
 	     }
 	    
 	    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void ldGrpEcobeeDetail_AssertValues_Success() {
+	    public void ldGrpHoneywellDetail_AssertValues_Success() {
 	    	SoftAssertions softly = new SoftAssertions();
 	    	builder = LoadGroupHoneywellCreateBuilder.buildLoadGroup();
 		    Pair<JSONObject, JSONObject> pair = builder.create();
@@ -129,6 +129,8 @@ public class LoadGroupHoneywellDetailTest extends SeleniumTestSetup {
 	        softly.assertThat(sectionValues.get(0)).isEqualTo(getResponse.path("LM_GROUP_HONEYWELL.kWCapacity").toString());
 	        softly.assertThat(sectionValues.get(1)).isEqualTo("No");
 	        softly.assertThat(sectionValues.get(2)).isEqualTo("No");
+	        
+	        softly.assertAll();
 	    	
 	    }
 }
