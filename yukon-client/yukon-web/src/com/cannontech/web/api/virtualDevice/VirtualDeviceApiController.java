@@ -30,7 +30,7 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
-@RequestMapping("/device/virtualDevices")
+@RequestMapping("/devices/virtualDevices")
 @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.VIEW)
 public class VirtualDeviceApiController {
 
