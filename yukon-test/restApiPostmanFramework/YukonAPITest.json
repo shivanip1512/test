@@ -50,7 +50,7 @@
 						{
 							"name": "Update",
 							"request": {
-								"method": "POST",
+								"method": "PUT",
 								"header": [
 									{
 										"key": "Content-Type",
@@ -64,16 +64,14 @@
 									"raw": "{\r\n   \"name\":\"LM Constraint\",\r\n   \"seasonSchedule\":{\r\n      \"id\":1\r\n   },\r\n   \"maxActivateSeconds\":12,\r\n   \"maxDailyOpsSeconds\":13,\r\n   \"minActivateSeconds\":14,\r\n   \"minRestartSeconds\":15,\r\n   \"daySelection\":[\r\n      \"SUNDAY\"\r\n   ],\r\n   \"holidaySchedule\":{\r\n      \"id\":1\r\n   },\r\n   \"holidayUsage\":\"FORCE\",\r\n   \"maxHoursDaily\":1,\r\n   \"maxHoursMonthly\":2,\r\n   \"maxHoursAnnually\":4,\r\n   \"maxHoursSeasonal\":3\r\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/constraint/update/{constraintId}",
+									"raw": "{{api-url}}/api/dr/constraints/{constraintId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"constraint",
-										"update",
+										"constraints",
 										"{constraintId}"
 									]
 								}
@@ -86,15 +84,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/constraint/{constraintId}",
+									"raw": "{{api-url}}/api/dr/constraints/{constraintId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"constraint",
+										"constraints",
 										"{constraintId}"
 									]
 								}
@@ -118,16 +115,14 @@
 									"raw": "\r\n{\r\n\t\"name\": \"LM Constraint\"\r\n\t\r\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/constraint/delete/{constraintId}",
+									"raw": "{{api-url}}/api/dr/constraints/{constraintId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"constraint",
-										"delete",
+										"constraints",
 										"{constraintId}"
 									]
 								}
@@ -140,15 +135,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/constraint/getSeasonSchedules",
+									"raw": "{{api-url}}/api/dr/constraints/getSeasonSchedules",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"constraint",
+										"constraints",
 										"getSeasonSchedules"
 									]
 								}
@@ -161,15 +155,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/constraint/getHolidaySchedules",
+									"raw": "{{api-url}}/api/dr/constraints/getHolidaySchedules",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"constraint",
+										"constraints",
 										"getHolidaySchedules"
 									]
 								}
@@ -193,15 +186,14 @@
 									"raw": "{\r\n   \"name\":\"LM Constraint\",\r\n   \"seasonSchedule\":{\r\n      \"id\":1\r\n   },\r\n   \"maxActivateSeconds\":12,\r\n   \"maxDailyOpsSeconds\":13,\r\n   \"minActivateSeconds\":14,\r\n   \"minRestartSeconds\":15,\r\n   \"daySelection\":[\r\n      \"SUNDAY\"\r\n   ],\r\n   \"holidaySchedule\":{\r\n      \"id\":1\r\n   },\r\n   \"holidayUsage\":\"EXCLUDE\",\r\n   \"maxHoursDaily\":1,\r\n   \"maxHoursMonthly\":2,\r\n   \"maxHoursAnnually\":4,\r\n   \"maxHoursSeasonal\":3\r\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/constraint/create",
+									"raw": "{{api-url}}/api/dr/constraints",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"constraint",
+										"constraints",
 										"create"
 									]
 								}

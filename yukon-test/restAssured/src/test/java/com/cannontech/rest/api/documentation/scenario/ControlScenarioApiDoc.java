@@ -225,7 +225,7 @@ public class ControlScenarioApiDoc {
     public void cleanUp() {
         ApiCallHelper.delete("controlAreas", "/" + controlArea.getControlAreaId().toString());
         ApiCallHelper.delete("loadPrograms", "/" + loadProgram.getProgramId().toString());
-        ApiCallHelper.delete(programConstraint.getId(), programConstraint.getName(), "deleteProgramConstraint");
+        ApiCallHelper.delete("programConstraints", "/" + programConstraint.getId().toString());
         loadGroups.forEach(group -> {
             ApiCallHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
         });
