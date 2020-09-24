@@ -12,12 +12,20 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class LoadGroupDetailPage extends PageBase {
-
+    
+    private ActionBtnDropDownElement actionBtn;
+    private Section generalSection;
+    private Section optionalAttributesSection;
+    
     public LoadGroupDetailPage(DriverExtensions driverExt, int id) {
         super(driverExt);
 
         requiresLogin = true;
         pageUrl = Urls.DemandResponse.LOAD_GROUP_DETAIL + id;
+        
+        actionBtn = new ActionBtnDropDownElement(this.driverExt);
+        generalSection = new Section(this.driverExt, "General");
+        optionalAttributesSection = new Section(this.driverExt, "Optional Attributes");
     }
     
     public LoadGroupDetailPage(DriverExtensions driverExt) {
@@ -25,7 +33,15 @@ public class LoadGroupDetailPage extends PageBase {
     }
     
     public ActionBtnDropDownElement getActionBtn() {
-        return new ActionBtnDropDownElement(this.driverExt);
+        return actionBtn;
+    }
+    
+    public Section getGeneralSection() {
+        return generalSection;
+    }
+    
+    public Section getOptionalAttributesSection() {
+        return optionalAttributesSection;
     }
     
     public ConfirmModal showDeleteLoadGroupModal() {
@@ -40,9 +56,5 @@ public class LoadGroupDetailPage extends PageBase {
         getActionBtn().clickAndSelectOptionByText("Copy");   
         
         return new CopyLoadGroupModal(this.driverExt, Optional.empty(), Optional.of("copy-loadGroup-popup")); 
-    }    
-    
-    public Section getPageSection(String sectionName) {
-        return new Section(this.driverExt, sectionName);
-    }    
+    }          
 }

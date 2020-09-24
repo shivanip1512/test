@@ -354,6 +354,32 @@ public class LoadGroupEnums {
             return values()[random.nextInt(values().length)];
         }
     }
+    
+    public enum DigiSepDeviceClassUIEnum {
+
+        HVAC_COMPRESSOR_FURNACE("HVAC Compressor or Furnace"),
+        BASEBOARD_HEAT("Strip Heaters/Baseboard Heaters"),
+        WATER_HEATER("Water Heater"),
+        POOL_PUMP("Pool Pump/Spa/Jacuzzi"),
+        SMART_APPLIANCE("Smart Appliances"),
+        IRRIGATION_PUMP("Irrigation Pump"),
+        MANAGED_COMMERCIAL_INDUSTRIAL("Managed Commercial and Industrial Loads"),
+        SIMPLE_RESIDENTIAL_ON_OFF("Simple Misc, Residential On/Off Loads"),
+        EXTERIOR_LIGHTING("Exterior Lighting"),
+        INTERIOR_LIGHTING("Interior Lighting"),
+        ELECTRIC_VEHICLE("Electric Vehicle"),
+        GENERATION_SYSTEMS("Generation Systems");
+
+        private final String deviceClassSet;
+
+        DigiSepDeviceClassUIEnum(String deviceClassSet) {
+            this.deviceClassSet = deviceClassSet;
+        }
+
+        public String getDeviceClassSet() {
+            return this.deviceClassSet;
+        }          
+    }
 
     public enum PointId {
         SCADA_OVERRIDE(4230),
