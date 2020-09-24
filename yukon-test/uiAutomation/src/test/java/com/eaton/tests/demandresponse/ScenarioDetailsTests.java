@@ -25,7 +25,7 @@ public class ScenarioDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void scenarioDetails_pageTitleCorrect() {
+    public void scenarioDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Scenario: AT Scenario";
 
         navigate(Urls.DemandResponse.SCENARIO_DETAILS + "663");
@@ -38,7 +38,7 @@ public class ScenarioDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void scenarioDetails_deleteScenarioSuccess() {
+    public void scenarioDetails_Delete_Success() {
         final String EXPECTED_MSG = "AT Delete Scenario deleted successfully.";
 
         navigate(Urls.DemandResponse.SCENARIO_DETAILS + "619");

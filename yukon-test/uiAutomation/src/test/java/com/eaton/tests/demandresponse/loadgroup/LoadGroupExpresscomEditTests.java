@@ -11,7 +11,6 @@ import java.util.Random;
 import org.assertj.core.api.SoftAssertions;
 import org.javatuples.Pair;
 import org.json.JSONObject;
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -43,7 +42,7 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpExpresscomEdit_RequiredFieldsOnly_Successfully() {
+    public void ldGrpExpresscomEdit_RequiredFieldsOnly_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String editName = "AT Edit Expresscom Ld group " + timeStamp;
         builder = LoadGroupExpresscomCreateBuilder.buildDefaultExpresscomLoadGroup();
@@ -74,7 +73,7 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpExpresscomEdit_SerialAddressToUser_Successfully() {
+    public void ldGrpExpresscomEdit_SerialAddressToUser_Success() {
         builder = LoadGroupExpresscomCreateBuilder.buildDefaultExpresscomLoadGroup();
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String editName = "AT Edit Expresscom Ld group " + timeStamp;
@@ -103,7 +102,7 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpExpresscomEdit_AllFieldsWithoutSerialAddress_Successfully() {
+    public void ldGrpExpresscomEdit_AllFieldsWithoutSerialAddress_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String editName = "AT Edit Expresscom Ld group " + timeStamp;
         builder = LoadGroupExpresscomCreateBuilder.buildDefaultExpresscomLoadGroup();
@@ -165,7 +164,7 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpExpresscomEdit_FieldValues_Correct() {
+    public void ldGrpExpresscomEdit_Field_ValuesCorrect() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         List<String> relayUsage = new ArrayList<>();
         relayUsage.add(LoadGroupEnums.RelayUsageExpresscom.LOAD_6.getRelayUsageValue());

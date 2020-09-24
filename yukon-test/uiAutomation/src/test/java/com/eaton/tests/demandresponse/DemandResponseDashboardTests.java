@@ -25,7 +25,7 @@ public class DemandResponseDashboardTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void demandResponseDashboard_pageTitleCorrect() {
+    public void demandResponseDashboard_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "DR Dashboard";
 
         String actualPageTitle = demandPage.getPageTitle();
@@ -34,28 +34,28 @@ public class DemandResponseDashboardTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void demandResponseDashboard_quickSearchLinkActiveControlAreasUrlCorrect() {
+    public void demandResponseDashboard_quickSearchLinkActiveControlAreas_UrlCorrect() {
         String url = demandPage.getQuickSearchesUrl("Active Control Areas");
 
         assertThat(url).contains(Urls.DemandResponse.ACTIVE_CONTROL_AREAS);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void demandResponseDashboard_quickSearchLinkActiveProgramsUrlCorrect() {
+    public void demandResponseDashboard_quickSearchLinkActivePrograms_UrlCorrect() {
         String url = demandPage.getQuickSearchesUrl("Active Programs");
 
         assertThat(url).contains(Urls.DemandResponse.ACTIVE_PROGRAMS);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void demandResponseDashboard_quickSearchLinkActiveLoadGroupsUrlCorrect() {
+    public void demandResponseDashboard_quickSearchLinkActiveLoadGroups_UrlCorrect() {
         String url = demandPage.getQuickSearchesUrl("Active Load Groups");
 
         assertThat(url).contains(Urls.DemandResponse.ACTIVE_LOAD_GROUPS);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void demandResponseDashboard_actionsBtnDisplayedAndEnabled() {
+    public void demandResponseDashboard_ActionsBtn_DisplayedAndEnabled() {
         softly = new SoftAssertions();
         
         softly.assertThat(demandPage.getActionBtn().isEnabled()).isTrue();

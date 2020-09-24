@@ -64,7 +64,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_ModalTitleCorrect() {
+    public void commChannelTerminalServerEdit_Modal_TitleCorrect() {
         String expectedModalTitle = "Edit " + commChannelName;
         EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
         String actualModalTitle = editModal.getModalTitle();
@@ -100,7 +100,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit__Name_AlreadyExitsValidation() {
+    public void commChannelTerminalServerEdit_Name_AlreadyExitsValidation() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String exprectedMsg = "Name already exists";
         String name = "Terminal Server " + timeStamp;
@@ -126,7 +126,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_Cancel_NavigatesCorrectly() {
+    public void commChannelTerminalServerEdit_Cancel_NavigatesToCorrectUrl() {
         String expectedTitle = commChannelName;
 
         EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
@@ -138,7 +138,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_TabTitlesCorrect() {
+    public void commChannelTerminalServerEdit_Tab_TitlesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
@@ -231,7 +231,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_PreTxWaitMaxValueValidation() {
+    public void commChannelTerminalServerEdit_PreTxWait_MaxValueValidation() {
         String expectedMsg = "Pre Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
 
@@ -391,7 +391,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_ConfigTab_TimingSectionDisplayed() {
+    public void commChannelTerminalServerEdit_ConfigTabTimingSection_Displayed() {
         String tabName = "Configuration";
 
         EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
@@ -403,7 +403,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_AllFieldsSuccess() {
+    public void commChannelTerminalServerEdit_AllFields_Success() {
         SoftAssertions softly = new SoftAssertions();
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "Terminal Server " + timeStamp;
@@ -463,7 +463,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelTerminalServerEdit_ConfigTab_SharingSectionDisplayed() {
+    public void commChannelTerminalServerEdit_ConfigTabSharingSection_Displayed() {
         String tabName = "Configuration";
 
         EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();

@@ -27,19 +27,20 @@ import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupVersacomDetailTest extends SeleniumTestSetup {
-	private DriverExtensions driverExt;
+	
+	 private DriverExtensions driverExt;
 	 private Integer id;
 	 private String name;
 	 Builder builder;
 	 private LoadGroupDetailPage detailPage;
 	
-	 @BeforeClass(alwaysRun=true)
+	 @BeforeClass(alwaysRun = true)
 	 public void beforeClass() {
 		 driverExt = getDriverExt();   
 	 }
 	 
 	 @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	 public void ldGrpVersacomDetail_DeleteLodGroup_Success() {
+	 public void ldGrpVersacomDetail_Delete_Success() {
 		 builder = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup();
 	     Pair<JSONObject, JSONObject> pair = builder.create();
 	     JSONObject response = pair.getValue1();
@@ -60,7 +61,7 @@ public class LoadGroupVersacomDetailTest extends SeleniumTestSetup {
 	}
 	 
 	 @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void ldGrpVersacomDetail_CopyLoadGroup_Success() {
+	    public void ldGrpVersacomDetail_Copy_Success() {
 			builder = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup();
 		    Pair<JSONObject, JSONObject> pair = builder.create();
 	        JSONObject response = pair.getValue1();
@@ -144,6 +145,5 @@ public class LoadGroupVersacomDetailTest extends SeleniumTestSetup {
 	        softly.assertThat(sectionValues.get(0)).isEqualTo(relayUsage.replace("_", " "));
 	        
 	        softly.assertAll();
-	    	
-	    }
+	  }
 }

@@ -26,18 +26,19 @@ import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupEcobeeDetailTest extends SeleniumTestSetup {
-	private DriverExtensions driverExt;
+	
+	 private DriverExtensions driverExt;
 	 private Integer id;
 	 private String name;
 	 private LoadGroupDetailPage detailPage;
 	
-	 @BeforeClass(alwaysRun=true)
+	 @BeforeClass(alwaysRun = true)
 	 public void beforeClass() {
 		 driverExt = getDriverExt();   
 	 }
 	 
 	 @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	 public void ldGrpEcobeeDetail_DeleteLoadGroup_Success() {
+	 public void ldGrpEcobeeDetail_Delete_Success() {
 		 Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
 	     JSONObject response = pair.getValue1();
 	     id = response.getInt("id");
@@ -57,7 +58,7 @@ public class LoadGroupEcobeeDetailTest extends SeleniumTestSetup {
 	}
 	 
 	 @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void ldGrpEcobeeDetail_CopyLoadGroup_Success() {
+	    public void ldGrpEcobeeDetail_Copy_Success() {
 		 	Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
 	        JSONObject response = pair.getValue1();
 	        id = response.getInt("id");
@@ -127,7 +128,7 @@ public class LoadGroupEcobeeDetailTest extends SeleniumTestSetup {
 	    }
 	    
 	    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void ldGrpEcobeeDetail_Copy_NameRequired() {
+	    public void ldGrpEcobeeDetail_Copy_NameRequiredValidation() {
 	    	Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
 	        JSONObject response = pair.getValue1();
 	        id = response.getInt("id");
@@ -145,7 +146,7 @@ public class LoadGroupEcobeeDetailTest extends SeleniumTestSetup {
 	    }
 	    
 	    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void ldGrpEcobeeDetail_Copy_UniqueName() {
+	    public void ldGrpEcobeeDetail_Copy_UniqueNameValidation() {
 	    	Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
 	        JSONObject response = pair.getValue1();
 	        id = response.getInt("id");
@@ -163,7 +164,7 @@ public class LoadGroupEcobeeDetailTest extends SeleniumTestSetup {
 	    }
 	    
 	    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void ldGrpEcobeeDetail_Copy_InvalidValue() {
+	    public void ldGrpEcobeeDetail_Copy_InvalidValueValidation() {
 	    	Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty()).create();
 	        JSONObject response = pair.getValue1();
 	        id = response.getInt("id");

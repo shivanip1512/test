@@ -169,13 +169,12 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
 
     @Override
     @Transactional
-    public int delete(int areaId, String areaName) {
+    public int delete(int areaId) {
         LiteYukonPAObject controlArea = dbCache.getAllLMControlAreas()
                                                          .stream()
-                                                         .filter(area -> area.getLiteID() == areaId && area.getPaoName()
-                                                         .equalsIgnoreCase(areaName))
+                                                         .filter(area -> area.getLiteID() == areaId)
                                                          .findFirst()
-                                                         .orElseThrow(() -> new NotFoundException("Control Area Id and Name combination not found"));
+                                                         .orElseThrow(() -> new NotFoundException("Control Area Id not found"));
 
         // Checks if any assigned load program(s) is associated with any control scenario(s) 
         validateDelete(areaId);

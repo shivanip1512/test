@@ -36,7 +36,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannelTerminalServer_AllFieldsSuccess() {
+    public void createCommChannelTerminalServer_AllFields_Success() {
         CreateTerminalServerCommChannelModal createModal = listPage.showAndWaitCreateTerminalServerCommChannelModal();
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -63,7 +63,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannelTerminalServer_LabelsCorrect() {
+    public void createCommChannelTerminalServer_Labels_Correct() {
         SoftAssertions softly = new SoftAssertions();
         CreateTerminalServerCommChannelModal createModal = listPage.showAndWaitCreateTerminalServerCommChannelModal();
 
@@ -118,7 +118,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannelTerminalServer_PortNumber_MinValidation() {
+    public void createCommChannelTerminalServer_PortNumber_MinValueValidation() {
         CreateTerminalServerCommChannelModal createModal = listPage.showAndWaitCreateTerminalServerCommChannelModal();
 
         final String EXPECTED_MSG = "Port Number must be between 1 and 65,535.";
@@ -135,7 +135,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void createCommChannelTerminalServer_PortNumber_MaxValidation() {
+    public void createCommChannelTerminalServer_PortNumber_MaxValueValidation() {
         CreateTerminalServerCommChannelModal createModal = listPage.showAndWaitCreateTerminalServerCommChannelModal();                
 
         final String EXPECTED_MSG = "Port Number must be between 1 and 65,535.";

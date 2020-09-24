@@ -28,19 +28,20 @@ import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupRippleDetailTest extends SeleniumTestSetup {
-	private DriverExtensions driverExt;
+	
+	 private DriverExtensions driverExt;
 	 private Integer id;
 	 private String name;
 	 Builder builder;
 	 private LoadGroupDetailPage detailPage;
 	
-	 @BeforeClass(alwaysRun=true)
+	 @BeforeClass(alwaysRun = true)
 	 public void beforeClass() {
 		 driverExt = getDriverExt();   
 	 }
 	 
 	 @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	 public void ldGrpRippleDetail_DeleteLoadGroup_Success() {
+	 public void ldGrpRippleDetail_Delete_Success() {
 		 builder = LoadGroupRippleCreateBuilder.buildDefaultRippleLoadGroup();
 		 Pair<JSONObject, JSONObject> pair = builder.create();
 	     JSONObject response = pair.getValue1();
@@ -61,7 +62,7 @@ public class LoadGroupRippleDetailTest extends SeleniumTestSetup {
 	}
 	 
 	 @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void ldGrpRippleDetail_CopyLoadGroup_Success() {
+	    public void ldGrpRippleDetail_Copy_Success() {
 			builder = LoadGroupRippleCreateBuilder.buildDefaultRippleLoadGroup();
 		    Pair<JSONObject, JSONObject> pair = builder.create();
 	        JSONObject response = pair.getValue1();
@@ -134,7 +135,5 @@ public class LoadGroupRippleDetailTest extends SeleniumTestSetup {
 	        softly.assertThat(sectionValues.get(2)).isEqualTo(areaCode);
 	        
 	        softly.assertAll();
-	    	
-	    }
-
+	   }
 }

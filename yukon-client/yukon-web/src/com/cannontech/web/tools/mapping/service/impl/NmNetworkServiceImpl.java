@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -554,7 +555,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             log.debug("Failed to add devices {} to map, locations empty", paoIds.size());
             return;
         }
-        String hexColor = "#ffffff";
+        String hexColor = YukonColorPalette.WHITE.getHexValue();
         if (color != null) {
             hexColor = color.getHexColor();
         }

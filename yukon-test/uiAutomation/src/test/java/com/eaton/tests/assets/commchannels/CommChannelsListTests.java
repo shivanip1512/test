@@ -21,7 +21,6 @@ import com.eaton.rest.api.drsetup.JsonFileHelper;
 import io.restassured.response.ExtractableResponse;
 
 public class CommChannelsListTests extends SeleniumTestSetup {
-
     private CommChannelsListPage listPage;
     private DriverExtensions driverExt;
     private List<String> names;
@@ -33,6 +32,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);        
 
         String[] tcpChannel = { "123", "TCP_port", "1@tcp" };
         String[] udpChannel = { "channeludp", "UDPport", "2$udp" };
@@ -72,20 +72,23 @@ public class CommChannelsListTests extends SeleniumTestSetup {
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(listPage);
+        if(getRefreshPage()) {
+            refreshPage(listPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelList_TitleCorrect() {
+    public void commChannelList_Page_TitleCorrect() {
         String EXPECTED_TITLE = "Comm Channels";
-        
+
         String actualPageTitle = listPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelList_HeadersCorrect() {
+    public void commChannelList_ColumnHeaders_Correct() {
         SoftAssertions softly = new SoftAssertions();
         int EXPECTED_COUNT = 3;
         List<String> headers = this.listPage.getTable().getListTableHeaders();
@@ -98,7 +101,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelList_NameLinkCorrect() {
+    public void commChannelList_Name_LinkCorrect() {
         WebTableRow row = listPage.getTable().getDataRowByName(udpCommChannelName);
         String link = row.getCellLinkByIndex(0);
 
@@ -106,53 +109,58 @@ public class CommChannelsListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelList_SortNamesAscCorrectly() {
+    public void commChannelList_NameSortAsc_Correct() {
+        setRefreshPage(true);
         Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
 
         navigate(Urls.Assets.COMM_CHANNEL_NAME_ASC);
 
         List<String> namesList = listPage.getTable().getDataRowsTextByCellIndex(1);
-        
+
         assertThat(names).isEqualTo(namesList);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelList_SortNamesDescCorrectly() {
+    public void commChannelList_NameSortDesc_Correct() {
+        setRefreshPage(true);
         Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
         Collections.reverse(names);
 
         navigate(Urls.Assets.COMM_CHANNEL_NAME_DESC);
-        
+
         List<String> namesList = listPage.getTable().getDataRowsTextByCellIndex(1);
-        
+
         assertThat(names).isEqualTo(namesList);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelList_SortTypesAscCorrectly() {
+    public void commChannelList_TypeSortAsc_Correct() {
+        setRefreshPage(true);
         Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
 
         navigate(Urls.Assets.COMM_CHANNEL_TYPE_ASC);
         listPage = new CommChannelsListPage(driverExt);
 
         List<String> typesList = listPage.getTable().getDataRowsTextByCellIndex(2);
-        
+
         assertThat(types).isEqualTo(typesList);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelList_SortTypesDescCorrectly() {
+    public void commChannelList_TypeSortDesc_Correct() {
+        setRefreshPage(true);
         Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
         Collections.reverse(types);
         navigate(Urls.Assets.COMM_CHANNEL_TYPE_DESC);
-        
+
         List<String> typesList = listPage.getTable().getDataRowsTextByCellIndex(2);
-        
+
         assertThat(types).isEqualTo(typesList);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelList_SortStatusesAscCorrectly() {
+    public void commChannelList_StatusesSortAsc_Correct() {
+        setRefreshPage(true);
         Collections.sort(statuses, String.CASE_INSENSITIVE_ORDER);
 
         navigate(Urls.Assets.COMM_CHANNEL_STATUS_ASC);
@@ -163,7 +171,8 @@ public class CommChannelsListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelList_SortStatusesDescCorrectly() {
+    public void commChannelList_StatusesSortDesc_Correct() {
+        setRefreshPage(true);
         Collections.sort(statuses, String.CASE_INSENSITIVE_ORDER);
         Collections.reverse(statuses);
 
@@ -175,11 +184,12 @@ public class CommChannelsListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
-    public void commChannelList_CreateOpensPopupCorrect() {
+    public void commChannelList_Create_OpensCorrectModal() {
+        setRefreshPage(true);
         String EXPECTED_CREATE_MODEL_TITLE = "Create Comm Channel";
         CreateTcpCommChannelModal createModel = listPage.showAndWaitCreateTcpCommChannelModal();
         String actualCreateModelTitle = createModel.getModalTitle();
-        
+
         assertThat(actualCreateModelTitle).isEqualTo(EXPECTED_CREATE_MODEL_TITLE);
     }
 }

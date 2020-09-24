@@ -56,8 +56,8 @@ public class EcobeeProgramApiTest {
         loadProgram.setName("Auto_LmEcobeeProgramTest");
         loadProgram.setNotification(null);
         // Create Load Program
-        ExtractableResponse<?> response = ApiCallHelper.post("saveLoadProgram", loadProgram);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
+        ExtractableResponse<?> response = ApiCallHelper.post("loadPrograms", loadProgram);
+        assertTrue("Status code should be 201", response.statusCode() == 201);
         assertTrue("GROUP Id should not be Null", response.path("programId") != null);
 
         programId = response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID);
@@ -72,7 +72,7 @@ public class EcobeeProgramApiTest {
         Log.startTestCase("loadPgmEcobee_02_Get");
         MockLoadProgram expectedLoadProgram = (MockLoadProgram) context.getAttribute("expectedloadProgram");
 
-        ExtractableResponse<?> response = ApiCallHelper.get("getLoadProgram", programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.get("loadPrograms", "/" + programId.toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
         context.setAttribute("name", response.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME));
         MockLoadProgram actualLoadProgram = response.as(MockLoadProgram.class);
@@ -100,10 +100,10 @@ public class EcobeeProgramApiTest {
         updateLoadProgram.setName(name);
         updateLoadProgram.getGears().get(0).setGearName(gearName);
 
-        ExtractableResponse<?> response = ApiCallHelper.post("updateLoadProgram", updateLoadProgram, programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.put("loadPrograms", updateLoadProgram, "/" +programId.toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
-        ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("getLoadProgram", programId.toString());
+        ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("loadPrograms", "/" + programId.toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
         assertTrue("Name Should be : " + name, name.equals(getupdatedResponse.path("name")));
         context.setAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME, name);
@@ -116,7 +116,7 @@ public class EcobeeProgramApiTest {
         MockLoadProgramCopy loadProgramCopy = LoadProgramSetupHelper.buildLoadProgramCopyRequest(MockPaoType.LM_ECOBEE_PROGRAM,
                                                                                                  (Integer) context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID));
 
-        ExtractableResponse<?> response = ApiCallHelper.post("copyLoadProgram", loadProgramCopy, programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.post("loadPrograms", loadProgramCopy, "/" +programId.toString() + "/copy");
         assertTrue("Status code should be 200", response.statusCode() == 200);
         assertTrue("Program Id should not be Null", response.path("programId") != null);
         assertTrue("Copy Program Id should be different", !response.path("programId").toString().equals(programId));
@@ -132,7 +132,7 @@ public class EcobeeProgramApiTest {
         MockLMDto deleteObject = MockLMDto.builder().name((String) context.getAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME)).build();
 
         // Delete LoadProgram created
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteLoadProgram", deleteObject, programId.toString());
+        ExtractableResponse<?> response = ApiCallHelper.delete("loadPrograms", "/" + programId.toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
         // Delete LoadGroup created
@@ -140,10 +140,8 @@ public class EcobeeProgramApiTest {
         deleteObject.setName(loadGroup.getName());
         ExtractableResponse<?> response1 = ApiCallHelper.delete("deleteloadgroup", deleteObject, loadGroup.getId().toString());
         assertTrue("Status code should be 200", response1.statusCode() == 200);
-
         // Delete Copy LoadProgram
-        deleteObject = MockLMDto.builder().name((String) context.getAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME)).build();
-        ExtractableResponse<?> response2 = ApiCallHelper.delete("deleteLoadProgram", deleteObject, context.getAttribute("copyPgmId").toString());
+        ExtractableResponse<?> response2 = ApiCallHelper.delete("loadPrograms", "/" + context.getAttribute("copyPgmId").toString());
         assertTrue("Status code should be 200", response2.statusCode() == 200);
         Log.endTestCase("loadPgmEcobee_05_Delete");
     }
@@ -156,7 +154,7 @@ public class EcobeeProgramApiTest {
         mockLoadProgram.setName(programName);
         mockLoadProgram.setNotification(null);
 
-        ExtractableResponse<?> response = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> response = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue("Status code should be " + expectedStatusCode, response.statusCode() == expectedStatusCode);
         assertTrue("Expected message should be - Validation error", response.path("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct", expectedFieldCode.equals(response.path("fieldErrors.code[0]")));
@@ -172,8 +170,8 @@ public class EcobeeProgramApiTest {
     public Object[][] getProgramNameData() {
 
         return new Object[][] { { "", "Name is required.", 422 },
-                { "Test\\@SpecialChar", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
-                { "Test,SpecialChar", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
+                { "Test\\@SpecialChar", "Name must not contain any of the following characters: / \\ , ' \" |.", 422 },
+                { "Test,SpecialChar", "Name must not contain any of the following characters: / \\ , ' \" |.", 422 },
                 { "TestNameMoreThanSixtyCharacter_TestNameMoreThanSixtyCharacters", "Exceeds maximum length of 60.", 422 } };
     }
 
@@ -186,7 +184,7 @@ public class EcobeeProgramApiTest {
         mockLoadProgram.setTriggerOffset(triggerOffset);
         mockLoadProgram.setNotification(null);
 
-        ExtractableResponse<?> response = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        ExtractableResponse<?> response = ApiCallHelper.post("loadPrograms", mockLoadProgram);
         assertTrue("Status code should be " + expectedStatusCode, response.statusCode() == expectedStatusCode);
         assertTrue("Expected message should be - Validation error", response.path("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct", expectedFieldCode.equals(response.path("fieldErrors.code[0]")));
@@ -212,7 +210,7 @@ public class EcobeeProgramApiTest {
         Log.startTestCase("loadPgmEcobee_08_CopyWithInvalidGroupId");
         MockLoadProgramCopy loadProgramCopy = LoadProgramSetupHelper.buildLoadProgramCopyRequest(MockPaoType.LM_ECOBEE_PROGRAM, programId);
 
-        ExtractableResponse<?> response = ApiCallHelper.post("copyLoadProgram", loadProgramCopy, "999999");
+        ExtractableResponse<?> response = ApiCallHelper.post("loadPrograms", loadProgramCopy, "/999999"+"/copy");
         assertTrue("Status code should be 400", response.statusCode() == 400);
         assertTrue("Expected message should be - Validation error", response.path("message").equals("A PAObject with id 999999 cannot be found."));
 
@@ -241,7 +239,7 @@ public class EcobeeProgramApiTest {
         loadProgram.setName("Auto_ProgramTest");
         loadProgram.setNotification(null);
         loadProgram.getAssignedGroups().get(0).setGroupId(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", loadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", loadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");

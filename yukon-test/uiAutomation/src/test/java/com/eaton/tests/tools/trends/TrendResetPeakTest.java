@@ -26,7 +26,7 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.tools.trends.TrendsDetailPage;
 
-public class ResetPeakTest extends SeleniumTestSetup {
+public class TrendResetPeakTest extends SeleniumTestSetup {
 
     private TrendsDetailPage detailsPage;
     private DriverExtensions driverExt;
@@ -54,7 +54,7 @@ public class ResetPeakTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
-    public void trendResetPeak_FieldLabelsCorrect() {
+    public void trendResetPeak_Field_LabelsCorrect() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
         List<String> expectedLabels = new ArrayList<>(List.of("Reset Peak To:", "Date:", "Reset Peak For All Trends:"));
@@ -64,7 +64,7 @@ public class ResetPeakTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
-    public void trendResetPeak_DefaultFieldValues_Correct() {
+    public void trendResetPeak_DefaultFields_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
 
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
@@ -123,7 +123,7 @@ public class ResetPeakTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
-    public void trendResetPeak_ResetPeakTo_ContainsAllExpectedValues() {
+    public void trendResetPeak_ResetPeakTo_ValuesCorrect() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
         List<String> expectedDropDownValues = new ArrayList<>(List.of("Today", "First Date of Month", "First Date of Year", "Selected Date"));
@@ -142,7 +142,7 @@ public class ResetPeakTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendResetPeak_ResetPeakToFirstMonth_DateDisabled() {
+    public void trendResetPeak_ResetPeakToFirstMonthDate_DateDisabled() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
         resetPeakModal.getResetPeakTo().selectItemByValue("FIRST_DATE_OF_MONTH");
@@ -151,7 +151,7 @@ public class ResetPeakTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendResetPeak_ResetPeakToFirstYear_DateDisabled() {
+    public void trendResetPeak_ResetPeakToFirstYearDate_DateDisabled() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
         resetPeakModal.getResetPeakTo().selectItemByValue("FIRST_DATE_OF_YEAR");
@@ -160,7 +160,7 @@ public class ResetPeakTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
-    public void trendResetPeak_ResetPeakToSelectedDate_SaveSuccess() {
+    public void trendResetPeak_SelectedDate_Success() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
         resetPeakModal.getResetPeakTo().selectItemByValue("SELECTED_DATE");
@@ -172,11 +172,11 @@ public class ResetPeakTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
-    public void trendResetPeak_HelpTextMessage_Correct() {
+    public void trendResetPeak_Help_TextMessageCorrect() {
         SoftAssertions softly = new SoftAssertions();
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
-        resetPeakModal.clickHelpIcon();
+        resetPeakModal.clickHelpIconAndWait();
 
         String actualTextMessage = resetPeakModal.getHelpTextMessage();
         String expectedTextSection1 = "The Peak type is used to display data for the peak date. When a Peak type is added, the minimum starting date is set to the first day of this month and will remain at this date until Reset Peaks is performed. The peak day is determined by finding the highest archived value from the minimum starting date through today. The data from the peak day is overlaid and repeated for every day displayed in the trend.";
@@ -190,10 +190,10 @@ public class ResetPeakTest extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendResetPeak_ClickHelpCloseIcon_Success() {
+    public void trendResetPeak_Close_HelpMessageSuccess() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
-        resetPeakModal.clickHelpIcon();
+        resetPeakModal.clickHelpIconAndWait();
         resetPeakModal.clickHelpCloseIcon();
 
         assertThat(resetPeakModal.isHelpClosed()).isTrue();

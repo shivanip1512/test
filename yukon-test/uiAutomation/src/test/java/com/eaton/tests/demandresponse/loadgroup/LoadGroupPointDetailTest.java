@@ -30,19 +30,20 @@ import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupPointDetailTest  extends SeleniumTestSetup {
-	private DriverExtensions driverExt;
+	
+	 private DriverExtensions driverExt;
 	 private Integer id;
 	 private String name;
 	 Builder builder;
 	 private LoadGroupDetailPage detailPage;
 	
-	 @BeforeClass(alwaysRun=true)
+	 @BeforeClass(alwaysRun = true)
 	 public void beforeClass() {
 		 driverExt = getDriverExt();   
 	 }
 	 
 	 @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	 public void ldGrpPointDetail_DeleteLoadGroup_Success() {
+	 public void ldGrpPointDetail_Delete_Success() {
 		 builder = LoadGroupPointCreateBuilder.buildDefaultPointLoadGroup();
 		 String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 		 String createName = "AT Create Point Ld group " + timeStamp;
@@ -74,7 +75,7 @@ public class LoadGroupPointDetailTest  extends SeleniumTestSetup {
 	}
 	 
 	 @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	     public void ldGrpPointDetail_CopyLoadGroup_Success() {
+	     public void ldGrpPointDetail_Copy_Success() {
 		 builder = LoadGroupPointCreateBuilder.buildDefaultPointLoadGroup();
 		 Pair<JSONObject, JSONObject> pair = builder.create();
 
@@ -141,7 +142,5 @@ public class LoadGroupPointDetailTest  extends SeleniumTestSetup {
 	        softly.assertThat(sectionValues.get(1)).isEqualTo("  " + getResponse.path("LM_GROUP_POINT.startControlRawState.stateText").toString());
 	        
 	        softly.assertAll();
-	    	
-	    }
-
+	   }
 }

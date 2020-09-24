@@ -2,17 +2,13 @@ package com.eaton.tests.demandresponse.loadgroup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
-import org.assertj.core.api.SoftAssertions;
 import org.javatuples.Pair;
 import org.json.JSONObject;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.eaton.builders.drsetup.loadgroup.LoadGroupHoneywellCreateBuilder;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupMeterDisconnectCreateBuilder;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.CopyLoadGroupModal;
@@ -22,23 +18,21 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
-import com.eaton.rest.api.drsetup.DrSetupGetRequest;
-
-import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupMeterDisconnectDetailTest extends SeleniumTestSetup {
-	private DriverExtensions driverExt;
+	
+	 private DriverExtensions driverExt;
 	 private Integer id;
 	 private String name;
 	 private LoadGroupDetailPage detailPage;
 	
-	 @BeforeClass(alwaysRun=true)
+	 @BeforeClass(alwaysRun = true)
 	 public void beforeClass() {
 		 driverExt = getDriverExt();   
 	 }
 	 
 	 @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	 public void ldGrpMeterDisconnectDetail_DeleteLoadGroup_Success() {
+	 public void ldGrpMeterDisconnectDetail_Delete_Success() {
 		 Pair<JSONObject, JSONObject> pair = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
 														.create();
 		 JSONObject response = pair.getValue1(); 
@@ -61,7 +55,7 @@ public class LoadGroupMeterDisconnectDetailTest extends SeleniumTestSetup {
 	}
 	
 	 @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	 public void  ldGrpMeterDisconnectDetail_DeleteModalConfirmMessageValidation() {
+	 public void  ldGrpMeterDisconnectDetail_DeleteModal_ConfirmMessageCorrect() {
 		 Pair<JSONObject, JSONObject> pair = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
 														.create();
 		 JSONObject response = pair.getValue1(); 
@@ -79,7 +73,7 @@ public class LoadGroupMeterDisconnectDetailTest extends SeleniumTestSetup {
 	}
 	
 	 @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void ldGrpMeterDisconnectDetail_CopyLoadGroup_Success() {
+	    public void ldGrpMeterDisconnectDetail_Copy_Success() {
 		 	Pair<JSONObject, JSONObject> pair = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
 					.create();
 	        JSONObject response = pair.getValue1();

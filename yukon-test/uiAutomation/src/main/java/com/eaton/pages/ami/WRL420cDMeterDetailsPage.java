@@ -27,19 +27,6 @@ public class WRL420cDMeterDetailsPage extends PageBase {
 	
 	private Panels panels;
 	
-	public static final int METER_INFO_PANEL_INDEX = 0;
-	public static final int METER_READINGS_PANEL_INDEX = 1;
-	public static final int WIFI_CONNECTION_PANEL_INDEX = 2;
-	public static final int NETWORK_INFO_PANEL_INDEX = 3;
-	public static final int NOTES_PANEL_INDEX = 4;
-	public static final int DEVICE_GROUP_PANEL_INDEX = 5;
-	public static final int METER_TREND_PANEL_INDEX = 6;
-	public static final int DISCONNECT_PANEL_INDEX = 7;
-	public static final int METER_EVENTS_PANEL_INDEX = 8;
-	public static final int OUTAGES_PANEL_INDEX = 9;
-	public static final int TOU_PANEL_INDEX = 10;
-	public static final int DEVICE_CONFIG_INDEX = 11;
-
     public WRL420cDMeterDetailsPage(DriverExtensions driverExt, int id) {
         super(driverExt);
 
@@ -57,51 +44,51 @@ public class WRL420cDMeterDetailsPage extends PageBase {
     }
 
     public MeterInfoPanel getMeterInfoPanel() {
-    	return new MeterInfoPanel(this.driverExt, panels.getPanels().get(METER_INFO_PANEL_INDEX).getPanelName());
+    	return new MeterInfoPanel(this.driverExt, getPanelList().getListOfPanelNames().get(0));
     }
     
     public MeterReadingsPanel getMeterReadingsPanel() {
-    	return new MeterReadingsPanel(this.driverExt, panels.getPanels().get(METER_READINGS_PANEL_INDEX).getPanelName());
+        return new MeterReadingsPanel(this.driverExt, getPanelList().getListOfPanelNames().get(1));
     }
     
     public WiFiConnectionPanel getWiFiConnectionPanel() {
-        return new WiFiConnectionPanel(this.driverExt, panels.getPanels().get(WIFI_CONNECTION_PANEL_INDEX).getPanelName());
+        return new WiFiConnectionPanel(this.driverExt, getPanelList().getListOfPanelNames().get(2));
     }
     
     public NetworkInfoPanel getNetworkInfoPanel() {
-        return new NetworkInfoPanel(this.driverExt, panels.getPanels().get(NETWORK_INFO_PANEL_INDEX).getPanelName());
+        return new NetworkInfoPanel(this.driverExt, getPanelList().getListOfPanelNames().get(3));
     }
     
     public NotesPanel getNotesPanel() {
-        return new NotesPanel(this.driverExt, panels.getPanels().get(NOTES_PANEL_INDEX).getPanelName());
+        return new NotesPanel(this.driverExt, getPanelList().getListOfPanelNames().get(4));
     }
     
     public DeviceGroupsPanel getDeviceGroupsPanel() {
-        return new DeviceGroupsPanel(this.driverExt, panels.getPanels().get(DEVICE_GROUP_PANEL_INDEX).getPanelName());
+        return new DeviceGroupsPanel(this.driverExt, getPanelList().getListOfPanelNames().get(5));
     }
     
     public MeterTrendPanel getMeterTrendPanel() {
-        return new MeterTrendPanel(this.driverExt, panels.getPanels().get(METER_TREND_PANEL_INDEX).getPanelName());
+        return new MeterTrendPanel(this.driverExt, getPanelList().getListOfPanelNames().get(6));
     }
     
     public DisconnectPanel getDisconnectPanel() {
-        return new DisconnectPanel(this.driverExt, panels.getPanels().get(DISCONNECT_PANEL_INDEX).getPanelName());
+        return new DisconnectPanel(this.driverExt, getPanelList().getListOfPanelNames().get(7));
     }
     
     public MeterEventsPanel getMeterEventsPanel() {
-        return new MeterEventsPanel(this.driverExt, panels.getPanels().get(METER_EVENTS_PANEL_INDEX).getPanelName());
+        return new MeterEventsPanel(this.driverExt, getPanelList().getListOfPanelNames().get(8));
     }
     
     public OutagesPanel getOutagesPanel() {
-        return new OutagesPanel(this.driverExt, panels.getPanels().get(OUTAGES_PANEL_INDEX).getPanelName());
+        return new OutagesPanel(this.driverExt, getPanelList().getListOfPanelNames().get(9));
     }
     
     public TimeOfUsePanel getTimeOfUsePanel() {
-        return new TimeOfUsePanel(this.driverExt, panels.getPanels().get(TOU_PANEL_INDEX).getPanelName());
+        return new TimeOfUsePanel(this.driverExt, getPanelList().getListOfPanelNames().get(10));
     }
     
     public DeviceConfigPanel getDeviceConfigPanel() {
-        return new DeviceConfigPanel(this.driverExt, panels.getPanels().get(DEVICE_CONFIG_INDEX).getPanelName());
+        return new DeviceConfigPanel(this.driverExt, getPanelList().getListOfPanelNames().get(11));
     }
 
     public EditMeterModal showMeterEditModal() {
@@ -122,8 +109,7 @@ public class WRL420cDMeterDetailsPage extends PageBase {
         return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of("yukon_dialog_confirm"));  
     }
     
-    public Panels getPanels() {
+    public Panels getPanelList() {
     	return panels;
     }
-    	
 }

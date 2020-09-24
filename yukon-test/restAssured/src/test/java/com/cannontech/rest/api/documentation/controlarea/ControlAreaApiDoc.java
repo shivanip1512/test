@@ -21,7 +21,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.constraint.request.MockProgramConstraint;
 import com.cannontech.rest.api.controlArea.request.MockControlArea;
@@ -81,12 +80,12 @@ public class ControlAreaApiDoc {
         gearTypes.add(MockGearControlMethod.TimeRefresh);
 
         loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_DIRECT_PROGRAM, loadGroups, gearTypes, programConstraint.getId());
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", loadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", loadProgram);
         Integer programId = createResponse.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID);
         loadProgram.setProgramId(programId);
 
         assertTrue("Program Id should not be Null", programId != null);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
     }
 
     /**
@@ -115,11 +114,11 @@ public class ControlAreaApiDoc {
         controlAreaThresholdPoint = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD_POINT, loadProgram.getProgramId());
         List<FieldDescriptor> requestDescriptor = ControlAreaHelper.buildRequestDescriptor(MockControlAreaTriggerType.THRESHOLD_POINT);
         List<FieldDescriptor> responseDescriptor = ControlAreaHelper.buildResponseDescriptor();
-        Response response = getResponseForCreate(requestDescriptor, responseDescriptor, controlAreaThresholdPoint, "saveControlArea");
+        Response response = getResponseForCreate(requestDescriptor, responseDescriptor, controlAreaThresholdPoint, "controlAreas");
         controlAreaId = response.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID);
 
         assertTrue("Control Area Id should not be Null", controlAreaId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
+        assertTrue("Status code should be 201", response.statusCode() == 201);
     }
 
     /**
@@ -131,13 +130,13 @@ public class ControlAreaApiDoc {
         MockControlArea controlArea = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD, loadProgram.getProgramId());
         List<FieldDescriptor> requestDescriptor = ControlAreaHelper.buildRequestDescriptor(MockControlAreaTriggerType.THRESHOLD);
         List<FieldDescriptor> responseDescriptor = ControlAreaHelper.buildResponseDescriptor();
-        Response response = getResponseForCreate(requestDescriptor, responseDescriptor, controlArea, "saveControlArea");
+        Response response = getResponseForCreate(requestDescriptor, responseDescriptor, controlArea, "controlAreas");
         Integer controlAreaId = response.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID);
         controlArea.setControlAreaId(controlAreaId);
 
         assertTrue("Control Area Id should not be Null", controlAreaId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        ApiCallHelper.delete(controlArea.getControlAreaId(), controlArea.getName(), "deleteControlArea");
+        assertTrue("Status code should be 201", response.statusCode() == 201);
+        ApiCallHelper.delete("controlAreas", "/" + controlArea.getControlAreaId());
     }
 
     /**
@@ -149,13 +148,13 @@ public class ControlAreaApiDoc {
         MockControlArea controlArea = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.STATUS, loadProgram.getProgramId());
         List<FieldDescriptor> requestDescriptor = ControlAreaHelper.buildRequestDescriptor(MockControlAreaTriggerType.STATUS);
         List<FieldDescriptor> responseDescriptor = ControlAreaHelper.buildResponseDescriptor();
-        Response response = getResponseForCreate(requestDescriptor, responseDescriptor, controlArea, "saveControlArea");
+        Response response = getResponseForCreate(requestDescriptor, responseDescriptor, controlArea, "controlAreas");
         Integer controlAreaId = response.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID);
         controlArea.setControlAreaId(controlAreaId);
 
         assertTrue("Control Area Id should not be Null", controlAreaId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-        ApiCallHelper.delete(controlArea.getControlAreaId(), controlArea.getName(), "deleteControlArea");
+        assertTrue("Status code should be 201", response.statusCode() == 201);
+        ApiCallHelper.delete("controlAreas", "/" + controlArea.getControlAreaId());
     }
 
     /**
@@ -169,7 +168,7 @@ public class ControlAreaApiDoc {
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
                                                     .when()
-                                                    .get(ApiCallHelper.getProperty("getControlArea") + controlAreaId)
+                                                    .get(ApiCallHelper.getProperty("controlAreas") + "/" +controlAreaId)
                                                     .then()
                                                     .extract()
                                                     .response();
@@ -193,7 +192,7 @@ public class ControlAreaApiDoc {
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
                                                     .body(controlArea)
                                                     .when()
-                                                    .post(ApiCallHelper.getProperty("updateControlArea") + controlAreaId)
+                                                    .put(ApiCallHelper.getProperty("controlAreas") + "/" +controlAreaId)
                                                     .then()
                                                     .extract()
                                                     .response();
@@ -209,17 +208,14 @@ public class ControlAreaApiDoc {
      */
     @Test(dependsOnMethods = { "Test_ControlArea_ThresholdPointTrigger_Update" })
     public void Test_ControlArea_ThresholdPointTrigger_Delete(ITestContext context) {
-        MockLMDto deleteObject = MockLMDto.builder().name(controlAreaThresholdPoint.getName()).build();
 
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
-                                                                     requestFields(ControlAreaHelper.requestFieldDesriptorForDelete()),
-                                                                     responseFields(ControlAreaHelper.buildResponseDescriptor())))
+                                                                     responseFields(ControlAreaHelper.deleteFieldDescriptor())))
                                                     .accept("application/json")
                                                     .contentType("application/json")
                                                     .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .body(deleteObject)
                                                     .when()
-                                                    .delete(ApiCallHelper.getProperty("deleteControlArea") + controlAreaId)
+                                                    .delete(ApiCallHelper.getProperty("controlAreas") + "/" + controlAreaId)
                                                     .then()
                                                     .extract()
                                                     .response();
@@ -229,8 +225,8 @@ public class ControlAreaApiDoc {
 
     @AfterClass
     public void cleanUp() {
-        ApiCallHelper.delete(loadProgram.getProgramId(), loadProgram.getName(), "deleteLoadProgram");
-        ApiCallHelper.delete(programConstraint.getId(), programConstraint.getName(), "deleteProgramConstraint");
+        ApiCallHelper.delete("loadPrograms", "/" + loadProgram.getProgramId().toString());
+        ApiCallHelper.delete("programConstraints", "/" + programConstraint.getId().toString());
         loadGroups.forEach(group -> {
             ApiCallHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
         });

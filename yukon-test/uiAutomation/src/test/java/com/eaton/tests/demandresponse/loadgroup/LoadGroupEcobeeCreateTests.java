@@ -37,7 +37,7 @@ public class LoadGroupEcobeeCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateEcobee_AllFieldsDisableFalseSuccessfully() {
+    public void ldGrpCreateEcobee_AllFieldsDisableFalse_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT ecobee " + timeStamp;
         double randomDouble = randomNum.nextDouble();
@@ -64,7 +64,7 @@ public class LoadGroupEcobeeCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpCreateEcobee_CreateAllFieldsDisableTrueSuccessfully() {
+    public void ldGrpCreateEcobee_AllFieldsDisableTrue_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT ecobee " + timeStamp;
         double randomDouble = randomNum.nextDouble();

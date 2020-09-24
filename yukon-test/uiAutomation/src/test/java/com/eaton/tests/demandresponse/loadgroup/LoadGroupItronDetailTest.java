@@ -26,18 +26,19 @@ import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupItronDetailTest  extends SeleniumTestSetup {
-	private DriverExtensions driverExt;
+	
+	 private DriverExtensions driverExt;
 	 private Integer id;
 	 private String name;
 	 private LoadGroupDetailPage detailPage;
 	
-	 @BeforeClass(alwaysRun=true)
+	 @BeforeClass(alwaysRun = true)
 	 public void beforeClass() {
 		 driverExt = getDriverExt();   
 	 }
 	 
 	 @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	 public void ldGrpItronDetail_DeleteLoadGroup_Success() {
+	 public void ldGrpItronDetail_Delete_Success() {
 		 Pair<JSONObject, JSONObject> pair = new LoadGroupItronCreateBuilder.Builder(Optional.empty())
 													.withKwCapacity(Optional.empty())
 													.withRelay(Optional.empty())
@@ -60,7 +61,7 @@ public class LoadGroupItronDetailTest  extends SeleniumTestSetup {
 	}
 	 
 	 @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void ldGrpItronDetail_CopyLoadGroup_Success() {
+	    public void ldGrpItronDetail_Copy_Success() {
 		 	Pair<JSONObject, JSONObject> pair = new LoadGroupItronCreateBuilder.Builder(Optional.empty())
 														.withKwCapacity(Optional.empty())
 														.withRelay(Optional.empty())

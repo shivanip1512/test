@@ -22,15 +22,16 @@ public class AssetsMenuTests extends SeleniumTestSetup {
         navigate(Urls.HOME);
         page = new HomePage(driverExt);
     }
+    
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
-    public void assetsMenu_dashboardUrlCorrect() {
+    public void assetsMenu_Dashboard_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 0);
 
         assertThat(url).contains(Urls.Assets.DASHBOARD);
     }
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
-    public void assetsMenu_gatewaysUrlCorrect() {
+    public void assetsMenu_Gateways_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 1);
 
@@ -38,7 +39,7 @@ public class AssetsMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
-    public void assetsMenu_relaysUrlCorrect() {
+    public void assetsMenu_Relays_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 2);
 
@@ -46,7 +47,7 @@ public class AssetsMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
-    public void assetsMenu_rtusUrlCorrect() {
+    public void assetsMenu_Rtus_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 3);
 
@@ -54,7 +55,7 @@ public class AssetsMenuTests extends SeleniumTestSetup {
     }
         
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
-    public void assetsMenu_virtualDevicesUrlCorrect() {
+    public void assetsMenu_VirtualDevices_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 4);
 
@@ -62,7 +63,7 @@ public class AssetsMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
-    public void assetsMenu_optOutStatusUrlCorrect() {
+    public void assetsMenu_OptOutStatus_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 5);
 
@@ -70,7 +71,7 @@ public class AssetsMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
-    public void assetsMenu_workOrdersUrlCorrect() {
+    public void assetsMenu_WorkOrders_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 6);
 
@@ -78,7 +79,7 @@ public class AssetsMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
-    public void assetsMenu_importUrlCorrect() {
+    public void assetsMenu_Import_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 7);
 
@@ -86,7 +87,7 @@ public class AssetsMenuTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
-    public void assetsMenu_reportsUrlCorrect() {
+    public void assetsMenu_Reports_UrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 8);
 

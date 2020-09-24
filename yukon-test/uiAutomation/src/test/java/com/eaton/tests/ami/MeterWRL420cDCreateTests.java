@@ -72,6 +72,4 @@ public class MeterWRL420cDCreateTests extends SeleniumTestSetup {
 
         assertThat(userMsg).isEqualTo(METER + name + CREATED);
     }
-
-
 }

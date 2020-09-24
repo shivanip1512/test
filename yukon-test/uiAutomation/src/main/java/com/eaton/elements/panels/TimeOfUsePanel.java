@@ -1,73 +1,39 @@
 package com.eaton.elements.panels;
 
-import java.util.List;
+import java.util.Optional;
 
-import org.openqa.selenium.WebElement;
-
-import com.eaton.elements.WebTable;
+import com.eaton.elements.Button;
+import com.eaton.elements.NameValueTable;
 import com.eaton.framework.DriverExtensions;
 
 public class TimeOfUsePanel extends BasePanel {
 
     private DriverExtensions driverExt;
-    private WebTable pointsTableA;
-    private WebTable pointsTableB;
-    private WebTable pointsTableC;
-    private WebTable pointsTableD;
-    private List<String> labelEntries;
-    private List<String> valueEntries;
     
     public TimeOfUsePanel(DriverExtensions driverExt, String panelName) {
         super(driverExt, panelName);
-        final int LABEL_INDEX = 1;
-        final int VALUE_INDEX = 2;
-        this.driverExt = driverExt;
-        WebElement panel = super.getPanel();
         
-        this.pointsTableA = new WebTable(driverExt, "name-value-table:nth-of-type(1)", panel);
-        this.labelEntries = pointsTableA.getDataRowsTextByCellIndex(LABEL_INDEX);
-        this.valueEntries = pointsTableA.getDataRowsTextByCellIndex(VALUE_INDEX);
-        this.pointsTableB = new WebTable(driverExt, "name-value-table:nth-of-type(2)", panel);
-        this.labelEntries.addAll(pointsTableB.getDataRowsTextByCellIndex(LABEL_INDEX));
-        this.valueEntries.addAll(pointsTableB.getDataRowsTextByCellIndex(VALUE_INDEX));
-        this.pointsTableC = new WebTable(driverExt, "name-value-table:nth-of-type(3)", panel);
-        this.labelEntries.addAll(pointsTableC.getDataRowsTextByCellIndex(LABEL_INDEX));
-        this.valueEntries.addAll(pointsTableC.getDataRowsTextByCellIndex(VALUE_INDEX));
-        this.pointsTableD = new WebTable(driverExt, "name-value-table:nth-of-type(4)", panel);
-        this.labelEntries.addAll(pointsTableD.getDataRowsTextByCellIndex(LABEL_INDEX));
-        this.valueEntries.addAll(pointsTableD.getDataRowsTextByCellIndex(VALUE_INDEX));
+        this.driverExt = driverExt;
     }
     
-    //================================================================================
-    // Private Functions Section
-    //================================================================================
-    
-    //================================================================================
-    // Getters/Setters Section
-    //================================================================================
-    
-    public WebTable getPointsTableA() {
-    	return pointsTableA;
+    public Button getReadBtn() {
+        return new Button(this.driverExt, "Read", getPanel());
     }
     
-    public WebTable getPointsTableB() {
-    	return pointsTableB;
+    public NameValueTable getUsageRateATable() {
+        return new NameValueTable(this.driverExt, getPanel(), Optional.of(0));
     }
     
-    public WebTable getPointsTableC() {
-    	return pointsTableC;
+    public NameValueTable getUsageRateBTable() {
+        return new NameValueTable(this.driverExt, getPanel(), Optional.of(1));
     }
     
-    public WebTable getPointsTableD() {
-    	return pointsTableD;
+    public NameValueTable getUsageRateCTable() {
+        return new NameValueTable(this.driverExt, getPanel(), Optional.of(2));
     }
     
-    public List<String> getLabelEntries() {
-    	return labelEntries;
+    public NameValueTable getUsageRateDTable() {
+        return new NameValueTable(this.driverExt, getPanel(), Optional.of(3));
     }
     
-    public List<String> getValueEntries() {
-    	return valueEntries;
-    }
-
 }

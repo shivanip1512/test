@@ -48,7 +48,7 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(listPage);
+        refreshPage(listPage);    
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })

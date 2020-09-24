@@ -25,18 +25,19 @@ import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 
 import io.restassured.response.ExtractableResponse;
 public class LoadGroupEmetconDetailTest extends SeleniumTestSetup {
-	private DriverExtensions driverExt;
+	
+	 private DriverExtensions driverExt;
 	 private Integer id;
 	 private String name;
 	 private LoadGroupEmetconDetailPage detailPage;
 	
-	 @BeforeClass(alwaysRun=true)
+	 @BeforeClass(alwaysRun = true)
 	 public void beforeClass() {
 		 driverExt = getDriverExt();   
 	 }
 	 
 	 @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	 public void ldGrpEmetconDetail_DeleteLoadGroup_Success() {
+	 public void ldGrpEmetconDetail_Delete_Success() {
 		 Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
 	                										.create();
 	     JSONObject response = pair.getValue1();
@@ -57,7 +58,7 @@ public class LoadGroupEmetconDetailTest extends SeleniumTestSetup {
 	}
 	 
 	 @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-	    public void ldGrEmetconDetail_CopyLoadGroup_Success() {
+	    public void ldGrEmetconDetail_Copy_Success() {
 		 	Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
 					.create();
 	        JSONObject response = pair.getValue1();
@@ -131,6 +132,4 @@ public class LoadGroupEmetconDetailTest extends SeleniumTestSetup {
 	        
 	        softly.assertAll();
 	    }
-
-
 }

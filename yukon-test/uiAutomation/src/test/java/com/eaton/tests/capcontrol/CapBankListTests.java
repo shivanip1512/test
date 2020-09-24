@@ -20,17 +20,21 @@ public class CapBankListTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         navigate(Urls.CapControl.CAP_BANK_LIST);
         listPage = new CapBankListPage(driverExt);
     }
 
     @AfterMethod()
     public void afterMethod() {
-        refreshPage(listPage);
+        if(getRefreshPage()) {
+            refreshPage(listPage);    
+        }
+        setRefreshPage(false);
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.VoltVar.VOLT_VAR })
-    public void capBankList_columnHeadersCorrect() {
+    public void capBankList_ColumnHeaders_Correct() {
         SoftAssertions softly = new SoftAssertions();
         final int EXPECTED_COUNT = 3;
 

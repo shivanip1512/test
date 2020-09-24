@@ -27,7 +27,7 @@ public class LoadGroupListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpList_pageTitleCorrect() {
+    public void ldGrpList_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Load Groups";
 
         String actualPageTitle = listPage.getPageTitle();
@@ -36,7 +36,7 @@ public class LoadGroupListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpList_columnHeadersCorrect() {
+    public void ldGrpList_ColumnHeaders_Correct() {
         softly = new SoftAssertions();
         final int EXPECTED_COUNT = 6;
 
