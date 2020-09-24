@@ -147,7 +147,7 @@ public class EcobeeProgramGearApiDoc {
 
     @AfterClass
     public void cleanUp() {
-        ApiCallHelper.delete(programConstraint.getId(), programConstraint.getName(), "deleteProgramConstraint");
+        ApiCallHelper.delete("programConstraints", "/" + programConstraint.getId().toString());
         loadGroups.forEach(group -> {
             ApiCallHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
         });
