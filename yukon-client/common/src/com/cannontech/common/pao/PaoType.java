@@ -271,6 +271,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     SIMPLE_SCHEDULE(DeviceTypes.SIMPLE_SCHEDULE, "Simple", PaoCategory.SCHEDULE, PaoClass.SCHEDULE),
     SYSTEM(DeviceTypes.SYSTEM, "SYSTEM", PaoCategory.DEVICE, PaoClass.SYSTEM),
     VIRTUAL_SYSTEM(DeviceTypes.VIRTUAL_SYSTEM, "VIRTUAL SYSTEM", PaoCategory.DEVICE, PaoClass.VIRTUAL),
+    VIRTUAL_METER(DeviceTypes.VIRTUAL_METER, "VIRTUAL METER", PaoCategory.DEVICE, PaoClass.VIRTUAL),
     
     WEATHER_LOCATION(DeviceTypes.WEATHER_LOCATION, "WEATHER LOCATION", PaoCategory.DEVICE, PaoClass.VIRTUAL),
     
