@@ -53,7 +53,7 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
         refreshPage(trendEditPage);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.TRENDS })
     public void trendPointSetup_AddPoint_OpensCorrectModal() {
         String EXPECTED_MODAL_TITLE = "Add Point";
         trendPointModal = trendEditPage.showAndWaitAddPointModal();
@@ -62,7 +62,7 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
         assertThat(actualModalTitle).isEqualTo(EXPECTED_MODAL_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS})
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.TRENDS})
     public void trendPointSetup_FieldLabels_Correct() {
         SoftAssertions softly = new SoftAssertions();
 
@@ -81,12 +81,11 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.TRENDS })
     public void trendPointSetup_Label_RequiredValidation() {
         final String EXPECTED_MSG = "Label is required.";
         trendPointModal = trendEditPage.showAndWaitAddPointModal();
-        // Set the empty value for the Label Input Field
-        trendPointModal.getLabel().setInputValue("");
+        trendPointModal.getLabel().clearInputValue();
         trendPointModal.clickOk();
 
         String errorMsg = trendPointModal.getLabel().getValidationError();
@@ -94,7 +93,7 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.TRENDS })
     public void trendPointSetup_Label_MaxLength40Chars() {
         final String ALLOWED_MAX_LENGTH = "40";
         trendPointModal = trendEditPage.showAndWaitAddPointModal();
@@ -103,7 +102,7 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
         assertThat(maxLengthofLabel).isEqualTo(ALLOWED_MAX_LENGTH);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.TRENDS })
     public void trendPointSetup_Point_RequiredValidation() {
         final String EXPECTED_MSG = "Point is required.";
         trendPointModal = trendEditPage.showAndWaitAddPointModal();
@@ -113,7 +112,7 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.TRENDS })
     public void trendPointSetup_Multiplier_InvalidValidation() {
         final String EXPECTED_MSG = "Not a valid value.";
         trendPointModal = trendEditPage.showAndWaitAddPointModal();
@@ -126,7 +125,7 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.TRENDS })
     public void trendPointSetup_Style_ExpectedValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         trendPointModal = trendEditPage.showAndWaitAddPointModal();
@@ -140,7 +139,7 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.TRENDS })
     public void trendPointSetup_Type_ExpectedValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         trendPointModal = trendEditPage.showAndWaitAddPointModal();
@@ -155,7 +154,7 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.TRENDS })
     public void trendPointSetup_EditPoint_OpensCorrectModal() {
         final String EXPECTED_MODAL_TITLE = "Edit " + POINT_NAME;
 
@@ -166,10 +165,8 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
         assertThat(actualModalTitle).isEqualTo(EXPECTED_MODAL_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.TRENDS })
     public void trendPointSetup_EditPoint_ValuesCorrect() {
-        //Taking longer to create a trend so need to add refresh here
-        //refreshPage(trendEditPage);
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_MODAL_TITLE = "Edit " + POINT_NAME;
         

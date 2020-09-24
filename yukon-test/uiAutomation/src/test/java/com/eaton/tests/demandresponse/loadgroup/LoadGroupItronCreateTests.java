@@ -41,7 +41,7 @@ public class LoadGroupItronCreateTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateItron_AllFieldsDisableTrue_Success() {
         setRefreshPage(true);
         JSONObject jo = new LoadGroupItronCreateBuilder.Builder(Optional.empty())
@@ -77,7 +77,7 @@ public class LoadGroupItronCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateItron_RequiredFields_Success() {
         setRefreshPage(true);
         JSONObject jo = new LoadGroupItronCreateBuilder.Builder(Optional.empty())
@@ -102,7 +102,7 @@ public class LoadGroupItronCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateItron_Relay_ValuesCorrect() {
         List<String> expectedRelayValues = new ArrayList<>(List.of("1", "2", "3", "4", "5", "6", "7", "8"));
 

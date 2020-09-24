@@ -45,7 +45,7 @@ public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
         setRefreshPage(false);
     }
     
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreateEmetcon_AllFields_Success() { 
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -76,7 +76,7 @@ public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }  
     
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreateEmetcon_GoldAddress_MaxRangeValidation() {
         String expectedErrorMsg = "Must be between 0 and 4.";
         
@@ -90,7 +90,7 @@ public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
         assertThat(createPage.getGoldAddress().getValidationError()).isEqualTo(expectedErrorMsg);
     } 
     
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreateEmetcon_GoldAddress_MinRangeValidation() {
         String expectedErrorMsg = "Must be between 0 and 4.";
         
@@ -104,7 +104,7 @@ public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
         assertThat(createPage.getGoldAddress().getValidationError()).isEqualTo(expectedErrorMsg);
     } 
     
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreateEmetcon_GoldAddress_RequiredValidation() {
         String expectedErrorMsg = "Gold Address is required.";
         
@@ -118,7 +118,7 @@ public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
         assertThat(createPage.getGoldAddress().getValidationError()).isEqualTo(expectedErrorMsg);
     } 
     
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreateEmetcon_SilverAddress_RequiredValidation() {
         String expectedErrorMsg = "Silver Address is required.";
         
@@ -132,7 +132,7 @@ public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
         assertThat(createPage.getSilverAddress().getValidationError()).isEqualTo(expectedErrorMsg);
     } 
     
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreateEmetcon_SilverAddress_MaxRangeValidation() {
         String expectedErrorMsg = "Must be between 0 and 60.";
         
@@ -146,7 +146,7 @@ public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
         assertThat(createPage.getSilverAddress().getValidationError()).isEqualTo(expectedErrorMsg);
     } 
     
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreateEmetcon_SilverAddress_MinRangeValidation() {
         String expectedErrorMsg = "Must be between 0 and 60.";
         
@@ -160,7 +160,7 @@ public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
         assertThat(createPage.getSilverAddress().getValidationError()).isEqualTo(expectedErrorMsg);
     } 
     
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreateEmetcon_AddressingSection_TitleCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_EMETCON");
         waitForLoadingSpinner();  
@@ -170,7 +170,7 @@ public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
         assertThat(general.getSection()).isNotNull();
     }
     
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreateEmetcon_CommunicationRoute_LabelsCorrect() {
         String sectionName = "General";
         String expectedLabel = "Communication Route:";
@@ -183,7 +183,7 @@ public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
         assertThat(actualLabels.contains(expectedLabel)).isTrue();
     }
     
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreateEmetcon_AddressingSection_LabelsCorrect() {
         String sectionName = "Addressing";
         List<String> expectedLabels = new ArrayList<>(List.of("Gold Address:", "Silver Address:", "Address To Use:", "Relay To Use:"));

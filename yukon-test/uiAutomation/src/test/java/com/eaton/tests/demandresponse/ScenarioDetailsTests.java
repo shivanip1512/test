@@ -24,7 +24,7 @@ public class ScenarioDetailsTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void scenarioDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Scenario: AT Scenario";
 
@@ -37,7 +37,7 @@ public class ScenarioDetailsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void scenarioDetails_Delete_Success() {
         final String EXPECTED_MSG = "AT Delete Scenario deleted successfully.";
 

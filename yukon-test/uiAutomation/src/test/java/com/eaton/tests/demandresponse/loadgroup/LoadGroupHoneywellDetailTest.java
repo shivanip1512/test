@@ -31,7 +31,7 @@ public class LoadGroupHoneywellDetailTest extends SeleniumTestSetup {
         driverExt = getDriverExt();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpHoneywellDetail_Delete_Success() {
         builder = LoadGroupHoneywellCreateBuilder.buildLoadGroup();
         Pair<JSONObject, JSONObject> pair = builder.create();

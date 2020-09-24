@@ -39,7 +39,7 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void loadProgramCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Load Program";
 
@@ -48,7 +48,7 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void loadProgramCreate_RequiredFieldsOnly_Success() {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

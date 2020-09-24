@@ -22,7 +22,7 @@ public class CustomerListTests extends SeleniumTestSetup {
         listPage = new CustomerListPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void customerList_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Customers";
 

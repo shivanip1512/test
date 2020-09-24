@@ -63,7 +63,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDetailsTcp_Page_TitleCorrect() {
         String EXPECTED_TITLE = commChannelName;
         
@@ -72,7 +72,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDetailsTcp_Tab_TitlesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         List<String> titles = detailPage.getTabElement().getTitles();
@@ -83,7 +83,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDetailsTcp_InfoTab_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         String infoTitle = "Info";
@@ -98,7 +98,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDetailsTcp_InfoTab_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         List<String> values = detailPage.getTabElement().getTabValues("Info");
@@ -111,7 +111,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDetailsTcp_ConfigTabTimingSection_Displayed() {
         String infoTitle = "Configuration";
 
@@ -122,7 +122,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         assertThat(timing.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDetailsTcp_ConfigTab_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         String infoTitle = "Configuration";
@@ -140,7 +140,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDetailsTcp_ConfigTab_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         detailPage.getTabElement().clickTabAndWait("Configuration");
@@ -156,7 +156,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDetailsTcp_Panel_TitleCorrect() {
         String expectedPanelText = "Comm Channel Information";
 
@@ -165,7 +165,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         assertThat(actualPanelText).isEqualTo(expectedPanelText);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDetailsTcp_Edit_NavigatesToCorrectUrl() {
         setRefreshPage(true);
         String expectedModalTitle = "Edit " + commChannelName;
@@ -177,7 +177,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDetailsTCP_Create_NavigatesToCorrectUrl() {
         setRefreshPage(true);
         String expectedModalTitle = "Create Comm Channel";
@@ -188,7 +188,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDeleteTcp_Delete_TitleCorrect() {
         setRefreshPage(true);
         String expectedModalTitle = "Confirm Delete";
@@ -200,7 +200,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDeleteTcp_DeleteConfirmMessage_Correct() {
         setRefreshPage(true);
         String expectedModalMessage = "Are you sure you want to delete \"" + commChannelName + "\"?";
@@ -212,7 +212,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         assertThat(actualModalMessage).isEqualTo(expectedModalMessage);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDeleteTcp_CancelDelete_NavigatesToCorrectUrl() {
         setRefreshPage(true);
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
@@ -222,7 +222,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         assertThat(deleteConfirmModal.isModalAvailable()).isFalse();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDeleteTcp_CloseDelete_NavigatesToCorrectUrl() {
         setRefreshPage(true);
         ConfirmModal deleteConfirmModal = detailPage.showDeleteCommChannelModal();
@@ -232,7 +232,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         assertThat(deleteConfirmModal.isModalDisplayed()).isFalse();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDeleteTcp_Delete_Success() {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

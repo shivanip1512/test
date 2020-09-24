@@ -52,7 +52,7 @@ public class LoadGroupHoneyWellEditTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpHoneywellEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Load Group: " + name;
         String actualPageTitle;
@@ -62,7 +62,7 @@ public class LoadGroupHoneyWellEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpHoneywellEdit_AllFields_Success() {
         setRefreshPage(true);
         Pair<JSONObject, JSONObject> pair = new LoadGroupHoneywellCreateBuilder.Builder(Optional.empty())

@@ -47,7 +47,7 @@ public class LoadGroupMeterDisconnectEditTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpMeterDisconnectEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Load Group: " + name;
 
@@ -56,7 +56,7 @@ public class LoadGroupMeterDisconnectEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpMeterDisconnectEdit_AllFields_Success() {
         setRefreshPage(true);
         String u = UUID.randomUUID().toString();

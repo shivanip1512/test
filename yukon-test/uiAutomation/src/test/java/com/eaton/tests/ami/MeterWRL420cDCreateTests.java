@@ -43,7 +43,7 @@ public class MeterWRL420cDCreateTests extends SeleniumTestSetup {
         refreshPage(amiDashboardPage);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDCreate_AllFields_Success() {
 
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();

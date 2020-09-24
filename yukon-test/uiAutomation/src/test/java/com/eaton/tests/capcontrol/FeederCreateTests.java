@@ -38,7 +38,7 @@ public class FeederCreateTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
     
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void feederCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Feeder";
 
@@ -47,7 +47,7 @@ public class FeederCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void feederCreate_RequiredFieldsOnly_Success() {
         setRefreshPage(true);
         final String EXPECTED_MSG = "Feeder was saved successfully.";

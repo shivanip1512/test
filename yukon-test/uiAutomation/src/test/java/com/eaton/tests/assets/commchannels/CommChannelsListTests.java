@@ -78,7 +78,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelList_Page_TitleCorrect() {
         String EXPECTED_TITLE = "Comm Channels";
 
@@ -87,7 +87,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelList_ColumnHeaders_Correct() {
         SoftAssertions softly = new SoftAssertions();
         int EXPECTED_COUNT = 3;
@@ -100,7 +100,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelList_Name_LinkCorrect() {
         WebTableRow row = listPage.getTable().getDataRowByName(udpCommChannelName);
         String link = row.getCellLinkByIndex(0);
@@ -108,7 +108,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
         assertThat(link).contains(Urls.Assets.COMM_CHANNEL_DETAIL.concat(udpCommChannelId));
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelList_NameSortAsc_Correct() {
         setRefreshPage(true);
         Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
@@ -120,7 +120,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
         assertThat(names).isEqualTo(namesList);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelList_NameSortDesc_Correct() {
         setRefreshPage(true);
         Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
@@ -133,7 +133,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
         assertThat(names).isEqualTo(namesList);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelList_TypeSortAsc_Correct() {
         setRefreshPage(true);
         Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
@@ -146,7 +146,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
         assertThat(types).isEqualTo(typesList);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelList_TypeSortDesc_Correct() {
         setRefreshPage(true);
         Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
@@ -158,7 +158,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
         assertThat(types).isEqualTo(typesList);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelList_StatusesSortAsc_Correct() {
         setRefreshPage(true);
         Collections.sort(statuses, String.CASE_INSENSITIVE_ORDER);
@@ -170,7 +170,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
         assertThat(statuses).isEqualTo(statusList);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelList_StatusesSortDesc_Correct() {
         setRefreshPage(true);
         Collections.sort(statuses, String.CASE_INSENSITIVE_ORDER);
@@ -183,7 +183,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
         assertThat(statuses).isEqualTo(statusList);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelList_Create_OpensCorrectModal() {
         setRefreshPage(true);
         String EXPECTED_CREATE_MODEL_TITLE = "Create Comm Channel";

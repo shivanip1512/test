@@ -23,7 +23,7 @@ public class CbcListTests extends SeleniumTestSetup {
         this.listPage = new CbcListPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void cbcList_ColumnHeaders_Correct() {
         SoftAssertions softly = new SoftAssertions();
         final int EXPECTED_COUNT = 3;

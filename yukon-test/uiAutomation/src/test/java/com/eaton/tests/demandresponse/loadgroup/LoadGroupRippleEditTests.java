@@ -35,7 +35,7 @@ public class LoadGroupRippleEditTests extends SeleniumTestSetup {
         randomNum = getRandomNum();
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRippleEdit_AllFields_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String editName = "AT Edit Ripple " + timeStamp;

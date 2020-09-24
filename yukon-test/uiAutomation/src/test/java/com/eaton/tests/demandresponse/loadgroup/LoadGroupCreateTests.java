@@ -41,7 +41,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Load Group";
 
@@ -50,7 +50,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreate_Name_RequiredValidation() {
         createPage.getName().clearInputValue();
         
@@ -58,7 +58,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
         assertThat(createPage.getName().getValidationError()).isEqualTo("Name is required.");
     }
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreate_Type_RequiredValidation() {
         createPage.getType().selectItemByIndex(0);
         
@@ -67,7 +67,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getType().getValidationError()).isEqualTo("Type is required.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreate_Name_InvalidCharValidation() {
         createPage.getName().setInputValue("test/,");
         createPage.getSaveBtn().click();
@@ -76,7 +76,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
                 .isEqualTo("Name must not contain any of the following characters: / \\ , ' \" |.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreate_Cancel_NavigatesToCorrectUrl() {
         setRefreshPage(true);
         createPage.getCancelBtn().click();
@@ -86,7 +86,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(actualUrl).contains(Urls.DemandResponse.LOAD_GROUP_SETUP_LIST);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreate_KwCapacity_RequiredValidation() {
         createPage.getType().selectItemByIndex(2);
         createPage.getkWCapacity().setInputValue("");
@@ -95,7 +95,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getkWCapacity().getValidationError()).isEqualTo("kW Capacity is required.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreate_KwCapacity_MaxRangeValidation() {
         createPage.getType().selectItemByIndex(2);
         createPage.getkWCapacity().setInputValue("1000000");
@@ -104,7 +104,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getkWCapacity().getValidationError()).isEqualTo("Must be between 0 and 99,999.999.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreate_KwCapacity_MinRangeValidation() {
         createPage.getType().selectItemByIndex(2);
         createPage.getkWCapacity().setInputValue("-1");
@@ -113,13 +113,13 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getkWCapacity().getValidationError()).isEqualTo("Must be between 0 and 99,999.999.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreate_GeneralSection_TitleCorrect() {
         Section general = createPage.getPageSection("General");
         assertThat(general.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreate_OptionalAttributeSection_TitleCorrect() {
         createPage.getType().selectItemByIndex(2);
         createPage.getkWCapacity().clearInputValue();
@@ -128,7 +128,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(optAttr.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreate_Type_ValuesCorrect() {
         List<String> expectedDropDownValues = new ArrayList<>(List.of("Select", "Digi SEP Group", "ecobee Group", "Emetcon Group", "Expresscom Group", "Honeywell Group",
                 "Itron Group", "MCT Group", "Meter Disconnect Group", "Point Group", "RFN Expresscom Group", "Ripple Group",
@@ -138,7 +138,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(actualDropDownValues).containsExactlyElementsOf(expectedDropDownValues);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreate_Name_UniqueValidation() {
         Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty())
                 .create();
@@ -153,7 +153,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getName().getValidationError()).isEqualTo("Name must be unique.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreateCommon_GeneralSection_LabelsCorrect() {
         String sectionName = "General";
         List<String> expectedLabels = new ArrayList<>(List.of("Name:", "Type:" ));
@@ -163,7 +163,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreateCommon_OptionalAttrSection_LabelsCorrect() {
         String sectionName = "Optional Attributes";
         List<String> expectedLabels = new ArrayList<>(List.of("kW Capacity:", "Disable Group:", "Disable Control:"));

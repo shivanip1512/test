@@ -9,7 +9,7 @@ import com.eaton.elements.Section;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.WebTable;
 import com.eaton.elements.WebTableRow;
-import com.eaton.elements.WebTableRow.Icon;
+import com.eaton.elements.WebTableRow.Icons;
 import com.eaton.elements.modals.TrendMarkerModal;
 import com.eaton.elements.modals.TrendPointModal;
 import com.eaton.elements.tabs.TabElement;
@@ -102,7 +102,7 @@ public class TrendPage extends PageBase {
     public TrendPointModal showAndWaitEditPointModal(String modalTitle, int index) {
         WebTableRow row = getPointSetupTable().getDataRowByIndex(index);
         
-        row.clickIcon(Icon.PENCIL);
+        row.clickActionIcon(Icons.PENCIL);
         
         SeleniumTestSetup.waitUntilModalOpenByTitle(modalTitle);
         
@@ -112,7 +112,7 @@ public class TrendPage extends PageBase {
     public TrendMarkerModal showAndWaitEditMarkerModal(String modalTitle, int index) {                
         WebTableRow row = getMarkerSetupTable().getDataRowByIndex(index);
         
-        row.clickIcon(Icon.PENCIL);
+        row.clickActionIcon(Icons.PENCIL);
         
         SeleniumTestSetup.waitUntilModalOpenByTitle(modalTitle);
         

@@ -24,7 +24,7 @@ public class MeterRfn430Sl4DetailTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
     }
 
-    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
+    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.AMI })
     public void meterRfn430Sl4Detail_Delete_Success() {
         final String EXPECTED_MSG = "Meter AT Delete RFN-430SL4 deleted successfully.";
 

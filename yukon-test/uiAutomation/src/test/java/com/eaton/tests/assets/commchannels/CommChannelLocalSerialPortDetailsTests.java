@@ -63,7 +63,7 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDetailsLocalSerialPort_Page_TitleCorrect() {
         String EXPECTED_TITLE = commChannelName;
         
@@ -72,7 +72,7 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDetailsLocalSerialPort_InfoTab_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         String infoTitle = "Info";
@@ -88,7 +88,7 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDetailsLocalSerialPort_InfoTab_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         List<String> values = detailPage.getTabElement().getTabValues("Info");
@@ -102,7 +102,7 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDetailsLocalSerialPort_ConfigTabTimingSection_Displayed() {
         String infoTitle = "Configuration";
         
@@ -112,7 +112,7 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         assertThat(timing.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDetailsLocalSerialPort_ConfigTabGeneralSection_Displayed() {
         String infoTitle = "Configuration";
         
@@ -122,7 +122,7 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         assertThat(general.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDetailsLocalSerialPort_ConfigTabSharedSection_Displayed() {
         String infoTitle = "Configuration";
         
@@ -132,7 +132,7 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         assertThat(shared.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDetailsLocalSerialPort_ConfigTab_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         String infoTitle = "Configuration";
@@ -153,7 +153,7 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelDetailsLocalSerialPort_ConfigTab_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         detailPage.getTabElement().clickTabAndWait("Configuration");
@@ -173,7 +173,7 @@ public class CommChannelLocalSerialPortDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS})
     public void commChannelDeleteLocalSerial_Delete_Success() {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

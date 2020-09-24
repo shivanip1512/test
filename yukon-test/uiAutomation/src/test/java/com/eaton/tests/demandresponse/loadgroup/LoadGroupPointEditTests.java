@@ -39,7 +39,7 @@ public class LoadGroupPointEditTests extends SeleniumTestSetup {
         randomNum = getRandomNum();
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpPointEdit_AllFields_Success() {
         builder = LoadGroupPointCreateBuilder.buildDefaultPointLoadGroup();
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

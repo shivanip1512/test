@@ -36,7 +36,7 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
         refreshPage(listPage);
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesCreate_Labels_Correct() {
         SoftAssertions softly = new SoftAssertions();
         CreateVirtualDeviceModal createModal = listPage.showAndWaitCreateVirtualDeviceModal();
@@ -54,7 +54,7 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
 //    public void virtualDevicesCreate_Name_AlreadyExistsValidation() {
 //    }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesCreate_Name_InvalidCharValidation() {
         String name = "AT Virtual Devices " + "/ \\ , ' \" |";
 
@@ -68,13 +68,13 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesCreate_Name_MaxLength60Validation() {
         CreateVirtualDeviceModal createModal = listPage.showAndWaitCreateVirtualDeviceModal();
         assertThat(createModal.getName().getMaxLength()).isEqualTo("60");
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesCreate_Name_RequiredValidation() {
         final String EXPECTED_MSG = "Name is required.";
 
@@ -86,7 +86,7 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesCreate_AllFieldsEnabled_Success() {
     	String name = "AT Virtual Device" + faker.number().digits(10);
 
@@ -101,7 +101,7 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesCreate_AllFieldsDisabled_Success() {
     	String name = "AT Virtual Device" + faker.number().digits(10);
 

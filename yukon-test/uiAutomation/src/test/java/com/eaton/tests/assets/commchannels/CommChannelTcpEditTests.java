@@ -55,7 +55,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         refreshPage(detailPage);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTcpEdit_Modal_TitleCorrect() {
         String expectedModalTitle = "Edit " + commChannelName;
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
@@ -64,7 +64,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTcpEdit_Name_RequiredValidation() {
         String EXPECTED_MSG = "Name is required.";
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
@@ -77,7 +77,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTcpEdit_Name_InvalidCharsValidation() {
         String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
 
@@ -91,7 +91,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTcpEdit_Name_AlreadyExistsValidation() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String commChannelNameTcp = "TCP Comm Channel " + timeStamp;
@@ -114,7 +114,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTcpEdit_Cancel_NavigatesToCorrectUrl() {
         String EXPECTED_TITLE = commChannelName;
 
@@ -126,7 +126,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTcpEdit_Tab_TitlesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
@@ -139,7 +139,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTcpEdit_InfoTab_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
@@ -157,7 +157,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTcpEdit_ConfigTab_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
@@ -176,7 +176,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTcpEdit_ConfigTab_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
@@ -192,7 +192,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         softly.assertAll();       
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTcpEdit_PreTxWait_MinValueValidation() {
         String EXPECTED_MSG = "Pre Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -208,7 +208,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTcpEdit_PreTxWait_MaxValueValidation() {
         String EXPECTED_MSG = "Pre Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -224,7 +224,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTcpEdit_RtsToTxWait_MinValueValidation() {
         String EXPECTED_MSG = "RTS To Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -240,7 +240,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTcpEdit_RtsToTxWait_MaxValueValidation() {
         String EXPECTED_MSG = "RTS To Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -256,7 +256,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTcpEdit_PostTxWait_MinValueValidation() {
         String EXPECTED_MSG = "Post Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -272,7 +272,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTcpEdit_PostTxWait_MaxValueValidation() {
         String EXPECTED_MSG = "Post Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -288,7 +288,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTcpEdit_ReceiveDataWait_MinValueValidation() {
         String EXPECTED_MSG = "Receive Data Wait must be between 0 and 1,000.";
         String tabName = "Configuration";
@@ -304,7 +304,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTcpEdit_ReceiveDataWait_MaxValueValidation() {
         String EXPECTED_MSG = "Receive Data Wait must be between 0 and 1,000.";
         String tabName = "Configuration";
@@ -320,7 +320,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTcpEdit_AdditionalTimeOut_MinValueValidation() {
         String EXPECTED_MSG = "Additional Time Out must be between 0 and 999.";
         String tabName = "Configuration";
@@ -336,7 +336,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTcpEdit_AdditionalTimeOut_MaxValueValidation() {
         String EXPECTED_MSG = "Additional Time Out must be between 0 and 999.";
         String tabName = "Configuration";
@@ -352,7 +352,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         assertThat(EXPECTED_MSG).isEqualTo(errorMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTcpEdit_InfoTab_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         String tabName = "Info";
@@ -366,7 +366,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         softly.assertAll();        
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTcpEdit_ConfigTabTimingSection_Displayed() {
         String tabName = "Configuration";
 
@@ -378,7 +378,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         assertThat(timing.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTcpEdit_AllFields_Success() {
         SoftAssertions softly = new SoftAssertions();
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

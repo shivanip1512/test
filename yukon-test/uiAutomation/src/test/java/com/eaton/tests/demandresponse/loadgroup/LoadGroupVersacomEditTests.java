@@ -35,7 +35,7 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
         randomNum = getRandomNum();
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpVersacomEdit_RequiredFieldsOnly_Success() {
         Pair<JSONObject, JSONObject> pair = new LoadGroupVersacomCreateBuilder.Builder(Optional.empty())
                 .withRouteId(Optional.of(LoadGroupEnums.RouteId.ACCU710A))
@@ -76,7 +76,7 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpVersacomEdit_SerialAddressToSectionClass_Success() {
         builder = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup();
         Pair<JSONObject, JSONObject> pair = builder
@@ -109,7 +109,7 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpVersacomEdit_AddressUsageToSerial_Success() {
         builder = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup();
         Pair<JSONObject, JSONObject> pair = builder

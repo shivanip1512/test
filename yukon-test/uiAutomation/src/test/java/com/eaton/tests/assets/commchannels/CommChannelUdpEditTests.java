@@ -62,7 +62,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         refreshPage(detailPage);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_Modal_TitleCorrect() {
         String expectedModalTitle = "Edit " + commChannelName;
         
@@ -73,7 +73,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_Name_RequiredValidation() {
         String EXPECTED_MSG = "Name is required.";
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
@@ -86,7 +86,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelUdpEdit_Name_InvalidCharsValidation() {
         String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
 
@@ -100,7 +100,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_PortNumber_MinValueValidation() {
         String EXPECTED_MSG = "Port Number must be between 1 and 65,535.";
         String portNumber = "0";
@@ -114,7 +114,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_PortNumber_MaxValueValidation() {
         String EXPECTED_MSG = "Port Number must be between 1 and 65,535.";
         String portNumber = "65536";
@@ -128,7 +128,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_PreTxWait_MinValueValidation() {
         String EXPECTED_MSG = "Pre Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -145,7 +145,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_PreTxWait_MaxValueValidation() {
         String EXPECTED_MSG = "Pre Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -161,7 +161,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_RtsToTxWait_MinValueValidation() {
         String EXPECTED_MSG = "RTS To Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -177,7 +177,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_RtsToTxWait_MaxValueValidation() {
         String EXPECTED_MSG = "RTS To Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -193,7 +193,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_PostTxWait_MinValueValidation() {
         String EXPECTED_MSG = "Post Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -209,7 +209,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_PostTxWait_MaxValueValidation() {
         String EXPECTED_MSG = "Post Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -225,7 +225,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_ReceiveDataWait_MinValueValidation() {
         String EXPECTED_MSG = "Receive Data Wait must be between 0 and 1,000.";
         String tabName = "Configuration";
@@ -241,7 +241,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_ReceiveDataWait_MaxValueValidation() {
         String EXPECTED_MSG = "Receive Data Wait must be between 0 and 1,000.";
         String tabName = "Configuration";
@@ -257,7 +257,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_AdditionalTimeOut_MinValueValidation() {
         String EXPECTED_MSG = "Additional Time Out must be between 0 and 999.";
         String tabName = "Configuration";
@@ -273,7 +273,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_AdditionalTimeOut_MaxValueValidation() {
         String EXPECTED_MSG = "Additional Time Out must be between 0 and 999.";
         String tabName = "Configuration";
@@ -289,7 +289,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }       
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_SocketNumber_MinValueValidation() {
         String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
         String tabName = "Configuration";
@@ -305,7 +305,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_SocketNumber_MaxValueValidation() {
         String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
         String tabName = "Configuration";
@@ -321,7 +321,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_SocketNumber_RequiredValidation() {
         String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
         String tabName = "Configuration";
@@ -337,7 +337,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_Tab_TitlesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
@@ -350,7 +350,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_ConfigTab_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
@@ -374,7 +374,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_InfoTab_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
@@ -393,7 +393,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_InfoTab_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         String tabName = "Info";
@@ -408,7 +408,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })	
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })	
     public void commChannelUdpEdit_ConfigTab_ValuesCorrect() {	
         SoftAssertions softly = new SoftAssertions();
         String tabName = "Configuration";	
@@ -431,7 +431,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         softly.assertAll();	
     }	
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_Name_AlreadyExistsValidation() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String commChannelNameUdp = "UDP Comm Channel " + timeStamp;
@@ -455,7 +455,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_Create_OpensCorrectModal() {
         String EXPECTED_CREATE_MODEL_TITLE = "Create Comm Channel";
         CreateCommChannelModal createModel = detailPage.showCreateCommChannelModal();
@@ -464,7 +464,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(actualCreateModelTitle).isEqualTo(EXPECTED_CREATE_MODEL_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_ConfigTabTimingSection_Displayed() {
         String tabName = "Configuration";
 
@@ -476,7 +476,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(timing.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelUdpEdit_ConfigTabSharingSection_Displayed() {
         String tabName = "Configuration";
 
@@ -489,7 +489,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         assertThat(shared.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })	
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.COMM_CHANNELS })	
     public void commChannelUdpEdit_AllFields_Success() {	
         SoftAssertions softly = new SoftAssertions();
         randomNum = getRandomNum();

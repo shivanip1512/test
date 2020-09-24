@@ -43,7 +43,7 @@ public class MeterRfn420flCreateTests extends SeleniumTestSetup {
         refreshPage(amiDashboardPage);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.AMI })
     public void meterRfn420flCreate_AllFields_Success() {
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 

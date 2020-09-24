@@ -23,7 +23,7 @@ public class FeederListTests extends SeleniumTestSetup {
         listPage = new FeederListPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VOLT_VAR })
     public void feederList_ColumnHeaders_Correct() {
         SoftAssertions softly = new SoftAssertions();
         final int EXPECTED_COUNT = 3;

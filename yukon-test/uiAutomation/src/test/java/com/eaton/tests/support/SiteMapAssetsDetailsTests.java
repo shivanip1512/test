@@ -25,7 +25,7 @@ public class SiteMapAssetsDetailsTests extends SeleniumTestSetup {
         siteMapPage = new SiteMapPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ASSETS })
     public void siteMatpAssetsDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Site Map";
 
@@ -34,21 +34,21 @@ public class SiteMapAssetsDetailsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ASSETS })
     public void siteMatpAssetsDetails_AssetsSection_Displayed() {
         Section assetsSection = siteMapPage.getAssetsSection();
 
         assertThat(assetsSection).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ASSETS })
     public void siteMatpAssetsDetails_AssetsSection_CountCorrect() {
         final int EXPECTED_COUNT = 18;
 
         assertThat(siteMapPage.getAssetsSectionSimpleList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ASSETS })
     public void siteMatpAssetsDetails_AssetsDashboard_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Assets Dashboard";
@@ -60,7 +60,7 @@ public class SiteMapAssetsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ASSETS })
     public void siteMatpAssetsDetails_CommChannels_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Comm Channels";
@@ -72,7 +72,7 @@ public class SiteMapAssetsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ASSETS })
     public void siteMatpAssetsDetails_ComprehensiveMap_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Comprehensive Map";
@@ -84,7 +84,7 @@ public class SiteMapAssetsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ASSETS })
     public void siteMatpAssetsDetails_CreateAccount_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Create Account";
@@ -96,7 +96,7 @@ public class SiteMapAssetsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ASSETS })
     public void siteMatpAssetsDetails_Gateways_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Gateways";
@@ -108,7 +108,7 @@ public class SiteMapAssetsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ASSETS })
     public void siteMatpAssetsDetails_Import_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Import";
@@ -120,7 +120,7 @@ public class SiteMapAssetsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ASSETS })
     public void siteMatpAssetsDetails_OptOutStatus_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Opt Out Status";
@@ -132,7 +132,7 @@ public class SiteMapAssetsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ASSETS })
     public void siteMatpAssetsDetails_OptOutSurveys_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Opt Out Surveys";
@@ -144,7 +144,7 @@ public class SiteMapAssetsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ASSETS })
     public void siteMatpAssetsDetails_Purchasing_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Purchasing";
@@ -156,7 +156,7 @@ public class SiteMapAssetsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ASSETS })
     public void siteMatpAssetsDetails_Relays_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Relays";
@@ -168,7 +168,7 @@ public class SiteMapAssetsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ASSETS })
     public void siteMatpAssetsDetails_RTUs_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "RTUs";
@@ -180,7 +180,7 @@ public class SiteMapAssetsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ASSETS })
     public void siteMatpAssetsDetails_ServiceOrderList_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Service Order List";
@@ -192,7 +192,7 @@ public class SiteMapAssetsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ASSETS })
     public void siteMatpAssetsDetails_StarsReports_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "STARS Reports";
@@ -204,7 +204,7 @@ public class SiteMapAssetsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ASSETS })
     public void siteMatpAssetsDetails_ViewBatchCommands_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "View Batch Commands";
@@ -216,7 +216,7 @@ public class SiteMapAssetsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ASSETS })
     public void siteMatpAssetsDetails_VirtualDevices_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Virtual Devices";
@@ -228,7 +228,7 @@ public class SiteMapAssetsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ASSETS })
     public void siteMatpAssetsDetails_WorkOrderReports_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Work Order Reports";
@@ -240,7 +240,7 @@ public class SiteMapAssetsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ASSETS })
     public void siteMatpAssetsDetails_WorkOrders_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Work Orders";
@@ -252,7 +252,7 @@ public class SiteMapAssetsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ASSETS })
     public void siteMatpAssetsDetails_ZigBeeProblemDevices_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "ZigBee Problem Devices";

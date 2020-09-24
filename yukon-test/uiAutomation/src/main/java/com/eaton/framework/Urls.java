@@ -260,6 +260,8 @@ public final class Urls {
         public static final String STATISTICAL_REPORTS = "/analysis/Reports.jsp?groupType=STATISTICAL";
         public static final String SURVEYS = "/stars/survey/list";
         public static final String THEMES = "/admin/config/themes";
+        
+        public static final String ATTRIBUTES_LIST = "/admin/config/attributes";
     }
 
     public static final class Support {

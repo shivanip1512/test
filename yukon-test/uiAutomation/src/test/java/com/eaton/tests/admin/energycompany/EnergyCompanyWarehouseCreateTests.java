@@ -36,7 +36,7 @@ public class EnergyCompanyWarehouseCreateTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
     public void energyCompanyWarehouseCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "QA_Test";
         
@@ -45,7 +45,7 @@ public class EnergyCompanyWarehouseCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
     public void energyCompanyWarehouseCreate_AllFields_Success() {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

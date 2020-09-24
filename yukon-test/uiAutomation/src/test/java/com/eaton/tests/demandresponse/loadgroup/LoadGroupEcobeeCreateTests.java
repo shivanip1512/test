@@ -36,7 +36,7 @@ public class LoadGroupEcobeeCreateTests extends SeleniumTestSetup {
         refreshPage(createPage);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateEcobee_AllFieldsDisableFalse_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT ecobee " + timeStamp;
@@ -63,7 +63,7 @@ public class LoadGroupEcobeeCreateTests extends SeleniumTestSetup {
         assertThat(EXPECTED_MSG).isEqualTo(userMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateEcobee_AllFieldsDisableTrue_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT ecobee " + timeStamp;

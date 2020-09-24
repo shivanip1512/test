@@ -44,7 +44,7 @@ public class CbcCreateTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void cbcCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create CBC";
 
@@ -53,7 +53,7 @@ public class CbcCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void cbcCreate_RequiredFieldsOnly_Success() {
         setRefreshPage(true);
         final String EXPECTED_MSG = "CBC was successfully saved.";

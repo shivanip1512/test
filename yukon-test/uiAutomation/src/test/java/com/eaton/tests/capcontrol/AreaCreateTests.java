@@ -38,7 +38,7 @@ public class AreaCreateTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void areaCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Area";
 
@@ -47,7 +47,7 @@ public class AreaCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void areaCreate_RequiredFieldsOnly_Success() {
         setRefreshPage(true);
         final String EXPECTED_MSG = "Area was saved successfully.";

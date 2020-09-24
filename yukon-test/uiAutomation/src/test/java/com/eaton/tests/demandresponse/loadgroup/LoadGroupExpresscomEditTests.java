@@ -41,7 +41,7 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
         randomNum = getRandomNum();
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpExpresscomEdit_RequiredFieldsOnly_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String editName = "AT Edit Expresscom Ld group " + timeStamp;
@@ -72,7 +72,7 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpExpresscomEdit_SerialAddressToUser_Success() {
         builder = LoadGroupExpresscomCreateBuilder.buildDefaultExpresscomLoadGroup();
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -101,7 +101,7 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpExpresscomEdit_AllFieldsWithoutSerialAddress_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String editName = "AT Edit Expresscom Ld group " + timeStamp;
@@ -163,7 +163,7 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
         assertThat(EXPECTED_MSG).isEqualTo(userMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpExpresscomEdit_Field_ValuesCorrect() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         List<String> relayUsage = new ArrayList<>();

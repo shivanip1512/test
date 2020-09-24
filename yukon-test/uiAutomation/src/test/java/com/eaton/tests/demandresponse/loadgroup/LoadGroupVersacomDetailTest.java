@@ -31,7 +31,7 @@ public class LoadGroupVersacomDetailTest extends SeleniumTestSetup {
         driverExt = getDriverExt();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpVersacomDetail_Delete_Success() {
         builder = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup();
         Pair<JSONObject, JSONObject> pair = builder.create();

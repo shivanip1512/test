@@ -37,7 +37,7 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
         refreshPage(listPage);
     }
     
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.COMM_CHANNELS })
     public void createCommChannelUdp_AllFields_Success() {
         CreateUdpCommChannelModal createModal = listPage.showAndWaitCreateUdpCommChannelModal();
                 
@@ -64,7 +64,7 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void createCommChannelUdp_Labels_Correct() {
         SoftAssertions softly = new SoftAssertions();
         CreateUdpCommChannelModal createModal = listPage.showAndWaitCreateUdpCommChannelModal();
@@ -83,7 +83,7 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void createCommChannelUdp_PortNumber_MinValueValidation() {
         CreateUdpCommChannelModal createModal = listPage.showAndWaitCreateUdpCommChannelModal();
 
@@ -103,7 +103,7 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void createCommChannelUdp_PortNumber_MaxValueValidation() {
         CreateUdpCommChannelModal createModal = listPage.showAndWaitCreateUdpCommChannelModal();
 
@@ -123,7 +123,7 @@ public class CommChannelUdpCreateTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void createCommChannelUdp_PortNumber_RequiredValidation() {
         CreateUdpCommChannelModal createModal = listPage.showAndWaitCreateUdpCommChannelModal();
 

@@ -32,7 +32,7 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscom_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Load Group: AT Load Group";
 
@@ -45,7 +45,7 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscom_Copy_Success() {
 
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + "592");
@@ -72,7 +72,7 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(enabled = true, groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(enabled = true, groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscom_Delete_Success() {
         Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup().create();
         JSONObject response = pair.getValue1();

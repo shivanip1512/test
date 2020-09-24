@@ -37,7 +37,7 @@ public class ControlAreaCreateTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void controlAreaCreate_Page_TitleCorrect() {
         navigate(Urls.DemandResponse.CONTROL_AREA_CREATE);
         final String EXPECTED_TITLE = "Create Control Area";
@@ -47,7 +47,7 @@ public class ControlAreaCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void controlAreaCreate_RequiredFieldsOnly_Success() {
         setRefreshPage(true);
 

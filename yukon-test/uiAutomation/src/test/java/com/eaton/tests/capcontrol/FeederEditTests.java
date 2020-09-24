@@ -40,7 +40,7 @@ public class FeederEditTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void feederEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Feeder: AT Feader";
 
@@ -49,7 +49,7 @@ public class FeederEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void feederEdit_RequiredFieldsOnly_Success() {
         setRefreshPage(true);
         final String EXPECTED_MSG = "Feeder was saved successfully.";
@@ -72,7 +72,7 @@ public class FeederEditTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void feederEdit_Delete_Success() {
         setRefreshPage(true);
         final String EXPECTED_MSG = "Feeder AT Delete Feeder deleted successfully.";

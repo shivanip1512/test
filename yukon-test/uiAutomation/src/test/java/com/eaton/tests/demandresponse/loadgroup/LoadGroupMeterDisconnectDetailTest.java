@@ -27,7 +27,7 @@ public class LoadGroupMeterDisconnectDetailTest extends SeleniumTestSetup {
         driverExt = getDriverExt();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpMeterDisconnectDetail_Delete_Success() {
         Pair<JSONObject, JSONObject> pair = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
                 .create();
@@ -50,7 +50,7 @@ public class LoadGroupMeterDisconnectDetailTest extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(expected_msg);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpItronDetail_DeleteModal_ConfirmMessageCorrect() {
         Pair<JSONObject, JSONObject> pair = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
                 .create();

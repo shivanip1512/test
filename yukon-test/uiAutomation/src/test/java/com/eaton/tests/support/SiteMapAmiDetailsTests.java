@@ -24,7 +24,7 @@ public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
         siteMapPage = new SiteMapPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void siteMapAmiDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Site Map";
 
@@ -33,21 +33,21 @@ public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void siteMapAmiDetails_AMISection_Displayed() {
         Section amiSection = siteMapPage.getAMISection();
 
         assertThat(amiSection).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void siteMapAmiDetails_AMISection_CountCorrect() {
         final int EXPECTED_COUNT = 16;
 
         assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void siteMapAmiDetails_AMIDashboard_LinkCorrect() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "AMI Dashboard";
@@ -60,7 +60,7 @@ public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void siteMapAmiDetails_ArchiveDataAnalysis_LinkCorrect() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Archive Data Analysis";
@@ -72,7 +72,7 @@ public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void siteMapAmiDetails_Billing_LinkCorrect() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Billing";
@@ -84,7 +84,7 @@ public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void siteMapAmiDetails_BillingSchedules_LinkCorrect() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Billing Schedules";
@@ -96,7 +96,7 @@ public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void siteMapAmiDetails_BulkImport_LinkCorrect() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Bulk Import";
@@ -108,7 +108,7 @@ public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void siteMapAmiDetails_AMIBulkUpdate_LinkCorrect() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Bulk Update";
@@ -120,7 +120,7 @@ public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void siteMapAmiDetails_ManageDashboards_LinkCorrect() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Manage Dashboards";
@@ -132,7 +132,7 @@ public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void siteMapAmiDetails_MeterEventsReport_LinkCorrect() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Meter Events Report";
@@ -144,7 +144,7 @@ public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void siteMapAmiDetails_MeterProgramming_LinkCorrect() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Meter Programming";
@@ -156,7 +156,7 @@ public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void siteMapAmiDetails_MeterReports_LinkCorrect() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Metering Reports";
@@ -168,7 +168,7 @@ public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void siteMapAmiDetails_PhaseDetection_LinkCorrect() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Phase Detection";
@@ -180,7 +180,7 @@ public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void siteMapAmiDetails_AMIPointImport_LinkCorrect() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Point Import";
@@ -192,7 +192,7 @@ public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void siteMapAmiDetails_ReviewFlaggedPoints_LinkCorrect() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Review Flagged Points";
@@ -204,7 +204,7 @@ public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void siteMapAmiDetails_Trends_LinkCorrect() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Trends";
@@ -216,7 +216,7 @@ public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void siteMapAmiDetails_UsageThresholdReport_LinkCorrect() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Usage Threshold Report";
@@ -228,7 +228,7 @@ public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void siteMapAmiDetails_WaterLeakReport_LinkCorrect() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Water Leak Report";

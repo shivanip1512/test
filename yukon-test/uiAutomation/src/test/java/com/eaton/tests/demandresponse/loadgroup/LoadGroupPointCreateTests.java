@@ -42,7 +42,7 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreatePoint_AllFields_Success() {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -76,7 +76,7 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreatePoint_PointGroupSection_TitleCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_POINT");
         waitForLoadingSpinner();
@@ -85,7 +85,7 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
         assertThat(section.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreatePoint_PointGroupSection_LabelsCorrect() {
         String sectionName = "Point Group";
         String expectedLabels = "Control Device Point:";
@@ -97,7 +97,7 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
         assertThat(actualLabels).contains(expectedLabels);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreatePoint_ControlDevicePoint_RequiredValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_POINT");
         waitForLoadingSpinner();
@@ -107,7 +107,7 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getControlDevicePointValidationMsg()).isEqualTo("Control Device Point is required.");
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreatePoint_ControlDevicePointLabel_DefaultValueCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_POINT");
         waitForLoadingSpinner();
@@ -115,7 +115,7 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getControlDevicePointLabelText()).isEqualTo("(none selected)");
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreatePoint_ControlDevicePointLabel_UpdatedCorrectly() {
         setRefreshPage(true);
         createPage.getType().selectItemByValue("LM_GROUP_POINT");

@@ -19,7 +19,7 @@ public class EnergyCompanyGeneralInfoTests extends SeleniumTestSetup {
         driverExt = getDriverExt();               
     }
 
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
     public void energyCompanyGeneralInfo_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "QA_Test";
         

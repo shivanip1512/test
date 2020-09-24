@@ -46,7 +46,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateDigiSEP_AllFields_Success() {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -81,7 +81,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         assertThat(EXPECTED_MSG).isEqualTo(userMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateDigiSEP_DeviceClass_RequiredValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_DIGI_SEP");
         waitForLoadingSpinner();
@@ -91,7 +91,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getDeviceClass().getValidationError()).isEqualTo("At least one device class set must be assigned.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateDigiSEP_UtilityEnrollmentGroup_RequiredValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_DIGI_SEP");
         waitForLoadingSpinner();
@@ -102,7 +102,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getUtilityEnrollmentGroup().getValidationError()).isEqualTo("Utility Enrollment Group is required.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateDigiSEP_UtilityEnrollmentGroup_MinValueValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_DIGI_SEP");
         waitForLoadingSpinner();
@@ -113,7 +113,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getUtilityEnrollmentGroup().getValidationError()).isEqualTo("Must be between 1 and 255.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateDigiSEP_UtilityEnrollmentGroup_MaxValueValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_DIGI_SEP");
         waitForLoadingSpinner();
@@ -124,7 +124,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getUtilityEnrollmentGroup().getValidationError()).isEqualTo("Must be between 1 and 255.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateDigiSEP_RampInTime_RequiredValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_DIGI_SEP");
         waitForLoadingSpinner();
@@ -135,7 +135,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getRampInTime().getValidationError()).isEqualTo("Ramp In Time is required.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateDigiSEP_RampInTime_MinValueValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_DIGI_SEP");
         waitForLoadingSpinner();
@@ -146,7 +146,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getRampInTime().getValidationError()).isEqualTo("Must be between -99,999 and 99,999.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateDigiSEP_RampInTime_MaxValueValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_DIGI_SEP");
         waitForLoadingSpinner();
@@ -157,7 +157,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getRampInTime().getValidationError()).isEqualTo("Must be between -99,999 and 99,999.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateDigiSEP_RampOutTime_RequiredValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_DIGI_SEP");
         waitForLoadingSpinner();
@@ -168,7 +168,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getRampOutTime().getValidationError()).isEqualTo("Ramp Out Time is required.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateDigiSEP_RampOutTime_MinValueValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_DIGI_SEP");
         waitForLoadingSpinner();
@@ -179,7 +179,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getRampOutTime().getValidationError()).isEqualTo("Must be between -99,999 and 99,999.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateDigiSEP_RampOutTime_MaxValueValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_DIGI_SEP");
         waitForLoadingSpinner();
@@ -190,7 +190,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getRampOutTime().getValidationError()).isEqualTo("Must be between -99,999 and 99,999.");
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateDigiSEP_GeneralSection_TitleCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_DIGI_SEP");
         waitForLoadingSpinner();
@@ -199,7 +199,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         assertThat(generalSection.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateDigiSEP_GeneralSection_LabelsCorrect() {
         String sectionName = "General";
         createPage.getType().selectItemByValue("LM_GROUP_DIGI_SEP");
@@ -210,7 +210,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         assertThat(expectedLabels).containsExactlyElementsOf(actualLabels);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateDigiSEP_DeviceClassSection_TitleCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_DIGI_SEP");
         waitForLoadingSpinner();
@@ -219,7 +219,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         assertThat(generalSection.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateDigiSEP_DeviceClassSection_LabelsCorrect() {
         String sectionName = "Device Class";
         createPage.getType().selectItemByValue("LM_GROUP_DIGI_SEP");
@@ -230,7 +230,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         assertThat(expectedLabels).containsExactlyElementsOf(actualLabels);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateDigiSEP_EnrollmentSection_TitleCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_DIGI_SEP");
         waitForLoadingSpinner();
@@ -239,7 +239,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         assertThat(generalSection.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateDigiSEP_EnrollmentSection_LabelsCorrect() {
         String sectionName = "Enrollment";
         createPage.getType().selectItemByValue("LM_GROUP_DIGI_SEP");
@@ -250,7 +250,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         assertThat(expectedLabels).containsExactlyElementsOf(actualLabels);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateDigiSEP_TimingSection_TitleCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_DIGI_SEP");
         waitForLoadingSpinner();
@@ -259,7 +259,7 @@ public class LoadGroupDigiSepCreateTests extends SeleniumTestSetup {
         assertThat(generalSection.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateDigiSEP_TimingSection_LabelsCorrect() {
         String sectionName = "Timing";
         createPage.getType().selectItemByValue("LM_GROUP_DIGI_SEP");

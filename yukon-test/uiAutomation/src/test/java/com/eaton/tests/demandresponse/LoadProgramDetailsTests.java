@@ -26,7 +26,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void loadPrgoramDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Load Program: AT Load Program";
 
@@ -39,7 +39,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void loadPrgoramDetails_Copy_Success() {
 
         navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "604");
@@ -65,7 +65,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void loadPrgoramDetails_Delete_Success() {
         final String EXPECTED_MSG = "AT Delete Direct Program deleted successfully.";
 

@@ -53,7 +53,7 @@ public class TrendResetPeakTest extends SeleniumTestSetup {
         refreshPage(detailsPage);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.TRENDS })
     public void trendResetPeak_Field_LabelsCorrect() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
@@ -63,7 +63,7 @@ public class TrendResetPeakTest extends SeleniumTestSetup {
         assertThat(expectedLabels).containsExactlyElementsOf(actualLabels);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.TRENDS })
     public void trendResetPeak_DefaultFields_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
 
@@ -76,7 +76,7 @@ public class TrendResetPeakTest extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.TRENDS })
     public void trendResetPeak_NoPoint_ResetPeakDisabled() {
         Pair<JSONObject, JSONObject> pair = TrendCreateService.buildAndCreateTrendOnlyRequiredFields();
 
@@ -91,7 +91,7 @@ public class TrendResetPeakTest extends SeleniumTestSetup {
         assertThat(detailsPage.getActionBtn().isActionEnabled("Reset Peak")).isFalse();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.TRENDS })
     public void trendResetPeak_ResetPeakForAllTrendsYes_Success() {
         SoftAssertions softly = new SoftAssertions();
         Pair<JSONObject, JSONObject> pair = TrendCreateService.buildAndCreateTrendWithPoint(Optional.empty(), Optional.of(TrendTypes.Type.PEAK_TYPE));
@@ -112,7 +112,7 @@ public class TrendResetPeakTest extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.TRENDS })
     public void trendResetPeak_ResetPeakForAllTrendsNo_Success() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
@@ -122,7 +122,7 @@ public class TrendResetPeakTest extends SeleniumTestSetup {
         assertThat(detailsPage.getUserMessage()).contains("Reset peak performed successfully for " + trendName + ".");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.TRENDS })
     public void trendResetPeak_ResetPeakTo_ValuesCorrect() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
@@ -132,7 +132,7 @@ public class TrendResetPeakTest extends SeleniumTestSetup {
         assertThat(expectedDropDownValues).containsExactlyElementsOf(actualDropDownValues);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.TRENDS })
     public void trendResetPeak_ResetPeakToSelectedDate_DateEnabled() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
@@ -141,7 +141,7 @@ public class TrendResetPeakTest extends SeleniumTestSetup {
         assertThat(resetPeakModal.getDate().isPickerEnabled()).isTrue();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void trendResetPeak_ResetPeakToFirstMonthDate_DateDisabled() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
@@ -150,7 +150,7 @@ public class TrendResetPeakTest extends SeleniumTestSetup {
         assertThat(resetPeakModal.getDate().isPickerEnabled()).isFalse();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void trendResetPeak_ResetPeakToFirstYearDate_DateDisabled() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
@@ -159,7 +159,7 @@ public class TrendResetPeakTest extends SeleniumTestSetup {
         assertThat(resetPeakModal.getDate().isPickerEnabled()).isFalse();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.TRENDS })
     public void trendResetPeak_SelectedDate_Success() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 
@@ -171,7 +171,7 @@ public class TrendResetPeakTest extends SeleniumTestSetup {
         assertThat(detailsPage.getResetPeakMessage()).contains("Reset peak performed successfully for " + trendName + ".");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.TRENDS })
     public void trendResetPeak_Help_TextMessageCorrect() {
         SoftAssertions softly = new SoftAssertions();
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
@@ -189,7 +189,7 @@ public class TrendResetPeakTest extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void trendResetPeak_Close_HelpMessageSuccess() {
         ResetPeakModal resetPeakModal = detailsPage.showResetPeakTrendModal();
 

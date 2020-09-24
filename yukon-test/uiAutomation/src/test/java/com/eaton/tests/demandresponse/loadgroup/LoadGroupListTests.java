@@ -26,7 +26,7 @@ public class LoadGroupListTests extends SeleniumTestSetup {
         listPage = new LoadGroupListPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpList_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Load Groups";
 
@@ -35,7 +35,7 @@ public class LoadGroupListTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpList_ColumnHeaders_Correct() {
         softly = new SoftAssertions();
         final int EXPECTED_COUNT = 6;

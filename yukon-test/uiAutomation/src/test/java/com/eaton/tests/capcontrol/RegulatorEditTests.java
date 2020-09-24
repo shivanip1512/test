@@ -39,7 +39,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void regulatorEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Regulator: AT Regulator";
 
@@ -48,7 +48,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void regulatorEdit_RequiredFieldsOnly_Success() {
         setRefreshPage(true);
         
@@ -74,7 +74,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo("Regulator: " + name);
     }
 
-    @Test(enabled = false, groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    @Test(enabled = false, groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void regulatorEdit_Delete_Success() {
         setRefreshPage(true);
 

@@ -38,7 +38,7 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup {
         refreshPage(trendCreatePage);    
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.TRENDS })
     public void trendMarkerSetup_Add_OpensCorrectModal() {
         final String EXP_MODAL_TITLE = "Add Marker";
 
@@ -50,7 +50,7 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup {
         assertThat(EXP_MODAL_TITLE).isEqualTo(title);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void trendMarkerSetup_AddMarker_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
 
@@ -67,7 +67,7 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void trendMarkerSetup_AddMarkerLabel_RequiredValidation() {
         final String EXPECTED_MSG = "Label is required.";
 
@@ -81,7 +81,7 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void trendMarkerSetup_AddMarkerLabel_MaxLength40CharsSuccess() {
         final String EXPECTED_MAXLENGTH = "40";
         trendCreatePage.getTabElement().clickTabAndWait("Additional Options");
@@ -92,7 +92,7 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup {
         assertThat(labelMaxlLength).isEqualTo(EXPECTED_MAXLENGTH);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void trendMarkerSetup_AddMarkerValue_InvalidCharValidation() {
         final String EXPECTED_MSG = "Not a valid value.";
 
@@ -110,7 +110,7 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void trendMarkerSetup_EditMarker_OpensCorrectModal() {
         Pair<JSONObject, JSONObject> pair = TrendCreateService.buildAndCreateTrendWithMarker();
         JSONObject response = pair.getValue1();
@@ -130,7 +130,7 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup {
         assertThat(EXP_MODAL_TITLE).isEqualTo(title);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void trendMarkerSetup_EditMarkerField_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
 

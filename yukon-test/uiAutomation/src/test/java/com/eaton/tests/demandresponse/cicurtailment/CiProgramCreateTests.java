@@ -22,7 +22,7 @@ public class CiProgramCreateTests extends SeleniumTestSetup {
         createPage = new CiProgramCreatePage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ciProgramCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Program";
 

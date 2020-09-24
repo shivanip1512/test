@@ -43,7 +43,7 @@ public class UsersAndGroupsDetailsTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
     
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
     public void userAndGroupsDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "User and Groups";
         
@@ -52,7 +52,7 @@ public class UsersAndGroupsDetailsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
     public void userAndGroupsDetails_CreateUser_Success() {
         setRefreshPage(true);
         CreateUserModal createModal = page.showAndWaitCreateUserModal();
@@ -79,7 +79,7 @@ public class UsersAndGroupsDetailsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo("User (" + name + ")");
     }  
     
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
     public void userAndGroupsDetails_CreateRoleGroup_Success() {
         setRefreshPage(true);
         CreateRoleGroupModal createModal = page.showAndWaitCreateRoleGroupModal();
@@ -101,7 +101,7 @@ public class UsersAndGroupsDetailsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo("Role Group (" + name + ")");
     } 
     
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
     public void userAndGroupsDetails_CreateUserGroup_Success() {
         setRefreshPage(true);
         CreateUserGroupModal createModal = page.showAndWaitCreateUserGroupModal();

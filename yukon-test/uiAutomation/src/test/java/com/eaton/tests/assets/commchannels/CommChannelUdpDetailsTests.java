@@ -68,7 +68,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS})
     public void commChannelDetailsUdp_Page_TitleCorrect() {
         String EXPECTED_TITLE = commChannelName;
         
@@ -77,7 +77,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS})
     public void commChannelDetailsUdp_InfoTab_LabelsCorrect() {
         SoftAssertions softly= new SoftAssertions(); 
         String infoTitle = "Info";
@@ -93,7 +93,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS})
     public void commChannelDetailsUdp_InfoTab_ValuesCorrect() {   
         SoftAssertions softly= new SoftAssertions(); 
         List<String> values = detailPage.getTabElement().getTabValues("Info");        
@@ -107,7 +107,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS})
     public void commChannelDetailsUdp_ConfigTabTimingSection_Displayed() {
         String infoTitle = "Configuration";
         
@@ -117,7 +117,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         assertThat(timing.getSection()).isNotNull();
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS})
     public void commChannelDetailsUdp_ConfigTabGeneralSection_Displayed() {
         String infoTitle = "Configuration";
         
@@ -127,7 +127,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         assertThat(general.getSection()).isNotNull();
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS})
     public void commChannelDetailsUdp_ConfigTabSharedSection_Displayed() {
         String infoTitle = "Configuration";
         
@@ -137,7 +137,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         assertThat(timing.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS})
     public void commChannelDetailsUdp_ConfigTab_LabelsCorrect() {
         SoftAssertions softly= new SoftAssertions(); 
         String infoTitle = "Configuration";
@@ -160,7 +160,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS})
     public void commChannelDetailsUdp_ConfigTab_ValuesCorrect() {
         SoftAssertions softly= new SoftAssertions(); 
         detailPage.getTabElement().clickTabAndWait("Configuration");
@@ -182,7 +182,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
         
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS})
     public void commChannelDeleteUdp_Delete_Success() {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

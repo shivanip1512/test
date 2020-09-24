@@ -22,7 +22,7 @@ public class EnergyCompanyListTests extends SeleniumTestSetup {
         page = new EnergyCompanyListPage(driverExt);
     }
 
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
     public void energyCompanyList_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Energy Companies";
         

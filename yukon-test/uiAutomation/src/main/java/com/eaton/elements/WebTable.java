@@ -188,7 +188,7 @@ public class WebTable {
         List<WebTableRow> newList = new ArrayList<>();
         for (WebElement element : rowList) {
 
-            newList.add(new WebTableRow(element));
+            newList.add(new WebTableRow(this.driverExt, element));
         }
         
         return newList;
@@ -199,13 +199,13 @@ public class WebTable {
         
         WebElement element = rowList.stream().filter(x -> x.findElement(By.cssSelector("a")).getText().contains(name)).findFirst().orElseThrow();
         
-        return new WebTableRow(element);
+        return new WebTableRow(this.driverExt, element);
     }   
     
-    public WebTableRow getDataRowByIndex(Integer index) {
+    public WebTableRow getDataRowByIndex(int index) {
         List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody tr"));
         
-        return new WebTableRow(rowList.get(index));
+        return new WebTableRow(this.driverExt, rowList.get(index));
     }
 
     private void findColumnHeaders() {

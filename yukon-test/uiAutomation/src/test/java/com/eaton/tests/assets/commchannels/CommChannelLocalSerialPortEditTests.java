@@ -55,7 +55,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         refreshPage(detailPage);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_Modal_TitleCorrect() {
         String expectedModalTitle = "Edit " + commChannelName;
         
@@ -66,7 +66,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_Name_RequiredValidation() {
         String EXPECTED_MSG = "Name is required.";
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal();
@@ -79,7 +79,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS, TestConstants.Features.ASSETS })
     public void commChannelLocalSerialEdit_Name_InvalidCharsValidation() {
         String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
 
@@ -93,7 +93,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_PhysicalPortOther_RequiredValidation() {
         String EXPECTED_MSG = "Physical Port is required.";
 
@@ -106,7 +106,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_PreTxWait_MinValueValidation() {
         String EXPECTED_MSG = "Pre Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -122,7 +122,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_PreTxWait_MaxValueValidation() {
         String EXPECTED_MSG = "Pre Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -138,7 +138,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_RtsToTxWait_MinValueValidation() {
         String EXPECTED_MSG = "RTS To Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -154,7 +154,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_RtsToTxWait_MaxValueValidation() {
         String EXPECTED_MSG = "RTS To Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -170,7 +170,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_PostTxWait_MinValueValidation() {
         String EXPECTED_MSG = "Post Tx Wait must be between 0 and 10,000,000.";
         
@@ -185,7 +185,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_PostTxWait_MaxValueValidation() {
         String EXPECTED_MSG = "Post Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -201,7 +201,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_ReceiveDataWait_MinValueValidation() {
         String EXPECTED_MSG = "Receive Data Wait must be between 0 and 1,000.";
         String tabName = "Configuration";
@@ -217,7 +217,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
     
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_ReceiveDataWait_MaxValueValidation() {
         String EXPECTED_MSG = "Receive Data Wait must be between 0 and 1,000.";
         String tabName = "Configuration";
@@ -233,7 +233,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_AdditionalTimeOut_MinValueValidation() {
         String EXPECTED_MSG = "Additional Time Out must be between 0 and 999.";
         String tabName = "Configuration";
@@ -249,7 +249,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_AdditionalTimeOut_MaxValueValidation() {
         String EXPECTED_MSG = "Additional Time Out must be between 0 and 999.";
         String tabName = "Configuration";
@@ -265,7 +265,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_SocketNumber_MinValueValidation() {
         String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
         String tabName = "Configuration";
@@ -281,7 +281,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_SocketNumber_MaxValueValidation() {
         String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
         String tabName = "Configuration";
@@ -297,7 +297,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_SocketNumber_RequiredValidation() {
         String EXPECTED_MSG = "Socket Number must be between 1 and 65,535.";
         String tabName = "Configuration";
@@ -314,7 +314,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_Tab_TitlesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal();
@@ -327,7 +327,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_ConfigTab_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal();
@@ -350,7 +350,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_InfoTab_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal();
@@ -369,7 +369,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_InfoTab_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         String tabName = "Info";
@@ -383,7 +383,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_ConfigTab_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         String tabName = "Configuration";
@@ -404,7 +404,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_Cancel_NavigatesToCorrectUrl() {
         String EXPECTED_TITLE = commChannelName;
 
@@ -416,7 +416,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_Name_AlreadyExistsValidation() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String commChannelNameLocalSerial = "LocalSerial Comm Channel " + timeStamp;
@@ -439,7 +439,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_Create_OpensCorrectModal() {
         String EXPECTED_CREATE_MODEL_TITLE = "Create Comm Channel";
         
@@ -450,7 +450,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         assertThat(actualCreateModelTitle).isEqualTo(EXPECTED_CREATE_MODEL_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_ConfigTabTimingSection_Displayed() {
         String tabName = "Configuration";
 
@@ -462,7 +462,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         assertThat(timing.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_ConfigTabSharingSection_Displayed() {
         String tabName = "Configuration";
 
@@ -474,7 +474,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
         assertThat(sharing.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.COMM_CHANNELS })
     public void commChannelLocalSerialEdit_AllFields_Success() {
         SoftAssertions softly = new SoftAssertions();
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

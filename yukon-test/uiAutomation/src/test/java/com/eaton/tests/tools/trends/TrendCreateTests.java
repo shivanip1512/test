@@ -48,7 +48,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.TRENDS })
     public void trendCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Trend";
 
@@ -57,7 +57,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.TRENDS })
     public void trendCreate_AllFields_Success() {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -95,7 +95,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.TRENDS })
     public void trendCreate_RequiredFieldsOnly_Success() {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -113,7 +113,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void trendCreate_Tab_TitlesCorrect() {
         SoftAssertions softly = new SoftAssertions();
 
@@ -125,7 +125,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void trendCreate_GeneralSection_TitleCorrect() {
         String tab = "Setup";
 
@@ -136,7 +136,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
         assertThat(generalSection.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void trendCreate_GeneralSection_LabelsCorrect() {
         String tab = "Setup";
 
@@ -148,7 +148,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void trendCreate_PointSetupSection_TitleCorrect() {
         String tab = "Setup";
 
@@ -159,7 +159,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
         assertThat(generalSection.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void trendCreate_PointSection_TableHeadersCorrect() {
         String tab = "Setup";
 
@@ -171,7 +171,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void trendCreate_MarkerSetupSection_TitleCorrect() {
         String tab = "Additional Options";
 
@@ -182,7 +182,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
         assertThat(generalSection.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void trendCreate_MarkerSetupTableHeaders_Correct() {
         createPage.getTabElement().clickTabAndWait("Additional Option");
 
@@ -193,7 +193,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void trendCreate_Name_RequiredValidation() {
         createPage.getTabElement().clickTabAndWait("Setup");
         final String EXPECTED_MSG = "Name is required.";
@@ -206,7 +206,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void trendCreate_Name_AlreadyExistsValidation() {
         createPage.getTabElement().clickTabAndWait("Setup");
         final String EXPECTED_MSG = "Name already exists";
@@ -225,7 +225,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void trendCreate_Cancel_NavigatesToCorrectUrl() {
         setRefreshPage(true);
 
@@ -236,7 +236,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
         assertThat(loaded).isTrue();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void trendCreate_Name_InvalidCharsValidation() {
         createPage.getTabElement().clickTabAndWait("Setup");
         String name = "AT Trends " + "/ \\ , ' \" |";
@@ -250,7 +250,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void trendCreate_Name_MaxLength40Chars() {
         createPage.getTabElement().clickTabAndWait("Setup");
 

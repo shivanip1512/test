@@ -27,7 +27,7 @@ public class CommChannelGlobalSearchTests extends SeleniumTestSetup {
         globalSearchPage = new GlobalSearchPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.COMM_CHANNELS })
     public void commChannelGlobalSearch_SearchCommChannelAndEnter_NavigatesToSearchPage() {
         globalSearchPage.getSearchBoxElement().setSearchValueAndEnter("Comm Channels");
         
@@ -36,18 +36,18 @@ public class CommChannelGlobalSearchTests extends SeleniumTestSetup {
         assertThat(pageLoaded).isTrue();
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.COMM_CHANNELS })
     public void commChannelGlobalSearch_SearchAndSelectCommChannelsResult_NavigatesToCommChannelListPage() {
         throw new SkipException("QA task created: QA-6229");
         
 //        globalSearchPage.getSearchBoxElement().setSearchValueAndClickResult("Comm Channels");
 //        
-//        boolean pageLoaded = waitForUrlToLoad(Urls.Assets.COMM_CHANNELS_LIST, Optional.empty());
+//        boolean pageLoaded = waitForUrlToLoad(Urls.Features.COMM_CHANNELS_LIST, Optional.empty());
 //        
 //        assertThat(pageLoaded).isTrue();       
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.COMM_CHANNELS })
     public void commChannelGlobalSearch_SearchCommResults_ContainsCommChannel() {
         throw new SkipException("QA task created: QA-6229");
         

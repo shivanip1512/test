@@ -48,7 +48,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
     // Overall Page Section
     // ================================================================================
 
-    @Test(groups = {TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = {TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWrl420clDetail_Panels_Correct() {
         SoftAssertions softly = new SoftAssertions();
         
@@ -72,7 +72,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
     // Meter Info Section
     // ================================================================================
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDDetail_MeterInfo_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         
@@ -87,7 +87,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDDetail_MeterInfo_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         
@@ -106,7 +106,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
     // Meter Readings Section
     // ================================================================================
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDDetail_MeterReadings_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         
@@ -120,7 +120,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDDetail_MeterReadings_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         
@@ -138,7 +138,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
     // Wi-Fi Connection Section
     // ================================================================================
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDDetail_WiFiConnection_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         
@@ -148,7 +148,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDDetail_WiFiConnection_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(meterDetailsPage.getWiFiConnectionPanel().getTable().getValueCount()).isEqualTo(2);
@@ -177,7 +177,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
     // Disconnect Section
     // ================================================================================
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDDetail_Disconnect_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(meterDetailsPage.getDisconnectPanel().getTable().getLabelCount()).isEqualTo(1);
@@ -185,7 +185,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDDetail_Disconnect_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         
@@ -202,7 +202,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
     // Outages Section
     // ================================================================================
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDDetail_Outages_LabelsCorrect() {
         throw new SkipException("Development Defect: YUK-22819");
 //    	SoftAssertions softly = new SoftAssertions();
@@ -215,7 +215,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
 //    	softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDDetail_Outages_ValuesCorrect() {
         throw new SkipException("Development Defect: YUK-22819");
 //    	SoftAssertions softly = new SoftAssertions();
@@ -231,7 +231,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
     // Time of Use Section
     // ================================================================================
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDDetail_TimeOfUseUsageRateA_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         
@@ -241,7 +241,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDDetail_TimeOfUseUsageRateB_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         
@@ -251,7 +251,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDDetail_TimeOfUseUsageRateC_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         
@@ -261,7 +261,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDDetail_TimeOfUseUsageRateD_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         
@@ -271,7 +271,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDDetail_TimeOfUseUsageRateA_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         
@@ -281,7 +281,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDDetail_TimeOfUseUsageRateB_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         
@@ -291,7 +291,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDDetail_TimeOfUseUsageRateC_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         
@@ -301,7 +301,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDDetail_TimeOfUseUsageRateD_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         
@@ -319,7 +319,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
     // Actions Section
     // ================================================================================
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDDetail_Delete_Success() {
         setRefreshPage(true);
         final int DEVICEID = 1263;

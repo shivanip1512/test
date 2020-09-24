@@ -37,7 +37,7 @@ public class EnergyCompanyOperatorUserCreateTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
     public void energyCompanyOperatorUserCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Operator User";
         
@@ -46,7 +46,7 @@ public class EnergyCompanyOperatorUserCreateTests extends SeleniumTestSetup {
         assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);
     }
     
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
     public void energyCompanyOperatorUserCreate_AllFields_Success() {
         setRefreshPage(true);
         final String EXPECTED_USER_MSG = "Successfully created the user.";
