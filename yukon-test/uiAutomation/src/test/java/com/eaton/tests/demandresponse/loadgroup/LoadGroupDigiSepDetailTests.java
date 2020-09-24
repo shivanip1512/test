@@ -25,7 +25,7 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDigiSepDetailPage;
 
-public class LoadGroupDigiSepDetailTest extends SeleniumTestSetup {
+public class LoadGroupDigiSepDetailTests extends SeleniumTestSetup {
     private DriverExtensions driverExt;
     private LoadGroupDigiSepDetailPage detailPage;
     private JSONObject response;
