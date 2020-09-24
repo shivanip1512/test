@@ -7,4 +7,8 @@ public class VirtualDevice extends DeviceBase {
     public VirtualDevice() {
         super(PaoType.VIRTUAL_SYSTEM);
     }
+    
+    protected VirtualDevice(PaoType paoType) {
+        super(paoType);
+    }
 }
