@@ -20,7 +20,7 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
-import com.eaton.pages.demandresponse.loadgroup.LoadGroupEmetconDetailPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 
 import io.restassured.response.ExtractableResponse;
@@ -29,7 +29,7 @@ public class LoadGroupEmetconDetailTest extends SeleniumTestSetup {
 	 private DriverExtensions driverExt;
 	 private Integer id;
 	 private String name;
-	 private LoadGroupEmetconDetailPage detailPage;
+	 private LoadGroupDetailPage detailPage;
 	
 	 @BeforeClass(alwaysRun = true)
 	 public void beforeClass() {
@@ -46,7 +46,7 @@ public class LoadGroupEmetconDetailTest extends SeleniumTestSetup {
 	     final String expected_msg = name + " deleted successfully.";
 	     navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
 	     
-	     detailPage = new LoadGroupEmetconDetailPage(driverExt, id);
+	     detailPage = new LoadGroupDetailPage(driverExt, id);
 	     ConfirmModal  confirmModal = detailPage.showDeleteLoadGroupModal(); 
 	     confirmModal.clickOkAndWaitForModalToClose();
 	     
@@ -69,7 +69,7 @@ public class LoadGroupEmetconDetailTest extends SeleniumTestSetup {
 	        
 	        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
 	        
-	        detailPage = new LoadGroupEmetconDetailPage(driverExt, id);
+	        detailPage = new LoadGroupDetailPage(driverExt, id);
 	        CopyLoadGroupModal modal = detailPage.showCopyLoadGroupModal();
 	        modal.getName().setInputValue(copyName);
 	        modal.clickOkAndWaitForModalToClose();
@@ -88,7 +88,7 @@ public class LoadGroupEmetconDetailTest extends SeleniumTestSetup {
 	        JSONObject response = pair.getValue1();
 	        id = response.getInt("id");
 	        name = response.getString("name");
-	        detailPage = new LoadGroupEmetconDetailPage(driverExt, id);
+	        detailPage = new LoadGroupDetailPage(driverExt, id);
 	        
 	        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
 	    	
@@ -111,7 +111,7 @@ public class LoadGroupEmetconDetailTest extends SeleniumTestSetup {
 	        JSONObject response = pair.getValue1();
 	        id = response.getInt("id");
 	        name = response.getString("name");
-	        detailPage = new LoadGroupEmetconDetailPage(driverExt, id);
+	        detailPage = new LoadGroupDetailPage(driverExt, id);
 	        
 	        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
 	        
