@@ -224,7 +224,7 @@ public class ControlScenarioApiTest {
      * controlScenario_06_CreateWithAlreadyAssignedProgramToControlScenario
      * Control Area, Load Program and Load Group used for above mentioned Control Scenario's
      */
-    @Test(dependsOnMethods = "controlScenario_19_UnassigningProgramFromControlScenario")
+    @Test(dependsOnMethods = "controlScenario_21_UpdateWithAlreadyAssignedProgramId")
     public void controlScenario_07_Delete(ITestContext context) {
 
         SoftAssert softAssert = new SoftAssert();
@@ -500,7 +500,7 @@ public class ControlScenarioApiTest {
         ExtractableResponse<?> updatedResponse = ApiCallHelper.put("controlScenarios", controlScenario,
                 "/" + context.getAttribute("controlScenarioId").toString());
 
-        assertTrue(updatedResponse.statusCode() == 400, "Status code should be " + 400);
+        assertTrue(updatedResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(updatedResponse, "Validation error"),
                 "Expected message should be - Validation error");
         assertTrue(ValidationHelper.validateGlobalErrors(updatedResponse, expectedErrorMsg),
