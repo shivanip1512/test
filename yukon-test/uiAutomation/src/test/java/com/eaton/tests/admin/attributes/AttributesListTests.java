@@ -20,7 +20,7 @@ public class AttributesListTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        navigate(Urls.Admin.ENERGY_COMPANY_LIST);
+        navigate(Urls.Admin.ATTRIBUTES_LIST);
         page = new AttributesListPage(driverExt);
     }
     
