@@ -542,7 +542,7 @@ public class ControlAreaApiTest {
 
         //control scenario creation
         MockControlScenario controlScenario = ControlScenarioHelper.buildControlScenario(loadProgram);
-        ExtractableResponse<?> responseCS = ApiCallHelper.post("saveControlScenario", controlScenario);
+        ExtractableResponse<?> responseCS = ApiCallHelper.post("controlScenarios", controlScenario);
 
         assertTrue(responseCS.statusCode() == 200, "Status code should be 200");
 
