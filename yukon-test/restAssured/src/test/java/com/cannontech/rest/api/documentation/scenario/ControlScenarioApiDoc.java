@@ -150,7 +150,7 @@ public class ControlScenarioApiDoc {
 
         scenario.setId(response.path(ControlScenarioHelper.CONTEXT_CONTROL_SCENARIO_ID));
         assertTrue("Control Scenario Id should not be Null", scenario.getId() != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
+        assertTrue("Status code should be 201", response.statusCode() == 201);
 
     }
 
