@@ -105,7 +105,7 @@ public class AggregateIntervalReportController {
     @PostMapping("exportNow")
     public String exportNow(@ModelAttribute AggregateIntervalReportFilter filter, BindingResult result, YukonUserContext userContext, 
                             FlashScope flashScope, HttpServletRequest request, HttpServletResponse response, 
-                            RedirectAttributes redirectAtts, ModelMap model) throws IOException {
+                            RedirectAttributes redirectAtts) throws IOException {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         populateDevices(request, filter);
         
@@ -184,6 +184,6 @@ public class AggregateIntervalReportController {
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         binder.registerCustomEditor(Attribute.class, attributeTypeEditor.getPropertyEditor());
-        datePropertyEditorFactory.setupInstantPropertyEditor(binder, userContext, BlankMode.CURRENT);
+        datePropertyEditorFactory.setupInstantPropertyEditor(binder, userContext, BlankMode.NULL);
     }
 }

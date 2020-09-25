@@ -20,7 +20,7 @@ public interface AggregateIntervalReportService {
         PARTIAL,
         FIXED_VALUE;
 
-        private final static String keyPrefix = "";
+        private final static String keyPrefix = "yukon.web.modules.tools.aggregateIntervalReport.";
 
         @Override
         public String getFormatKey() {
@@ -32,7 +32,7 @@ public interface AggregateIntervalReportService {
         ADD,
         MAX;
 
-        private final static String keyPrefix = "";
+        private final static String keyPrefix = "yukon.web.modules.tools.aggregateIntervalReport.";
 
         @Override
         public String getFormatKey() {
