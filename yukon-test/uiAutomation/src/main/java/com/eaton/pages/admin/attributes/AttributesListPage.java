@@ -1,10 +1,7 @@
 package com.eaton.pages.admin.attributes;
 
-import java.util.List;
 import java.util.Optional;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 
 import com.eaton.elements.Button;
 import com.eaton.elements.Section;
@@ -12,7 +9,6 @@ import com.eaton.elements.TextEditElement;
 import com.eaton.elements.WebTable;
 import com.eaton.elements.WebTableRow;
 import com.eaton.elements.WebTableRow.Icons;
-import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.attributes.AddAttributeAssignmentsModal;
 import com.eaton.elements.modals.attributes.EditAttributeAssignmentsModal;
 import com.eaton.framework.DriverExtensions;

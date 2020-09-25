@@ -29,12 +29,24 @@ public class AttributesListTests extends SeleniumTestSetup {
         refreshPage(page);
     }
     
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.ADMIN})
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
     public void attributeList_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Attributes";
         
         String actualPageTitle = page.getLinkedPageTitle();
         
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
-    }    
+    }  
+    
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
+    public void attributeList_AttributeDefinitionsSection_TitleCorrect() {
+        assertThat(page.getAttrDefSection()).isNotNull();
+    }  
+    
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
+    public void attributeList_AttributeAssignmentsSection_TitleCorrect() {
+        assertThat(page.getAttrAsgmtSection()).isNotNull();
+    }  
+    
+    
 }
