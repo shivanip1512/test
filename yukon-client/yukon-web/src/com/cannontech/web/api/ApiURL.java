@@ -48,11 +48,13 @@ public class ApiURL {
 
     public static final String commChannelUrl = "/devices/commChannels";
 
-    public static final String virtualDeviceUrl = "/device/virtualDevices";
+    public static final String virtualDeviceUrl = "/device/virtualDevices12";
 
     public static final String trendUrl = "/trends";
     
     public static final String attributeUrl = "/attributes";
     public static final String attributeAssignmentsUrl = "/attributeAssignments";
+    
+    public static final String aggregateDataReportUrl = "/aggregateIntervalDataReport/report";
 
 }

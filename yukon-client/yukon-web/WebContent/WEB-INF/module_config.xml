@@ -372,6 +372,9 @@
         </pages>
       </page>
       <page name="paoNotesSearch" type="BASIC"/>
+      <page name="aggregateIntervalReport" type="BASIC">
+        <link>/tools/aggregateIntervalReport/view</link>
+      </page>
     </pages>
   </module><!--  ENDS MODULE "tools" -->
 

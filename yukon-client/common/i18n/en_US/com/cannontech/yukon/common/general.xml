@@ -166,6 +166,7 @@
 <entry key="yukon.common.hours">Hours</entry>
 <entry key="yukon.common.html">HTML</entry>
 <entry key="yukon.common.instructions">Instructions</entry>
+<entry key="yukon.common.interval">Interval</entry>
 <entry key="yukon.common.invalidCron">Invalid Cron Expression</entry>
 <entry key="yukon.common.ipaddress">IP Address</entry>
 <entry key="yukon.common.inProgress">In Progress</entry>
@@ -293,6 +294,7 @@
 <entry key="yukon.common.thermostat.mode.HEAT">Heat</entry>
 <entry key="yukon.common.thermostat.mode.OFF">Off</entry>
 <entry key="yukon.common.thousandSeparator">,</entry>
+<entry key="yukon.common.time">Time</entry>
 <entry key="yukon.common.timeOffset">Time Offset</entry>
 <entry key="yukon.common.timeOffsetChoose">Choose Time Offset</entry>
 <entry key="yukon.common.timeOffsetMinError">Time Offset must be greater than or equal to {0}</entry>
