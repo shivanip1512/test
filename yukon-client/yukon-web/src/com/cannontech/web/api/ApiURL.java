@@ -30,13 +30,10 @@ public class ApiURL {
     public static final String drGetGearsForLoadProgram = "/dr/loadPrograms/getGearsForProgram/";
     public static final String drGearRetrieveUrl = "/dr/loadPrograms/gear/";
 
-    public static final String drAllProgramConstraintUrl = "/dr/setup/constraint/getAllProgramConstraint";
-    public static final String drProgramConstraintRetrieveUrl = "/dr/setup/constraint/";
-    public static final String drProgramConstraintCreateUrl = "/dr/setup/constraint/create";
-    public static final String drProgramConstraintUpdateUrl = "/dr/setup/constraint/update/";
-    public static final String drProgramConstraintDeleteUrl = "/dr/setup/constraint/delete/";
-    public static final String drHolidayScheduleUrl = "/dr/setup/constraint/getHolidaySchedules";
-    public static final String drSeasonScheduleUrl = "/dr/setup/constraint/getSeasonSchedules";
+    public static final String drAllProgramConstraintUrl = "/dr/constraints/getAllProgramConstraint";
+    public static final String drProgramConstraintUrl = "/dr/constraints";
+    public static final String drHolidayScheduleUrl = "/dr/constraints/getHolidaySchedules";
+    public static final String drSeasonScheduleUrl = "/dr/constraints/getSeasonSchedules";
 
     public static final String drControlAreaUrl = "/dr/controlAreas";
     public static final String drNormalStateUrl = "/dr/controlAreas/normalState/";
@@ -48,7 +45,7 @@ public class ApiURL {
 
     public static final String commChannelUrl = "/devices/commChannels";
 
-    public static final String virtualDeviceUrl = "/device/virtualDevices12";
+    public static final String virtualDeviceUrl = "/devices/virtualDevices";
 
     public static final String trendUrl = "/trends";
     

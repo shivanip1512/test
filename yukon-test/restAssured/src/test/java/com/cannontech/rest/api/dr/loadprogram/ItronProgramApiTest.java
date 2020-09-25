@@ -521,10 +521,8 @@ public class ItronProgramApiTest {
         softAssert.assertTrue(response1.statusCode() == 200, "Status code should be 200. Delete LoadGroup failed.");
 
         // Delete Program Constraint which have been created for Load Program
-        MockLMDto deleteConstraint = MockLMDto.builder()
-                .name(context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME).toString()).build();
-        ExtractableResponse<?> response2 = ApiCallHelper.delete("deleteProgramConstraint", deleteConstraint,
-                context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID).toString());
+        ExtractableResponse<?> response2 = ApiCallHelper.delete("programConstraints", 
+                "/" + context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID).toString());
         softAssert.assertTrue(response2.statusCode() == 200,
                 "Status code should be 200. Delete Program Constraint failed.");
 

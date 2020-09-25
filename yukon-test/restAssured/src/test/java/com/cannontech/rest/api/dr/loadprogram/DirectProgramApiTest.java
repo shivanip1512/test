@@ -536,8 +536,8 @@ public class DirectProgramApiTest {
         // Delete Program Constraints which have been created for Load Programs
         for (Map.Entry<Integer, String> map : constraints.entrySet()) {
             deleteObject.setName(map.getValue().toString());
-            ExtractableResponse<?> response2 = ApiCallHelper.delete("deleteProgramConstraint",
-                    deleteObject, map.getKey().toString());
+            ExtractableResponse<?> response2 = ApiCallHelper.delete("programConstraints",
+                    "/" + map.getKey().toString());
             softAssert.assertTrue(response2.statusCode() == 200, "Status code should be 200. Delete Program Constraint failed.");
         }
         softAssert.assertAll();

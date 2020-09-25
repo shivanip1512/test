@@ -31,7 +31,6 @@ import com.cannontech.rest.api.loadProgram.request.MockLoadProgram;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 
-import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
@@ -536,7 +535,7 @@ public class DirectProgramGearApiDoc {
 
     @AfterClass
     public void cleanUp() {
-        ApiCallHelper.delete(programConstraint.getId(), programConstraint.getName(), "deleteProgramConstraint");
+        ApiCallHelper.delete("programConstraints", "/" + programConstraint.getId().toString());
         loadGroups.forEach(group -> {
             ApiCallHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
         });

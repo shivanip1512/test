@@ -116,11 +116,11 @@ public class ControlScenarioApiDoc {
             if (controlArea == null) {
                 controlArea = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD_POINT,
                         loadProgram.getProgramId());
-                ExtractableResponse<?> controlAreaResponse = ApiCallHelper.post("saveControlArea", controlArea);
+                ExtractableResponse<?> controlAreaResponse = ApiCallHelper.post("controlAreas", controlArea);
 
                 controlArea.setControlAreaId(controlAreaResponse.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID));
                 assertTrue("Control Area Id should not be Null", controlArea.getControlAreaId() != null);
-                assertTrue("Status code should be 200", controlAreaResponse.statusCode() == 200);
+                assertTrue("Status code should be 201", controlAreaResponse.statusCode() == 201);
             }
         }
     }
@@ -223,9 +223,9 @@ public class ControlScenarioApiDoc {
 
     @AfterClass
     public void cleanUp() {
-        ApiCallHelper.delete(controlArea.getControlAreaId(), controlArea.getName(), "deleteControlArea");
-        ApiCallHelper.delete(loadProgram.getProgramId(), loadProgram.getName(), "deleteLoadProgram");
-        ApiCallHelper.delete(programConstraint.getId(), programConstraint.getName(), "deleteProgramConstraint");
+        ApiCallHelper.delete("controlAreas", "/" + controlArea.getControlAreaId().toString());
+        ApiCallHelper.delete("loadPrograms", "/" + loadProgram.getProgramId().toString());
+        ApiCallHelper.delete("programConstraints", "/" + programConstraint.getId().toString());
         loadGroups.forEach(group -> {
             ApiCallHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
         });
