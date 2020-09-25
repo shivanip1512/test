@@ -678,7 +678,8 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
         {
             if( parse.getCommand() == GetConfigRequest
                 && parse.isKeyValid("install")
-                && ! parse.isKeyValid("verify") )
+                && ! parse.isKeyValid("verify")
+                && ! InMessage.ErrorCode )  //  This is only checking the last groupMessageId for success, but that's the best we have for PLC
             {
                 if( ! devSingle->getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection) )
                 {
@@ -829,10 +830,17 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
                 //  This is the last return message - check to see if it was a get/putconfig install that needs a verify
                 CtiCommandParser parse{ requestParameters.commandString };
 
-                if( (parse.getCommand() == GetConfigRequest ||
-                     parse.getCommand() == PutConfigRequest)
-                    && parse.isKeyValid("install") 
-                    && ! parse.isKeyValid("verify") )
+                if( (parse.getCommand() == GetConfigRequest 
+                        && parse.isKeyValid("install")
+                        && retMsg->Status() == ClientErrors::None)
+                        //  The "getconfig install all" is the Config Notification read in FW 9.0, so it will
+                        //    succeed or fail as a single request.  We can issue a Verify if the read succeeds.
+                        //  If we are not FW 9.0, we suffer from the same shortfall as PLC (see handleInMessageResult near line 682).
+                    || (parse.getCommand() == PutConfigRequest
+                        && parse.isKeyValid("install")
+                        && ! parse.isKeyValid("verify")) )
+                        //  The "putconfig install all" is likely to be an aggregate message, but we can issue a 
+                        //    Verify in all cases, since any mismatch that was not written will still be a mismatch.
                 {
                     auto verifyMsg =
                         makeVerifyMsg(
