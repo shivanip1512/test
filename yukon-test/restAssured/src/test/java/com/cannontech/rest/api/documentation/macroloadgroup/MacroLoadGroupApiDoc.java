@@ -225,9 +225,7 @@ public class MacroLoadGroupApiDoc {
         
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}",
-                                    requestFields(
-                                    fieldWithPath("name").type(JsonFieldType.STRING).description("Macro Load Group Name")), 
-                                    responseFields(fieldWithPath("paoId").type(JsonFieldType.NUMBER).description("Macro Load Group Id"))))
+                                    responseFields(fieldWithPath("id").type(JsonFieldType.NUMBER).description("Macro Load Group Id"))))
                                 .accept("application/json")
                                 .contentType("application/json")
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
