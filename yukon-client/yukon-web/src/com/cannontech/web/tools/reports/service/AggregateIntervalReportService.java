@@ -3,12 +3,16 @@ package com.cannontech.web.tools.reports.service;
 import org.joda.time.Instant;
 import java.util.List;
 
+import com.cannontech.amr.archivedValueExporter.model.AttributeDeserializer;
+import com.cannontech.common.exception.TypeNotSupportedException;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.user.YukonUserContext;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public interface AggregateIntervalReportService {
 
@@ -24,6 +28,15 @@ public interface AggregateIntervalReportService {
         public String getFormatKey() {
             return keyPrefix + "missingIntervalData." + name();
         }
+        
+        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+        public static MissingIntervalData getMissinIntervalData(String missingIntervalDataJsonString) {
+            try {
+                return MissingIntervalData.valueOf(missingIntervalDataJsonString);
+            } catch (IllegalArgumentException e) {
+                throw new TypeNotSupportedException(missingIntervalDataJsonString + " missing interval data is not valid.");
+            }
+        }
     }
     
     enum Operation implements DisplayableEnum {
@@ -35,6 +48,15 @@ public interface AggregateIntervalReportService {
         @Override
         public String getFormatKey() {
             return keyPrefix + "operation." + name();
+        }
+        
+        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+        public static Operation getOperation(String operationJsonString) {
+            try {
+                return Operation.valueOf(operationJsonString);
+            } catch (IllegalArgumentException e) {
+                throw new TypeNotSupportedException(operationJsonString + " operation is not valid.");
+            }
         }
     }
 
@@ -49,6 +71,7 @@ public interface AggregateIntervalReportService {
         private String missingIntervalDataValue;
         private Operation operation;
 
+        @JsonDeserialize(using = AttributeDeserializer.class)
         public Attribute getAttribute() {
             return attribute;
         }
