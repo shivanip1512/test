@@ -23,7 +23,7 @@ yukon.widget.dataCollection = (function () {
                 displayPercentage: data.available.percentage < 1 && data.available.percentage != 0 ? '&lt;1%' : yukon.percent(data.available.percentage, 100, 1),
                 y: (data.available.percentage < 1 && data.available.percentage != 0 ? 1 : data.available.percentage),
                 x: data.available.deviceCount,
-                color: '#2ca618'
+                color: yg.colors.GREEN
             },
             {
                 name: $('.js-EXPECTED').val(),
@@ -31,7 +31,7 @@ yukon.widget.dataCollection = (function () {
                 displayPercentage: data.expected.percentage < 1 && data.expected.percentage != 0 ? '&lt;1%' : yukon.percent(data.expected.percentage, 100, 1),
                 y: (data.expected.percentage < 1 && data.expected.percentage != 0 ? 1 : data.expected.percentage),
                 x: data.expected.deviceCount,
-                color: '#0088f2'
+                color: yg.colors.BLUE
                 
             },
             {
@@ -40,7 +40,7 @@ yukon.widget.dataCollection = (function () {
                 displayPercentage: data.outdated.percentage < 1 && data.outdated.percentage != 0 ? '&lt;1%' : yukon.percent(data.outdated.percentage, 100, 1),
                 y: (data.outdated.percentage < 1 && data.outdated.percentage != 0 ? 1 : data.outdated.percentage),
                 x: data.outdated.deviceCount,
-                color: '#e99012'
+                color: yg.colors.ORANGE
             },
             {
                 name: $('.js-UNAVAILABLE').val(),
@@ -48,7 +48,7 @@ yukon.widget.dataCollection = (function () {
                 displayPercentage: data.unavailable.percentage < 1 && data.unavailable.percentage != 0 ? '&lt;1%' : yukon.percent(data.unavailable.percentage, 100, 1),
                 y: (data.unavailable.percentage < 1 && data.unavailable.percentage != 0 ? 1 : data.unavailable.percentage),
                 x: data.unavailable.deviceCount,
-                color: '#7b8387'
+                color: yg.colors.GRAY
             }
         ]
     },

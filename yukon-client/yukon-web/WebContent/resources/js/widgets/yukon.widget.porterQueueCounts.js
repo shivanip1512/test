@@ -45,7 +45,7 @@ yukon.widget.porterQueueCounts = (function () {
                 enabled: true,
                 align: 'center',
                 backgroundColor: '#fefefe',
-                borderColor: '#ccc',
+                borderColor: yg.colors.LIGHT_GRAY,
                 borderWidth: 1,
                 borderRadius: 1,
                 layout: 'vertical',
@@ -53,7 +53,7 @@ yukon.widget.porterQueueCounts = (function () {
                 shadow: true,
                 title : {
                     style: {
-                        "color" :"#ff0000"
+                        "color" : yg.colors.RED
                     },
                     text: data.truncateMessage,
                 }
