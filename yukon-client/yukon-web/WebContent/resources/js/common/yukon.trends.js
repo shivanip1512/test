@@ -33,7 +33,7 @@ yukon.trends = (function () {
                     enabled: true,
                     align: 'center',
                     backgroundColor: '#fefefe',
-                    borderColor: yg.colors.LIGHT_GRAY,
+                    borderColor: yg.colors.GRAY_LIGHT,
                     borderWidth: 1,
                     borderRadius: 1,
                     layout: 'vertical',
