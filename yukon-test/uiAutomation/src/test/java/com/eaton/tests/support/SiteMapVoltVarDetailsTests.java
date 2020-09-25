@@ -26,7 +26,7 @@ public class SiteMapVoltVarDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.VoltVar.VOLT_VAR })
-    public void siteMapVoltVarDetails_pageTitleCorrect() {
+    public void siteMapVoltVarDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Site Map";
 
         String actualPageTitle = siteMapPage.getPageTitle();
@@ -35,21 +35,21 @@ public class SiteMapVoltVarDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.VoltVar.VOLT_VAR })
-    public void siteMapVoltVarDetails_pageHasCCSection() {
+    public void siteMapVoltVarDetails_CcSection_Displayed() {
         Section ccSection = siteMapPage.getCCSection();
 
         assertThat(ccSection).isNotNull();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.VoltVar.VOLT_VAR })
-    public void siteMapVoltVarDetails_pageCCSectionItemCountCorrect() {
+    public void siteMapVoltVarDetails_CcSectionPage_CountCorrect() {
         final int EXPECTED_COUNT = 10;
 
         assertThat(siteMapPage.getCCSectionSimpleList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.VoltVar.VOLT_VAR })
-    public void siteMapVoltVarDetails_pageCapControlImportLinkCorrect() {
+    public void siteMapVoltVarDetails_CapControlImport_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "CapControl Import";
         final String EXPECTED_LINK = Urls.CapControl.IMPORT;
@@ -61,7 +61,7 @@ public class SiteMapVoltVarDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.VoltVar.VOLT_VAR })
-    public void siteMapVoltVarDetails_pageCapControlReportsLinkCorrect() {
+    public void siteMapVoltVarDetails_CapControlReports_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "CapControl Reports";
         final String EXPECTED_LINK = Urls.CapControl.REPORTS;
@@ -73,7 +73,7 @@ public class SiteMapVoltVarDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.VoltVar.VOLT_VAR })
-    public void siteMapVoltVarDetails_pageDMVTestLinkCorrect() {
+    public void siteMapVoltVarDetails_DMVTest_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "DMV Test";
         final String EXPECTED_LINK = Urls.CapControl.DMV_TEST_LIST;
@@ -85,7 +85,7 @@ public class SiteMapVoltVarDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.VoltVar.VOLT_VAR })
-    public void siteMapVoltVarDetails_pageFDRTranslationManagementLinkCorrect() {
+    public void siteMapVoltVarDetails_FDRTranslationManagement_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "FDR Translation Management";
         //final String EXPECTED_LINK = Urls.CapControl.FDR_TRANSLATION_MANAGER;
@@ -97,7 +97,7 @@ public class SiteMapVoltVarDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.VoltVar.VOLT_VAR })
-    public void siteMapVoltVarDetails_pageOrphansLinkCorrect() {
+    public void siteMapVoltVarDetails_Orphans_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Orphans";
         final String EXPECTED_LINK = Urls.CapControl.ORPHANS;
@@ -109,7 +109,7 @@ public class SiteMapVoltVarDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.VoltVar.VOLT_VAR })
-    public void siteMapVoltVarDetails_pageCCPointImportLinkCorrect() {
+    public void siteMapVoltVarDetails_CCPointImport_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Point Import";
         final String EXPECTED_LINK = Urls.CapControl.POINT_IMPORT;
@@ -121,7 +121,7 @@ public class SiteMapVoltVarDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.VoltVar.VOLT_VAR })
-    public void siteMapVoltVarDetails_pageRecentTempCapBankMovesLinkCorrect() {
+    public void siteMapVoltVarDetails_RecentTempCapBankMoves_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Recent Temp Cap Bank Moves";
         final String EXPECTED_LINK = Urls.CapControl.RECENT_TEMP_MOVES;
@@ -133,7 +133,7 @@ public class SiteMapVoltVarDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.VoltVar.VOLT_VAR })
-    public void siteMapVoltVarDetails_pageCCSchedulesLinkCorrect() {
+    public void siteMapVoltVarDetails_CCSchedules_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Schedules";
         final String EXPECTED_LINK = Urls.CapControl.SCHEDULES;
@@ -145,7 +145,7 @@ public class SiteMapVoltVarDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.VoltVar.VOLT_VAR })
-    public void siteMapVoltVarDetails_pageStrategiesLinkCorrect() {
+    public void siteMapVoltVarDetails_Strategies_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Strategies";
         final String EXPECTED_LINK = Urls.CapControl.STRATEGIES;
@@ -157,7 +157,7 @@ public class SiteMapVoltVarDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.VoltVar.VOLT_VAR })
-    public void siteMapVoltVarDetails_pageVoltVarDashboardLinkCorrect() {
+    public void siteMapVoltVarDetails_VoltVarDashboard_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Volt/Var Dashboard";
         final String EXPECTED_LINK = Urls.CapControl.DASHBOARD;

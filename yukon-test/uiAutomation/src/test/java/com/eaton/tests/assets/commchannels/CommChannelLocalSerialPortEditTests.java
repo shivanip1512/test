@@ -56,7 +56,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelLocalSerialEdit_ModalTitleCorrect() {
+    public void commChannelLocalSerialEdit_Modal_TitleCorrect() {
         String expectedModalTitle = "Edit " + commChannelName;
         
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal();
@@ -315,7 +315,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelLocalSerialEdit_TabTitlesCorrect() {
+    public void commChannelLocalSerialEdit_Tab_TitlesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal();
 
@@ -405,7 +405,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelLocalSerialEdit_Cancel_NavigatesCorrectly() {
+    public void commChannelLocalSerialEdit_Cancel_NavigatesToCorrectUrl() {
         String EXPECTED_TITLE = commChannelName;
 
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal();
@@ -440,7 +440,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelLocalSerialEdit_Create_OpensPopupCorrect() {
+    public void commChannelLocalSerialEdit_Create_OpensCorrectModal() {
         String EXPECTED_CREATE_MODEL_TITLE = "Create Comm Channel";
         
         CreateCommChannelModal createModel = detailPage.showCreateCommChannelModal();
@@ -451,7 +451,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelLocalSerialEdit_ConfigTab_TimingSectionDisplayed() {
+    public void commChannelLocalSerialEdit_ConfigTabTimingSection_Displayed() {
         String tabName = "Configuration";
 
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal();
@@ -463,7 +463,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelLocalSerialEdit_ConfigTab_SharingSectionDisplayed() {
+    public void commChannelLocalSerialEdit_ConfigTabSharingSection_Displayed() {
         String tabName = "Configuration";
 
         EditLocalSerialPortCommChannelModal editModal = detailPage.showLocalSerialPortCommChannelEditModal();
@@ -475,7 +475,7 @@ public class CommChannelLocalSerialPortEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelLocalSerialEdit_AllFieldsSuccess() {
+    public void commChannelLocalSerialEdit_AllFields_Success() {
         SoftAssertions softly = new SoftAssertions();
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "Local Serial " + timeStamp;

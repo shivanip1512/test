@@ -146,6 +146,10 @@ public class ControlAreaHelper {
         return responseDescriptor;
     }
 
+    public static FieldDescriptor deleteFieldDescriptor() {
+        return fieldWithPath("id").type(JsonFieldType.NUMBER).description("Control Area Id");
+    }
+
     public static FieldDescriptor[] buildResponseDescriptorForGet() {
         return new FieldDescriptor[] { fieldWithPath("controlAreaId").type(JsonFieldType.NUMBER).optional().description("Control Area Id"),
                 fieldWithPath("name").type(JsonFieldType.STRING).description("Control Area Name"),

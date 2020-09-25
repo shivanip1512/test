@@ -20,25 +20,28 @@ import com.github.javafaker.Faker;
 
 public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
     private DriverExtensions driverExt;
-    private Integer id;
     private LoadGroupEmetconEditPage editPage;
     private Faker faker;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         faker = new Faker();
         Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
                 .create();
         JSONObject response = pair.getValue1();
-        id = response.getInt("id");
+        Integer id = response.getInt("id");
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
         editPage = new LoadGroupEmetconEditPage(driverExt, id);
     }
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(editPage);
+        if(getRefreshPage()) {
+            refreshPage(editPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -80,6 +83,7 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpEmetconEdit_AllFields_Success() {
+        setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited Emetcon Ldgrp " + timeStamp;
         final String EXPECTED_MSG = name + " saved successfully.";

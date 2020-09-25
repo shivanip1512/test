@@ -377,7 +377,7 @@ public class MacroLoadGroupApiTest {
 		// Test data
 		String mlgName = "MLG_dummy";
 		char notAllowedChars[] = { '/', '\\', ',', '\'', '"', '|' };
-		String expectedErrorMsg = "Cannot be blank or include any of the following characters: / \\ , ' \" |";
+		String expectedErrorMsg = "Name must not contain any of the following characters: / \\ , ' \" |.";
 		// create Load Group which needs to be assigned in Macro load Group
 		MockLoadGroupBase loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_DIGI_SEP);
 		MockLMPaoDto loadGroupToBeAssigned = MacroLoadGroupHelper.getMockLMPaoDtoObject(loadGroup);

@@ -1,10 +1,14 @@
 package com.eaton.pages.admin.energycompany;
 
+import java.util.Optional;
+
 import com.eaton.elements.Button;
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.PickerElement;
 import com.eaton.elements.TextEditElement;
+import com.eaton.elements.modals.SelectUserGroupModal;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
@@ -33,7 +37,7 @@ public class EnergyCompanyCreatePage extends PageBase {
         confirmPassword = new TextEditElement(this.driverExt, "adminPassword2");
         saveBtn = new Button(this.driverExt, "Save");
         cancelBtn = new Button(this.driverExt, "Cancel");
-//TODO fix        primaryOperatorGroup = new PickerElement(this.driverExt, Optional.of("primaryOperatorUserGroupPicker"), Optional.empty());
+        primaryOperatorGroup = new PickerElement(this.driverExt, Optional.of("primaryOperatorUserGroupPicker"), Optional.empty());
     }
     
     public TextEditElement getCompanyName() {
@@ -68,16 +72,16 @@ public class EnergyCompanyCreatePage extends PageBase {
         return cancelBtn;
     }   
     
-//    private PickerElement getPrimaryOperatorGroup() {
-//        return primaryOperatorGroup;
-//    }
+    private PickerElement getPrimaryOperatorGroup() {
+        return primaryOperatorGroup;
+    }
     
-//    public SelectUserGroupModal showAndWaitUserGroupModal() {
-//
-//        getPrimaryOperatorGroup().clickLink();
-//
-//        SeleniumTestSetup.waitUntilModalVisibleByTitle("Select User Group");
-//
-//        return new SelectUserGroupModal(this.driverExt, Optional.empty(), Optional.of("primaryOperatorUserGroupPicker"));
-//    }
+    public SelectUserGroupModal showAndWaitUserGroupModal() {
+
+        getPrimaryOperatorGroup().clickLink();
+
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("primaryOperatorUserGroupPicker");
+
+        return new SelectUserGroupModal(this.driverExt, Optional.empty(), Optional.of("primaryOperatorUserGroupPicker"));
+    }
 }

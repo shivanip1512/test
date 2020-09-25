@@ -1,15 +1,20 @@
 package com.cannontech.web.capcontrol.ivvc.validators;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
+import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.model.AbstractZone;
 import com.cannontech.capcontrol.model.AbstractZoneNotThreePhase;
 import com.cannontech.capcontrol.model.AbstractZoneThreePhase;
 import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
+import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 
 public class ZoneDtoValidator extends SimpleValidator<AbstractZone> {
+
+    @Autowired ZoneDao zoneDao;
 
     public ZoneDtoValidator() {
         super(AbstractZone.class);
@@ -37,6 +42,12 @@ public class ZoneDtoValidator extends SimpleValidator<AbstractZone> {
             errors.rejectValue("substationBusId", "yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.substationBusId");
         }
         
+        Zone existingZone = zoneDao.findZoneByZoneName(zoneDto.getName());
+        if (existingZone != null) {
+            if (zoneDto.getZoneId() == null || !existingZone.getId().equals(zoneDto.getZoneId())) {
+                errors.rejectValue("name", "yukon.web.error.nameConflict");
+            }
+        }
     }
 
 }

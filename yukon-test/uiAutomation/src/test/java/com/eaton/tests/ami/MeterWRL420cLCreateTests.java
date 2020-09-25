@@ -37,6 +37,11 @@ public class MeterWRL420cLCreateTests extends SeleniumTestSetup {
         amiDashboardPage = new AmiDashboardPage(driverExt);
         randomNum = getRandomNum();
     }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        refreshPage(amiDashboardPage);
+    }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
     public void meterWRL420cLCreate_AllFields_Success() {
@@ -66,10 +71,5 @@ public class MeterWRL420cLCreateTests extends SeleniumTestSetup {
         String userMsg = detailPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(METER + name + CREATED);
-    }
-
-    @AfterMethod(alwaysRun = true)
-    public void afterTest() {
-        refreshPage(amiDashboardPage);
     }
 }

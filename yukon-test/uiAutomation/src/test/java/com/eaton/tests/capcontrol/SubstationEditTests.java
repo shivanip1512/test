@@ -26,17 +26,21 @@ public class SubstationEditTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         navigate(Urls.CapControl.SUBSTATION_EDIT + "666" + Urls.EDIT);
         editPage = new SubstationEditPage(driverExt, 666);
     }
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(editPage);
+        if(getRefreshPage()) {
+            refreshPage(editPage);    
+        }
+        setRefreshPage(false);
     }
     
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void substationEdit_pageTitleCorrect() {
+    public void substationEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Substation: AT Substation";
 
         String actualPageTitle = editPage.getPageTitle();
@@ -45,7 +49,8 @@ public class SubstationEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void substationEdit_requiredFieldsOnlySuccess() {
+    public void substationEdit_RequiredFieldsOnly_Success() {
+        setRefreshPage(true);
         final String EXPECTED_MSG = "Substation was saved successfully.";
 
         navigate(Urls.CapControl.SUBSTATION_EDIT + "451" + Urls.EDIT);
@@ -67,7 +72,8 @@ public class SubstationEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void substationEdit_deleteSubstationSuccess() {
+    public void substationEdit_Delete_Success() {
+        setRefreshPage(true);
         final String EXPECTED_MSG = "Substation AT Delete Substation deleted successfully.";
 
         navigate(Urls.CapControl.SUBSTATION_EDIT + "573" + Urls.EDIT);

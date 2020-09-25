@@ -27,7 +27,7 @@ public class ProgramListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void programList_pageTitleCorrect() {
+    public void programList_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Programs";
 
         String actualPageTitle = listPage.getPageTitle();
@@ -36,7 +36,7 @@ public class ProgramListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void programList_columnHeadersCorrect() {
+    public void programList_ColumnHeaders_Correct() {
         softly = new SoftAssertions();
         final int EXPECTED_COUNT = 8;
 

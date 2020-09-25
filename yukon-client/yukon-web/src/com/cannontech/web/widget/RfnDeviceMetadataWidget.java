@@ -68,6 +68,8 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
     @RequestMapping("render")
     public String render(final ModelMap model, int deviceId, final YukonUserContext context) {
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+        
+        String unknown = accessor.getMessage("yukon.common.unknown");
 
         RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
         model.addAttribute("device", device);
@@ -81,48 +83,46 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
 
             RfnMetadataMultiQueryResult metadataMulti = metaDataMultiResult.get(device.getRfnIdentifier());
 
-            DynamicRfnDeviceData deviceData = rfnDeviceDao
-                    .findDynamicRfnDeviceData(device.getPaoIdentifier().getPaoId());
+            Pair<String, Object> primaryGateway;
+            DynamicRfnDeviceData deviceData = rfnDeviceDao.findDynamicRfnDeviceData(device.getPaoIdentifier().getPaoId());
             if (deviceData != null) {
-                Pair<String, Object> pair = Pair.of(accessor.getMessage(keyPrefix + "PRIMARY_GATEWAY"),
-                        deviceData.getGateway().getName());
-                metadataPairs.add(pair);
-                csrMetadataPairs.add(pair);
+                primaryGateway = Pair.of(accessor.getMessage(keyPrefix + "PRIMARY_GATEWAY"), deviceData.getGateway().getName());
+            } else {
+                primaryGateway = Pair.of(accessor.getMessage(keyPrefix + "PRIMARY_GATEWAY"), unknown);
             }
+            metadataPairs.add(primaryGateway);
+            csrMetadataPairs.add(primaryGateway);
+
+            Pair<String, Object> reverseForward = Pair.of(accessor.getMessage(keyPrefix + "REVERSE_LOOKUP"), unknown);
+            Pair<String, Object> commStatusPair = Pair.of(accessor.getMessage(keyPrefix + "COMM_STATUS"), "UNKNOWN");
+            Pair<String, Object> commStatusTime = Pair.of(accessor.getMessage(keyPrefix + "COMM_STATUS_TIMESTAMP"), unknown);
 
             if (metadataMulti.isValidResultForMulti(REVERSE_LOOKUP_NODE_COMM)) {
                 NodeComm comm = (NodeComm) metadataMulti.getMetadatas().get(REVERSE_LOOKUP_NODE_COMM);
-                Pair<String, Object> pair;
                 try {
                     RfnDevice reverseGateway = rfnDeviceDao.getDeviceForExactIdentifier(comm.getGatewayRfnIdentifier());
-                    pair = Pair.of(accessor.getMessage(keyPrefix + "REVERSE_LOOKUP"), reverseGateway.getName());
-                    metadataPairs.add(pair);
-                    csrMetadataPairs.add(pair);
-
+                    reverseForward = Pair.of(accessor.getMessage(keyPrefix + "REVERSE_LOOKUP"), reverseGateway.getName());
                 } catch (Exception e) {
                     // we can't create a gateway from RfnIdentifier
                 }
 
                 NodeComm commStatus = nmNetworkService.getNodeCommStatusFromMultiQueryResult(device, metadataMulti);
-                if (commStatus == null || commStatus.getNodeCommStatus() == null) {
-                    // primary forward and reverse lookup are not the same, set comm status to
-                    // unknown
-                    pair = Pair.of(accessor.getMessage(keyPrefix + "COMM_STATUS"), "UNKNOWN");
-                    metadataPairs.add(pair);
-                    csrMetadataPairs.add(pair);
-                } else {
-                    pair = Pair.of(accessor.getMessage(keyPrefix + "COMM_STATUS"), commStatus.getNodeCommStatus().name());
-                    metadataPairs.add(pair);
-                    csrMetadataPairs.add(pair);
+                if (commStatus != null && commStatus.getNodeCommStatus() != null) {
+                    commStatusPair = Pair.of(accessor.getMessage(keyPrefix + "COMM_STATUS"), commStatus.getNodeCommStatus().name());
                     String dateTime = dateFormattingService.format(commStatus.getNodeCommStatusTimestamp(), DateFormatEnum.DATEHM,
                             context);
-                    pair = Pair.of(accessor.getMessage(keyPrefix + "COMM_STATUS_TIMESTAMP"), dateTime);
-                    metadataPairs.add(pair);
-                    csrMetadataPairs.add(pair);
+                    commStatusTime = Pair.of(accessor.getMessage(keyPrefix + "COMM_STATUS_TIMESTAMP"), dateTime);
                 }
             } else {
                 log.info("REVERSE_LOOKUP_NODE_COMM not found for {}", device);
             }
+            metadataPairs.add(reverseForward);
+            csrMetadataPairs.add(reverseForward);
+            metadataPairs.add(commStatusPair);
+            csrMetadataPairs.add(commStatusPair);
+            metadataPairs.add(commStatusTime);
+            csrMetadataPairs.add(commStatusTime);
+            
             if (metadataMulti.isValidResultForMulti(NODE_DATA)) {
                 NodeData data = (NodeData) metadataMulti.getMetadatas().get(NODE_DATA);
                 Pair<String, Object> pair = Pair.of(accessor.getMessage(keyPrefix + "NODE_SERIAL_NUMBER"),

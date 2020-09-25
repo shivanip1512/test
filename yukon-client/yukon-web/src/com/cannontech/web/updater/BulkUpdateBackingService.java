@@ -2,6 +2,7 @@ package com.cannontech.web.updater;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.user.YukonUserContext;
@@ -18,4 +19,6 @@ public interface BulkUpdateBackingService {
             YukonUserContext userContext, boolean canWait);
 
     PointValueQualityHolder getCachedValue(int pointId);
+
+    List<PointValueQualityHolder> getCachedValues(Set<Integer> pointIds);
 }

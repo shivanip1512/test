@@ -27,6 +27,7 @@ public final class TestConstants {
     public static final class Assets {
         public static final String ASSETS = "Assets";
         public static final String COMM_CHANNELS = "Comm_Channels";
+        public static final String VIRTUAL_DEVICES = "Virtual_Devices";
     }
     
     public static final class Tools {

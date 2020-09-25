@@ -22,31 +22,21 @@ public class ApiURL {
     public static final String drMacroLoadGroupDeleteUrl = "/dr/setup/macroLoadGroup/delete/";
     public static final String drMacroLoadGroupCopyUrl = "/dr/setup/macroLoadGroup/copy/";
 
-    public static final String drLoadProgramSaveUrl = "/dr/setup/loadProgram/create";
-    public static final String drLoadProgramRetrieveUrl = "/dr/setup/loadProgram/";
-    public static final String drAvailableLoadGroupsUrl = "/dr/setup/loadProgram/availableLoadGroups/";
-    public static final String drAvailableNotificationGroupsUrl = "/dr/setup/loadProgram/availableNotificationGroups/";
-    public static final String drAvailableDirectMemberControlsUrl = "/dr/setup/loadProgram/availableDirectMemberControls/";
-    public static final String drLoadProgramDeleteUrl = "/dr/setup/loadProgram/delete/";
-    public static final String drLoadProgramCopyUrl = "/dr/setup/loadProgram/copy/";
-    public static final String drLoadProgramUpdateUrl = "/dr/setup/loadProgram/update/";
-    public static final String drLoadProgramAvailableProgramsUrl = "/dr/setup/loadProgram/availablePrograms";
-    public static final String drGetGearsForLoadProgram = "/dr/setup/loadProgram/getGearsForProgram/";
-    public static final String drGearRetrieveUrl = "/dr/setup/loadProgram/gear/";
+    public static final String drLoadProgramUrl = "/dr/loadPrograms";
+    public static final String drAvailableLoadGroupsUrl = "/dr/loadPrograms/availableLoadGroups/";
+    public static final String drAvailableNotificationGroupsUrl = "/dr/loadPrograms/availableNotificationGroups/";
+    public static final String drAvailableDirectMemberControlsUrl = "/dr/loadPrograms/availableDirectMemberControls/";
+    public static final String drLoadProgramAvailableProgramsUrl = "/dr/loadPrograms/availablePrograms";
+    public static final String drGetGearsForLoadProgram = "/dr/loadPrograms/getGearsForProgram/";
+    public static final String drGearRetrieveUrl = "/dr/loadPrograms/gear/";
 
-    public static final String drAllProgramConstraintUrl = "/dr/setup/constraint/getAllProgramConstraint";
-    public static final String drProgramConstraintRetrieveUrl = "/dr/setup/constraint/";
-    public static final String drProgramConstraintCreateUrl = "/dr/setup/constraint/create";
-    public static final String drProgramConstraintUpdateUrl = "/dr/setup/constraint/update/";
-    public static final String drProgramConstraintDeleteUrl = "/dr/setup/constraint/delete/";
-    public static final String drHolidayScheduleUrl = "/dr/setup/constraint/getHolidaySchedules";
-    public static final String drSeasonScheduleUrl = "/dr/setup/constraint/getSeasonSchedules";
+    public static final String drAllProgramConstraintUrl = "/dr/constraints/getAllProgramConstraint";
+    public static final String drProgramConstraintUrl = "/dr/constraints";
+    public static final String drHolidayScheduleUrl = "/dr/constraints/getHolidaySchedules";
+    public static final String drSeasonScheduleUrl = "/dr/constraints/getSeasonSchedules";
 
-    public static final String drControlAreaRetrieveUrl = "/dr/setup/controlArea/";
-    public static final String drControlAreaCreateUrl = "/dr/setup/controlArea/create";
-    public static final String drControlAreaUpdateUrl = "/dr/setup/controlArea/update/";
-    public static final String drControlAreaDeleteUrl = "/dr/setup/controlArea/delete/";
-    public static final String drNormalStateUrl = "/dr/setup/controlArea/normalState/";
+    public static final String drControlAreaUrl = "/dr/controlAreas";
+    public static final String drNormalStateUrl = "/dr/controlAreas/normalState/";
 
     public static final String drControlScenarioRetrieveUrl = "/dr/setup/controlScenario/";
     public static final String drControlScenarioCreateUrl = "/dr/setup/controlScenario/create";
@@ -55,7 +45,7 @@ public class ApiURL {
 
     public static final String commChannelUrl = "/devices/commChannels";
 
-    public static final String virtualDeviceUrl = "/device/virtualDevices";
+    public static final String virtualDeviceUrl = "/devices/virtualDevices";
 
     public static final String trendUrl = "/trends";
     

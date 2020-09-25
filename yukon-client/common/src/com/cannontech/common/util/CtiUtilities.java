@@ -74,6 +74,7 @@ public final class CtiUtilities {
     public static final String IMPORT_ARCHIVE_DIR = "ImportArchive";
 
     public static final String COLLECTION_ACTION_DIR = "CollectionAction";
+    public static final String CACHE_CORRELATION_DIR = "CacheCorrelation";
     public static final String NEST_DIR = "Nest";
     public static final String ITRON_DIR = "Itron";
 
@@ -365,6 +366,10 @@ public final class CtiUtilities {
         return path;
     }
 
+    public final static String getCacheCollerationDirPath() {
+        return getExportArchiveDirPath(CACHE_CORRELATION_DIR);
+    }
+    
     public final static String getCollectionActionDirPath() {
         return getExportArchiveDirPath(COLLECTION_ACTION_DIR);
     }

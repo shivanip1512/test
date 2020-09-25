@@ -26,6 +26,7 @@ public class AreaEditTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         
         navigate(Urls.CapControl.AREA_EDIT + "672" + Urls.EDIT);
 
@@ -34,11 +35,14 @@ public class AreaEditTests extends SeleniumTestSetup {
     
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
-        refreshPage(editPage);
+        if(getRefreshPage()) {
+            refreshPage(editPage);            
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void areaEdit_pageTitleCorrect() {
+    public void areaEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Area: AT Area";
 
         String actualPageTitle = editPage.getPageTitle();
@@ -47,7 +51,8 @@ public class AreaEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void areaEdit_requiredFieldsOnlySuccess() {
+    public void areaEdit_RequiredFieldsOnly_Success() {
+        setRefreshPage(true);
         final String EXPECTED_MSG = "Area was saved successfully.";
 
         navigate(Urls.CapControl.AREA_EDIT + "449" + Urls.EDIT);
@@ -69,7 +74,8 @@ public class AreaEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
-    public void areaEdit_deleteSuccess() {
+    public void areaEdit_Delete_Success() {
+        setRefreshPage(true);
         final String EXPECTED_MSG = "Area AT Delete Area Deleted successfully.";
 
         navigate(Urls.CapControl.AREA_EDIT + "579" + Urls.EDIT);

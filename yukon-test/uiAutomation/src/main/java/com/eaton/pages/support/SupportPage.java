@@ -1,6 +1,7 @@
 package com.eaton.pages.support;
 
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
@@ -9,6 +10,8 @@ import java.util.Date;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.eaton.elements.Button;
 import com.eaton.elements.DropDownElement;
@@ -134,7 +137,11 @@ public class SupportPage extends PageBase {
     
     public String getDatabaseValidationText() {
       WebElement databaseInfo = getDatabaseInfoSection().getSection();
+      
       WebElement databaseValidation = databaseInfo.findElement(By.cssSelector("a"));
+      
+      SeleniumTestSetup.scrollToElement(databaseValidation);
+      
       return databaseValidation.getText();
     }
     

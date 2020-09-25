@@ -25,11 +25,8 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.tools.trends.TrendCreatePage;
 import com.eaton.pages.tools.trends.TrendsListPage;
-import com.github.javafaker.Faker;
 
 public class TrendCreateTests extends SeleniumTestSetup {
-
-    private Faker faker;
 
     private TrendCreatePage createPage;
     private DriverExtensions driverExt;
@@ -37,7 +34,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        faker = SeleniumTestSetup.getFaker();
+        setRefreshPage(false);
 
         navigate(Urls.Tools.TREND_CREATE);
         createPage = new TrendCreatePage(driverExt, Urls.Tools.TREND_CREATE);
@@ -45,11 +42,14 @@ public class TrendCreateTests extends SeleniumTestSetup {
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(createPage);
+        if(getRefreshPage()) {
+            refreshPage(createPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
-    public void trendCreate_PageTitle_Correct() {
+    public void trendCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Trend";
 
         String actualPageTitle = createPage.getPageTitle();
@@ -58,9 +58,10 @@ public class TrendCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
-    public void trendCreate_AllFields_Successfully() {
+    public void trendCreate_AllFields_Success() {
+        setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT Trend " + timeStamp;
+        String name = "AT All Fields " + timeStamp;
 
         String point = "Analog Point for Create Trend";
         String label = "AT Marker";
@@ -95,9 +96,10 @@ public class TrendCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
-    public void trendCreate_RequiredFieldsOnly_Successfully() {
+    public void trendCreate_RequiredFieldsOnly_Success() {
+        setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT Trend " + timeStamp;
+        String name = "AT Required Only " + timeStamp;
 
         final String EXPECTED_MSG = name + " saved successfully.";
 
@@ -112,7 +114,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendCreate_TabTitles_Correct() {
+    public void trendCreate_Tab_TitlesCorrect() {
         SoftAssertions softly = new SoftAssertions();
 
         List<String> titles = createPage.getTabElement().getTitles();
@@ -124,7 +126,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendCreate_GeneralSectionTitle_Correct() {
+    public void trendCreate_GeneralSection_TitleCorrect() {
         String tab = "Setup";
 
         createPage.getTabElement().clickTabAndWait(tab);
@@ -135,7 +137,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendCreate_GeneralSectionLabels_Correct() {
+    public void trendCreate_GeneralSection_LabelsCorrect() {
         String tab = "Setup";
 
         createPage.getTabElement().clickTabAndWait(tab);
@@ -147,7 +149,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendCreate_PointSetupSectionTitle_Correct() {
+    public void trendCreate_PointSetupSection_TitleCorrect() {
         String tab = "Setup";
 
         createPage.getTabElement().clickTabAndWait(tab);
@@ -158,7 +160,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendCreate_PointSectionTableHeaders_Correct() {
+    public void trendCreate_PointSection_TableHeadersCorrect() {
         String tab = "Setup";
 
         createPage.getTabElement().clickTabAndWait(tab);
@@ -170,7 +172,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
-    public void trendCreate_MarkerSetupSectionTitle_Correct() {
+    public void trendCreate_MarkerSetupSection_TitleCorrect() {
         String tab = "Additional Options";
 
         createPage.getTabElement().clickTabAndWait(tab);
@@ -182,9 +184,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
     public void trendCreate_MarkerSetupTableHeaders_Correct() {
-        String tab = "Additional Option";
-
-        createPage.getTabElement().clickTabAndWait(tab);
+        createPage.getTabElement().clickTabAndWait("Additional Option");
 
         List<String> expectedLabels = new ArrayList<>(List.of("Label", "Color", "Axis", "Value", ""));
 
@@ -195,8 +195,10 @@ public class TrendCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
     public void trendCreate_Name_RequiredValidation() {
+        createPage.getTabElement().clickTabAndWait("Setup");
         final String EXPECTED_MSG = "Name is required.";
-
+        
+        createPage.getName().clearInputValue();
         createPage.getSave().click();
 
         String errorMsg = createPage.getName().getValidationError();
@@ -206,17 +208,14 @@ public class TrendCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
     public void trendCreate_Name_AlreadyExistsValidation() {
-        String trendName;
-
+        createPage.getTabElement().clickTabAndWait("Setup");
         final String EXPECTED_MSG = "Name already exists";
 
         Pair<JSONObject, JSONObject> pair = TrendCreateService.buildAndCreateTrendOnlyRequiredFields();
 
         JSONObject response = pair.getValue1();
 
-        trendName = response.getString("name");
-
-        navigate(Urls.Tools.TREND_CREATE);
+        String trendName = response.getString("name");
 
         createPage.getName().setInputValue(trendName);
         createPage.getSave().click();
@@ -228,19 +227,19 @@ public class TrendCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
     public void trendCreate_Cancel_NavigatesToCorrectUrl() {
-        final String EXPECTED_TITLE = "Trend";
+        setRefreshPage(true);
 
         createPage.getCancel().click();
+        
+        boolean loaded = waitForUrlToLoad(Urls.Tools.TRENDS_LIST, Optional.empty());
 
-        String actualPageTitle = createPage.getPageTitle();
-
-        assertThat(actualPageTitle).contains(EXPECTED_TITLE);
+        assertThat(loaded).isTrue();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
     public void trendCreate_Name_InvalidCharsValidation() {
+        createPage.getTabElement().clickTabAndWait("Setup");
         String name = "AT Trends " + "/ \\ , ' \" |";
-
         final String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
 
         createPage.getName().setInputValue(name);
@@ -253,17 +252,10 @@ public class TrendCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
     public void trendCreate_Name_MaxLength40Chars() {
-        String name = "AT Trend" + faker.number().digits(32);
+        createPage.getTabElement().clickTabAndWait("Setup");
 
-        final String EXPECTED_MSG = name + " saved successfully.";
+        String maxLength = createPage.getName().getMaxLength();
 
-        createPage.getName().setInputValue(name);
-        createPage.getSave().click();
-
-        TrendsListPage listPage = new TrendsListPage(driverExt);
-
-        String userMsg = listPage.getUserMessage();
-
-        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+        assertThat(maxLength).isEqualTo("40");
     }
 }

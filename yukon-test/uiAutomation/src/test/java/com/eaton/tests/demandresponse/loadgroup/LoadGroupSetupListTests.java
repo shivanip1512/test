@@ -27,7 +27,6 @@ import com.eaton.pages.demandresponse.loadgroup.LoadGroupListPage;
 public class LoadGroupSetupListTests extends SeleniumTestSetup {
 
     private LoadGroupListPage listPage;
-    private SoftAssertions softly;
     private List<String> names;
     private List<String> types;
     private DriverExtensions driverExt;
@@ -38,22 +37,25 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        softly = new SoftAssertions();
+        setRefreshPage(false);
+        
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         filterName = "LoadGroup " + timeStamp;
-        String[] ecobeeLdGrpName = { "123ecobee" + timeStamp, "2@$Ecobeegrp" + timeStamp, "ecobeeldgrplower" + timeStamp, "ECOBEELDGRPUPPER" + timeStamp, filterName };
+        String[] ecobeeLdGrpName = { "123ecobee" + timeStamp, "2@$Ecobeegrp" + timeStamp, "ecobeeldgrplower" + timeStamp,
+                "ECOBEELDGRPUPPER" + timeStamp, filterName };
         String[] itronLdGrpName = { "12itron" + timeStamp, "it$ron@group" + timeStamp };
 
         for (int i = 0; i < ecobeeLdGrpName.length; i++) {
             new LoadGroupEcobeeCreateBuilder.Builder(Optional.of(ecobeeLdGrpName[i]))
-                .create();
+                    .create();
         }
 
         for (int j = 0; j < itronLdGrpName.length; j++) {
-            Pair<JSONObject, JSONObject> itronLdGrpCreate = new LoadGroupItronCreateBuilder.Builder(Optional.of(itronLdGrpName[j]))
-                    .withRelay(Optional.empty())
-                    .create();
-            
+            Pair<JSONObject, JSONObject> itronLdGrpCreate = new LoadGroupItronCreateBuilder.Builder(
+                    Optional.of(itronLdGrpName[j]))
+                            .withRelay(Optional.empty())
+                            .create();
+
             JSONObject response = itronLdGrpCreate.getValue1();
 
             name = response.getString("name");
@@ -66,14 +68,17 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
         names = listPage.getTable().getDataRowsTextByCellIndex(1);
         types = listPage.getTable().getDataRowsTextByCellIndex(2);
     }
-    
+
     @AfterMethod
     public void afterMethod() {
-        refreshPage(listPage);
+        if(getRefreshPage()) {
+            refreshPage(listPage);    
+        }
+        setRefreshPage(false);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpSetupList_PageTitleCorrect() {
+    public void ldGrpSetupList_PageTitle_Correct() {
         final String EXPECTED_TITLE = "Setup";
 
         String actualPageTitle = listPage.getPageTitle();
@@ -82,7 +87,8 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpSetupList_ColumnHeadersCorrect() {
+    public void ldGrpSetupList_ColumnHeaders_Correct() {
+        SoftAssertions softly = new SoftAssertions();
         final int EXPECTED_COUNT = 2;
 
         List<String> headers = this.listPage.getTable().getListTableHeaders();
@@ -96,7 +102,7 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpSetupList_SortNamesAscCorrectly() {
+    public void ldGrpSetupList_SortNamesAsc_Correct() {
         Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
         navigate(Urls.DemandResponse.LOAD_GROUP_SETUP_NAME_ASC);
 
@@ -105,7 +111,7 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpSetupList_SortNamesDescCorrectly() {
+    public void ldGrpSetupList_SortNamesDesc_Correct() {
         Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
         Collections.reverse(names);
 
@@ -116,7 +122,7 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpSetupList_SortTypesAscCorrectly() {
+    public void ldGrpSetupList_SortTypesAsc_Correct() {
         Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
 
         navigate(Urls.DemandResponse.LOAD_GROUP_SETUP_TYPE_ASC);
@@ -126,19 +132,20 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpSetupList_SortTypesDescCorrectly() {
+    public void ldGrpSetupList_SortTypesDesc_Correct() {
         Collections.sort(types, String.CASE_INSENSITIVE_ORDER);
         Collections.reverse(types);
 
         navigate(Urls.DemandResponse.LOAD_GROUP_SETUP_TYPE_DESC);
 
         List<String> typesList = listPage.getTable().getDataRowsTextByCellIndex(2);
-        
+
         assertThat(types).isEqualTo(typesList);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpSetupList_FilterByName_DoesNotExist_NoResultsFound() {
+    public void ldGrpSetupList_FilterByNameDoesNotExist_NoResultsFound() {
+        setRefreshPage(true);
         final String EXPECTED_MSG = "No results found.";
 
         listPage.getName().setInputValue("dsdddadadadadadada");
@@ -149,7 +156,7 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpSetupList_LdGroupNameLinkCorrect() {
+    public void ldGrpSetupList_LdGroupNameLink_Correct() {
         listPage.getName().setInputValue(name);
         listPage.getSaveBtn().click();
 
@@ -161,7 +168,8 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpSetupList_CreateOpens_CorrectModal() {
+    public void ldGrpSetupList_Create_OpensCorrectModal() {
+        setRefreshPage(true);
         String EXPECTED_CREATE_MODEL_TITLE = "Create Demand Response Object";
 
         CreateDRObjectModal createModel = listPage.showAndWaitCreateDemandResponseObject();
@@ -171,7 +179,8 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpSetupList_FilterByType_CorrectResultsFound() {
+    public void ldGrpSetupList_FilterByType_ResultsCorrect() {
+        setRefreshPage(true);
         listPage.getTypes().selectItemByText("Itron Group");
 
         List<String> actualTypes = listPage.getTable().getDataRowsTextByCellIndex(2);
@@ -180,7 +189,8 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpSetupList_FilterByName_CorrectResultsFound() {
+    public void ldGrpSetupList_FilterByName_ResultsCorrect() {
+        setRefreshPage(true);
         listPage.getName().setInputValue(filterName);
         listPage.getSaveBtn().click();
 

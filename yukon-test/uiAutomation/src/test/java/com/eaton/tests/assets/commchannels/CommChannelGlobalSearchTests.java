@@ -37,7 +37,7 @@ public class CommChannelGlobalSearchTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
-    public void commChannelGlobalSearch_ResultNavigatesTo_CommChannelListPage() {
+    public void commChannelGlobalSearch_SearchAndSelectCommChannelsResult_NavigatesToCommChannelListPage() {
         throw new SkipException("QA task created: QA-6229");
         
 //        globalSearchPage.getSearchBoxElement().setSearchValueAndClickResult("Comm Channels");

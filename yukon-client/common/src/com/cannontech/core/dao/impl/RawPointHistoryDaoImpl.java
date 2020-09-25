@@ -69,7 +69,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Sets; 
 
 public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     private static final Logger log = YukonLogManager.getLogger(RawPointHistoryDaoImpl.class);
@@ -962,7 +962,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             return builder.build();
         }
     }
-
+    
     @Override
     public List<PointValueHolder> getIntervalPointData(int pointId, Date startDate, Date stopDate, ChartInterval resolution, Mode mode) {
         // unlike the other code, this expects to process things in increasing order
@@ -1092,28 +1092,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
     	yukonTemplate.update(sql);
     }
-    
-    @Override
-    public List<PointValueQualityHolder> getMostRecentValues(int pointId, int rows){
-
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT");
-        sql.append("pointId,");
-        sql.append("timestamp,");
-        sql.append("value,");
-        sql.append("quality,");
-        sql.append("pointtype");
-        sql.append("FROM (");
-        sql.append("  SELECT ROW_NUMBER() OVER (ORDER BY Timestamp DESC, Changeid DESC) as rowNumber, rph.pointId, rph.timestamp, rph.value, rph.quality, p.pointtype");
-        sql.append("  FROM RawPointHistory rph");
-        sql.append("  JOIN Point p ON (rph.pointId = p.pointId)");
-        sql.append("  WHERE rph.pointId").eq(pointId);
-        sql.append(") T");
-        sql.append("WHERE T.rowNumber").lte(rows);
-
-        return yukonTemplate.query(sql, new LiteRPHQualityRowMapper());
-    }
-    
+        
     @Override
     public void deletePointData(int pointId, double value, Instant timestamp) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
