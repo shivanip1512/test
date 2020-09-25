@@ -108,14 +108,14 @@ public class MacroLoadGroupApiDoc {
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
                                 .body(macroLoadGroup)
                                 .when()
-                                .post(ApiCallHelper.getProperty("saveMacroLoadGroup"))
+                                .post(ApiCallHelper.getProperty("macroLoadGroups"))
                                 .then()
                                 .extract()
                                 .response();
 
         macroGroupId = response.path(CONTEXT_MACRO_GROUP_ID);
         assertTrue("Macro Group Id should not be Null", macroGroupId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
+        assertTrue("Status code should be 201", response.statusCode() == 201);
     }
 
     /**
@@ -137,7 +137,7 @@ public class MacroLoadGroupApiDoc {
                                 .contentType("application/json")
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
                                 .when()
-                                .get(ApiCallHelper.getProperty("getMacroloadgroup") + macroGroupId)
+                                .get(ApiCallHelper.getProperty("macroLoadGroups") + "/" + macroGroupId)
                                 .then()
                                 .extract()
                                 .response();
@@ -166,7 +166,7 @@ public class MacroLoadGroupApiDoc {
                                .header("Authorization","Bearer " + ApiCallHelper.authToken)
                                .body(macroLoadGroup)
                                .when()
-                               .post(ApiCallHelper.getProperty("updateMacroLoadGroup")+ macroGroupId)
+                               .put(ApiCallHelper.getProperty("macroLoadGroups")+ "/" + macroGroupId)
                                .then()
                                .extract()
                                .response();
@@ -193,7 +193,7 @@ public class MacroLoadGroupApiDoc {
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
                                 .body(loadGroupCopy)
                                 .when()
-                                .post(ApiCallHelper.getProperty("copyMacroLoadGroup")+ macroGroupId)
+                                .post(ApiCallHelper.getProperty("macroLoadGroups")+ "/" + macroGroupId + "/copy")
                                 .then()
                                 .extract()
                                 .response();
@@ -210,12 +210,8 @@ public class MacroLoadGroupApiDoc {
      */
     @Test(dependsOnMethods = { "Test_MacroLoadGroup_Copy" })
     public void MacroLoadGroupCopy_Delete(ITestContext context) {
-        MockLMDto lmDeleteObject = MockLMDto.builder()
-                                    .name(context.getAttribute("macroLoadGroupCopy").toString())
-                                    .build();
-        
         ExtractableResponse<?> response =
-            ApiCallHelper.delete("deleteMacroLoadGroup", lmDeleteObject, context.getAttribute(CONTEXT_COPIED_MACRO_GROUP_ID).toString());
+            ApiCallHelper.delete("macroLoadGroups", "/" + context.getAttribute(CONTEXT_COPIED_MACRO_GROUP_ID).toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
@@ -237,7 +233,7 @@ public class MacroLoadGroupApiDoc {
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
                                 .body(lmDeleteMacroLoadGroupObject)
                                 .when()
-                                .delete(ApiCallHelper.getProperty("deleteMacroLoadGroup") + macroGroupId)
+                                .delete(ApiCallHelper.getProperty("macroLoadGroups") + "/" +  macroGroupId)
                                 .then()
                                 .extract()
                                 .response();
