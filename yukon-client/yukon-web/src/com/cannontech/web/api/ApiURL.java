@@ -38,10 +38,7 @@ public class ApiURL {
     public static final String drControlAreaUrl = "/dr/controlAreas";
     public static final String drNormalStateUrl = "/dr/controlAreas/normalState/";
 
-    public static final String drControlScenarioRetrieveUrl = "/dr/setup/controlScenario/";
-    public static final String drControlScenarioCreateUrl = "/dr/setup/controlScenario/create";
-    public static final String drControlScenarioUpdateUrl = "/dr/setup/controlScenario/update/";
-    public static final String drControlScenarioDeleteUrl = "/dr/setup/controlScenario/delete/";
+    public static final String drControlScenarioUrl = "/dr/controlScenarios";
 
     public static final String commChannelUrl = "/devices/commChannels";
 

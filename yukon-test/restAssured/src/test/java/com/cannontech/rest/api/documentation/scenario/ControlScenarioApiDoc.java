@@ -143,14 +143,14 @@ public class ControlScenarioApiDoc {
                 .header("Authorization", "Bearer " + ApiCallHelper.authToken)
                 .body(scenario)
                 .when()
-                .post(ApiCallHelper.getProperty("saveControlScenario"))
+                .post(ApiCallHelper.getProperty("controlScenarios"))
                 .then()
                 .extract()
                 .response();
 
         scenario.setId(response.path(ControlScenarioHelper.CONTEXT_CONTROL_SCENARIO_ID));
         assertTrue("Control Scenario Id should not be Null", scenario.getId() != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
+        assertTrue("Status code should be 201", response.statusCode() == 201);
 
     }
 
@@ -166,7 +166,7 @@ public class ControlScenarioApiDoc {
                 .contentType("application/json")
                 .header("Authorization", "Bearer " + ApiCallHelper.authToken)
                 .when()
-                .get(ApiCallHelper.getProperty("getControlScenario") + scenario.getId())
+                .get(ApiCallHelper.getProperty("controlScenarios") + "/" + scenario.getId())
                 .then()
                 .extract()
                 .response();
@@ -187,7 +187,7 @@ public class ControlScenarioApiDoc {
                 .header("Authorization", "Bearer " + ApiCallHelper.authToken)
                 .body(scenario)
                 .when()
-                .post(ApiCallHelper.getProperty("updateControlScenario") + scenario.getId())
+                .put(ApiCallHelper.getProperty("controlScenarios") + "/" + scenario.getId())
                 .then()
                 .extract()
                 .response();
@@ -206,14 +206,13 @@ public class ControlScenarioApiDoc {
         MockLMDto deleteScenario = MockLMDto.builder().name(scenario.getName()).build();
 
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
-                requestFields(fieldWithPath("name").type(JsonFieldType.STRING).description("Control Scenario name")),
-                responseFields(fieldWithPath("paoId").type(JsonFieldType.NUMBER).description("Control Scenario Id"))))
+                responseFields(fieldWithPath("id").type(JsonFieldType.NUMBER).description("Control Scenario Id"))))
                 .accept("application/json")
                 .contentType("application/json")
                 .header("Authorization", "Bearer " + ApiCallHelper.authToken)
                 .body(deleteScenario)
                 .when()
-                .delete(ApiCallHelper.getProperty("deleteControlScenario") + scenario.getId())
+                .delete(ApiCallHelper.getProperty("controlScenarios") + "/" + scenario.getId())
                 .then()
                 .extract()
                 .response();

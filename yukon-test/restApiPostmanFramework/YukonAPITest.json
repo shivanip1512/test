@@ -193,8 +193,7 @@
 									"path": [
 										"api",
 										"dr",
-										"constraints",
-										"create"
+										"constraints"
 									]
 								}
 							},
@@ -375,15 +374,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/loadProgram/availablePrograms",
+									"raw": "{{api-url}}/api/dr/loadPrograms/availablePrograms",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"loadProgram",
+										"loadPrograms",
 										"availablePrograms"
 									]
 								}
@@ -407,7 +405,7 @@
 									"raw": "{\r\n   \"name\" : \"s16\"\r\n}"
 								},
 								"url": {
-									"raw": "http://127.0.0.1:8080/yukon/api/dr/setup/controlScenario/delete/37269",
+									"raw": "http://127.0.0.1:8080/yukon/api/dr/controlScenarios/37269",
 									"protocol": "http",
 									"host": [
 										"127",
@@ -420,9 +418,7 @@
 										"yukon",
 										"api",
 										"dr",
-										"setup",
-										"controlScenario",
-										"delete",
+										"controlScenarios",
 										"37269"
 									]
 								}
@@ -435,15 +431,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/controlScenario/37419",
+									"raw": "{{api-url}}/api/dr/controlScenarios/37419",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"controlScenario",
+										"controlScenarios",
 										"37419"
 									]
 								}
@@ -453,7 +448,7 @@
 						{
 							"name": "Update",
 							"request": {
-								"method": "POST",
+								"method": "PUT",
 								"header": [
 									{
 										"key": "Content-Type",
@@ -467,16 +462,14 @@
 									"raw": "{\r\n   \"name\":\"s17\",\r\n   \"allPrograms\":[\r\n      {\r\n         \"programId\":56,\r\n         \"startOffsetInMinutes\":143,\r\n         \"stopOffsetInMinutes\":14,\r\n         \"gears\":[\r\n            {\r\n               \"gearNumber\":1\r\n            }\r\n         ]\r\n      },\r\n      {\r\n         \"programId\":11583,\r\n         \"startOffsetInMinutes\":12,\r\n         \"stopOffsetInMinutes\":1,\r\n         \"gears\":[\r\n            {\r\n               \"gearNumber\":7\r\n            }\r\n         ]\r\n      }\r\n   ]\r\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/controlScenario/update/{id}",
+									"raw": "{{api-url}}/api/dr/controlScenarios/{id}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"controlScenario",
-										"update",
+										"controlScenarios",
 										"{id}"
 									]
 								}
@@ -500,16 +493,14 @@
 									"raw": "{\r\n   \"name\":\"s26\",\r\n   \"allPrograms\":[\r\n      {\r\n         \"programId\":56,\r\n         \"startOffsetInMinutes\":36,\r\n         \"stopOffsetInMinutes\":2,\r\n         \"gears\":[\r\n            {\r\n               \"gearNumber\":1\r\n            }\r\n         ]\r\n      }\r\n   ]\r\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/controlScenario/create",
+									"raw": "{{api-url}}/api/dr/controlScenarios",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"controlScenario",
-										"create"
+										"controlScenarios"
 									]
 								}
 							},

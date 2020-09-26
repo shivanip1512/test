@@ -542,9 +542,9 @@ public class ControlAreaApiTest {
 
         //control scenario creation
         MockControlScenario controlScenario = ControlScenarioHelper.buildControlScenario(loadProgram);
-        ExtractableResponse<?> responseCS = ApiCallHelper.post("saveControlScenario", controlScenario);
+        ExtractableResponse<?> responseCS = ApiCallHelper.post("controlScenarios", controlScenario);
 
-        assertTrue(responseCS.statusCode() == 200, "Status code should be 200");
+        assertTrue(responseCS.statusCode() == 201, "Status code should be 201");
 
         //update controlarea by unassigned Load Program
         control_Area.setProgramAssignment(null);

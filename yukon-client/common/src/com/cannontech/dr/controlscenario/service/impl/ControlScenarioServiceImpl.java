@@ -90,11 +90,11 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
 
     @Override
     @Transactional
-    public int delete(int controlScenarioId, String controlScenarioName) {
+    public int delete(int controlScenarioId) {
         LiteYukonPAObject controlScenario = dbCache.getAllLMScenarios().stream()
-                                                                       .filter(scenario -> scenario.getLiteID() == controlScenarioId && scenario.getPaoName().equalsIgnoreCase(controlScenarioName))
+                                                                       .filter(scenario -> scenario.getLiteID() == controlScenarioId)
                                                                        .findFirst()
-                                                                       .orElseThrow(() -> new NotFoundException("Scenario Id and Name combination not found"));
+                                                                       .orElseThrow(() -> new NotFoundException("Scenario Id not found"));
 
         YukonPAObject lmScenario = (YukonPAObject) LiteFactory.createDBPersistent(controlScenario);
         dbPersistentDao.performDBChange(lmScenario, TransactionType.DELETE);
