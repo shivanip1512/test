@@ -64,8 +64,8 @@
             <%@ include file="jsSortedTable.jsp" %>
         </c:otherwise>
     </c:choose>
-        <dt:pickerIncludes/>
-    
+  
+    <dt:pickerIncludes/>
     <tags:simplePopup id="tdc-popup" title=""/>
     <tags:simplePopup id="manual-entry-popup" title=""/>
     <cti:includeScript link="/resources/js/pages/yukon.tools.tdc.js"/>
