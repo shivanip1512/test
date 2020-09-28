@@ -52,9 +52,9 @@ public class LoadGroupDigiSepDetailTests extends SeleniumTestSetup {
         }
         setRefreshPage(false);
     }
-
+    
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpDigiSepDetail_Delete_Success() {
+    public void ldGrpDetail_Delete_Success() {
         setRefreshPage(true);
         Pair<JSONObject, JSONObject> pair = LoadGroupDigiSepCreateBuilder.buildLoadGroup()
                 .create();        
@@ -76,7 +76,7 @@ public class LoadGroupDigiSepDetailTests extends SeleniumTestSetup {
     }    
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpDigiSepDetail_Copy_Success() {
+    public void ldGrpDetail_Copy_Success() {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         Pair<JSONObject, JSONObject> pair = LoadGroupDigiSepCreateBuilder.buildLoadGroup()
@@ -99,11 +99,6 @@ public class LoadGroupDigiSepDetailTests extends SeleniumTestSetup {
     }
     
     @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpDigiSepDetail_GeneralSection_Displayed() {
-        assertThat(detailPage.getGeneralSection().getSection()).isNotNull();
-    }
-    
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpDigiSepDetail_DeviceClassSection_Displayed() {
         assertThat(detailPage.getDeviceClassSection().getSection()).isNotNull();
     }
@@ -116,34 +111,6 @@ public class LoadGroupDigiSepDetailTests extends SeleniumTestSetup {
     @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpDigiSepDetail_TimingsSection_Displayed() {
         assertThat(detailPage.getTimingSection().getSection()).isNotNull();
-    }
-    
-    
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpDigiSepDetail_OptionalAttributesSection_Displayed() {
-        assertThat(detailPage.getOptionalAttributesSection().getSection()).isNotNull();
-    }
-    
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpDigiSepDetail_GeneralSection_LabelsCorrect() {
-        SoftAssertions softly = new SoftAssertions();
-        List<String> labels = detailPage.getGeneralSection().getSectionLabels();
-        
-        softly.assertThat(2).isEqualTo(labels.size());
-        softly.assertThat("Name:").isEqualTo(labels.get(0));
-        softly.assertThat("Type:").isEqualTo(labels.get(1));
-        softly.assertAll();
-    }
-    
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpDigiSepDetail_GeneralSection_ValuesCorrect() {
-        SoftAssertions softly = new SoftAssertions();
-        List<String> values = detailPage.getGeneralSection().getSectionValues();
-        
-        softly.assertThat(2).isEqualTo(values.size());
-        softly.assertThat(response.get("name")).isEqualTo(values.get(0));
-        softly.assertThat("Digi SEP Group").isEqualTo(values.get(1));
-        softly.assertAll();
     }
     
     @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
@@ -212,33 +179,6 @@ public class LoadGroupDigiSepDetailTests extends SeleniumTestSetup {
         softly.assertThat(2).isEqualTo(values.size());
         softly.assertThat(values.get(0)).contains(rampIn.trim());
         softly.assertThat(values.get(1)).contains(rampOut.trim());
-        softly.assertAll();
-    }
-    
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpDigiSepDetail_OptionalAttributesSection_LabelsCorrect() {
-        SoftAssertions softly = new SoftAssertions();
-        List<String> labels = detailPage.getOptionalAttributesSection().getSectionLabels();
-        
-        softly.assertThat(3).isEqualTo(labels.size());
-        softly.assertThat("kW Capacity:").isEqualTo(labels.get(0));
-        softly.assertThat("Disable Group:").isEqualTo(labels.get(1));
-        softly.assertThat("Disable Control:").isEqualTo(labels.get(2));
-        softly.assertAll();
-    }
-    
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
-    public void ldGrpDigiSepDetail_OptionalAttributesSection_ValuesCorrect() {
-        SoftAssertions softly = new SoftAssertions();
-        List<String> values = detailPage.getOptionalAttributesSection().getSectionValues();
-        
-        String disableGroup = response.getBoolean("disableGroup") ? "Yes" : "No";
-        String disableControl = response.getBoolean("disableControl") ? "Yes" : "No";
-        
-        softly.assertThat(3).isEqualTo(values.size());
-        softly.assertThat(String.valueOf(response.getDouble("kWCapacity"))).isEqualTo(values.get(0));
-        softly.assertThat(disableGroup).isEqualTo((values.get(1)));
-        softly.assertThat(disableControl).isEqualTo(values.get(2));
         softly.assertAll();
     }        
 }

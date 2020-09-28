@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.javatuples.Pair;
 import org.json.JSONObject;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -20,30 +21,44 @@ import com.eaton.pages.demandresponse.DemandResponseSetupPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 
 public class LoadGroupMeterDisconnectDetailTest extends SeleniumTestSetup {
-	
-	 private DriverExtensions driverExt;
-	 private Integer id;
-	 private String name;
-	 private LoadGroupDetailPage detailPage;
-	
-	 @BeforeClass(alwaysRun = true)
-	 public void beforeClass() {
-		 driverExt = getDriverExt();   
-	 }
+	private DriverExtensions driverExt;
+    private LoadGroupDetailPage detailPage;
+    private JSONObject response;
+
+    @BeforeClass(alwaysRun = true)
+    public void beforeClass() {
+        driverExt = getDriverExt();
+        setRefreshPage(false);
+        
+        Pair<JSONObject, JSONObject> pair = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
+				.create();
+        
+        response = pair.getValue1();
+        int id = response.getInt("id");
+        
+        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
+        detailPage = new LoadGroupDetailPage(driverExt, id);
+    }
+    
+    @AfterMethod
+    public void afterMethod() {
+        if(getRefreshPage()) {
+            refreshPage(detailPage);    
+        }
+        setRefreshPage(false);
+    }
 	 
 	 @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	 public void ldGrpMeterDisconnectDetail_Delete_Success() {
+		 setRefreshPage(true);
 		 Pair<JSONObject, JSONObject> pair = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
 														.create();
 		 JSONObject response = pair.getValue1(); 
-		 id = response.getInt("id");
-		 navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-				
-	     name = response.getString("name");
+		 int id = response.getInt("id");
+		 String name = response.getString("name");
 	     final String expected_msg = name + " deleted successfully.";
 	     navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
 	     
-	     detailPage = new LoadGroupDetailPage(driverExt, id);
 	     ConfirmModal  confirmModal = detailPage.showDeleteLoadGroupModal(); 
 	     confirmModal.clickOkAndWaitForModalToClose();
 	     
@@ -54,37 +69,19 @@ public class LoadGroupMeterDisconnectDetailTest extends SeleniumTestSetup {
 	     assertThat(userMsg).isEqualTo(expected_msg);
 	}
 	
-	 @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	 public void  ldGrpMeterDisconnectDetail_DeleteModal_ConfirmMessageCorrect() {
-		 Pair<JSONObject, JSONObject> pair = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
-														.create();
-		 JSONObject response = pair.getValue1(); 
-		 id = response.getInt("id");
-		 navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
-				
-	     name = response.getString("name");
-	     final String expected_msg = "Are you sure you want to delete " + "\"" + name + "\""+ "?";
-	     navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
-	     
-	     detailPage = new LoadGroupDetailPage(driverExt, id);
-	     ConfirmModal  confirmModal = detailPage.showDeleteLoadGroupModal(); 
-	     
-	     assertThat(confirmModal.getConfirmMsg()).isEqualTo(expected_msg);
-	}
-	
-	 @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+	  @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
 	    public void ldGrpMeterDisconnectDetail_Copy_Success() {
+		 	setRefreshPage(true);
 		 	Pair<JSONObject, JSONObject> pair = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
 					.create();
 	        JSONObject response = pair.getValue1();
-	        id = response.getInt("id");
-	        name = response.getString("name");
+	        int id = response.getInt("id");
+	        String name = response.getString("name");
 	        final String copyName= "Copy of " + name;
 	        final String expected_msg = copyName + " copied successfully.";
 	        
 	        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
 	        
-	        detailPage = new LoadGroupDetailPage(driverExt, id);
 	        CopyLoadGroupModal modal = detailPage.showCopyLoadGroupModal();
 	        modal.getName().setInputValue(copyName);
 	        modal.clickOkAndWaitForModalToClose();
