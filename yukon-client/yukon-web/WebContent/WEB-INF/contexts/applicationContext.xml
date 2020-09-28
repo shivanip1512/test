@@ -1508,5 +1508,5 @@
     <bean class="com.cannontech.web.admin.service.impl.CustomAttributeServiceImpl"/>
 
     <bean class="com.cannontech.web.api.aggregateIntervalDataReport.AggregateIntervalDataReportValidator"/>
-    <bean class="com.cannontech.web.tools.reports.service.AggregateIntervalReportServiceImpl"/>
+
 </beans>
