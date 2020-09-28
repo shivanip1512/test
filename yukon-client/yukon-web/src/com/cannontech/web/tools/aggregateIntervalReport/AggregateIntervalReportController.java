@@ -127,7 +127,7 @@ public class AggregateIntervalReportController {
                 }
             }
 
-            if (resp.getStatusCode() == HttpStatus.CREATED) {
+            if (resp.getStatusCode() == HttpStatus.OK) {
                 List<String> headerRow = new ArrayList<String>();
                 headerRow.add(accessor.getMessage("yukon.common.date"));
                 headerRow.add(accessor.getMessage("yukon.common.time"));
