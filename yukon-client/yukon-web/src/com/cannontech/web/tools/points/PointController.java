@@ -11,7 +11,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.jfree.util.Log;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -85,6 +89,8 @@ import com.cannontech.web.common.flashScope.FlashScopeListType;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.common.pao.service.YukonPointHelper;
 import com.cannontech.web.editor.point.StaleData;
+import com.cannontech.web.input.DatePropertyEditorFactory;
+import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.stars.rtu.service.RtuService;
 import com.cannontech.web.tools.points.model.LitePointModel;
@@ -116,6 +122,7 @@ public class PointController {
     @Autowired private CopyPointValidator copyPointValidator;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private YukonPointHelper pointHelper;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     
     private static final String baseKey = "yukon.web.modules.tools.point";
 
@@ -124,6 +131,11 @@ public class PointController {
         protected void doValidation(PointBackingBean bean, Errors errors) {
             if (bean.getValue() != null) {
                 YukonValidationUtils.checkIsValidDouble(errors, "value", bean.getValue());
+            }
+            if (!errors.hasFieldErrors("timestamp")) {
+                if (bean.getTimestamp() == null) {
+                    errors.rejectValue("timestamp", "yukon.web.error.isBlank");
+                }
             }
         }
     };
@@ -536,6 +548,7 @@ public class PointController {
 
         PointBackingBean backingBean = new PointBackingBean();
         backingBean.setPointId(pointId);
+        backingBean.setTimestamp(Instant.now());
         LitePoint litePoint = pointDao.getLitePoint(pointId);
         PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(pointId);
         if (litePoint.getPointTypeEnum() == PointType.Status
@@ -545,6 +558,9 @@ public class PointController {
             backingBean.setStateId((int) pointValue.getValue());
         } else {
             backingBean.setValue(pointValue.getValue());
+        }
+        if (litePoint.getPointTypeEnum().isCalcPoint()) {
+            model.addAttribute("allowDateTimeSelection", true);
         }
         LiteYukonPAObject liteYukonPAO = dbCache.getAllPaosMap().get(litePoint.getPaobjectID());
         model.put("deviceName", liteYukonPAO.getPaoName());
@@ -557,8 +573,10 @@ public class PointController {
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_POINT_DATA, level = HierarchyPermissionLevel.UPDATE)
     public String manualEntrySend(HttpServletResponse response, YukonUserContext userContext,
             @ModelAttribute("backingBean") PointBackingBean backingBean, BindingResult bindingResult, ModelMap model,
-            FlashScope flashScope) throws IOException {
-
+            FlashScope flashScope, Boolean specifiedDateTime) throws IOException {
+        if (BooleanUtils.isNotTrue(specifiedDateTime)) {
+            backingBean.setTimestamp(Instant.now());
+        }
         double newPointValue;
         LitePoint litePoint = pointDao.getLitePoint(backingBean.getPointId());
         if (litePoint.getPointTypeEnum() == PointType.Status
@@ -571,6 +589,10 @@ public class PointController {
                 model.put("deviceName", liteYukonPAO.getPaoName());
                 model.put("pointName", litePoint.getPointName());
                 model.addAttribute("backingBean", backingBean);
+                if (litePoint.getPointTypeEnum().isCalcPoint()) {
+                    model.addAttribute("allowDateTimeSelection", true);
+                }
+                model.addAttribute("specifiedDateTime", specifiedDateTime);
                 List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
                 flashScope.setError(messages);
                 return "../common/pao/manualEntryPopup.jsp";
@@ -578,10 +600,15 @@ public class PointController {
 
             newPointValue = backingBean.getValue();
         }
-        pointService.addPointData(backingBean.getPointId(), newPointValue, userContext);
+        pointService.addPointData(backingBean.getPointId(), newPointValue, backingBean.getTimestamp(), userContext);
 
         response.setContentType("application/json");
         response.getWriter().write(JsonUtils.toJson(Collections.singletonMap("action", "close")));
         return null;
+    }
+    
+    @InitBinder
+    public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
+        datePropertyEditorFactory.setupInstantPropertyEditor(binder, userContext, BlankMode.NULL);
     }
 }

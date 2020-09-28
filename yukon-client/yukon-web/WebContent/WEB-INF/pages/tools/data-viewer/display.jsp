@@ -3,6 +3,7 @@
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
@@ -63,6 +64,8 @@
             <%@ include file="jsSortedTable.jsp" %>
         </c:otherwise>
     </c:choose>
+        <dt:pickerIncludes/>
+    
     <tags:simplePopup id="tdc-popup" title=""/>
     <tags:simplePopup id="manual-entry-popup" title=""/>
     <cti:includeScript link="/resources/js/pages/yukon.tools.tdc.js"/>
