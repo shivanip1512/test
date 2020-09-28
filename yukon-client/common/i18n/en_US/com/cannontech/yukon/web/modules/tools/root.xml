@@ -550,4 +550,44 @@
 
 	<entry key="yukon.web.modules.tools.collectionActions.deviceUploadFailed">{0} errors were encountered while processing the import file.</entry>
     <entry key="yukon.web.modules.tools.collectionActions.unsupportedFileFormat">Incorrect File format.</entry>
+    
+        <!-- Aggregate Interval Report -->
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.pageName">Aggregate Interval Data Report</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.missingIntervalData">Missing Interval Data</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.operation">Operation</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.missingData.helpTitle">Missing Interval Data Help</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.missingData.helpText">
+            <![CDATA[
+            The following options are available to select from to control how missing interval data will be displayed:
+            <ul style="list-style-type:none;padding-left:10px;">
+                <li><b>Skip Record</b> - Interval is completely omitted from report.</li>
+                <li><b>Leave Blank</b> - Interval is shown in report, but value is left blank.</li>
+                <li><b>Partial</b> - Interval is shown and value is calculated with missing data.</li>
+                <li><b>Fixed Value</b> - The value entered will be displayed.</li>
+            </ul>
+        ]]>
+    </entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.operation.helpTitle">Operation Help</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.operation.helpText">
+            <![CDATA[
+            The following options are available to control how value aggregation will work:
+            <ul style="list-style-type:none;padding-left:10px;">
+                <li><b>Add</b> - Value is calculated by adding all devices' values for the attribute at the interval timestamp.</li>
+                <li><b>Max</b> - Value is calculated by choosing the highest value among all devices' values for the attribute at the interval timestamp.</li>
+            </ul>
+        ]]>
+    </entry>
+    <!-- Missing Interval Data Enum -->
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.missingIntervalData.SKIP">Skip Record</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.missingIntervalData.BLANK">Leave Blank</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.missingIntervalData.PARTIAL">Partial</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.missingIntervalData.FIXED_VALUE">Fixed Value</entry>
+    <!-- Operation Enum -->
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.operation.ADD">Add</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.operation.MAX">Max</entry>
+    <!-- Intervals -->
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.interval.MINUTES_15">15 minutes</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.interval.MINUTES_30">30 minutes</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.interval.HOURS_1">1 hour</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.interval.DAYS_1">Daily (midnight)</entry>
 </properties>
