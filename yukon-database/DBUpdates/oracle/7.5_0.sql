@@ -3,6 +3,8 @@
 /******************************************/ 
 
 /* @start YUK-21642 */
+/* errors are ignored for an edge case where the tables had been already modified */
+/* @error ignore-begin */
 DROP INDEX INDX_DynRfnDevData_GatewayId;
 
 ALTER TABLE DynamicRfnDeviceData
@@ -38,6 +40,7 @@ RENAME COLUMN LastTransferTimeNew
 TO LastTransferTime;
 
 INSERT INTO DBUpdates VALUES ('YUK-21642', '7.5.0', SYSDATE);
+/* @error ignore-end */
 /* @end YUK-21642 */
 
 /* @start YUK-20982 */
