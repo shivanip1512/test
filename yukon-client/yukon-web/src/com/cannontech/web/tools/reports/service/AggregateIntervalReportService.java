@@ -30,7 +30,7 @@ public interface AggregateIntervalReportService {
         }
         
         @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-        public static MissingIntervalData getMissinIntervalData(String missingIntervalDataJsonString) {
+        public static MissingIntervalData getMissingIntervalData(String missingIntervalDataJsonString) {
             try {
                 return MissingIntervalData.valueOf(missingIntervalDataJsonString);
             } catch (IllegalArgumentException e) {
@@ -61,7 +61,7 @@ public interface AggregateIntervalReportService {
     }
 
     class AggregateIntervalReportFilter {
-        private List<PaoIdentifier> devices;
+        private List<Integer> devices;
         private String deviceGroup;
         private Attribute attribute;
         private Instant startDate;
@@ -128,11 +128,11 @@ public interface AggregateIntervalReportService {
             this.operation = operation;
         }
 
-        public List<PaoIdentifier> getDevices() {
+        public List<Integer> getDevices() {
             return devices;
         }
 
-        public void setDevices(List<PaoIdentifier> devices) {
+        public void setDevices(List<Integer> devices) {
             this.devices = devices;
         }
 

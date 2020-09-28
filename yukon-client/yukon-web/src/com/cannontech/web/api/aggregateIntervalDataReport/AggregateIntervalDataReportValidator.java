@@ -17,14 +17,16 @@ public class AggregateIntervalDataReportValidator extends SimpleValidator<Aggreg
 
     @SuppressWarnings("deprecation")
     @Override
-    protected void doValidation(AggregateIntervalReportFilter aggregateIntervalReportFilter, Errors errors) {
-        if (CollectionUtils.isEmpty(aggregateIntervalReportFilter.getDevices())) {
-            YukonValidationUtils.checkIsBlank(errors, "deviceGroup", aggregateIntervalReportFilter.getDeviceGroup(), false);
+    protected void doValidation(AggregateIntervalReportFilter filter, Errors errors) {
+        if (CollectionUtils.isEmpty(filter.getDevices())) {
+            YukonValidationUtils.checkIsBlank(errors, "deviceGroup", filter.getDeviceGroup(), false);
         }
-        if (aggregateIntervalReportFilter.getMissingIntervalData() == MissingIntervalData.FIXED_VALUE) {
+        if (filter.getMissingIntervalData() == MissingIntervalData.FIXED_VALUE) {
             YukonValidationUtils.checkIsBlank(errors, "missingIntervalDataValue",
-                    aggregateIntervalReportFilter.getMissingIntervalDataValue(), false);
+                    filter.getMissingIntervalDataValue(), false);
         }
+        YukonValidationUtils.checkIfEndDateGreaterThenStartDate("startDate", "endDate", filter.getStartDate(), filter.getEndDate(), false, errors);
+        
     }
 
 }
