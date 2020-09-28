@@ -248,6 +248,7 @@ public class PaoTypeTest {
                             PaoType.SIMPLE_SCHEDULE,
                             PaoType.SYSTEM,
                             PaoType.VIRTUAL_SYSTEM,
+                            PaoType.VIRTUAL_METER,
                             PaoType.RFN_GATEWAY,
                             PaoType.GWY800,
                             PaoType.GWY801,
