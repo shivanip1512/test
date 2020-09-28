@@ -130,7 +130,7 @@ public class UsageThresholdReportController {
         try {
             collection = deviceCollectionFactory.createDeviceCollection(request);
         } catch (Exception e) {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.usageThresholdReport.report.criteria.invalidDevicesSelected"));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.error.invalidDevicesOrDeviceGroup"));
             redirectAtts.addFlashAttribute("criteria", criteria);
             return "redirect:/amr/usageThresholdReport/report";
         }
