@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.Instant;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
@@ -367,6 +368,13 @@ public class YukonValidationUtils extends ValidationUtils {
         }
     }
 
+    
+    public static void checkIfEndDateGreaterThenStartDate(String startField, String endField, Instant startDate, Instant endDate, boolean allowZeroInterval, Errors errors) {
+        if((startDate.isEqual(endDate) && !allowZeroInterval) || endDate.isBefore(startDate)) {
+            // This needs to be fixed, startField doesnt explain problem field very well, figure it out lol
+            errors.rejectValue(startField, "yukon.web.error.invalidInterval", new Object[] { startDate, endDate }, "");
+        }
+    }
 }
 
 
