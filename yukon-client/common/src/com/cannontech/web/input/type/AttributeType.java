@@ -3,6 +3,7 @@ package com.cannontech.web.input.type;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorSupport;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -40,8 +41,10 @@ public class AttributeType extends DefaultValidatedType<Attribute> {
             @Override
             public void setAsText(String attr) throws IllegalArgumentException {
             	
-            	Attribute attribute = attributeService.resolveAttributeName(attr);
-                setValue(attribute);
+                if (StringUtils.isNotBlank(attr)) {
+                    Attribute attribute = attributeService.resolveAttributeName(attr);
+                    setValue(attribute);
+                }
             }
             
             @Override

@@ -1,5 +1,7 @@
 package com.cannontech.web.tools.reports.service;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.joda.time.Instant;
 import java.util.List;
 
@@ -22,7 +24,7 @@ public interface AggregateIntervalReportService {
         PARTIAL,
         FIXED_VALUE;
 
-        private final static String keyPrefix = "";
+        private final static String keyPrefix = "yukon.web.modules.tools.aggregateIntervalReport.";
 
         @Override
         public String getFormatKey() {
@@ -43,7 +45,7 @@ public interface AggregateIntervalReportService {
         ADD,
         MAX;
 
-        private final static String keyPrefix = "";
+        private final static String keyPrefix = "yukon.web.modules.tools.aggregateIntervalReport.";
 
         @Override
         public String getFormatKey() {
@@ -143,6 +145,12 @@ public interface AggregateIntervalReportService {
         public void setMissingIntervalDataValue(String missingIntervalDataValue) {
             this.missingIntervalDataValue = missingIntervalDataValue;
         }
+        
+        @Override    
+        public String toString() {
+            return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                + System.getProperty("line.separator");
+        } 
     }
 
     /**

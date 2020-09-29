@@ -443,7 +443,7 @@ public enum TimeIntervals {
     }
     
     private static final Set<TimeIntervals> dataReportAggregateIntervals = ImmutableSet.of(
-            TimeIntervals.HOURS_1, TimeIntervals.MINUTES_15, TimeIntervals.MINUTES_30, TimeIntervals.DAYS_1);
+            TimeIntervals.MINUTES_15, TimeIntervals.MINUTES_30, TimeIntervals.HOURS_1, TimeIntervals.DAYS_1);
 
     /**
      * Returns the list of intervals used by Aggregate Interval Data Report
