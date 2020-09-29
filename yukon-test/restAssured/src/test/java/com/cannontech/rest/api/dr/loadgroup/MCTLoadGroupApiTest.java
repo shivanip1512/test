@@ -194,7 +194,7 @@ public class MCTLoadGroupApiTest {
                 "Expected message should be - Validation error");
         assertTrue(
                 ValidationHelper.validateFieldError(createResponse, "name",
-                        "Cannot be blank or include any of the following characters: / \\ , ' \" |"),
+                        "Name must not contain any of the following characters: / \\ , ' \" |."),
                 "Expected code in response is not correct");
     }
 

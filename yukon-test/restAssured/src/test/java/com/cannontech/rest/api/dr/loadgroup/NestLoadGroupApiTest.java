@@ -151,8 +151,8 @@ public class NestLoadGroupApiTest {
     public Object[][] getGroupNameData(ITestContext context) {
 
         return new Object[][] { { "", "Name is required.", 422 },
-            { "Test\\Nest", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
-            { "Test,Nest", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
+            { "Test\\Nest", "Name must not contain any of the following characters: / \\ , ' \" |.", 422 },
+            { "Test,Nest", "Name must not contain any of the following characters: / \\ , ' \" |.", 422 },
             { "TestNestMoreThanSixtyCharacter_TestNestMoreThanSixtyCharacters", "Exceeds maximum length of 60.", 422 },
                 /* { context.getAttribute("Nest_GrpName"), "Name must be unique.", 422 } */};
     }

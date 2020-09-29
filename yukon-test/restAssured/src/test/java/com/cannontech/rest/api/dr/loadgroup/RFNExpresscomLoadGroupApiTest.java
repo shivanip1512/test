@@ -185,7 +185,7 @@ public class RFNExpresscomLoadGroupApiTest {
     public void loadGroupRFNExpresscom_07_PhysicalAddressGreaterThanMaxValue() {
         Log.startTestCase("loadGroupRFNExpresscom_07_PhysicalAddressGreaterThanMaxValue");
         loadGroup = (MockLoadGroupExpresscom) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RFN_EXPRESSCOMM);
-        loadGroup.setSplinter(Integer.valueOf(100));
+        loadGroup.setSplinter(Integer.valueOf(255));
         loadGroup.setGeo(Integer.valueOf(65535));
         loadGroup.setZip(Integer.valueOf(16777215));
         loadGroup.setUser(Integer.valueOf(65535));

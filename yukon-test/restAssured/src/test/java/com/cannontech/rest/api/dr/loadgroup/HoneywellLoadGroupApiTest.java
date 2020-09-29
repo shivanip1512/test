@@ -202,8 +202,8 @@ public class HoneywellLoadGroupApiTest {
     public Object[][] getGroupNameData(ITestContext context) {
 
         return new Object[][] { { "", "Name is required.", 422 },
-                { "Test\\Honeywell", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
-                { "Test,Honeywell", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
+                { "Test\\Honeywell", "Name must not contain any of the following characters: / \\ , ' \" |.", 422 },
+                { "Test,Honeywell", "Name must not contain any of the following characters: / \\ , ' \" |.", 422 },
                 { "TestHoneywellMoreThanSixtyCharacter_TestHoneywellMoreThanSixtyCharacters", "Exceeds maximum length of 60.",
                         422 },
                 { context.getAttribute("Honeywell_GrpName"), "Name must be unique.", 422 } };
