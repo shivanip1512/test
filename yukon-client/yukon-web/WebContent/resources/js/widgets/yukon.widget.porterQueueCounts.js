@@ -44,7 +44,7 @@ yukon.widget.porterQueueCounts = (function () {
             legend = {
                 enabled: true,
                 align: 'center',
-                backgroundColor: '#fefefe',
+                backgroundColor: yg.colors.WHITE,
                 borderColor: yg.colors.GRAY_LIGHT,
                 borderWidth: 1,
                 borderRadius: 1,

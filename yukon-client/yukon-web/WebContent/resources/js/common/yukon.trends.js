@@ -32,7 +32,7 @@ yukon.trends = (function () {
             var legend = {
                     enabled: true,
                     align: 'center',
-                    backgroundColor: '#fefefe',
+                    backgroundColor: yg.colors.WHITE,
                     borderColor: yg.colors.GRAY_LIGHT,
                     borderWidth: 1,
                     borderRadius: 1,
@@ -40,9 +40,6 @@ yukon.trends = (function () {
                     verticalAlign: 'bottom',
                     shadow: true,
                     title : {
-                        style:{
-                            "color" :"#ff0000"
-                            },
                         text:trend.truncateMessage
                     },
                     maxHeight: 80
