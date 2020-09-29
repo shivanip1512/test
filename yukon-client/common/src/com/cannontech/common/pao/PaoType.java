@@ -526,7 +526,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             SENTINEL,
             SIXNET,
             TRANSDATA_MARKV,
-            VECTRON
+            VECTRON,
+            VIRTUAL_METER
             );
         
         rfTypes = ImmutableSet.of(

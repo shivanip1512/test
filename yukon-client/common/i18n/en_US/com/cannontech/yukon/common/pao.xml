@@ -248,6 +248,7 @@
     <entry key="yukon.common.pao.SIMPLE_SCHEDULE">Simple Schedule</entry>
     <entry key="yukon.common.pao.SYSTEM">System</entry>
     <entry key="yukon.common.pao.VIRTUAL_SYSTEM">Virtual System</entry>
+    <entry key="yukon.common.pao.VIRTUAL_METER">Virtual Meter</entry>
 
     <entry key="yukon.common.pao.WEATHER_LOCATION">Weather Location</entry>
 
