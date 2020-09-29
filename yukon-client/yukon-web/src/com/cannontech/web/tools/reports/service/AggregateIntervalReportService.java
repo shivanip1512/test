@@ -153,7 +153,7 @@ public interface AggregateIntervalReportService {
     }
 
     /**
-     * Returns the list if rows that represent a row in CSV file. Empty list is returned if no data found.
+     * Returns the list of rows that represent a row in CSV file. Empty list is returned if no data found.
      */
     List<List<String>> getIntervalDataReport(AggregateIntervalReportFilter filter, YukonUserContext context);
 }
