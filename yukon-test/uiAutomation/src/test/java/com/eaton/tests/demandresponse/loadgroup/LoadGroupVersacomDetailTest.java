@@ -2,18 +2,17 @@ package com.eaton.tests.demandresponse.loadgroup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.assertj.core.api.SoftAssertions;
 import org.javatuples.Pair;
 import org.json.JSONObject;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.eaton.builders.drsetup.loadgroup.LoadGroupVersacomCreateBuilder;
-import com.eaton.builders.drsetup.loadgroup.LoadGroupVersacomCreateBuilder.Builder;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.CopyLoadGroupModal;
 import com.eaton.framework.DriverExtensions;
@@ -21,131 +20,149 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
-import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
+import com.eaton.pages.demandresponse.loadgroup.LoadGroupVersacomDetailsPage;
 import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 
 import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupVersacomDetailTest extends SeleniumTestSetup {
+	private DriverExtensions driverExt;
+    private LoadGroupVersacomDetailsPage detailPage;
+    private JSONObject response;
+    private int id;
 
-//    private DriverExtensions driverExt;
-//    private Integer id;
-//    private String name;
-//    Builder builder;
-//    private LoadGroupDetailPage detailPage;
-//
-//    @BeforeClass(alwaysRun = true)
-//    public void beforeClass() {
-//        driverExt = getDriverExt();
-//    }
-//
-//    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-//    public void ldGrpVersacomDetail_Delete_Success() {
-//        builder = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup();
-//        Pair<JSONObject, JSONObject> pair = builder.create();
-//        JSONObject response = pair.getValue1();
-//        id = response.getInt("id");
-//        name = response.getString("name");
-//        final String expected_msg = name + " deleted successfully.";
-//        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
-//
-//        detailPage = new LoadGroupDetailPage(driverExt, id);
-//        ConfirmModal confirmModal = detailPage.showDeleteLoadGroupModal();
-//        confirmModal.clickOkAndWaitForModalToClose();
-//
-//        waitForPageToLoad("Setup", Optional.empty());
-//        DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_GROUP);
-//        String userMsg = setupPage.getUserMessage();
-//
-//        assertThat(userMsg).isEqualTo(expected_msg);
-//    }
-//
-//    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-//    public void ldGrpVersacomDetail_Copy_Success() {
-//        builder = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup();
-//        Pair<JSONObject, JSONObject> pair = builder.create();
-//        JSONObject response = pair.getValue1();
-//        id = response.getInt("id");
-//        name = response.getString("name");
-//        final String copyName = "Copy of " + name;
-//        final String expected_msg = copyName + " copied successfully.";
-//
-//        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
-//
-//        detailPage = new LoadGroupDetailPage(driverExt, id);
-//        CopyLoadGroupModal modal = detailPage.showCopyLoadGroupModal();
-//        modal.getName().setInputValue(copyName);
-//        modal.clickOkAndWaitForModalToClose();
-//
-//        waitForPageToLoad("Load Group: " + copyName, Optional.of(8));
-//        String userMsg = detailPage.getUserMessage();
-//
-//        assertThat(userMsg).isEqualTo(expected_msg);
-//    }
-//
-//    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-//    public void ldGrpVersacomDetail_AssertLabels_Success() {
-//        SoftAssertions softly = new SoftAssertions();
-//        builder = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup();
-//        Pair<JSONObject, JSONObject> pair = builder.create();
-//        JSONObject response = pair.getValue1();
-//        id = response.getInt("id");
-//        name = response.getString("name");
-//        detailPage = new LoadGroupDetailPage(driverExt, id);
-//
-//        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
-//
-//        List<String> expectedLabels = new ArrayList<>(List.of("Usage:"));
-//        List<String> actualLabels = detailPage.getPageSection("Address Usage").getSectionLabels();
-//        softly.assertThat(expectedLabels).containsExactlyElementsOf(actualLabels);
-//
-//        actualLabels = detailPage.getPageSection("Addressing").getSectionLabels();
-//        expectedLabels = new ArrayList<>(List.of("Utility Address:", "Section Address:", "", "", ""));
-//        softly.assertThat(expectedLabels).containsExactlyElementsOf(actualLabels);
-//
-//        actualLabels = detailPage.getPageSection("Relay Usage").getSectionLabels();
-//        expectedLabels = new ArrayList<>(List.of("Relay Usage:"));
-//        softly.assertThat(expectedLabels).containsExactlyElementsOf(actualLabels);
-//
-//        softly.assertAll();
-//    }
-//
-//    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-//    public void ldGrpVersacomDetail_AssertValues_Success() {
-//        SoftAssertions softly = new SoftAssertions();
-//        builder = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup();
-//        Pair<JSONObject, JSONObject> pair = builder.create();
-//        JSONObject response = pair.getValue1();
-//        id = response.getInt("id");
-//        name = response.getString("name");
-//        detailPage = new LoadGroupDetailPage(driverExt, id);
-//
-//        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
-//
-//        ExtractableResponse<?> getResponse = DrSetupGetRequest.getLoadGroup(id);
-//
-//        List<String> sectionValues = detailPage.getPageSection("Address Usage").getSectionValues();
-//
-//        softly.assertThat(sectionValues.size()).isEqualTo(1);
-//        String addressUsageRespenseElement1 = getResponse.path("LM_GROUP_VERSACOM.addressUsage[0]").toString();
-//        String addressUsageElement1 = addressUsageRespenseElement1.substring(0, 1).toUpperCase()
-//                + addressUsageRespenseElement1.substring(1).toLowerCase();
-//        String addressUsageRespenseElement2 = getResponse.path("LM_GROUP_VERSACOM.addressUsage[1]").toString();
-//        String addressUsageElement2 = addressUsageRespenseElement2.substring(0, 1).toUpperCase()
-//                + addressUsageRespenseElement2.substring(1).toLowerCase();
-//        softly.assertThat(sectionValues.get(0)).isEqualTo(addressUsageElement1 + "," + "  " + addressUsageElement2);
-//
-//        sectionValues = detailPage.getPageSection("Addressing").getSectionValues();
-//        softly.assertThat(sectionValues.size()).isEqualTo(5);
-//        softly.assertThat(sectionValues.get(0)).isEqualTo(getResponse.path("LM_GROUP_VERSACOM.utilityAddress").toString());
-//        softly.assertThat(sectionValues.get(1)).isEqualTo(getResponse.path("LM_GROUP_VERSACOM.sectionAddress").toString());
-//
-//        sectionValues = detailPage.getPageSection("Relay Usage").getSectionValues();
-//        softly.assertThat(sectionValues.size()).isEqualTo(1);
-//        String relayUsageRespense = getResponse.path("LM_GROUP_VERSACOM.relayUsage[0]").toString();
-//        String relayUsage = relayUsageRespense.substring(0, 1).toUpperCase() + relayUsageRespense.substring(1).toLowerCase();
-//        softly.assertThat(sectionValues.get(0)).isEqualTo(relayUsage.replace("_", " "));
-//
-//        softly.assertAll();
-//    }
+    @BeforeClass(alwaysRun = true)
+    public void beforeClass() {
+        driverExt = getDriverExt();
+        setRefreshPage(false);
+        
+        Pair<JSONObject, JSONObject> pair = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup().create();
+        
+        response = pair.getValue1();
+        id = response.getInt("id");
+        
+        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
+        detailPage = new LoadGroupVersacomDetailsPage(driverExt, id);
+    }
+    
+    @AfterMethod
+    public void afterMethod() {
+        if(getRefreshPage()) {
+            refreshPage(detailPage);    
+        }
+        setRefreshPage(false);
+    }
+
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpVersacomDetail_Delete_Success() {
+        setRefreshPage(true);
+        Pair<JSONObject, JSONObject> pair = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup().create();
+        JSONObject response = pair.getValue1();
+        int id = response.getInt("id");
+        String name = response.getString("name");
+        final String expected_msg = name + " deleted successfully.";
+        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
+
+        ConfirmModal confirmModal = detailPage.showDeleteLoadGroupModal();
+        confirmModal.clickOkAndWaitForModalToClose();
+
+        waitForPageToLoad("Setup", Optional.empty());
+        DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_GROUP);
+        String userMsg = setupPage.getUserMessage();
+
+        assertThat(userMsg).isEqualTo(expected_msg);
+    }
+
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpVersacomDetail_Copy_Success() {
+        setRefreshPage(true);
+        Pair<JSONObject, JSONObject> pair = LoadGroupVersacomCreateBuilder.buildDefaultVersacomLoadGroup().create();
+        JSONObject response = pair.getValue1();
+        int id = response.getInt("id");
+        String name = response.getString("name");
+        final String copyName = "Copy of " + name;
+        final String expected_msg = copyName + " copied successfully.";
+
+        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
+
+        CopyLoadGroupModal modal = detailPage.showCopyLoadGroupModal();
+        modal.getName().setInputValue(copyName);
+        modal.clickOkAndWaitForModalToClose();
+
+        waitForPageToLoad("Load Group: " + copyName, Optional.of(8));
+        String userMsg = detailPage.getUserMessage();
+
+        assertThat(userMsg).isEqualTo(expected_msg);
+    }
+    
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    public void ldGrpVersacomDetail_AddressUsage_LabelsCorrect() {
+    	SoftAssertions softly = new SoftAssertions();
+    	List<String> labels = detailPage.getAddressUsageSection().getSectionLabels();
+    	softly.assertThat(labels.size()).isEqualTo(1);
+    	softly.assertThat(labels.get(0)).isEqualTo("Usage:");
+    	
+    	softly.assertAll();
+    }
+    
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    public void ldGrpVersacomDetail_AddressingSection_LabelsCorrect() {
+    	SoftAssertions softly = new SoftAssertions();
+    	List<String> labels = detailPage.getAddressingSection().getSectionLabels();
+    	softly.assertThat(labels.size()).isEqualTo(5);
+    	softly.assertThat(labels.get(0)).isEqualTo("Utility Address:");
+    	softly.assertThat(labels.get(1)).isEqualTo("Section Address:");
+    	
+    	softly.assertAll();
+    }
+    
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    public void ldGrpVersacomDetail_RelayUsageSection_LabelsCorrect() {
+    	SoftAssertions softly = new SoftAssertions();
+    	List<String> labels = detailPage.getRelayUsageSection().getSectionLabels();
+    	softly.assertThat(labels.size()).isEqualTo(1);
+    	softly.assertThat(labels.get(0)).isEqualTo("Relay Usage:");
+    	
+    	softly.assertAll();
+    }
+    
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    public void ldGrpVersacomDetail_AddressUsage_ValuesCorrect() {
+    	setRefreshPage(true);
+    	SoftAssertions softly = new SoftAssertions();
+    	List<String> actualValues = detailPage.getAddressUsageSection().getSectionValues();
+        ExtractableResponse<?> getResponse = DrSetupGetRequest.getLoadGroup(id);
+    	
+    	navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
+    	softly.assertThat(getResponse.path("LM_GROUP_VERSACOM.addressUsage[0]").toString()).isEqualTo(actualValues.get(0).split(",")[0].toUpperCase());
+    	softly.assertThat(getResponse.path("LM_GROUP_VERSACOM.addressUsage[1]").toString()).isEqualTo(actualValues.get(0).split(",")[1].trim().toUpperCase());
+    	
+    	softly.assertAll();
+    }
+    
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    public void ldGrpVersacomDetail_AddressingSection_ValuesCorrect() {
+    	SoftAssertions softly = new SoftAssertions();
+    	List<String> values = detailPage.getAddressingSection().getSectionValues();
+    	softly.assertThat(values.size()).isEqualTo(5);
+    	softly.assertThat(response.get("utilityAddress").toString()).isEqualTo(values.get(0));
+    	softly.assertThat(response.get("sectionAddress").toString()).isEqualTo(values.get(1));
+    	
+    	softly.assertAll();
+    }
+    
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    public void ldGrpVersacomDetail_RelayUsageSection_ValuesCorrect() {
+    	setRefreshPage(true);
+    	SoftAssertions softly = new SoftAssertions();
+    	List<String> values = detailPage.getRelayUsageSection().getSectionValues();
+        ExtractableResponse<?> getResponse = DrSetupGetRequest.getLoadGroup(id);
+    	
+    	navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
+    	
+    	softly.assertThat(values.size()).isEqualTo(1);
+    	softly.assertThat(getResponse.path("LM_GROUP_VERSACOM.relayUsage[0]").toString().replace("_", " ")).isEqualTo(values.get(0).trim().toUpperCase());
+    	
+    	softly.assertAll();
+    }
 }
