@@ -26,8 +26,8 @@
                     htmlEscape="true" />
             </tags:nameValue2>
             <tags:nameValue2 nameKey="yukon.common.dateRange">
-                <dt:dateTime path="startDate"/>
-                <dt:dateTime path="endDate"/>
+                <dt:dateTime name="startDate" value="${filter.startDate}"/>
+                <dt:dateTime name="endDate" value="${filter.endDate}"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey="yukon.common.interval">
                 <form:select path="interval">

@@ -29,8 +29,10 @@ yukon.tools.aggregateIntervalReport = (function () {
             if (_initialized) return;
             
             /** Display fixed value text box if Missing Interval Data is Fixed Value */
-            $(document).on('click', '.js-missing-data', function (ev) {
+            $(document).on('change', '.js-missing-data', function (ev) {
                 $('.js-missing-data-value').toggleClass('dn', $(this).val() !== $('#fixedValueOption').val());
+                //remove validation error if exists
+                $("span[id='missingIntervalDataValue.errors']").remove();
             });
             
             _initialized = true;
