@@ -216,9 +216,14 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
                 intervals.put(first.toDate().getTime(), first.toDate());
                 first = first.toDateTime().plusSeconds(interval.getSeconds()).toInstant();
             }
-            log.info("user selected:[{}-{}] intervals created:[{}]", format(startDate, context), format(stopDate, context),
-                    intervals.values().stream().map(time -> format(new Instant(time.getTime()), context))
-                            .collect(Collectors.joining(",")));
+            if (log.isDebugEnabled()) {
+                log.debug("user selected:[{}-{}] intervals created:[{}]", format(startDate, context), format(stopDate, context),
+                        intervals.values().stream().map(time -> format(new Instant(time.getTime()), context))
+                                .collect(Collectors.joining(",")));
+            } else {
+                log.info("user selected:[{}-{}] intervals created:{}", format(startDate, context), format(stopDate, context),
+                        intervals.size());
+            }
             
             //15 min intervals
             //user selected:[02/04/2020 01:27:00-02/04/2020 02:27:00] intervals created:[02/04/2020 01:30:00,02/04/2020 01:45:00,02/04/2020 02:00:00,02/04/2020 02:15:00]
