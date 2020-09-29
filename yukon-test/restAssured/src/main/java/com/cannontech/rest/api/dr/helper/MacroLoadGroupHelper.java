@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockLMPaoDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.documentation.macroloadgroup.MacroLoadGroupApiDoc;
@@ -21,11 +20,11 @@ public class MacroLoadGroupHelper {
 
     public static MockMacroLoadGroup createMacroLoadGroup(String groupName, List<MockLMPaoDto> assignedLoadGroups) {
         MockMacroLoadGroup macroLoadGroup = buildMacroLoadGroup(groupName, assignedLoadGroups);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveMacroLoadGroup", macroLoadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("macroLoadGroups", macroLoadGroup);
         Integer macroGroupId = createResponse.path(MacroLoadGroupApiDoc.CONTEXT_MACRO_GROUP_ID);
         log.info("macroGroupId:" + macroGroupId);
         log.info("Name:" + createResponse.path("name"));
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
         assertTrue("Macro Group Id(paoId) should not be Null", macroGroupId != null);
         macroLoadGroup.setId(macroGroupId);
         return macroLoadGroup;
@@ -34,7 +33,7 @@ public class MacroLoadGroupHelper {
     public static MockMacroLoadGroup updateMacroLoadGroup(String loadGroupIDtoUpdate, String updatedName,
             List<MockLMPaoDto> assignedLoadGroupsUpdated) {
         MockMacroLoadGroup macroLoadGroup = buildMacroLoadGroup(updatedName, assignedLoadGroupsUpdated);
-        ExtractableResponse<?> updateResponse = ApiCallHelper.post("updateMacroLoadGroup", macroLoadGroup, loadGroupIDtoUpdate);
+        ExtractableResponse<?> updateResponse = ApiCallHelper.put("macroLoadGroups", macroLoadGroup, "/" + loadGroupIDtoUpdate.toString());
         Integer macroGroupId = updateResponse.path(MacroLoadGroupApiDoc.CONTEXT_MACRO_GROUP_ID);
         assertTrue("Status code should be 200", updateResponse.statusCode() == 200);
         assertTrue("Macro Group Id(paoId) should not be Null", macroGroupId != null);
@@ -44,7 +43,7 @@ public class MacroLoadGroupHelper {
     }
 
     public static Integer getMacroLoadGroup(String macroLoadGroupId) {
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("getMacroloadgroup", macroLoadGroupId);
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("macroLoadGroups", "/" + macroLoadGroupId.toString());
         Integer macroGroupId = getResponse.path("id");
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
         assertTrue("Macro Load Group Id(paoId) should not be Null", macroGroupId != null);
@@ -54,8 +53,8 @@ public class MacroLoadGroupHelper {
 
     public static Integer copyMacroLoadGroup(String newMacroLoadGroupName, String macroLoadGroupIdToBeCopied) {
         MockLoadGroupCopy macroloadGroupCopy = MockLoadGroupCopy.builder().name(newMacroLoadGroupName).build();
-        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyMacroLoadGroup", macroloadGroupCopy,
-                macroLoadGroupIdToBeCopied);
+        ExtractableResponse<?> copyResponse = ApiCallHelper.post("macroLoadGroups", macroloadGroupCopy,
+               "/" + macroLoadGroupIdToBeCopied.toString() + "/copy" );
         Integer copiedMacroLoadGroupId = copyResponse.path(MacroLoadGroupApiDoc.CONTEXT_MACRO_GROUP_ID);
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
         assertTrue("Macro Load Group Id(paoId) should not be Null", copiedMacroLoadGroupId != null);
@@ -65,9 +64,7 @@ public class MacroLoadGroupHelper {
     }
 
     public static boolean deleteMacroLoadGroup(String macroLoadGroupName, String macroLoadGroupId) {
-        MockLMDto macroloadGroupDelete = MockLMDto.builder().name(macroLoadGroupName).build();
-        ExtractableResponse<?> deleteResponse = ApiCallHelper.delete("deleteMacroLoadGroup", macroloadGroupDelete,
-                macroLoadGroupId);
+        ExtractableResponse<?> deleteResponse = ApiCallHelper.delete("macroLoadGroups", "/" + macroLoadGroupId.toString());
         assertTrue("Status code should be 200", deleteResponse.statusCode() == 200);
         return true;
     }
