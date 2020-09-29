@@ -57,7 +57,6 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
     
     @Override
     public List<List<String>> getIntervalDataReport(AggregateIntervalReportFilter filter, YukonUserContext context) {
-        
         List<PaoIdentifier> devices = getDevices(filter);
         log.info("Generating report date range:{}-{} devices:{} interval:{}", format(filter.getStartDate(), context),
                 format(filter.getEndDate(), context), devices.size(), filter.getInterval());
@@ -72,24 +71,11 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
         if(!intervalParser.hasValidInterval()) {
             return new ArrayList<>();
         }
-
-        // > start date <= end date
-    /*   Range<Instant> range = Range.exclusiveInclusive(filter.getStartDate(), filter.getEndDate());
-
-       ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData =
-                rawPointHistoryDao.getAttributeData(devices,
-                                                    filter.getAttribute(),
-                                                    range, //> start date <= end date
-                                                    null,
-                                                    false, //excludes disabled devices
-                                                    Order.FORWARD,
-                                                    null,
-                                                    null);*/
         
         ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData =
                 rawPointHistoryDao.getAttributeData(devices,
                                                     filter.getAttribute(),
-                                                    intervalParser.getRange(),
+                                                    intervalParser.getRange(), //range is adjusted to first interval (inclusive) last interval (inclusive)
                                                     null,
                                                     false, //excludes disabled devices
                                                     Order.FORWARD,
@@ -130,7 +116,7 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
                         .collect(Collectors.toList());
             }
             // one row per device
-            boolean isCompleteData =  data != null && data.size() == devices.size();
+            boolean isCompleteData = data != null && data.size() == devices.size();
 
             String value = null;
             if (isCompleteData) {
