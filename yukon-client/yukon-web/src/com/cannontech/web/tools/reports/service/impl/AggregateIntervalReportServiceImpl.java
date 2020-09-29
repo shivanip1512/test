@@ -105,18 +105,22 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
         intervals.forEach(interval -> {
             List<PointValueQualityHolder> data = intervalData.get(interval);
             
-            if(data.size() > devices.size()) {
-                /* multiple rows per point
-                 * example: point id = 4485645 09/27/2020 23:00:00 value:1 and  point id = 4485645 09/27/2020 23:00:00 value:2
-                 */
-                
-                //keep first row
-                data = data.stream().collect(Collectors.groupingBy(p -> p.getId())).values().stream()
-                        .map(values -> values.stream().findFirst().get())
-                        .collect(Collectors.toList());
+            boolean isCompleteData = false;
+            if (data != null) {
+                if (data.size() > devices.size()) {
+                    /*
+                     * multiple rows per point
+                     * example: point id = 4485645 09/27/2020 23:00:00 value:1 and point id = 4485645 09/27/2020 23:00:00 value:2
+                     */
+
+                    // keep first row
+                    data = data.stream().collect(Collectors.groupingBy(p -> p.getId())).values().stream()
+                            .map(values -> values.stream().findFirst().get())
+                            .collect(Collectors.toList());
+                }
+                // one row per device
+                isCompleteData = data.size() == devices.size();
             }
-            // one row per device
-            boolean isCompleteData = data != null && data.size() == devices.size();
 
             String value = null;
             if (isCompleteData) {
