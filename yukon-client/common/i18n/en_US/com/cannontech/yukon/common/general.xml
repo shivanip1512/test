@@ -282,6 +282,7 @@
 <entry key="yukon.common.settings">Settings</entry>
 <entry key="yukon.common.serialNumber">Serial Number</entry>
 <entry key="yukon.common.showAll">Show All</entry>
+<entry key="yukon.common.specified">Specified</entry>
 <entry key="yukon.common.status">Status</entry>
 <entry key="yukon.common.start">Start</entry>
 <entry key="yukon.common.stop">Stop</entry>
