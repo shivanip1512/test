@@ -368,11 +368,20 @@ public class YukonValidationUtils extends ValidationUtils {
         }
     }
 
-    
-    public static void checkIfEndDateGreaterThenStartDate(String startField, String endField, Instant startDate, Instant endDate, boolean allowZeroInterval, Errors errors) {
+    /**
+     * Check if fieldValue <= targetValue, if true throw error
+     * @param startField - model object name you want to display error for
+     * @param startDate - Instant value of startDate
+     * @param endDate - Instant value of endDate
+     * @param allowZeroInterval - Can startDate = endDate
+     */
+    public static void checkIfEndDateGreaterThenStartDate(String startField, Instant startDate, Instant endDate, boolean allowZeroInterval, Errors errors) {
+        String errorMessage = "yukon.web.error.date.startDateBeforeEndDate";
         if((startDate.isEqual(endDate) && !allowZeroInterval) || endDate.isBefore(startDate)) {
-            // This needs to be fixed, startField doesnt explain problem field very well, figure it out lol
-            errors.rejectValue(startField, "yukon.web.error.invalidInterval", new Object[] { startDate, endDate }, "");
+            if(allowZeroInterval) {
+                errorMessage = "yukon.web.error.date.startDateBeforeOrEqualEndDate";
+            }
+            errors.rejectValue(startField, errorMessage, new Object[] { startDate, endDate }, "");
         }
     }
 }
