@@ -561,7 +561,7 @@
             <![CDATA[
             The following options are available to select from to control how missing interval data will be displayed:
             <ul style="list-style-type:none;padding-left:10px;">
-                <li><b>Skip Record</b> - Interval is completely omitted form report.</li>
+                <li><b>Skip Record</b> - Interval is completely omitted from report.</li>
                 <li><b>Leave Blank</b> - Interval is shown in report, but value is left blank.</li>
                 <li><b>Partial</b> - Interval is shown and value is calculated with missing data.</li>
                 <li><b>Fixed Value</b> - The value entered will be displayed.</li>
