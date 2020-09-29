@@ -103,13 +103,13 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
 
     @Override
     @Transactional
-    public int delete(int loadGroupId, String loadGroupName) {
+    public int delete(int loadGroupId) {
         Optional<LiteYukonPAObject> liteLoadGroup = dbCache.getAllLMGroups()
                                                            .stream()
-                                                           .filter(group -> group.getLiteID() == loadGroupId && group.getPaoName().equalsIgnoreCase(loadGroupName))
+                                                           .filter(group -> group.getLiteID() == loadGroupId)
                                                            .findFirst();
         if (liteLoadGroup.isEmpty()) {
-            throw new NotFoundException("Macro load Gorup Id and Name combination not found");
+            throw new NotFoundException("Macro load Gorup Id not found");
         }
 
         if (!isMacroLoadGroup(liteLoadGroup.get())) {

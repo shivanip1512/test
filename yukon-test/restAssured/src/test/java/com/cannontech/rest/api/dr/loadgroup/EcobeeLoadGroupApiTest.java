@@ -183,8 +183,8 @@ public class EcobeeLoadGroupApiTest {
     public Object[][] getGroupNameData(ITestContext context) {
 
         return new Object[][] { { "", "Name is required.", 422 },
-                { "Test\\Ecobee", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
-                { "Test,Ecobee", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
+                { "Test\\Ecobee", "Name must not contain any of the following characters: / \\ , ' \" |.", 422 },
+                { "Test,Ecobee", "Name must not contain any of the following characters: / \\ , ' \" |.", 422 },
                 { "TestEcobeeMoreThanSixtyCharacter_TestEcobeeMoreThanSixtyCharacters", "Exceeds maximum length of 60.", 422 },
                 { context.getAttribute("Ecobee_GrpName"), "Name must be unique.", 422 } };
     }

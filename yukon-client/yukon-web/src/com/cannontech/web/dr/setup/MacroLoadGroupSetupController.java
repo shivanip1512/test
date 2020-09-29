@@ -78,7 +78,7 @@ public class MacroLoadGroupSetupController {
     public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drMacroLoadGroupRetrieveUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drMacroLoadGroupUrl + "/" + id);
             model.addAttribute("mode", PageEditMode.VIEW);
             MacroLoadGroup macroLoadGroupBase = retrieveGroup(userContext, request, id, url);
             if (macroLoadGroupBase == null) {
@@ -100,7 +100,7 @@ public class MacroLoadGroupSetupController {
     public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drMacroLoadGroupRetrieveUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drMacroLoadGroupUrl + "/" + id);
             MacroLoadGroup macroLoadGroup = retrieveGroup(userContext, request, id, url);
             if (macroLoadGroup == null) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "macroLoadGroup.retrieve.error"));
@@ -145,7 +145,7 @@ public class MacroLoadGroupSetupController {
             ModelMap model) throws JsonGenerationException, JsonMappingException, IOException {
         Map<String, String> json = new HashMap<>();
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drMacroLoadGroupCopyUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drMacroLoadGroupUrl + "/" + id + "/copy");
 
             // Call Api to copy
             ResponseEntity<? extends Object> responseEntity =
@@ -202,13 +202,13 @@ public class MacroLoadGroupSetupController {
         try {
             ResponseEntity<? extends Object> response = null;
             if (macroLoadGroup.getId() == null) {
-                String url = helper.findWebServerUrl(request, userContext, ApiURL.drMacroLoadGroupCreateUrl);
+                String url = helper.findWebServerUrl(request, userContext, ApiURL.drMacroLoadGroupUrl);
                 response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class,
                     macroLoadGroup);
             } else {
                 String url = helper.findWebServerUrl(request, userContext,
-                    ApiURL.drMacroLoadGroupUpdateUrl + macroLoadGroup.getId());
-                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class,
+                    ApiURL.drMacroLoadGroupUrl + "/" +  macroLoadGroup.getId());
+                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PUT, Object.class,
                     macroLoadGroup);
             }
 
@@ -228,7 +228,7 @@ public class MacroLoadGroupSetupController {
                 return bindAndForward(macroLoadGroup, result, redirectAttributes);
             }
 
-            if (response.getStatusCode() == HttpStatus.OK) {
+            if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 HashMap<String, Integer> paoIdMap = (HashMap<String, Integer>) response.getBody();
                 int groupId = paoIdMap.get("paoId");
                 flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", macroLoadGroup.getName()));
@@ -252,7 +252,7 @@ public class MacroLoadGroupSetupController {
             FlashScope flash, HttpServletRequest request) {
         try {
             // Api call to delete macro load group
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drMacroLoadGroupDeleteUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drMacroLoadGroupUrl + "/" + id);
             ResponseEntity<? extends Object> response =
                 apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.DELETE, Object.class, lmDelete);
 

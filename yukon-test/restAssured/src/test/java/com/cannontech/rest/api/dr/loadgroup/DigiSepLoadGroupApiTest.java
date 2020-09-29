@@ -254,7 +254,7 @@ public class DigiSepLoadGroupApiTest {
             List<MockApiFieldError> fieldErrors = error.getFieldErrors();
             String code = fieldErrors.get(0).getCode();
             assertTrue("Expected code in response is not correct",
-                    code.equals("Cannot be blank or include any of the following characters: / \\ , ' \" |"));
+                    code.equals("Name must not contain any of the following characters: / \\ , ' \" |."));
         }
 
         Log.endTestCase("loadGroupDigiSep_08_CreateWithSpecialCharsInName");

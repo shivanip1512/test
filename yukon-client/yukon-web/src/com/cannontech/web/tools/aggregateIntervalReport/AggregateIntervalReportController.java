@@ -173,8 +173,8 @@ public class AggregateIntervalReportController {
                 String groupName = collection.getCollectionParameters().get("group.name");
                 filter.setDeviceGroup(groupName);
             } else {
-                List<PaoIdentifier> paos = collection.getDeviceList().stream()
-                        .map(device -> device.getPaoIdentifier())
+                List<Integer> paos = collection.getDeviceList().stream()
+                        .map(device -> device.getDeviceId())
                         .collect(Collectors.toList());
                 filter.setDevices(paos);
             }

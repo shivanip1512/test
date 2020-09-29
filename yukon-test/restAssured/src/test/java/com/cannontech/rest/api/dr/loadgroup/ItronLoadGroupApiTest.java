@@ -205,8 +205,8 @@ public class ItronLoadGroupApiTest {
     public Object[][] getGroupNameData(ITestContext context) {
 
         return new Object[][] { { "", "Name is required.", 422 },
-                { "Test\\Itron", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
-                { "Test,Itron", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
+                { "Test\\Itron", "Name must not contain any of the following characters: / \\ , ' \" |.", 422 },
+                { "Test,Itron", "Name must not contain any of the following characters: / \\ , ' \" |.", 422 },
                 { "TestItronMoreThanSixtyCharacter_TestNestMoreThanSixtyCharacters", "Exceeds maximum length of 60.", 422 },
                 { context.getAttribute("Itron_GrpName"), "Name must be unique.", 422 } };
     }
