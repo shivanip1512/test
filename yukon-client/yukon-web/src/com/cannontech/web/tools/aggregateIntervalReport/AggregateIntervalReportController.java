@@ -36,7 +36,6 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollectionType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.TimeIntervals;
@@ -47,6 +46,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.ApiRequestHelper;
 import com.cannontech.web.api.ApiURL;
+import com.cannontech.web.api.aggregateIntervalDataReport.AggregateIntervalDataReportValidator;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -70,7 +70,7 @@ public class AggregateIntervalReportController {
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    //@Autowired private AggregateIntervalDataReportValidator aggregateIntervalDataReportValidator;
+    @Autowired private AggregateIntervalDataReportValidator aggregateIntervalDataReportValidator;
     
     private static final String redirectLink = "redirect:/tools/aggregateIntervalReport/view";
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
@@ -105,14 +105,13 @@ public class AggregateIntervalReportController {
     @PostMapping("exportNow")
     public String exportNow(@ModelAttribute AggregateIntervalReportFilter filter, BindingResult result, YukonUserContext userContext, 
                             FlashScope flashScope, HttpServletRequest request, HttpServletResponse response, 
-                            RedirectAttributes redirectAtts) throws IOException {
+                            RedirectAttributes redirectAtts, ModelMap model) throws IOException {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        populateDevices(request, filter);
+        populateDevices(request, filter, model);
         
-        //TODO: call validator after checked in from controller YUK
-        //aggregateIntervalDataReportValidator.validate(filter, result);
+        aggregateIntervalDataReportValidator.validate(filter, result);
         if (result.hasErrors()) {
-            populateErrorModel(response, redirectAtts, filter, result, flashScope);
+            populateErrorModel(response, redirectAtts, filter, result, flashScope, model);
         }
         
         String url = helper.findWebServerUrl(request, userContext, ApiURL.aggregateDataReportUrl);
@@ -123,7 +122,7 @@ public class AggregateIntervalReportController {
                 BindException error = new BindException(filter, "filter");
                 result = helper.populateBindingError(result, error, resp);
                 if (result.hasErrors()) {
-                    populateErrorModel(response, redirectAtts, filter, result, flashScope);
+                    populateErrorModel(response, redirectAtts, filter, result, flashScope, model);
                 }
             }
 
@@ -151,20 +150,31 @@ public class AggregateIntervalReportController {
     }
     
     private String populateErrorModel(HttpServletResponse response, RedirectAttributes redirectAtts, AggregateIntervalReportFilter filter,
-                                      BindingResult result, FlashScope flashScope) {
+                                      BindingResult result, FlashScope flashScope, ModelMap model) {
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         redirectAtts.addFlashAttribute("filter", filter);
         redirectAtts.addFlashAttribute("org.springframework.validation.BindingResult.filter", result);
         if (result.hasFieldErrors("deviceGroup") || result.hasFieldErrors("devices")) {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.error.invalidDevicesOrDeviceGroup"));
         }
+        if (result.hasFieldErrors("startDate")) {
+            flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(result.getFieldError("startDate").getDefaultMessage()));
+        }
+        if (result.hasFieldErrors("endDate")) {
+            flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(result.getFieldError("endDate").getDefaultMessage()));
+        }
+        Object deviceCollectionObj = model.get("deviceCollection");
+        if (deviceCollectionObj instanceof DeviceCollection) {
+            redirectAtts.addFlashAttribute("deviceCollection", (DeviceCollection) deviceCollectionObj);
+        }
         return redirectLink;
     }
     
-    private void populateDevices(HttpServletRequest request, AggregateIntervalReportFilter filter) {
+    private void populateDevices(HttpServletRequest request, AggregateIntervalReportFilter filter, ModelMap model) {
         DeviceCollection collection = null;
         try {
             collection = deviceCollectionFactory.createDeviceCollection(request);
+            model.addAttribute("deviceCollection", collection);
         } catch (Exception e) {
             //No devices found - this will be caught by validator
         }
@@ -173,10 +183,10 @@ public class AggregateIntervalReportController {
                 String groupName = collection.getCollectionParameters().get("group.name");
                 filter.setDeviceGroup(groupName);
             } else {
-                List<PaoIdentifier> paos = collection.getDeviceList().stream()
-                        .map(device -> device.getPaoIdentifier())
+                List<Integer> deviceIds = collection.getDeviceList().stream()
+                        .map(device -> device.getDeviceId())
                         .collect(Collectors.toList());
-                filter.setDevices(paos);
+                filter.setDevices(deviceIds);
             }
         }
     }
