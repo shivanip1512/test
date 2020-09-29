@@ -25,7 +25,7 @@ public class AggregateIntervalDataReportValidator extends SimpleValidator<Aggreg
             YukonValidationUtils.checkIsBlank(errors, "missingIntervalDataValue",
                     filter.getMissingIntervalDataValue(), false);
         }
-        YukonValidationUtils.checkIfEndDateGreaterThenStartDate("startDate", "endDate", filter.getStartDate(), filter.getEndDate(), false, errors);
+        YukonValidationUtils.checkIfEndDateGreaterThenStartDate("startDate", filter.getStartDate(), filter.getEndDate(), false, errors);
         
     }
 
