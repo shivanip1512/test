@@ -178,7 +178,7 @@ public class VersacomLoadGroupApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "name");
         assertTrue(validationCode.get("message").equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue("Cannot be blank or include any of the following characters: / \\ , ' \" |".equals(validationCode.get("code")),
+        assertTrue("Name must not contain any of the following characters: / \\ , ' \" |.".equals(validationCode.get("code")),
                 "Expected code in response is not correct");
 
         Log.endTestCase("loadGroupVersacom_07_GroupName_With_Special_Characters_Validation");
