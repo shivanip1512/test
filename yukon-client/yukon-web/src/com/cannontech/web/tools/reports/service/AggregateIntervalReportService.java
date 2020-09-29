@@ -1,17 +1,16 @@
 package com.cannontech.web.tools.reports.service;
 
+import java.util.List;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.joda.time.Instant;
-import java.util.List;
 
 import com.cannontech.amr.archivedValueExporter.model.AttributeDeserializer;
 import com.cannontech.common.exception.TypeNotSupportedException;
 import com.cannontech.common.i18n.DisplayableEnum;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.util.TimeIntervals;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.user.YukonUserContext;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -154,9 +153,7 @@ public interface AggregateIntervalReportService {
     }
 
     /**
-     * Returns the list if rows that represent a row in CSV file. The data is formatted and ready to be written to CSV file.
-     * 
-     * @throws NotFoundException - if there is no data to return
+     * Returns the list if rows that represent a row in CSV file. Empty list is returned if no data found.
      */
     List<List<String>> getIntervalDataReport(AggregateIntervalReportFilter filter, YukonUserContext context);
 }
