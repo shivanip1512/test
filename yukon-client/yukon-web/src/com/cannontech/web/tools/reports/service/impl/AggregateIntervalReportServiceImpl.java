@@ -11,7 +11,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -98,9 +97,19 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
         return report;
     }
      
+    /**
+     * Creates report for user selected values
+     * @param filter - user selections
+     * @param intervalData - data from RPH
+     * @param intervals - list of intervals
+     * @param devices
+     * @param context
+     * @return list data to write to CSV
+     */
     private List<List<String>> getReport(AggregateIntervalReportFilter filter,
-            Map<Date, List<PointValueQualityHolder>> intervalData, Set<Date> intervals, List<PaoIdentifier> devices,
+            Map<Date, List<PointValueQualityHolder>> intervalData, List<Date> intervals, List<PaoIdentifier> devices,
             YukonUserContext context) {
+                
         List<List<String>> report = new ArrayList<>();
         intervals.forEach(interval -> {
             List<PointValueQualityHolder> data = intervalData.get(interval);
@@ -122,18 +131,7 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
                 isCompleteData = data.size() == devices.size();
             }
 
-            String value = null;
-            if (isCompleteData) {
-                value = getValue(data, filter.getOperation());
-            } else {
-                if (filter.getMissingIntervalData() == MissingIntervalData.PARTIAL) {
-                    value = data.isEmpty() ? "0" : getValue(data, filter.getOperation());
-                } else if (filter.getMissingIntervalData() == MissingIntervalData.BLANK) {
-                    value = "";
-                } else if (filter.getMissingIntervalData() == MissingIntervalData.FIXED_VALUE) {
-                    value = filter.getMissingIntervalDataValue();
-                }
-            }
+            String value = getValue(filter, data, isCompleteData);
             if (value != null) {
                 report.add(createRow(interval, value, context));
             }
@@ -141,6 +139,28 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
         return report;
     }
 
+    /**
+     * Returns value for the report row calculated based on user selections
+     */
+    private String getValue(AggregateIntervalReportFilter filter, List<PointValueQualityHolder> data, boolean isCompleteData) {
+        String value = null;
+        if (isCompleteData) {
+            value = getValue(data, filter.getOperation());
+        } else {
+            if (filter.getMissingIntervalData() == MissingIntervalData.PARTIAL) {
+                value = data.isEmpty() ? "0" : getValue(data, filter.getOperation());
+            } else if (filter.getMissingIntervalData() == MissingIntervalData.BLANK) {
+                value = "";
+            } else if (filter.getMissingIntervalData() == MissingIntervalData.FIXED_VALUE) {
+                value = filter.getMissingIntervalDataValue();
+            }
+        }
+        return value;
+    }
+
+    /**
+     * Returns a report row which consists of date, time and value
+     */
     private List<String> createRow(Date interval, String value, YukonUserContext context){
         List<String> row = new ArrayList<>();
         row.add(dateFormattingService.format(interval, DateFormatEnum.DATE, context));
@@ -149,6 +169,11 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
         return row;
     }
 
+    /**
+     * Returns a value for report row 
+     * @param data - data from RPH
+     * @param operation - instructions to add the data or find max value
+     */
     private String getValue(List<PointValueQualityHolder> data, Operation operation) {
         if(operation == Operation.ADD) {
            return decimalFormatter.format(data.stream()
@@ -167,6 +192,9 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
         throw new RuntimeException("Operation "+ operation +" is invalid");
     }
 
+    /**
+     * Returns list of Pao Identifiers based on the user selection of device group or individual devices
+     */
     private List<PaoIdentifier> getDevices(AggregateIntervalReportFilter filter) {
         List<SimpleDevice> devices = new ArrayList<>();
         if (!CollectionUtils.isEmpty(filter.getDevices())) {
@@ -186,7 +214,7 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
 
     private class IntervalParser {
         private boolean hasValidInterval = true;
-        private Map<Long, Date> intervals = new LinkedHashMap<>();
+        private Map<Long, Date> intervals;
         private Range<Instant> range;
 
         IntervalParser(Instant startDate, Instant stopDate, TimeIntervals interval,
@@ -201,19 +229,8 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
                         format(stopDate, context));
                 hasValidInterval = false;
             }
-            Instant first = firstInterval;
-            while (first.isBefore(lastInterval) || first.equals(lastInterval)) {
-                intervals.put(first.toDate().getTime(), first.toDate());
-                first = first.toDateTime().plusSeconds(interval.getSeconds()).toInstant();
-            }
-            if (log.isDebugEnabled()) {
-                log.debug("user selected:[{}-{}] intervals created:[{}]", format(startDate, context), format(stopDate, context),
-                        intervals.values().stream().map(time -> format(new Instant(time.getTime()), context))
-                                .collect(Collectors.joining(",")));
-            } else {
-                log.info("user selected:[{}-{}] intervals created:{}", format(startDate, context), format(stopDate, context),
-                        intervals.size());
-            }
+            intervals = createIntervals(interval, firstInterval, lastInterval);
+            logIntervals(startDate, stopDate, context);
             
             //15 min intervals
             //user selected:[02/04/2020 01:27:00-02/04/2020 02:27:00] intervals created:[02/04/2020 01:30:00,02/04/2020 01:45:00,02/04/2020 02:00:00,02/04/2020 02:15:00]
@@ -261,6 +278,30 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
 
         }
 
+        private void logIntervals(Instant startDate, Instant stopDate, YukonUserContext context) {
+            if (log.isDebugEnabled()) {
+                log.debug("user selected:[{}-{}] intervals created:[{}]", format(startDate, context), format(stopDate, context),
+                        intervals.values().stream().map(time -> format(new Instant(time.getTime()), context))
+                                .collect(Collectors.joining(",")));
+            } else {
+                log.info("user selected:[{}-{}] intervals created:{}", format(startDate, context), format(stopDate, context),
+                        intervals.size());
+            }
+        }
+
+        /**
+         * Creates intervals starting from the firstInterval and ending with the lastInterval
+         */
+        private Map<Long, Date> createIntervals(TimeIntervals interval, Instant firstInterval, Instant lastInterval) {
+            Map<Long, Date> intervals = new LinkedHashMap<>();
+            Instant first = firstInterval;
+            while (first.isBefore(lastInterval) || first.equals(lastInterval)) {
+                intervals.put(first.toDate().getTime(), first.toDate());
+                first = first.toDateTime().plusSeconds(interval.getSeconds()).toInstant();
+            }
+            return intervals;
+        }
+
         boolean hasValidInterval() {
             return hasValidInterval;
         }
@@ -269,12 +310,18 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
             return intervals.containsKey(interval.getTime());
         }
 
-        Set<Date> getIntervals() {
+        /**
+         * Returns all intervals
+         */
+        List<Date> getIntervals() {
             return intervals.values().stream()
                     .sorted()
-                    .collect(Collectors.toSet());
+                    .collect(Collectors.toList());
         }
         
+        /**
+         * Returns a date range of firstInterval and lastInterval
+         */
         Range<Instant> getRange() {
             return range;
         }
@@ -288,18 +335,7 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
                 throw new RuntimeException("Interval definition doesn't exist");
             }
 
-            LocalDateTime localTime = null;
-
-            if (unit == ChronoUnit.MINUTES) {
-                long minutes = TimeUnit.SECONDS.toMinutes(interval.getSeconds());
-                localTime = time.truncatedTo(ChronoUnit.HOURS).plusMinutes(minutes * (time.getMinute() / minutes));
-            } else if (unit == ChronoUnit.HOURS) {
-                long hours = TimeUnit.SECONDS.toHours(interval.getSeconds());
-                localTime = time.truncatedTo(ChronoUnit.DAYS).plusHours(hours * (time.getHour() / hours));
-            } else if (unit == ChronoUnit.DAYS) {
-                localTime = time.truncatedTo(ChronoUnit.DAYS);
-            }
-
+            LocalDateTime localTime = createInterval(interval, time, unit);
             if (localTime == null) {
                 throw new RuntimeException("Unable to calculate interval for " + format(date, context) + " interval:" + interval
                         + " isFirstInterval:" + isFirstInterval);
@@ -311,6 +347,23 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
             ZonedDateTime zonedDateTime = localTime.atZone(zone);
             Instant newDate = new Instant(zonedDateTime.toInstant().toEpochMilli());
             return newDate;
+        }
+
+        /**
+         * Returns an interval
+         */
+        private LocalDateTime createInterval(TimeIntervals interval, LocalDateTime time, ChronoUnit unit) {
+            LocalDateTime localTime = null;
+            if (unit == ChronoUnit.MINUTES) {
+                long minutes = TimeUnit.SECONDS.toMinutes(interval.getSeconds());
+                localTime = time.truncatedTo(ChronoUnit.HOURS).plusMinutes(minutes * (time.getMinute() / minutes));
+            } else if (unit == ChronoUnit.HOURS) {
+                long hours = TimeUnit.SECONDS.toHours(interval.getSeconds());
+                localTime = time.truncatedTo(ChronoUnit.DAYS).plusHours(hours * (time.getHour() / hours));
+            } else if (unit == ChronoUnit.DAYS) {
+                localTime = time.truncatedTo(ChronoUnit.DAYS);
+            }
+            return localTime;
         }
     }
 }
