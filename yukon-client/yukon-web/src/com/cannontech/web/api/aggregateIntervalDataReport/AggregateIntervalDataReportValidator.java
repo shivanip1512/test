@@ -27,7 +27,7 @@ public class AggregateIntervalDataReportValidator extends SimpleValidator<Aggreg
             YukonValidationUtils.checkIsBlank(errors, "deviceGroup", filter.getDeviceGroup(), "Device Group", false);
         }
         if (filter.getMissingIntervalData() == MissingIntervalData.FIXED_VALUE) {
-            YukonValidationUtils.checkIsBlank(errors, "missingIntervalDataValue", filter.getMissingIntervalDataValue(), "missingIntervalDataValue", false);
+            YukonValidationUtils.checkIsBlank(errors, "missingIntervalDataValue", filter.getMissingIntervalDataValue(), "Missing Interval Data Value", false);
         }
         if (filter.getStartDate() != null && filter.getEndDate() != null) {
             YukonValidationUtils.checkIfEndDateGreaterThenStartDate("startDate", filter.getStartDate(), filter.getEndDate(), false, errors);
