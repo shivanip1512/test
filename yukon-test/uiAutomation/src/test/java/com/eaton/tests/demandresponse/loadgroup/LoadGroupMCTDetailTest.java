@@ -23,11 +23,15 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupMCTDetailsPage;
+import com.eaton.rest.api.drsetup.DrSetupGetRequest;
+
+import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupMCTDetailTest extends SeleniumTestSetup {
 	 	private DriverExtensions driverExt;
 	    private LoadGroupMCTDetailsPage detailPage;
 	    private JSONObject response;
+	    private int id;
 
 	    @BeforeClass(alwaysRun = true)
 	    public void beforeClass() {
@@ -41,11 +45,11 @@ public class LoadGroupMCTDetailTest extends SeleniumTestSetup {
 										                .withKwCapacity(Optional.empty())
 										                .withAddress(34567)
 										                .withlevel(LoadGroupEnums.AddressLevelMCT.LEAD)
-										                .withRelayUsage(Arrays.asList(LoadGroupEnums.RelayUsage.RELAY_2, LoadGroupEnums.RelayUsage.RELAY_1))
+										                .withRelayUsage(Arrays.asList(LoadGroupEnums.RelayUsage.RELAY_2))
 										                .create();
 	        
 	        response = pair.getValue1();
-	        int id = response.getInt("id");
+	        id = response.getInt("id");
 	        
 	        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
 	        detailPage = new LoadGroupMCTDetailsPage(driverExt, id);
@@ -61,6 +65,7 @@ public class LoadGroupMCTDetailTest extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpMCTDetail_Delete_Success() {
+    	setRefreshPage(true);
         Pair<JSONObject, JSONObject> pair = new LoadGroupMCTCreateBuilder.Builder(Optional.empty())
                 .withCommunicationRoute(28)
                 .withDisableControl(Optional.of(true))
@@ -90,6 +95,7 @@ public class LoadGroupMCTDetailTest extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpMCTDetail_Copy_Success() {
+    	setRefreshPage(true);
         Pair<JSONObject, JSONObject> pair = new LoadGroupMCTCreateBuilder.Builder(Optional.empty())
                 .withCommunicationRoute(28)
                 .withDisableControl(Optional.of(true))
@@ -119,6 +125,7 @@ public class LoadGroupMCTDetailTest extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpMCTDetail_GeneralSection_LabelsCorrect() {
+    	setRefreshPage(true);
     	SoftAssertions softly = new SoftAssertions();
     	Pair<JSONObject, JSONObject> pair = new LoadGroupMCTCreateBuilder.Builder(Optional.empty())
                 .withCommunicationRoute(28)
@@ -144,6 +151,7 @@ public class LoadGroupMCTDetailTest extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpMCTDetail_GeneralSection_ValuesCorrect() {
+    	setRefreshPage(true);
     	SoftAssertions softly = new SoftAssertions();
     	Pair<JSONObject, JSONObject> pair = new LoadGroupMCTCreateBuilder.Builder(Optional.empty())
                 .withCommunicationRoute(28)
@@ -161,48 +169,42 @@ public class LoadGroupMCTDetailTest extends SeleniumTestSetup {
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
         
 	    softly.assertThat(3).isEqualTo(values.size());
-	    softly.assertThat(values.get(1)).isEqualTo(response.get("routeName").toString());
+	    softly.assertThat(values.get(2)).isEqualTo(response.get("routeName").toString());
         
 	    softly.assertAll();
     }
 
-//    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-//    public void ldGrpMCTDetail_AddressingSection_LabelsCorrect() {
-//    	SoftAssertions softly = new SoftAssertions();
-//        List<String> labels = detailPage.getAddressingSection().getSectionLabels();
-//
-//	    // getting null value of label on details page for this section
-//        //[Address Level:, Address:, , Relay Usage:]
-//        //Test is failing right now due to same, query has been sent to developer for confirmation
-//        
-//        softly.assertThat(3).isEqualTo(labels.size());
-//        softly.assertThat("Address Level:").isEqualTo(labels.get(0));
-//        softly.assertThat("Address:").isEqualTo(labels.get(1));
-//        softly.assertThat("Relay Usage:").isEqualTo(labels.get(2));
-//        softly.assertAll();
-//    }
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpMCTDetail_AddressingSection_LabelsCorrect() {
+    	SoftAssertions softly = new SoftAssertions();
+        List<String> labels = detailPage.getAddressingSection().getSectionLabels();
+        
+        softly.assertThat(4).isEqualTo(labels.size());
+        softly.assertThat("Address Level:").isEqualTo(labels.get(0));
+        softly.assertThat("Address:").isEqualTo(labels.get(1));
+        softly.assertThat("Relay Usage:").isEqualTo(labels.get(3));
+        softly.assertAll();
+    }
     
-//    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-//    public void ldGrpMCTDetail_AddressingSection_ValuesCorrect() {
-    	 // getting null value of label on details page for this section
-//      //[Address Level:, Address:, , Relay Usage:]
-//      //Test is failing right now due to same, query has been sent to developer for confirmation
-//      
-//    	SoftAssertions softly = new SoftAssertions();
-//	    List<String> values = detailPage.getAddressingSection().getSectionValues();
-//	    System.out.println("I am value" + values.toString() + "@@@@@");
-//	    
-//	    softly.assertThat(4).isEqualTo(values.size());
-//	    String addressLevelRespense = response.get("level").toString();
-//        String addressLevel = addressLevelRespense.substring(0, 1).toUpperCase()
-//                + addressLevelRespense.substring(1).toLowerCase();
-//        softly.assertThat(values.get(0)).isEqualTo(addressLevel);
-//        
-//        softly.assertThat(values.get(1)).isEqualTo(response.get("address").toString());
-//        String relayUsageRespense = response.get("relayUsage[0]").toString();
-//        String relayUsage = relayUsageRespense.substring(0, 1).toUpperCase() + relayUsageRespense.substring(1).toLowerCase();
-//        softly.assertThat(values.get(2)).isEqualTo(relayUsage.replace("_", " "));
-//
-//        softly.assertAll();
-//    }
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldGrpMCTDetail_AddressingSection_ValuesCorrect() {
+    	SoftAssertions softly = new SoftAssertions();
+    	List<String> values = detailPage.getAddressingSection().getSectionValues();
+	    ExtractableResponse<?> getResponse = DrSetupGetRequest.getLoadGroup(id);
+    	
+    	navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
+    	
+	    softly.assertThat(4).isEqualTo(values.size());
+	    String addressLevelRespense = response.get("level").toString();
+        String addressLevel = addressLevelRespense.substring(0, 1).toUpperCase()
+                + addressLevelRespense.substring(1).toLowerCase();
+        softly.assertThat(values.get(0)).isEqualTo(addressLevel);
+        
+        softly.assertThat(values.get(1)).isEqualTo(response.get("address").toString());
+        String relayUsageRespense = getResponse.path("LM_GROUP_MCT.relayUsage[0]").toString();
+        String relayUsage = relayUsageRespense.substring(0, 1).toUpperCase() + relayUsageRespense.substring(1).toLowerCase();
+        softly.assertThat(values.get(3)).isEqualTo(relayUsage.replace("_", " "));
+
+        softly.assertAll();
+    }
 }
