@@ -27,6 +27,14 @@ ALTER TABLE Zone ADD CONSTRAINT Ak_ZoneName UNIQUE (ZoneName);
 INSERT INTO DBUpdates VALUES ('YUK-22834', '9.0.0', GETDATE());
 /* @end YUK-22834 */
 
+/* @start YUK-23001 */
+UPDATE DeviceGroupComposed SET CompositionType = 'INTERSECTION'
+    WHERE DeviceGroupId IN
+        (SELECT DeviceGroupId FROM DeviceGroup WHERE SystemGroupEnum IN ('SERVICE_ACTIVE_RFW_METERS', 'SERVICE_ACTIVE_RF_ELECTRIC_METERS'));
+
+INSERT INTO DBUpdates VALUES ('YUK-23001', '9.0.0', GETDATE());
+/* @start YUK-23001 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

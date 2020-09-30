@@ -3247,8 +3247,8 @@ create table DeviceGroupComposed  (
    constraint PK_DevGroupComp primary key (DeviceGroupComposedId)
 );
 
-INSERT INTO DeviceGroupComposed VALUES (1, 58, 'UNION');
-INSERT INTO DeviceGroupComposed VALUES (2, 59, 'UNION');
+INSERT INTO DeviceGroupComposed VALUES (1, 58, 'INTERSECTION');
+INSERT INTO DeviceGroupComposed VALUES (2, 59, 'INTERSECTION');
 
 /*==============================================================*/
 /* Table: DeviceGroupComposedGroup                              */
