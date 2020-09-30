@@ -20,10 +20,6 @@ public interface LMSetupService<T1, T2> {
     /**
      * Delete the LM object.
      */
-    default int delete(int id, String name) {
-        return 0;
-    }
-   
     default int delete(int id) {
         return 0;
     }
