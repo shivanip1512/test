@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/3/2020 5:37:30 AM                          */
+/* Created on:     9/30/2020 6:01:29 AM                         */
 /*==============================================================*/
 
 
@@ -3468,8 +3468,8 @@ create table DeviceGroupComposed (
 )
 go
 
-INSERT INTO DeviceGroupComposed VALUES (1, 58, 'UNION');
-INSERT INTO DeviceGroupComposed VALUES (2, 59, 'UNION');
+INSERT INTO DeviceGroupComposed VALUES (1, 58, 'INTERSECTION');
+INSERT INTO DeviceGroupComposed VALUES (2, 59, 'INTERSECTION');
 
 /*==============================================================*/
 /* Table: DeviceGroupComposedGroup                              */
