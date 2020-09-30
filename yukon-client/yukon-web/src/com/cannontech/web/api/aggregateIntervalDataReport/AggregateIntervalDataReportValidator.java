@@ -15,18 +15,23 @@ public class AggregateIntervalDataReportValidator extends SimpleValidator<Aggreg
         super(AggregateIntervalReportFilter.class);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     protected void doValidation(AggregateIntervalReportFilter filter, Errors errors) {
+        YukonValidationUtils.checkIfFieldRequired("attribute", errors, filter.getAttribute(), "Attribute");
+        YukonValidationUtils.checkIfFieldRequired("startDate", errors, filter.getStartDate(), "Start Date");
+        YukonValidationUtils.checkIfFieldRequired("endDate", errors, filter.getEndDate(), "End Date");
+        YukonValidationUtils.checkIfFieldRequired("interval", errors, filter.getInterval(), "Interval");
+        YukonValidationUtils.checkIfFieldRequired("missingIntervalData", errors, filter.getMissingIntervalData(),"Missing Interval Data");
+        YukonValidationUtils.checkIfFieldRequired("operation", errors, filter.getOperation(), "Operation");
         if (CollectionUtils.isEmpty(filter.getDevices())) {
-            YukonValidationUtils.checkIsBlank(errors, "deviceGroup", filter.getDeviceGroup(), false);
+            YukonValidationUtils.checkIsBlank(errors, "deviceGroup", filter.getDeviceGroup(), "Device Group", false);
         }
         if (filter.getMissingIntervalData() == MissingIntervalData.FIXED_VALUE) {
-            YukonValidationUtils.checkIsBlank(errors, "missingIntervalDataValue",
-                    filter.getMissingIntervalDataValue(), false);
+            YukonValidationUtils.checkIsBlank(errors, "missingIntervalDataValue", filter.getMissingIntervalDataValue(), "Missing Interval Data Value", false);
         }
-        YukonValidationUtils.checkIfEndDateGreaterThenStartDate("startDate", "endDate", filter.getStartDate(), filter.getEndDate(), false, errors);
-        
+        if (filter.getStartDate() != null && filter.getEndDate() != null) {
+            YukonValidationUtils.checkIfEndDateGreaterThenStartDate("startDate", filter.getStartDate(), filter.getEndDate(), false, errors);
+        }
     }
 
 }
