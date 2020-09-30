@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -32,7 +33,7 @@ public class ColorsFileReader {
             Matcher valueMatcher = valuePattern.matcher(colors);
             
             while (variableNameMatcher.find() && valueMatcher.find()) {
-                colorHexValueMapBuilder.put(YukonColorPalette.valueOf(variableNameMatcher.group(1).toUpperCase()), valueMatcher.group(1));
+                colorHexValueMapBuilder.put(YukonColorPalette.valueOf(variableNameMatcher.group(1).toUpperCase()), StringUtils.trim(valueMatcher.group(1)));
             }
         } catch (IOException e) {
             log.error(e);

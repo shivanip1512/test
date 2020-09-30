@@ -31,7 +31,7 @@ yukon.flot = (function () {
                     hoverable: true,
                     clickable: true,
                     mouseActiveRadius: 50,
-                    borderColor: '#ccc'
+                    borderColor: yg.colors.GRAY_LIGHT
                 },
                 selection: {
                     mode: "x",

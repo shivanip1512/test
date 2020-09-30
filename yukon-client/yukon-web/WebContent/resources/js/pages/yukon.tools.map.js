@@ -18,7 +18,7 @@ yukon.tools.map = (function() {
     _deviceFocusCurrentIcon,
     _deviceFocusIcons = [],
     _deviceFocusLines = [],
-    _violationColor = '#e99012',
+    _violationColor = yg.colors.ORANGE,
     
     //grey
     _focusRouteColor = yukon.mapping.getFocusRouteColor(),

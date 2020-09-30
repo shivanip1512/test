@@ -379,7 +379,7 @@ yukon.namespace = function (ns) {
         return this.each(function () {
             
             options = $.extend({ 
-                color: '#fff288', 
+                color: yg.colors.YELLOW, 
                 duration: 1500,
                 complete: yukon.nothing
             }, options || {});
