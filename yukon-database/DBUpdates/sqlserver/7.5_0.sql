@@ -264,67 +264,78 @@ INSERT INTO DBUpdates VALUES ('YUK-22094', '7.5.0', GETDATE());
 /* @end YUK-22094 */
 
 /* @start YUK-20252 */
-SELECT DeviceId, MAX(CompleteTime) AS maxCompleteTime INTO #LatestSendTemp
-FROM CommandRequestExec cre 
-    JOIN CommandRequestExecResult crer ON cre.CommandRequestExecId=crer.CommandRequestExecId
-WHERE ErrorCode=0
-AND CommandRequestExecType='GROUP_DEVICE_CONFIG_SEND'
+SELECT 
+    DeviceId, 
+    CASE WHEN ErrorCode = 0 then 'SUCCESS' else 'FAILURE' END as Success, 
+    CommandRequestExecType, 
+    MAX(CompleteTime) AS maxCompleteTime
+INTO #LatestGdcRequestsTemp
+FROM 
+    CommandRequestExec cre 
+        JOIN CommandRequestExecResult crer ON cre.CommandRequestExecId=crer.CommandRequestExecId
+WHERE 
+    CommandRequestExecType IN (
+        'GROUP_DEVICE_CONFIG_SEND', 
+        'GROUP_DEVICE_CONFIG_READ', 
+        'GROUP_DEVICE_CONFIG_VERIFY')
+GROUP BY 
+    DeviceId, 
+    CASE WHEN ErrorCode = 0 THEN 'SUCCESS' ELSE 'FAILURE' END, 
+    CommandRequestExecType
+
+SELECT DeviceId, maxCompleteTime INTO #LatestSendTemp
+FROM #LatestGdcRequestsTemp
+WHERE Success='SUCCESS' AND CommandRequestExecType='GROUP_DEVICE_CONFIG_SEND';
+
+SELECT DeviceId, maxCompleteTime INTO #LatestReadTemp
+FROM #LatestGdcRequestsTemp
+WHERE Success='SUCCESS' AND CommandRequestExecType='GROUP_DEVICE_CONFIG_READ';
+
+SELECT DeviceId, maxCompleteTime INTO #FailedVerifyTemp
+FROM #LatestGdcRequestsTemp
+WHERE Success='FAILURE' AND CommandRequestExecType='GROUP_DEVICE_CONFIG_VERIFY';
+
+SELECT DeviceId, maxCompleteTime INTO #SuccessfulVerifyTemp
+FROM #LatestGdcRequestsTemp
+WHERE Success='SUCCESS' AND CommandRequestExecType='GROUP_DEVICE_CONFIG_VERIFY';
+
+SELECT DeviceId, MAX(maxCompleteTime) as maxCompleteTime INTO #LatestSendOrReadTemp
+FROM #LatestGdcRequestsTemp
+WHERE Success='SUCCESS' AND CommandRequestExecType IN ('GROUP_DEVICE_CONFIG_SEND', 'GROUP_DEVICE_CONFIG_READ')
 GROUP BY DeviceId;
 
-SELECT DeviceId, MAX(CompleteTime) AS maxCompleteTime INTO #LatestReadTemp
-FROM CommandRequestExec cre JOIN CommandRequestExecResult crer ON cre.CommandRequestExecId=crer.CommandRequestExecId
-WHERE ErrorCode=0
-AND CommandRequestExecType='GROUP_DEVICE_CONFIG_READ'
-GROUP BY DeviceId;
-
-SELECT DeviceId, MAX(CompleteTime) AS maxCompleteTime INTO #FailedVerifyTemp
-FROM CommandRequestExecResult crer JOIN CommandRequestExec cre ON crer.CommandRequestExecId=cre.CommandRequestExecId 
-WHERE ErrorCode<>0
-AND CommandRequestExecType='GROUP_DEVICE_CONFIG_VERIFY'
-GROUP BY DeviceId;
-
-SELECT DeviceId, MAX(CompleteTime) AS maxCompleteTime INTO #SuccessfulVerifyTemp
-FROM CommandRequestExecResult crer JOIN CommandRequestExec cre ON crer.CommandRequestExecId=cre.CommandRequestExecId 
-WHERE ErrorCode=0
-AND CommandRequestExecType='GROUP_DEVICE_CONFIG_VERIFY'
-GROUP BY DeviceId;
-
-SELECT DeviceId, MAX(CompleteTime) AS maxCompleteTime INTO #LatestSendOrReadTemp
-FROM CommandRequestExec cre JOIN CommandRequestExecResult crer ON cre.CommandRequestExecId=crer.CommandRequestExecId
-WHERE ErrorCode=0
-AND CommandRequestExecType in ('GROUP_DEVICE_CONFIG_SEND', 'GROUP_DEVICE_CONFIG_READ')
-GROUP BY DeviceId;
-
-SELECT DeviceId, MAX(CompleteTime) AS maxCompleteTime INTO #LatestVerifyTemp
-FROM CommandRequestExecResult crer JOIN CommandRequestExec cre ON crer.CommandRequestExecId=cre.CommandRequestExecId 
+SELECT DeviceId, MAX(maxCompleteTime) as maxCompleteTime INTO #LatestVerifyTemp
+FROM #LatestGdcRequestsTemp
 WHERE CommandRequestExecType='GROUP_DEVICE_CONFIG_VERIFY'
 GROUP BY DeviceId;
 
-SELECT DeviceId, MAX(CompleteTime) AS maxCompleteTime INTO #LatestActionTemp
-FROM CommandRequestExec cre JOIN CommandRequestExecResult crer ON cre.CommandRequestExecId=crer.CommandRequestExecId
-WHERE CommandRequestExecType in ('GROUP_DEVICE_CONFIG_SEND', 'GROUP_DEVICE_CONFIG_READ', 'GROUP_DEVICE_CONFIG_VERIFY')
+SELECT DeviceId, MAX(maxCompleteTime) AS maxCompleteTime INTO #LatestActionTemp
+FROM #LatestGdcRequestsTemp
 GROUP BY DeviceId;
 
-Create Table #DeviceConfigTypesTemp (
-    type VARCHAR(30) NOT NULL PRIMARY KEY NONCLUSTERED
+CREATE TABLE #ConfigurablePaoIdsTemp (
+    PAObjectID NUMERIC NOT NULL PRIMARY KEY NONCLUSTERED
 );
-INSERT INTO #DeviceConfigTypesTemp VALUES
-    ('MCT-410cL'),('MCT-410fL'),('MCT-410gL'),('MCT-410iL'),
-    ('MCT-420cL'),('MCT-420cD'),('MCT-420fL'),('MCT-420fD'),
-    ('MCT-430A'),('MCT-430A3'),('MCT-430S4'),('MCT-430SL'),
-    ('MCT-440-2131B'),('MCT-440-2132B'),('MCT-440-2133B'),
-    ('MCT-470'),
-    ('RFN-410fL'),('RFN-410fX'),('RFN-410fD'),
-    ('RFN-420fL'),('RFN-420fX'),('RFN-420fD'),('RFN-420fRX'),('RFN-420fRD'),
-    ('RFN-410cL'),
-    ('RFN-420cL'),('RFN-420cD'),
-    ('WRL-420cL'),('WRL-420cD'),
-    ('RFN-430A3D'),('RFN-430A3T'),('RFN-430A3K'),('RFN-430A3R'),('RFN-430KV'),('RFN-430SL0'),('RFN-430SL1'),('RFN-430SL2'),('RFN-430SL3'),('RFN-430SL4'),
-    ('RFN-510fL'),
-    ('RFN-520fAX'),('RFN-520fRX'),('RFN-520fAXD'),('RFN-520fRXD'),
-    ('RFN-530fAX'),('RFN-530fRX'),('RFN-530S4x'),('RFN-530S4eAX'),('RFN-530S4eAXR'),('RFN-530S4eRX'),('RFN-530S4eRXR'),
-    ('RFW-201'),
-    ('RFG-201'),('RFG-301');
+INSERT INTO #ConfigurablePaoIdsTemp
+SELECT PAObjectID 
+FROM YukonPAObject
+WHERE type in (
+    'MCT-410cL','MCT-410fL','MCT-410gL','MCT-410iL',
+    'MCT-420cL','MCT-420cD','MCT-420fL','MCT-420fD',
+    'MCT-430A','MCT-430A3','MCT-430S4','MCT-430SL',
+    'MCT-440-2131B','MCT-440-2132B','MCT-440-2133B',
+    'MCT-470',
+    'RFN-410fL','RFN-410fX','RFN-410fD',
+    'RFN-420fL','RFN-420fX','RFN-420fD','RFN-420fRX','RFN-420fRD',
+    'RFN-410cL',
+    'RFN-420cL','RFN-420cD',
+    'WRL-420cL','WRL-420cD',
+    'RFN-430A3D','RFN-430A3T','RFN-430A3K','RFN-430A3R','RFN-430KV','RFN-430SL0','RFN-430SL1','RFN-430SL2','RFN-430SL3','RFN-430SL4',
+    'RFN-510fL',
+    'RFN-520fAX','RFN-520fRX','RFN-520fAXD','RFN-520fRXD',
+    'RFN-530fAX','RFN-530fRX','RFN-530S4x','RFN-530S4eAX','RFN-530S4eAXR','RFN-530S4eRX','RFN-530S4eRXR',
+    'RFW-201',
+    'RFG-201','RFG-301');
 
 INSERT INTO DeviceConfigState (PaObjectId, CurrentState, LastAction, LastActionStatus, LastActionStart, LastActionEnd, CommandRequestExecId)
 (
@@ -336,8 +347,7 @@ SELECT
     cre.StartTime AS LastActionStart, 
     crer.CompleteTime AS LastActionEnd, 
     cre.CommandRequestExecId AS CommandRequestExecId
-FROM YukonPAObject y 
-    JOIN #DeviceConfigTypesTemp dct on y.Type=dct.type
+FROM #ConfigurablePaoIdsTemp y 
     /*  Limits to only devices that have been assigned to a config  */
     JOIN DeviceConfigurationDeviceMap dcdm 
         ON y.paobjectid=dcdm.deviceid
@@ -365,8 +375,7 @@ SELECT
     cre.StartTime AS LastActionStart, 
     crer.CompleteTime AS LastActionEnd, 
     cre.CommandRequestExecId AS CommandRequestExecId
-FROM YukonPAObject y 
-    JOIN #DeviceConfigTypesTemp dct on y.Type=dct.type
+FROM #ConfigurablePaoIdsTemp y 
     /*  Limits to only devices that have been assigned to a config  */
     JOIN DeviceConfigurationDeviceMap dcdm 
         ON y.paobjectid=dcdm.deviceid
@@ -395,8 +404,7 @@ SELECT
     cre.StartTime AS LastActionStart, 
     crer.CompleteTime AS LastActionEnd, 
     cre.CommandRequestExecId AS CommandRequestExecId
-FROM YukonPAObject y 
-    JOIN #DeviceConfigTypesTemp dct on y.Type=dct.type
+FROM #ConfigurablePaoIdsTemp y 
     /*  Limits to only devices that have been assigned to a config  */
     JOIN DeviceConfigurationDeviceMap dcdm 
         ON y.paobjectid=dcdm.deviceid
@@ -423,8 +431,7 @@ SELECT
     cre.StartTime AS LastActionStart, 
     crer.CompleteTime AS LastActionEnd, 
     cre.CommandRequestExecId AS CommandRequestExecId
-FROM YukonPAObject y 
-    JOIN #DeviceConfigTypesTemp dct on y.Type=dct.type
+FROM #ConfigurablePaoIdsTemp y 
     /*  Limits to only devices that have no config  */
     LEFT JOIN DeviceConfigurationDeviceMap dcdm 
         ON y.paobjectid=dcdm.deviceid
@@ -440,8 +447,7 @@ WHERE dcdm.DeviceConfigurationId IS NULL
 UNION
 
 SELECT PaObjectId, 'UNREAD', 'ASSIGN', 'SUCCESS', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL
-FROM YukonPAObject y 
-    JOIN #DeviceConfigTypesTemp dct on y.Type=dct.type
+FROM #ConfigurablePaoIdsTemp y 
     /*  Limits to only devices that have been assigned to a config, which is only meters and DNP/CBC devices  */
     JOIN DeviceConfigurationDeviceMap dcdm ON y.paobjectid=dcdm.deviceid
     LEFT JOIN #LatestActionTemp latest_action on y.PAObjectID=latest_action.DeviceId
@@ -456,7 +462,8 @@ DROP TABLE #SuccessfulVerifyTemp;
 DROP TABLE #LatestSendOrReadTemp;
 DROP TABLE #LatestVerifyTemp;
 DROP TABLE #LatestActionTemp;
-DROP TABLE #DeviceConfigTypesTemp;
+DROP TABLE #ConfigurablePaoIdsTemp;
+DROP TABLE #LatestGdcRequestsTemp;
 
 INSERT INTO DBUpdates VALUES ('YUK-20252', '7.5.0', GETDATE());
 /* @end YUK-20252 */
