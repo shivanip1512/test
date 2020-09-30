@@ -281,9 +281,9 @@ public class PointLoadGroupApiTest {
         Log.startTestCase("loadGroupPoint_13_CntDeviceIsOtherThanRTU_MCT_CBC_ION");
 
         MockLoadGroupPoint loadGroup = buildMockLoadGroup();
-        MockLMDto deviceUsage = MockLMDto.builder().id(29467).build();
+        MockLMDto deviceUsage = MockLMDto.builder().id(78945).build();
         loadGroup.setDeviceUsage(deviceUsage);
-        MockLMDto pointUsage = MockLMDto.builder().id(176266).build();
+        MockLMDto pointUsage = MockLMDto.builder().id(703078).build();
         loadGroup.setPointUsage(pointUsage);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
@@ -331,7 +331,7 @@ public class PointLoadGroupApiTest {
         Log.startTestCase("loadGroupPoint_15_CntDevicePointIsBlank");
 
         MockLoadGroupPoint loadGroup = buildMockLoadGroup();
-        MockLMDto deviceUsage = MockLMDto.builder().id(11735).build();
+        MockLMDto deviceUsage = MockLMDto.builder().id(2).build();
         loadGroup.setDeviceUsage(deviceUsage);
         MockLMDto pointUsage = MockLMDto.builder().id(null).build();
         loadGroup.setPointUsage(pointUsage);
@@ -377,9 +377,9 @@ public class PointLoadGroupApiTest {
         Log.startTestCase("loadGroupPoint_17_CntPntNotControlled");
 
         MockLoadGroupPoint loadGroup = buildMockLoadGroup();
-        MockLMDto deviceUsage = MockLMDto.builder().id(11735).build();
+        MockLMDto deviceUsage = MockLMDto.builder().id(3).build();
         loadGroup.setDeviceUsage(deviceUsage);
-        MockLMDto pointUsage = MockLMDto.builder().id(113717).build();
+        MockLMDto pointUsage = MockLMDto.builder().id(1235).build();
         loadGroup.setPointUsage(pointUsage);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
@@ -401,9 +401,9 @@ public class PointLoadGroupApiTest {
         Log.startTestCase("loadGroupPoint_18_CntPntNotOfStatusType");
 
         MockLoadGroupPoint loadGroup = buildMockLoadGroup();
-        MockLMDto deviceUsage = MockLMDto.builder().id(11735).build();
+        MockLMDto deviceUsage = MockLMDto.builder().id(3).build();
         loadGroup.setDeviceUsage(deviceUsage);
-        MockLMDto pointUsage = MockLMDto.builder().id(113684).build();
+        MockLMDto pointUsage = MockLMDto.builder().id(1235).build();
         loadGroup.setPointUsage(pointUsage);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
