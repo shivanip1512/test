@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,6 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollectionType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.TimeIntervals;
@@ -51,6 +51,7 @@ import com.cannontech.web.api.aggregateIntervalDataReport.AggregateIntervalDataR
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeListType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.type.AttributeType;
@@ -58,6 +59,7 @@ import com.cannontech.web.tools.reports.service.AggregateIntervalReportService.A
 import com.cannontech.web.tools.reports.service.AggregateIntervalReportService.MissingIntervalData;
 import com.cannontech.web.tools.reports.service.AggregateIntervalReportService.Operation;
 import com.cannontech.web.util.WebFileUtils;
+import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/aggregateIntervalReport/*")
@@ -108,7 +110,7 @@ public class AggregateIntervalReportController {
                             FlashScope flashScope, HttpServletRequest request, HttpServletResponse response, 
                             RedirectAttributes redirectAtts, ModelMap model) throws IOException {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        populateDevices(request, filter, model);
+        populateDevices(request, filter, model, flashScope);
         
         aggregateIntervalDataReportValidator.validate(filter, result);
         if (result.hasErrors()) {
@@ -155,15 +157,17 @@ public class AggregateIntervalReportController {
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         redirectAtts.addFlashAttribute("filter", filter);
         redirectAtts.addFlashAttribute("org.springframework.validation.BindingResult.filter", result);
+        List<MessageSourceResolvable> globalErrors = Lists.newArrayList();
         if (result.hasFieldErrors("deviceGroup") || result.hasFieldErrors("devices")) {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.error.invalidDevicesOrDeviceGroup"));
+            globalErrors.add(new YukonMessageSourceResolvable("yukon.web.api.error.invalidDevicesOrDeviceGroup"));
         }
         if (result.hasFieldErrors("startDate")) {
-            flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(result.getFieldError("startDate").getDefaultMessage()));
+            globalErrors.add(YukonMessageSourceResolvable.createDefaultWithoutCode(result.getFieldError("startDate").getDefaultMessage()));
         }
         if (result.hasFieldErrors("endDate")) {
-            flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(result.getFieldError("endDate").getDefaultMessage()));
+            globalErrors.add(YukonMessageSourceResolvable.createDefaultWithoutCode(result.getFieldError("endDate").getDefaultMessage()));
         }
+        flashScope.setError(globalErrors, FlashScopeListType.NONE);
         Object deviceCollectionObj = model.get("deviceCollection");
         if (deviceCollectionObj instanceof DeviceCollection) {
             redirectAtts.addFlashAttribute("deviceCollection", (DeviceCollection) deviceCollectionObj);
@@ -171,13 +175,13 @@ public class AggregateIntervalReportController {
         return redirectLink;
     }
     
-    private void populateDevices(HttpServletRequest request, AggregateIntervalReportFilter filter, ModelMap model) {
+    private void populateDevices(HttpServletRequest request, AggregateIntervalReportFilter filter, ModelMap model, FlashScope flashScope) {
         DeviceCollection collection = null;
         try {
             collection = deviceCollectionFactory.createDeviceCollection(request);
             model.addAttribute("deviceCollection", collection);
         } catch (Exception e) {
-            //No devices found - this will be caught by validator
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.error.invalidDevicesOrDeviceGroup"));
         }
         if (collection != null) {
             if (collection.getCollectionType() == DeviceCollectionType.group) {
