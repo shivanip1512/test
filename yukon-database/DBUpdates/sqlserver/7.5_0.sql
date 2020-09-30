@@ -376,8 +376,8 @@ FROM YukonPAObject y
     /*  Select commands sent to the devices, if any  */
     LEFT JOIN #LatestSendTemp latest_send ON latest_send.DeviceId=y.PAObjectID
     LEFT JOIN #LatestReadTemp latest_read ON latest_read.DeviceId=y.PAObjectID
-    LEFT JOIN #FailedVerifyTemp failed_verify ON failed_verify.DeviceId=y.PAObjectID
-    JOIN #SuccessfulVerifyTemp successful_verify ON successful_verify.DeviceId=y.PAObjectID
+    JOIN #FailedVerifyTemp failed_verify ON failed_verify.DeviceId=y.PAObjectID
+    LEFT JOIN #SuccessfulVerifyTemp successful_verify ON successful_verify.DeviceId=y.PAObjectID
     JOIN CommandRequestExecResult crer
         ON crer.CompleteTime=failed_verify.maxCompleteTime
             AND crer.DeviceId=failed_verify.DeviceId
