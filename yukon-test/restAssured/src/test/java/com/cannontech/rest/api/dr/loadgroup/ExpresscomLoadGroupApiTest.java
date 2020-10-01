@@ -192,7 +192,7 @@ public class ExpresscomLoadGroupApiTest {
         MockLoadGroupExpresscom loadGroup = MockLoadGroupExpresscom.builder()
                 .name("Test_ExpressCom_LoadGroup")
                 .type(MockPaoType.LM_GROUP_EXPRESSCOMM)
-                .routeId(47)
+                .routeId(1)
                 .disableControl(false)
                 .disableGroup(false)
                 .feeder("1000000000000000")

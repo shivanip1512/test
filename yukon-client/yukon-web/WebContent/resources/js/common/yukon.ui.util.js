@@ -423,7 +423,7 @@ yukon.ui.util = (function () {
                     return ('0' + parseInt(x, 10).toString(16)).slice(-2);
                 };
             if ('undefined' === typeof rgb || '' === rgb || null === rgb) {
-                return '#000000';
+                return yg.colors.BLACK;
             }
             
             // IE8 returns color in hex
