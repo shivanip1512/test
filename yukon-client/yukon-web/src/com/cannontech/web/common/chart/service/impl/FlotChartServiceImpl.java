@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartValue;
 import com.cannontech.common.chart.model.Graph;
@@ -242,12 +243,12 @@ public class FlotChartServiceImpl implements FlotChartService {
         List<Object> markingsArray = new ArrayList<>();
 
         Map<String, Object> markingStrategyHigh = Maps.newHashMapWithExpectedSize(2);
-        markingStrategyHigh.put(FlotOptionKey.GRID_MARKINGS_COLOR.getKey(), "#f1f1f1");
+        markingStrategyHigh.put(FlotOptionKey.GRID_MARKINGS_COLOR.getKey(), YukonColorPalette.SILVER.getHexValue());
         markingStrategyHigh.put(FlotOptionKey.GRID_MARKINGS_YAXIS.getKey(), yAxisFrom);
         markingsArray.add(markingStrategyHigh);
 
         Map<String, Object> markingStrategyLow = Maps.newHashMapWithExpectedSize(2);
-        markingStrategyLow.put(FlotOptionKey.GRID_MARKINGS_COLOR.getKey(), "#f1f1f1");
+        markingStrategyLow.put(FlotOptionKey.GRID_MARKINGS_COLOR.getKey(), YukonColorPalette.SILVER.getHexValue());
         markingStrategyLow.put(FlotOptionKey.GRID_MARKINGS_YAXIS.getKey(), yAxisTo);
         markingsArray.add(markingStrategyLow);
 

@@ -292,7 +292,7 @@ public class ControlAuditController {
             uncontrolledPercent = audit.getUncontrolled().size() / completed * 100;
         }
         uncontrolled.put("y", Double.parseDouble(df.format(uncontrolledPercent)));
-        uncontrolled.put("color", "#fb8521");
+        uncontrolled.put("color", YukonColorPalette.ORANGE.getHexValue());
         data.add(uncontrolled);
         
         Map<String, Object> unknown = new HashMap<>();
@@ -312,7 +312,7 @@ public class ControlAuditController {
             unsupportedPercent = audit.getUnsupported().size() / completed * 100;
         }
         unsupported.put("y", Double.parseDouble(df.format(unsupportedPercent)));
-        unsupported.put("color", "#888888");
+        unsupported.put("color", YukonColorPalette.GRAY.getHexValue());
         data.add(unsupported);
         
         status.put("data", data);
