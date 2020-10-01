@@ -147,7 +147,9 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("JOIN YukonPAObject ypo ON ypo.PAObjectID = dcs.PAObjectID");
         sql.append("JOIN DeviceConfigurationDeviceMap scdm ON dcs.PAObjectID = scdm.DeviceId");
         sql.append("JOIN DeviceConfiguration dc ON dc.DeviceConfigurationID = scdm.DeviceConfigurationId");
-        sql.append("LEFT JOIN CommandRequestExecResult crer ON crer.CommandRequestExecId = dcs.CommandRequestExecId AND dcs.PAObjectID=crer.DeviceId");
+        if (!selectCount) {
+            sql.append("LEFT JOIN CommandRequestExecResult crer ON crer.CommandRequestExecId = dcs.CommandRequestExecId AND dcs.PAObjectID=crer.DeviceId");
+        }
         sql.append("WHERE ypo.type").in_k(getSupportedPaoTypes());
         if(!filter.isDisplayAll()) {
             sql.append("AND scdm.DeviceConfigurationId").in(filter.getConfigurationIds());
