@@ -13,6 +13,9 @@ public class VirtualMeter extends VirtualBase implements IDeviceMeterGroup {
 
     @Override
     public DeviceMeterGroup getDeviceMeterGroup() {
+            if (deviceMeterGroup == null) {
+                deviceMeterGroup = new DeviceMeterGroup();
+            }
             return deviceMeterGroup;
     }
 
