@@ -2,16 +2,10 @@ package com.cannontech.web.tools.reports.service.impl;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -27,8 +21,6 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.util.Range;
-import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
@@ -38,6 +30,7 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.IntervalParser;
 import com.cannontech.web.tools.reports.service.AggregateIntervalReportService;
 import com.google.common.collect.ListMultimap;
 
@@ -59,14 +52,6 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
         decimalFormatter.setRoundingMode(roundingMode);
     }
     
-    /* example of adding new 5 min interval: TimeIntervals.MINUTES_5, ChronoUnit.MINUTES
-    no other changes required */
-    private static final Map<TimeIntervals, ChronoUnit> intervalDefinition = Map.of(
-            TimeIntervals.HOURS_1, ChronoUnit.HOURS,
-            TimeIntervals.DAYS_1, ChronoUnit.DAYS,
-            TimeIntervals.MINUTES_5, ChronoUnit.MINUTES,
-            TimeIntervals.MINUTES_15, ChronoUnit.MINUTES,
-            TimeIntervals.MINUTES_30, ChronoUnit.MINUTES);
     
     @Override
     public List<List<String>> getIntervalDataReport(AggregateIntervalReportFilter filter, YukonUserContext context) {
@@ -79,13 +64,8 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
          
         log.debug(filter);
         
-        ChronoUnit unit = intervalDefinition.get(filter.getInterval());
-        if (unit == null) {
-            throw new RuntimeException("Interval definition doesn't exist");
-        }
-        
         IntervalParser intervalParser = new IntervalParser(filter.getStartDate(), filter.getEndDate(), filter.getInterval(),
-                unit, context);
+                dateFormattingService, context, log);
         if(!intervalParser.hasValidInterval()) {
             return new ArrayList<>();
         }
@@ -134,17 +114,16 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
             
             boolean isCompleteData = false;
             if (data != null) {
-                if (data.size() > devices.size()) {
-                    /*
-                     * multiple rows per point
-                     * example: point id = 4485645 09/27/2020 23:00:00 value:1 and point id = 4485645 09/27/2020 23:00:00 value:2
-                     */
+                /*
+                 * multiple rows per point
+                 * example: point id = 4485645 09/27/2020 23:00:00 value:1 and point id = 4485645 09/27/2020 23:00:00 value:2
+                 */
 
-                    // keep first row
-                    data = data.stream().collect(Collectors.groupingBy(p -> p.getId())).values().stream()
-                            .map(values -> values.stream().findFirst().get())
-                            .collect(Collectors.toList());
-                }
+                // keep first row
+                data = data.stream().collect(Collectors.groupingBy(p -> p.getId())).values().stream()
+                        .map(values -> values.stream().findFirst().get())
+                        .collect(Collectors.toList());
+
                 // one row per device
                 isCompleteData = data.size() == devices.size();
             }
@@ -166,7 +145,7 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
             value = getValue(data, filter.getOperation());
         } else {
             if (filter.getMissingIntervalData() == MissingIntervalData.PARTIAL) {
-                value = data.isEmpty() ? "0" : getValue(data, filter.getOperation());
+                value = CollectionUtils.isEmpty(data) ? "0" : getValue(data, filter.getOperation());
             } else if (filter.getMissingIntervalData() == MissingIntervalData.BLANK) {
                 value = "";
             } else if (filter.getMissingIntervalData() == MissingIntervalData.FIXED_VALUE) {
@@ -228,156 +207,5 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
 
     private String format(Instant date, YukonUserContext context) {
         return dateFormattingService.format(date, DateFormatEnum.BOTH, context);
-    }
-
-    private class IntervalParser {
-        private boolean hasValidInterval = true;
-        private Map<Long, Date> intervals;
-        private Range<Instant> range;
-
-        IntervalParser(Instant startDate, Instant stopDate, TimeIntervals interval, ChronoUnit unit,
-                YukonUserContext context) {
-            // time of the first interval
-            Instant firstInterval = findInterval(startDate, interval, true, unit, context);
-            // time of the last interval
-            Instant lastInterval = findInterval(stopDate, interval, false, unit, context);
-            range = Range.inclusive(firstInterval, lastInterval);
-            if (firstInterval.isAfter(lastInterval)) {
-                log.info("Interval {} is not valid for date range {}-{}", interval, format(startDate, context),
-                        format(stopDate, context));
-                hasValidInterval = false;
-            }
-            intervals = createIntervals(interval, firstInterval, lastInterval);
-            logIntervals(startDate, stopDate, context);
-            
-            //15 min intervals
-            //user selected:[02/04/2020 01:27:00-02/04/2020 02:27:00] intervals created:[02/04/2020 01:30:00,02/04/2020 01:45:00,02/04/2020 02:00:00,02/04/2020 02:15:00]
-            //user selected:[02/04/2020 01:00:00-02/04/2020 02:00:00] intervals created:[02/04/2020 01:15:00,02/04/2020 01:30:00,02/04/2020 01:45:00,02/04/2020 02:00:00]
-            //user selected:[02/04/2020 01:05:00-02/04/2020 02:10:00] intervals created:[02/04/2020 01:15:00,02/04/2020 01:30:00,02/04/2020 01:45:00,02/04/2020 02:00:00]
-            
-            //30 min intervals
-            //user selected:[02/04/2020 01:27:00-02/04/2020 02:27:00] intervals created:[02/04/2020 01:30:00,02/04/2020 02:00:00]
-            //user selected:[02/04/2020 01:27:00-02/04/2020 01:47:00] intervals created:[02/04/2020 01:30:00]
-            //user selected:[02/04/2020 01:15:00-02/04/2020 01:30:00] intervals created:[02/04/2020 01:30:00]
-            //user selected:[02/04/2020 01:15:00-02/04/2020 01:20:00] intervals created:[]
-            //(logged as info -  Interval MINUTES_30 is not valid for date range 02/04/2020 01:15:00-02/04/2020 01:20:00)
-            
-            //1 hour
-            // user selected:[02/04/2020 01:15:00-02/04/2020 05:30:00] intervals created:[02/04/2020 02:00:00,02/04/2020 03:00:00,02/04/2020 04:00:00,02/04/2020 05:00:00]
-            // user selected:[02/04/2020 00:00:00-02/05/2020 00:00:00] intervals created:[
-            // 02/04/2020 01:00:00,
-            // 02/04/2020 02:00:00,
-            // 02/04/2020 03:00:00,
-            // 02/04/2020 04:00:00,
-            // 02/04/2020 05:00:00,
-            // 02/04/2020 06:00:00,
-            // 02/04/2020 07:00:00,
-            // 02/04/2020 08:00:00,
-            // 02/04/2020 09:00:00,
-            // 02/04/2020 10:00:00,
-            // 02/04/2020 11:00:00,
-            // 02/04/2020 12:00:00,
-            // 02/04/2020 13:00:00,
-            // 02/04/2020 14:00:00,
-            // 02/04/2020 15:00:00,
-            // 02/04/2020 16:00:00,
-            // 02/04/2020 17:00:00,
-            // 02/04/2020 18:00:00,
-            // 02/04/2020 19:00:00,
-            // 02/04/2020 20:00:00,
-            // 02/04/2020 21:00:00,
-            // 02/04/2020 22:00:00,
-            // 02/04/2020 23:00:00,
-            // 02/05/2020 00:00:00]
-            
-            //1 day
-            //user selected:[02/01/2020 00:00:00-02/05/2020 00:00:00] intervals created:[02/02/2020 00:00:00,02/03/2020 00:00:00,02/04/2020 00:00:00,02/05/2020 00:00:00]
-            //user selected:[02/01/2020 00:15:00-02/05/2020 00:45:00] intervals created:[02/02/2020 00:00:00,02/03/2020 00:00:00,02/04/2020 00:00:00,02/05/2020 00:00:00]
-
-        }
-
-        private void logIntervals(Instant startDate, Instant stopDate, YukonUserContext context) {
-            if (log.isDebugEnabled()) {
-                log.debug("user selected:[{}-{}] intervals created:[{}]", format(startDate, context), format(stopDate, context),
-                        intervals.values().stream().map(time -> format(new Instant(time.getTime()), context))
-                                .collect(Collectors.joining(",")));
-            } else {
-                log.info("user selected:[{}-{}] intervals created:{}", format(startDate, context), format(stopDate, context),
-                        intervals.size());
-            }
-        }
-
-        /**
-         * Creates intervals starting from the firstInterval and ending with the lastInterval
-         */
-        private Map<Long, Date> createIntervals(TimeIntervals interval, Instant firstInterval, Instant lastInterval) {
-            Map<Long, Date> intervals = new LinkedHashMap<>();
-            Instant first = firstInterval;
-            while (first.isBefore(lastInterval) || first.equals(lastInterval)) {
-                intervals.put(first.toDate().getTime(), first.toDate());
-                first = first.toDateTime().plusSeconds(interval.getSeconds()).toInstant();
-            }
-            return intervals;
-        }
-
-        boolean hasValidInterval() {
-            return hasValidInterval;
-        }
-
-        boolean containsInterval(Date interval) {
-            return intervals.containsKey(interval.getTime());
-        }
-
-        /**
-         * Returns all intervals
-         */
-        List<Date> getIntervals() {
-            return intervals.values().stream()
-                    .sorted()
-                    .collect(Collectors.toList());
-        }
-        
-        /**
-         * Returns a date range of firstInterval and lastInterval
-         */
-        Range<Instant> getRange() {
-            return range;
-        }
-
-        private Instant findInterval(Instant date, TimeIntervals interval, boolean isFirstInterval, ChronoUnit unit,
-                YukonUserContext context) {
-            ZoneId zone = context.getTimeZone().toZoneId();
-            LocalDateTime time = LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(date.getMillis()), zone);
-
-            LocalDateTime localTime = createInterval(interval, time, unit);
-            if (localTime == null) {
-                throw new RuntimeException("Unable to calculate interval for " + format(date, context) + " interval:" + interval
-                        + " isFirstInterval:" + isFirstInterval);
-            }
-
-            if (isFirstInterval) {
-                localTime = localTime.plus(interval.getSeconds(), ChronoUnit.SECONDS);
-            }
-            ZonedDateTime zonedDateTime = localTime.atZone(zone);
-            Instant newDate = new Instant(zonedDateTime.toInstant().toEpochMilli());
-            return newDate;
-        }
-
-        /**
-         * Returns an interval
-         */
-        private LocalDateTime createInterval(TimeIntervals interval, LocalDateTime time, ChronoUnit unit) {
-            LocalDateTime localTime = null;
-            if (unit == ChronoUnit.MINUTES) {
-                long minutes = TimeUnit.SECONDS.toMinutes(interval.getSeconds());
-                localTime = time.truncatedTo(ChronoUnit.HOURS).plusMinutes(minutes * (time.getMinute() / minutes));
-            } else if (unit == ChronoUnit.HOURS) {
-                long hours = TimeUnit.SECONDS.toHours(interval.getSeconds());
-                localTime = time.truncatedTo(ChronoUnit.DAYS).plusHours(hours * (time.getHour() / hours));
-            } else if (unit == ChronoUnit.DAYS) {
-                localTime = time.truncatedTo(ChronoUnit.DAYS);
-            }
-            return localTime;
-        }
     }
 }
