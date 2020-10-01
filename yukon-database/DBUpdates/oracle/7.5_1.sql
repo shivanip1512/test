@@ -7,7 +7,7 @@ UPDATE DeviceGroupComposed SET CompositionType = 'INTERSECTION'
         (SELECT DeviceGroupId FROM DeviceGroup WHERE SystemGroupEnum IN ('SERVICE_ACTIVE_RFW_METERS', 'SERVICE_ACTIVE_RF_ELECTRIC_METERS'));
 
 INSERT INTO DBUpdates VALUES ('YUK-23001', '7.5.1', SYSDATE);
-/* @start YUK-23001 */
+/* @end YUK-23001 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
