@@ -102,14 +102,7 @@
 							"name": "Delete",
 							"request": {
 								"method": "DELETE",
-								"header": [
-									{
-										"key": "Content-Type",
-										"name": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
+								"header": [],
 								"url": {
 									"raw": "{{api-url}}/api/dr/constraints/{constraintId}",
 									"host": [
@@ -206,14 +199,7 @@
 							"name": "Delete",
 							"request": {
 								"method": "DELETE",
-								"header": [
-									{
-										"key": "Content-Type",
-										"name": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
+								"header": [],
 								"url": {
 									"raw": "http://localhost:8086/yukon/api/dr/macroLoadGroups/{Id}",
 									"protocol": "http",
@@ -376,14 +362,7 @@
 							"name": "Delete",
 							"request": {
 								"method": "DELETE",
-								"header": [
-									{
-										"key": "Content-Type",
-										"name": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
+								"header": [],
 								"url": {
 									"raw": "http://127.0.0.1:8080/yukon/api/dr/controlScenarios/37269",
 									"protocol": "http",
@@ -578,14 +557,7 @@
 							"name": "Delete",
 							"request": {
 								"method": "DELETE",
-								"header": [
-									{
-										"key": "Content-Type",
-										"name": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
+								"header": [],
 								"url": {
 									"raw": "{{api-url}}/api/dr/setup/controlAreas/{id}",
 									"host": [
