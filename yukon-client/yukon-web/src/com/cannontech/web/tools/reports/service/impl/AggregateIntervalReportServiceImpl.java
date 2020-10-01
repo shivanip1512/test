@@ -1,12 +1,12 @@
 package com.cannontech.web.tools.reports.service.impl;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,11 +14,14 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
@@ -32,6 +35,8 @@ import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.reports.service.AggregateIntervalReportService;
 import com.google.common.collect.ListMultimap;
@@ -44,13 +49,22 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceDao deviceDao;
-    final static DecimalFormat decimalFormatter = new DecimalFormat("0.00");
+    @Autowired private GlobalSettingDao globalSettingDao;
+    private final static DecimalFormat decimalFormatter = new DecimalFormat();
+    
+    @PostConstruct
+    void init() {
+        RoundingMode roundingMode = globalSettingDao.getEnum(GlobalSettingType.DEFAULT_ROUNDING_MODE, YukonRoundingMode.class)
+                .getRoundingMode();
+        decimalFormatter.setRoundingMode(roundingMode);
+    }
     
     /* example of adding new 5 min interval: TimeIntervals.MINUTES_5, ChronoUnit.MINUTES
     no other changes required */
     private static final Map<TimeIntervals, ChronoUnit> intervalDefinition = Map.of(
             TimeIntervals.HOURS_1, ChronoUnit.HOURS,
             TimeIntervals.DAYS_1, ChronoUnit.DAYS,
+            TimeIntervals.MINUTES_5, ChronoUnit.MINUTES,
             TimeIntervals.MINUTES_15, ChronoUnit.MINUTES,
             TimeIntervals.MINUTES_30, ChronoUnit.MINUTES);
     
@@ -65,8 +79,13 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
          
         log.debug(filter);
         
+        ChronoUnit unit = intervalDefinition.get(filter.getInterval());
+        if (unit == null) {
+            throw new RuntimeException("Interval definition doesn't exist");
+        }
+        
         IntervalParser intervalParser = new IntervalParser(filter.getStartDate(), filter.getEndDate(), filter.getInterval(),
-                context);
+                unit, context);
         if(!intervalParser.hasValidInterval()) {
             return new ArrayList<>();
         }
@@ -87,7 +106,6 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
         
         //group by interval
         Map<Date, List<PointValueQualityHolder>> intervalData =  attributeData.values().stream()
-                .sorted(Comparator.comparing(PointValueQualityHolder::getPointDataTimeStamp))
                 .filter(value -> intervalParser.containsInterval(value.getPointDataTimeStamp()))
                 .collect(Collectors.groupingBy(PointValueQualityHolder::getPointDataTimeStamp));
 
@@ -217,12 +235,12 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
         private Map<Long, Date> intervals;
         private Range<Instant> range;
 
-        IntervalParser(Instant startDate, Instant stopDate, TimeIntervals interval,
+        IntervalParser(Instant startDate, Instant stopDate, TimeIntervals interval, ChronoUnit unit,
                 YukonUserContext context) {
             // time of the first interval
-            Instant firstInterval = findInterval(startDate, interval, true, context);
+            Instant firstInterval = findInterval(startDate, interval, true, unit, context);
             // time of the last interval
-            Instant lastInterval= findInterval(stopDate, interval, false, context);
+            Instant lastInterval = findInterval(stopDate, interval, false, unit, context);
             range = Range.inclusive(firstInterval, lastInterval);
             if (firstInterval.isAfter(lastInterval)) {
                 log.info("Interval {} is not valid for date range {}-{}", interval, format(startDate, context),
@@ -326,14 +344,10 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
             return range;
         }
 
-        private Instant findInterval(Instant date, TimeIntervals interval, boolean isFirstInterval, YukonUserContext context) {
+        private Instant findInterval(Instant date, TimeIntervals interval, boolean isFirstInterval, ChronoUnit unit,
+                YukonUserContext context) {
             ZoneId zone = context.getTimeZone().toZoneId();
             LocalDateTime time = LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(date.getMillis()), zone);
-            ChronoUnit unit = intervalDefinition.get(interval);
-
-            if (unit == null) {
-                throw new RuntimeException("Interval definition doesn't exist");
-            }
 
             LocalDateTime localTime = createInterval(interval, time, unit);
             if (localTime == null) {
