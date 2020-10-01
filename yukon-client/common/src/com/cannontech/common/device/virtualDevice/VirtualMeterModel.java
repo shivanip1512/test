@@ -1,7 +1,6 @@
-package com.cannontech.common.device.virtualMeter;
+package com.cannontech.common.device.virtualDevice;
 
 import com.cannontech.common.device.port.DBPersistentConverter;
-import com.cannontech.common.device.virtualDevice.VirtualDeviceBaseModel;
 import com.cannontech.database.data.device.VirtualMeter;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
