@@ -43,6 +43,20 @@ yukon.assets.virtualDevice = (function () {
                 });
             });
             
+            $(document).on('change', '.js-type', function () {
+                var type = $(this).children('option:selected').val(),
+                    name = $('#name').val();
+                $.ajax({
+                    url: yukon.url('/widget/virtualDeviceInfoWidget/create/' + type),
+                    type: 'get',
+                    data: {name: name}
+                }).done(function(data) {
+                     $('#virtual-device-form').html(data);
+               });
+                
+                //$('.js-meter-number').toggleClass('dn', selectedType != $('#virtualMeterType').val());
+            });
+            
             _initialized = true;
         }
  

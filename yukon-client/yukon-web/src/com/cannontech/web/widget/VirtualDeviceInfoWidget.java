@@ -22,10 +22,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.model.PaoModelFactory;
+import com.cannontech.common.device.port.PortBase;
+import com.cannontech.common.device.virtualDevice.VirtualDeviceBaseModel;
 import com.cannontech.common.device.virtualDevice.VirtualDeviceModel;
+import com.cannontech.common.device.virtualDevice.VirtualMeterModel;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.JsonUtils;
@@ -45,6 +50,7 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
+import com.google.common.collect.ImmutableSet;
 
 @Controller
 @RequestMapping("/virtualDeviceInfoWidget")
@@ -81,6 +87,7 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
     public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.EDIT);
         retrieveVirtualDevice(userContext, request, id, model);
+        model.addAttribute("virtualMeterType", PaoType.VIRTUAL_METER);
         return "virtualDeviceInfoWidget/render.jsp";
     }
     
@@ -91,7 +98,23 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
         VirtualDeviceModel virtualDevice = new VirtualDeviceModel();
         virtualDevice.setEnable(true);
         virtualDevice.setType(PaoType.VIRTUAL_SYSTEM);
+        model.addAttribute("types", ImmutableSet.of(PaoType.VIRTUAL_SYSTEM, PaoType.VIRTUAL_METER));
         model.addAttribute("virtualDevice", virtualDevice);
+        model.addAttribute("virtualMeterType", PaoType.VIRTUAL_METER);
+        return "virtualDeviceInfoWidget/render.jsp";
+    }
+    
+    @GetMapping("/create/{type}")
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.CREATE)
+    public String create(ModelMap model, @PathVariable PaoType type, @RequestParam String name) {
+        model.addAttribute("mode", PageEditMode.CREATE);
+        VirtualDeviceBaseModel virtualDevice = (VirtualDeviceBaseModel) PaoModelFactory.getModel(type);
+        virtualDevice.setName(name);
+        virtualDevice.setEnable(true);
+        virtualDevice.setType(type);
+        model.addAttribute("types", ImmutableSet.of(PaoType.VIRTUAL_SYSTEM, PaoType.VIRTUAL_METER));
+        model.addAttribute("virtualDevice", virtualDevice);
+        model.addAttribute("virtualMeterType", PaoType.VIRTUAL_METER);
         return "virtualDeviceInfoWidget/render.jsp";
     }
 
@@ -122,10 +145,13 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
 
     @PostMapping("/save")
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
-    public String save(@ModelAttribute("virtualDevice") VirtualDeviceModel virtualDevice, BindingResult result, YukonUserContext userContext,
+    public String save(@ModelAttribute("virtualDevice") VirtualDeviceBaseModel virtualDevice, BindingResult result, YukonUserContext userContext,
             FlashScope flash, HttpServletRequest request, ModelMap model, HttpServletResponse resp) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
 
+        //VirtualMeterModel obj = (VirtualMeterModel) virtualDevice;
+        //String meterNbr = obj.getMeterNumber();
+        String meterNo = ((VirtualMeterModel) virtualDevice).getMeterNumber();
         try {
             String paoId = null;
             if (virtualDevice.getId() != null) {

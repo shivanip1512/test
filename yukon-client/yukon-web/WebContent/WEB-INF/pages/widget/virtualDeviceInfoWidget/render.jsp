@@ -2,6 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="yukon.common,yukon.web.modules.operator.virtualDeviceInfoWidget">
@@ -9,12 +10,24 @@
     <c:if test="${not empty errorMsg}"><tags:alertBox includeCloseButton="true">${fn:escapeXml(errorMsg)}</tags:alertBox></c:if>
     <form:form modelAttribute="virtualDevice" id="virtual-device-form">
         <cti:csrfToken />
-        <tags:hidden path="type"/>
         <tags:hidden path="id"/>
+        <input type="hidden" id="virtualMeterType" value="${virtualMeterType}"/>
         
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".name">
-                <tags:input path="name" maxlength="60" inputClass="w300 wrbw dib"/>
+                <tags:input id="name" path="name" maxlength="60" inputClass="w300 wrbw dib"/>
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".type">
+                <cti:displayForPageEditModes modes="CREATE">
+                    <tags:selectWithItems path="type" items="${types}" inputClass="js-type"/>
+                </cti:displayForPageEditModes>
+                <cti:displayForPageEditModes modes="VIEW,EDIT">
+                    <i:inline key="${virtualDevice.type.formatKey}"/>
+                </cti:displayForPageEditModes>
+            </tags:nameValue2>
+            <c:set var="displayClass" value="${virtualDevice.type == virtualMeterType ? '' : 'dn'}"/>
+            <tags:nameValue2 nameKey=".meterNumber" rowClass="js-meter-number ${displayClass}">
+                <input type="text" name="meterNumber"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".status">
                 <tags:switchButton path="enable" offNameKey=".disabled.label" onNameKey=".enabled.label" />
