@@ -1,8 +1,10 @@
 package com.cannontech.core.dynamic.impl;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,13 +92,15 @@ public class PointServiceImpl implements PointService {
 
     @Transactional
     @Override
-    public void addPointData(int pointId, double value, Instant timestamp, YukonUserContext context) {
+    public void addPointData(int pointId, double value, Instant timestamp, YukonUserContext context) throws Exception {
+        pointDataAlreadyExists(pointId, timestamp);
+
         PointValueQualityTagHolder pd = asyncDynamicDataSource.getPointValueAndTags(pointId);
         PointData data = new PointData();
         data.setId(pointId);
         data.setTags(pd.getTags());
-        data.setTimeStamp(new java.util.Date());
-        data.setTime(new java.util.Date());
+        data.setTimeStamp(timestamp.toDate());
+        data.setTime(timestamp.toDate());
         data.setType(pd.getType());
         data.setValue(value);
         data.setPointQuality(PointQuality.Manual);
@@ -113,6 +117,17 @@ public class PointServiceImpl implements PointService {
         
         eventLog.pointDataAdded(pao.getPaoName(), point.getPointName(), formattedValue, data.getTimeStamp(),
             context.getYukonUser());
+    }
+    
+    public void pointDataAlreadyExists(int pointId, Instant timestamp) throws Exception {
+        timestamp = timestamp.minus(18000000);
+        Date startDate = timestamp.minus(1000).toDate();
+        Date endDate = timestamp.toDate();
+        List<PointValueHolder> pointHolder = rawPointHistoryDao.getPointData(pointId, startDate, endDate);
+        if (!CollectionUtils.isEmpty(pointHolder) || true) { // The pointHolder is not returning anything for some reason
+            throw new Exception("Error while communicating with Api."); // This should prob be its own exception
+        }
+
     }
 
     @Transactional

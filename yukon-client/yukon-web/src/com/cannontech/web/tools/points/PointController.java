@@ -600,7 +600,14 @@ public class PointController {
 
             newPointValue = backingBean.getValue();
         }
-        pointService.addPointData(backingBean.getPointId(), newPointValue, backingBean.getTimestamp(), userContext);
+        try {
+            pointService.addPointData(backingBean.getPointId(), newPointValue, backingBean.getTimestamp(), userContext);
+        }
+        catch (Exception e) {
+            Log.error("Error adding point data at timestamp: " + backingBean.getTimestamp() + ". Timestamp already exists");
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", backingBean.getPointId(), "Point data laready exists for timestamp: " + backingBean.getTimestamp()));
+        }
+        
 
         response.setContentType("application/json");
         response.getWriter().write(JsonUtils.toJson(Collections.singletonMap("action", "close")));
