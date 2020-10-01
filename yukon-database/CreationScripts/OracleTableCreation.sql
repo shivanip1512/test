@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/3/2020 5:42:50 AM                          */
+/* Created on:     9/30/2020 6:00:30 AM                         */
 /*==============================================================*/
 
 
@@ -3247,8 +3247,8 @@ create table DeviceGroupComposed  (
    constraint PK_DevGroupComp primary key (DeviceGroupComposedId)
 );
 
-INSERT INTO DeviceGroupComposed VALUES (1, 58, 'UNION');
-INSERT INTO DeviceGroupComposed VALUES (2, 59, 'UNION');
+INSERT INTO DeviceGroupComposed VALUES (1, 58, 'INTERSECTION');
+INSERT INTO DeviceGroupComposed VALUES (2, 59, 'INTERSECTION');
 
 /*==============================================================*/
 /* Table: DeviceGroupComposedGroup                              */
