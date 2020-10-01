@@ -22,7 +22,7 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupEmetconDetailPage;
 
-public class LoadGroupEmetconDetailTest extends SeleniumTestSetup {
+public class LoadGroupEmetconDetailTests extends SeleniumTestSetup {
 	private DriverExtensions driverExt;
     private LoadGroupEmetconDetailPage detailPage;
     private JSONObject response;

@@ -28,7 +28,7 @@ import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 
 import io.restassured.response.ExtractableResponse;
 
-public class LoadGroupPointDetailTest extends SeleniumTestSetup {
+public class LoadGroupPointDetailTests extends SeleniumTestSetup {
 	private DriverExtensions driverExt;
     private LoadGroupPointDetailsPage detailPage;
     private JSONObject response;

@@ -23,7 +23,7 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupRippleDetailsPage;
 
-public class LoadGroupRippleDetailTest extends SeleniumTestSetup {
+public class LoadGroupRippleDetailTests extends SeleniumTestSetup {
 	private DriverExtensions driverExt;
     private LoadGroupRippleDetailsPage detailPage;
     private JSONObject response;

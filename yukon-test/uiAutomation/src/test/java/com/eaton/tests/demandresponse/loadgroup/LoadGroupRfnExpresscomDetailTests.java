@@ -192,6 +192,21 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
     }
     
     @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    public void ldGrpRfnExpresscomDetail_LoadAddress_ValuesCorrect() {
+    	setRefreshPage(true);
+    	SoftAssertions softly = new SoftAssertions();
+    	List<String> actualValues = detailPage.getLoadAddressSection().getSectionValues();
+        ExtractableResponse<?> getResponse = DrSetupGetRequest.getLoadGroup(id);
+    	
+    	navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
+    	softly.assertThat(getResponse.path("LM_GROUP_EXPRESSCOMM.addressUsage[4]").toString()).isEqualTo(actualValues.get(0).split(",")[0].toUpperCase());
+    	softly.assertThat(getResponse.path("LM_GROUP_EXPRESSCOMM.addressUsage[5]").toString()).isEqualTo(actualValues.get(0).split(",")[1].trim().toUpperCase());
+    	softly.assertThat(getResponse.path("LM_GROUP_EXPRESSCOMM.addressUsage[6]").toString()).isEqualTo(actualValues.get(0).split(",")[2].trim().toUpperCase());    	
+    	
+    	softly.assertAll();
+    }
+    
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpRfnExpresscomDetail_LoadAddressing_ValuesCorrect() {
     	setRefreshPage(true);
     	SoftAssertions softly = new SoftAssertions();

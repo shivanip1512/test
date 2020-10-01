@@ -20,7 +20,7 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 
-public class LoadGroupHoneywellDetailTest extends SeleniumTestSetup {
+public class LoadGroupHoneywellDetailTests extends SeleniumTestSetup {
 	private DriverExtensions driverExt;
     private LoadGroupDetailPage detailPage;
     private JSONObject response;

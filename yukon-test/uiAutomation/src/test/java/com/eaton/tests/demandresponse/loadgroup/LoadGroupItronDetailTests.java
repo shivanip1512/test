@@ -22,7 +22,7 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 
-public class LoadGroupItronDetailTest extends SeleniumTestSetup {
+public class LoadGroupItronDetailTests extends SeleniumTestSetup {
 	private DriverExtensions driverExt;
     private LoadGroupDetailPage detailPage;
     private JSONObject response;

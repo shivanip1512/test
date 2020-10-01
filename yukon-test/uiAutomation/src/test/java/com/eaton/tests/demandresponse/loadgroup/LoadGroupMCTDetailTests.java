@@ -27,7 +27,7 @@ import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 
 import io.restassured.response.ExtractableResponse;
 
-public class LoadGroupMCTDetailTest extends SeleniumTestSetup {
+public class LoadGroupMCTDetailTests extends SeleniumTestSetup {
 	 	private DriverExtensions driverExt;
 	    private LoadGroupMCTDetailsPage detailPage;
 	    private JSONObject response;
