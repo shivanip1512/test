@@ -110,10 +110,6 @@
 										"type": "text"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": "\r\n{\r\n\t\"name\": \"LM Constraint\"\r\n\t\r\n}"
-								},
 								"url": {
 									"raw": "{{api-url}}/api/dr/constraints/{constraintId}",
 									"host": [
@@ -218,10 +214,6 @@
 										"type": "text"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": "{  \r\n\t\"name\": \"Macro Load group\"\r\n}"
-								},
 								"url": {
 									"raw": "http://localhost:8086/yukon/api/dr/macroLoadGroups/{Id}",
 									"protocol": "http",
@@ -264,7 +256,6 @@
 									"path": [
 										"api",
 										"dr",
-										"setup",
 										"macroLoadGroups",
 										"{Id}",
 										"copy"
@@ -286,7 +277,6 @@
 									"path": [
 										"api",
 										"dr",
-										"setup",
 										"macroLoadGroup",
 										"{Id}"
 									]
@@ -394,10 +384,6 @@
 										"type": "text"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n   \"name\" : \"s16\"\r\n}"
-								},
 								"url": {
 									"raw": "http://127.0.0.1:8080/yukon/api/dr/controlScenarios/37269",
 									"protocol": "http",
@@ -600,10 +586,6 @@
 										"type": "text"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n\t\"name\" : \"Area0099178\"\n}"
-								},
 								"url": {
 									"raw": "{{api-url}}/api/dr/setup/controlAreas/{id}",
 									"host": [
