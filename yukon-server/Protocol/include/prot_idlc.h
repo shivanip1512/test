@@ -146,7 +146,7 @@ class IM_EX_PROT IDLC : public Wrap
 
 protected:
 
-    void clearSequenceNumbers();    // this is for unit testing
+    void clearSequenceNumbers( Test::use_in_unit_tests_only & );
 
 public:
 

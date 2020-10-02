@@ -1,6 +1,7 @@
 #include <boost/test/auto_unit_test.hpp>
 
 #include "prot_idlc.h"
+#include "boost_test_helpers.h"
 
 BOOST_AUTO_TEST_SUITE( test_prot_idlc )
 
@@ -10,7 +11,7 @@ struct Test_IDLC : Cti::Protocols::IDLC
     {
         // Zeroing the sequence numbers allows the call
         //  to generate() to take the right path to the bug
-        clearSequenceNumbers();
+        clearSequenceNumbers( test_tag );
     }
 };
 
