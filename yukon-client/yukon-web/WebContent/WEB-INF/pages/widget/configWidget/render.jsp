@@ -21,7 +21,7 @@
     <!-- Device Configuration -->
     <c:if test="${configurableDevice}">
         <tags:nameValueContainer2 tableClass="spaced-form-controls">
-            <tags:nameValue2 nameKey=".currentConfiguration" nameColumnWidth="160px">
+            <tags:nameValue2 nameKey=".assignedConfiguration" nameColumnWidth="160px">
                 ${fn:escapeXml(currentConfigName)}
                 <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
                     <c:if test="${not empty currentConfigId}">
