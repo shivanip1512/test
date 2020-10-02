@@ -108,7 +108,10 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public String create(ModelMap model, @PathVariable PaoType type, @RequestParam String name) {
         model.addAttribute("mode", PageEditMode.CREATE);
-        VirtualDeviceBaseModel virtualDevice = (VirtualDeviceBaseModel) PaoModelFactory.getModel(type);
+        VirtualDeviceBaseModel virtualDevice = (VirtualDeviceBaseModel) new VirtualDeviceModel();
+        if (type == PaoType.VIRTUAL_METER) {
+            virtualDevice = (VirtualDeviceBaseModel) new VirtualMeterModel();
+        }
         virtualDevice.setName(name);
         virtualDevice.setEnable(true);
         virtualDevice.setType(type);
