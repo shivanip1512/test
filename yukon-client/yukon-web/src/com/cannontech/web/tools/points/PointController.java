@@ -44,6 +44,7 @@ import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.AlarmCatDao;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
@@ -571,7 +572,7 @@ public class PointController {
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_POINT_DATA, level = HierarchyPermissionLevel.UPDATE)
     public String manualEntrySend(HttpServletResponse response, YukonUserContext userContext,
             @ModelAttribute("backingBean") PointBackingBean backingBean, BindingResult bindingResult, ModelMap model,
-            FlashScope flashScope, Boolean specifiedDateTime) throws IOException {
+            FlashScope flashScope, Boolean specifiedDateTime) throws Exception {
         if (BooleanUtils.isNotTrue(specifiedDateTime)) {
             backingBean.setTimestamp(Instant.now());
         }
@@ -593,14 +594,11 @@ public class PointController {
         }
         try {
             pointService.addPointData(backingBean.getPointId(), newPointValue, backingBean.getTimestamp(), userContext);
-        }
-        catch (Exception e) {
-            Log.error("Error adding point data at timestamp: " + backingBean.getTimestamp() + ". Timestamp already exists");
+        } catch (DuplicateException e) {
             setupErrorModel(model, litePoint, backingBean, specifiedDateTime);
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".error.timestampExists"));
             return "../common/pao/manualEntryPopup.jsp";
         }
-        
 
         response.setContentType("application/json");
         response.getWriter().write(JsonUtils.toJson(Collections.singletonMap("action", "close")));

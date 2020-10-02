@@ -1,10 +1,8 @@
 package com.cannontech.core.dynamic.impl;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +14,8 @@ import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.events.loggers.PointEventLogService;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.core.dao.DuplicateException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.StateGroupDao;
@@ -92,7 +92,7 @@ public class PointServiceImpl implements PointService {
 
     @Transactional
     @Override
-    public void addPointData(int pointId, double value, Instant timestamp, YukonUserContext context) throws Exception {
+    public void addPointData(int pointId, double value, Instant timestamp, YukonUserContext context) {
         pointDataAlreadyExists(pointId, timestamp);
 
         PointValueQualityTagHolder pd = asyncDynamicDataSource.getPointValueAndTags(pointId);
@@ -118,16 +118,16 @@ public class PointServiceImpl implements PointService {
         eventLog.pointDataAdded(pao.getPaoName(), point.getPointName(), formattedValue, data.getTimeStamp(),
             context.getYukonUser());
     }
-    
-    public void pointDataAlreadyExists(int pointId, Instant timestamp) throws Exception {
-        timestamp = timestamp.minus(18000000);
-        Date startDate = timestamp.minus(1000).toDate();
-        Date endDate = timestamp.toDate();
-        List<PointValueHolder> pointHolder = rawPointHistoryDao.getPointData(pointId, startDate, endDate);
-        if (!CollectionUtils.isEmpty(pointHolder) || true) { // The pointHolder is not returning anything for some reason
-            throw new Exception("Error while communicating with Api."); // This should prob be its own exception
-        }
 
+    public void pointDataAlreadyExists(int pointId, Instant timestamp) {
+        try {
+            PointValueHolder pointValueHolder = rawPointHistoryDao.getSpecificValue(pointId, timestamp.getMillis());
+            String errorMessage = "Error adding point data at timestamp: " + timestamp.toDate() + ". Timestamp already exists";
+            log.error(errorMessage);
+            throw new DuplicateException(errorMessage);
+        } catch (NotFoundException e) {
+            log.debug("No point value for pointid " + pointId + " and timestamp " + timestamp, e);
+        }
     }
 
     @Transactional
