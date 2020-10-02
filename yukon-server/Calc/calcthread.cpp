@@ -1294,18 +1294,11 @@ BOOL CtiCalculateThread::isACalcPointID(const long aPointID)
 
 void CtiCalculateThread::stealPointMaps(CtiCalculateThread& victim)
 {
-    auto extractMap = [](CtiCalculateThread::CtiCalcPointMap& map)
-    {
-        CtiCalculateThread::CtiCalcPointMap tmp;
-        std::swap(tmp, map);
-        return std::move(tmp);
-    };
-
-    _periodicPoints = extractMap(victim._periodicPoints);
-    _onUpdatePoints = extractMap(victim._onUpdatePoints);
-    _constantPoints = extractMap(victim._constantPoints);
-    _historicalPoints = extractMap(victim._historicalPoints);
-    _backfilledPoints = extractMap(victim._backfilledPoints);
+    _periodicPoints = std::exchange(victim._periodicPoints, {});
+    _onUpdatePoints = std::exchange(victim._onUpdatePoints, {});
+    _constantPoints = std::exchange(victim._constantPoints, {});
+    _historicalPoints = std::exchange(victim._historicalPoints, {});
+    _backfilledPoints = std::exchange(victim._backfilledPoints, {});
 }
 
 void CtiCalculateThread::clearPointMaps()
@@ -1401,10 +1394,8 @@ void CtiCalculateThread::sendConstants()
 
     if( messageInMulti )
     {
-        {
-            CtiLockGuard<CtiCriticalSection> calcMsgGuard(outboxMux);
-            _outbox.emplace(std::move(pMultiMsg));
-        }
+        CtiLockGuard<CtiCriticalSection> calcMsgGuard(outboxMux);
+        _outbox.emplace(std::move(pMultiMsg));
     }
 }
 
@@ -1418,8 +1409,6 @@ void CtiCalculateThread::sendUserQuit( const std::string & who )
 void CtiCalculateThread::getCalcHistoricalLastUpdatedTime(PointTimeMap &dbTimeMap)
 {
     dbTimeMap.clear();
-    long pointid;
-    CtiTime updateTime;
 
     try
     {
@@ -1436,12 +1425,11 @@ void CtiCalculateThread::getCalcHistoricalLastUpdatedTime(PointTimeMap &dbTimeMa
         //  iterate through the components
         while( rdr() )
         {
-
             //  read 'em in, and append to the class
-            rdr["POINTID"] >> pointid;
-            rdr["LASTUPDATE"] >> updateTime;
+            const auto pointid = rdr["POINTID"].as<long>();
+            const auto updateTime = rdr["LASTUPDATE"].as<CtiTime>();
 
-            dbTimeMap.insert(PointTimeMap::value_type(pointid, updateTime));
+            dbTimeMap.emplace(pointid, updateTime);
         }
 
     }
@@ -1455,10 +1443,6 @@ void CtiCalculateThread::getCalcHistoricalLastUpdatedTime(PointTimeMap &dbTimeMa
 void CtiCalculateThread::getHistoricalTableData(CtiCalc& calcPoint, CtiTime &lastTime, DynamicTableData &data)
 {
     data.clear();
-    long pointid;
-    CtiTime timeStamp;
-    double value;
-    DynamicTableDataIter iter;
 
     if( calcPoint.getComponentIDList().empty() )
     {
@@ -1476,26 +1460,11 @@ void CtiCalculateThread::getHistoricalTableData(CtiCalc& calcPoint, CtiTime &las
         DatabaseConnection connection { getCalcQueryTimeout() };
         DatabaseReader rdr { connection };
 
-        std::stringstream ss;
+        const auto sql = sqlIds + " AND " + Cti::Database::createIdInClause("RPH", "POINTID", compIDList.size());
 
-        ss << sqlIds << " AND RPH.POINTID IN (";
-
-        for( set<long>::iterator idIter = compIDList.begin(); idIter != compIDList.end(); idIter++ )
-        {
-            if( idIter != compIDList.begin() )
-            {
-                ss << ", " << *idIter;
-            }
-            else
-            {
-                ss << *idIter;
-            }
-        }
-
-        ss << ")";
-
-        rdr.setCommandText(ss.str());
+        rdr.setCommandText(sql);
         rdr << lastTime;
+        rdr << compIDList;
 
         rdr.execute();
 
@@ -1503,20 +1472,11 @@ void CtiCalculateThread::getHistoricalTableData(CtiCalc& calcPoint, CtiTime &las
         while( rdr() )
         {
             //  read 'em in, and append to the data structure
-            rdr["POINTID"] >> pointid;
-            rdr["TIMESTAMP"] >> timeStamp;
-            rdr["VALUE"] >> value;
+            const auto pointid = rdr["POINTID"].as<long>();
+            const auto timeStamp = rdr["TIMESTAMP"].as<CtiTime>();
+            const auto value = rdr["VALUE"].as<double>();
 
-            if( (iter = data.find(timeStamp)) != data.end() )
-            {
-                iter->second.insert(HistoricalPointValueMap::value_type(pointid, value));
-            }
-            else
-            {
-                HistoricalPointValueMap insertMap;
-                insertMap.insert(HistoricalPointValueMap::value_type(pointid, value));
-                data.insert(DynamicTableData::value_type(timeStamp, insertMap));
-            }
+            data[timeStamp].emplace(pointid, value);
         }
 
     }
@@ -1529,46 +1489,41 @@ void CtiCalculateThread::getHistoricalTableData(CtiCalc& calcPoint, CtiTime &las
 void CtiCalculateThread::getHistoricalTableSinglePointData(long calcPoint, CtiTime &lastTime, DynamicTableSinglePointData &data)
 {
     data.clear();
-    long pointid;
-    CtiTime timeStamp;
-    double value;
 
-    data.clear();
-
-    if( calcPoint != 0 )
+    if( ! calcPoint )
     {
-        try
+        return;
+    }
+
+    try
+    {
+        static const string sqlCore =  "SELECT RPH.POINTID, RPH.TIMESTAMP, RPH.VALUE "
+                                        "FROM RAWPOINTHISTORY RPH "
+                                        "WHERE RPH.TIMESTAMP > ? AND RPH.POINTID = ? "
+                                        "ORDER BY RPH.TIMESTAMP DESC";
+
+        DatabaseConnection connection { getCalcQueryTimeout() };
+        DatabaseReader rdr { connection, sqlCore };
+
+        rdr << lastTime
+            << calcPoint;
+
+        rdr.execute();
+
+        //  iterate through the components
+        while( rdr() )
         {
-            static const string sqlCore =  "SELECT RPH.POINTID, RPH.TIMESTAMP, RPH.VALUE "
-                                           "FROM RAWPOINTHISTORY RPH "
-                                           "WHERE RPH.TIMESTAMP > ? AND RPH.POINTID = ? "
-                                           "ORDER BY RPH.TIMESTAMP DESC";
+            //  read 'em in, and append to the data structure
+            const auto pointid = rdr["POINTID"].as<long>();
+            const auto timeStamp = rdr["TIMESTAMP"].as<CtiTime>();
+            const auto value = rdr["VALUE"].as<double>();
 
-            DatabaseConnection connection { getCalcQueryTimeout() };
-            DatabaseReader rdr { connection, sqlCore };
-
-            rdr << lastTime
-                << calcPoint;
-
-            rdr.execute();
-
-            //  iterate through the components
-            while( rdr() )
-            {
-                //  read 'em in, and append to the data structure
-                rdr["POINTID"] >> pointid;
-                rdr["TIMESTAMP"] >> timeStamp;
-                rdr["VALUE"] >> value;
-
-                PointValuePair insertPair(pointid, value);
-                data.insert(DynamicTableSinglePointData::value_type(timeStamp, insertPair));
-            }
-
+            data.emplace(timeStamp, PointValuePair {pointid, value});
         }
-        catch(...)
-        {
-            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-        }
+    }
+    catch(...)
+    {
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
