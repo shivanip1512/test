@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
@@ -43,15 +41,6 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceDao deviceDao;
     @Autowired private GlobalSettingDao globalSettingDao;
-    private final static DecimalFormat decimalFormatter = new DecimalFormat();
-    
-    @PostConstruct
-    void init() {
-        RoundingMode roundingMode = globalSettingDao.getEnum(GlobalSettingType.DEFAULT_ROUNDING_MODE, YukonRoundingMode.class)
-                .getRoundingMode();
-        decimalFormatter.setRoundingMode(roundingMode);
-    }
-    
     
     @Override
     public List<List<String>> getIntervalDataReport(AggregateIntervalReportFilter filter, YukonUserContext context) {
@@ -161,7 +150,7 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
     private List<String> createRow(Date interval, String value, YukonUserContext context){
         List<String> row = new ArrayList<>();
         row.add(dateFormattingService.format(interval, DateFormatEnum.DATE, context));
-        row.add(dateFormattingService.format(interval, DateFormatEnum.TIME, context));
+        row.add(dateFormattingService.format(interval, DateFormatEnum.TIME24H, context));
         row.add(value);
         return row;
     }
@@ -172,6 +161,10 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
      * @param operation - instructions to add the data or find max value
      */
     private String getValue(List<PointValueQualityHolder> data, Operation operation) {
+        DecimalFormat decimalFormatter = new DecimalFormat();
+        RoundingMode roundingMode = globalSettingDao.getEnum(GlobalSettingType.DEFAULT_ROUNDING_MODE, YukonRoundingMode.class)
+                .getRoundingMode();
+        decimalFormatter.setRoundingMode(roundingMode);
         if(operation == Operation.ADD) {
            return decimalFormatter.format(data.stream()
                    .map(value -> value.getValue())
