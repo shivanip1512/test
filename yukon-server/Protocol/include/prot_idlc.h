@@ -144,6 +144,10 @@ class IM_EX_PROT IDLC : public Wrap
         MaximumFramingSeekLength = 260,
     };
 
+protected:
+
+    void clearSequenceNumbers();    // this is for unit testing
+
 public:
 
     IDLC();
