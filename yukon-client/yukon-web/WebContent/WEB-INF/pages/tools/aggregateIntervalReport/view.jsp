@@ -19,11 +19,16 @@
                     deviceCallback="yukon.tools.aggregateIntervalReport.devicesSelected"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey="yukon.common.attribute">
-                <tags:attributeSelector attributes="${groupedAttributes}" 
-                    selectedAttributes="${selectedAttributes}"
-                    name="attribute"
-                    groupItems="true"
-                    htmlEscape="true" />
+                 <spring:bind path="attribute">
+                    <tags:attributeSelector attributes="${groupedAttributes}" 
+                        selectedAttributes="${selectedAttributes}"
+                        name="attribute"
+                        groupItems="true"
+                        htmlEscape="true" />
+                    <c:if test="${status.error}">
+                        <div><form:errors path="attribute" cssClass="error"/></div>
+                    </c:if>
+                </spring:bind>
             </tags:nameValue2>
             <tags:nameValue2 nameKey="yukon.common.dateRange">
                 <dt:dateTime name="startDate" value="${filter.startDate}"/>
