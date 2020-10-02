@@ -193,6 +193,6 @@ public class IntervalParser {
     }
     
     private String format(Instant date, YukonUserContext context) {
-        return dateFormattingService.format(date, DateFormatEnum.BOTH, context);
+        return dateFormattingService.format(date, DateFormatEnum.DATEHM, context);
     }
 }
