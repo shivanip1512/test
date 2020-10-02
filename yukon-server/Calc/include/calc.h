@@ -18,7 +18,7 @@ class CtiCalc
     bool                 _isBaseline;
     bool                 _reuseRegression;
 
-    struct UpdateTypes {
+    struct UpdateTypeDbStrings {
         // text from the database
         static const std::string Periodic;
         static const std::string AllChange;
