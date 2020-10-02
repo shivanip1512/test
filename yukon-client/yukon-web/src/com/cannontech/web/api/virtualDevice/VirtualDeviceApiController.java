@@ -1,7 +1,6 @@
 package com.cannontech.web.api.virtualDevice;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -20,12 +19,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cannontech.common.device.virtualDevice.VirtualDeviceModel;
+import com.cannontech.common.device.virtualDevice.VirtualDeviceBaseModel;
 import com.cannontech.common.device.virtualDevice.service.VirtualDeviceService;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.pao.LiteYukonPaoSortableField;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.device.VirtualBase;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
@@ -40,7 +40,7 @@ public class VirtualDeviceApiController {
 
     @PostMapping("")
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.CREATE)
-    public ResponseEntity<Object> create(@Valid @RequestBody VirtualDeviceModel virtualDevice) {
+    public ResponseEntity<Object> create(@Valid @RequestBody VirtualDeviceBaseModel<? extends VirtualBase> virtualDevice) {
         return new ResponseEntity<>(virtualDeviceService.create(virtualDevice), HttpStatus.CREATED);
     }
 
@@ -51,7 +51,7 @@ public class VirtualDeviceApiController {
 
     @PatchMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
-    public ResponseEntity<Object> update(@PathVariable int id, @Valid @RequestBody VirtualDeviceModel virtualDevice) {
+    public ResponseEntity<Object> update(@PathVariable int id, @Valid @RequestBody VirtualDeviceBaseModel<? extends VirtualBase> virtualDevice) {
         return new ResponseEntity<>(virtualDeviceService.update(id, virtualDevice), HttpStatus.OK);
     }
 

@@ -13,14 +13,14 @@ public class DeviceBaseModel implements YukonDevice {
     private String name;
     private Boolean enable;
 
-    public static DeviceBaseModel of(LiteYukonPAObject pao) {
-        Integer id = pao.getPaoIdentifier().getPaoId();
-        PaoType type = pao.getPaoType();
-        String name = pao.getPaoName();
-        Boolean enable = (pao.getDisableFlag().equals("N") ? true : false);
-        return new DeviceBaseModel(id, type, name, enable);
+    public DeviceBaseModel of(LiteYukonPAObject pao) {
+        id = pao.getPaoIdentifier().getPaoId();
+        type = pao.getPaoType();
+        name = pao.getPaoName();
+        enable = (pao.getDisableFlag().equals("N") ? true : false);
+        return this;
     }
- 
+
     public DeviceBaseModel(Integer id, PaoType type, String name, Boolean enable) {
         this.id = id;
         this.type = type;
