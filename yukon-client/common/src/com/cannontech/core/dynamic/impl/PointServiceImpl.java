@@ -14,6 +14,8 @@ import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.events.loggers.PointEventLogService;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.core.dao.DuplicateException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.StateGroupDao;
@@ -91,12 +93,14 @@ public class PointServiceImpl implements PointService {
     @Transactional
     @Override
     public void addPointData(int pointId, double value, Instant timestamp, YukonUserContext context) {
+        pointDataAlreadyExists(pointId, timestamp);
+
         PointValueQualityTagHolder pd = asyncDynamicDataSource.getPointValueAndTags(pointId);
         PointData data = new PointData();
         data.setId(pointId);
         data.setTags(pd.getTags());
-        data.setTimeStamp(new java.util.Date());
-        data.setTime(new java.util.Date());
+        data.setTimeStamp(timestamp.toDate());
+        data.setTime(timestamp.toDate());
         data.setType(pd.getType());
         data.setValue(value);
         data.setPointQuality(PointQuality.Manual);
@@ -113,6 +117,17 @@ public class PointServiceImpl implements PointService {
         
         eventLog.pointDataAdded(pao.getPaoName(), point.getPointName(), formattedValue, data.getTimeStamp(),
             context.getYukonUser());
+    }
+
+    public void pointDataAlreadyExists(int pointId, Instant timestamp) {
+        try {
+            PointValueHolder pointValueHolder = rawPointHistoryDao.getSpecificValue(pointId, timestamp.getMillis());
+            String errorMessage = "Error adding point data at timestamp: " + timestamp.toDate() + ". Timestamp already exists";
+            log.error(errorMessage);
+            throw new DuplicateException(errorMessage);
+        } catch (NotFoundException e) {
+            log.debug("No point value for pointid " + pointId + " and timestamp " + timestamp, e);
+        }
     }
 
     @Transactional
