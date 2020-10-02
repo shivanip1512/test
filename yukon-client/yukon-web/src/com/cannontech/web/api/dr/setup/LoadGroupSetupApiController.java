@@ -88,6 +88,11 @@ public class LoadGroupSetupApiController {
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
+    @GetMapping("/getPointGroupStartState/{pointId}")
+    public ResponseEntity<List<ControlRawState>> getPointGroupStartState(@PathVariable int pointId) {
+        return new ResponseEntity<>(loadGroupService.getPointGroupStartState(pointId), HttpStatus.OK);
+    }
+
     @InitBinder("loadGroupBase")
     public void setupBinder(WebDataBinder binder) {
         validators.stream().forEach(e -> {
@@ -100,11 +105,6 @@ public class LoadGroupSetupApiController {
     @InitBinder("LMCopy")
     public void setupBinderCopy(WebDataBinder binder) {
         binder.addValidators(lmCopyValidator);
-    }
-
-    @GetMapping("/getPointGroupStartState/{pointId}")
-    public ResponseEntity<List<ControlRawState>> getPointGroupStartState(@PathVariable int pointId) {
-        return new ResponseEntity<>(loadGroupService.getPointGroupStartState(pointId), HttpStatus.OK);
     }
 
     @Autowired
