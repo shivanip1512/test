@@ -56,7 +56,7 @@ public class MeterWRL420cDCreateTests extends SeleniumTestSetup {
 
         String name = "AT " + MeterEnums.MeterType.WRL420CD.getMeterType() + " Meter " + timeStamp;
         createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.WRL420CD.getMeterType());
-        createModal.getdeviceName().setInputValue(name);
+        createModal.getDeviceName().setInputValue(name);
         createModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
         createModal.getSerialNumber().setInputValue(String.valueOf(serialNumber));
         createModal.getManufacturer().setInputValue(manufacturer);

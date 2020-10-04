@@ -54,7 +54,7 @@ public class MeterRfn420flCreateTests extends SeleniumTestSetup {
 
         String name = "AT RFN-420fL Meter " + timeStamp;
         createModal.getType().selectItemByTextSearch("RFN-420fL");
-        createModal.getdeviceName().setInputValue(name);
+        createModal.getDeviceName().setInputValue(name);
         createModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
         createModal.getSerialNumber().setInputValue(String.valueOf(serialNumber));
         createModal.getManufacturer().setInputValue(manufacturer);
