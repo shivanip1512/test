@@ -126,7 +126,7 @@ public class PointServiceImpl implements PointService {
             log.error("RawPointHistory data for pointid {} and timestamp {} already exists.", pointId, timestamp.toDate());
             throw new DuplicateException(errorMessage);
         } catch (NotFoundException e) {
-            log.debug("No point value for pointid " + pointId + " and timestamp " + timestamp, e);
+            log.debug("RawPointHistory data for pointid {} and timestamp {} not found.", pointId, timestamp.toDate(), e);
         }
     }
 
