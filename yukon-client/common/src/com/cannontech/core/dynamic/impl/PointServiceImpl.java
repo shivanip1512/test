@@ -93,7 +93,7 @@ public class PointServiceImpl implements PointService {
     @Transactional
     @Override
     public void addPointData(int pointId, double value, Instant timestamp, YukonUserContext context) {
-        pointDataAlreadyExists(pointId, timestamp);
+        checkPointDataDuplication(pointId, timestamp);
 
         PointValueQualityTagHolder pd = asyncDynamicDataSource.getPointValueAndTags(pointId);
         PointData data = new PointData();
@@ -119,14 +119,18 @@ public class PointServiceImpl implements PointService {
             context.getYukonUser());
     }
 
-    public void pointDataAlreadyExists(int pointId, Instant timestamp) {
+    /**
+     * This method is used to check if there is existing point data at a specific timestamp to prevent duplicate data
+     * @throws DuplicateException - If point data already exists for timestamp
+     */
+    public void checkPointDataDuplication(int pointId, Instant timestamp) {
         try {
             PointValueHolder pointValueHolder = rawPointHistoryDao.getSpecificValue(pointId, timestamp.getMillis());
             String errorMessage = "Error adding point data at timestamp: " + timestamp.toDate() + ". Timestamp already exists";
-            log.error(errorMessage);
+            log.error("RawPointHistory data for pointid {} and timestamp {} already exists.", pointId, timestamp.toDate());
             throw new DuplicateException(errorMessage);
         } catch (NotFoundException e) {
-            log.debug("No point value for pointid " + pointId + " and timestamp " + timestamp, e);
+            log.debug("RawPointHistory data for pointid {} and timestamp {} not found.", pointId, timestamp.toDate(), e);
         }
     }
 
