@@ -51,10 +51,8 @@ public class LoadProgramSetupApiController {
     @PostMapping
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> create(@Valid @RequestBody LoadProgram loadProgram) {
-        int paoId = loadProgramService.create(loadProgram);
-        HashMap<String, Integer> paoIdMap = new HashMap<>();
-        paoIdMap.put("programId", paoId);
-        return new ResponseEntity<>(paoIdMap, HttpStatus.CREATED);
+        LoadProgram createLoadProgram = loadProgramService.create(loadProgram);
+        return new ResponseEntity<>(createLoadProgram, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
@@ -78,10 +76,8 @@ public class LoadProgramSetupApiController {
     @PutMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public ResponseEntity<Object> update(@Valid @RequestBody LoadProgram loadProgram, @PathVariable int id) {
-        int paoId = loadProgramService.update(id, loadProgram);
-        HashMap<String, Integer> paoIdMap = new HashMap<>();
-        paoIdMap.put("programId", paoId);
-        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
+        LoadProgram updateLoadProgram = loadProgramService.update(id, loadProgram);
+        return new ResponseEntity<>(updateLoadProgram, HttpStatus.OK);
     }
 
     @GetMapping("/allAvailableNotificationGroups")

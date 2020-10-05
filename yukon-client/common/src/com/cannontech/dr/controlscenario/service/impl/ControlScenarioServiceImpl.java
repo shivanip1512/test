@@ -35,7 +35,7 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
 
     @Override
     @Transactional
-    public int create(ControlScenario controlScenario) {
+    public ControlScenario create(ControlScenario controlScenario) {
         if (CollectionUtils.isNotEmpty(controlScenario.getAllPrograms())) {
             lmServiceHelper.validateProgramsAndGear(controlScenario);
         }
@@ -45,12 +45,12 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
 
         logService.scenarioCreated(lmScenario.getPAOName(), getProgramNames(lmScenario.getAllThePrograms()),
                 ApiRequestContext.getContext().getLiteYukonUser());
-        return lmScenario.getPAObjectID();
+        return controlScenario;
     }
 
     @Override
     @Transactional
-    public int update(int controlScenarioId, ControlScenario controlScenario) {
+    public ControlScenario update(int controlScenarioId, ControlScenario controlScenario) {
         if (CollectionUtils.isNotEmpty(controlScenario.getAllPrograms())) {
             lmServiceHelper.validateProgramsAndGear(controlScenario);
         }
@@ -61,7 +61,7 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
 
         logService.scenarioUpdated(lmScenario.getPAOName(), getProgramNames(lmScenario.getAllThePrograms()),
                 ApiRequestContext.getContext().getLiteYukonUser());
-        return lmScenario.getPAObjectID();
+        return controlScenario;
     }
 
     private String getProgramNames(Vector<LMControlScenarioProgram> allPrograms) {

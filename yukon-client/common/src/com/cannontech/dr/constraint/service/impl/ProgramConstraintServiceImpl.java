@@ -59,7 +59,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
     }
 
     @Override
-    public int create(ProgramConstraint programConstraint) {
+    public ProgramConstraint create(ProgramConstraint programConstraint) {
         Optional<LMDto> holidaySchedule = lmServiceHelper.getHolidaySchedule(programConstraint.getHolidaySchedule().getId());
         if (holidaySchedule.isEmpty()) {
             throw new NotFoundException("Holiday Schedule Id not found");
@@ -80,7 +80,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
         demandResponseEventLogService.programConstraintCreated(constraint.getConstraintName(),
                                                                ApiRequestContext.getContext().getLiteYukonUser());
 
-        return constraint.getConstraintID();
+        return programConstraint;
     }
 
     @Override
@@ -104,7 +104,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
     }
 
     @Override
-    public int update(int constraintId, ProgramConstraint programConstraint) {
+    public ProgramConstraint update(int constraintId, ProgramConstraint programConstraint) {
         Optional<LiteLMConstraint> lmConstraint = 
                 dbCache.getAllLMProgramConstraints().stream()
                 .filter(liteLMConstraint -> liteLMConstraint.getConstraintID() == constraintId)
@@ -131,7 +131,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
         demandResponseEventLogService.programConstraintUpdated(lmprogramConstraint.getConstraintName(),
                                                                ApiRequestContext.getContext().getLiteYukonUser());
 
-        return lmprogramConstraint.getConstraintID();
+        return programConstraint;
     }
 
     @Override
