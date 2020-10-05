@@ -228,7 +228,7 @@ public class ControlAreaApiDoc {
         ApiCallHelper.delete("loadPrograms", "/" + loadProgram.getProgramId().toString());
         ApiCallHelper.delete("programConstraints", "/" + programConstraint.getId().toString());
         loadGroups.forEach(group -> {
-            ApiCallHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
+            ApiCallHelper.delete("loadGroups", "/" + group.getId());
         });
     }
 }

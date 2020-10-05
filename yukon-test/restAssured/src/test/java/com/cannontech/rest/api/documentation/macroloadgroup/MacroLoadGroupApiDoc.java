@@ -61,10 +61,10 @@ public class MacroLoadGroupApiDoc {
      */
     @Test
     public void AssignedLoadGroup_Create(ITestContext context) {
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         Integer loadGroupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID);
         context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, loadGroupId);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
     }
 
     private MockMacroLoadGroup buildMacroLoadGroupCreateRequest(ITestContext context) {
@@ -245,7 +245,7 @@ public class MacroLoadGroupApiDoc {
     @Test(dependsOnMethods = { "Test_MacroLoadGroup_Delete" })
     public void assignedLoadGroup_Delete(ITestContext context) {
         Integer loadGroupId = (Integer)context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID);
-        ExtractableResponse<?> response = ApiCallHelper.delete(loadGroupId, loadGroup.getName(), "deleteloadgroup");
+        ExtractableResponse<?> response = ApiCallHelper.delete("loadGroups", "/" + loadGroupId);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 

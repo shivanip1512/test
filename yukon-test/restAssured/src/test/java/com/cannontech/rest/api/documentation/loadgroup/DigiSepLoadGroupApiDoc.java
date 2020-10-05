@@ -39,7 +39,7 @@ public class DigiSepLoadGroupApiDoc extends LoadGroupApiDocBase {
 
     @Test(dependsOnMethods = { "Test_LmDigiSep_Get" })
     public void Test_LmDigiSep_Update() {
-        paoId = updateDoc();
+        paoId = updateAllDoc();
     }
 
     @Test(dependsOnMethods = { "Test_LmDigiSep_Update" })
@@ -52,7 +52,7 @@ public class DigiSepLoadGroupApiDoc extends LoadGroupApiDocBase {
         deleteDoc();
 
         // clean up the copied object as well
-        LoadGroupHelper.deleteLoadGroup(LoadGroupHelper.getCopiedLoadGroupName(getMockPaoType()), copyPaoId);
+        LoadGroupHelper.deleteLoadGroup(copyPaoId);
     }
 
     @Override

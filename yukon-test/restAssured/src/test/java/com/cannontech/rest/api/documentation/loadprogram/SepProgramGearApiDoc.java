@@ -85,7 +85,7 @@ public class SepProgramGearApiDoc {
      */
     public void assignedLoadGroup_Create() {
         MockLoadGroupBase loadGroupSep = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_DIGI_SEP);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroupSep);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroupSep);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
         loadGroups = new ArrayList<>();
         Integer loadGroupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID);

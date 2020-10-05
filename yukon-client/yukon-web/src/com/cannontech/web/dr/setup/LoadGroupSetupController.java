@@ -120,7 +120,7 @@ public class LoadGroupSetupController {
     @GetMapping("/{id}")
     public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash, HttpServletRequest request) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupRetrieveUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupUrl + "/" + id);
             model.addAttribute("mode", PageEditMode.VIEW);
             LoadGroupBase loadGroup = retrieveGroup(userContext, request, id, url);
             if (loadGroup == null) {
@@ -145,7 +145,7 @@ public class LoadGroupSetupController {
     public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupRetrieveUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupUrl + "/" + id);
             model.addAttribute("mode", PageEditMode.EDIT);
             LoadGroupBase loadGroup = retrieveGroup(userContext, request, id, url);
             if (loadGroup == null) {
@@ -176,13 +176,15 @@ public class LoadGroupSetupController {
 
         try {
             String url;
+            ResponseEntity<? extends Object> response;
             if (loadGroup.getId() == null) {
-                url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupSaveUrl);
+                url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupUrl);
+                response = saveGroup(userContext, request, url, loadGroup, HttpMethod.POST);
             } else {
-                url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupUpdateUrl + loadGroup.getId());
+                url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupUrl + "/" + loadGroup.getId());
+                response = saveGroup(userContext, request, url, loadGroup, HttpMethod.PUT);
             }
-            ResponseEntity<? extends Object> response =
-                    saveGroup(userContext, request, url, loadGroup, HttpMethod.POST);
+
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(loadGroup, "loadGroup");
                 result = helper.populateBindingError(result, error, response);
@@ -192,7 +194,7 @@ public class LoadGroupSetupController {
                 return bindAndForward(loadGroup, result, redirectAttributes);
             }
 
-            if (response.getStatusCode() == HttpStatus.OK) {
+            if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 HashMap<String, Integer> groupIdMap = (HashMap<String, Integer>) response.getBody();
                 int groupId = groupIdMap.get("groupId");
                 flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", loadGroup.getName()));
@@ -217,7 +219,7 @@ public class LoadGroupSetupController {
             FlashScope flash, HttpServletRequest request) {
 
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupDeleteUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupUrl + "/" + id);
             ResponseEntity<? extends Object> response = deleteGroup(userContext, request, url, lmDelete);
 
             if (response.getStatusCode() == HttpStatus.OK) {
@@ -243,7 +245,7 @@ public class LoadGroupSetupController {
             HttpServletResponse servletResponse) throws IOException {
         Map<String, String> json = new HashMap<>();
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupCopyUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadGroupUrl + "/" + id + "/copy" );
             ResponseEntity<? extends Object> response = copyGroup(userContext, request, url, lmCopy, HttpMethod.POST);
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {

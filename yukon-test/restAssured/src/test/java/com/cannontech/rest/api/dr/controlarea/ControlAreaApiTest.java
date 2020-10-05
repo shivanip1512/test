@@ -12,7 +12,6 @@ import org.testng.annotations.Test;
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.model.MockApiError;
 import com.cannontech.rest.api.common.model.MockApiGlobalError;
-import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.constraint.request.MockProgramConstraint;
 import com.cannontech.rest.api.controlArea.request.MockControlArea;
@@ -41,24 +40,18 @@ public class ControlAreaApiTest {
     public void tearDown(ITestContext context) {
 
         // Delete Control Area
-        MockLMDto lmDeleteObject = MockLMDto.builder().name(context.getAttribute("controlAreaName").toString()).build();
-        Log.info("Delete Load Group is : " + lmDeleteObject);
         ExtractableResponse<?> deleteAreaResponse = ApiCallHelper.delete("controlAreas",
                 "/" + context.getAttribute("controlAreaId").toString());
         assertTrue(deleteAreaResponse.statusCode() == 200, "Status code should be 200");
 
         // Delete Load Program
-        lmDeleteObject = MockLMDto.builder().name(loadProgram.getName()).build();
-        Log.info("Delete Load Group is : " + lmDeleteObject);
         ExtractableResponse<?> deleteProgramResponse = ApiCallHelper.delete("loadPrograms",
                 "/" + loadProgram.getProgramId().toString());
         assertTrue(deleteProgramResponse.statusCode() == 200, "Status code should be 200");
 
         // Delete Load Group
-        lmDeleteObject = MockLMDto.builder().name(loadProgram.getAssignedGroups().get(0).getGroupName()).build();
-        ExtractableResponse<?> deleteGroupResponse = ApiCallHelper.delete("deleteloadgroup",
-                lmDeleteObject,
-                loadProgram.getAssignedGroups().get(0).getGroupId().toString());
+        ExtractableResponse<?> deleteGroupResponse = ApiCallHelper.delete("loadGroups",
+               "/" + loadProgram.getAssignedGroups().get(0).getGroupId().toString());
         assertTrue(deleteGroupResponse.statusCode() == 200, "Status code should be 200");
     }
 
@@ -171,9 +164,6 @@ public class ControlAreaApiTest {
 
         Log.startTestCase("controlArea_04_Delete");
 
-        MockLMDto lmDeleteObject = MockLMDto.builder().name(context.getAttribute("controlArea_Name").toString()).build();
-
-        Log.info("Delete Load Group is : " + lmDeleteObject);
         ExtractableResponse<?> deleteResponse = ApiCallHelper.delete("controlAreas",
                 "/" + context.getAttribute("controlArea_Id").toString());
         assertTrue(deleteResponse.statusCode() == 200, "Status code should be 200");
@@ -483,8 +473,6 @@ public class ControlAreaApiTest {
     @Test(dependsOnMethods = "controlArea_06_CreateWithProgramAndTrigger")
     public void controlArea_21_DeleteCntAreaWithProgramAssigned(ITestContext context) {
     
-        MockLMDto deleteObject = MockLMDto.builder().name(context.getAttribute("contArea_Name").toString()).build();
-        Log.info("Delete Control Area is : " + deleteObject);
         ExtractableResponse<?> deleteAreaResponse = ApiCallHelper.delete("controlAreas",
                 "/" + context.getAttribute("contArea_Id").toString());
         assertTrue(deleteAreaResponse.statusCode() == 200, "Status code should be 200");
@@ -564,8 +552,6 @@ public class ControlAreaApiTest {
     @Test(dependsOnMethods = "controlArea_23_UpdateCntAreaUnassignProgramNegativeValidation")
     public void controlArea_24_DeleteCntAreaWithProgramNegativeValidation(ITestContext context) {
     
-     MockLMDto deleteObject = MockLMDto.builder().name(context.getAttribute("controlArea_Name").toString()).build();
-        Log.info("Delete Control Area is : " + deleteObject);
         ExtractableResponse<?> deleteAreaResponse = ApiCallHelper.delete("controlAreas",
                 "/" + context.getAttribute("controlArea_Id").toString());
         assertTrue(deleteAreaResponse.statusCode() == 400, "Status code should be 400");
