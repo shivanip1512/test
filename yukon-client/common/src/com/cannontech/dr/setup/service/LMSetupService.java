@@ -20,9 +20,7 @@ public interface LMSetupService<T1, T2> {
     /**
      * Delete the LM object.
      */
-    default int delete(int id) {
-        return 0;
-    }
+    int delete(int id);
 
     /**
      * Copy the LM object.
