@@ -1,5 +1,4 @@
 #include <boost/test/unit_test.hpp>
-#include <boost/assign/list_of.hpp>
 
 #include "ctidate.h"
 #include "cmd_rfn_RemoteDisconnect.h"
@@ -11,9 +10,6 @@ using Cti::Devices::Commands::RfnRemoteDisconnectSetOnDemandConfigurationCommand
 using Cti::Devices::Commands::RfnRemoteDisconnectSetThresholdConfigurationCommand;
 using Cti::Devices::Commands::RfnRemoteDisconnectSetCyclingConfigurationCommand;
 using Cti::Devices::Commands::RfnRemoteDisconnectGetConfigurationCommand;
-
-using boost::assign::list_of;
-using boost::assign::pair_list_of;
 
 // --- defined in RTDB\test_main.cpp -- so BOOST_CHECK_EQUAL_COLLECTIONS() works for RfnCommand::CommandException
 namespace boost         {
@@ -37,8 +33,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_OnDemand_SetConfiguration )
 
     // execute
     {
-        const std::vector< unsigned char > exp = boost::assign::list_of
-            (0x82)(0x00)(0x01)(0x01)(0x01)(0x00);
+        const std::vector< unsigned char > exp {
+            0x82, 0x00, 0x01, 0x01, 0x01, 0x00 };
 
         RfnCommand::RfnRequestPayload rcv = cmd.executeCommand( execute_time );
 
@@ -48,21 +44,21 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_OnDemand_SetConfiguration )
 
     // decode -- success response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            (0x83)(0x00)(0x00)(0x01)(0x01)(0x01)(0x01)(0x01);
+        const std::vector< unsigned char > response {
+            0x83, 0x00, 0x00, 0x01, 0x01, 0x01, 0x01, 0x00 };
 
         RfnCommandResult rcv = cmd.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description,
                                  "Status: Success (0)"
                                  "\nDisconnect mode: On Demand"
-                                 "\nReconnect param: Immediate reconnect" );
+                                 "\nReconnect param: Arm reconnect" );
     }
 
     // decode -- failure response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            (0x83)(0x00)(0x01)(0x01)(0x00);
+        const std::vector< unsigned char > response {
+            0x83, 0x00, 0x01, 0x01, 0x00 };
 
         BOOST_CHECK_THROW( cmd.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
@@ -88,8 +84,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
 
     // execute
     {
-        const std::vector< unsigned char > exp = boost::assign::list_of
-            (0x82)(0x00)(0x01)(0x02)(0x05)(0x00)(0x05)(0x32)(0x0a)(0x00);
+        const std::vector< unsigned char > exp {
+            0x82, 0x00, 0x01, 0x02, 0x05, 0x00, 0x05, 0x32, 0x0a, 0x00 };
 
         RfnCommand::RfnRequestPayload rcv = cmd.executeCommand( execute_time );
 
@@ -99,8 +95,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
 
     // decode -- success response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            (0x83)(0x00)(0x00)(0x02)(0x01)(0x02)(0x05)(0x01)(0x0f)(0x64)(0x0a)(0x00);
+        const std::vector< unsigned char > response {
+            0x83, 0x00, 0x00, 0x02, 0x01, 0x02, 0x05, 0x01, 0x0f, 0x64, 0x0a, 0x00 };
 
         RfnCommandResult rcv = cmd.decodeCommand( execute_time, response );
 
@@ -116,8 +112,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
 
     // decode -- failure response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            (0x83)(0x00)(0x01)(0x02)(0x00);
+        const std::vector< unsigned char > response {
+            0x83, 0x00, 0x01, 0x02, 0x00 };
 
         BOOST_CHECK_THROW( cmd.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
@@ -139,8 +135,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_Cycling_SetConfiguration )
 
     // execute
     {
-        const std::vector< unsigned char > exp = boost::assign::list_of
-            (0x82)(0x00)(0x01)(0x03)(0x05)(0x01)(0x00)(0x3c)(0x01)(0x00);
+        const std::vector< unsigned char > exp {
+            0x82, 0x00, 0x01, 0x03, 0x05, 0x01, 0x00, 0x3c, 0x01, 0x00 };
 
         RfnCommand::RfnRequestPayload rcv = cmd.executeCommand( execute_time );
 
@@ -150,8 +146,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_Cycling_SetConfiguration )
 
     // decode -- success response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            (0x83)(0x00)(0x00)(0x03)(0x01)(0x03)(0x05)(0x01)(0x03)(0xe8)(0x00)(0x3c);
+        const std::vector< unsigned char > response {
+            0x83, 0x00, 0x00, 0x03, 0x01, 0x03, 0x05, 0x01, 0x03, 0xe8, 0x00, 0x3c };
 
         RfnCommandResult rcv = cmd.decodeCommand( execute_time, response );
 
@@ -165,8 +161,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_Cycling_SetConfiguration )
 
     // decode -- failure response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            (0x83)(0x00)(0x01)(0x03)(0x00);
+        const std::vector< unsigned char > response {
+            0x83, 0x00, 0x01, 0x03, 0x00 };
 
         BOOST_CHECK_THROW( cmd.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
@@ -184,11 +180,11 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_Cycling_SetConfiguration )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfiguration_constructor_exceptions )
 {
-    const std::vector< RfnCommand::CommandException > expected = list_of
-        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Demand Threshold: (0.0) underflow (minimum 0.5)" ) )
-        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Demand Threshold: (13.0) overflow (maximum 12.0)" ) )
-        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Connect Delay: (31) overflow (maximum 30)" ) )
-        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Max Disconnects: (21) overflow (maximum 20)" ) );
+    const std::vector< RfnCommand::CommandException > expected {
+        RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Demand Threshold: (0.0) underflow (minimum 0.5)" ),
+        RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Demand Threshold: (13.0) overflow (maximum 12.0)" ),
+        RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Connect Delay: (31) overflow (maximum 30)" ),
+        RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Max Disconnects: (21) overflow (maximum 20)" ) };
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -254,17 +250,17 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_Cycling_SetConfiguration_constructor_exceptions )
 {
-    const std::vector< std::pair< unsigned, unsigned > > inputs = pair_list_of
-        (   60,    4 )   // Connect minutes < 5
-        (   60, 1441 )   // Connect minutes > 1440
-        (    4,   60 )   // Disconnect minutes < 5
-        ( 1441,   60 );  // Disconnect minutes > 1440
+    const std::vector< std::pair< unsigned, unsigned > > inputs{
+        {   60,    4 },   // Connect minutes < 5
+        {   60, 1441 },   // Connect minutes > 1440
+        {    4,   60 },   // Disconnect minutes < 5
+        { 1441,   60 }};  // Disconnect minutes > 1440
 
-    const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Connect Minutes: (4) underflow (minimum 5)" ) )
-        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Connect Minutes: (1441) overflow (maximum 1440)" ) )
-        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Disconnect Minutes: (4) underflow (minimum 5)" ) )
-        ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Disconnect Minutes: (1441) overflow (maximum 1440)" ) );
+    const std::vector< RfnCommand::CommandException >   expected {
+        RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Connect Minutes: (4) underflow (minimum 5)" ),
+        RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Connect Minutes: (1441) overflow (maximum 1440)" ),
+        RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Disconnect Minutes: (4) underflow (minimum 5)" ),
+        RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid Disconnect Minutes: (1441) overflow (maximum 1440)" ) };
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -286,7 +282,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_Cycling_SetConfiguration_con
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_OnDemand_SetConfiguration_decoding_exceptions )
 {
-    const std::vector< RfnCommand::RfnResponsePayload > responses = {
+    const std::vector< RfnCommand::RfnResponsePayload > responses {
         { 0x8f, 0x00, 0x00, 0x01, 0x00 },
         { 0x83, 0x01, 0x00, 0x01, 0x00 },
         { 0x83, 0x00, 0x02, 0x01, 0x00 },
@@ -294,12 +290,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OnDemand_SetConfiguration_decoding_exceptions
         { 0x83, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00 } 
     };
 
-    const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x8f)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x01)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (2)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (0)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type received in response (0)" ) );
+    const std::vector< RfnCommand::CommandException >   expected {
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x8f)" ),
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x01)" ),
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (2)" ),
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (0)" ),
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type received in response (0)" ) };
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -325,7 +321,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OnDemand_SetConfiguration_decoding_exceptions
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandThreshold_SetConfiguration_decoding_exceptions )
 {
-    const std::vector< RfnCommand::RfnResponsePayload > responses = {
+    const std::vector< RfnCommand::RfnResponsePayload > responses {
         { 0x8f, 0x00, 0x00, 0x02, 0x00 },
         { 0x83, 0x01, 0x00, 0x02, 0x00 },
         { 0x83, 0x00, 0x02, 0x02, 0x00 },
@@ -333,12 +329,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandThreshold_SetConfiguration_decoding_exc
         { 0x83, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00 }
     };
 
-    const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x8f)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x01)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (2)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (0)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type received in response (0)" ) );
+    const std::vector< RfnCommand::CommandException >   expected {
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x8f)" ),
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x01)" ),
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (2)" ),
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (0)" ),
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type received in response (0)" ) };
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -368,7 +364,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandThreshold_SetConfiguration_decoding_exc
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_Cycling_SetConfiguration_decoding_exceptions )
 {
-    const std::vector< RfnCommand::RfnResponsePayload > responses = {
+    const std::vector< RfnCommand::RfnResponsePayload > responses {
         { 0x8f, 0x00, 0x00, 0x03, 0x00 },
         { 0x83, 0x01, 0x00, 0x03, 0x00 },
         { 0x83, 0x00, 0x02, 0x03, 0x00 },
@@ -376,12 +372,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_Cycling_SetConfiguration_decoding_exceptions 
         { 0x83, 0x00, 0x00, 0x03, 0x01, 0x00, 0x00 }
     };
 
-    const std::vector< RfnCommand::CommandException >   expected = list_of
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x8f)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x01)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (2)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (0)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type received in response (0)" ) );
+    const std::vector< RfnCommand::CommandException >   expected {
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0x8f)" ),
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x01)" ),
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (2)" ),
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (0)" ),
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type received in response (0)" ) };
 
     std::vector< RfnCommand::CommandException > actual;
 
@@ -411,8 +407,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_OnDemand )
 
     // execute
     {
-        const std::vector< unsigned char > exp = boost::assign::list_of
-            ( 0x82 )( 0x01 )( 0x00 );
+        const std::vector< unsigned char > exp {
+            0x82, 0x01, 0x00 };
 
         RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
@@ -422,8 +418,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_OnDemand )
 
     // decode -- success response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x83 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x01 )( 0x01 )( 0x01 );
+        const std::vector< unsigned char > response {
+            0x83, 0x01, 0x00, 0x01, 0x01, 0x01, 0x01, 0x01 };
 
         // These should be empty to begin
         BOOST_CHECK( ! command.getDisconnectMode() );
@@ -462,8 +458,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_OnDemand )
 
     // decode -- failure response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x83 )( 0x01 )( 0x01 )( 0x01 )( 0x01 )( 0x01 )( 0x01 )( 0x01 );
+        const std::vector< unsigned char > response {
+            0x83, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01 };
 
         BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
@@ -485,8 +481,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_DemandThres
 
     // execute
     {
-        const std::vector< unsigned char > exp = boost::assign::list_of
-            ( 0x82 )( 0x01 )( 0x00 );
+        const std::vector< unsigned char > exp {
+            0x82, 0x01, 0x00 };
 
         RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
@@ -496,8 +492,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_DemandThres
 
     // decode -- success response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x83 )( 0x01 )( 0x00 )( 0x02 )( 0x01 )( 0x02 )( 0x05 )( 0x01 )( 0x0f )( 0x64 )( 0x0a )( 0x00 );
+        const std::vector< unsigned char > response {
+            0x83, 0x01, 0x00, 0x02, 0x01, 0x02, 0x05, 0x01, 0x0f, 0x64, 0x0a, 0x00 };
 
         // These should be empty to begin
         BOOST_CHECK( ! command.getDisconnectMode() );
@@ -548,8 +544,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_DemandThres
 
     // decode -- failure response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x83 )( 0x01 )( 0x01 )( 0x02 )( 0x01 )( 0x02 )( 0x05 )( 0x01 )( 0x0f )( 0x64 )( 0x0a )( 0x00 );
+        const std::vector< unsigned char > response {
+            0x83, 0x01, 0x01, 0x02, 0x01, 0x02, 0x05, 0x01, 0x0f, 0x64, 0x0a, 0x00 };
 
         BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
@@ -571,8 +567,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_Cycling )
 
     // execute
     {
-        const std::vector< unsigned char > exp = boost::assign::list_of
-            ( 0x82 )( 0x01 )( 0x00 );
+        const std::vector< unsigned char > exp {
+            0x82, 0x01, 0x00 };
 
         RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
 
@@ -582,8 +578,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_Cycling )
 
     // decode -- success response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x83 )( 0x01 )( 0x00 )( 0x03 )( 0x01 )( 0x03 )( 0x05 )( 0x01 )( 0x03 )( 0xe8 )( 0x00 )( 0x3c );
+        const std::vector< unsigned char > response {
+            0x83, 0x01, 0x00, 0x03, 0x01, 0x03, 0x05, 0x01, 0x03, 0xe8, 0x00, 0x3c };
 
         // These should be empty to begin
         BOOST_CHECK( ! command.getDisconnectMode() );
@@ -628,8 +624,8 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_Cycling )
 
     // decode -- failure response
     {
-        const std::vector< unsigned char > response = boost::assign::list_of
-            ( 0x83 )( 0x01 )( 0x01 )( 0x03 )( 0x01 )( 0x03 )( 0x05 )( 0x01 )( 0x03 )( 0xe8 )( 0x00 )( 0x3c );
+        const std::vector< unsigned char > response {
+            0x83, 0x01, 0x01, 0x03, 0x01, 0x03, 0x05, 0x01, 0x03, 0xe8, 0x00, 0x3c };
 
         BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
 
@@ -647,7 +643,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_Cycling )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_decoding_exceptions )
 {
-    const std::vector< RfnCommand::RfnResponsePayload > responses = {
+    const std::vector< RfnCommand::RfnResponsePayload > responses {
         //  invalid response length
         { 0x83, 0x01 },
         //         \/\/ invalid response command code
@@ -674,22 +670,22 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_decoding_ex
         { 0x83, 0x01, 0x00, 0x03, 0x01, 0x03, 0x05, 0x02, 0x03, 0xe8, 0x00, 0x3c }
     };
 
-    const std::vector< RfnCommand::CommandException >   expected = list_of
+    const std::vector< RfnCommand::CommandException >   expected {
         //  0
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response length (2)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0xcc)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x00)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (23)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Failure (1)" ) )
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response length (2)" ),
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Response Command Code (0xcc)" ),
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Operation Code (0x00)" ),
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid Status (23)" ),
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Status: Failure (1)" ),
         //  5
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Response too small (3 < 5)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (2 != 1)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type received in response (23)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Response reconnect param invalid (23) expecting 0 or 1" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Response TLV too small (4 != 5)" ) )
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Response too small (3 < 5)" ),
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV count (2 != 1)" ),
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Invalid TLV type received in response (23)" ),
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Response reconnect param invalid (23) expecting 0 or 1" ),
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Response TLV too small (4 != 5)" ),
         //  10
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Response TLV too small (4 != 5)" ) )
-        ( RfnCommand::CommandException( ClientErrors::InvalidData, "Response reconnect param invalid (2) expecting 0 or 1" ) );
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Response TLV too small (4 != 5)" ),
+        RfnCommand::CommandException( ClientErrors::InvalidData, "Response reconnect param invalid (2) expecting 0 or 1" ) };
 
     std::vector< RfnCommand::CommandException > actual;
 
