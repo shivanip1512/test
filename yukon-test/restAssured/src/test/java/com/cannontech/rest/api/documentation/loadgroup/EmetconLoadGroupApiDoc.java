@@ -41,7 +41,7 @@ public class EmetconLoadGroupApiDoc extends LoadGroupApiDocBase {
 
     @Test(dependsOnMethods = { "Test_LmEmetcon_Get" })
     public void Test_LmEmetcon_Update() {
-        paoId = updateDoc();
+        paoId = updateAllDoc();
     }
 
     @Test(dependsOnMethods = { "Test_LmEmetcon_Update" })
@@ -54,7 +54,7 @@ public class EmetconLoadGroupApiDoc extends LoadGroupApiDocBase {
         deleteDoc();
 
         // cleanup/delete the copied group as well
-        LoadGroupHelper.deleteLoadGroup(LoadGroupHelper.getCopiedLoadGroupName(getMockPaoType()), copyPaoId);
+        LoadGroupHelper.deleteLoadGroup(copyPaoId);
     }
 
     @Override

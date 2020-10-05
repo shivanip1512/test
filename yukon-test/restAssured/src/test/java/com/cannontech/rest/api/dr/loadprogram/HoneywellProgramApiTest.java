@@ -13,7 +13,6 @@ import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.constraint.request.MockProgramConstraint;
 import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
@@ -432,21 +431,17 @@ public class HoneywellProgramApiTest {
 
         SoftAssert softAssert = new SoftAssert();
         // Delete Copied LoadProgram
-        MockLMDto deleteObject = MockLMDto.builder().name((String) context.getAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME)).build();
         ExtractableResponse<?> response = ApiCallHelper.delete("loadPrograms", "/" + copyProgramId.toString());
         softAssert.assertTrue(response.statusCode() == 200, "Status code should be 200. Delete copied LoadProgram failed.");
 
         // Delete LoadGroup which have been created for Load Program
         MockLoadGroupBase loadGroup = (MockLoadGroupBase) context.getAttribute("loadGroupHoneywell");
-        deleteObject.setName(loadGroup.getName());
-        ExtractableResponse<?> response1 = ApiCallHelper.delete("deleteloadgroup", deleteObject, loadGroup.getId().toString());
+        ExtractableResponse<?> response1 = ApiCallHelper.delete("loadGroups", "/" + loadGroup.getId().toString());
         softAssert.assertTrue(response1.statusCode() == 200, "Status code should be 200. Delete LoadGroup failed.");
 
         // Delete Program Constraint which have been created for Load Program
-        MockLMDto deleteConstraint = MockLMDto.builder().name(context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME).toString()).build();
-        ExtractableResponse<?> response2 = ApiCallHelper.delete("deleteProgramConstraint",
-                                                                deleteConstraint,
-                                                                context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID).toString());
+        ExtractableResponse<?> response2 = ApiCallHelper.delete("programConstraints",
+                "/" + context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID).toString());
         softAssert.assertTrue(response2.statusCode() == 200, "Status code should be 200. Delete Program Constraint failed.");
 
         softAssert.assertAll();

@@ -33,7 +33,7 @@ import com.google.common.collect.Lists;
 public class YukonJdbcTemplate extends JdbcTemplate {
     private static final Logger log = YukonLogManager.getLogger(YukonJdbcTemplate.class);
     
-    private static final int defaultBatchSize = 50000;
+    private static final int defaultBatchSize = 1000;
 
     public YukonJdbcTemplate(DataSource dataSource) {
         super(dataSource);
@@ -186,7 +186,7 @@ public class YukonJdbcTemplate extends JdbcTemplate {
                             deleteSql.append("DELETE FROM").append(batchUpdater.getTableName());
                             deleteSql.append("WHERE").append(deleteByColumn).in(deleteValues);
                             deleteSql.appendFragment(batchUpdater.getDeleteBeforeInsertClauses());
-                            log.trace("Delete sql: " + deleteSql.getDebugSql());
+                            log.trace("Delete sql {}", deleteSql.getDebugSql());
                             update(deleteSql);
                         }
 

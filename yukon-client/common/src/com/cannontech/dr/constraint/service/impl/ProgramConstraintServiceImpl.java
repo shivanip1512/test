@@ -84,14 +84,13 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
     }
 
     @Override
-    public int delete(int constraintId, String constraintName) {
+    public int delete(int constraintId) {
         Optional<LiteLMConstraint> liteLMConstraint = 
                 dbCache.getAllLMProgramConstraints().stream()
-                .filter(constraint -> constraint.getConstraintID() == constraintId
-                    && constraint.getConstraintName().equalsIgnoreCase(constraintName))
+                .filter(constraint -> constraint.getConstraintID() == constraintId)
                 .findFirst();
         if (liteLMConstraint.isEmpty()) {
-            throw new NotFoundException("Constraint Id and Name combination not found");
+            throw new NotFoundException("Constraint Id not found");
         }
         Integer paoId = Integer.valueOf(ServletUtils.getPathVariable("id"));
         checkIfConstriantIsUsed(liteLMConstraint.get(), paoId);

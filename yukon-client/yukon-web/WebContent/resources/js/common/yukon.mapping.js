@@ -16,14 +16,13 @@ yukon.mapping = (function () {
     _initialized = false,
     _updateNetworkTreeInterval,
     
-    //Line Color depends on ETX Band 1 - #006622(GREEN), 2 - #669900(LIGHT GREEN), 3 - #CCA300(YELLOW), 4 - #FF6600(ORANGE), 5 and up - #FF0000(RED)
-    _neighborColors = ['#006622', '#669900', '#CCA300', '#FF6600', '#FF0000'],  
-    //dark blue
-    _routeColor = "#0000CC",
-    //grey
-    _focusRouteColor = "#808080",
-    //yellow
-    _highlightRouteColor = "#FFFF00",
+    _neighborColors = [yg.colors.GREEN, yg.colors.GREEN_LIGHT, yg.colors.YELLOW, yg.colors.ORANGE, yg.colors.RED],  
+
+    _routeColor = yg.colors.BLUE_BRIGHT,
+
+    _focusRouteColor = yg.colors.GRAY,
+
+    _highlightRouteColor = yg.colors.YELLOW,
     
     /** @type {string} - The default projection code of our map tiles. */
     _destProjection = 'EPSG:3857',

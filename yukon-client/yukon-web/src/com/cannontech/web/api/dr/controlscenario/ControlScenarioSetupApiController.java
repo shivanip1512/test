@@ -14,44 +14,42 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.dr.setup.ControlScenario;
 import com.cannontech.common.dr.setup.LMCopy;
-import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.dr.setup.service.LMSetupService;
-import com.cannontech.web.api.dr.setup.LMDeleteValidator;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
 @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
-@RequestMapping("/dr/setup/controlScenario")
+@RequestMapping("/dr/controlScenarios")
 public class ControlScenarioSetupApiController {
 
     @Autowired @Qualifier("controlScenario") private LMSetupService <ControlScenario, LMCopy> controlScenarioService;
     @Autowired private ControlScenarioSetupValidator controlScenarioSetupValidator;
-    @Autowired private LMDeleteValidator lmDeleteValidator;
 
     @GetMapping("/{id}")
     public ResponseEntity<ControlScenario> retrieve(@PathVariable int id) {
         return new ResponseEntity<>(controlScenarioService.retrieve(id), HttpStatus.OK);
     }
 
-    @PostMapping("/create")
+    @PostMapping
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<HashMap<String, Integer>> create(
             @Valid @RequestBody ControlScenario controlScenario) {
         int paoId = controlScenarioService.create(controlScenario);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("paoId", paoId);
-        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
+        return new ResponseEntity<>(paoIdMap, HttpStatus.CREATED);
     }
 
-    @PostMapping("/update/{id}")
+    @PutMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public ResponseEntity<HashMap<String, Integer>> update(@Valid @RequestBody ControlScenario controlScenario,
             @PathVariable int id) {
@@ -61,23 +59,17 @@ public class ControlScenarioSetupApiController {
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.OWNER)
-    public ResponseEntity<HashMap<String, Integer>> delete(@Valid @RequestBody LMDelete lmDelete,
-            @PathVariable int id) {
-        int paoId = controlScenarioService.delete(id, lmDelete.getName());
+    public ResponseEntity<HashMap<String, Integer>> delete(@PathVariable int id) {
+        int paoId = controlScenarioService.delete(id);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
-        paoIdMap.put("paoId", paoId);
+        paoIdMap.put("id", paoId);
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
     @InitBinder("controlScenario")
     public void setupBinder(WebDataBinder binder) {
         binder.setValidator(controlScenarioSetupValidator);
-    }
-
-    @InitBinder("LMDelete")
-    public void setupBinderDelete(WebDataBinder binder) {
-        binder.addValidators(lmDeleteValidator);
     }
 }
