@@ -280,4 +280,5 @@ public interface DeviceTypes extends TypeBase
     public final static int WRL420CD = DEVICE_OFFSET + 212;
     public final static int VIRTUAL_GATEWAY = DEVICE_OFFSET + 213;
     public final static int GWY801 = DEVICE_OFFSET + 214;
+    public final static int VIRTUAL_METER = DEVICE_OFFSET + 215;
 }
