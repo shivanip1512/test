@@ -25,10 +25,11 @@
                     <i:inline key="${virtualDevice.type.formatKey}"/>
                 </cti:displayForPageEditModes>
             </tags:nameValue2>
-            <c:set var="displayClass" value="${virtualDevice.type == virtualMeterType ? '' : 'dn'}"/>
-            <tags:nameValue2 nameKey=".meterNumber" rowClass="js-meter-number ${displayClass}">
-                <input type="text" name="meterNumber"/>
-            </tags:nameValue2>
+            <c:if test="${virtualDevice.type == virtualMeterType}">
+                <tags:nameValue2 nameKey=".meterNumber">
+                    <input type="text" name="meterNumber"/>
+                </tags:nameValue2>
+            </c:if>
             <tags:nameValue2 nameKey=".status">
                 <tags:switchButton path="enable" offNameKey=".disabled.label" onNameKey=".enabled.label" />
             </tags:nameValue2>
