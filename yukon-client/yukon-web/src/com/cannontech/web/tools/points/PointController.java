@@ -572,7 +572,7 @@ public class PointController {
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_POINT_DATA, level = HierarchyPermissionLevel.UPDATE)
     public String manualEntrySend(HttpServletResponse response, YukonUserContext userContext,
             @ModelAttribute("backingBean") PointBackingBean backingBean, BindingResult bindingResult, ModelMap model,
-            FlashScope flashScope, Boolean specifiedDateTime) throws Exception {
+            FlashScope flashScope, Boolean specifiedDateTime) throws IOException {
         if (BooleanUtils.isNotTrue(specifiedDateTime)) {
             backingBean.setTimestamp(Instant.now());
         }
@@ -604,7 +604,7 @@ public class PointController {
         response.getWriter().write(JsonUtils.toJson(Collections.singletonMap("action", "close")));
         return null;
     }
-    
+
     private void setupErrorModel(ModelMap model, LitePoint litePoint, PointBackingBean backingBean, Boolean specifiedDateTime) {
         LiteYukonPAObject liteYukonPAO = dbCache.getAllPaosMap().get(litePoint.getPaobjectID());
         model.put("deviceName", liteYukonPAO.getPaoName());
@@ -615,7 +615,7 @@ public class PointController {
         }
         model.addAttribute("specifiedDateTime", specifiedDateTime);
     }
-    
+
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         datePropertyEditorFactory.setupInstantPropertyEditor(binder, userContext, BlankMode.NULL);
