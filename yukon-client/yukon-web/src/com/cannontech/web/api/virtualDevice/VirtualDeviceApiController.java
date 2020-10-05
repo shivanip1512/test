@@ -35,8 +35,8 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 public class VirtualDeviceApiController {
 
     @Autowired private VirtualDeviceService virtualDeviceService;
-    @Autowired private VirtualDeviceCreateApiValidator virtualDeviceCreateApiValidator;
-    @Autowired private VirtualDeviceApiValidator virtualDeviceApiValidator;
+    @Autowired private VirtualDeviceCreateApiValidator<? extends VirtualDeviceBaseModel<?>> virtualDeviceCreateApiValidator;
+    @Autowired private VirtualDeviceApiValidator<? extends VirtualDeviceBaseModel<?>> virtualDeviceApiValidator;
 
     @PostMapping("")
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.CREATE)
@@ -73,7 +73,7 @@ public class VirtualDeviceApiController {
         return new ResponseEntity<>(virtualDeviceService.getPage(sort, direction, page, itemsPerPage), HttpStatus.OK);
     }
 
-    @InitBinder("virtualDeviceModel")
+    @InitBinder("virtualDeviceBaseModel")
     public void setBinder(WebDataBinder binder) {
         binder.addValidators(virtualDeviceApiValidator);
 

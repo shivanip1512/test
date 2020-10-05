@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.model.PaoModelFactory;
 import com.cannontech.common.device.virtualDevice.VirtualDeviceBaseModel;
+import com.cannontech.common.device.virtualDevice.VirtualDeviceModel;
+import com.cannontech.common.device.virtualDevice.VirtualMeterModel;
 import com.cannontech.common.device.virtualDevice.service.VirtualDeviceService;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PaginatedResponse;
@@ -78,15 +80,25 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
         if (sortBy != LiteYukonPaoSortableField.PAO_NAME) {
             comparator = comparator.thenComparing(LiteYukonPaoSortableField.PAO_NAME.getComparator());
         }
-        
-        List<DeviceBaseModel> virtualModels = dbCache.getAllYukonPAObjects()
+
+        List<DeviceBaseModel> deviceBaseModel = dbCache.getAllYukonPAObjects()
                 .stream()
                 .filter(pao -> pao.getPaoType() == PaoType.VIRTUAL_SYSTEM || pao.getPaoType() == PaoType.VIRTUAL_METER)
                 .sorted(comparator)
-                .map(pao -> ((VirtualDeviceBaseModel) PaoModelFactory.getModel(pao.getPaoType())).of(pao))
+                .map( pao -> {
+                    if (dbCache.getAllMeters().containsKey(pao.getPaoIdentifier().getPaoId())) {
+                        VirtualMeterModel model = new VirtualMeterModel();
+                        model.of(pao);
+                        model.setMeterNumber(dbCache.getAllMeters().get(pao.getPaoIdentifier().getPaoId()).getMeterNumber());
+                        return model;
+                    }
+                    VirtualDeviceModel model = new VirtualDeviceModel();
+                    return model.of(pao);
+                }
+                )
                 .collect(Collectors.toList());
 
-        return new PaginatedResponse<DeviceBaseModel>(virtualModels, page, itemsPerPage);
+        return new PaginatedResponse<DeviceBaseModel>(deviceBaseModel, page, itemsPerPage);
     }
 
 }
