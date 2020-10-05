@@ -1,5 +1,6 @@
 package com.cannontech.database.data.device;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import com.cannontech.common.pao.PaoType;
@@ -11,6 +12,24 @@ public class VirtualMeter extends VirtualBase implements IDeviceMeterGroup {
 
     public VirtualMeter() {
             super(PaoType.VIRTUAL_METER);
+    }
+
+    @Override
+    public void setDbConnection(Connection conn) {
+        super.setDbConnection(conn);
+        getDeviceMeterGroup().setDbConnection(conn);
+    }
+
+    @Override
+    public void deletePartial() throws SQLException {
+        getDeviceMeterGroup().delete();
+        super.deletePartial();
+    }
+
+    @Override
+    public void addPartial() throws SQLException {
+        super.addPartial();
+        getDeviceMeterGroup().add();
     }
 
     @Override public void setDeviceID(Integer deviceID) {
@@ -32,8 +51,8 @@ public class VirtualMeter extends VirtualBase implements IDeviceMeterGroup {
 
     @Override
     public void update() throws SQLException {
-        getDeviceMeterGroup().update();
         super.update();
+        getDeviceMeterGroup().update();
     }
 
     @Override
