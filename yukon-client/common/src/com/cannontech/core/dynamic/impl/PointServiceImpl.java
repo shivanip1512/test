@@ -123,7 +123,7 @@ public class PointServiceImpl implements PointService {
         try {
             PointValueHolder pointValueHolder = rawPointHistoryDao.getSpecificValue(pointId, timestamp.getMillis());
             String errorMessage = "Error adding point data at timestamp: " + timestamp.toDate() + ". Timestamp already exists";
-            log.error(errorMessage);
+            log.error("RawPointHistory data for pointid {} and timestamp {} already exists.", pointId, timestamp.toDate());
             throw new DuplicateException(errorMessage);
         } catch (NotFoundException e) {
             log.debug("No point value for pointid " + pointId + " and timestamp " + timestamp, e);
