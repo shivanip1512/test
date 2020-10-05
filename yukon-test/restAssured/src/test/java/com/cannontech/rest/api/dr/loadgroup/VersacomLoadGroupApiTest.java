@@ -12,7 +12,6 @@ import org.testng.annotations.Test;
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.model.MockApiError;
 import com.cannontech.rest.api.common.model.MockApiFieldError;
-import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
@@ -32,9 +31,9 @@ public class VersacomLoadGroupApiTest {
     public void loadGroupVersacom_01_Create(ITestContext context) {
         Log.startTestCase("loadGroupVersacom_01_Create");
         MockLoadGroupVersacom loadGroup = (MockLoadGroupVersacom) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_VERSACOM);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID));
-        assertTrue(createResponse.statusCode() == 200, "Status code should be 200");
+        assertTrue(createResponse.statusCode() == 201, "Status code should be 201");
         assertTrue(createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID) != null, "Group Id should not be Null");
         loadGroup.setId(createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID));
         context.setAttribute("expectedloadGroup", loadGroup);
@@ -49,8 +48,8 @@ public class VersacomLoadGroupApiTest {
         Log.startTestCase("loadGroupVersacom_02_Get");
         Log.info("Group Id of LmGroupVersacom created is : " + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID));
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("getloadgroup",
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups",
+                "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
 
         MockLoadGroupVersacom loadGroupResponse = getResponse.as(MockLoadGroupVersacom.class);
@@ -82,13 +81,13 @@ public class VersacomLoadGroupApiTest {
         context.setAttribute("Versacom_GrpName", name);
 
         Log.info("Updated Load Group is :" + loadGroup);
-        ExtractableResponse<?> getResponse = ApiCallHelper.post("updateloadgroup",
+        ExtractableResponse<?> getResponse = ApiCallHelper.put("loadGroups",
                 loadGroup,
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+                "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
 
-        ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("getloadgroup",
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("loadGroups",
+               "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
 
         MockLoadGroupVersacom updatedLoadGroupResponse = getupdatedResponse.as(MockLoadGroupVersacom.class);
         assertTrue(name.equals(updatedLoadGroupResponse.getName()), "Name Should be : " + name);
@@ -108,13 +107,13 @@ public class VersacomLoadGroupApiTest {
 
         MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
                 .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_VERSACOM)).build();
-        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup",
+        ExtractableResponse<?> copyResponse = ApiCallHelper.post("loadGroups",
                 loadGroupCopy,
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+               "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString() + "/copy");
         assertTrue(copyResponse.statusCode() == 200, "Status code should be 200");
         assertTrue(copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString() != null, "Group Id should not be Null");
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("getloadgroup",
-                copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups",
+               "/" + copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
 
         MockLoadGroupVersacom loadGroupResponse = getResponse.as(MockLoadGroupVersacom.class);
@@ -135,7 +134,7 @@ public class VersacomLoadGroupApiTest {
 
         MockLoadGroupVersacom loadGroup = (MockLoadGroupVersacom) context.getAttribute("expectedloadGroup");
         loadGroup.setName(loadGroup.getName());
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
 
         HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "name");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
@@ -155,7 +154,7 @@ public class VersacomLoadGroupApiTest {
 
         MockLoadGroupVersacom loadGroup = buildMockLoadGroup();
         loadGroup.setName("");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "name");
         assertTrue(validationCode.get("message").equals("Validation error"), "Expected message should be - Validation error");
@@ -174,11 +173,11 @@ public class VersacomLoadGroupApiTest {
 
         MockLoadGroupVersacom loadGroup = buildMockLoadGroup();
         loadGroup.setName("Test\\,Versacom");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "name");
         assertTrue(validationCode.get("message").equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue("Cannot be blank or include any of the following characters: / \\ , ' \" |".equals(validationCode.get("code")),
+        assertTrue("Name must not contain any of the following characters: / \\ , ' \" |.".equals(validationCode.get("code")),
                 "Expected code in response is not correct");
 
         Log.endTestCase("loadGroupVersacom_07_GroupName_With_Special_Characters_Validation");
@@ -194,7 +193,7 @@ public class VersacomLoadGroupApiTest {
 
         MockLoadGroupVersacom loadGroup = buildMockLoadGroup();
         loadGroup.setName("TestVersacomMoreThanSixtyCharacter_TestVersacomMoreThanSixtyCharacters");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "name");
         assertTrue(validationCode.get("message").equals("Validation error"), "Expected message should be - Validation error");
@@ -214,7 +213,7 @@ public class VersacomLoadGroupApiTest {
 
         MockLoadGroupVersacom loadGroup = buildMockLoadGroup();
         loadGroup.setKWCapacity(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "kWCapacity");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(validationCode.get("message").equals("Validation error"), "Expected message should be - Validation error");
@@ -234,7 +233,7 @@ public class VersacomLoadGroupApiTest {
 
         MockLoadGroupVersacom loadGroup = buildMockLoadGroup();
         loadGroup.setKWCapacity(-222.0);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "kWCapacity");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(validationCode.get("message").equals("Validation error"), "Expected message should be - Validation error");
@@ -255,7 +254,7 @@ public class VersacomLoadGroupApiTest {
 
         MockLoadGroupVersacom loadGroup = buildMockLoadGroup();
         loadGroup.setKWCapacity(100000.0);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "kWCapacity");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(validationCode.get("message").equals("Validation error"), "Expected message should be - Validation error");
@@ -275,7 +274,7 @@ public class VersacomLoadGroupApiTest {
 
         MockLoadGroupVersacom loadGroup = buildMockLoadGroup();
         loadGroup.setUtilityAddress(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "utilityAddress");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(validationCode.get("message").equals("Validation error"), "Expected message should be - Validation error");
@@ -295,7 +294,7 @@ public class VersacomLoadGroupApiTest {
 
         MockLoadGroupVersacom loadGroup = buildMockLoadGroup();
         loadGroup.setUtilityAddress(257);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "utilityAddress");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(validationCode.get("message").equals("Validation error"), "Expected message should be - Validation error");
@@ -315,7 +314,7 @@ public class VersacomLoadGroupApiTest {
 
         MockLoadGroupVersacom loadGroup = buildMockLoadGroup();
         loadGroup.setUtilityAddress(257);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "utilityAddress");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(validationCode.get("message").equals("Validation error"), "Expected message should be - Validation error");
@@ -334,7 +333,7 @@ public class VersacomLoadGroupApiTest {
 
         MockLoadGroupVersacom loadGroup = buildMockLoadGroup();
         loadGroup.setSectionAddress(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "sectionAddress");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(validationCode.get("message").equals("Validation error"), "Expected message should be - Validation error");
@@ -354,7 +353,7 @@ public class VersacomLoadGroupApiTest {
 
         MockLoadGroupVersacom loadGroup = buildMockLoadGroup();
         loadGroup.setSectionAddress(257);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "sectionAddress");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(validationCode.get("message").equals("Validation error"), "Expected message should be - Validation error");
@@ -374,7 +373,7 @@ public class VersacomLoadGroupApiTest {
 
         MockLoadGroupVersacom loadGroup = buildMockLoadGroup();
         loadGroup.setSectionAddress(-3);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "sectionAddress");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(validationCode.get("message").equals("Validation error"), "Expected message should be - Validation error");
@@ -394,27 +393,23 @@ public class VersacomLoadGroupApiTest {
         loadGroup.setName("TestVersacom1");
         loadGroup.setClassAddress("Text");
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
-        assertTrue(createResponse.statusCode() == 200, "Status code should be " + 200);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
+        assertTrue(createResponse.statusCode() == 201, "Status code should be " + 201);
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("getloadgroup",
-                createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups",
+                "/" + createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
 
         MockLoadGroupVersacom loadGroupGetResponse = getResponse.as(MockLoadGroupVersacom.class);
         assertTrue(loadGroupGetResponse.getClassAddress().equals("0000000000000000"),
                 "Class Address should be " + "0000000000000000");
 
-        MockLMDto lmDeleteObject = MockLMDto.builder().name(loadGroupGetResponse.getName()).build();
-
-        Log.info("Delete Load Group is : " + lmDeleteObject);
-        ExtractableResponse<?> deleteResponse = ApiCallHelper.delete("deleteloadgroup", lmDeleteObject,
-                loadGroupGetResponse.getId().toString());
+        ExtractableResponse<?> deleteResponse = ApiCallHelper.delete("loadGroups", "/" + loadGroupGetResponse.getId().toString());
         assertTrue(deleteResponse.statusCode() == 200, "Status code should be 200");
 
         // Get request to validate load group is deleted
-        ExtractableResponse<?> getDeletedLoadGroupResponse = ApiCallHelper.get("getloadgroup",
-                loadGroupGetResponse.getId().toString());
+        ExtractableResponse<?> getDeletedLoadGroupResponse = ApiCallHelper.get("loadGroups",
+                "/" + loadGroupGetResponse.getId().toString());
         assertTrue(getDeletedLoadGroupResponse.statusCode() == 400, "Status code should be 400");
         MockApiError error = getDeletedLoadGroupResponse.as(MockApiError.class);
         assertTrue("Id not found".equals(error.getMessage()), "Expected error message Should be : " + "Id not found");
@@ -435,7 +430,7 @@ public class VersacomLoadGroupApiTest {
         MockLoadGroupVersacom loadGroup = buildMockLoadGroup();
         loadGroup.setClassAddress("10000000000100011");
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "classAddress");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(validationCode.get("message").equals("Validation error"), "Expected message should be - Validation error");
@@ -456,27 +451,24 @@ public class VersacomLoadGroupApiTest {
         loadGroup.setName("TestVersacom1");
         loadGroup.setDivisionAddress("Text");
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
-        assertTrue(createResponse.statusCode() == 200, "Status code should be " + 200);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
+        assertTrue(createResponse.statusCode() == 201, "Status code should be " + 201);
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("getloadgroup",
-                createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups",
+                "/" + createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
 
         MockLoadGroupVersacom loadGroupGetResponse = getResponse.as(MockLoadGroupVersacom.class);
         assertTrue(loadGroupGetResponse.getDivisionAddress().equals("0000000000000000"),
                 "division Address should be " + "0000000000000000");
 
-        MockLMDto lmDeleteObject = MockLMDto.builder().name(loadGroupGetResponse.getName()).build();
-
-        Log.info("Delete Load Group is : " + lmDeleteObject);
-        ExtractableResponse<?> deleteResponse = ApiCallHelper.delete("deleteloadgroup", lmDeleteObject,
-                loadGroupGetResponse.getId().toString());
+        ExtractableResponse<?> deleteResponse = ApiCallHelper.delete("loadGroups",
+                "/" + loadGroupGetResponse.getId().toString());
         assertTrue(deleteResponse.statusCode() == 200, "Status code should be 200");
 
         // Get request to validate load group is deleted
-        ExtractableResponse<?> getDeletedLoadGroupResponse = ApiCallHelper.get("getloadgroup",
-                loadGroupGetResponse.getId().toString());
+        ExtractableResponse<?> getDeletedLoadGroupResponse = ApiCallHelper.get("loadGroups",
+               "/" + loadGroupGetResponse.getId().toString());
         assertTrue(getDeletedLoadGroupResponse.statusCode() == 400, "Status code should be 400");
         MockApiError error = getDeletedLoadGroupResponse.as(MockApiError.class);
         assertTrue("Id not found".equals(error.getMessage()), "Expected error message Should be : " + "Id not found");
@@ -497,7 +489,7 @@ public class VersacomLoadGroupApiTest {
         MockLoadGroupVersacom loadGroup = buildMockLoadGroup();
         loadGroup.setDivisionAddress("10000000000100011");
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "divisionAddress");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(validationCode.get("message").equals("Validation error"), "Expected message should be - Validation error");
@@ -518,7 +510,7 @@ public class VersacomLoadGroupApiTest {
         MockLoadGroupVersacom loadGroup = buildMockLoadGroup();
         add_Serial_In_AddressUsage(loadGroup);
         loadGroup.setSerialAddress("1000000");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "serialAddress");
 
@@ -541,7 +533,7 @@ public class VersacomLoadGroupApiTest {
         MockLoadGroupVersacom loadGroup = buildMockLoadGroup();
         add_Serial_In_AddressUsage(loadGroup);
         loadGroup.setSerialAddress("-3");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "serialAddress");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(validationCode.get("message").equals("Validation error"), "Expected message should be - Validation error");
@@ -562,7 +554,7 @@ public class VersacomLoadGroupApiTest {
         MockLoadGroupVersacom loadGroup = buildMockLoadGroup();
         add_Serial_In_AddressUsage(loadGroup);
         loadGroup.setSerialAddress("Test");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "serialAddress");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(validationCode.get("message").equals("Validation error"), "Expected message should be - Validation error");
@@ -578,33 +570,24 @@ public class VersacomLoadGroupApiTest {
     public void loadGroupVersacom_25_Delete(ITestContext context) {
         Log.startTestCase("loadGroupVersacom_25_Delete");
 
-        MockLMDto lmDeleteObject = MockLMDto.builder().name(context.getAttribute("Versacom_GrpName").toString()).build();
-
-        Log.info("Delete Load Group is : " + lmDeleteObject);
-        ExtractableResponse<?> deleteResponse = ApiCallHelper.delete("deleteloadgroup",
-                lmDeleteObject,
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> deleteResponse = ApiCallHelper.delete("loadGroups",
+                "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue(deleteResponse.statusCode() == 200, "Status code should be 200");
 
-        MockLMDto lmDeleteCopyObject = MockLMDto.builder().name(context.getAttribute("Copied_Versacom_GrpName").toString())
-                .build();
-
-        Log.info("Delete Load Group is : " + lmDeleteCopyObject);
-        ExtractableResponse<?> deleteCopyResponse = ApiCallHelper.delete("deleteloadgroup",
-                lmDeleteCopyObject,
-                context.getAttribute("Copied_Versacom_GrpId").toString());
+        ExtractableResponse<?> deleteCopyResponse = ApiCallHelper.delete("loadGroups",
+               "/" + context.getAttribute("Copied_Versacom_GrpId").toString());
         assertTrue(deleteCopyResponse.statusCode() == 200, "Status code should be 200");
 
         // Get request to validate load group is deleted
-        ExtractableResponse<?> getDeletedLoadGroupResponse = ApiCallHelper.get("getloadgroup",
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getDeletedLoadGroupResponse = ApiCallHelper.get("loadGroups",
+               "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue(getDeletedLoadGroupResponse.statusCode() == 400, "Status code should be 400");
         MockApiError error = getDeletedLoadGroupResponse.as(MockApiError.class);
         assertTrue("Id not found".equals(error.getMessage()), "Expected error message Should be : " + "Id not found");
 
         // Get request to validate load group is deleted
-        ExtractableResponse<?> getDeletedCopiedLoadGroupResponse = ApiCallHelper.get("getloadgroup",
-                context.getAttribute("Copied_Versacom_GrpId").toString());
+        ExtractableResponse<?> getDeletedCopiedLoadGroupResponse = ApiCallHelper.get("loadGroups",
+               "/" + context.getAttribute("Copied_Versacom_GrpId").toString());
         assertTrue(getDeletedCopiedLoadGroupResponse.statusCode() == 400, "Status code should be 400");
         MockApiError errorCopy = getDeletedCopiedLoadGroupResponse.as(MockApiError.class);
         assertTrue("Id not found".equals(errorCopy.getMessage()), "Expected error message Should be : " + "Id not found");
@@ -621,8 +604,8 @@ public class VersacomLoadGroupApiTest {
         MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
                 .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_VERSACOM)).build();
         loadGroupCopy.setRouteId(LoadGroupHelper.INVALID_ROUTE_ID);
-        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup", loadGroupCopy,
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> copyResponse = ApiCallHelper.post("loadGroups", loadGroupCopy,
+               "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString() + "/copy");
         assertTrue(copyResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(copyResponse, "Validation error"),
                 "Expected message should be - Validation error");

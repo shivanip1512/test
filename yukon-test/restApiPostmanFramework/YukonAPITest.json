@@ -61,7 +61,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n   \"name\":\"LM Constraint\",\r\n   \"seasonSchedule\":{\r\n      \"id\":1\r\n   },\r\n   \"maxActivateSeconds\":12,\r\n   \"maxDailyOpsSeconds\":13,\r\n   \"minActivateSeconds\":14,\r\n   \"minRestartSeconds\":15,\r\n   \"daySelection\":[\r\n      \"SUNDAY\"\r\n   ],\r\n   \"holidaySchedule\":{\r\n      \"id\":1\r\n   },\r\n   \"holidayUsage\":\"FORCE\",\r\n   \"maxHoursDaily\":1,\r\n   \"maxHoursMonthly\":2,\r\n   \"maxHoursAnnually\":4,\r\n   \"maxHoursSeasonal\":3\r\n}"
+									"raw": "{\r\n   \"name\":\"LM Constraint\",\r\n   \"seasonSchedule\":{\r\n      \"id\":1\r\n   },\r\n   \"maxActivateSeconds\":12,\r\n   \"maxDailyOps\":13,\r\n   \"minActivateSeconds\":14,\r\n   \"minRestartSeconds\":15,\r\n   \"daySelection\":[\r\n      \"SUNDAY\"\r\n   ],\r\n   \"holidaySchedule\":{\r\n      \"id\":1\r\n   },\r\n   \"holidayUsage\":\"EXCLUDE\",\r\n   \"maxHoursDaily\":1,\r\n   \"maxHoursMonthly\":2,\r\n   \"maxHoursAnnually\":4,\r\n   \"maxHoursSeasonal\":3\r\n}"
 								},
 								"url": {
 									"raw": "{{api-url}}/api/dr/constraints/{constraintId}",
@@ -102,18 +102,7 @@
 							"name": "Delete",
 							"request": {
 								"method": "DELETE",
-								"header": [
-									{
-										"key": "Content-Type",
-										"name": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "\r\n{\r\n\t\"name\": \"LM Constraint\"\r\n\t\r\n}"
-								},
+								"header": [],
 								"url": {
 									"raw": "{{api-url}}/api/dr/constraints/{constraintId}",
 									"host": [
@@ -183,7 +172,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n   \"name\":\"LM Constraint\",\r\n   \"seasonSchedule\":{\r\n      \"id\":1\r\n   },\r\n   \"maxActivateSeconds\":12,\r\n   \"maxDailyOpsSeconds\":13,\r\n   \"minActivateSeconds\":14,\r\n   \"minRestartSeconds\":15,\r\n   \"daySelection\":[\r\n      \"SUNDAY\"\r\n   ],\r\n   \"holidaySchedule\":{\r\n      \"id\":1\r\n   },\r\n   \"holidayUsage\":\"EXCLUDE\",\r\n   \"maxHoursDaily\":1,\r\n   \"maxHoursMonthly\":2,\r\n   \"maxHoursAnnually\":4,\r\n   \"maxHoursSeasonal\":3\r\n}"
+									"raw": "{\r\n   \"name\":\"LM Constraint\",\r\n   \"seasonSchedule\":{\r\n      \"id\":1\r\n   },\r\n   \"maxActivateSeconds\":12,\r\n   \"maxDailyOps\":13,\r\n   \"minActivateSeconds\":14,\r\n   \"minRestartSeconds\":15,\r\n   \"daySelection\":[\r\n      \"SUNDAY\"\r\n   ],\r\n   \"holidaySchedule\":{\r\n      \"id\":1\r\n   },\r\n   \"holidayUsage\":\"EXCLUDE\",\r\n   \"maxHoursDaily\":1,\r\n   \"maxHoursMonthly\":2,\r\n   \"maxHoursAnnually\":4,\r\n   \"maxHoursSeasonal\":3\r\n}"
 								},
 								"url": {
 									"raw": "{{api-url}}/api/dr/constraints",
@@ -193,8 +182,7 @@
 									"path": [
 										"api",
 										"dr",
-										"constraints",
-										"create"
+										"constraints"
 									]
 								}
 							},
@@ -211,32 +199,16 @@
 							"name": "Delete",
 							"request": {
 								"method": "DELETE",
-								"header": [
-									{
-										"key": "Content-Type",
-										"name": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{  \r\n\t\"name\": \"Macro Load group\"\r\n}"
-								},
+								"header": [],
 								"url": {
-									"raw": "http://localhost:8086/yukon/api/dr/setup/macroLoadGroup/delete/{Id}",
-									"protocol": "http",
+									"raw": "{{api-url}}/api/dr/macroLoadGroups/{Id}",
 									"host": [
-										"localhost"
+										"{{api-url}}"
 									],
-									"port": "8086",
 									"path": [
-										"yukon",
 										"api",
 										"dr",
-										"setup",
-										"macroLoadGroup",
-										"delete",
+										"macroLoadGroups",
 										"{Id}"
 									]
 								}
@@ -260,17 +232,16 @@
 									"raw": "{\r\n   \"LOAD_GROUP_COPY\":{\r\n      \"name\":\"Macro Load Group 1\"\r\n   }\r\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/macroLoadGroup/copy/{Id}",
+									"raw": "{{api-url}}/api/dr/macroLoadGroups/{Id}/copy",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"macroLoadGroup",
-										"copy",
-										"{Id}"
+										"macroLoadGroups",
+										"{Id}",
+										"copy"
 									]
 								}
 							},
@@ -282,15 +253,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/macroLoadGroup/{Id}",
+									"raw": "{{api-url}}/api/dr/macroLoadGroups/{Id}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"macroLoadGroup",
+										"macroLoadGroups",
 										"{Id}"
 									]
 								}
@@ -300,7 +270,7 @@
 						{
 							"name": "Update",
 							"request": {
-								"method": "POST",
+								"method": "PUT",
 								"header": [
 									{
 										"key": "Content-Type",
@@ -314,16 +284,14 @@
 									"raw": "{\r\n   \"name\":\"Macro Load group\",\r\n   \"type\":\"MACRO_GROUP\",\r\n   \"assignedLoadGroups\":[\r\n      {\r\n         \"id\":4957\r\n      },\r\n      {\r\n         \"id\":4446\r\n      },\r\n      {\r\n         \"id\":4356\r\n      }\r\n   ]\r\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/macroLoadGroup/update/{Id}",
+									"raw": "{{api-url}}/api/dr/macroLoadGroups/{Id}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"macroLoadGroup",
-										"update",
+										"macroLoadGroups",
 										"{Id}"
 									]
 								}
@@ -347,16 +315,14 @@
 									"raw": "{\r\n   \"name\":\"Macro Load group\",\r\n   \"type\":\"MACRO_GROUP\",\r\n   \"assignedLoadGroups\":[\r\n      {\r\n         \"id\":4957\r\n      },\r\n      {\r\n         \"id\":4446\r\n      },\r\n      {\r\n         \"id\":4356\r\n      }\r\n   ]\r\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/macroLoadGroup/create",
+									"raw": "{{api-url}}/api/dr/macroLoadGroups",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"macroLoadGroup",
-										"create"
+										"macroLoadGroups"
 									]
 								}
 							},
@@ -375,15 +341,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/loadProgram/availablePrograms",
+									"raw": "{{api-url}}/api/dr/loadPrograms/availablePrograms",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"loadProgram",
+										"loadPrograms",
 										"availablePrograms"
 									]
 								}
@@ -394,36 +359,17 @@
 							"name": "Delete",
 							"request": {
 								"method": "DELETE",
-								"header": [
-									{
-										"key": "Content-Type",
-										"name": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n   \"name\" : \"s16\"\r\n}"
-								},
+								"header": [],
 								"url": {
-									"raw": "http://127.0.0.1:8080/yukon/api/dr/setup/controlScenario/delete/37269",
-									"protocol": "http",
+									"raw": "{{api-url}}/api/dr/controlScenarios/{Id}",
 									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
+										"{{api-url}}"
 									],
-									"port": "8080",
 									"path": [
-										"yukon",
 										"api",
 										"dr",
-										"setup",
-										"controlScenario",
-										"delete",
-										"37269"
+										"controlScenarios",
+										"{Id}"
 									]
 								}
 							},
@@ -435,16 +381,15 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/controlScenario/37419",
+									"raw": "{{api-url}}/api/dr/controlScenarios/{id}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"controlScenario",
-										"37419"
+										"controlScenarios",
+										"{id}"
 									]
 								}
 							},
@@ -453,7 +398,7 @@
 						{
 							"name": "Update",
 							"request": {
-								"method": "POST",
+								"method": "PUT",
 								"header": [
 									{
 										"key": "Content-Type",
@@ -467,16 +412,14 @@
 									"raw": "{\r\n   \"name\":\"s17\",\r\n   \"allPrograms\":[\r\n      {\r\n         \"programId\":56,\r\n         \"startOffsetInMinutes\":143,\r\n         \"stopOffsetInMinutes\":14,\r\n         \"gears\":[\r\n            {\r\n               \"gearNumber\":1\r\n            }\r\n         ]\r\n      },\r\n      {\r\n         \"programId\":11583,\r\n         \"startOffsetInMinutes\":12,\r\n         \"stopOffsetInMinutes\":1,\r\n         \"gears\":[\r\n            {\r\n               \"gearNumber\":7\r\n            }\r\n         ]\r\n      }\r\n   ]\r\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/controlScenario/update/{id}",
+									"raw": "{{api-url}}/api/dr/controlScenarios/{id}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"controlScenario",
-										"update",
+										"controlScenarios",
 										"{id}"
 									]
 								}
@@ -500,16 +443,14 @@
 									"raw": "{\r\n   \"name\":\"s26\",\r\n   \"allPrograms\":[\r\n      {\r\n         \"programId\":56,\r\n         \"startOffsetInMinutes\":36,\r\n         \"stopOffsetInMinutes\":2,\r\n         \"gears\":[\r\n            {\r\n               \"gearNumber\":1\r\n            }\r\n         ]\r\n      }\r\n   ]\r\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/controlScenario/create",
+									"raw": "{{api-url}}/api/dr/controlScenarios",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
 										"dr",
-										"setup",
-										"controlScenario",
-										"create"
+										"controlScenarios"
 									]
 								}
 							},
@@ -528,7 +469,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/dr/controlAreas/38139",
+									"raw": "{{api-url}}/api/dr/controlAreas/{id}",
 									"host": [
 										"{{api-url}}"
 									],
@@ -536,7 +477,7 @@
 										"api",
 										"dr",
 										"controlAreas",
-										"38139"
+										"{id}"
 									]
 								}
 							},
@@ -589,7 +530,7 @@
 									"raw": "{\n    \"name\": \"Area0099178\",\n    \"controlInterval\": 0,\n    \"minResponseTime\": 0,\n    \"dailyDefaultState\": \"None\",\n    \"allTriggersActiveFlag\": false,\n    \"triggers\": [\n        {\n            \"triggerId\": 6,\n            \"triggerNumber\": 1,\n            \"triggerType\": \"THRESHOLD_POINT\",\n            \"triggerPointId\": 299981,\n            \"minRestoreOffset\": 0,\n            \"thresholdPointId\": 299981\n        }\n    ]\n}"
 								},
 								"url": {
-									"raw": "{{api-url}}/api/dr/controlAreas/127476",
+									"raw": "{{api-url}}/api/dr/controlAreas/{id}",
 									"host": [
 										"{{api-url}}"
 									],
@@ -597,7 +538,7 @@
 										"api",
 										"dr",
 										"controlAreas",
-										"127476"
+										"{id}"
 									]
 								}
 							},
@@ -607,20 +548,9 @@
 							"name": "Delete",
 							"request": {
 								"method": "DELETE",
-								"header": [
-									{
-										"key": "Content-Type",
-										"name": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n\t\"name\" : \"Area0099178\"\n}"
-								},
+								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/dr/setup/controlAreas/{id}",
+									"raw": "{{api-url}}/api/dr/controlAreas/{id}",
 									"host": [
 										"{{api-url}}"
 									],
@@ -693,16 +623,14 @@
 											"raw": "{ \r\n\t\"LM_GROUP_METER_DISCONNECT\": \r\n\t{\r\n        \"name\": \"LoadGroupBase00141\",\r\n        \"type\": \"LM_GROUP_METER_DISCONNECT\",\r\n        \"kWCapacity\": \"23\",\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false\r\n    }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										}
 									},
@@ -722,19 +650,17 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{ \r\n\t\"LM_GROUP_ECOBEE\": \r\n\t{\r\n        \"name\": \"LoadGroupBase25\",\r\n        \"type\": \"LM_GROUP_ECOBEE\",\r\n        \"kWCapacity\": \"23\",\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false\r\n    }\r\n}"
+											"raw": "{ \r\n\t\"LM_GROUP_ECOBEE\": \r\n\t{\r\n        \"name\": \"LoadGroupEcobee\",\r\n        \"type\": \"LM_GROUP_ECOBEE\",\r\n        \"kWCapacity\": \"23\",\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false\r\n    }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										},
 										"description": "Create ecobee load group."
@@ -758,16 +684,14 @@
 											"raw": "{ \"LM_GROUP_EMETCON\": {\r\n \"name\": \"EmetCeronGroup3\",\r\n \"type\": \"LM_GROUP_EMETCON\",\r\n \"kWCapacity\": \"4\",\r\n \"disableGroup\": false,\r\n \"disableControl\": false,\r\n \"routeId\": 3611,\r\n \"addressUsage\": \"GOLD\",\r\n \"relayUsage\": \"RELAY_C\",\r\n \"goldAddress\": 4,\r\n \"silverAddress\": 4\r\n }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										}
 									},
@@ -790,16 +714,14 @@
 											"raw": "\r\n{ \"LM_GROUP_DIGI_SEP\": { \"name\": \"digisepui12\",\r\n \"type\": \"LM_GROUP_DIGI_SEP\",\r\n \"kWCapacity\": 23.0,\r\n \"disableGroup\": false,\r\n \"disableControl\": true,\r\n \"utilityEnrollmentGroup\": 12,\r\n \"deviceClassSet\": [\r\n \"BASEBOARD_HEAT\"\r\n ],\r\n \"rampInMinutes\": 30,\r\n \"rampOutMinutes\": 30\r\n }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										}
 									},
@@ -822,16 +744,14 @@
 											"raw": "{\r\n \"LM_GROUP_VERSACOM\": {\r\n \"id\": null,\r\n \"name\": \"VersacomABC\",\r\n \"type\": \"LM_GROUP_VERSACOM\",\r\n \"kWCapacity\": 0,\r\n \"disableGroup\": false,\r\n \"disableControl\": false,\r\n \"routeId\": 37,\r\n \"utilityAddress\": 25,\r\n \"sectionAddress\": 27,\r\n \"classAddress\": \"0000000000000001\",\r\n \"divisionAddress\": \"0000000000000001\",\r\n \"serialAddress\": \"0\",\r\n \"addressUsage\": [\"UTILITY\", \"SECTION\", \"CLASS\", \"DIVISION\"],\r\n \"relayUsage\": [\"RELAY_1\" , \"RELAY_2\", \"RELAY_3\", \"RELAY_4\"]\r\n }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										}
 									},
@@ -854,16 +774,14 @@
 											"raw": "{ \"LM_GROUP_ITRON\": {\r\n \"name\": \"TeesDiereoup\",\r\n \"type\": \"LM_GROUP_ITRON\",\r\n \"kWCapacity\": \"23\",\r\n \"disableGroup\": false,\r\n \"disableControl\": false,\r\n \"virtualRelayId\": 5\r\n }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										}
 									},
@@ -886,16 +804,14 @@
 											"raw": "{\r\n  \"LM_GROUP_EXPRESSCOMM\": {\r\n    \"name\": \"Express2001\",\r\n    \"type\": \"LM_GROUP_EXPRESSCOMM\",\r\n    \"kWCapacity\": 0.0,\r\n    \"disableGroup\": false,\r\n    \"disableControl\": false,\r\n    \"routeId\": 123636,\r\n    \"routeName\": \"* CCU 711 CART\",\r\n    \"serviceProvider\": 1,\r\n    \"geo\": 2,\r\n    \"substation\": 3,\r\n    \"feeder\": \"1000000000100100\",\r\n    \"zip\": 5,\r\n    \"user\": 6,\r\n    \"program\": 12,\r\n    \"splinter\": 23,\r\n    \"serialNumber\": 1245,\r\n    \"addressUsage\": [\r\n      \"GEO\",\r\n      \"SUBSTATION\",\r\n      \"FEEDER\",\r\n      \"ZIP\",\r\n      \"USER\",\r\n      \"LOAD\",\r\n      \"PROGRAM\",\r\n      \"SPLINTER\"\r\n    ],\r\n    \"relayUsage\": [\r\n      \"Load_1\"\r\n    ],\r\n    \"protocolPriority\": \"DEFAULT\"\r\n  }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										}
 									},
@@ -918,16 +834,14 @@
 											"raw": "{ \r\n   \"LM_GROUP_HONEYWELL\":{ \r\n      \"name\":\"LmGroup_HoneyWell_Test\",\r\n      \"type\":\"LM_GROUP_HONEYWELL\",\r\n      \"kWCapacity\":\"78.26\",\r\n      \"disableGroup\":true,\r\n      \"disableControl\":false\r\n   }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										}
 									},
@@ -950,16 +864,14 @@
 											"raw": "{ \r\n   \"LM_GROUP_NEST\":{ \r\n      \"name\":\"LmGroup_Nest_Test\",\r\n      \"type\":\"LM_GROUP_NEST\",\r\n      \"kWCapacity\":\"78.26\",\r\n      \"disableGroup\":true,\r\n      \"disableControl\":false\r\n   }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										}
 									},
@@ -982,16 +894,14 @@
 											"raw": "{ \r\n   \"LM_GROUP_MCT\":{ \r\n      \"name\":\"LmGroup_MCT_Test\",\r\n      \"type\":\"LM_GROUP_MCT\",\r\n      \"kWCapacity\":\"78.26\",\r\n      \"disableGroup\":true,\r\n      \"disableControl\":false,\r\n      \"routeId\":123,\r\n      \"level\":\"BRONZE\",\r\n      \"address\":12536,\r\n      \"mctDeviceId\":2135,\r\n      \"relayUsage\":[\"RELAY_1\"]\r\n   }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										}
 									},
@@ -1014,16 +924,14 @@
 											"raw": "{\r\n    \"LM_GROUP_POINT\": {\r\n        \r\n        \"name\": \"pointGrp_3\",\r\n        \"type\": \"LM_GROUP_POINT\",\r\n        \"kWCapacity\": 0.0,\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false,\r\n        \"deviceUsage\": {\r\n            \"id\": 2\r\n        },\r\n        \"pointUsage\": {\r\n            \"id\": 1234\r\n        },\r\n        \"startControlRawState\": {\r\n            \"rawState\": 0\r\n        }\r\n    }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										}
 									},
@@ -1051,16 +959,14 @@
 											}
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+											"raw": "{{api-url}}/api/dr/loadGroups",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"create"
+												"loadGroups"
 											]
 										}
 									},
@@ -1080,16 +986,15 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/38829",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"38829"
+												"loadGroups",
+												"{Id}"
 											]
 										},
 										"description": "Retrieve a load group."
@@ -1107,7 +1012,7 @@
 								{
 									"name": "Meter Disconnect",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -1121,17 +1026,15 @@
 											"raw": "{ \r\n\t\"LM_GROUP_METER_DISCONNECT\": \r\n\t{\r\n        \"name\": \"LoadGroupBase001\",\r\n        \"type\": \"LM_GROUP_METER_DISCONNECT\",\r\n        \"kWCapacity\": \"23\",\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false\r\n    }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/update/38769",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"update",
-												"38769"
+												"loadGroups",
+												"{Id}"
 											]
 										}
 									},
@@ -1140,7 +1043,7 @@
 								{
 									"name": "DigiSep",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -1154,17 +1057,16 @@
 											"raw": "\r\n{ \"LM_GROUP_DIGI_SEP\": { \"name\": \"digisepui12\",\r\n \"type\": \"LM_GROUP_DIGI_SEP\",\r\n \"kWCapacity\": 23.0,\r\n \"disableGroup\": false,\r\n \"disableControl\": true,\r\n \"utilityEnrollmentGroup\": 12,\r\n \"deviceClassSet\": [\r\n \"BASEBOARD_HEAT\"\r\n ],\r\n \"rampInMinutes\": 30,\r\n \"rampOutMinutes\": 30\r\n }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/update/38769",
+											"raw": "{{api-url}}/api/dr//loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"update",
-												"38769"
+												"",
+												"loadGroups",
+												"{Id}"
 											]
 										}
 									},
@@ -1173,7 +1075,7 @@
 								{
 									"name": "Ecobee",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -1187,17 +1089,15 @@
 											"raw": "{ \r\n\t\"LM_GROUP_ECOBEE\": {\r\n        \"name\": \"LoadGroupBase1234\",\r\n        \"type\": \"LM_GROUP_ECOBEE\",\r\n        \"kWCapacity\": \"23\",\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false\r\n    }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/update/38769",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"update",
-												"38769"
+												"loadGroups",
+												"{Id}"
 											]
 										},
 										"description": "Update any created load group."
@@ -1207,7 +1107,7 @@
 								{
 									"name": "Itron",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -1221,17 +1121,15 @@
 											"raw": "{ \"LM_GROUP_ITRON\": {\r\n \"name\": \"TeesDiereoup\",\r\n \"type\": \"LM_GROUP_ITRON\",\r\n \"kWCapacity\": \"23\",\r\n \"disableGroup\": false,\r\n \"disableControl\": false,\r\n \"virtualRelayId\": 5\r\n }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/update/38769",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"update",
-												"38769"
+												"loadGroups",
+												"{Id}"
 											]
 										}
 									},
@@ -1240,7 +1138,7 @@
 								{
 									"name": "Emetcon",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -1251,20 +1149,18 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{ \"LM_GROUP_EMETCON\": {\r\n \"name\": \"EmetCeronGroup3\",\r\n \"type\": \"LM_GROUP_EMETCON\",\r\n \"kWCapacity\": \"4\",\r\n \"disableGroup\": false,\r\n \"disableControl\": false,\r\n \"routeId\": 3611,\r\n \"addressUsage\": \"GOLD\",\r\n \"relayUsage\": \"RELAY_C\",\r\n \"goldAddress\": 4,\r\n \"silverAddress\": 4\r\n }\r\n}"
+											"raw": "{ \"LM_GROUP_EMETCON\": {\r\n \"name\": \"EmetCeronGroup3\",\r\n \"type\": \"LM_GROUP_EMETCON\",\r\n \"kWCapacity\": \"4\",\r\n \"disableGroup\": false,\r\n \"disableControl\": false,\r\n \"routeId\": 1,\r\n \"addressUsage\": \"GOLD\",\r\n \"relayUsage\": \"RELAY_C\",\r\n \"goldAddress\": 4,\r\n \"silverAddress\": 4\r\n }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/update/38769",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"update",
-												"38769"
+												"loadGroups",
+												"{Id}"
 											]
 										}
 									},
@@ -1273,7 +1169,7 @@
 								{
 									"name": "ExpressCom",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -1284,20 +1180,18 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"LM_GROUP_EXPRESSCOMM\": {\r\n    \"name\": \"Express2001\",\r\n    \"type\": \"LM_GROUP_EXPRESSCOMM\",\r\n    \"kWCapacity\": 0.0,\r\n    \"disableGroup\": false,\r\n    \"disableControl\": false,\r\n    \"routeId\": 123636,\r\n    \"routeName\": \"* CCU 711 CART\",\r\n    \"serviceProvider\": 1,\r\n    \"geo\": 2,\r\n    \"substation\": 3,\r\n    \"feeder\": \"1000000000100100\",\r\n    \"zip\": 5,\r\n    \"user\": 6,\r\n    \"program\": 12,\r\n    \"splinter\": 23,\r\n    \"serialNumber\": 1245,\r\n    \"addressUsage\": [\r\n      \"GEO\",\r\n      \"SUBSTATION\",\r\n      \"FEEDER\",\r\n      \"ZIP\",\r\n      \"USER\",\r\n      \"LOAD\",\r\n      \"PROGRAM\",\r\n      \"SPLINTER\"\r\n    ],\r\n    \"relayUsage\": [\r\n      \"Load_1\"\r\n    ],\r\n    \"protocolPriority\": \"DEFAULT\"\r\n  }\r\n}"
+											"raw": "{\r\n  \"LM_GROUP_EXPRESSCOMM\": {\r\n    \"name\": \"Express2001\",\r\n    \"type\": \"LM_GROUP_EXPRESSCOMM\",\r\n    \"kWCapacity\": 0.0,\r\n    \"disableGroup\": false,\r\n    \"disableControl\": false,\r\n    \"routeId\": 1,\r\n    \"routeName\": \"* CCU 711 CART\",\r\n    \"serviceProvider\": 1,\r\n    \"geo\": 2,\r\n    \"substation\": 3,\r\n    \"feeder\": \"1000000000100100\",\r\n    \"zip\": 5,\r\n    \"user\": 6,\r\n    \"program\": 12,\r\n    \"splinter\": 23,\r\n    \"serialNumber\": 1245,\r\n    \"addressUsage\": [\r\n      \"GEO\",\r\n      \"SUBSTATION\",\r\n      \"FEEDER\",\r\n      \"ZIP\",\r\n      \"USER\",\r\n      \"LOAD\",\r\n      \"PROGRAM\",\r\n      \"SPLINTER\"\r\n    ],\r\n    \"relayUsage\": [\r\n      \"Load_1\"\r\n    ],\r\n    \"protocolPriority\": \"DEFAULT\"\r\n  }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/update/38769",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"update",
-												"38769"
+												"loadGroups",
+												"{Id}"
 											]
 										}
 									},
@@ -1306,7 +1200,7 @@
 								{
 									"name": "Honeywell",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -1320,17 +1214,15 @@
 											"raw": "{ \r\n   \"LM_GROUP_HONEYWELL\":{ \r\n      \"name\":\"LmGroup_HoneyWell_Test\",\r\n      \"type\":\"LM_GROUP_HONEYWELL\",\r\n      \"kWCapacity\":\"78.26\",\r\n      \"disableGroup\":true,\r\n      \"disableControl\":false\r\n   }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/update/38769",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"update",
-												"38769"
+												"loadGroups",
+												"{Id}"
 											]
 										}
 									},
@@ -1339,7 +1231,7 @@
 								{
 									"name": "Versacom",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -1350,20 +1242,18 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n \"LM_GROUP_VERSACOM\": {\r\n \"id\": null,\r\n \"name\": \"VersacomABC\",\r\n \"type\": \"LM_GROUP_VERSACOM\",\r\n \"kWCapacity\": 0,\r\n \"disableGroup\": false,\r\n \"disableControl\": false,\r\n \"routeId\": 37,\r\n \"utilityAddress\": 25,\r\n \"sectionAddress\": 27,\r\n \"classAddress\": \"0000000000000001\",\r\n \"divisionAddress\": \"0000000000000001\",\r\n \"serialAddress\": \"0\",\r\n \"addressUsage\": [\"UTILITY\", \"SECTION\", \"CLASS\", \"DIVISION\"],\r\n \"relayUsage\": [\"RELAY_1\" , \"RELAY_2\", \"RELAY_3\", \"RELAY_4\"]\r\n }\r\n}"
+											"raw": "{\r\n \"LM_GROUP_VERSACOM\": {\r\n \"id\": null,\r\n \"name\": \"VersacomABC\",\r\n \"type\": \"LM_GROUP_VERSACOM\",\r\n \"kWCapacity\": 0,\r\n \"disableGroup\": false,\r\n \"disableControl\": false,\r\n \"routeId\": 1,\r\n \"utilityAddress\": 25,\r\n \"sectionAddress\": 27,\r\n \"classAddress\": \"0000000000000001\",\r\n \"divisionAddress\": \"0000000000000001\",\r\n \"serialAddress\": \"0\",\r\n \"addressUsage\": [\"UTILITY\", \"SECTION\", \"CLASS\", \"DIVISION\"],\r\n \"relayUsage\": [\"RELAY_1\" , \"RELAY_2\", \"RELAY_3\", \"RELAY_4\"]\r\n }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/update/38769",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"update",
-												"38769"
+												"loadGroups",
+												"{Id}"
 											]
 										}
 									},
@@ -1372,7 +1262,7 @@
 								{
 									"name": "MCT",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -1383,20 +1273,18 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"LM_GROUP_MCT\": {\n        \"name\": \"LmGroup_MCT_Test\",\n        \"type\": \"LM_GROUP_MCT\",\n        \"kWCapacity\": 78.32,\n        \"disableGroup\": true,\n        \"disableControl\": false,\n        \"routeId\": 730,\n        \"routeName\": \"CCU Parkwood\",\n        \"level\": \"BRONZE\",\n        \"address\": 12536,\n        \"mctDeviceId\": 0,\n        \"relayUsage\": [\n            \"RELAY_1\", \"RELAY_3\"\n        ]\n    }\n}"
+											"raw": "{\n    \"LM_GROUP_MCT\": {\n        \"name\": \"LmGroup_MCT_Test\",\n        \"type\": \"LM_GROUP_MCT\",\n        \"kWCapacity\": 78.32,\n        \"disableGroup\": true,\n        \"disableControl\": false,\n        \"routeId\": 1,\n        \"routeName\": \"CCU Parkwood\",\n        \"level\": \"BRONZE\",\n        \"address\": 12536,\n        \"mctDeviceId\": 0,\n        \"relayUsage\": [\n            \"RELAY_1\", \"RELAY_3\"\n        ]\n    }\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/update/151386",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"update",
-												"151386"
+												"loadGroups",
+												"{Id}"
 											]
 										}
 									},
@@ -1405,7 +1293,7 @@
 								{
 									"name": "Point",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -1419,17 +1307,15 @@
 											"raw": "{\r\n    \"LM_GROUP_POINT\": {\r\n        \r\n        \"name\": \"pointGrp_3\",\r\n        \"type\": \"LM_GROUP_POINT\",\r\n        \"kWCapacity\": 0.0,\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false,\r\n        \"deviceUsage\": {\r\n            \"id\": 2\r\n        },\r\n        \"pointUsage\": {\r\n            \"id\": 1234\r\n        },\r\n        \"startControlRawState\": {\r\n            \"rawState\": 0\r\n        }\r\n    }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/update/151386",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"update",
-												"151386"
+												"loadGroups",
+												"{Id}"
 											]
 										}
 									},
@@ -1438,7 +1324,7 @@
 								{
 									"name": "Ripple",
 									"request": {
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Content-Type",
@@ -1449,7 +1335,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"LM_GROUP_RIPPLE\": {\r\n        \"name\": \"TestRippleLoadGroupUpdate\",\r\n        \"type\": \"LM_GROUP_RIPPLE\",\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false,\r\n        \"routeId\": 3611,\r\n        \"control\": \"00000000000000000000000011111110111010101010101010\",\r\n        \"restore\": \"00000000000000000000000011111110111010101010101010\",\r\n        \"shedTime\": 455,\r\n        \"kWCapacity\": 4.0\r\n    }\r\n}",
+											"raw": "{\r\n    \"LM_GROUP_RIPPLE\": {\r\n        \"name\": \"TestRippleLoadGroupUpdate\",\r\n        \"type\": \"LM_GROUP_RIPPLE\",\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false,\r\n        \"routeId\": 1,\r\n        \"control\": \"00000000000000000000000011111110111010101010101010\",\r\n        \"restore\": \"00000000000000000000000011111110111010101010101010\",\r\n        \"shedTime\": 450,\r\n        \"kWCapacity\": 4.0\r\n    }\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -1457,17 +1343,15 @@
 											}
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/update/151386",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"update",
-												"151386"
+												"loadGroups",
+												"{Id}"
 											]
 										}
 									},
@@ -1495,20 +1379,19 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{ \r\n \"LOAD_GROUP_COPY\":\r\n    { \r\n      \"name\": \"TestExp0005copy\",\r\n      \"routeId\": 3611\r\n    }\r\n}"
+											"raw": "{ \r\n \"LOAD_GROUP_COPY\":\r\n    { \r\n      \"name\": \"TestExp0005copy\",\r\n      \"routeId\": 1\r\n    }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/copy/10087",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}/copy",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"copy",
-												"10087"
+												"loadGroups",
+												"{Id}",
+												"copy"
 											]
 										}
 									},
@@ -1528,20 +1411,19 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{ \r\n \"LOAD_GROUP_COPY\":\r\n    { \r\n      \"name\": \"TestExp0005copy\",\r\n      \"routeId\": 3611\r\n    }\r\n}"
+											"raw": "{ \r\n \"LOAD_GROUP_COPY\":\r\n    { \r\n      \"name\": \"TestExp0006copy\",\r\n      \"routeId\": 1\r\n    }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/copy/10087",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}/copy",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"copy",
-												"10087"
+												"loadGroups",
+												"{Id}",
+												"copy"
 											]
 										}
 									},
@@ -1561,20 +1443,19 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{ \r\n \"LOAD_GROUP_COPY\":\r\n    { \r\n      \"name\": \"TestExp0005copy\",\r\n      \"routeId\": 3611\r\n    }\r\n}"
+											"raw": "{ \r\n \"LOAD_GROUP_COPY\":\r\n    { \r\n      \"name\": \"TestVersacom0005copy\",\r\n      \"routeId\": 1\r\n    }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/copy/10087",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}/copy",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"copy",
-												"10087"
+												"loadGroups",
+												"{Id}",
+												"copy"
 											]
 										}
 									},
@@ -1597,17 +1478,16 @@
 											"raw": "{ \r\n\t\"LOAD_GROUP_COPY\":\r\n\t{ \r\n\t\t\"name\": \"MeterDisconnectcopy\"\r\n     }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/copy/10055",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}/copy",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"copy",
-												"10055"
+												"loadGroups",
+												"{Id}",
+												"copy"
 											]
 										}
 									},
@@ -1630,20 +1510,16 @@
 											"raw": "{ \r\n\t\"LOAD_GROUP_COPY\":\r\n\t{ \r\n\t\t\"name\": \"Itroncopy\"\r\n     }\r\n}"
 										},
 										"url": {
-											"raw": "http://localhost:8080/yukon/api/dr/setup/loadGroup/copy/10055",
-											"protocol": "http",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}/copy",
 											"host": [
-												"localhost"
+												"{{api-url}}"
 											],
-											"port": "8080",
 											"path": [
-												"yukon",
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"copy",
-												"10055"
+												"loadGroups",
+												"{Id}",
+												"copy"
 											]
 										}
 									},
@@ -1666,17 +1542,16 @@
 											"raw": "{ \r\n\t\"LOAD_GROUP_COPY\":\r\n\t{ \r\n\t\t\"name\": \"DigiSepcopy\"\r\n     }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/copy/10055",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}/copy",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"copy",
-												"10055"
+												"loadGroups",
+												"{Id}",
+												"copy"
 											]
 										}
 									},
@@ -1699,17 +1574,16 @@
 											"raw": "{ \r\n\t\"LOAD_GROUP_COPY\":\r\n\t{ \r\n\t\t\"name\": \"MCTcopy\"\r\n     }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/copy/151386",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}/copy",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"copy",
-												"151386"
+												"loadGroups",
+												"{Id}",
+												"copy"
 											]
 										}
 									},
@@ -1732,17 +1606,16 @@
 											"raw": "{ \r\n\t\"LOAD_GROUP_COPY\":\r\n\t{ \r\n\t\t\"name\": \"Pointcopy\"\r\n     }\r\n}"
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/copy/151386",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}/copy",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"copy",
-												"151386"
+												"loadGroups",
+												"{Id}",
+												"copy"
 											]
 										}
 									},
@@ -1770,17 +1643,76 @@
 											}
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/copy/151386",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}/copy",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"copy",
-												"151386"
+												"loadGroups",
+												"{Id}",
+												"copy"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Ecobee",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"LMCopy\": {\r\n    \"name\": \"Copy of EcobeeLG\"\r\n  }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}/copy",
+											"host": [
+												"{{api-url}}"
+											],
+											"path": [
+												"api",
+												"dr",
+												"loadGroups",
+												"{Id}",
+												"copy"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Honeywell",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"LMCopy\": {\r\n    \"name\": \"Copy of HoneywellLG\"\r\n  }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}/copy",
+											"host": [
+												"{{api-url}}"
+											],
+											"path": [
+												"api",
+												"dr",
+												"loadGroups",
+												"{Id}",
+												"copy"
 											]
 										}
 									},
@@ -1808,20 +1740,18 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{ \r\n\t\"name\": \"AnyName\"\r\n}"
+											"raw": ""
 										},
 										"url": {
-											"raw": "{{api-url}}/api/dr/setup/loadGroup/delete/38769",
+											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",
 											"host": [
 												"{{api-url}}"
 											],
 											"path": [
 												"api",
 												"dr",
-												"setup",
-												"loadGroup",
-												"delete",
-												"38769"
+												"loadGroups",
+												"{Id}"
 											]
 										},
 										"description": "Delete any load group based on passed loadGroupId."
@@ -2330,8 +2260,8 @@
 												"api",
 												"dr",
 												"loadPrograms",
-                                                "36516",
-                                                "copy"
+												"36516",
+												"copy"
 											]
 										}
 									},

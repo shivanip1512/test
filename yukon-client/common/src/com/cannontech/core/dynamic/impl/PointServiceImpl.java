@@ -90,7 +90,7 @@ public class PointServiceImpl implements PointService {
 
     @Transactional
     @Override
-    public void addPointData(int pointId, double value, YukonUserContext context) {
+    public void addPointData(int pointId, double value, Instant timestamp, YukonUserContext context) {
         PointValueQualityTagHolder pd = asyncDynamicDataSource.getPointValueAndTags(pointId);
         PointData data = new PointData();
         data.setId(pointId);

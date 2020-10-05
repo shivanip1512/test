@@ -12,7 +12,6 @@ import org.testng.annotations.Test;
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.model.MockApiError;
 import com.cannontech.rest.api.common.model.MockApiFieldError;
-import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
@@ -36,10 +35,10 @@ public class EcobeeLoadGroupApiTest {
     @Test
     public void loadGroupEcobee_01_Create(ITestContext context) {
         Log.startTestCase("loadGroupEcobee_01_Create");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         String paoId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
         context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, paoId);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
         assertTrue("Group Id should not be Null", paoId != null);
         Log.endTestCase("loadGroupEcobee_01_Create");
     }
@@ -52,8 +51,8 @@ public class EcobeeLoadGroupApiTest {
     public void loadGroupEcobee_02_Get(ITestContext context) {
         Log.startTestCase("loadGroupEcobee_02_Get");
         Log.info("Group Id of LmGroupEcobee created is : " + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("getloadgroup",
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups",
+                "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
         MockLoadGroupEcobee loadGroupResponse = getResponse.as(MockLoadGroupEcobee.class);
         context.setAttribute("Ecobee_GrpName", loadGroupResponse.getName());
@@ -80,12 +79,12 @@ public class EcobeeLoadGroupApiTest {
         loadGroup.setKWCapacity(888.0);
         context.setAttribute("Ecobee_GrpName", name);
         Log.info("Updated Load Group is :" + loadGroup);
-        ExtractableResponse<?> getResponse = ApiCallHelper.post("updateloadgroup",
+        ExtractableResponse<?> getResponse = ApiCallHelper.put("loadGroups",
                 loadGroup,
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+                "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
-        ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("getloadgroup",
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("loadGroups",
+                "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         MockLoadGroupEcobee updatedLoadGroupResponse = getupdatedResponse.as(MockLoadGroupEcobee.class);
         assertTrue("Name Should be : " + name, name.equals(updatedLoadGroupResponse.getName()));
         assertTrue("Type Should be : " + loadGroup.getType(), loadGroup.getType().equals(updatedLoadGroupResponse.getType()));
@@ -103,9 +102,9 @@ public class EcobeeLoadGroupApiTest {
         Log.startTestCase("loadGroupEcobee_04_Copy");
         MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
                 .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_ECOBEE)).build();
-        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup",
+        ExtractableResponse<?> copyResponse = ApiCallHelper.post("loadGroups",
                 loadGroupCopy,
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+                "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString() + "/copy");
         String copyGroupId = copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
         assertTrue("Group Id should not be Null", copyGroupId != null);
@@ -118,7 +117,7 @@ public class EcobeeLoadGroupApiTest {
     public void loadGroupEcobee_05_GroupNameValidation(String groupName, String expectedFieldCode, int expectedStatusCode) {
         Log.startTestCase("loadGroupEcobee_05_GroupNameValidation");
         loadGroup.setName(groupName);
-        ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> response = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue("Status code should be " + expectedStatusCode, response.statusCode() == expectedStatusCode);
         MockApiError error = response.as(MockApiError.class);
         assertTrue("Expected message should be - Validation error", error.getMessage().equals("Validation error"));
@@ -132,7 +131,7 @@ public class EcobeeLoadGroupApiTest {
     public void loadGroupEcobee_06_KwCapacityValidation(Double kwCapacity, String expectedFieldCode, int expectedStatusCode) {
         Log.startTestCase("loadGroupEcobee_06_KwCapacityValidation");
         loadGroup.setKWCapacity(kwCapacity);
-        ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> response = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue("Status code should be " + expectedStatusCode, response.statusCode() == expectedStatusCode);
         MockApiError error = response.as(MockApiError.class);
         assertTrue("Expected message should be - Validation error", error.getMessage().equals("Validation error"));
@@ -150,26 +149,21 @@ public class EcobeeLoadGroupApiTest {
     public void loadGroupEcobee_07_Delete(ITestContext context) {
         String expectedMessage = "Id not found";
         Log.startTestCase("loadGroupEcobee_07_Delete");
-        MockLMDto lmDeleteObject = MockLMDto.builder().name(context.getAttribute("Ecobee_GrpName").toString()).build();
-        Log.info("Delete Load Group is : " + lmDeleteObject);
-        ExtractableResponse<?> deleteResponse = ApiCallHelper.delete("deleteloadgroup",
-                lmDeleteObject,
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> deleteResponse = ApiCallHelper.delete("loadGroups",
+                "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue("Status code should be 200", deleteResponse.statusCode() == 200);
 
         // Get request to validate load group is deleted
-        ExtractableResponse<?> deleteResponseValidation = ApiCallHelper.get("getloadgroup",
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> deleteResponseValidation = ApiCallHelper.get("loadGroups",
+                "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue("Status code should be 400", deleteResponseValidation.statusCode() == 400);
 
         MockApiError error = deleteResponseValidation.as(MockApiError.class);
         assertTrue("Expected error message Should be : " + expectedMessage, expectedMessage.equals(error.getMessage()));
 
         // Delete copy Load group
-        lmDeleteObject = MockLMDto.builder().name(context.getAttribute("ecobee_CopyGrpName").toString()).build();
-        ExtractableResponse<?> deleteCopyResponse = ApiCallHelper.delete("deleteloadgroup",
-                lmDeleteObject,
-                context.getAttribute("ecobee_CopyGrpId").toString());
+        ExtractableResponse<?> deleteCopyResponse = ApiCallHelper.delete("loadGroups",
+                "/" + context.getAttribute("ecobee_CopyGrpId").toString());
         assertTrue("Status code should be 200", deleteCopyResponse.statusCode() == 200);
         Log.endTestCase("loadGroupEcobee_07_Delete");
 
@@ -183,8 +177,8 @@ public class EcobeeLoadGroupApiTest {
     public Object[][] getGroupNameData(ITestContext context) {
 
         return new Object[][] { { "", "Name is required.", 422 },
-                { "Test\\Ecobee", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
-                { "Test,Ecobee", "Cannot be blank or include any of the following characters: / \\ , ' \" |", 422 },
+                { "Test\\Ecobee", "Name must not contain any of the following characters: / \\ , ' \" |.", 422 },
+                { "Test,Ecobee", "Name must not contain any of the following characters: / \\ , ' \" |.", 422 },
                 { "TestEcobeeMoreThanSixtyCharacter_TestEcobeeMoreThanSixtyCharacters", "Exceeds maximum length of 60.", 422 },
                 { context.getAttribute("Ecobee_GrpName"), "Name must be unique.", 422 } };
     }

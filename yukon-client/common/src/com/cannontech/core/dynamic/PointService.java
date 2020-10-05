@@ -37,7 +37,7 @@ public interface PointService {
     /**
      * Sends point data to dispatch.
      */
-    void addPointData(int pointId, double value, YukonUserContext context);
+    void addPointData(int pointId, double value, Instant timestamp, YukonUserContext context);
 
     /**
      * Finds and deletes point data by pointId, value and timestamp.

@@ -44,7 +44,7 @@ public class VersacomLoadGroupApiDoc extends LoadGroupApiDocBase {
 
     @Test(dependsOnMethods = { "Test_LmVersacom_Get" })
     public void Test_LmVersacom_Update() {
-        paoId = updateDoc();
+        paoId = updateAllDoc();
     }
 
     @Test(dependsOnMethods = { "Test_LmVersacom_Update" })
@@ -57,7 +57,7 @@ public class VersacomLoadGroupApiDoc extends LoadGroupApiDocBase {
         deleteDoc();
 
         // clean up the copied object as well
-        LoadGroupHelper.deleteLoadGroup(LoadGroupHelper.getCopiedLoadGroupName(getMockPaoType()), copyPaoId);
+        LoadGroupHelper.deleteLoadGroup(copyPaoId);
     }
 
     @Override

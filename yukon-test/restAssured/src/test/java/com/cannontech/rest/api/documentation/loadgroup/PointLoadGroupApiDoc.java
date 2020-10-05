@@ -44,7 +44,7 @@ public class PointLoadGroupApiDoc extends LoadGroupApiDocBase {
 
     @Test(dependsOnMethods = { "Test_LmPointGroup_Get" })
     public void Test_LmPointGroup_Update() {
-        paoId = updateDoc();
+        paoId = updateAllDoc();
     }
 
     @Test(dependsOnMethods = { "Test_LmPointGroup_Update" })
@@ -57,7 +57,7 @@ public class PointLoadGroupApiDoc extends LoadGroupApiDocBase {
         deleteDoc();
 
         // clean up the copied object as well
-        LoadGroupHelper.deleteLoadGroup(LoadGroupHelper.getCopiedLoadGroupName(getMockPaoType()), copyPaoId);
+        LoadGroupHelper.deleteLoadGroup(copyPaoId);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class PointLoadGroupApiDoc extends LoadGroupApiDocBase {
         responseFields.add(11, fieldWithPath(paoType + ".startControlRawState.stateText").type(JsonFieldType.STRING)
                 .optional().description("Control start state name of available control Point."));
 
-        String url = ApiCallHelper.getProperty("getloadgroup") + getLoadGroupId();
+        String url = ApiCallHelper.getProperty("loadGroups") + "/" + getLoadGroupId();
         return new DocumentationFields.Get(responseFields, url);
     }
 }
