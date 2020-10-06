@@ -16,33 +16,31 @@ import com.eaton.builders.assets.virtualdevices.VirtualDeviceCreateBuilder;
 import com.eaton.elements.modals.virtualdevices.EditVirtualDeviceModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.assets.virtualdevices.VirtualDevicesDetailPage;
 import com.github.javafaker.Faker;
 
 public class VirtualDevicesEditTests extends SeleniumTestSetup {
-    private VirtualDevicesDetailPage detailPage;
+   
     private DriverExtensions driverExt;
     private Faker faker;
+    private VirtualDevicesDetailPage detailPage;
     private int virtualDeviceId;
     private String virtualDeviceName;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-       
         faker = SeleniumTestSetup.getFaker();
         virtualDeviceName = "AT Virtual Device" + faker.number().digits(10);
-        navigate(Urls.Assets.VIRTUAL_DEVICES);
         Pair<JSONObject, JSONObject> pair = new VirtualDeviceCreateBuilder.Builder(Optional.of(virtualDeviceName))
                 .withEnable(Optional.of(true)).create();
         virtualDeviceId = (Integer) pair.getValue1().get("id");
-
-        navigate(Urls.Assets.VIRTUAL_DEVICES_EDIT + "/" + virtualDeviceId);
         detailPage = new VirtualDevicesDetailPage(driverExt, virtualDeviceId);
-
     }
-
+    
+    
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
         refreshPage(detailPage);
@@ -50,7 +48,7 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
     
   
 
-    @Test
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDeviceEdit_FieldValues_Correct() {
         SoftAssertions softly = new SoftAssertions();
         // Navigate to virtual device detail page
@@ -64,7 +62,7 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDeviceEdit_AllFieldsEnabled_Success() {
         SoftAssertions softly = new SoftAssertions();
         String virtualDevice = "AT Virtual Device" + faker.number().digits(10);
@@ -78,7 +76,7 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
         EditVirtualDeviceModal editVirtualDeviceModal = detailPage.showAndWaitEditVirtualDeviceModal();
         // Validate that virtual device has the status as disabled
         softly.assertThat(editVirtualDeviceModal.getStatus().getCheckedValue()).isEqualTo("Disabled");
-        // Change the status and Name of virtual device and
+        // Change the status and Name of virtual device
         editVirtualDeviceModal.getStatus().selectValue("Enabled");
         editVirtualDeviceModal.getName().setInputValue("Edit " + virtualDevice);
         editVirtualDeviceModal.clickOkAndWaitForModalToClose();
@@ -88,7 +86,7 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDeviceEdit_AllFieldsDisabled_Success() {
         SoftAssertions softly = new SoftAssertions();
         String virtualDevice = "AT Virtual Device" + faker.number().digits(10);
@@ -112,7 +110,7 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDevicesEdit_Labels_Correct() {
         SoftAssertions softly = new SoftAssertions();
         // Navigate to Virtual Device edit modal
@@ -126,7 +124,7 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDevicesEdit_Name_RequiredValidation() {
         final String EXPECTED_MSG = "Name is required.";
         // Navigate to Virtual Device edit modal
@@ -138,20 +136,19 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDevicesEdit_Name_InvalidCharValidation() {
         String name = "AT Virtual Devices " + "/ \\ , ' \" |";
         final String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
         navigate(Urls.Assets.VIRTUAL_DEVICES_EDIT + "/" + virtualDeviceId);
         EditVirtualDeviceModal editVirtualDeviceModal = detailPage.showAndWaitEditVirtualDeviceModal();
-
         editVirtualDeviceModal.getName().setInputValue(name);
         editVirtualDeviceModal.clickOk();
         String errorMsg = editVirtualDeviceModal.getName().getValidationError();
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDevicesEdit_Name_AlreadyExistsValidation() {
         final String EXPECTED_MSG = "Name already exists";
         String virtualDevice = "AT Virtual Device" + faker.number().digits(10);
@@ -168,7 +165,7 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDevicesEdit_Name_MaxLength60Validation() {
         navigate(Urls.Assets.VIRTUAL_DEVICES_EDIT + "/" + virtualDeviceId);
         EditVirtualDeviceModal editVirtualDeviceModal = detailPage.showAndWaitEditVirtualDeviceModal();
