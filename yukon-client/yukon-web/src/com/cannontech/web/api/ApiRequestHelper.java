@@ -31,6 +31,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.DeviceBaseModel;
+import com.cannontech.common.device.virtualDevice.VirtualDeviceBaseModel;
 import com.cannontech.common.dr.gear.setup.model.ProgramGear;
 import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.LMDto;
@@ -124,7 +125,7 @@ public class ApiRequestHelper {
         });
         paramTypeObjectRefMap.put(ProgramGear.class, new ParameterizedTypeReference<ProgramGear>() {
         });
-        paramTypeObjectRefMap.put(DeviceBaseModel.class, new ParameterizedTypeReference<PaginatedResponse<DeviceBaseModel>>() {
+        paramTypeObjectRefMap.put(DeviceBaseModel.class, new ParameterizedTypeReference<PaginatedResponse<VirtualDeviceBaseModel<?>>>() {
         });
     }
 

@@ -138,7 +138,6 @@ public class VirtualDeviceController {
     public enum VirtualSortBy implements DisplayableEnum {
 
         name(LiteYukonPaoSortableField.PAO_NAME),
-        meterNumber(LiteYukonPaoSortableField.PAO_NAME),  //TODO: Change to new Meter Number Sortable Field
         status(LiteYukonPaoSortableField.DISABLE_FLAG);
         
         private final LiteYukonPaoSortableField value;

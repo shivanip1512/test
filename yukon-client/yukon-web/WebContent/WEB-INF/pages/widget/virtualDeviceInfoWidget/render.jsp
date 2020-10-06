@@ -12,6 +12,7 @@
         <cti:csrfToken />
         <tags:hidden path="id"/>
         <input type="hidden" id="virtualMeterType" value="${virtualMeterType}"/>
+        <input type="hidden" name="virtualDevice" value="${virtualDevice.type}">
         
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".name">
@@ -23,11 +24,12 @@
                 </cti:displayForPageEditModes>
                 <cti:displayForPageEditModes modes="VIEW,EDIT">
                     <i:inline key="${virtualDevice.type.formatKey}"/>
+                    <tags:hidden path="type"/>
                 </cti:displayForPageEditModes>
             </tags:nameValue2>
             <c:if test="${virtualDevice.type == virtualMeterType}">
                 <tags:nameValue2 nameKey=".meterNumber">
-                    <input type="text" name="meterNumber"/>
+                    <tags:input path="meterNumber"/>
                 </tags:nameValue2>
             </c:if>
             <tags:nameValue2 nameKey=".status">

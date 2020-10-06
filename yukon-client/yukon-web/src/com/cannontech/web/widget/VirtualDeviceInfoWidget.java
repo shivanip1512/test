@@ -27,7 +27,6 @@ import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.PaoModelFactory;
-import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.device.virtualDevice.VirtualDeviceBaseModel;
 import com.cannontech.common.device.virtualDevice.VirtualDeviceModel;
 import com.cannontech.common.device.virtualDevice.VirtualMeterModel;
@@ -35,6 +34,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.YukonValidationHelper;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -76,6 +76,7 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
             deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
             model.addAttribute("mode", PageEditMode.VIEW);
             retrieveVirtualDevice(userContext, request, deviceId, model);
+            prepareModel(model);
         } catch (ServletRequestBindingException e) {
             log.error("Error rendering Virtual Device Information widget", e);
         }
@@ -87,7 +88,7 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
     public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.EDIT);
         retrieveVirtualDevice(userContext, request, id, model);
-        model.addAttribute("virtualMeterType", PaoType.VIRTUAL_METER);
+        prepareModel(model);
         return "virtualDeviceInfoWidget/render.jsp";
     }
     
@@ -98,9 +99,8 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
         VirtualDeviceModel virtualDevice = new VirtualDeviceModel();
         virtualDevice.setEnable(true);
         virtualDevice.setType(PaoType.VIRTUAL_SYSTEM);
-        model.addAttribute("types", ImmutableSet.of(PaoType.VIRTUAL_SYSTEM, PaoType.VIRTUAL_METER));
         model.addAttribute("virtualDevice", virtualDevice);
-        model.addAttribute("virtualMeterType", PaoType.VIRTUAL_METER);
+        prepareModel(model);
         return "virtualDeviceInfoWidget/render.jsp";
     }
     
@@ -108,16 +108,12 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public String create(ModelMap model, @PathVariable PaoType type, @RequestParam String name) {
         model.addAttribute("mode", PageEditMode.CREATE);
-        VirtualDeviceBaseModel virtualDevice = (VirtualDeviceBaseModel) new VirtualDeviceModel();
-        if (type == PaoType.VIRTUAL_METER) {
-            virtualDevice = (VirtualDeviceBaseModel) new VirtualMeterModel();
-        }
+        VirtualDeviceBaseModel virtualDevice = (VirtualDeviceBaseModel) PaoModelFactory.getModel(type);
         virtualDevice.setName(name);
         virtualDevice.setEnable(true);
         virtualDevice.setType(type);
-        model.addAttribute("types", ImmutableSet.of(PaoType.VIRTUAL_SYSTEM, PaoType.VIRTUAL_METER));
         model.addAttribute("virtualDevice", virtualDevice);
-        model.addAttribute("virtualMeterType", PaoType.VIRTUAL_METER);
+        prepareModel(model);
         return "virtualDeviceInfoWidget/render.jsp";
     }
 
@@ -125,9 +121,9 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.virtualDeviceUrl + "/" + id);
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url,
-                    HttpMethod.GET, VirtualDeviceModel.class);
+                    HttpMethod.GET, VirtualDeviceBaseModel.class);
             if (response.getStatusCode() == HttpStatus.OK) {
-                VirtualDeviceModel virtualDevice = (VirtualDeviceModel) response.getBody();
+                VirtualDeviceBaseModel virtualDevice = (VirtualDeviceBaseModel) response.getBody();
                 virtualDevice.setId(id);
                 model.addAttribute("virtualDevice", virtualDevice);
             }
@@ -145,16 +141,18 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
             model.addAttribute("errorMsg", errorMsg);
         }
     }
+    
+    private void prepareModel(ModelMap model) {
+        model.addAttribute("virtualMeterType", PaoType.VIRTUAL_METER);
+        model.addAttribute("types", ImmutableSet.of(PaoType.VIRTUAL_SYSTEM, PaoType.VIRTUAL_METER));
+    }
 
     @PostMapping("/save")
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public String save(@ModelAttribute("virtualDevice") VirtualDeviceBaseModel virtualDevice, BindingResult result, YukonUserContext userContext,
             FlashScope flash, HttpServletRequest request, ModelMap model, HttpServletResponse resp) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-
-        //VirtualMeterModel obj = (VirtualMeterModel) virtualDevice;
-        //String meterNbr = obj.getMeterNumber();
-        String meterNo = ((VirtualMeterModel) virtualDevice).getMeterNumber();
+        prepareModel(model);
         try {
             String paoId = null;
             if (virtualDevice.getId() != null) {
@@ -162,6 +160,10 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
             }
             String nameLabel = accessor.getMessage("yukon.common.name");
             yukonValidationHelper.validatePaoName(virtualDevice.getName(), virtualDevice.getType(), result, nameLabel, paoId);
+            if (virtualDevice instanceof VirtualMeterModel) {
+                String meterNumberLabel = accessor.getMessage("yukon.common.meterNumber");
+                YukonValidationUtils.checkIsBlank(result, "meterNumber", ((VirtualMeterModel) virtualDevice).getMeterNumber(), meterNumberLabel, false);
+            }
             if (result.hasErrors()) {
                 resp.setStatus(HttpStatus.BAD_REQUEST.value());
                 return "virtualDeviceInfoWidget/render.jsp";
@@ -169,9 +171,11 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
             ResponseEntity<? extends Object> response = null;
             if (virtualDevice.getId() != null) {
                 String url = helper.findWebServerUrl(request, userContext, ApiURL.virtualDeviceUrl + "/" + virtualDevice.getId());
-                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PATCH, VirtualDeviceModel.class, virtualDevice);
+                model.addAttribute("mode", PageEditMode.EDIT);
+                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PATCH, Object.class, virtualDevice);
             } else {
                 String url = helper.findWebServerUrl(request, userContext, ApiURL.virtualDeviceUrl);
+                model.addAttribute("mode", PageEditMode.CREATE);
                 response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class, virtualDevice);
             }
 
