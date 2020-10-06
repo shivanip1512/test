@@ -5728,7 +5728,7 @@ JavaScript :
     md5 : 1035f8affb61bfbbbc029c1a50a4c2b5
     sha1 : ef387b68a9279576299eb6d224a45f1955af21ce
     jira : YUK-22998
-    updated : 2020-06-10
+    updated : 2020-10-07
     notes : This library is used for selecting colors in Themes for Yukon.
 
   - project : time-picker
