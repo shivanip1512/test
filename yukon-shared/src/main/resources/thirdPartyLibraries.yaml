@@ -5681,7 +5681,7 @@ JavaScript :
     sha1 : ea060f1818fcc8ac5e27de53eef47ce63b6c86e5
     jira : YUK-22999
     updated : 2020-10-06
-    notes : This library is used to display a text as a placeholder in input fields for e.g. search text is displayed in global search.
+    notes : This library is used to display the text as a placeholder in input fields for e.g. search text is displayed in global search.
 
   - project : scroll.to
     version : 2.1.2
