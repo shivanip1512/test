@@ -76,7 +76,8 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
         if (constraint.getConstraintID() == null) {
             dbPersistentDao.performDBChange(constraint, TransactionType.INSERT);
         }
-
+        programConstraint.buildModel(constraint);
+        
         demandResponseEventLogService.programConstraintCreated(constraint.getConstraintName(),
                                                                ApiRequestContext.getContext().getLiteYukonUser());
 
@@ -127,6 +128,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
         LMProgramConstraint lmprogramConstraint = new LMProgramConstraint();
         programConstraint.buildDBPersistent(lmprogramConstraint);
         dbPersistentDao.performDBChange(lmprogramConstraint, TransactionType.UPDATE);
+        programConstraint.buildModel(lmprogramConstraint);
 
         demandResponseEventLogService.programConstraintUpdated(lmprogramConstraint.getConstraintName(),
                                                                ApiRequestContext.getContext().getLiteYukonUser());
