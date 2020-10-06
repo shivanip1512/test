@@ -68,11 +68,6 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
                                                     Order.FORWARD,
                                                     null,
                                                     null);
-                
-        if(attributeData.isEmpty()) {
-            return new ArrayList<>();
-        }
-        
         //group by interval
         Map<Date, List<PointValueQualityHolder>> intervalData =  attributeData.values().stream()
                 .filter(value -> intervalParser.containsInterval(value.getPointDataTimeStamp()))
