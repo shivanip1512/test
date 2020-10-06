@@ -19,12 +19,10 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.assets.virtualdevices.VirtualDevicesDetailPage;
-import com.github.javafaker.Faker;
 
 public class VirtualDevicesEditTests extends SeleniumTestSetup {
-   
+
     private DriverExtensions driverExt;
-    private Faker faker;
     private VirtualDevicesDetailPage detailPage;
     private int virtualDeviceId;
     private String virtualDeviceName;
@@ -32,21 +30,17 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        faker = SeleniumTestSetup.getFaker();
-        virtualDeviceName = "AT Virtual Device" + faker.number().digits(10);
-        Pair<JSONObject, JSONObject> pair = new VirtualDeviceCreateBuilder.Builder(Optional.of(virtualDeviceName))
+        Pair<JSONObject, JSONObject> pair = new VirtualDeviceCreateBuilder.Builder(Optional.empty())
                 .withEnable(Optional.of(true)).create();
         virtualDeviceId = (Integer) pair.getValue1().get("id");
+        virtualDeviceName = (String) pair.getValue1().get("name");
         detailPage = new VirtualDevicesDetailPage(driverExt, virtualDeviceId);
     }
-    
-    
+
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
         refreshPage(detailPage);
     }
-    
-  
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDeviceEdit_FieldValues_Correct() {
@@ -65,12 +59,13 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDeviceEdit_AllFieldsEnabled_Success() {
         SoftAssertions softly = new SoftAssertions();
-        String virtualDevice = "AT Virtual Device" + faker.number().digits(10);
-        String EXPECTED_MSG = "Edit " + virtualDevice + " saved successfully.";
         // Create disabled virtual device via API
-        Pair<JSONObject, JSONObject> pair = new VirtualDeviceCreateBuilder.Builder(Optional.of(virtualDevice))
+        Pair<JSONObject, JSONObject> pair = new VirtualDeviceCreateBuilder.Builder(Optional.empty())
                 .withEnable(Optional.of(false)).create();
         int id = (Integer) pair.getValue1().get("id");
+        String virtualDevice = (String) pair.getValue1().get("name");
+        String EXPECTED_MSG = "Edit " + virtualDevice + " saved successfully.";
+
         // Navigate to Virtual Device page
         navigate(Urls.Assets.VIRTUAL_DEVICES_EDIT + "/" + id);
         EditVirtualDeviceModal editVirtualDeviceModal = detailPage.showAndWaitEditVirtualDeviceModal();
@@ -89,12 +84,12 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDeviceEdit_AllFieldsDisabled_Success() {
         SoftAssertions softly = new SoftAssertions();
-        String virtualDevice = "AT Virtual Device" + faker.number().digits(10);
-        String EXPECTED_MSG = "Edit " + virtualDevice + " saved successfully.";
         // Create disabled virtual device via API
-        Pair<JSONObject, JSONObject> pair = new VirtualDeviceCreateBuilder.Builder(Optional.of(virtualDevice))
+        Pair<JSONObject, JSONObject> pair = new VirtualDeviceCreateBuilder.Builder(Optional.empty())
                 .withEnable(Optional.of(true)).create();
         int id = (Integer) pair.getValue1().get("id");
+        String virtualDevice = (String) pair.getValue1().get("name");
+        String EXPECTED_MSG = "Edit " + virtualDevice + " saved successfully.";
         // Navigate to Virtual Device page
         navigate(Urls.Assets.VIRTUAL_DEVICES_EDIT + "/" + id);
         EditVirtualDeviceModal editVirtualDeviceModal = detailPage.showAndWaitEditVirtualDeviceModal();
@@ -151,9 +146,7 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDevicesEdit_Name_AlreadyExistsValidation() {
         final String EXPECTED_MSG = "Name already exists";
-        String virtualDevice = "AT Virtual Device" + faker.number().digits(10);
-
-        Pair<JSONObject, JSONObject> pair = new VirtualDeviceCreateBuilder.Builder(Optional.of(virtualDevice))
+        Pair<JSONObject, JSONObject> pair = new VirtualDeviceCreateBuilder.Builder(Optional.empty())
                 .withEnable(Optional.of(true)).create();
         String virtualDeviceName = (String) pair.getValue1().get("name");
         navigate(Urls.Assets.VIRTUAL_DEVICES_EDIT + "/" + virtualDeviceId);
