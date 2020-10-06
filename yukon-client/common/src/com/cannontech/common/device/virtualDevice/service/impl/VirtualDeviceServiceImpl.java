@@ -86,7 +86,7 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
                 .filter(pao -> pao.getPaoType() == PaoType.VIRTUAL_SYSTEM || pao.getPaoType() == PaoType.VIRTUAL_METER)
                 .sorted(comparator)
                 .map( pao -> {
-                    if (dbCache.getAllMeters().containsKey(pao.getPaoIdentifier().getPaoId())) {
+                    if (pao.getPaoType() == PaoType.VIRTUAL_METER) {
                         VirtualMeterModel model = new VirtualMeterModel();
                         model.of(pao);
                         model.setMeterNumber(dbCache.getAllMeters().get(pao.getPaoIdentifier().getPaoId()).getMeterNumber());
