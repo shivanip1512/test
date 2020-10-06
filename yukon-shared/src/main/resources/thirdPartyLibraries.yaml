@@ -5580,8 +5580,8 @@ JavaScript :
     license : Eaton-owned
     license URLs : n/a
     npm URL : "https://www.npmjs.com/package/highcharts/v/8.0.0"
-    md5 : f8abf4ac808f7f04452e338283b2447b
-    sha1 : a8e27c252351ee42b29f1eea55bd9d1b3c89a40c
+    md5 : 64082fd2a0792f16762669a1c8abe090
+    sha1 : 8834f42a88f83666390b328092c63f7c9da982d4
     jira : YUK-21140
     updated : 2020-02-27
     notes : Used for charting
