@@ -39,12 +39,12 @@
                                 ${fn:escapeXml(device.meterNumber)}
                             </c:if>
                         </td>
-                            <c:set var="cssClass" value="success" />
-                            <cti:msg2 var="status" key="yukon.common.enabled"/>
-                            <c:if test="${!device.enable}">
-                                <c:set var="cssClass" value="error" />
-                                <cti:msg2 var="status" key="yukon.common.disabled"/>
-                            </c:if>
+                        <c:set var="cssClass" value="success" />
+                        <cti:msg2 var="status" key="yukon.common.enabled"/>
+                        <c:if test="${!device.enable}">
+                            <c:set var="cssClass" value="error" />
+                            <cti:msg2 var="status" key="yukon.common.disabled"/>
+                        </c:if>
                         <td class="${cssClass}">${status}</td>
                     </tr>
                 </c:forEach>
