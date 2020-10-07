@@ -136,13 +136,13 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
 
     @Override
     @Transactional
-    public int delete(int loadGroupId, String loadGroupName) {
+    public int delete(int loadGroupId) {
         Optional<LiteYukonPAObject> liteLoadGroup = dbCache.getAllLMGroups()
                                                            .stream()
-                                                           .filter(group -> group.getLiteID() == loadGroupId && group.getPaoName().equalsIgnoreCase(loadGroupName))
+                                                           .filter(group -> group.getLiteID() == loadGroupId)
                                                            .findFirst();
         if (liteLoadGroup.isEmpty() || liteLoadGroup.get().getPaoType() == PaoType.MACRO_GROUP) {
-            throw new NotFoundException("Id and Name combination not found");
+            throw new NotFoundException("Id not found");
         }
         Integer paoId = Integer.valueOf(ServletUtils.getPathVariable("id"));
         checkIfGroupIsUsed(liteLoadGroup.get().getPaoName(), paoId);

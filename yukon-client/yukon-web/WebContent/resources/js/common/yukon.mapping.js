@@ -18,7 +18,7 @@ yukon.mapping = (function () {
     
     _neighborColors = [yg.colors.GREEN, yg.colors.GREEN_LIGHT, yg.colors.YELLOW, yg.colors.ORANGE, yg.colors.RED],  
 
-    _routeColor = yg.colors.BLUE_BRIGHT,
+    _routeColor = yg.colors.BLUE_DARK,
 
     _focusRouteColor = yg.colors.GRAY,
 

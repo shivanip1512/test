@@ -35,7 +35,7 @@ public class ItronLoadGroupApiDoc extends LoadGroupApiDocBase {
 
     @Test(dependsOnMethods = { "Test_LmItron_Get" })
     public void Test_LmItron_Update() {
-        paoId = updateDoc();
+        paoId = updateAllDoc();
     }
 
     @Test(dependsOnMethods = { "Test_LmItron_Update" })
@@ -48,7 +48,7 @@ public class ItronLoadGroupApiDoc extends LoadGroupApiDocBase {
         deleteDoc();
 
         // clean up the copied object as well
-        LoadGroupHelper.deleteLoadGroup(LoadGroupHelper.getCopiedLoadGroupName(getMockPaoType()), copyPaoId);
+        LoadGroupHelper.deleteLoadGroup(copyPaoId);
     }
 
     @Override

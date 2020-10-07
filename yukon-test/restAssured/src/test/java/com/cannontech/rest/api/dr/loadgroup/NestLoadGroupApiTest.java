@@ -33,10 +33,10 @@ public class NestLoadGroupApiTest {
     public void loadGroupNest_01_Create(ITestContext context) {
 
         Log.startTestCase("loadGroupNest_01_Create");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         String groupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
         context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
         assertTrue("Load Group Id should not be Null", groupId != null);
         Log.endTestCase("loadGroupNest_01_Create");
     }
@@ -48,7 +48,7 @@ public class NestLoadGroupApiTest {
         String groupId = context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
         Log.info("GroupId of LmGroupNest created is : " + groupId);
 
-        ExtractableResponse<?> response = ApiCallHelper.get("getloadgroup", groupId);
+        ExtractableResponse<?> response = ApiCallHelper.get("loadGroups", "/" + groupId);
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
         MockLoadGroupBase nestLoadGroup = response.as(MockLoadGroupBase.class);
@@ -81,10 +81,10 @@ public class NestLoadGroupApiTest {
 
         Log.info("Updated Load Group is :" +  JsonUtil.beautifyJson(loadGroup.toString()));
 
-        ExtractableResponse<?> response = ApiCallHelper.post("updateloadgroup", loadGroup, groupId);
+        ExtractableResponse<?> response = ApiCallHelper.put("loadGroups", loadGroup, "/" + groupId);
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
-        ExtractableResponse<?> getUpdatedResponse = ApiCallHelper.get("getloadgroup", groupId);
+        ExtractableResponse<?> getUpdatedResponse = ApiCallHelper.get("loadGroups", "/" + groupId);
 
         MockLoadGroupBase updatedNestLoadGroup = getUpdatedResponse.as(MockLoadGroupBase.class);
         assertTrue("Name Should be : " + name, name.equals(loadGroup.getName()));
@@ -104,11 +104,7 @@ public class NestLoadGroupApiTest {
 
         Log.startTestCase("loadGroupNest_05_Delete");
 
-        MockLMDto lmDeleteObject = MockLMDto.builder()
-                                    .name(context.getAttribute("Nest_UpdateGrpName").toString())
-                                    .build();
-        Log.info("Delete Load Group is : " + JsonUtil.beautifyJson(lmDeleteObject.toString()));
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup", lmDeleteObject, context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> response = ApiCallHelper.delete("loadGroups", "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
 
         assertTrue("Status code should be 200", response.statusCode() == 200);
         Log.endTestCase("loadGroupNest_05_Delete");
@@ -119,7 +115,7 @@ public class NestLoadGroupApiTest {
     public void loadGroupNest_06_GroupNameValidation(String groupName, String expectedFieldCode, int expectedStatusCode) {
         Log.startTestCase("loadGroupNest_06_GroupNameValidation");
         loadGroup.setName(groupName);
-        ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> response = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue("Status code should be " + expectedStatusCode, response.statusCode() == expectedStatusCode);
         MockApiError error = response.as(MockApiError.class);
         assertTrue("Expected message should be - Validation error", error.getMessage().equals("Validation error"));
@@ -131,7 +127,7 @@ public class NestLoadGroupApiTest {
     public void loadGroupNest_07_KwCapacityValidation(Double kwCapacity, String expectedFieldCode, int expectedStatusCode) {
         Log.startTestCase("loadGroupNest_07_KwCapacityValidation");
         loadGroup.setKWCapacity(kwCapacity);
-        ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> response = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue("Status code should be " + expectedStatusCode, response.statusCode() == expectedStatusCode);
         MockApiError error = response.as(MockApiError.class);
         assertTrue("Expected message should be - Validation error",  error.getMessage().equals("Validation error"));

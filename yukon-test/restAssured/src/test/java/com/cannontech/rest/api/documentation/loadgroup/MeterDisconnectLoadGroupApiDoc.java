@@ -36,7 +36,7 @@ public class MeterDisconnectLoadGroupApiDoc extends LoadGroupApiDocBase {
 
     @Test(dependsOnMethods = { "Test_LmGroupMeterDisconnect_Get" })
     public void Test_LmGroupMeterDisconnect_Update() {
-        paoId = updateDoc();
+        paoId = updateAllDoc();
     }
 
     @Test(dependsOnMethods = { "Test_LmGroupMeterDisconnect_Update" })
@@ -49,7 +49,7 @@ public class MeterDisconnectLoadGroupApiDoc extends LoadGroupApiDocBase {
         deleteDoc();
 
         // clean up the copied object as well
-        LoadGroupHelper.deleteLoadGroup(LoadGroupHelper.getCopiedLoadGroupName(getMockPaoType()), copyPaoId);
+        LoadGroupHelper.deleteLoadGroup(copyPaoId);
     }
 
     @Override
