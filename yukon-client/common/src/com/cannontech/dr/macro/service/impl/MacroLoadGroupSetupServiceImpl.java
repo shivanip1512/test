@@ -59,6 +59,7 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
         LMGroup lmGroup = getMacroLoadGroupDBPersistent(macroLoadGroup, macroLoadGroup.getId());
         buildMacroLoadGroupDBPersistent(macroLoadGroup, lmGroup);
         dbPersistentDao.performDBChange(lmGroup, TransactionType.INSERT);
+        buildMacroLoadGroupModel(lmGroup, macroLoadGroup);
         logService.loadGroupCreated(macroLoadGroup.getName(), macroLoadGroup.getType(),
                 ApiRequestContext.getContext().getLiteYukonUser());
 
@@ -76,6 +77,7 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
         LMGroup lmGroup = getMacroLoadGroupDBPersistent(macroLoadGroup, loadGroupId);
         buildMacroLoadGroupDBPersistent(macroLoadGroup, lmGroup);
         dbPersistentDao.performDBChange(lmGroup, TransactionType.UPDATE);
+        buildMacroLoadGroupModel(lmGroup, macroLoadGroup);
         logService.loadGroupUpdated(macroLoadGroup.getName(), macroLoadGroup.getType(),
                 ApiRequestContext.getContext().getLiteYukonUser());
         return macroLoadGroup;

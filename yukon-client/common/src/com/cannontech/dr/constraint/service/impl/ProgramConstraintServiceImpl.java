@@ -77,6 +77,13 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
             dbPersistentDao.performDBChange(constraint, TransactionType.INSERT);
         }
         programConstraint.buildModel(constraint);
+        if (holidaySchedule.isPresent()) {
+            programConstraint.getHolidaySchedule().setName(holidaySchedule.get().getName());
+        }
+        Optional<LMDto> seasonSchedule = lmServiceHelper.getSeasonSchedule(programConstraint.getSeasonSchedule().getId());
+        if (seasonSchedule.isPresent()) {
+            programConstraint.getSeasonSchedule().setName(seasonSchedule.get().getName());
+        }
         
         demandResponseEventLogService.programConstraintCreated(constraint.getConstraintName(),
                                                                ApiRequestContext.getContext().getLiteYukonUser());
@@ -129,6 +136,13 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
         programConstraint.buildDBPersistent(lmprogramConstraint);
         dbPersistentDao.performDBChange(lmprogramConstraint, TransactionType.UPDATE);
         programConstraint.buildModel(lmprogramConstraint);
+        if (holidaySchedule.isPresent()) {
+            programConstraint.getHolidaySchedule().setName(holidaySchedule.get().getName());
+        }
+        Optional<LMDto> seasonSchedule = lmServiceHelper.getSeasonSchedule(programConstraint.getSeasonSchedule().getId());
+        if (seasonSchedule.isPresent()) {
+            programConstraint.getSeasonSchedule().setName(seasonSchedule.get().getName());
+        }
 
         demandResponseEventLogService.programConstraintUpdated(lmprogramConstraint.getConstraintName(),
                                                                ApiRequestContext.getContext().getLiteYukonUser());

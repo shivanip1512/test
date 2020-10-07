@@ -43,6 +43,9 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
         controlScenario.buildDBPersistent(lmScenario);
         dbPersistentDao.performDBChange(lmScenario, TransactionType.INSERT);
         controlScenario.buildModel(lmScenario);
+        controlScenario.getAllPrograms().stream().forEach(program -> {
+            program.setGears(lmServiceHelper.getGearsforModel(program.getProgramId(), program.getGears()));
+        });
 
         logService.scenarioCreated(lmScenario.getPAOName(), getProgramNames(lmScenario.getAllThePrograms()),
                 ApiRequestContext.getContext().getLiteYukonUser());
@@ -60,6 +63,9 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
         controlScenario.buildDBPersistent(lmScenario);
         dbPersistentDao.performDBChange(lmScenario, TransactionType.UPDATE);
         controlScenario.buildModel(lmScenario);
+        controlScenario.getAllPrograms().stream().forEach(program -> {
+            program.setGears(lmServiceHelper.getGearsforModel(program.getProgramId(), program.getGears()));
+        });
 
         logService.scenarioUpdated(lmScenario.getPAOName(), getProgramNames(lmScenario.getAllThePrograms()),
                 ApiRequestContext.getContext().getLiteYukonUser());

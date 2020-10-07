@@ -103,13 +103,12 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
                 .fromMinutesToHHmm(controlArea.getDailyStartTimeInMinutes()) : null;
         String stopTime = controlArea.getDailyStopTimeInMinutes() != null ? TimeUtil
                 .fromMinutesToHHmm(controlArea.getDailyStopTimeInMinutes()) : null;
-        controlArea = buildControlAreaModel(lmControlArea);
 
         logService.controlAreaCreated(controlArea.getName(), getTriggerNamesString(lmControlArea.getLmControlAreaTriggerVector()),
                 getProgramNamesString(lmControlArea.getLmControlAreaProgramVector()), startTime, stopTime,
                 ApiRequestContext.getContext().getLiteYukonUser());
 
-        return controlArea;
+        return buildControlAreaModel(lmControlArea);
     }
 
     @Override
@@ -133,13 +132,12 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
                 .fromMinutesToHHmm(controlArea.getDailyStartTimeInMinutes()) : null;
         String stopTime = controlArea.getDailyStopTimeInMinutes() != null ? TimeUtil
                 .fromMinutesToHHmm(controlArea.getDailyStopTimeInMinutes()) : null;
-        controlArea = buildControlAreaModel(lmControlArea);
 
           logService.controlAreaUpdated(lmControlArea.getPAOName(), getTriggerNamesString(lmControlArea.getLmControlAreaTriggerVector()),
           getProgramNamesString(lmControlArea.getLmControlAreaProgramVector()), startTime, stopTime,
           ApiRequestContext.getContext().getLiteYukonUser());
 
-        return controlArea;
+        return buildControlAreaModel(lmControlArea);
     }
 
     /**
