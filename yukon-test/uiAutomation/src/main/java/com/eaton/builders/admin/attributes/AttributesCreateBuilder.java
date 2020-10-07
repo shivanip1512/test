@@ -20,7 +20,7 @@ public class AttributesCreateBuilder {
             String u = UUID.randomUUID().toString();            
             String uuid = u.replace("-", "");
             
-            this.name = name.orElse("AT Udp " + uuid);
+            this.name = name.orElse("AT Attr " + uuid);
         }
         
         public JSONObject build() {                  

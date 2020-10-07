@@ -2,10 +2,15 @@ package com.eaton.tests.admin.attributes;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Optional;
+
+import org.javatuples.Pair;
+import org.json.JSONObject;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.eaton.builders.admin.attributes.AttributeService;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
@@ -48,5 +53,18 @@ public class AttributesListTests extends SeleniumTestSetup {
         assertThat(page.getAttrAsgmtSection()).isNotNull();
     }  
     
-    
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
+    public void testing() {
+        Pair<JSONObject, JSONObject> pair = AttributeService.buildAndCreateAttribute();
+        
+        JSONObject response = pair.getValue1();
+        
+        int attributeId = response.getInt("customAttributeId");
+        
+        Pair<JSONObject, JSONObject> asgmt = AttributeService.buildAndCreateAttributeAssignment(attributeId, Optional.empty(), Optional.empty());
+        
+        JSONObject created = asgmt.getValue1();
+        
+        assertThat(created).isNotNull();
+    }
 }

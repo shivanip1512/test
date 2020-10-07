@@ -20,20 +20,20 @@ public static class Builder {
         private Integer offSet; 
         private Faker faker = new Faker();
         
-        public Builder(int attributeId) {
+        public Builder(Integer attributeId) {
             this.attributeId = attributeId;
         }
         
-        public Builder withPaoType(Optional<AttributeAssignmentTypes.PaoTypes> paoType) {
-            AttributeAssignmentTypes.PaoTypes type = paoType.orElse(AttributeAssignmentTypes.PaoTypes.getRandomPaoType());
+        public Builder withPaoType(Optional<AttributeAsgmtTypes.PaoTypes> paoType) {
+            AttributeAsgmtTypes.PaoTypes type = paoType.orElse(AttributeAsgmtTypes.PaoTypes.getRandomPaoType());
 
             this.paoType = type.getPaoType();
             
             return this;
         }
         
-        public Builder withPointType(Optional<AttributeAssignmentTypes.PointTypes> pointType) {
-            AttributeAssignmentTypes.PointTypes type = pointType.orElse(AttributeAssignmentTypes.PointTypes.getRandomPointType());
+        public Builder withPointType(Optional<AttributeAsgmtTypes.PointTypes> pointType) {
+            AttributeAsgmtTypes.PointTypes type = pointType.orElse(AttributeAsgmtTypes.PointTypes.getRandomPointType());
 
             this.pointType = type.getPointType();
             

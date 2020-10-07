@@ -12,7 +12,7 @@ public class AttributesRequest {
     public static ExtractableResponse<?> createAttribute(Object body) {
         String pathParam = APIs.Attributes.CREATE_ATTRIBUTE;
         ExtractableResponse<?> createResponse = ApiCallHelper.post(pathParam, body);
-        assertThat(createResponse.statusCode()).as("Error in create load group \"%s\"").isEqualTo(200);
+        assertThat(createResponse.statusCode()).as("Error in create load group \"%s\"").isEqualTo(201);
         return createResponse;
     }
 

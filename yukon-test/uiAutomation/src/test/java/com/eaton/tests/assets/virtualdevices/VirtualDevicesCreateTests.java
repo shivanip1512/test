@@ -9,6 +9,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.eaton.builders.assets.virtualdevices.VirtualDeviceCreateService;
 import com.eaton.elements.modals.virtualdevices.CreateVirtualDeviceModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
@@ -34,7 +35,7 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
         refreshPage(listPage);
-    }
+    }    
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesCreate_Labels_Correct() {
@@ -115,4 +116,16 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
 
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
+
+//    //TODO: Used to create lots of virtual devices for manual testing
+//    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
+//    public void virtualDevicesCreate_CreateMultiple_Success() {
+//        VirtualDeviceCreateService.buildAndCreateMultipleVirtualDeviceRequiredFields(1002);
+//    }
+    
+//  //TODO: Used to create virtual devices with lots of points for manual testing 
+  @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
+  public void virtualDevicesCreate_CreateVirDevWithMultiplePoints_Success() {
+      VirtualDeviceCreateService.buildAndCreateVirtualDeviceRequiredFieldsWithMultiplePoints(170);
+  }
 }
