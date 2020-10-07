@@ -20,7 +20,7 @@ typedef CtiTableDynamicPaoInfo Dpi;
 
 struct test_Mct470Device : Cti::Devices::Mct470Device
 {
-    CtiRouteSPtr rte;
+    boost::shared_ptr<Cti::Test::test_CtiRouteCCU> rte;
 
     test_Mct470Device()
         : rte(boost::make_shared<Cti::Test::test_CtiRouteCCU>())
@@ -173,7 +173,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_convertTimestamp_in_2009)
 
     std::vector<unsigned long> expected, results;
 
-    for each( utc34_checker tc in test_cases )
+    for( const auto tc : test_cases )
     {
         expected.push_back(build_gmt_seconds(tc.expected_time));
 
@@ -221,7 +221,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_convertTimestamp_in_2010)
 
     std::vector<unsigned long> expected, results;
 
-    for each( utc34_checker tc in test_cases )
+    for( const auto tc : test_cases )
     {
         expected.push_back(build_gmt_seconds(tc.expected_time));
 
@@ -269,7 +269,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_convertTimestamp_in_2011)
 
     std::vector<unsigned long> expected, results;
 
-    for each( utc34_checker tc in test_cases )
+    for( const auto tc : test_cases )
     {
         expected.push_back(build_gmt_seconds(tc.expected_time));
 
@@ -317,7 +317,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_convertTimestamp_in_2012)
 
     std::vector<unsigned long> expected, results;
 
-    for each( utc34_checker tc in test_cases )
+    for( const auto tc : test_cases )
     {
         expected.push_back(build_gmt_seconds(tc.expected_time));
 
@@ -1690,17 +1690,15 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK( vgList.empty() );
 
         {
-            const std::vector<std::string> resultString_exp = boost::assign::list_of
-                ("Emetcon DLC command sent on route ").repeat(24, "Emetcon DLC command sent on route ");
-            const std::vector<long> status_exp = boost::assign::list_of
-                (0).repeat(24, 0);
+            const std::vector<std::string> resultString_exp(25, "Emetcon DLC command sent on route ");
+            const std::vector<long> status_exp(25, 0);
 
             std::vector<std::string> resultString_rcv;
             std::vector<long> status_rcv;
 
-            for each( const CtiMessage *msg in retList )
+            for( const auto msg : retList )
             {
-                const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(msg);
+                auto retMsg = dynamic_cast<const CtiReturnMsg *>(msg);
 
                 BOOST_REQUIRE(retMsg);
 
@@ -2252,17 +2250,15 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK( vgList.empty() );
 
         {
-            const std::vector<std::string> resultString_exp = boost::assign::list_of
-                ("Emetcon DLC command sent on route ").repeat(16, "Emetcon DLC command sent on route ");
-            const std::vector<long> status_exp = boost::assign::list_of
-                (0).repeat(16, 0);
+            const std::vector<std::string> resultString_exp(17, "Emetcon DLC command sent on route ");
+            const std::vector<long> status_exp(17, 0);
 
             std::vector<std::string> resultString_rcv;
             std::vector<long> status_rcv;
 
-            for each( const CtiMessage *msg in retList )
+            for( const auto msg : retList )
             {
-                const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(msg);
+                auto retMsg = dynamic_cast<const CtiReturnMsg *>(msg);
 
                 BOOST_REQUIRE(retMsg);
 
@@ -2535,6 +2531,37 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_REQUIRE_EQUAL( outList.size(), 9 );
 
         BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
+
+        BOOST_CHECK( boost::algorithm::all_of( retList, [](const CtiMessage* msg) {
+            auto retMsg = dynamic_cast<const CtiReturnMsg*>(msg);
+            return retMsg && retMsg->ExpectMore();
+        }));
+    }
+
+
+    BOOST_AUTO_TEST_CASE(test_getconfig_install_all_inhibited)
+    {
+        mct.rte->ccu->setInhibited();
+
+        request.setCommandString("getconfig install all");
+
+        CtiCommandParser parse(request.CommandString());
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_CHECK(vgList.empty());
+        BOOST_CHECK_EQUAL(retList.size(), 18);
+        BOOST_CHECK(outList.empty());
+
+        BOOST_CHECK(std::all_of(retList.begin(), --retList.end(), [](const CtiMessage* msg) {
+            auto retMsg = dynamic_cast<const CtiReturnMsg*>(msg);
+            return retMsg && retMsg->ExpectMore();
+        }));
+
+        auto lastMsg = dynamic_cast<const CtiReturnMsg*>(retList.back());
+
+        BOOST_REQUIRE(lastMsg);
+        BOOST_CHECK_EQUAL(lastMsg->ExpectMore(), true);
     }
 
 
