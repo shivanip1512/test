@@ -68,6 +68,10 @@ public class AggregateIntervalReportServiceImpl implements AggregateIntervalRepo
                                                     Order.FORWARD,
                                                     null,
                                                     null);
+        
+        log.info("Got report data date range:{}-{} devices:{} interval:{} data rows:{}", format(filter.getStartDate(), context),
+                format(filter.getEndDate(), context), devices.size(), filter.getInterval(), attributeData.size());
+        
         //group by interval
         Map<Date, List<PointValueQualityHolder>> intervalData =  attributeData.values().stream()
                 .filter(value -> intervalParser.containsInterval(value.getPointDataTimeStamp()))
