@@ -14,7 +14,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.constraint.request.MockProgramConstraint;
 import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
@@ -129,7 +128,6 @@ public class EcobeeProgramApiTest {
     @Test(dependsOnMethods = { "loadPgmEcobee_01_Create" })
     public void loadPgmEcobee_05_Delete(ITestContext context) {
         Log.startTestCase("loadPgmEcobee_05_Delete");
-        MockLMDto deleteObject = MockLMDto.builder().name((String) context.getAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME)).build();
 
         // Delete LoadProgram created
         ExtractableResponse<?> response = ApiCallHelper.delete("loadPrograms", "/" + programId.toString());
@@ -137,8 +135,7 @@ public class EcobeeProgramApiTest {
 
         // Delete LoadGroup created
         MockLoadGroupBase loadGroup = (MockLoadGroupBase) context.getAttribute("loadGroupEcobee");
-        deleteObject.setName(loadGroup.getName());
-        ExtractableResponse<?> response1 = ApiCallHelper.delete("deleteloadgroup", deleteObject, loadGroup.getId().toString());
+        ExtractableResponse<?> response1 = ApiCallHelper.delete("loadGroups", "/" + loadGroup.getId().toString());
         assertTrue("Status code should be 200", response1.statusCode() == 200);
         // Delete Copy LoadProgram
         ExtractableResponse<?> response2 = ApiCallHelper.delete("loadPrograms", "/" + context.getAttribute("copyPgmId").toString());
