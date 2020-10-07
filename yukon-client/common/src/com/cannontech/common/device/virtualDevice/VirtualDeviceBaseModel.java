@@ -4,6 +4,7 @@ import org.apache.commons.lang3.BooleanUtils;
 
 import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.port.DBPersistentConverter;
+import com.cannontech.common.device.port.JsonDeserializePaoTypeLookup;
 import com.cannontech.database.data.device.VirtualBase;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -12,7 +13,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonIgnoreProperties(value= {"id"}, allowGetters=true, ignoreUnknown=true)
 @JsonInclude(Include.NON_NULL)
-@JsonDeserialize
+@JsonDeserialize(using = JsonDeserializePaoTypeLookup.class)
 public class VirtualDeviceBaseModel<T extends VirtualBase> extends DeviceBaseModel implements DBPersistentConverter<T> {
 
     @Override
