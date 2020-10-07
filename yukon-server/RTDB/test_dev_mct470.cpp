@@ -2561,7 +2561,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         auto lastMsg = dynamic_cast<const CtiReturnMsg*>(retList.back());
 
         BOOST_REQUIRE(lastMsg);
-        BOOST_CHECK_EQUAL(lastMsg->ExpectMore(), true);
+        BOOST_CHECK_EQUAL(lastMsg->ExpectMore(), false);
     }
 
 
