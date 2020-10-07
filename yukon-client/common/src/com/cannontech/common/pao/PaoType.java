@@ -1070,7 +1070,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     }
 
     public boolean hasMeterNumber() {
-        return isMct() || isIed() || isRfMeter();
+        return isMct() || isIed() || isRfMeter() || this == PaoType.VIRTUAL_METER;
     }
     
     public boolean isTlvReporting() {

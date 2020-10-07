@@ -7,7 +7,10 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.device.model.DeviceBaseModel;
+import com.cannontech.common.device.model.PaoModelFactory;
+import com.cannontech.common.device.virtualDevice.VirtualDeviceBaseModel;
 import com.cannontech.common.device.virtualDevice.VirtualDeviceModel;
+import com.cannontech.common.device.virtualDevice.VirtualMeterModel;
 import com.cannontech.common.device.virtualDevice.service.VirtualDeviceService;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PaginatedResponse;
@@ -16,7 +19,8 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.TransactionType;
-import com.cannontech.database.data.device.VirtualDevice;
+import com.cannontech.database.data.device.DeviceFactory;
+import com.cannontech.database.data.device.VirtualBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -26,34 +30,33 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
     @Autowired private IDatabaseCache dbCache;
 
     @Override
-    public VirtualDeviceModel create(VirtualDeviceModel virtualDeviceBase) {
-        VirtualDevice virtualDevice = new VirtualDevice();
+    public VirtualDeviceBaseModel<? extends VirtualBase> create(VirtualDeviceBaseModel virtualDeviceBase) {
+        VirtualBase virtualDevice = (VirtualBase) DeviceFactory.createDevice(virtualDeviceBase.getType());
         virtualDeviceBase.buildDBPersistent(virtualDevice);
         dBPersistentDao.performDBChange(virtualDevice, TransactionType.INSERT);
-
         virtualDeviceBase.buildModel(virtualDevice);
         return virtualDeviceBase;
     }
 
     @Override
-    public VirtualDeviceModel retrieve(int virtualDeviceId) {
+    public VirtualDeviceBaseModel<? extends VirtualBase> retrieve(int virtualDeviceId) {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(virtualDeviceId);
         if (pao == null) {
             throw new NotFoundException("Virtual device ID not found");
         }
-        VirtualDevice virtualDevice = (VirtualDevice) dBPersistentDao.retrieveDBPersistent(pao);
-        VirtualDeviceModel virtualDeviceBase = new VirtualDeviceModel();
+        VirtualBase virtualDevice = (VirtualBase) dBPersistentDao.retrieveDBPersistent(pao);
+        VirtualDeviceBaseModel virtualDeviceBase = (VirtualDeviceBaseModel) PaoModelFactory.getModel(virtualDevice.getPaoType());
         virtualDeviceBase.buildModel(virtualDevice);
         return virtualDeviceBase;
     }
 
     @Override
-    public VirtualDeviceModel update(int virtualDeviceId, VirtualDeviceModel virtualDevice) {
+    public VirtualDeviceBaseModel<? extends VirtualBase> update(int virtualDeviceId, VirtualDeviceBaseModel virtualDevice) {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(virtualDeviceId);
         if (pao == null) {
             throw new NotFoundException("ID not found " + virtualDeviceId);
         }
-        VirtualDevice virtualDeviceRecord = (VirtualDevice) dBPersistentDao.retrieveDBPersistent(pao);
+        VirtualBase virtualDeviceRecord = (VirtualBase) dBPersistentDao.retrieveDBPersistent(pao);
         virtualDevice.buildDBPersistent(virtualDeviceRecord);
         dBPersistentDao.performDBChange(virtualDeviceRecord, TransactionType.UPDATE);
         virtualDevice.buildModel(virtualDeviceRecord);
@@ -66,7 +69,7 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
         if (pao == null) {
             throw new NotFoundException("ID not found " + id);
         }
-        VirtualDevice virtualDeviceRecord = (VirtualDevice) dBPersistentDao.retrieveDBPersistent(pao);
+        VirtualBase virtualDeviceRecord = (VirtualBase) dBPersistentDao.retrieveDBPersistent(pao);
         dBPersistentDao.performDBChange(virtualDeviceRecord, TransactionType.DELETE);
         return virtualDeviceRecord.getPAObjectID();
     }
@@ -78,13 +81,24 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
             comparator = comparator.thenComparing(LiteYukonPaoSortableField.PAO_NAME.getComparator());
         }
 
-        List<DeviceBaseModel> deviceModels = dbCache.getAllYukonPAObjects()
+        List<DeviceBaseModel> deviceBaseModel = dbCache.getAllYukonPAObjects()
                 .stream()
-                .filter(pao -> pao.getPaoType() == PaoType.VIRTUAL_SYSTEM)
-                .sorted(comparator).map(pao -> DeviceBaseModel.of(pao))
+                .filter(pao -> pao.getPaoType() == PaoType.VIRTUAL_SYSTEM || pao.getPaoType() == PaoType.VIRTUAL_METER)
+                .sorted(comparator)
+                .map( pao -> {
+                    if (pao.getPaoType() == PaoType.VIRTUAL_METER) {
+                        VirtualMeterModel model = new VirtualMeterModel();
+                        model.of(pao);
+                        model.setMeterNumber(dbCache.getAllMeters().get(pao.getPaoIdentifier().getPaoId()).getMeterNumber());
+                        return model;
+                    }
+                    VirtualDeviceModel model = new VirtualDeviceModel();
+                    return model.of(pao);
+                }
+                )
                 .collect(Collectors.toList());
 
-        return new PaginatedResponse<DeviceBaseModel>(deviceModels, page, itemsPerPage);
+        return new PaginatedResponse<DeviceBaseModel>(deviceBaseModel, page, itemsPerPage);
     }
 
 }
