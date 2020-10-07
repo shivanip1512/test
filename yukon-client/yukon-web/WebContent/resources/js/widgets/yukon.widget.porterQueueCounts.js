@@ -223,13 +223,11 @@ yukon.widget.porterQueueCounts = (function () {
         init : function () {
             if (_initialized) return;
             
-            var highChartOptionsLangOptions = {
-                    lang:{
-                        rangeSelectorZoom: '',
-                        rangeSelectorFrom: ''
-                    }
-            };
-            Highcharts.setOptions($.extend(highChartOptionsLangOptions, yg.highcharts_options));
+            var highChartOptions = yg.highcharts_options;
+            highChartOptions.lang.rangeSelectorZoom = "";
+            highChartOptions.lang.rangeSelectorFrom = "";
+            Highcharts.setOptions($.extend(highChartOptions, yg.highcharts_options));
+            
             $.ajax({
                 url: yukon.url('/amr/porterQueueCounts/getZoom'),
                 type: 'get',
