@@ -5672,16 +5672,16 @@ JavaScript :
     notes : Used for mapping
 
   - project : placeholder
-    version : 2.0.7
+    version : 2.3.1
     project URL : "https://github.com/mathiasbynens/jquery-placeholder"
     license : MIT
     license URLs : "https://opensource.org/licenses/mit-license.php"
-    npm URL : "https://www.npmjs.com/package/jquery-placeholder/v/2.0.7"
-    md5 : 8d610a320459682421a80028d278e183
-    sha1 : a4f659173acc554c934707dfebe837ef312f7a75
-    jira : YUK-12670
-    updated : 2013-10-28
-    notes : 
+    npm URL : "https://www.npmjs.com/package/jquery-placeholder/v/2.3.1"
+    md5 : 9954228b60fcca215a079d9ddac91f7a
+    sha1 : ea060f1818fcc8ac5e27de53eef47ce63b6c86e5
+    jira : YUK-22999
+    updated : 2020-10-06
+    notes : This library is used to display the text as a placeholder in input fields for e.g. search text is displayed in global search.
 
   - project : scroll.to
     version : 2.1.2
