@@ -34,6 +34,12 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
             throw new NotFoundException("request is not found in correct format");
         }
         String idStr = ServletUtils.getPathVariable("id");
+        if (idStr == null) {
+            TreeNode id = node.get("id");
+            if (id != null) {
+                idStr = id.toString();
+            }
+        }
         Integer id = null;
         TreeNode type = node.get("type");
         PaoType paoType;
