@@ -5,25 +5,24 @@ import org.springframework.core.convert.converter.Converter;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.PaoModelFactory;
-import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.device.virtualDevice.VirtualDeviceBaseModel;
 import com.cannontech.common.pao.PaoType;
 
 /**
  * Converter class for Virtual Device Base Model.
- * This will take port type as string and return the appropriate object.
+ * This will take virtual device type as string and return the appropriate object.
  * Converter is required when a inherited class have to be passed for a base class input.
  */
 public class VirtualDeviceBaseConverter implements Converter<String, VirtualDeviceBaseModel> {
     private static final Logger log = YukonLogManager.getLogger(VirtualDeviceBaseConverter.class);
 
     @Override
-    public VirtualDeviceBaseModel convert(String portType) {
+    public VirtualDeviceBaseModel convert(String deviceType) {
         PaoType paoType = null;
         try {
-            paoType = PaoType.valueOf(portType);
+            paoType = PaoType.valueOf(deviceType);
         } catch (IllegalArgumentException e) {
-            log.error(portType + " pao type doesn't match with existing pao types", e);
+            log.error(deviceType + " pao type doesn't match with existing pao types", e);
         }
         return (VirtualDeviceBaseModel) PaoModelFactory.getModel(paoType);
     }
