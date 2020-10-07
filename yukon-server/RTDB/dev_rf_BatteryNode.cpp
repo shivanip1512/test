@@ -14,15 +14,35 @@
 
 namespace Cti::Devices {
 
+namespace {
+
+    std::unique_ptr<CtiRequestMsg> makeVerifyMsg(const CtiRequestMsg& req) 
+    {
+        auto verifyRequest = std::make_unique<CtiRequestMsg>(req.DeviceId(), "putconfig install all verify");
+
+        verifyRequest->setUserMessageId(req.UserMessageId());
+        verifyRequest->setConnectionHandle(req.getConnectionHandle());
+
+        return verifyRequest;
+    }
+}
+
 YukonError_t RfBatteryNodeDevice::executePutConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {
     if ( auto configPart = parse.findStringForKey("installvalue") )
     {
         if ( *configPart == "all" || *configPart == "intervals" )
         {
-            executeConfigInstallSingle( pReq, parse, returnMsgs, rfnRequests, *configPart,
-                                        bindConfigMethod( &RfBatteryNodeDevice::executePutConfigIntervals, this ) );
+            const auto ret = 
+                executeConfigInstallSingle( 
+                    pReq, parse, returnMsgs, rfnRequests, *configPart,
+                    bindConfigMethod( &RfBatteryNodeDevice::executePutConfigIntervals, this ) );
             
+            if( ! ret )
+            {
+                requestMsgs.emplace_back(makeVerifyMsg(*pReq));
+            }
+
             return ClientErrors::None;
         }
     }
@@ -36,8 +56,15 @@ YukonError_t RfBatteryNodeDevice::executeGetConfig(CtiRequestMsg* pReq, CtiComma
     {
         if ( *configPart == "all" || *configPart == "intervals" )
         {
-            executeConfigInstallSingle( pReq, parse, returnMsgs, rfnRequests, *configPart,
-                                        bindConfigMethod( &RfBatteryNodeDevice::executeGetConfigIntervals, this ) );
+            const auto ret =
+                executeConfigInstallSingle( 
+                    pReq, parse, returnMsgs, rfnRequests, *configPart,
+                    bindConfigMethod( &RfBatteryNodeDevice::executeGetConfigIntervals, this ) );
+
+            if( ! ret )
+            {
+                requestMsgs.emplace_back(makeVerifyMsg(*pReq));
+            }
 
             return ClientErrors::None;
         }
