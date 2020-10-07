@@ -534,13 +534,18 @@ struct test_CtiDeviceCCU : CtiDeviceCCU
     {
         _paObjectID = 12345;
     }
+
+    void setInhibited()
+    {
+        _disableFlag = true;
+    }
 };
 
 struct test_CtiRouteCCU : CtiRouteCCU
 {
-    CtiDeviceSPtr ccu;
+    boost::shared_ptr<test_CtiDeviceCCU> ccu;
 
-    test_CtiRouteCCU() : ccu(new test_CtiDeviceCCU)
+    test_CtiRouteCCU() : ccu(boost::make_shared<test_CtiDeviceCCU>())
     {
         _tblPAO.setID(1234, test_tag);
         setDevicePointer(ccu);
