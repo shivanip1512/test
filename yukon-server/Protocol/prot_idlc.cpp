@@ -635,6 +635,11 @@ unsigned IDLC::getMaximumPayload( void ) const
     return Frame_MaximumDataLength;
 }
 
+void IDLC::clearSequenceNumbers( Test::use_in_unit_tests_only & )
+{
+    _master_sequence = 0;
+    _slave_sequence = 0;
+}
 
 }
 }

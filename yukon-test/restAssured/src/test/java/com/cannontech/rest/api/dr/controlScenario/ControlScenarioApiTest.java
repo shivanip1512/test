@@ -13,7 +13,6 @@ import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockLMGearDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.constraint.request.MockProgramConstraint;
@@ -228,11 +227,9 @@ public class ControlScenarioApiTest {
     public void controlScenario_07_Delete(ITestContext context) {
 
         SoftAssert softAssert = new SoftAssert();
-        MockLMDto deleteObject = MockLMDto.builder().build();
 
         // Delete Control Scenario's
         for (Map.Entry<Integer, String> map : createdControlScenarios.entrySet()) {
-            deleteObject.setName(map.getValue().toString());
             ExtractableResponse<?> response = ApiCallHelper.delete("controlScenarios", "/" + map.getKey().toString());
             softAssert.assertTrue(response.statusCode() == 200, "Status code should be 200, delete Control Scenario failed.");
         }
@@ -248,25 +245,19 @@ public class ControlScenarioApiTest {
         }
 
         // Delete Control Area
-        deleteObject = MockLMDto.builder().name(context.getAttribute("controlAreaName").toString()).build();
-        Log.info("Delete Control Area is : " + deleteObject);
         ExtractableResponse<?> deleteAreaResponse = ApiCallHelper.delete("controlAreas",
                "/" +  context.getAttribute("controlAreaId").toString());
         softAssert.assertTrue(deleteAreaResponse.statusCode() == 200, "Status code should be 200, delete Control Area failed.");
 
         // Delete Load Program
-        deleteObject = MockLMDto.builder().name(loadProgram.getName()).build();
-        Log.info("Delete Load Program is : " + deleteObject);
         ExtractableResponse<?> deleteProgramResponse = ApiCallHelper.delete("loadPrograms",
                "/" + loadProgram.getProgramId().toString());
         softAssert.assertTrue(deleteProgramResponse.statusCode() == 200,
                 "Status code should be 200, delete Load Program failed.");
 
         // Delete Load Group
-        deleteObject = MockLMDto.builder().name(loadProgram.getAssignedGroups().get(0).getGroupName()).build();
-        ExtractableResponse<?> deleteGroupResponse = ApiCallHelper.delete("deleteloadgroup",
-                deleteObject,
-                loadProgram.getAssignedGroups().get(0).getGroupId().toString());
+        ExtractableResponse<?> deleteGroupResponse = ApiCallHelper.delete("loadGroups",
+               "/" + loadProgram.getAssignedGroups().get(0).getGroupId().toString());
         softAssert.assertTrue(deleteGroupResponse.statusCode() == 200, "Status code should be 200, delete Load Group failed.");
         softAssert.assertAll();
     }
@@ -514,27 +505,20 @@ public class ControlScenarioApiTest {
     @AfterClass
     public void deleteCreatedProgramAndControlAreaInNegativeValidation(ITestContext context) {
         SoftAssert softAssert = new SoftAssert();
-        MockLMDto deleteObject = MockLMDto.builder().build();
 
         // Delete Control Area
-        deleteObject = MockLMDto.builder().name(context.getAttribute("controlAreaName").toString()).build();
-        Log.info("Delete Control Area is : " + deleteObject);
         ExtractableResponse<?> deleteAreaResponse = ApiCallHelper.delete("controlAreas",
                 "/" + context.getAttribute("controlAreaId").toString());
         softAssert.assertTrue(deleteAreaResponse.statusCode() == 200, "Status code should be 200");
 
         // Delete Load Program
-        deleteObject = MockLMDto.builder().name(loadProgram.getName()).build();
-        Log.info("Delete Load Program is : " + deleteObject);
         ExtractableResponse<?> deleteProgramResponse = ApiCallHelper.delete("loadPrograms",
                 "/" + loadProgram.getProgramId().toString());
         softAssert.assertTrue(deleteProgramResponse.statusCode() == 200, "Status code should be 200");
 
         // Delete Load Group
-        deleteObject = MockLMDto.builder().name(loadProgram.getAssignedGroups().get(0).getGroupName()).build();
-        ExtractableResponse<?> deleteGroupResponse = ApiCallHelper.delete("deleteloadgroup",
-                deleteObject,
-                loadProgram.getAssignedGroups().get(0).getGroupId().toString());
+        ExtractableResponse<?> deleteGroupResponse = ApiCallHelper.delete("loadGroups",
+               "/" + loadProgram.getAssignedGroups().get(0).getGroupId().toString());
         softAssert.assertTrue(deleteGroupResponse.statusCode() == 200, "Status code should be 200, delete Load Group failed.");
         softAssert.assertAll();
     }

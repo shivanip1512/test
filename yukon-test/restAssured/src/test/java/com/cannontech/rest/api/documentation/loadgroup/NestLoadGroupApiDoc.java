@@ -32,7 +32,7 @@ public class NestLoadGroupApiDoc extends LoadGroupApiDocBase {
 
     @Test(dependsOnMethods = { "Test_LmNest_Get" }, enabled = false)
     public void Test_LmNest_Update() {
-        paoId = updateDoc();
+        paoId = updateAllDoc();
     }
 
     @Test(dependsOnMethods = { "Test_LmNest_Update" }, enabled = false)

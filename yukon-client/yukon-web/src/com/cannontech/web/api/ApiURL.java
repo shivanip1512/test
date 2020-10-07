@@ -2,13 +2,10 @@ package com.cannontech.web.api;
 
 public class ApiURL {
 
-    public static final String drLoadGroupSaveUrl = "/dr/setup/loadGroup/create";
-    public static final String drLoadGroupRetrieveUrl = "/dr/setup/loadGroup/";
-    public static final String drLoadGroupDeleteUrl = "/dr/setup/loadGroup/delete/";
-    public static final String drLoadGroupCopyUrl = "/dr/setup/loadGroup/copy/";
-    public static final String drLoadGroupUpdateUrl = "/dr/setup/loadGroup/update/";
-    public static final String drRetrieveAvailableLoadGroupsUrl = "/dr/setup/loadGroup/availableLoadGroup";
-    public static final String drPointGroupStartStateUrl = "/dr/setup/loadGroup/getPointGroupStartState/";
+    public static final String drLoadGroupUrl = "/dr/loadGroups";
+    public static final String drRetrieveAvailableLoadGroupsUrl = "/dr/loadGroups/availableLoadGroup";
+    public static final String drPointGroupStartStateUrl = "/dr/loadGroups/getPointGroupStartState/";
+
 
     public static final String drSetupFilterUrl = "/dr/setup/filter";
     public static final String retrieveAllRoutesUrl = "/core/setup/route/allRoutes";
@@ -16,11 +13,7 @@ public class ApiURL {
     public static final String pickerSearchUrl = "/picker/search";
     public static final String pickerIdSearchUrl = "/picker/idSearch";
 
-    public static final String drMacroLoadGroupRetrieveUrl = "/dr/setup/macroLoadGroup/";
-    public static final String drMacroLoadGroupCreateUrl = "/dr/setup/macroLoadGroup/create";
-    public static final String drMacroLoadGroupUpdateUrl = "/dr/setup/macroLoadGroup/update/";
-    public static final String drMacroLoadGroupDeleteUrl = "/dr/setup/macroLoadGroup/delete/";
-    public static final String drMacroLoadGroupCopyUrl = "/dr/setup/macroLoadGroup/copy/";
+    public static final String drMacroLoadGroupUrl = "/dr/macroLoadGroups";
 
     public static final String drLoadProgramUrl = "/dr/loadPrograms";
     public static final String drAvailableLoadGroupsUrl = "/dr/loadPrograms/availableLoadGroups/";
@@ -48,5 +41,7 @@ public class ApiURL {
     
     public static final String attributeUrl = "/attributes";
     public static final String attributeAssignmentsUrl = "/attributeAssignments";
+    
+    public static final String aggregateDataReportUrl = "/aggregateIntervalDataReport/report";
 
 }
