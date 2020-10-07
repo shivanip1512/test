@@ -266,6 +266,7 @@
     <entry key="yukon.web.modules.tools.point.viewError">Point {0} cannot be viewed.</entry>
     <entry key="yukon.web.modules.tools.point.notFoundError">Point {0} was not found.</entry>
     <entry key="yukon.web.modules.tools.point.error.reasonability">Low Reasonability must be less than High Reasonability.</entry>
+    <entry key="yukon.web.modules.tools.point.error.timestampExists">Point data already exists for the selected Date/Time.</entry>
 
     <entry key="yukon.web.modules.tools.point.tab.general">General</entry>
     <entry key="yukon.web.modules.tools.point.tab.physical">Physical Setup</entry>
@@ -587,6 +588,7 @@
     <entry key="yukon.web.modules.tools.aggregateIntervalReport.operation.ADD">Add</entry>
     <entry key="yukon.web.modules.tools.aggregateIntervalReport.operation.MAX">Max</entry>
     <!-- Intervals -->
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.interval.MINUTES_5">5 minutes</entry>
     <entry key="yukon.web.modules.tools.aggregateIntervalReport.interval.MINUTES_15">15 minutes</entry>
     <entry key="yukon.web.modules.tools.aggregateIntervalReport.interval.MINUTES_30">30 minutes</entry>
     <entry key="yukon.web.modules.tools.aggregateIntervalReport.interval.HOURS_1">1 hour</entry>

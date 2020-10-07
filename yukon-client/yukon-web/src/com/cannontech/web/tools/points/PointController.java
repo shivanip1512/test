@@ -44,6 +44,7 @@ import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.AlarmCatDao;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
@@ -133,9 +134,7 @@ public class PointController {
                 YukonValidationUtils.checkIsValidDouble(errors, "value", bean.getValue());
             }
             if (!errors.hasFieldErrors("timestamp")) {
-                if (bean.getTimestamp() == null) {
-                    errors.rejectValue("timestamp", "yukon.web.error.isBlank");
-                }
+                YukonValidationUtils.checkIfFieldRequired("timestamp", errors, bean.getTimestamp(), "Date/Time");
             }
         }
     };
@@ -585,14 +584,7 @@ public class PointController {
         } else {
             validator.validate(backingBean, bindingResult);
             if (bindingResult.hasErrors()) {
-                LiteYukonPAObject liteYukonPAO = dbCache.getAllPaosMap().get(litePoint.getPaobjectID());
-                model.put("deviceName", liteYukonPAO.getPaoName());
-                model.put("pointName", litePoint.getPointName());
-                model.addAttribute("backingBean", backingBean);
-                if (litePoint.getPointTypeEnum().isCalcPoint()) {
-                    model.addAttribute("allowDateTimeSelection", true);
-                }
-                model.addAttribute("specifiedDateTime", specifiedDateTime);
+                setupErrorModel(model, litePoint, backingBean, specifiedDateTime);
                 List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
                 flashScope.setError(messages);
                 return "../common/pao/manualEntryPopup.jsp";
@@ -600,13 +592,30 @@ public class PointController {
 
             newPointValue = backingBean.getValue();
         }
-        pointService.addPointData(backingBean.getPointId(), newPointValue, backingBean.getTimestamp(), userContext);
+        try {
+            pointService.addPointData(backingBean.getPointId(), newPointValue, backingBean.getTimestamp(), userContext);
+        } catch (DuplicateException e) {
+            setupErrorModel(model, litePoint, backingBean, specifiedDateTime);
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".error.timestampExists"));
+            return "../common/pao/manualEntryPopup.jsp";
+        }
 
         response.setContentType("application/json");
         response.getWriter().write(JsonUtils.toJson(Collections.singletonMap("action", "close")));
         return null;
     }
-    
+
+    private void setupErrorModel(ModelMap model, LitePoint litePoint, PointBackingBean backingBean, Boolean specifiedDateTime) {
+        LiteYukonPAObject liteYukonPAO = dbCache.getAllPaosMap().get(litePoint.getPaobjectID());
+        model.put("deviceName", liteYukonPAO.getPaoName());
+        model.put("pointName", litePoint.getPointName());
+        model.addAttribute("backingBean", backingBean);
+        if (litePoint.getPointTypeEnum().isCalcPoint()) {
+            model.addAttribute("allowDateTimeSelection", true);
+        }
+        model.addAttribute("specifiedDateTime", specifiedDateTime);
+    }
+
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         datePropertyEditorFactory.setupInstantPropertyEditor(binder, userContext, BlankMode.NULL);
