@@ -47,14 +47,11 @@ public class PagingParametersHandlerMethodArgumentResolver implements HandlerMet
      * @throws InvalidPagingParametersException for Invalid Items per page
      */
     private static Integer getValidItemsPerPage(String itemsPerPageString) {
-        if (itemsPerPageString == null) {
-            return CtiUtilities.DEFAULT_ITEMS_PER_PAGE;
-        }
         Integer itemsPerPage = null;
         try {
             itemsPerPage = Integer.valueOf(itemsPerPageString);
         } catch (NumberFormatException e) {
-            throw new InvalidPagingParametersException(itemsPerPageString + " is not a valid Integer for Items per page");
+            itemsPerPage = CtiUtilities.DEFAULT_ITEMS_PER_PAGE;
         }
 
         // Items per page should be less than 0 and more than 1000
