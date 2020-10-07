@@ -6,15 +6,14 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.model.PaoModelFactory;
 import com.cannontech.common.device.virtualDevice.VirtualDeviceBaseModel;
 import com.cannontech.common.device.virtualDevice.VirtualDeviceModel;
+import com.cannontech.common.device.virtualDevice.VirtualDeviceSortableField;
 import com.cannontech.common.device.virtualDevice.VirtualMeterModel;
 import com.cannontech.common.device.virtualDevice.service.VirtualDeviceService;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PaginatedResponse;
-import com.cannontech.common.pao.LiteYukonPaoSortableField;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -75,30 +74,30 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
     }
 
     @Override
-    public PaginatedResponse<DeviceBaseModel> getPage(LiteYukonPaoSortableField sortBy, Direction direction, Integer page, Integer itemsPerPage) {
-        Comparator<LiteYukonPAObject> comparator = (direction == Direction.desc ? sortBy.getComparator().reversed() : sortBy.getComparator());
-        if (sortBy != LiteYukonPaoSortableField.PAO_NAME) {
-            comparator = comparator.thenComparing(LiteYukonPaoSortableField.PAO_NAME.getComparator());
+    public PaginatedResponse<VirtualDeviceBaseModel> getPage(VirtualDeviceSortableField sortBy, Direction direction, Integer page, Integer itemsPerPage) {
+        Comparator<VirtualDeviceBaseModel> comparator = (direction == Direction.desc ? sortBy.getComparator().reversed() : sortBy.getComparator());
+        if (sortBy != VirtualDeviceSortableField.PAO_NAME) {
+            comparator = comparator.thenComparing(VirtualDeviceSortableField.PAO_NAME.getComparator());
         }
 
-        List<DeviceBaseModel> deviceBaseModel = dbCache.getAllYukonPAObjects()
+        List<VirtualDeviceBaseModel> deviceBaseModel = dbCache.getAllYukonPAObjects()
                 .stream()
                 .filter(pao -> pao.getPaoType() == PaoType.VIRTUAL_SYSTEM || pao.getPaoType() == PaoType.VIRTUAL_METER)
-                .sorted(comparator)
                 .map( pao -> {
                     if (pao.getPaoType() == PaoType.VIRTUAL_METER) {
                         VirtualMeterModel model = new VirtualMeterModel();
                         model.of(pao);
                         model.setMeterNumber(dbCache.getAllMeters().get(pao.getPaoIdentifier().getPaoId()).getMeterNumber());
-                        return model;
+                        return (VirtualDeviceBaseModel) model;
                     }
                     VirtualDeviceModel model = new VirtualDeviceModel();
-                    return model.of(pao);
+                    return (VirtualDeviceBaseModel) model.of(pao);
                 }
                 )
+                .sorted(comparator)
                 .collect(Collectors.toList());
 
-        return new PaginatedResponse<DeviceBaseModel>(deviceBaseModel, page, itemsPerPage);
+        return new PaginatedResponse<VirtualDeviceBaseModel>(deviceBaseModel, page, itemsPerPage);
     }
 
 }
