@@ -50,7 +50,7 @@ public class ProgramConstraintApiController {
 
     @PutMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
-    public ResponseEntity<ProgramConstraint> update(@Valid @RequestBody ProgramConstraint programConstraint, @PathVariable int id) {
+    public ResponseEntity<Object> update(@Valid @RequestBody ProgramConstraint programConstraint, @PathVariable int id) {
         ProgramConstraint updateProgramConstraint = programConstraintService.update(id, programConstraint);
         return new ResponseEntity<>(updateProgramConstraint, HttpStatus.OK);
     }
