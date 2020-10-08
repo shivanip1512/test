@@ -11,14 +11,14 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonIgnoreProperties(value= {"id"}, allowGetters=true, ignoreUnknown=true)
 @JsonInclude(Include.NON_NULL)
 @JsonDeserialize
-public class VirtualMeterModel extends VirtualDeviceBaseModel<VirtualMeter> implements DBPersistentConverter<VirtualMeter>{
+public class VirtualMeterModel extends VirtualDeviceBaseModel<VirtualMeter> implements DBPersistentConverter<VirtualMeter> {
 
     private String meterNumber;
-    
+
     public void setMeterNumber(String meterNumber) {
         this.meterNumber = meterNumber;
     }
-    
+
     public String getMeterNumber() {
         return meterNumber;
     }
