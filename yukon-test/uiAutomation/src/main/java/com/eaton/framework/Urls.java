@@ -188,6 +188,7 @@ public final class Urls {
         public static final String WORK_ORDER_REPORTS = "/operator/WorkOrder/Report.jsp";
         public static final String ZIGBEE_PROBLEM_DEVICES = "/stars/operator/inventory/zbProblemDevices/view";
         public static final String VIRTUAL_DEVICES = "/stars/virtualDevices";
+        public static final String VIRTUAL_DEVICES_EDIT = "/stars/virtualDevice";
 
     }
 
