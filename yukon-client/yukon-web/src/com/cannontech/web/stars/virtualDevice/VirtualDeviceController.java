@@ -90,7 +90,8 @@ public class VirtualDeviceController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
         } catch (RestClientException ex) {
             log.error("Error retrieving virtual devices. Error: {}", ex.getMessage(), ex);
-            flash.setError(new YukonMessageSourceResolvable("yukon.exception.apiCommunicationException.communicationError"));
+            String virtualDevicesLabel = accessor.getMessage("yukon.web.modules.operator.virtualDevices.list.pageName");
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.retrieve.error", virtualDevicesLabel, ex.getMessage()));
         } catch (URISyntaxException e) {
             log.error("URI syntax error while creating builder for retrieving virtual devices.", e);
             String virtualDevicesLabel = accessor.getMessage("yukon.web.modules.operator.virtualDevices.list.pageName");

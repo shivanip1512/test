@@ -17,10 +17,10 @@
 <cti:default var="thousands" value="false"/>
 
 <c:if test="${response.totalItems > 1}">
-    <c:set var = "numPages" value = "${((response.totalItems - 1) / response.itemsPerPage) + 1}"/>
+    <c:set var="numPages" value="${((response.totalItems - 1) / response.itemsPerPage) + 1}"/>
 </c:if>
 <c:if test="${response.totalItems < 1}">
-    <c:set var = "numPages" value = "${0} "/>
+    <c:set var="numPages" value="${0} "/>
 </c:if>
 
 <fmt:parseNumber var="numberOfPages" integerOnly="true" value="${numPages}" />
