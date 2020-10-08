@@ -55,8 +55,8 @@ public class PagingParametersHandlerMethodArgumentResolver implements HandlerMet
         try {
             itemsPerPage = Integer.valueOf(itemsPerPageString);
         } catch (NumberFormatException e) {
-            log.warn(itemsPerPageString + " is not a valid Integer for Items per page. Setting it to defaule value : "
-                    + CtiUtilities.DEFAULT_ITEMS_PER_PAGE);
+            log.warn("'{}' is not a valid Integer for ItemsPerPage. Setting it to default value: {}.", itemsPerPageString,
+                    CtiUtilities.DEFAULT_ITEMS_PER_PAGE);
             itemsPerPage = CtiUtilities.DEFAULT_ITEMS_PER_PAGE;
         }
 
@@ -77,8 +77,8 @@ public class PagingParametersHandlerMethodArgumentResolver implements HandlerMet
         try {
             pageNumber = Integer.valueOf(pageString);
         } catch (NumberFormatException e) {
-            log.warn(pageString + " is not a valid Integer for Page Number. Setting it to defaule value : " + CtiUtilities.DEFAULT_ITEMS_PER_PAGE );
-            pageNumber = CtiUtilities.DEFAULT_ITEMS_PER_PAGE;
+            log.warn("'{}' is not a valid Integer for page. Setting it to default value: {}.", pageNumber, CtiUtilities.MIN_ITEMS_PER_PAGE);
+            pageNumber = CtiUtilities.MIN_ITEMS_PER_PAGE;
         }
 
         // Page no should be always greater than 0
