@@ -77,8 +77,8 @@ public class PagingParametersHandlerMethodArgumentResolver implements HandlerMet
         try {
             pageNumber = Integer.valueOf(pageString);
         } catch (NumberFormatException e) {
-            log.warn("'{}' is not a valid Integer for page. Setting it to default value: {}.", pageNumber, CtiUtilities.MIN_ITEMS_PER_PAGE);
-            pageNumber = CtiUtilities.MIN_ITEMS_PER_PAGE;
+            log.warn("'{}' is not a valid Integer for page. Setting it to default value: {}.", pageNumber, CtiUtilities.DEFAULT_PAGE_NUMBER);
+            pageNumber = CtiUtilities.DEFAULT_PAGE_NUMBER;
         }
 
         // Page no should be always greater than 0
