@@ -188,8 +188,11 @@ public final class Urls {
         public static final String WORK_ORDER_REPORTS = "/operator/WorkOrder/Report.jsp";
         public static final String ZIGBEE_PROBLEM_DEVICES = "/stars/operator/inventory/zbProblemDevices/view";
         public static final String VIRTUAL_DEVICES = "/stars/virtualDevices";
+        public static final String VIRTUAL_DEVICES_NAME_ASC = "/stars/virtualDevices?sort=name&dir=asc";
+        public static final String VIRTUAL_DEVICES_NAME_DESC = "/stars/virtualDevices?sort=name&dir=desc";
+        public static final String VIRTUAL_DEVICES_STATUS_ASC = "/stars/virtualDevices?sort=status&dir=asc";
+        public static final String VIRTUAL_DEVICES_STATUS_DESC = "/stars/virtualDevices?sort=status&dir=desc";
         public static final String VIRTUAL_DEVICES_EDIT = "/stars/virtualDevice";
-
     }
 
     public static final class Tools {
