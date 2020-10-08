@@ -150,7 +150,7 @@ public class VirtualDevicesListPageTests extends SeleniumTestSetup{
         WebTableRow row = listPage.getTable().getDataRowByName(devName);
         String link = row.getCellLinkByIndex(0);
 
-        assertThat(link).contains(Urls.Assets.VIRTUAL_DEVICE.concat(devId.toString()));
+        assertThat(link).contains(Urls.Assets.VIRTUAL_DEVICES_EDIT.concat("/" +devId.toString()));
 
     }
 }

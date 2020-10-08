@@ -669,6 +669,8 @@ YukonError_t DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg       *pReq,
                                 pOut->Request,
                                 getName() + ": ERROR " + CtiNumStr(nRet) + " (" + CtiError::GetErrorString(nRet) + ") performing command on route " + Route->getName(),
                                 nRet));
+
+                decrementGroupMessageCount(pOut->Request.UserID, pOut->Request.Connection);
             }
         }
         else if( getRouteManager() == 0 )       // If there is no route manager, we need porter to do the route work!
