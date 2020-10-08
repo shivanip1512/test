@@ -55,7 +55,8 @@ public class SepProgramGearApiDoc {
             programConstraint_Create();
         }
         if (loadGroups == null) {
-            assignedLoadGroup_Create();
+            loadGroups = new ArrayList<>();
+            loadGroups.add(LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_DIGI_SEP));
         }
     }
 
@@ -81,28 +82,15 @@ public class SepProgramGearApiDoc {
     }
 
     /**
-     * Method to create Load group as we need to pass load group in request of Sep Load Program.
-     */
-    public void assignedLoadGroup_Create() {
-        MockLoadGroupBase loadGroupSep = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_DIGI_SEP);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroupSep);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
-        loadGroups = new ArrayList<>();
-        Integer loadGroupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID);
-        loadGroupSep.setId(loadGroupId);
-        loadGroups.add(loadGroupSep);
-    }
-
-    /**
      * Method to create Program Constraint as we need to pass constraint in request of Sep Load Program.
      */
     public void programConstraint_Create() {
         programConstraint = ProgramConstraintHelper.buildProgramConstraint();
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         Integer constraintId = createResponse.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID);
         programConstraint.setId(constraintId);
         assertTrue("Constraint Id should not be Null", constraintId != null);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
     }
 
     @Test
@@ -171,9 +159,9 @@ public class SepProgramGearApiDoc {
 
     @AfterClass
     public void cleanUp() {
-        ApiCallHelper.delete(programConstraint.getId(), programConstraint.getName(), "deleteProgramConstraint");
+        ApiCallHelper.delete("programConstraints", "/" + programConstraint.getId().toString());
         loadGroups.forEach(group -> {
-            ApiCallHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
+            ApiCallHelper.delete("loadGroups", "/" + group.getId());
         });
 
     }

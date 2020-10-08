@@ -14,7 +14,6 @@ import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.constraint.request.MockProgramConstraint;
 import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
@@ -517,27 +516,23 @@ public class DirectProgramApiTest {
     public void tearDown(ITestContext context) {
 
         SoftAssert softAssert = new SoftAssert();
-        MockLMDto deleteObject = MockLMDto.builder().build();
 
         // Delete LoadPrograms
         for (Map.Entry<Integer, String> map : programs.entrySet()) {
-            deleteObject.setName(map.getValue().toString());
             ExtractableResponse<?> response = ApiCallHelper.delete("loadPrograms", "/" + map.getKey().toString());
             softAssert.assertTrue(response.statusCode() == 200, "Status code should be 200. Delete copied LoadProgram failed.");
         }
 
         // Delete LoadGroups which have been created for Load Programs
         for (Map.Entry<Integer, String> map : groups.entrySet()) {
-            deleteObject.setName(map.getValue().toString());
-            ExtractableResponse<?> response1 = ApiCallHelper.delete("deleteloadgroup", deleteObject, map.getKey().toString());
+            ExtractableResponse<?> response1 = ApiCallHelper.delete("loadGroups", "/" + map.getKey().toString());
             softAssert.assertTrue(response1.statusCode() == 200, "Status code should be 200. Delete LoadGroup failed.");
         }
 
         // Delete Program Constraints which have been created for Load Programs
         for (Map.Entry<Integer, String> map : constraints.entrySet()) {
-            deleteObject.setName(map.getValue().toString());
-            ExtractableResponse<?> response2 = ApiCallHelper.delete("deleteProgramConstraint",
-                    deleteObject, map.getKey().toString());
+            ExtractableResponse<?> response2 = ApiCallHelper.delete("programConstraints",
+                    "/" + map.getKey().toString());
             softAssert.assertTrue(response2.statusCode() == 200, "Status code should be 200. Delete Program Constraint failed.");
         }
         softAssert.assertAll();

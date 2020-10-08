@@ -13,7 +13,6 @@ import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.model.MockApiError;
-import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
 import com.cannontech.rest.api.loadgroup.request.MockAddressUsage;
@@ -42,10 +41,10 @@ public class ExpresscomLoadGroupApiTest {
     public void loadGroupExpresscom_01_Create(ITestContext context) {
 
         Log.startTestCase("loadGroupExpresscom_01_Create");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         String groupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
         context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
         assertTrue("Group Id should not be Null", groupId != null);
         Log.endTestCase("loadGroupExpresscom_01_Create");
 
@@ -62,7 +61,7 @@ public class ExpresscomLoadGroupApiTest {
 
         Log.info("GroupId of LmGroupExpresscomm created is : " + groupId);
 
-        ExtractableResponse<?> response = ApiCallHelper.get("getloadgroup", groupId);
+        ExtractableResponse<?> response = ApiCallHelper.get("loadGroups", "/" + groupId);
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
         MockLoadGroupExpresscom loadGroupExpresscomResponse = response.as(MockLoadGroupExpresscom.class);
@@ -93,10 +92,10 @@ public class ExpresscomLoadGroupApiTest {
         loadGroup.setKWCapacity(785.0);
         Log.info("Updated Load Group is :" + loadGroup);
 
-        ExtractableResponse<?> response = ApiCallHelper.post("updateloadgroup", loadGroup, groupId);
+        ExtractableResponse<?> response = ApiCallHelper.put("loadGroups", loadGroup, "/" + groupId);
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
-        ExtractableResponse<?> getupdatedLoadGroupExpresscomResponse = ApiCallHelper.get("getloadgroup", groupId);
+        ExtractableResponse<?> getupdatedLoadGroupExpresscomResponse = ApiCallHelper.get("loadGroups", "/" + groupId);
 
         MockLoadGroupExpresscom updatedLoadGroupExpresscomResponse = getupdatedLoadGroupExpresscomResponse
                 .as(MockLoadGroupExpresscom.class);
@@ -120,9 +119,9 @@ public class ExpresscomLoadGroupApiTest {
         MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
                 .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_EXPRESSCOMM)).build();
 
-        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup",
+        ExtractableResponse<?> copyResponse = ApiCallHelper.post("loadGroups",
                 loadGroupCopy,
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+                "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString() + "/copy");
         String copyGroupId = copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
         assertTrue("Group Id should not be Null", copyGroupId != null);
@@ -138,29 +137,23 @@ public class ExpresscomLoadGroupApiTest {
     public void loadGroupExpresscom_05_Delete(ITestContext context) {
 
         String expectedMessage = "Id not found";
-        String grpToDelete = "expresscom_UpdateGrpName";
         Log.startTestCase("loadGroupExpresscom_05_Delete");
 
-        MockLMDto lmDeleteObject = MockLMDto.builder().name(context.getAttribute(grpToDelete).toString()).build();
-        Log.info("Delete Load Group is : " + lmDeleteObject);
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup",
-                lmDeleteObject,
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> response = ApiCallHelper.delete("loadGroups",
+                "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
         // Get request to validate load group is deleted
-        ExtractableResponse<?> getDeletedResponse = ApiCallHelper.get("getloadgroup",
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getDeletedResponse = ApiCallHelper.get("loadGroups",
+                "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue("Status code should be 400", getDeletedResponse.statusCode() == 400);
 
         MockApiError error = getDeletedResponse.as(MockApiError.class);
         assertTrue("Expected error message Should be : " + expectedMessage, expectedMessage.equals(error.getMessage()));
 
         // Delete copy Load group
-        lmDeleteObject = MockLMDto.builder().name(context.getAttribute("expresscom_CopyGrpName").toString()).build();
-        ExtractableResponse<?> deleteCopyResponse = ApiCallHelper.delete("deleteloadgroup",
-                lmDeleteObject,
-                context.getAttribute("expresscom_CopyGrpId").toString());
+        ExtractableResponse<?> deleteCopyResponse = ApiCallHelper.delete("loadGroups",
+               "/" + context.getAttribute("expresscom_CopyGrpId").toString());
         assertTrue("Status code should be 200", deleteCopyResponse.statusCode() == 200);
         Log.endTestCase("loadGroupExpresscom_05_Delete");
     }
@@ -192,7 +185,7 @@ public class ExpresscomLoadGroupApiTest {
         MockLoadGroupExpresscom loadGroup = MockLoadGroupExpresscom.builder()
                 .name("Test_ExpressCom_LoadGroup")
                 .type(MockPaoType.LM_GROUP_EXPRESSCOMM)
-                .routeId(47)
+                .routeId(1)
                 .disableControl(false)
                 .disableGroup(false)
                 .feeder("1000000000000000")
@@ -213,7 +206,7 @@ public class ExpresscomLoadGroupApiTest {
         loadGroup.setUser(Integer.valueOf(user));
         loadGroup.setSubstation(Integer.valueOf(subId));
 
-        ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> response = ApiCallHelper.post("loadGroups", loadGroup);
         Integer statusCode = response.statusCode();
         assertTrue("Status code should be " + expectedStatusCode, expectedStatusCode.equals(statusCode));
 
@@ -233,8 +226,8 @@ public class ExpresscomLoadGroupApiTest {
         MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
                 .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_EXPRESSCOMM)).build();
         loadGroupCopy.setRouteId(LoadGroupHelper.INVALID_ROUTE_ID);
-        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup", loadGroupCopy,
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> copyResponse = ApiCallHelper.post("loadGroups", loadGroupCopy,
+                "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString() + "/copy");
         assertTrue(copyResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(copyResponse, "Validation error"),
                 "Expected message should be - Validation error");

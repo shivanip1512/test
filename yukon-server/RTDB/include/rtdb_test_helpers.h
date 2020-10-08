@@ -15,6 +15,7 @@
 #include "dev_rfnMeter.h"
 #include "dev_rfnCommercial.h"
 #include "dev_rfn_LgyrFocus_al.h"
+#include "dev_rf_BatteryNode.h"
 #include "rte_ccu.h"
 
 #include "test_reader.h"
@@ -461,6 +462,22 @@ struct test_Rfn510flDevice : Cti::Devices::Rfn510flDevice
     }
 };
 
+struct test_RfBatteryNodeDevice : Cti::Devices::RfBatteryNodeDevice
+{
+    test_RfBatteryNodeDevice(std::string& name)
+    {
+        _name = name;
+        setDeviceType(TYPE_RFG301);
+    }
+
+    boost::optional<Messaging::Rfn::RfnGetChannelConfigReplyMessage> channelConfigReplyMsg;
+
+    boost::optional<Messaging::Rfn::RfnGetChannelConfigReplyMessage> readConfigurationFromNM(const RfnIdentifier& rfnId) const override
+    {
+        return channelConfigReplyMsg;
+    }
+};
+
 using namespace std::literals::string_literals;
 
 struct test_DeviceManager : CtiDeviceManager
@@ -502,7 +519,8 @@ struct test_DeviceManager : CtiDeviceManager
         { 123, boost::make_shared<test_Rfn410flDevice>("JIMMY JOHNS GARGANTUAN (123)"s) },
         {  49, boost::make_shared<test_Rfn410flDevice>("JIMMY JOHNS VITO (49)"s) },
         { 499, boost::make_shared<test_Rfn430sl1Device>("JIMMY JOHNS TURKEY TOM (499)"s) },
-        { 500, boost::make_shared<test_Rfn510flDevice>("JIMMY JOHNS ITALIAN NIGHT CLUB (500)"s) } };
+        { 500, boost::make_shared<test_Rfn510flDevice>("JIMMY JOHNS ITALIAN NIGHT CLUB (500)"s) },
+        { 501, boost::make_shared<test_RfBatteryNodeDevice>("JIMMY JOHNS ULTIMATE PORKER (501)"s) } };
 
     Cti::Devices::RfnDeviceSPtr getDeviceByRfnIdentifier(const Cti::RfnIdentifier& rfnId) override
     {
@@ -523,6 +541,10 @@ struct test_DeviceManager : CtiDeviceManager
         {
             return devices[500];
         }
+        if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "ULTIMATE PORKER" } )
+        {
+            return devices[501];
+        }
 
         return nullptr;
     }
@@ -534,13 +556,18 @@ struct test_CtiDeviceCCU : CtiDeviceCCU
     {
         _paObjectID = 12345;
     }
+
+    void setInhibited()
+    {
+        _disableFlag = true;
+    }
 };
 
 struct test_CtiRouteCCU : CtiRouteCCU
 {
-    CtiDeviceSPtr ccu;
+    boost::shared_ptr<test_CtiDeviceCCU> ccu;
 
-    test_CtiRouteCCU() : ccu(new test_CtiDeviceCCU)
+    test_CtiRouteCCU() : ccu(boost::make_shared<test_CtiDeviceCCU>())
     {
         _tblPAO.setID(1234, test_tag);
         setDevicePointer(ccu);

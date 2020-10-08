@@ -87,6 +87,9 @@ public class DeviceConfigurationSummaryController {
     @GetMapping("view")
     public String view(ModelMap model, @DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
                        @DefaultItemsPerPage(value=250) PagingParameters paging, YukonUserContext userContext) {
+        List<LightDeviceConfiguration> configurations = deviceConfigurationDao.getAllConfigsWithDeviceConfigStateEntry();
+        model.addAttribute("configurations", configurations);
+        model.addAttribute("states", StateSelection.values());
         DeviceConfigSummaryFilter filter = new DeviceConfigSummaryFilter();
         //defaults are All Configurations and All Statuses
         filter.setConfigurationIds(new ArrayList<>(Arrays.asList(DEVICE_CONFIG_ASSIGNED_TO_ANY)));
@@ -114,16 +117,13 @@ public class DeviceConfigurationSummaryController {
             filter.getConfigurationIds().add(DEVICE_CONFIG_UNASSIGNED);
         }
         model.addAttribute("filter", filter);
-        return "summary/summary.jsp";
+        return "summary/resultsTable.jsp";
     }
     
     private void prepareModel(ModelMap model, DeviceConfigSummaryFilter filter, SortingParameters sorting, PagingParameters paging, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         DetailSortBy sortBy = DetailSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
-        List<LightDeviceConfiguration> configurations = deviceConfigurationDao.getAllConfigsWithDeviceConfigStateEntry();
-        model.addAttribute("configurations", configurations);
-        model.addAttribute("states", StateSelection.values());
         for (DetailSortBy column : DetailSortBy.values()) {
             String text = accessor.getMessage(column);
             SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());

@@ -1,14 +1,19 @@
 package com.cannontech.web.tools.reports.service;
 
-import java.time.Instant;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.joda.time.Instant;
+
+import com.cannontech.amr.archivedValueExporter.model.AttributeDeserializer;
+import com.cannontech.common.exception.TypeNotSupportedException;
 import com.cannontech.common.i18n.DisplayableEnum;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.util.TimeIntervals;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.user.YukonUserContext;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public interface AggregateIntervalReportService {
 
@@ -18,11 +23,20 @@ public interface AggregateIntervalReportService {
         PARTIAL,
         FIXED_VALUE;
 
-        private final static String keyPrefix = "";
+        private final static String keyPrefix = "yukon.web.modules.tools.aggregateIntervalReport.";
 
         @Override
         public String getFormatKey() {
             return keyPrefix + "missingIntervalData." + name();
+        }
+        
+        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+        public static MissingIntervalData getMissingIntervalData(String missingIntervalDataJsonString) {
+            try {
+                return MissingIntervalData.valueOf(missingIntervalDataJsonString);
+            } catch (IllegalArgumentException e) {
+                throw new TypeNotSupportedException(missingIntervalDataJsonString + " missing interval data is not valid.");
+            }
         }
     }
     
@@ -30,16 +44,25 @@ public interface AggregateIntervalReportService {
         ADD,
         MAX;
 
-        private final static String keyPrefix = "";
+        private final static String keyPrefix = "yukon.web.modules.tools.aggregateIntervalReport.";
 
         @Override
         public String getFormatKey() {
             return keyPrefix + "operation." + name();
         }
+        
+        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+        public static Operation getOperation(String operationJsonString) {
+            try {
+                return Operation.valueOf(operationJsonString);
+            } catch (IllegalArgumentException e) {
+                throw new TypeNotSupportedException(operationJsonString + " operation is not valid.");
+            }
+        }
     }
 
     class AggregateIntervalReportFilter {
-        private List<PaoIdentifier> devices;
+        private List<Integer> devices;
         private String deviceGroup;
         private Attribute attribute;
         private Instant startDate;
@@ -49,6 +72,7 @@ public interface AggregateIntervalReportService {
         private String missingIntervalDataValue;
         private Operation operation;
 
+        @JsonDeserialize(using = AttributeDeserializer.class)
         public Attribute getAttribute() {
             return attribute;
         }
@@ -105,11 +129,11 @@ public interface AggregateIntervalReportService {
             this.operation = operation;
         }
 
-        public List<PaoIdentifier> getDevices() {
+        public List<Integer> getDevices() {
             return devices;
         }
 
-        public void setDevices(List<PaoIdentifier> devices) {
+        public void setDevices(List<Integer> devices) {
             this.devices = devices;
         }
 
@@ -120,12 +144,16 @@ public interface AggregateIntervalReportService {
         public void setMissingIntervalDataValue(String missingIntervalDataValue) {
             this.missingIntervalDataValue = missingIntervalDataValue;
         }
+        
+        @Override    
+        public String toString() {
+            return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                + System.getProperty("line.separator");
+        } 
     }
 
     /**
-     * Returns the list if rows that represent a row in CSV file. The data is formatted and ready to be written to CSV file.
-     * 
-     * @throws NotFoundException - if there is no data to return
+     * Returns the list of rows that represent a row in CSV file. Empty list is returned if no data found.
      */
     List<List<String>> getIntervalDataReport(AggregateIntervalReportFilter filter, YukonUserContext context);
 }

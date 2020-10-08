@@ -342,7 +342,7 @@ public class MacroLoadGroupApiTest {
 		MockMacroLoadGroup macroLoadGroup = MacroLoadGroupHelper.buildMacroLoadGroup(mlgName,
 				List.of(loadGroupToBeAssigned));
 		// get post response
-		ExtractableResponse<?> response = ApiCallHelper.post("saveMacroLoadGroup", macroLoadGroup);
+		ExtractableResponse<?> response = ApiCallHelper.post("macroLoadGroups", macroLoadGroup);
 		// validations
 		Assert.assertTrue(response.statusCode() == 400, "Status code should be 400");
 		Assert.assertTrue(ValidationHelper.validateErrorMessage(response, expectedErrorMsg),
@@ -363,7 +363,7 @@ public class MacroLoadGroupApiTest {
 		MockMacroLoadGroup macroLoadGroup = MacroLoadGroupHelper.buildMacroLoadGroup(mlgName,
 				List.of(loadGroupToBeAssigned));
 		// get post response
-		ExtractableResponse<?> response = ApiCallHelper.post("saveMacroLoadGroup", macroLoadGroup);
+		ExtractableResponse<?> response = ApiCallHelper.post("macroLoadGroups", macroLoadGroup);
 		// validations
 		Assert.assertTrue(response.statusCode() == 422, "Status code should be 422");
 		Assert.assertTrue(ValidationHelper.validateErrorMessage(response, "Validation error"),
@@ -386,7 +386,7 @@ public class MacroLoadGroupApiTest {
 			MockMacroLoadGroup macroLoadGroup = MacroLoadGroupHelper.buildMacroLoadGroup(invaidGrpName,
 					List.of(loadGroupToBeAssigned));
 			// get post response
-			ExtractableResponse<?> response = ApiCallHelper.post("saveMacroLoadGroup", macroLoadGroup);
+			ExtractableResponse<?> response = ApiCallHelper.post("macroLoadGroups", macroLoadGroup);
 			// validations
 			Assert.assertTrue(response.statusCode() == 422, "Status code should be 422");
 			Assert.assertTrue(ValidationHelper.validateFieldError(response, "name", expectedErrorMsg),
@@ -410,7 +410,7 @@ public class MacroLoadGroupApiTest {
 		MockMacroLoadGroup macroLoadGroup = MacroLoadGroupHelper.buildMacroLoadGroup(mlgName,
 				List.of(loadGroupToBeAssigned));
 		// get post response
-		ExtractableResponse<?> response = ApiCallHelper.post("saveMacroLoadGroup", macroLoadGroup);
+		ExtractableResponse<?> response = ApiCallHelper.post("macroLoadGroups", macroLoadGroup);
 		// validations
 		Assert.assertTrue(response.statusCode() == 400, "Status code should be 400");
 		Assert.assertTrue(ValidationHelper.validateErrorMessage(response, expectedErrorMsg),
@@ -433,7 +433,7 @@ public class MacroLoadGroupApiTest {
 		MockMacroLoadGroup macroLoadGroup = MacroLoadGroupHelper.buildMacroLoadGroup(mlgName,
 				List.of(loadGroupToBeAssigned));
 		// get post response
-		ExtractableResponse<?> response = ApiCallHelper.post("saveMacroLoadGroup", macroLoadGroup);
+		ExtractableResponse<?> response = ApiCallHelper.post("macroLoadGroups", macroLoadGroup);
 		// validations
 		Assert.assertTrue(response.statusCode() == 400, "Status code should be 400");
 		Assert.assertTrue(ValidationHelper.validateErrorMessage(response, expectedErrorMsg),
@@ -456,7 +456,7 @@ public class MacroLoadGroupApiTest {
 		MockMacroLoadGroup macroLoadGroup = MacroLoadGroupHelper.buildMacroLoadGroup(mlgName,
 				List.of(loadGroupToBeAssigned));
 		// get post response
-		ExtractableResponse<?> response = ApiCallHelper.post("saveMacroLoadGroup", macroLoadGroup);
+		ExtractableResponse<?> response = ApiCallHelper.post("macroLoadGroups", macroLoadGroup);
 		// validations
 		Assert.assertTrue(response.statusCode() == 400, "Status code should be 400");
 		Assert.assertTrue(ValidationHelper.validateErrorMessage(response, expectedErrorMsg),
@@ -479,7 +479,7 @@ public class MacroLoadGroupApiTest {
 		MockMacroLoadGroup macroLoadGroup = MacroLoadGroupHelper.buildMacroLoadGroup(mlgName,
 				List.of(loadGroupToBeAssigned));
 		// get post response
-		ExtractableResponse<?> response = ApiCallHelper.post("saveMacroLoadGroup", macroLoadGroup);
+		ExtractableResponse<?> response = ApiCallHelper.post("macroLoadGroups", macroLoadGroup);
 		// validations
 		Assert.assertTrue(response.statusCode() == 400, "Status code should be 400");
 		Assert.assertTrue(ValidationHelper.validateErrorMessage(response, expectedErrorMsg),
@@ -592,7 +592,7 @@ public class MacroLoadGroupApiTest {
 		MockMacroLoadGroup macroLoadGroup = MacroLoadGroupHelper.buildMacroLoadGroup(mlgName,
 				List.of(loadGroupToBeAssigned));
 		// get post response
-		ExtractableResponse<?> response = ApiCallHelper.post("saveMacroLoadGroup", macroLoadGroup);
+		ExtractableResponse<?> response = ApiCallHelper.post("macroLoadGroups", macroLoadGroup);
 		// validations
 		Assert.assertTrue(response.statusCode() == 422, "Status code should be 422");
 		Assert.assertTrue(ValidationHelper.validateErrorMessage(response, "Validation error"),
@@ -613,7 +613,7 @@ public class MacroLoadGroupApiTest {
 		MockMacroLoadGroup macroLoadGroup = MacroLoadGroupHelper.buildMacroLoadGroup(mlgName,
 				List.of(loadGroupToBeAssigned, loadGroupToBeAssigned));
 		// get post response
-		ExtractableResponse<?> response = ApiCallHelper.post("saveMacroLoadGroup", macroLoadGroup);
+		ExtractableResponse<?> response = ApiCallHelper.post("macroLoadGroups", macroLoadGroup);
 		// validations
 		Assert.assertTrue(response.statusCode() == 422, "Status code should be 422");
 		Assert.assertTrue(ValidationHelper.validateErrorMessage(response, "Validation error"),

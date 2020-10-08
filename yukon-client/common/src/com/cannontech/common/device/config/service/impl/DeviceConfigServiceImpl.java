@@ -104,9 +104,9 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     private static final BiMap<DeviceRequestType, String> commands = new ImmutableBiMap.Builder<DeviceRequestType, String>()
-            .put(GROUP_DEVICE_CONFIG_VERIFY, "putconfig emetcon install all verify")
+            .put(GROUP_DEVICE_CONFIG_VERIFY, "putconfig install all verify")
             .put(GROUP_DEVICE_CONFIG_READ, "getconfig install all")
-            .put(GROUP_DEVICE_CONFIG_SEND, "putconfig emetcon install all")
+            .put(GROUP_DEVICE_CONFIG_SEND, "putconfig install all")
             .build();
 
     

@@ -53,6 +53,7 @@
 
 #include <boost/regex.hpp>
 #include <boost/bind.hpp>
+#include <boost/algorithm/cxx11/any_of.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/range/adaptor/indirected.hpp>
 #include <boost/range/algorithm/count.hpp>
@@ -678,7 +679,8 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
         {
             if( parse.getCommand() == GetConfigRequest
                 && parse.isKeyValid("install")
-                && ! parse.isKeyValid("verify") )
+                && ! parse.isKeyValid("verify")
+                && ! InMessage.ErrorCode )  //  This is only checking the last groupMessageId for success, but that's the best we have for PLC
             {
                 if( ! devSingle->getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection) )
                 {
@@ -829,10 +831,17 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
                 //  This is the last return message - check to see if it was a get/putconfig install that needs a verify
                 CtiCommandParser parse{ requestParameters.commandString };
 
-                if( (parse.getCommand() == GetConfigRequest ||
-                     parse.getCommand() == PutConfigRequest)
-                    && parse.isKeyValid("install") 
-                    && ! parse.isKeyValid("verify") )
+                if( (parse.getCommand() == GetConfigRequest 
+                        && parse.isKeyValid("install")
+                        && retMsg->Status() == ClientErrors::None)
+                        //  The "getconfig install all" is the Config Notification read in FW 9.0, so it will
+                        //    succeed or fail as a single request.  We can issue a Verify if the read succeeds.
+                        //  If we are not FW 9.0, we suffer from the same shortfall as PLC (see handleInMessageResult near line 682).
+                    || (parse.getCommand() == PutConfigRequest
+                        && parse.isKeyValid("install")
+                        && ! parse.isKeyValid("verify")) )
+                        //  The "putconfig install all" is likely to be an aggregate message, but we can issue a 
+                        //    Verify in all cases, since any mismatch that was not written will still be a mismatch.
                 {
                     auto verifyMsg =
                         makeVerifyMsg(
@@ -1232,6 +1241,18 @@ struct RequestExecuter : Devices::DeviceHandler
             pReq->getConnectionHandle() };
 
         static const auto releaseUniquePtr = [](auto& msg) { return msg.release(); };
+        static const auto setExpectMore = [](auto& msg) { msg->setExpectMore(true); };
+
+        const auto isSameGroupRequest = [pReq = pReq](const std::unique_ptr<CtiRequestMsg>& reqMsg) {
+                return reqMsg
+                    && reqMsg->getConnectionHandle() == pReq->getConnectionHandle()
+                    && reqMsg->UserMessageId() == pReq->UserMessageId();
+            };
+
+        if( boost::algorithm::any_of(requestMsgList, isSameGroupRequest) )
+        {
+            boost::for_each(returnMsgList, setExpectMore);
+        }
 
         boost::insert(retList, retList.end(), returnMsgList  | boost::adaptors::transformed(releaseUniquePtr));
         boost::insert(retList, retList.end(), requestMsgList | boost::adaptors::transformed(releaseUniquePtr));
@@ -1384,19 +1405,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
 
                 _rfnRequestManager.submitRequests(std::move(executer.rfnRequests));
 
-                for( CtiMessage *msg : executer.retList )
-                {
-                    //  smuggle any request messages back out to the scheduler queue
-                    if( msg && msg->isA() == MSG_PCREQUEST )
-                    {
-                        _schedulerQueue.putQueue(msg);
-                    }
-                    else
-                    {
-                        retList.push_back(msg);
-                    }
-                }
-                executer.retList.clear();
+                retList.splice(retList.end(), executer.retList);
 
                 vgList.splice(vgList.end(), executer.vgList);
 
@@ -1452,6 +1461,13 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
+    sendRequests(vgList, retList, outList, pReq->getConnectionHandle());
+
+    return status;
+}
+
+void PilServer::sendRequests(CtiDeviceBase::CtiMessageList& vgList, CtiDeviceBase::CtiMessageList& retList, CtiDeviceBase::OutMessageList& outList, const ConnectionHandle connectionHandle)
+{
     if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
     {
         CTILOG_DEBUG(dout, "Submitting "<< retList.size() <<" CtiReturnMsg objects to client");
@@ -1466,7 +1482,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
             //  Note that this sends all responses to the initial request message's connection -
             //    even if any other return messages were generated by another ExecuteRequest invoked
             //    from the original and have their ConnectionHandle set to 0!
-            CtiServer::ptr_type ptr = findConnectionManager(pReq->getConnectionHandle());
+            CtiServer::ptr_type ptr = findConnectionManager(connectionHandle);
 
             if(ptr)
             {
@@ -1489,9 +1505,14 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
                 delete pcRet;
             }
         }
+        else if( msg->isA() == MSG_PCREQUEST )
+        {
+            //  smuggle any request messages back out to the scheduler queue
+            _schedulerQueue.putQueue(msg);
+        }
         else
         {
-            CTILOG_WARN(dout, "Message was not a CtiReturnMsg:" << msg);
+            CTILOG_WARN(dout, "Message was not a CtiReturnMsg or CtiRequestMsg:" << msg);
 
             delete msg;
         }
@@ -1519,8 +1540,6 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
         VanGoghConnection.WriteConnQue(pVg, CALLSITE);
     }
     vgList.clear();
-
-    return status;
 }
 
 YukonError_t PilServer::executeMulti(const CtiMultiMsg *pMulti)

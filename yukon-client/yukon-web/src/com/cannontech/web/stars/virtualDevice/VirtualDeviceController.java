@@ -28,6 +28,8 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PaginatedResponse;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
+
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -60,6 +62,7 @@ public class VirtualDeviceController {
                                  @DefaultItemsPerPage(value=250) PagingParameters paging, YukonUserContext userContext, 
                                  HttpServletRequest request, FlashScope flash) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        model.addAttribute("virtualMeterType", PaoType.VIRTUAL_METER);
         
         VirtualSortBy sortBy = VirtualSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();

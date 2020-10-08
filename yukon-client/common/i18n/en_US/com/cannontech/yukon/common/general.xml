@@ -166,6 +166,7 @@
 <entry key="yukon.common.hours">Hours</entry>
 <entry key="yukon.common.html">HTML</entry>
 <entry key="yukon.common.instructions">Instructions</entry>
+<entry key="yukon.common.interval">Interval</entry>
 <entry key="yukon.common.invalidCron">Invalid Cron Expression</entry>
 <entry key="yukon.common.ipaddress">IP Address</entry>
 <entry key="yukon.common.inProgress">In Progress</entry>
@@ -195,6 +196,7 @@
 <entry key="yukon.common.meterGroups.MCT">MCT</entry>
 <entry key="yukon.common.meterGroups.RF_MESH">RF Mesh</entry>
 <entry key="yukon.common.meterGroups.ELECTRONIC">Electronic Meters</entry>
+<entry key="yukon.common.meterNumber">Meter Number</entry>
 <entry key="yukon.common.min">Min</entry>
 <entry key="yukon.common.minuteAbbreviation">{0} min</entry>
 <entry key="yukon.common.minutes">Minutes</entry>
@@ -281,6 +283,7 @@
 <entry key="yukon.common.settings">Settings</entry>
 <entry key="yukon.common.serialNumber">Serial Number</entry>
 <entry key="yukon.common.showAll">Show All</entry>
+<entry key="yukon.common.specified">Specified</entry>
 <entry key="yukon.common.status">Status</entry>
 <entry key="yukon.common.start">Start</entry>
 <entry key="yukon.common.stop">Stop</entry>
@@ -293,6 +296,7 @@
 <entry key="yukon.common.thermostat.mode.HEAT">Heat</entry>
 <entry key="yukon.common.thermostat.mode.OFF">Off</entry>
 <entry key="yukon.common.thousandSeparator">,</entry>
+<entry key="yukon.common.time">Time</entry>
 <entry key="yukon.common.timeOffset">Time Offset</entry>
 <entry key="yukon.common.timeOffsetChoose">Choose Time Offset</entry>
 <entry key="yukon.common.timeOffsetMinError">Time Offset must be greater than or equal to {0}</entry>

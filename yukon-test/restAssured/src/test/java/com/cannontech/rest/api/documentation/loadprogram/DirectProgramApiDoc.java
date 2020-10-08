@@ -78,8 +78,8 @@ public class DirectProgramApiDoc {
     @Test
     public void directAssignedLoadGroup_Create(ITestContext context) {
         MockLoadGroupBase loadGroupExpresscom = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_EXPRESSCOMM);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroupExpresscom);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroupExpresscom);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
         List<MockLoadGroupBase> loadGroups = new ArrayList<>();
         Integer loadGroupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID);
         loadGroupExpresscom.setId(loadGroupId);
@@ -93,12 +93,12 @@ public class DirectProgramApiDoc {
     @Test(dependsOnMethods={"directAssignedLoadGroup_Create"})
     public void programConstraint_Create(ITestContext context) {
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("programConstraints", programConstraint);
         Integer constraintId = createResponse.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID);
         context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID, constraintId);
         context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME, programConstraint.getName());
         assertTrue("Constraint Id should not be Null", constraintId != null);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
     }
 
     /**
@@ -263,7 +263,7 @@ public class DirectProgramApiDoc {
     public void directassignedLoadGroup_Delete(ITestContext context) {
         List<MockLoadGroupBase> groups = (List<MockLoadGroupBase>) context.getAttribute("loadGroups");
         groups.forEach(group -> {
-            ExtractableResponse<?> response = ApiCallHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
+            ExtractableResponse<?> response = ApiCallHelper.delete("loadGroups", "/" + group.getId());
             assertTrue("Status code should be 200", response.statusCode() == 200);
         });
     }
@@ -273,10 +273,9 @@ public class DirectProgramApiDoc {
      */
     @Test(dependsOnMethods={"directassignedLoadGroup_Delete"})
     public void programConstraint_Delete(ITestContext context) {
-        ExtractableResponse<?> response = ApiCallHelper.delete((Integer)context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID),
-                                                               (String)context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME),
-                                                               "deleteProgramConstraint");
-        
+        ExtractableResponse<?> response = ApiCallHelper.delete("programConstraints",
+                "/" + (context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID)));
+
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 }

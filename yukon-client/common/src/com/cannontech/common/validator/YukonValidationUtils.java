@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.Instant;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
@@ -353,20 +354,39 @@ public class YukonValidationUtils extends ValidationUtils {
         }
         return false;
     }
-    
+
     /**
-     * Check if fieldValue <= targetValue, if true throw error
-     * @param field - model object name
-     * @param fieldValue - value of field
-     * @param targetValue - value you are testing if fieldValue is greater then
+     * Check if fieldValue <= targetValue
+     * 
+     * @param field           - model object name
+     * @param fieldValue      - value of field
+     * @param targetValue     - value you are testing if fieldValue is greater then
      * @param fieldAllowsNull
      */
     public static void checkIsFieldValueGreaterThenTargetValueInt(String field, Integer fieldValue, int targetValue, Errors errors) {
-        if(fieldValue == null || fieldValue <= targetValue) {
+        if (fieldValue == null || fieldValue <= targetValue) {
             errors.rejectValue(field, "yukon.web.error.notGreaterThanInt", new Object[] { targetValue }, "");
         }
     }
 
+    /**
+     * Check if startDate <= endDate
+     * 
+     * @param startField        - model object name you want to display error for
+     * @param startDate         - Instant value of startDate
+     * @param endDate           - Instant value of endDate
+     * @param includeEqualTo - Can startDate = endDate
+     */
+    public static void checkIfEndDateGreaterThenStartDate(String startField, Instant startDate, Instant endDate,
+            boolean includeEqualTo, Errors errors) {
+        String errorMessage = "yukon.web.error.date.startDateBeforeEndDate";
+        if ((startDate.isEqual(endDate) && !includeEqualTo) || endDate.isBefore(startDate)) {
+            if (includeEqualTo) {
+                errorMessage = "yukon.web.error.date.startDateBeforeOrEqualEndDate";
+            }
+            errors.rejectValue(startField, errorMessage, new Object[] { startDate, endDate }, "");
+        }
+    }
 }
 
 

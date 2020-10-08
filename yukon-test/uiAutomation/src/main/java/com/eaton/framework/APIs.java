@@ -63,4 +63,20 @@ public final class APIs {
         public static final String UPDATE_TREND = "/api/trends/";
         public static final String GET_TREND = "/api/trends/";
     }
+    
+    public static final class VirtualDevice {
+        // Virtual Device URL
+        public static final String CREATE_VIRTUALDEVICE = "/api/device/virtualDevices";
+        public static final String DELETE_VIRTUALDEVICE = "/api/device/virtualDevices/";
+        public static final String UPDATE_VIRTUALDEVICE = "/api/device/virtualDevices/";
+        public static final String GET_VIRTUALDEVICE = "/api/device/virtualDevices/";
+    }
+    
+    public static final class Point {
+    	//Point URL
+    	public static final String CREATE_POINT = "/api/points";
+        public static final String DELETE_POINT = "/api/points/";
+        public static final String UPDATE_POINT = "/api/points/";
+        public static final String GET_POINT = "/api/points/";
+    }
 }

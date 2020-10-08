@@ -279,15 +279,6 @@ public class PointValidator extends SimpleValidator<PointModel> {
                         errors.rejectValue("pointBase.calcComponents[" + index + "].constant", "yukon.web.error.isBlank");
                     }
                 }
-                MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
-                String operand = messageSourceAccessor.getMessage("yukon.web.modules.tools.point.calculation.operand");
-                if (calcComponent.getComponentType().equals(CalcCompType.OPERATION.getCalcCompType())
-                        || calcComponent.getComponentType().equals(CalcCompType.FUNCTION.getCalcCompType())) {
-                    if (!errors.hasFieldErrors("pointBase.calcComponents[" + index + "].componentPointID")) {
-                        YukonValidationUtils.checkIfFieldRequired("pointBase.calcComponents[" + index + "].componentPointID",
-                                errors, calcComponent.getComponentPointID(), operand);
-                    }
-                }
                 index++;
             }
         }

@@ -13,7 +13,6 @@ import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockLMGearDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.constraint.request.MockProgramConstraint;
@@ -47,9 +46,9 @@ public class ControlScenarioApiTest {
         loadProgram_Create();
         assignProgramToControlArea(context);
         MockControlScenario controlScenario = ControlScenarioHelper.buildControlScenario(loadProgram);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlScenario", controlScenario);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlScenarios", controlScenario);
         Integer controlScenarioId = createResponse.path(ControlScenarioHelper.CONTEXT_CONTROL_SCENARIO_ID);
-        assertTrue(createResponse.statusCode() == 200, "Status code should be 200");
+        assertTrue(createResponse.statusCode() == 201, "Status code should be 201");
         assertTrue(controlScenarioId != null, "Control Scenario Id should not be Null");
         context.setAttribute("expectedControlScenario", controlScenario);
         context.setAttribute("controlScenarioId", controlScenarioId);
@@ -65,8 +64,8 @@ public class ControlScenarioApiTest {
         Log.info("Control Scenario Id of Control Scenario is : " + context.getAttribute("controlScenarioId"));
 
         MockControlScenario controlScenario = (MockControlScenario) context.getAttribute("expectedControlScenario");
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("getControlScenario",
-                context.getAttribute("controlScenarioId").toString());
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("controlScenarios",
+                "/" + context.getAttribute("controlScenarioId").toString());
         assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
 
         MockControlScenario controlScenarioGetResponse = getResponse.as(MockControlScenario.class);
@@ -103,12 +102,12 @@ public class ControlScenarioApiTest {
         controlScenario.setName(controlScenarioName);
         controlScenario.getAllPrograms().get(0).setStartOffsetInMinutes(1000);
         context.setAttribute("controlScenarioName", controlScenarioName);
-        ExtractableResponse<?> updatedResponse = ApiCallHelper.post("updateControlScenario",
+        ExtractableResponse<?> updatedResponse = ApiCallHelper.put("controlScenarios",
                 controlScenario,
-                context.getAttribute("controlScenarioId").toString());
+                "/" + context.getAttribute("controlScenarioId").toString());
         assertTrue(updatedResponse.statusCode() == 200, "Status code should be 200");
-        ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("getControlScenario",
-                context.getAttribute("controlScenarioId").toString());
+        ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("controlScenarios",
+                "/" + context.getAttribute("controlScenarioId").toString());
 
         MockControlScenario updatedControlScenarioResponse = getupdatedResponse.as(MockControlScenario.class);
         assertTrue(controlScenarioName.equals(updatedControlScenarioResponse.getName()),
@@ -130,7 +129,7 @@ public class ControlScenarioApiTest {
         MockControlScenario buildControlScenario = ControlScenarioHelper.buildControlScenario(loadProgram);
         MockControlScenario controlScenario = (MockControlScenario) context.getAttribute("expectedControlScenario");
         buildControlScenario.setName(controlScenario.getName());
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlScenario", buildControlScenario);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlScenarios", buildControlScenario);
 
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -159,12 +158,12 @@ public class ControlScenarioApiTest {
         MockLMGearDto gear = MockLMGearDto.builder().gearNumber(gearNumber).build();
         controlScenario.getAllPrograms().get(0).getGears().set(0, gear);
 
-        ExtractableResponse<?> updatedResponse = ApiCallHelper.post("updateControlScenario",
+        ExtractableResponse<?> updatedResponse = ApiCallHelper.put("controlScenarios",
                 controlScenario,
-                context.getAttribute("controlScenarioId").toString());
+                "/" + context.getAttribute("controlScenarioId").toString());
         assertTrue(updatedResponse.statusCode() == 200, "Status code should be 200");
-        ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("getControlScenario",
-                context.getAttribute("controlScenarioId").toString());
+        ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("controlScenarios",
+                "/" + context.getAttribute("controlScenarioId").toString());
 
         MockControlScenario updatedControlScenarioResponse = getupdatedResponse.as(MockControlScenario.class);
         assertTrue(updatedControlScenarioResponse.getAllPrograms().get(0).getGears().get(0).getGearName().equals("TestGear2"),
@@ -178,14 +177,14 @@ public class ControlScenarioApiTest {
     public void controlScenario_06_CreateWithAlreadyAssignedProgramToControlScenario(ITestContext context) {
 
         MockControlScenario controlScenarioWithAssignedProgram = ControlScenarioHelper.buildControlScenario(loadProgram);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlScenario", controlScenarioWithAssignedProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlScenarios", controlScenarioWithAssignedProgram);
         Integer controlScenarioId = createResponse.path(ControlScenarioHelper.CONTEXT_CONTROL_SCENARIO_ID);
-        assertTrue(createResponse.statusCode() == 200, "Status code should be 200");
+        assertTrue(createResponse.statusCode() == 201, "Status code should be 201");
         assertTrue(controlScenarioId != null, "Control Scenario Id should not be Null");
         context.setAttribute("expectedControlScenarioWithAssignedProgram", controlScenarioWithAssignedProgram);
         context.setAttribute("controlScenarioIdWithAssignedProgram", controlScenarioId);
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("getControlScenario",
-                controlScenarioId.toString());
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("controlScenarios", 
+                "/" + controlScenarioId.toString());
         assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
 
         MockControlScenario controlScenarioGetResponse = getResponse.as(MockControlScenario.class);
@@ -204,12 +203,12 @@ public class ControlScenarioApiTest {
         controlScenario.setName(controlScenarioName);
         context.setAttribute("controlScenarioName", controlScenarioName);
         createdControlScenarios.put((Integer) context.getAttribute("controlScenarioId"), controlScenarioName);
-        ExtractableResponse<?> updatedResponse = ApiCallHelper.post("updateControlScenario",
+        ExtractableResponse<?> updatedResponse = ApiCallHelper.put("controlScenarios",
                 controlScenario,
-                context.getAttribute("controlScenarioId").toString());
+                "/" + context.getAttribute("controlScenarioId").toString());
         assertTrue(updatedResponse.statusCode() == 200, "Status code should be 200");
-        ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("getControlScenario",
-                context.getAttribute("controlScenarioId").toString());
+        ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("controlScenarios", 
+                "/" + context.getAttribute("controlScenarioId").toString());
 
         MockControlScenario updatedControlScenarioResponse = getupdatedResponse.as(MockControlScenario.class);
         assertTrue(updatedControlScenarioResponse.getId().equals(context.getAttribute("controlScenarioId")),
@@ -224,24 +223,21 @@ public class ControlScenarioApiTest {
      * controlScenario_06_CreateWithAlreadyAssignedProgramToControlScenario
      * Control Area, Load Program and Load Group used for above mentioned Control Scenario's
      */
-    @Test(dependsOnMethods = "controlScenario_19_UnassigningProgramFromControlScenario")
+    @Test(dependsOnMethods = "controlScenario_21_UpdateWithAlreadyAssignedProgramId")
     public void controlScenario_07_Delete(ITestContext context) {
 
         SoftAssert softAssert = new SoftAssert();
-        MockLMDto deleteObject = MockLMDto.builder().build();
 
         // Delete Control Scenario's
         for (Map.Entry<Integer, String> map : createdControlScenarios.entrySet()) {
-            deleteObject.setName(map.getValue().toString());
-            ExtractableResponse<?> response = ApiCallHelper.delete("deleteControlScenario", deleteObject,
-                    map.getKey().toString());
+            ExtractableResponse<?> response = ApiCallHelper.delete("controlScenarios", "/" + map.getKey().toString());
             softAssert.assertTrue(response.statusCode() == 200, "Status code should be 200, delete Control Scenario failed.");
         }
 
         // Get request to validate Control Scenario's is deleted
         for (Map.Entry<Integer, String> map : createdControlScenarios.entrySet()) {
-            ExtractableResponse<?> getDeletedControlScenarioResponse = ApiCallHelper.get("getControlScenario",
-                    map.getKey().toString());
+            ExtractableResponse<?> getDeletedControlScenarioResponse = ApiCallHelper.get("controlScenarios",
+                    "/" + map.getKey().toString());
             softAssert.assertTrue(getDeletedControlScenarioResponse.statusCode() == 400, "Status code should be 400");
             softAssert.assertTrue(
                     ValidationHelper.validateErrorMessage(getDeletedControlScenarioResponse, "Scenario Id not found"),
@@ -249,27 +245,19 @@ public class ControlScenarioApiTest {
         }
 
         // Delete Control Area
-        deleteObject = MockLMDto.builder().name(context.getAttribute("controlAreaName").toString()).build();
-        Log.info("Delete Control Area is : " + deleteObject);
-        ExtractableResponse<?> deleteAreaResponse = ApiCallHelper.delete("deleteControlArea",
-                deleteObject,
-                context.getAttribute("controlAreaId").toString());
+        ExtractableResponse<?> deleteAreaResponse = ApiCallHelper.delete("controlAreas",
+               "/" +  context.getAttribute("controlAreaId").toString());
         softAssert.assertTrue(deleteAreaResponse.statusCode() == 200, "Status code should be 200, delete Control Area failed.");
 
         // Delete Load Program
-        deleteObject = MockLMDto.builder().name(loadProgram.getName()).build();
-        Log.info("Delete Load Program is : " + deleteObject);
-        ExtractableResponse<?> deleteProgramResponse = ApiCallHelper.delete("deleteLoadProgram",
-                deleteObject,
-                loadProgram.getProgramId().toString());
+        ExtractableResponse<?> deleteProgramResponse = ApiCallHelper.delete("loadPrograms",
+               "/" + loadProgram.getProgramId().toString());
         softAssert.assertTrue(deleteProgramResponse.statusCode() == 200,
                 "Status code should be 200, delete Load Program failed.");
 
         // Delete Load Group
-        deleteObject = MockLMDto.builder().name(loadProgram.getAssignedGroups().get(0).getGroupName()).build();
-        ExtractableResponse<?> deleteGroupResponse = ApiCallHelper.delete("deleteloadgroup",
-                deleteObject,
-                loadProgram.getAssignedGroups().get(0).getGroupId().toString());
+        ExtractableResponse<?> deleteGroupResponse = ApiCallHelper.delete("loadGroups",
+               "/" + loadProgram.getAssignedGroups().get(0).getGroupId().toString());
         softAssert.assertTrue(deleteGroupResponse.statusCode() == 200, "Status code should be 200, delete Load Group failed.");
         softAssert.assertAll();
     }
@@ -281,7 +269,7 @@ public class ControlScenarioApiTest {
     public void controlScenario_08_CreateWithProgramNotAssignedToControlArea(ITestContext context) {
         loadProgram_Create();
         MockControlScenario controlScenario = ControlScenarioHelper.buildControlScenario(loadProgram);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlScenario", controlScenario);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlScenarios", controlScenario);
         assertTrue(createResponse.statusCode() == 400, "Status code should be " + 400);
         assertTrue(createResponse.asString().contains("Program Id not found"),
                 "Program Id not found in Available Programs list or Program Id is not assigned to a Control area.");
@@ -296,7 +284,7 @@ public class ControlScenarioApiTest {
         MockControlScenario controlScenario = ControlScenarioHelper.buildControlScenario(loadProgram);
         controlScenario.getAllPrograms().get(0).setProgramId(null);
         ;
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlScenario", controlScenario);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlScenarios", controlScenario);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -312,7 +300,7 @@ public class ControlScenarioApiTest {
         MockControlScenario controlScenario = ControlScenarioHelper.buildControlScenario(loadProgram);
         controlScenario.getAllPrograms().get(0).setStartOffsetInMinutes(null);
         ;
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlScenario", controlScenario);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlScenarios", controlScenario);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -329,7 +317,7 @@ public class ControlScenarioApiTest {
         MockControlScenario controlScenario = ControlScenarioHelper.buildControlScenario(loadProgram);
         controlScenario.getAllPrograms().get(0).setStartOffsetInMinutes(-1);
         ;
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlScenario", controlScenario);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlScenarios", controlScenario);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -347,7 +335,7 @@ public class ControlScenarioApiTest {
         MockControlScenario controlScenario = ControlScenarioHelper.buildControlScenario(loadProgram);
         controlScenario.getAllPrograms().get(0).setStartOffsetInMinutes(-1);
         ;
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlScenario", controlScenario);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlScenarios", controlScenario);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -365,7 +353,7 @@ public class ControlScenarioApiTest {
         MockControlScenario controlScenario = ControlScenarioHelper.buildControlScenario(loadProgram);
         controlScenario.getAllPrograms().get(0).setStopOffsetInMinutes(null);
         ;
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlScenario", controlScenario);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlScenarios", controlScenario);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -382,7 +370,7 @@ public class ControlScenarioApiTest {
         MockControlScenario controlScenario = ControlScenarioHelper.buildControlScenario(loadProgram);
         controlScenario.getAllPrograms().get(0).setStopOffsetInMinutes(-1);
         ;
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlScenario", controlScenario);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlScenarios", controlScenario);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -400,7 +388,7 @@ public class ControlScenarioApiTest {
         MockControlScenario controlScenario = ControlScenarioHelper.buildControlScenario(loadProgram);
         controlScenario.getAllPrograms().get(0).setStopOffsetInMinutes(-1);
         ;
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlScenario", controlScenario);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlScenarios", controlScenario);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -417,7 +405,7 @@ public class ControlScenarioApiTest {
     public void controlScenario_09_NameAsBlankValidation(ITestContext context) {
 
         MockControlScenario controlScenario = buildControlScenario("");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlScenario", controlScenario);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlScenarios", controlScenario);
 
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -433,14 +421,14 @@ public class ControlScenarioApiTest {
     public void controlScenario_10_NameWithSpecialCharactersValidation(ITestContext context) {
 
         MockControlScenario controlScenario = buildControlScenario("controlScenarioTest_\"Name");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlScenario", controlScenario);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlScenarios", controlScenario);
 
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
         assertTrue(
                 ValidationHelper.validateFieldError(createResponse, "name",
-                        "Cannot be blank or include any of the following characters: / \\ , ' \" |"),
+                        "Name must not contain any of the following characters: / \\ , ' \" |."),
                 "Expected code in response is not correct");
     }
 
@@ -452,7 +440,7 @@ public class ControlScenarioApiTest {
 
         MockControlScenario controlScenario = buildControlScenario(
                 "TestControlScenarioName_MoreThanSixtyCharacter_TestControlScenarioNames");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlScenario", controlScenario);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlScenarios", controlScenario);
 
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -471,11 +459,11 @@ public class ControlScenarioApiTest {
         String expectedErrorMsg = "Duplicate load programs are not allowed, duplicate program ids:";
         MockControlScenario controlScenario = buildControlScenarioWithTwoPrograms(loadProgram, loadProgram);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlScenario", controlScenario);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("controlScenarios", controlScenario);
 
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
-                "Expected message value is 'Validation error'");
+                "Expected message should be - Validation error");
         assertTrue(ValidationHelper.validateGlobalErrors(createResponse, expectedErrorMsg),
                 "Expected Error not found:" + expectedErrorMsg);
     }
@@ -500,12 +488,12 @@ public class ControlScenarioApiTest {
         controlScenario.getAllPrograms().add(1, programDetails);
 
         String expectedErrorMsg = "Duplicate load programs are not allowed, duplicate program ids:";
-        ExtractableResponse<?> updatedResponse = ApiCallHelper.post("updateControlScenario", controlScenario,
-                context.getAttribute("controlScenarioId").toString());
+        ExtractableResponse<?> updatedResponse = ApiCallHelper.put("controlScenarios", controlScenario,
+                "/" + context.getAttribute("controlScenarioId").toString());
 
         assertTrue(updatedResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(updatedResponse, "Validation error"),
-                "Expected message value is 'Validation error'");
+                "Expected message should be - Validation error");
         assertTrue(ValidationHelper.validateGlobalErrors(updatedResponse, expectedErrorMsg),
                 "Expected Error not found:" + expectedErrorMsg);
     }
@@ -517,29 +505,20 @@ public class ControlScenarioApiTest {
     @AfterClass
     public void deleteCreatedProgramAndControlAreaInNegativeValidation(ITestContext context) {
         SoftAssert softAssert = new SoftAssert();
-        MockLMDto deleteObject = MockLMDto.builder().build();
 
         // Delete Control Area
-        deleteObject = MockLMDto.builder().name(context.getAttribute("controlAreaName").toString()).build();
-        Log.info("Delete Control Area is : " + deleteObject);
-        ExtractableResponse<?> deleteAreaResponse = ApiCallHelper.delete("deleteControlArea",
-                deleteObject,
-                context.getAttribute("controlAreaId").toString());
+        ExtractableResponse<?> deleteAreaResponse = ApiCallHelper.delete("controlAreas",
+                "/" + context.getAttribute("controlAreaId").toString());
         softAssert.assertTrue(deleteAreaResponse.statusCode() == 200, "Status code should be 200");
 
         // Delete Load Program
-        deleteObject = MockLMDto.builder().name(loadProgram.getName()).build();
-        Log.info("Delete Load Program is : " + deleteObject);
-        ExtractableResponse<?> deleteProgramResponse = ApiCallHelper.delete("deleteLoadProgram",
-                deleteObject,
-                loadProgram.getProgramId().toString());
+        ExtractableResponse<?> deleteProgramResponse = ApiCallHelper.delete("loadPrograms",
+                "/" + loadProgram.getProgramId().toString());
         softAssert.assertTrue(deleteProgramResponse.statusCode() == 200, "Status code should be 200");
 
         // Delete Load Group
-        deleteObject = MockLMDto.builder().name(loadProgram.getAssignedGroups().get(0).getGroupName()).build();
-        ExtractableResponse<?> deleteGroupResponse = ApiCallHelper.delete("deleteloadgroup",
-                deleteObject,
-                loadProgram.getAssignedGroups().get(0).getGroupId().toString());
+        ExtractableResponse<?> deleteGroupResponse = ApiCallHelper.delete("loadGroups",
+               "/" + loadProgram.getAssignedGroups().get(0).getGroupId().toString());
         softAssert.assertTrue(deleteGroupResponse.statusCode() == 200, "Status code should be 200, delete Load Group failed.");
         softAssert.assertAll();
     }
@@ -601,9 +580,9 @@ public class ControlScenarioApiTest {
     public void assignProgramToControlArea(ITestContext context) {
         MockControlArea controlArea = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD_POINT,
                 loadProgram.getProgramId());
-        ExtractableResponse<?> response = ApiCallHelper.post("saveControlArea", controlArea);
+        ExtractableResponse<?> response = ApiCallHelper.post("controlAreas", controlArea);
         Integer controlAreaId = response.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID);
-        assertTrue(response.statusCode() == 200, "Status code should be 200");
+        assertTrue(response.statusCode() == 201, "Status code should be 201");
         assertTrue(controlAreaId != null, "Control Area Id should not be Null");
         context.setAttribute("controlAreaName", controlArea.getName());
         context.setAttribute("controlAreaId", controlAreaId);
@@ -626,11 +605,11 @@ public class ControlScenarioApiTest {
         loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_ECOBEE_PROGRAM, loadGroups, gearTypes,
                 programConstraint.getId());
         loadProgram.setNotification(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", loadProgram);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadPrograms", loadProgram);
         Integer programId = createResponse.path(LoadProgramSetupHelper.CONTEXT_PROGRAM_ID);
         loadProgram.setProgramId(programId);
 
-        assertTrue(createResponse.statusCode() == 200, "Status code should be 200");
+        assertTrue(createResponse.statusCode() == 201, "Status code should be 201");
         assertTrue(programId != null, "Program Id should not be Null");
 
     }
