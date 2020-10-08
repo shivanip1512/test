@@ -122,7 +122,7 @@ public class VirtualDevicesListPageTests extends SeleniumTestSetup{
         assertThat(names).isEqualTo(namesList);
     }
     
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDevicesList_SortStatusAsc_Correctly() {
         Collections.sort(status, String.CASE_INSENSITIVE_ORDER);
         Collections.reverse(status);
@@ -134,7 +134,7 @@ public class VirtualDevicesListPageTests extends SeleniumTestSetup{
         assertThat(status).isEqualTo(statusList);
     }
     
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDevicesList_SortStatusDesc_Correctly() {
         Collections.sort(status, String.CASE_INSENSITIVE_ORDER);
 
@@ -145,7 +145,7 @@ public class VirtualDevicesListPageTests extends SeleniumTestSetup{
         assertThat(status).isEqualTo(statusList);
     }
     
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDevicesList_NameLink_Correct() {
         WebTableRow row = listPage.getTable().getDataRowByName(devName);
         String link = row.getCellLinkByIndex(0);
