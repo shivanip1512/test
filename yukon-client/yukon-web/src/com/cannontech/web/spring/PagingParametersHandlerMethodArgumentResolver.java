@@ -2,6 +2,7 @@ package com.cannontech.web.spring;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -9,12 +10,15 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.web.spring.parameters.exceptions.InvalidPagingParametersException;
+import com.cannontech.yukon.api.amr.endpoint.ArchivedValuesRequestEndpoint;
 
 public class PagingParametersHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
+    private final static Logger log = YukonLogManager.getLogger(ArchivedValuesRequestEndpoint.class);
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         Class<?> parameterType = parameter.getParameterType();
@@ -51,6 +55,8 @@ public class PagingParametersHandlerMethodArgumentResolver implements HandlerMet
         try {
             itemsPerPage = Integer.valueOf(itemsPerPageString);
         } catch (NumberFormatException e) {
+            log.warn(itemsPerPageString + " is not a valid Integer for Items per page. Setting it to defaule value : "
+                    + CtiUtilities.DEFAULT_ITEMS_PER_PAGE);
             itemsPerPage = CtiUtilities.DEFAULT_ITEMS_PER_PAGE;
         }
 
@@ -71,7 +77,8 @@ public class PagingParametersHandlerMethodArgumentResolver implements HandlerMet
         try {
             pageNumber = Integer.valueOf(pageString);
         } catch (NumberFormatException e) {
-            throw new InvalidPagingParametersException(pageString + " is not a valid Integer for Page Number");
+            log.warn(pageString + " is not a valid Integer for Page Number. Setting it to defaule value : " + CtiUtilities.DEFAULT_ITEMS_PER_PAGE );
+            pageNumber = CtiUtilities.DEFAULT_ITEMS_PER_PAGE;
         }
 
         // Page no should be always greater than 0
