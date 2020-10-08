@@ -72,6 +72,7 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
         editVirtualDeviceModal.getName().setInputValue("Edit " + virtualDevice);
         editVirtualDeviceModal.clickOkAndWaitForModalToClose();
         // Validate success message
+        waitForLoadingSpinner();
         String userMsg = detailPage.getUserMessage();
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
@@ -92,6 +93,7 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
         editVirtualDeviceModal.getName().setInputValue("Edit " + virtualDevice);
         editVirtualDeviceModal.clickOkAndWaitForModalToClose();
         // Validate success message
+        waitForLoadingSpinner();
         String userMsg = detailPage.getUserMessage();
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
