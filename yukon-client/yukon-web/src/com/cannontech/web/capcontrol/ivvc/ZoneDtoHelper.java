@@ -1,6 +1,8 @@
 package com.cannontech.web.capcontrol.ivvc;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -73,6 +75,32 @@ public class ZoneDtoHelper {
         }
         
         return availableZoneTypes;
+    }
+    
+    public List<Zone> getAvailableParentZonesForZone(AbstractZone zoneDto) {
+        List<Zone> parentZones = zoneService.getZonesBySubBusId(zoneDto.getSubstationBusId());
+        ZoneType type = zoneDto.getZoneType();
+        final List<ZoneType> possibleParentZoneTypes = new ArrayList<ZoneType>();
+        if (type == ZoneType.GANG_OPERATED) {
+            //A Gang Operated Zone can only have a Gang Operated Parent
+            possibleParentZoneTypes.add(ZoneType.GANG_OPERATED);
+        } else if (type == ZoneType.THREE_PHASE) {
+            //A 3 Phase Zone can only have a Gang Operated or 3 Phase Parent
+            possibleParentZoneTypes.add(ZoneType.GANG_OPERATED);
+            possibleParentZoneTypes.add(ZoneType.THREE_PHASE);
+        } else if (type == ZoneType.SINGLE_PHASE) {
+            //Single Phase Zones can have all parent zone types
+            possibleParentZoneTypes.add(ZoneType.GANG_OPERATED);
+            possibleParentZoneTypes.add(ZoneType.THREE_PHASE);
+            possibleParentZoneTypes.add(ZoneType.SINGLE_PHASE);
+        }        
+                
+        List<Zone> possibleParentZones = parentZones.stream()
+                .filter(parent -> possibleParentZoneTypes.contains(parent.getZoneType()) 
+                        && parent.getId().intValue() != zoneDto.getZoneId().intValue())
+                .collect(Collectors.toList());
+
+        return possibleParentZones;
     }
     
     public List<Phase> getAvailableChildPhasesFromParentZone(AbstractZone parentZone) {
