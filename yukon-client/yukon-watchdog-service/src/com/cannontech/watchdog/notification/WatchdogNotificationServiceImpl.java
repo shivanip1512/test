@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
@@ -46,6 +48,8 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
     private List<ServiceStatusWatchdog> serviceStatusWatchers;
     private MessageSourceAccessor messageSourceAccessor;
     private DateTime lastNotificationSendTime;
+    private static List<String> sendToEmailIds;
+    private static String sender;
     
     private final List<YukonServices> requiredServicesForSmartNotif = new ArrayList<>(
         Arrays.asList(YukonServices.MESSAGEBROKER, YukonServices.NOTIFICATIONSERVICE, YukonServices.SERVICEMANAGER));
@@ -53,6 +57,8 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
     @PostConstruct
     public void init() {
         messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+        sendToEmailIds = getSubscribedUsersEmailId();
+        sender = globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS);
     }
     
     @Autowired
@@ -62,15 +68,27 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
     
     @Override
     public void sendNotification(SmartNotificationEventType type, List<SmartNotificationEvent> events) {
-        // Get list of stopped services out of those which are required for smart notification (Broker, Service Manager and Notification services)
-        List <YukonServices> stoppedServices = getStoppedServices();
-        // Check If all required services are running for smart notification else send internal notification.
-        if (stoppedServices.isEmpty()) {
-            log.info("Sending events to smart notification framework");
-            smartNotificationEventCreationService.send(type, events);
-        } else {
-            log.info("Sending events to internal notification");
+        // If Database is down, Send internal notification.
+        boolean isDatabaseDisconnected = events.stream()
+                                               .filter(event -> event.getParameters().get("WarningType").toString().equals("YUKON_DATABASE"))
+                                               .findAny()
+                                               .isPresent();
+        if (isDatabaseDisconnected) {
+            List<YukonServices> stoppedServices = new ArrayList<YukonServices>();
+            stoppedServices.add(YukonServices.DATABASE);
             sendInternalNotification(stoppedServices);
+        } else {
+            // Get list of stopped services out of those which are required for smart notification (Broker, Service Manager and
+            // Notification services)
+            List<YukonServices> stoppedServices = getStoppedServices();
+            // Check If all required services are running for smart notification else send internal notification.
+            if (stoppedServices.isEmpty()) {
+                log.info("Sending events to smart notification framework");
+                smartNotificationEventCreationService.send(type, events);
+            } else {
+                log.info("Sending events to internal notification");
+                sendInternalNotification(stoppedServices);
+            }
         }
     }
 
@@ -87,24 +105,35 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
 
     // Create an email for internal notification and add all stopped services names to it.
     private void sendInternalNotification(List<YukonServices> stoppedServices) {
-        if (!shouldSendInternalNotification()) {
+        boolean isDatabaseDisconnected = stoppedServices.stream()
+                                                .filter(service -> service == YukonServices.DATABASE)
+                                                .findAny()
+                                                .isPresent();
+        if (!isDatabaseDisconnected && !shouldSendInternalNotification()) {
             log.info("Not sending any notification now as notification was send at " + lastNotificationSendTime);
         } else {
             try {
-                List<String> sendToEmailIds = getSubscribedUsersEmailId();
-                String subject = messageSourceAccessor.getMessage("yukon.watchdog.notification.subject");
+                String subject = StringUtils.EMPTY;
+                String message = StringUtils.EMPTY;
                 StringBuilder msgBuilder = new StringBuilder();
-                String message = messageSourceAccessor.getMessage("yukon.watchdog.notification.text");
-                msgBuilder.append(message + "\n");
-                // Append all the stopped services names to the email body.
-                for (YukonServices s : stoppedServices) {
-                    msgBuilder.append("\n");
-                    msgBuilder.append(messageSourceAccessor.getMessage("yukon.watchdog.notification." + s.toString()));
+                if (isDatabaseDisconnected) {
+                    subject = messageSourceAccessor.getMessage("yukon.watchdog.db.notification.subject");
+                    message = messageSourceAccessor.getMessage("yukon.watchdog.db.notification.text");
+                    msgBuilder.append(message + "\n");
+                } else {
+                    subject = messageSourceAccessor.getMessage("yukon.watchdog.notification.subject");
+                    message = messageSourceAccessor.getMessage("yukon.watchdog.notification.text");
+                    msgBuilder.append(message + "\n");
+                    // Append all the stopped services names to the email body.
+                    for (YukonServices s : stoppedServices) {
+                        msgBuilder.append("\n");
+                        msgBuilder.append(messageSourceAccessor.getMessage("yukon.watchdog.notification." + s.toString()));
+                    }
+                    msgBuilder.append("\n\nSee " + webserverUrlResolver.getUrlBase());
                 }
-                msgBuilder.append("\n\nSee " + webserverUrlResolver.getUrlBase());
-                String sender = globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS);
-                EmailMessage emailMessage =
-                        EmailMessage.newMessageBccOnly(subject, msgBuilder.toString(), sender, sendToEmailIds);
+                
+                EmailMessage emailMessage = EmailMessage.newMessageBccOnly(subject, msgBuilder.toString(), sender,
+                        sendToEmailIds);
                 emailService.sendMessage(emailMessage);
             } catch (Exception e) {
                 log.error("Watch dog is unable to send Internal Notification " + e);

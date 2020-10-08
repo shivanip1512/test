@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.annotation.PostConstruct;
 import javax.mail.Authenticator;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
@@ -33,6 +34,17 @@ public class EmailServiceImpl implements EmailService {
 
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private SmtpHelper configurationSource;
+
+    private static SmtpEncryptionType encryptionType;
+    private static String username;
+    private static String password;
+
+    @PostConstruct
+    public void init() {
+        encryptionType = globalSettingDao.getEnum(GlobalSettingType.SMTP_ENCRYPTION_TYPE, SmtpEncryptionType.class);
+        username = globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME);
+        password = globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD);
+    }
 
     @Override
     public void sendMessage(EmailMessage data) throws MessagingException {
@@ -80,7 +92,6 @@ public class EmailServiceImpl implements EmailService {
         SmtpAuthenticator authenticator = new SmtpAuthenticator();
         PasswordAuthentication authentication = authenticator.getPasswordAuthentication();
         Transport transport = null;
-        SmtpEncryptionType encryptionType = globalSettingDao.getEnum(GlobalSettingType.SMTP_ENCRYPTION_TYPE, SmtpEncryptionType.class);
         transport = session.getTransport(encryptionType.getProtocol());
         try {
             if (authentication != null) {
@@ -140,9 +151,7 @@ public class EmailServiceImpl implements EmailService {
         private PasswordAuthentication authentication = null;
         
         public SmtpAuthenticator() {
-            String username = globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME);
-            String password = globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD);
-            
+
             if (!StringUtils.isBlank(username) && !StringUtils.isBlank(password)) {
                 log.debug("SMTP username and password");
                 authentication = new PasswordAuthentication(username, password);
