@@ -43,6 +43,19 @@ yukon.assets.virtualDevice = (function () {
                 });
             });
             
+            $(document).on('change', '.js-type', function () {
+                var type = $(this).children('option:selected').val(),
+                    popup = $(this).closest('.ui-dialog-content'),
+                    name = popup.find('#name').val();
+                $.ajax({
+                    url: yukon.url('/widget/virtualDeviceInfoWidget/create/' + type),
+                    type: 'get',
+                    data: {name: name}
+                }).done(function(data) {
+                     popup.html(data);
+               });
+            });
+            
             _initialized = true;
         }
  
