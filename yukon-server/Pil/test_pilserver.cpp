@@ -48,24 +48,40 @@ struct Test_PilServer : Cti::Pil::PilServer
         return {};
     }
 
-    boost::ptr_vector<CtiMessage> vgList, retList;
+    std::vector<std::unique_ptr<CtiMessage>> vgList, retList;
+    std::vector<std::unique_ptr<OUTMESS>> outList;
 
     void sendResults(CtiDeviceBase::CtiMessageList &vgList_, CtiDeviceBase::CtiMessageList &retList_, const int priority, Cti::ConnectionHandle connectionHandle) override
     {
-        for( CtiMessage *msg : vgList_ )
+        for( auto msg : vgList_ )
         {
-            vgList.push_back(msg);
+            vgList.emplace_back(msg);
         }
 
-        for( CtiMessage *msg : retList_ )
+        for( auto msg : retList_ )
         {
-            retList.push_back(msg);
+            retList.emplace_back(msg);
+        }
+    }
+
+    void sendRequests(CtiDeviceBase::CtiMessageList& vgList_, CtiDeviceBase::CtiMessageList& retList_, CtiDeviceBase::OutMessageList& outList_, Cti::ConnectionHandle connectionHandle) override
+    {
+        for( auto msg : vgList_ )
+        {
+            vgList.emplace_back(msg);
+        }
+
+        for( auto msg : retList_ )
+        {
+            retList.emplace_back(msg);
+        }
+
+        for( auto msg : outList_ )
+        {
+            outList.emplace_back(msg);
         }
     }
 };
-
-
-
 
 struct pilEnvironment
 {
@@ -113,13 +129,69 @@ BOOST_AUTO_TEST_CASE(test_handleRfnDeviceResult)
     BOOST_REQUIRE_EQUAL(1, pilServer.retList.size());
 
     {
-        CtiReturnMsg &retMsg = dynamic_cast<CtiReturnMsg &>(pilServer.retList.front());
+        auto retMsg = dynamic_cast<CtiReturnMsg*>(pilServer.retList.front().get());
 
-        BOOST_CHECK_EQUAL(retMsg.ResultString(), "This was a triumph. I'm making a note here: HUGE SUCCESS.");
-        BOOST_CHECK(retMsg.ExpectMore());
+        BOOST_REQUIRE(retMsg);
+
+        BOOST_CHECK_EQUAL(retMsg->ResultString(), "This was a triumph. I'm making a note here: HUGE SUCCESS.");
+        BOOST_CHECK(retMsg->ExpectMore());
     }
 
     BOOST_CHECK_EQUAL(1, devSingle->getGroupMessageCount(11235, handle));
+}
+
+
+BOOST_AUTO_TEST_CASE(test_rfnExpectMore)
+{
+    Test_PilServer pilServer;
+
+    constexpr auto DeviceId = 501;
+    constexpr auto UserMessageId = 11235;
+    const Cti::ConnectionHandle handle { 55441 };
+
+    auto dev = pilServer.dev_mgr.getDeviceByID(DeviceId);
+
+    BOOST_REQUIRE(dev);
+
+    auto devRfBatteryNode = dynamic_cast<Cti::Test::test_RfBatteryNodeDevice*>(dev.get());
+
+    BOOST_REQUIRE(devRfBatteryNode);
+
+    Cti::Messaging::Rfn::RfnGetChannelConfigReplyMessage msg;
+    msg.rfnIdentifier.manufacturer = "Croctober";
+    msg.rfnIdentifier.model = "7";
+    msg.rfnIdentifier.serialNumber = "2020";
+    msg.replyCode = Cti::Messaging::Rfn::RfnGetChannelConfigReplyMessage::SUCCESS;
+    msg.recordingInterval = 60;
+    msg.reportingInterval = 360;
+
+    devRfBatteryNode->channelConfigReplyMsg = msg;
+
+    CtiRequestMsg reqMsg(DeviceId, "getconfig install all", UserMessageId);
+    reqMsg.setConnectionHandle(handle);
+    reqMsg.setSOE(97);  //  prevents us from attempting DB access by calling SystemLogIdGen()
+
+    pilServer.executeRequest(&reqMsg);
+
+    BOOST_REQUIRE_EQUAL(2, pilServer.retList.size());
+    auto retList_itr = pilServer.retList.cbegin();
+
+    {
+        auto retMsg = dynamic_cast<const CtiReturnMsg*>(retList_itr++->get());
+
+        BOOST_REQUIRE(retMsg);
+
+        BOOST_CHECK(retMsg->ExpectMore());
+    }
+    {
+        auto reqMsg = dynamic_cast<const CtiRequestMsg*>(retList_itr++->get());
+
+        BOOST_REQUIRE(reqMsg);
+
+        BOOST_CHECK_EQUAL(reqMsg->CommandString(), "putconfig install all verify");
+        BOOST_CHECK(reqMsg->getConnectionHandle(), handle);
+        BOOST_CHECK(reqMsg->UserMessageId(), UserMessageId);
+    }
 }
 
 
