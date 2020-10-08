@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.assertj.core.api.SoftAssertions;
 import org.javatuples.Pair;
 import org.json.JSONObject;
+import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -62,7 +63,7 @@ public class VirtualDevicesListPageTests extends SeleniumTestSetup{
         setRefreshPage(false);
     }
     
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS  })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS  })
     public void virtualDevicesList_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Virtual Devices";
 
@@ -71,7 +72,7 @@ public class VirtualDevicesListPageTests extends SeleniumTestSetup{
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS  })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS  })
     public void virtualDevicesList_ColumnHeaders_Correct() {
         SoftAssertions softly = new SoftAssertions();
         final int EXPECTED_COUNT = 2;
@@ -86,7 +87,7 @@ public class VirtualDevicesListPageTests extends SeleniumTestSetup{
         softly.assertAll();
     }
     
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS})
     public void virtualDevicesList_Create_OpensCorrectModal() {
         final String EXPECTED_TITLE = "Create Virtual Device";
         setRefreshPage(true);
@@ -97,32 +98,34 @@ public class VirtualDevicesListPageTests extends SeleniumTestSetup{
         assertThat(actualModalTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    /*    Disabling this test as a defect is raised for incorrect sorting order (YUK-22982)*/
-    @Test(enabled = false, groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    /*    Skipping this test as a defect is raised for incorrect sorting order (YUK-22982)*/
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesList_SortNamesAsc_Correctly() {
-        Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
-
-        navigate(Urls.Assets.VIRTUAL_DEVICES_NAME_ASC);
-
-        List<String> namesList = listPage.getTable().getDataRowsTextByCellIndex(1);
-
-        assertThat(names).isEqualTo(namesList);
+        throw new SkipException("Development Defect: YUK-22982");
+//        Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
+//
+//        navigate(Urls.Assets.VIRTUAL_DEVICES_NAME_ASC);
+//
+//        List<String> namesList = listPage.getTable().getDataRowsTextByCellIndex(1);
+//
+//        assertThat(names).isEqualTo(namesList);
     }
     
-    /*    Disabling this test as a defect is raised for incorrect sorting order (YUK-22982)*/
-    @Test(enabled = false, groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    /*    Skipping this test as a defect is raised for incorrect sorting order (YUK-22982)*/
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesList_SortNamesDesc_Correctly() {
-        Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
-        Collections.reverse(names);
-
-        navigate(Urls.Assets.VIRTUAL_DEVICES_NAME_DESC);
-
-        List<String> namesList = listPage.getTable().getDataRowsTextByCellIndex(1);
-
-        assertThat(names).isEqualTo(namesList);
+        throw new SkipException("Development Defect: YUK-22982");
+//        Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
+//        Collections.reverse(names);
+//
+//        navigate(Urls.Assets.VIRTUAL_DEVICES_NAME_DESC);
+//
+//        List<String> namesList = listPage.getTable().getDataRowsTextByCellIndex(1);
+//
+//        assertThat(names).isEqualTo(namesList);
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesList_SortStatusAsc_Correctly() {
         Collections.sort(status, String.CASE_INSENSITIVE_ORDER);
         Collections.reverse(status);
@@ -134,7 +137,7 @@ public class VirtualDevicesListPageTests extends SeleniumTestSetup{
         assertThat(status).isEqualTo(statusList);
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesList_SortStatusDesc_Correctly() {
         Collections.sort(status, String.CASE_INSENSITIVE_ORDER);
 
@@ -145,7 +148,7 @@ public class VirtualDevicesListPageTests extends SeleniumTestSetup{
         assertThat(status).isEqualTo(statusList);
     }
     
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesList_NameLink_Correct() {
         WebTableRow row = listPage.getTable().getDataRowByName(devName);
         String link = row.getCellLinkByIndex(0);
