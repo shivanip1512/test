@@ -5720,15 +5720,15 @@ JavaScript :
     notes : 
 
   - project : spectrum
-    version : 1.8.0
+    version : 1.8.1
     project URL : "https://github.com/bgrins/spectrum"
     license : MIT
     license URLs : "https://github.com/bgrins/spectrum/blob/master/LICENSE"
     npm URL : "https://www.npmjs.com/package/spectrum-colorpicker"
-    md5 : b623be7db1bfa95379c323c95a991c43
-    sha1 : c7071fb0b10b25ec6315e36f3c25e39a713cf917
-    jira : YUK-21527
-    updated : 2020-03-11
+    md5 : 1035f8affb61bfbbbc029c1a50a4c2b5
+    sha1 : ef387b68a9279576299eb6d224a45f1955af21ce
+    jira : YUK-22998
+    updated : 2020-10-07
     notes : This library is used for selecting colors in Themes for Yukon.
 
   - project : time-picker
