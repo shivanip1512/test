@@ -32,8 +32,9 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
         Pair<JSONObject, JSONObject> pair = new VirtualDeviceCreateBuilder.Builder(Optional.empty())
                 .withEnable(Optional.of(true)).create();
-        virtualDeviceId = (Integer) pair.getValue1().get("id");
-        virtualDeviceName = (String) pair.getValue1().get("name");
+        virtualDeviceId = pair.getValue1().getInt("id");
+        virtualDeviceName = pair.getValue1().getString("name");
+        navigate(Urls.Assets.VIRTUAL_DEVICES_EDIT + "/" + virtualDeviceId); 
         detailPage = new VirtualDevicesDetailPage(driverExt, virtualDeviceId);
     }
 
@@ -45,8 +46,6 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDeviceEdit_FieldValues_Correct() {
         SoftAssertions softly = new SoftAssertions();
-        // Navigate to virtual device detail page
-        navigate(Urls.Assets.VIRTUAL_DEVICES_EDIT + "/" + virtualDeviceId);
         // Click edit button and waits Edit virtual device modal to open
         EditVirtualDeviceModal editVirtualDeviceModal = detailPage.showAndWaitEditVirtualDeviceModal();
         // Validations for Modal Title Virtual device name and Status
@@ -58,58 +57,48 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDeviceEdit_AllFieldsEnabled_Success() {
-        SoftAssertions softly = new SoftAssertions();
         // Create disabled virtual device via API
         Pair<JSONObject, JSONObject> pair = new VirtualDeviceCreateBuilder.Builder(Optional.empty())
                 .withEnable(Optional.of(false)).create();
-        int id = (Integer) pair.getValue1().get("id");
-        String virtualDevice = (String) pair.getValue1().get("name");
+        int id = pair.getValue1().getInt("id");
+        String virtualDevice = pair.getValue1().getString("name");
         String EXPECTED_MSG = "Edit " + virtualDevice + " saved successfully.";
 
         // Navigate to Virtual Device page
         navigate(Urls.Assets.VIRTUAL_DEVICES_EDIT + "/" + id);
         EditVirtualDeviceModal editVirtualDeviceModal = detailPage.showAndWaitEditVirtualDeviceModal();
-        // Validate that virtual device has the status as disabled
-        softly.assertThat(editVirtualDeviceModal.getStatus().getCheckedValue()).isEqualTo("Disabled");
         // Change the status and Name of virtual device
         editVirtualDeviceModal.getStatus().selectValue("Enabled");
         editVirtualDeviceModal.getName().setInputValue("Edit " + virtualDevice);
         editVirtualDeviceModal.clickOkAndWaitForModalToClose();
         // Validate success message
         String userMsg = detailPage.getUserMessage();
-        softly.assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-        softly.assertAll();
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDeviceEdit_AllFieldsDisabled_Success() {
-        SoftAssertions softly = new SoftAssertions();
         // Create disabled virtual device via API
         Pair<JSONObject, JSONObject> pair = new VirtualDeviceCreateBuilder.Builder(Optional.empty())
                 .withEnable(Optional.of(true)).create();
-        int id = (Integer) pair.getValue1().get("id");
-        String virtualDevice = (String) pair.getValue1().get("name");
+        int id = pair.getValue1().getInt("id");
+        String virtualDevice = pair.getValue1().getString("name");
         String EXPECTED_MSG = "Edit " + virtualDevice + " saved successfully.";
         // Navigate to Virtual Device page
         navigate(Urls.Assets.VIRTUAL_DEVICES_EDIT + "/" + id);
         EditVirtualDeviceModal editVirtualDeviceModal = detailPage.showAndWaitEditVirtualDeviceModal();
-        // Validate that virtual device has the status as Enabled
-        softly.assertThat(editVirtualDeviceModal.getStatus().getCheckedValue()).isEqualTo("Enabled");
         // Change the status and Name of virtual device and
         editVirtualDeviceModal.getStatus().selectValue("Disabled");
         editVirtualDeviceModal.getName().setInputValue("Edit " + virtualDevice);
         editVirtualDeviceModal.clickOkAndWaitForModalToClose();
         // Validate success message
         String userMsg = detailPage.getUserMessage();
-        softly.assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-        softly.assertAll();
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDevicesEdit_Labels_Correct() {
         SoftAssertions softly = new SoftAssertions();
-        // Navigate to Virtual Device edit modal
-        navigate(Urls.Assets.VIRTUAL_DEVICES_EDIT + "/" + virtualDeviceId);
         EditVirtualDeviceModal editVirtualDeviceModal = detailPage.showAndWaitEditVirtualDeviceModal();
         // Validate the Labels are correct
         List<String> labels = editVirtualDeviceModal.getFieldLabels();
@@ -122,8 +111,6 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDevicesEdit_Name_RequiredValidation() {
         final String EXPECTED_MSG = "Name is required.";
-        // Navigate to Virtual Device edit modal
-        navigate(Urls.Assets.VIRTUAL_DEVICES_EDIT + "/" + virtualDeviceId);
         EditVirtualDeviceModal editVirtualDeviceModal = detailPage.showAndWaitEditVirtualDeviceModal();
         editVirtualDeviceModal.getName().setInputValue("");
         editVirtualDeviceModal.clickOk();
@@ -135,7 +122,6 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
     public void virtualDevicesEdit_Name_InvalidCharValidation() {
         String name = "AT Virtual Devices " + "/ \\ , ' \" |";
         final String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
-        navigate(Urls.Assets.VIRTUAL_DEVICES_EDIT + "/" + virtualDeviceId);
         EditVirtualDeviceModal editVirtualDeviceModal = detailPage.showAndWaitEditVirtualDeviceModal();
         editVirtualDeviceModal.getName().setInputValue(name);
         editVirtualDeviceModal.clickOk();
@@ -148,8 +134,7 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = "Name already exists";
         Pair<JSONObject, JSONObject> pair = new VirtualDeviceCreateBuilder.Builder(Optional.empty())
                 .withEnable(Optional.of(true)).create();
-        String virtualDeviceName = (String) pair.getValue1().get("name");
-        navigate(Urls.Assets.VIRTUAL_DEVICES_EDIT + "/" + virtualDeviceId);
+        String virtualDeviceName = pair.getValue1().getString("name");
         EditVirtualDeviceModal editVirtualDeviceModal = detailPage.showAndWaitEditVirtualDeviceModal();
 
         editVirtualDeviceModal.getName().setInputValue(virtualDeviceName);
@@ -160,7 +145,6 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDevicesEdit_Name_MaxLength60Validation() {
-        navigate(Urls.Assets.VIRTUAL_DEVICES_EDIT + "/" + virtualDeviceId);
         EditVirtualDeviceModal editVirtualDeviceModal = detailPage.showAndWaitEditVirtualDeviceModal();
         assertThat(editVirtualDeviceModal.getName().getMaxLength()).isEqualTo("60");
     }

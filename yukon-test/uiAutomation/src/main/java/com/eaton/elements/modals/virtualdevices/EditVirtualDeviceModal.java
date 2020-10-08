@@ -10,12 +10,14 @@ import com.eaton.framework.DriverExtensions;
 public class EditVirtualDeviceModal extends BaseModal {
     
     private TextEditElement name;
+    private SwitchBtnYesNoElement switchBtnYesNoElement;
 
-    protected static final String ARIADESCRIBEDBY = "js-edit-virtual-device-popup";
+    //protected static final String ARIA_DESCRIBED_BY = "js-edit-virtual-device-popup";
     
     public EditVirtualDeviceModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
         super(driverExt, modalTitle, describedBy);
-        name = new TextEditElement(this.driverExt, "name", ARIADESCRIBEDBY);
+        this.name = new TextEditElement(this.driverExt, "name",getModal() );
+        this.switchBtnYesNoElement = new SwitchBtnYesNoElement(this.driverExt, "enable", getModal());
     }
 
     public TextEditElement getName() {
@@ -23,6 +25,6 @@ public class EditVirtualDeviceModal extends BaseModal {
     }        
     
     public SwitchBtnYesNoElement getStatus() {
-        return new SwitchBtnYesNoElement(this.driverExt, "enable", getModal());
+        return switchBtnYesNoElement;
     }
 }

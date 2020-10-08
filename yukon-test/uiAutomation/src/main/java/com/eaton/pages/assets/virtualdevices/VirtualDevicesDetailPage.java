@@ -1,11 +1,7 @@
 package com.eaton.pages.assets.virtualdevices;
 
 import java.util.Optional;
-
-import com.eaton.elements.ActionBtnDropDownElement;
 import com.eaton.elements.Button;
-import com.eaton.elements.WebTable;
-import com.eaton.elements.modals.virtualdevices.CreateVirtualDeviceModal;
 import com.eaton.elements.modals.virtualdevices.EditVirtualDeviceModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
