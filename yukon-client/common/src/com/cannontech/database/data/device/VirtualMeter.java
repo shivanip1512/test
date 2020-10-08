@@ -54,6 +54,12 @@ public class VirtualMeter extends VirtualBase implements IDeviceMeterGroup {
         super.update();
         getDeviceMeterGroup().update();
     }
+    
+    @Override
+    public void retrieve() throws SQLException {
+        super.retrieve();
+        getDeviceMeterGroup().retrieve();
+    }
 
     @Override
     public DeviceMeterGroup getDeviceMeterGroup() {
