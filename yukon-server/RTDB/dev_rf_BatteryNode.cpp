@@ -1,7 +1,6 @@
 #include "precompiled.h"
 
 #include "dev_rf_BatteryNode.h"
-#include "RfnWaterNodeMessaging.h"
 
 #include "config_data_rfn.h"
 #include "config_helpers.h"
@@ -91,7 +90,7 @@ YukonError_t processChannelConfigReply( const Cti::Messaging::Rfn::RfnSetChannel
     return mapFindOrDefault( replyCodeToYukonError, reply.replyCode, ClientErrors::E2eErrorUnmapped ); 
 }
 
-boost::optional<Messaging::Rfn::RfnGetChannelConfigReplyMessage> readConfigurationFromNM( const RfnIdentifier & rfnId )
+boost::optional<Messaging::Rfn::RfnGetChannelConfigReplyMessage> RfBatteryNodeDevice::readConfigurationFromNM( const RfnIdentifier & rfnId ) const
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::Rfn;
