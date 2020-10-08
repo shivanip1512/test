@@ -73,6 +73,7 @@ protected:
 
    using RequestQueue = std::deque<std::unique_ptr<CtiRequestMsg>>;
 
+   virtual void sendRequests(CtiDeviceBase::CtiMessageList& vgList, CtiDeviceBase::CtiMessageList& retList, CtiDeviceBase::OutMessageList& outList, const ConnectionHandle connectionHandle);
    virtual void sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase::CtiMessageList &retList, const int priority, const ConnectionHandle connectionHandle);
 
    virtual std::vector<long> getDeviceGroupMembers( std::string groupname ) const;
