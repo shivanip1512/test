@@ -9,7 +9,11 @@ import java.util.UUID;
 import org.javatuples.Pair;
 import org.json.JSONObject;
 
+import com.eaton.builders.admin.attributes.AttributeAsgmtTypes;
+import com.eaton.builders.admin.attributes.AttributeService;
 import com.eaton.builders.tools.points.PointCreateService;
+import com.eaton.framework.SeleniumTestSetup;
+import com.github.javafaker.Faker;
 
 public class VirtualDeviceCreateService {
 
@@ -26,7 +30,7 @@ public class VirtualDeviceCreateService {
         JSONObject response = virtualDevicePair.getValue1();
         Integer paoId = response.getInt("id");
 
-        Pair<JSONObject, JSONObject> pointPair = PointCreateService.buildAndCreateAnalogPointOnlyRequiredFields(paoId, Optional.empty());
+        Pair<JSONObject, JSONObject> pointPair = PointCreateService.buildAndCreateAnalogPointOnlyRequiredFields(paoId, Optional.empty(), Optional.empty());
 
         hmap.put("VirtualDevice", virtualDevicePair);
         hmap.put("AnalogPoint", pointPair);
@@ -42,7 +46,7 @@ public class VirtualDeviceCreateService {
         JSONObject response = virtualDevicePair.getValue1();
         Integer paoId = response.getInt("id");
 
-        Pair<JSONObject, JSONObject> pointPair = PointCreateService.buildAndCreateStatusPointOnlyRequiredFields(paoId, Optional.empty());
+        Pair<JSONObject, JSONObject> pointPair = PointCreateService.buildAndCreateStatusPointOnlyRequiredFields(paoId, Optional.empty(), Optional.empty());
 
         hmap.put("VirtualDevice", virtualDevicePair);
         hmap.put("StatusPoint", pointPair);
@@ -58,7 +62,7 @@ public class VirtualDeviceCreateService {
         JSONObject response = virtualDevicePair.getValue1();
         Integer paoId = response.getInt("id");
 
-        Pair<JSONObject, JSONObject> pointPair = PointCreateService.buildAndCreateCalcAnalogPointOnlyRequiredFields(paoId, Optional.empty());
+        Pair<JSONObject, JSONObject> pointPair = PointCreateService.buildAndCreateCalcAnalogPointOnlyRequiredFields(paoId, Optional.empty(), Optional.empty());
 
         hmap.put("VirtualDevice", virtualDevicePair);
         hmap.put("CalcAnalogPoint", pointPair);
@@ -74,7 +78,7 @@ public class VirtualDeviceCreateService {
         JSONObject response = virtualDevicePair.getValue1();
         Integer paoId = response.getInt("id");
 
-        Pair<JSONObject, JSONObject> pointPair = PointCreateService.buildAndCreateCalcStatusPointOnlyRequiredFields(paoId, Optional.empty());
+        Pair<JSONObject, JSONObject> pointPair = PointCreateService.buildAndCreateCalcStatusPointOnlyRequiredFields(paoId, Optional.empty(), Optional.empty());
 
         hmap.put("VirtualDevice", virtualDevicePair);
         hmap.put("CalcStatusPoint", pointPair);
@@ -90,7 +94,7 @@ public class VirtualDeviceCreateService {
         JSONObject response = virtualDevicePair.getValue1();
         Integer paoId = response.getInt("id");
 
-        Pair<JSONObject, JSONObject> pointPair = PointCreateService.buildAndCreatePulseAccumulatorPointOnlyRequiredFields(paoId, Optional.empty());
+        Pair<JSONObject, JSONObject> pointPair = PointCreateService.buildAndCreatePulseAccumulatorPointOnlyRequiredFields(paoId, Optional.empty(), Optional.empty());
 
         hmap.put("VirtualDevice", virtualDevicePair);
         hmap.put("PulseAccumulatorPoint", pointPair);
@@ -106,7 +110,7 @@ public class VirtualDeviceCreateService {
         JSONObject response = virtualDevicePair.getValue1();
         Integer paoId = response.getInt("id");
 
-        Pair<JSONObject, JSONObject> pointPair = PointCreateService.buildAndCreateDemandAccumulatorPointOnlyRequiredFields(paoId, Optional.empty());
+        Pair<JSONObject, JSONObject> pointPair = PointCreateService.buildAndCreateDemandAccumulatorPointOnlyRequiredFields(paoId, Optional.empty(), Optional.empty());
 
         hmap.put("VirtualDevice", virtualDevicePair);
         hmap.put("DemandAccumulatorPoint", pointPair);
@@ -122,12 +126,12 @@ public class VirtualDeviceCreateService {
         JSONObject response = virtualDevicePair.getValue1();
         Integer paoId = response.getInt("id");
 
-        Pair<JSONObject, JSONObject> analogPointPair = PointCreateService.buildAndCreateAnalogPointOnlyRequiredFields(paoId, Optional.empty());
-        Pair<JSONObject, JSONObject> statusPointPair = PointCreateService.buildAndCreateStatusPointOnlyRequiredFields(paoId, Optional.empty());
-        Pair<JSONObject, JSONObject> calcAnalogPointPair = PointCreateService.buildAndCreateCalcAnalogPointOnlyRequiredFields(paoId, Optional.empty());
-        Pair<JSONObject, JSONObject> calcStatusPointPair = PointCreateService.buildAndCreateCalcStatusPointOnlyRequiredFields(paoId, Optional.empty());
-        Pair<JSONObject, JSONObject> pulseAccumulatorPointPair = PointCreateService.buildAndCreatePulseAccumulatorPointOnlyRequiredFields(paoId, Optional.empty());
-        Pair<JSONObject, JSONObject> demandAccumulatorPointPair = PointCreateService.buildAndCreateDemandAccumulatorPointOnlyRequiredFields(paoId, Optional.empty());
+        Pair<JSONObject, JSONObject> analogPointPair = PointCreateService.buildAndCreateAnalogPointOnlyRequiredFields(paoId, Optional.empty(), Optional.empty());
+        Pair<JSONObject, JSONObject> statusPointPair = PointCreateService.buildAndCreateStatusPointOnlyRequiredFields(paoId, Optional.empty(), Optional.empty());
+        Pair<JSONObject, JSONObject> calcAnalogPointPair = PointCreateService.buildAndCreateCalcAnalogPointOnlyRequiredFields(paoId, Optional.empty(), Optional.empty());
+        Pair<JSONObject, JSONObject> calcStatusPointPair = PointCreateService.buildAndCreateCalcStatusPointOnlyRequiredFields(paoId, Optional.empty(), Optional.empty());
+        Pair<JSONObject, JSONObject> pulseAccumulatorPointPair = PointCreateService.buildAndCreatePulseAccumulatorPointOnlyRequiredFields(paoId, Optional.empty(), Optional.empty());
+        Pair<JSONObject, JSONObject> demandAccumulatorPointPair = PointCreateService.buildAndCreateDemandAccumulatorPointOnlyRequiredFields(paoId, Optional.empty(), Optional.empty());
 
         hmap.put("VirtualDevice", virtualDevicePair);
         hmap.put("AnalogPoint", analogPointPair);
@@ -146,7 +150,7 @@ public class VirtualDeviceCreateService {
      * @return
      */
     public static Map<String, Pair<JSONObject, JSONObject>> buildAndCreateMultipleVirtualDeviceRequiredFields(Integer count) {        
-        HashMap<String, Pair<JSONObject, JSONObject>> map = new HashMap<>();
+        HashMap<String, Pair<JSONObject, JSONObject>> map = new HashMap<>();        
              
         String deviceName;
         for (int i = 1; i < count; i++) {
@@ -178,7 +182,7 @@ public class VirtualDeviceCreateService {
         return map;
     }
     
-    public static Map<String, Pair<JSONObject, JSONObject>> buildAndCreateVirtualDeviceRequiredFieldsWithMultiplePoints(Integer count) {        
+    public static Map<String, Pair<JSONObject, JSONObject>> buildAndCreateVirtualDeviceRequiredFieldsWithMultiplePoints(Integer count) {   
         HashMap<String, Pair<JSONObject, JSONObject>> map = new HashMap<>();
              
         String u = UUID.randomUUID().toString().replace("-", "");
@@ -224,12 +228,12 @@ public class VirtualDeviceCreateService {
             pointNameE = "Point-" + num + "e";
             pointNameF = "Point-" + num + "f";
             
-            Pair<JSONObject, JSONObject> analogPointPair = PointCreateService.buildAndCreateAnalogPointOnlyRequiredFields(paoId, Optional.of(pointNameA));
-            Pair<JSONObject, JSONObject> statusPointPair = PointCreateService.buildAndCreateStatusPointOnlyRequiredFields(paoId, Optional.of(pointNameB));
-            Pair<JSONObject, JSONObject> calcAnalogPointPair = PointCreateService.buildAndCreateCalcAnalogPointOnlyRequiredFields(paoId, Optional.of(pointNameC));
-            Pair<JSONObject, JSONObject> calcStatusPointPair = PointCreateService.buildAndCreateCalcStatusPointOnlyRequiredFields(paoId, Optional.of(pointNameD));
-            Pair<JSONObject, JSONObject> pulseAccumulatorPointPair = PointCreateService.buildAndCreatePulseAccumulatorPointOnlyRequiredFields(paoId, Optional.of(pointNameE));
-            Pair<JSONObject, JSONObject> demandAccumulatorPointPair = PointCreateService.buildAndCreateDemandAccumulatorPointOnlyRequiredFields(paoId, Optional.of(pointNameF));
+            Pair<JSONObject, JSONObject> analogPointPair = PointCreateService.buildAndCreateAnalogPointOnlyRequiredFields(paoId, Optional.of(pointNameA), Optional.empty());            
+            Pair<JSONObject, JSONObject> statusPointPair = PointCreateService.buildAndCreateStatusPointOnlyRequiredFields(paoId, Optional.of(pointNameB), Optional.empty());
+            Pair<JSONObject, JSONObject> calcAnalogPointPair = PointCreateService.buildAndCreateCalcAnalogPointOnlyRequiredFields(paoId, Optional.of(pointNameC), Optional.empty());
+            Pair<JSONObject, JSONObject> calcStatusPointPair = PointCreateService.buildAndCreateCalcStatusPointOnlyRequiredFields(paoId, Optional.of(pointNameD), Optional.empty());
+            Pair<JSONObject, JSONObject> pulseAccumulatorPointPair = PointCreateService.buildAndCreatePulseAccumulatorPointOnlyRequiredFields(paoId, Optional.of(pointNameE), Optional.empty());
+            Pair<JSONObject, JSONObject> demandAccumulatorPointPair = PointCreateService.buildAndCreateDemandAccumulatorPointOnlyRequiredFields(paoId, Optional.of(pointNameF), Optional.empty());
             
             
             map.put(pointNameA, analogPointPair);
@@ -241,5 +245,74 @@ public class VirtualDeviceCreateService {
         }
         
         return map;
+    }
+    
+    public static void createVirtualDeviceWithMultiplePointsAndCustomAttributes(Integer count) {      
+        Faker faker = SeleniumTestSetup.getFaker();
+        String u = UUID.randomUUID().toString().replace("-", "");
+        String deviceName = "Vir Dev Multi Points " + u;
+        String point;
+        String numA;
+        String numB;
+        String numC;
+        String numD;
+        String numE;
+        String numF;
+        
+        Pair<JSONObject, JSONObject> virtualDevicePair = new VirtualDeviceCreateBuilder.Builder(Optional.of(deviceName))
+                .withEnable(Optional.empty())
+                .create();
+        
+        JSONObject response = virtualDevicePair.getValue1();
+        Integer paoId = response.getInt("id");
+        
+        for (int i = 1; i < count; i++) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            
+        
+            String num;
+            if (i < 10) {
+                num = "000" + i;                
+            } else if (i < 100) {
+                num = "00" + i;
+            }else if (i < 1000) {
+                num = "0" + i;
+            }else {
+                num = "" + i;
+            }
+                
+            point = "Point-";
+            numA = num + "a";
+            numB = num + "b";
+            numC = num + "c";
+            numD = num + "d";
+            numE = num + "e";
+            numF = num + "f";
+            
+            Integer offSet = faker.number().numberBetween(0, 99999999);
+            final AttributeAsgmtTypes.PaoTypes paoType = AttributeAsgmtTypes.PaoTypes.VIRTUAL_SYSTEM;
+            
+            PointCreateService.buildAndCreateAnalogPointOnlyRequiredFields(paoId, Optional.of(point + numA), Optional.of(offSet));
+            AttributeService.createAttributeWithAssignment(paoType, AttributeAsgmtTypes.PointTypes.ANALOG, offSet, Optional.of("zttr-" + numA));
+            
+            PointCreateService.buildAndCreateStatusPointOnlyRequiredFields(paoId, Optional.of(point + numB), Optional.of(offSet));
+            AttributeService.createAttributeWithAssignment(paoType, AttributeAsgmtTypes.PointTypes.STATUS, offSet, Optional.of("zttr-" + numB));
+            
+            PointCreateService.buildAndCreateCalcAnalogPointOnlyRequiredFields(paoId, Optional.of(point + numC), Optional.of(offSet));
+            AttributeService.createAttributeWithAssignment(paoType, AttributeAsgmtTypes.PointTypes.CALC_ANALOG, offSet, Optional.of("zttr-" + numC));
+            
+            PointCreateService.buildAndCreateCalcStatusPointOnlyRequiredFields(paoId, Optional.of(point + numD), Optional.of(offSet));
+            AttributeService.createAttributeWithAssignment(paoType, AttributeAsgmtTypes.PointTypes.CALC_STATUS, offSet, Optional.of("zttr-" + numD));
+            
+            PointCreateService.buildAndCreatePulseAccumulatorPointOnlyRequiredFields(paoId, Optional.of(point + numE), Optional.of(offSet));
+            AttributeService.createAttributeWithAssignment(paoType, AttributeAsgmtTypes.PointTypes.PULSE_ACCUMULATOR, offSet, Optional.of("zttr-" + numE));
+            
+            PointCreateService.buildAndCreateDemandAccumulatorPointOnlyRequiredFields(paoId, Optional.of(point + numF), Optional.of(offSet));
+            AttributeService.createAttributeWithAssignment(paoType, AttributeAsgmtTypes.PointTypes.DEMAND_ACCUMULATOR, offSet, Optional.of("zttr-" + numF));
+        }
     }
 }

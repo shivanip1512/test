@@ -124,8 +124,14 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
 //    }
     
 //  //TODO: Used to create virtual devices with lots of points for manual testing 
+//  @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
+//  public void virtualDevicesCreate_CreateVirDevWithMultiplePoints_Success() {
+//      VirtualDeviceCreateService.buildAndCreateVirtualDeviceRequiredFieldsWithMultiplePoints(170);
+//  }
+    
+//  //TODO: Used to create virtual devices with lots of points for manual testing 
   @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
-  public void virtualDevicesCreate_CreateVirDevWithMultiplePoints_Success() {
-      VirtualDeviceCreateService.buildAndCreateVirtualDeviceRequiredFieldsWithMultiplePoints(170);
+  public void virtualDevicesCreate_CreateVirDevWithMultiplePointsLinkedToCustomAttribute_Success() {
+      VirtualDeviceCreateService.createVirtualDeviceWithMultiplePointsAndCustomAttributes(170);
   }
 }

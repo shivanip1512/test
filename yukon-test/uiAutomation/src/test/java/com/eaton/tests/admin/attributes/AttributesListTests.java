@@ -55,16 +55,16 @@ public class AttributesListTests extends SeleniumTestSetup {
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
     public void testing() {
-        Pair<JSONObject, JSONObject> pair = AttributeService.buildAndCreateAttribute();
-        
-        JSONObject response = pair.getValue1();
-        
-        int attributeId = response.getInt("customAttributeId");
-        
-        Pair<JSONObject, JSONObject> asgmt = AttributeService.buildAndCreateAttributeAssignment(attributeId, Optional.empty(), Optional.empty());
-        
-        JSONObject created = asgmt.getValue1();
-        
-        assertThat(created).isNotNull();
+//        Pair<JSONObject, JSONObject> pair = AttributeService.createAttribute(Optional.empty());
+//        
+//        JSONObject response = pair.getValue1();
+//        
+//        int attributeId = response.getInt("customAttributeId");
+//        
+//        Pair<JSONObject, JSONObject> asgmt = AttributeService.createAttributeAssignment(attributeId, Optional.empty(), Optional.empty());
+//        
+//        JSONObject created = asgmt.getValue1();
+//        
+//        assertThat(created).isNotNull();
     }
 }
