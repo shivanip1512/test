@@ -1,9 +1,7 @@
 package com.eaton.tests.ami;
 
 import static org.assertj.core.api.Assertions.*;
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Random;
 
 import org.assertj.core.api.SoftAssertions;
 import org.testng.annotations.AfterMethod;
@@ -22,9 +20,6 @@ public class CommonMeterCreateTests extends SeleniumTestSetup {
 
     private AmiDashboardPage amiDashboardPage;
     private DriverExtensions driverExt;
-    private Random randomNum;
-
-    private static final String DATE_FORMAT = "ddMMyyyyHHmmss";
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
@@ -33,15 +28,15 @@ public class CommonMeterCreateTests extends SeleniumTestSetup {
         navigate(Urls.Ami.AMI_DASHBOARD);
 
         amiDashboardPage = new AmiDashboardPage(driverExt);
-        randomNum = getRandomNum();
     }
     
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
     	if(getRefreshPage()) {
     		refreshPage(amiDashboardPage);
+    		setRefreshPage(false);
     	}
-    	setRefreshPage(false);
+    	
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
@@ -49,17 +44,8 @@ public class CommonMeterCreateTests extends SeleniumTestSetup {
     	setRefreshPage(true);
     	
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
-
-        int meterNumber = randomNum.nextInt(999999);
-        int serialNumber = randomNum.nextInt(99999999);
-        String manufacturer = MeterEnums.MeterType.RFN420CL.getManufacturer().getManufacturer();
-        String model = MeterEnums.MeterType.RFN420CL.getModel();
-
+        
         createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.RFN420CL.getMeterType());
-        createModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
-        createModal.getSerialNumber().setInputValue(String.valueOf(serialNumber));
-        createModal.getManufacturer().setInputValue(manufacturer);
-        createModal.getModel().setInputValue(model);
 
         createModal.clickOkAndWaitForSpinner();
 
@@ -74,18 +60,10 @@ public class CommonMeterCreateTests extends SeleniumTestSetup {
     	
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
-        int meterNumber = randomNum.nextInt(999999);
-        int serialNumber = randomNum.nextInt(99999999);
         String deviceName = "Meter / \\ , ' ";
-        String manufacturer = MeterEnums.MeterType.RFN420CL.getManufacturer().getManufacturer();
-        String model = MeterEnums.MeterType.RFN420CL.getModel();
 
         createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.RFN420CL.getMeterType());
         createModal.getDeviceName().setInputValue(deviceName);
-        createModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
-        createModal.getSerialNumber().setInputValue(String.valueOf(serialNumber));
-        createModal.getManufacturer().setInputValue(manufacturer);
-        createModal.getModel().setInputValue(model);
 
         createModal.clickOkAndWaitForSpinner();
 
@@ -95,7 +73,7 @@ public class CommonMeterCreateTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void createMeter_DeviceName_InvalidLengthValidation() {
+    public void createMeter_DeviceName_MaxLength60Chars() {
     	setRefreshPage(true);
     	
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
@@ -107,18 +85,10 @@ public class CommonMeterCreateTests extends SeleniumTestSetup {
     	setRefreshPage(true);
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
-        int meterNumber = randomNum.nextInt(999999);
-        int serialNumber = randomNum.nextInt(99999999);
         String deviceName = "AT Detail WRL-420cL";
-        String manufacturer = MeterEnums.MeterType.RFN420CL.getManufacturer().getManufacturer();
-        String model = MeterEnums.MeterType.RFN420CL.getModel();
-
+        
         createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.RFN420CL.getMeterType());
         createModal.getDeviceName().setInputValue(deviceName);
-        createModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
-        createModal.getSerialNumber().setInputValue(String.valueOf(serialNumber));
-        createModal.getManufacturer().setInputValue(manufacturer);
-        createModal.getModel().setInputValue(model);
 
         createModal.clickOkAndWaitForSpinner();
 
@@ -132,18 +102,7 @@ public class CommonMeterCreateTests extends SeleniumTestSetup {
     	setRefreshPage(true);
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
-        int serialNumber = randomNum.nextInt(99999999);
-        String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
-        String deviceName = "AT " + MeterEnums.MeterType.RFN420CL.getMeterType() + " Meter " + timeStamp;
-        String manufacturer = MeterEnums.MeterType.RFN420CL.getManufacturer().getManufacturer();
-        String model = MeterEnums.MeterType.RFN420CL.getModel();
-        
-
         createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.RFN420CL.getMeterType());
-        createModal.getDeviceName().setInputValue(deviceName);
-        createModal.getSerialNumber().setInputValue(String.valueOf(serialNumber));
-        createModal.getManufacturer().setInputValue(manufacturer);
-        createModal.getModel().setInputValue(model);
 
         createModal.clickOkAndWaitForSpinner();
 
@@ -153,7 +112,7 @@ public class CommonMeterCreateTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void createMeter_MeterNumber_InvalidLengthValidation() {
+    public void createMeter_MeterNumber_MaxLength50Chars() {
     	setRefreshPage(true);
     	
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
@@ -165,21 +124,6 @@ public class CommonMeterCreateTests extends SeleniumTestSetup {
     	setRefreshPage(true);
     	
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
-
-        int meterNumber = randomNum.nextInt(999999);
-        int serialNumber = randomNum.nextInt(99999999);
-        String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
-        String deviceName = "AT " + MeterEnums.MeterType.RFN420CL.getMeterType() + " Meter " + timeStamp;
-        String manufacturer = MeterEnums.MeterType.RFN420CL.getManufacturer().getManufacturer();
-        String model = MeterEnums.MeterType.RFN420CL.getModel();
-        
-
-        createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.RFN420CL.getMeterType());
-        createModal.getDeviceName().setInputValue(deviceName);
-        createModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
-        createModal.getSerialNumber().setInputValue(String.valueOf(serialNumber));
-        createModal.getManufacturer().setInputValue(manufacturer);
-        createModal.getModel().setInputValue(model);
 
         createModal.clickCancelAndWait();
         

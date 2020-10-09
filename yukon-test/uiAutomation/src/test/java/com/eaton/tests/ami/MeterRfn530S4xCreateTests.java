@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
-import java.util.Random;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -17,29 +16,31 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.ami.AmiDashboardPage;
 import com.eaton.pages.ami.MeterDetailsPage;
+import com.github.javafaker.Faker;
 
 public class MeterRfn530S4xCreateTests extends SeleniumTestSetup {
 
     private AmiDashboardPage amiDashboardPage;
     private DriverExtensions driverExt;
-    private Random randomNum;
+    private Faker faker;
     private static final String CREATED = " created successfully.";
     private static final String METER = "Meter ";
-
-    private static final String DATE_FORMAT = "ddMMyyyyHHmmss";
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        faker = SeleniumTestSetup.getFaker();
 
         navigate(Urls.Ami.AMI_DASHBOARD);
         amiDashboardPage = new AmiDashboardPage(driverExt);
-        randomNum = getRandomNum();
     }
     
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
-        refreshPage(amiDashboardPage);
+    	if(getRefreshPage()) {
+    		refreshPage(amiDashboardPage);
+    		setRefreshPage(false);
+    	}
     }
 
     @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
@@ -47,10 +48,10 @@ public class MeterRfn530S4xCreateTests extends SeleniumTestSetup {
 
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
-        int meterNumber = randomNum.nextInt(999999);
-        int serialNumber = randomNum.nextInt(99999999);
+        int meterNumber = faker.number().numberBetween(1, 999999);
+        int serialNumber = faker.number().numberBetween(1, 99999999);
         String manufacturer = randomString(12);
-        String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 
         String name = "AT RFN-430SL4 Meter " + timeStamp;
         createModal.getType().selectItemByTextSearch("RFN-530S4x");

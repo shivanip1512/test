@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import org.assertj.core.api.SoftAssertions;
 import org.testng.annotations.AfterMethod;
@@ -19,33 +18,33 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.ami.AmiDashboardPage;
 import com.eaton.pages.ami.MeterDetailsPage;
+import com.github.javafaker.Faker;
 
 public class MCTMeterCreateTests extends SeleniumTestSetup {
 
     private AmiDashboardPage amiDashboardPage;
     private DriverExtensions driverExt;
-    private Random randomNum;
+    private Faker faker;
     private static final String CREATED = " created successfully.";
     private static final String METER = "Meter ";
-
-    private static final String DATE_FORMAT = "ddMMyyyyHHmmss";
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-
+        faker = SeleniumTestSetup.getFaker();
+        
         navigate(Urls.Ami.AMI_DASHBOARD);
 
         amiDashboardPage = new AmiDashboardPage(driverExt);
-        randomNum = getRandomNum();
     }
     
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
     	if(getRefreshPage()) {
     		refreshPage(amiDashboardPage);
+    		setRefreshPage(false);
     	}
-    	setRefreshPage(false);
+    	
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
@@ -72,10 +71,10 @@ public class MCTMeterCreateTests extends SeleniumTestSetup {
     	
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
-        String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String deviceName = "AT " + MeterEnums.MeterType.MCT420CL.getMeterType() + " Meter " + timeStamp;
-        int meterNumber = randomNum.nextInt(999999);
-        int physicalAddress = randomNum.nextInt(4194304);
+        int meterNumber = faker.number().numberBetween(1, 999999);
+        int physicalAddress = faker.number().numberBetween(1, 4194304);
 
         createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.MCT420CL.getMeterType());
         createModal.getDeviceName().setInputValue(deviceName);
@@ -98,15 +97,11 @@ public class MCTMeterCreateTests extends SeleniumTestSetup {
     	setRefreshPage(true);
     	
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
-
-        String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
-        String deviceName = "AT " + MeterEnums.MeterType.RFN420CL.getMeterType() + " Meter " + timeStamp;
-        int meterNumber = randomNum.nextInt(999999);
+  
         String physicalAddress = "41 Charles St.";
 
         createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.MCT420CL.getMeterType());
-        createModal.getDeviceName().setInputValue(deviceName);
-        createModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
+
         createModal.getPhysicalAddress().setInputValue(physicalAddress);
 
         createModal.clickOkAndWaitForSpinner();
@@ -122,14 +117,10 @@ public class MCTMeterCreateTests extends SeleniumTestSetup {
     	
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
-        String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
-        String deviceName = "AT " + MeterEnums.MeterType.RFN420CL.getMeterType() + " Meter " + timeStamp;
-        int meterNumber = randomNum.nextInt(999999);
         int physicalAddress = 4194304;
 
         createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.MCT420CL.getMeterType());
-        createModal.getDeviceName().setInputValue(deviceName);
-        createModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
+        
         createModal.getPhysicalAddress().setInputValue(String.valueOf(physicalAddress));
         
         createModal.clickOkAndWaitForSpinner();
@@ -144,14 +135,6 @@ public class MCTMeterCreateTests extends SeleniumTestSetup {
     	setRefreshPage(true);
     	
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
-
-        String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
-        String deviceName = "AT " + MeterEnums.MeterType.RFN420CL.getMeterType() + " Meter " + timeStamp;
-        int meterNumber = randomNum.nextInt(999999);
-
-        createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.MCT420CL.getMeterType());
-        createModal.getDeviceName().setInputValue(deviceName);
-        createModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
 
         createModal.clickOkAndWaitForSpinner();
 

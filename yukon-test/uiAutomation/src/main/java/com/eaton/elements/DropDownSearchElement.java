@@ -81,10 +81,6 @@ public class DropDownSearchElement {
         
         dropDown.click();
         
-        WebElement search = dropDown.findElement(By.cssSelector(".chosen-search input"));
-        
-        search.sendKeys("");
-        
         WebElement results = dropDown.findElement(By.cssSelector(".chosen-results"));
         
         List<WebElement> filteredResults = results.findElements(By.cssSelector(".active-result"));

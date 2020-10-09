@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import org.assertj.core.api.SoftAssertions;
 import org.testng.annotations.AfterMethod;
@@ -19,33 +18,34 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.ami.AmiDashboardPage;
 import com.eaton.pages.ami.MeterDetailsPage;
+import com.github.javafaker.Faker;
 
 public class RFNMeterCreateTests extends SeleniumTestSetup {
 
     private AmiDashboardPage amiDashboardPage;
     private DriverExtensions driverExt;
-    private Random randomNum;
+    private Faker faker;
     private static final String CREATED = " created successfully.";
     private static final String METER = "Meter ";
-
-    private static final String DATE_FORMAT = "ddMMyyyyHHmmss";
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-
+        faker = SeleniumTestSetup.getFaker();
+        
         navigate(Urls.Ami.AMI_DASHBOARD);
 
         amiDashboardPage = new AmiDashboardPage(driverExt);
-        randomNum = getRandomNum();
+        
     }
     
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
     	if(getRefreshPage()) {
     		refreshPage(amiDashboardPage);
+    		setRefreshPage(false);
     	}
-    	setRefreshPage(false);
+    	
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
@@ -75,9 +75,9 @@ public class RFNMeterCreateTests extends SeleniumTestSetup {
     	
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
-        String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String deviceName = "AT " + MeterEnums.MeterType.RFN420CL.getMeterType() + " Meter " + timeStamp;
-        int meterNumber = randomNum.nextInt(999999);
+        int meterNumber = faker.number().numberBetween(1, 999999);
         
         createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.RFN420CL.getMeterType());
         createModal.getDeviceName().setInputValue(deviceName);
@@ -100,10 +100,10 @@ public class RFNMeterCreateTests extends SeleniumTestSetup {
     	
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
-        String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String deviceName = "AT " + MeterEnums.MeterType.RFN420CL.getMeterType() + " Meter " + timeStamp;
-        int meterNumber = randomNum.nextInt(999999);
-        int serialNumber = randomNum.nextInt(9999999);
+        int meterNumber = faker.number().numberBetween(1, 999999);
+        int serialNumber = faker.number().numberBetween(1, 9999999);
         
         createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.RFN420CL.getMeterType());
         createModal.getDeviceName().setInputValue(deviceName);
@@ -124,23 +124,16 @@ public class RFNMeterCreateTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void createMeter_SerialNumber_InvalidLengthValidation() {
+    public void createMeter_SerialNumber_MaxLength30Chars() {
     	//The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length after a form submission
     	setRefreshPage(true);
     	
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
-        String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
-        String deviceName = "AT " + MeterEnums.MeterType.RFN420CL.getMeterType() + " Meter " + timeStamp;
-        int meterNumber = randomNum.nextInt(999999);
         String serialNumber = "3619944661838896601546506928503";
         
         createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.RFN420CL.getMeterType());
-        createModal.getDeviceName().setInputValue(deviceName);
-        createModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
         createModal.getSerialNumber().setInputValue(serialNumber);
-        createModal.getManufacturer().setInputValue(MeterEnums.MeterType.RFN420CL.getManufacturer().getManufacturer());
-        createModal.getModel().setInputValue(MeterEnums.MeterType.RFN420CL.getModel());
 
         createModal.clickOkAndWaitForSpinner();
 
@@ -150,24 +143,16 @@ public class RFNMeterCreateTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void createMeter_Manufacturer_InvalidLengthValidation() {
+    public void createMeter_Manufacturer_MaxLength60Chars() {
     	//The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length after a form submission
     	setRefreshPage(true);
 
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
-        String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
-        String deviceName = "AT " + MeterEnums.MeterType.RFN420CL.getMeterType() + " Meter " + timeStamp;
-        int meterNumber = randomNum.nextInt(999999);
-        int serialNumber = randomNum.nextInt(9999999);
         String manufacturer = "Itron OpenWay Electricity Smart Meter with Two-way Communications";
         
         createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.RFN420CL.getMeterType());
-        createModal.getDeviceName().setInputValue(deviceName);
-        createModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
-        createModal.getSerialNumber().setInputValue(String.valueOf(serialNumber));
         createModal.getManufacturer().setInputValue(manufacturer);
-        createModal.getModel().setInputValue(MeterEnums.MeterType.RFN420CL.getModel());
 
         createModal.clickOkAndWaitForSpinner();
 
@@ -177,23 +162,15 @@ public class RFNMeterCreateTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
-    public void createMeter_Model_InvalidLengthValidation() {
+    public void createMeter_Model_MaxLength60Chars() {
     	//The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length after a form submission
     	setRefreshPage(true);
 
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
-        String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
-        String deviceName = "AT " + MeterEnums.MeterType.RFN420CL.getMeterType() + " Meter " + timeStamp;
-        int meterNumber = randomNum.nextInt(999999);
-        int serialNumber = randomNum.nextInt(9999999);
         String model = "Single-Phase Residential Electricity Meter CENTRON (C2SX) Meter";
         
         createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.RFN420CL.getMeterType());
-        createModal.getDeviceName().setInputValue(deviceName);
-        createModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
-        createModal.getSerialNumber().setInputValue(String.valueOf(serialNumber));
-        createModal.getManufacturer().setInputValue(MeterEnums.MeterType.RFN420CL.getManufacturer().getManufacturer());
         createModal.getModel().setInputValue(model);
 
         createModal.clickOkAndWaitForSpinner();
