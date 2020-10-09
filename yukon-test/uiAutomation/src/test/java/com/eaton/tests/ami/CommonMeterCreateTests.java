@@ -24,7 +24,8 @@ public class CommonMeterCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-
+        setRefreshPage(false);
+        
         navigate(Urls.Ami.AMI_DASHBOARD);
 
         amiDashboardPage = new AmiDashboardPage(driverExt);
@@ -34,7 +35,6 @@ public class CommonMeterCreateTests extends SeleniumTestSetup {
     public void afterMethod() {
     	if(getRefreshPage()) {
     		refreshPage(amiDashboardPage);
-    		setRefreshPage(false);
     	}
     	
     }

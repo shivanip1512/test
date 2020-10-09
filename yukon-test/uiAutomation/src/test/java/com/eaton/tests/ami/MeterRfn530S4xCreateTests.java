@@ -29,6 +29,7 @@ public class MeterRfn530S4xCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         faker = SeleniumTestSetup.getFaker();
 
         navigate(Urls.Ami.AMI_DASHBOARD);
@@ -39,7 +40,6 @@ public class MeterRfn530S4xCreateTests extends SeleniumTestSetup {
     public void afterTest() {
     	if(getRefreshPage()) {
     		refreshPage(amiDashboardPage);
-    		setRefreshPage(false);
     	}
     }
 

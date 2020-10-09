@@ -31,6 +31,7 @@ public class MCTMeterCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
         faker = SeleniumTestSetup.getFaker();
         
         navigate(Urls.Ami.AMI_DASHBOARD);
@@ -42,7 +43,6 @@ public class MCTMeterCreateTests extends SeleniumTestSetup {
     public void afterMethod() {
     	if(getRefreshPage()) {
     		refreshPage(amiDashboardPage);
-    		setRefreshPage(false);
     	}
     	
     }
