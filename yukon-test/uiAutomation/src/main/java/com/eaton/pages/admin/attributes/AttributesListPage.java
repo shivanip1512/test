@@ -2,13 +2,15 @@ package com.eaton.pages.admin.attributes;
 
 import java.util.Optional;
 
-
 import com.eaton.elements.Button;
 import com.eaton.elements.Section;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.WebTable;
 import com.eaton.elements.WebTableRow;
 import com.eaton.elements.WebTableRow.Icons;
+import com.eaton.elements.editwebtable.EditWebTable;
+import com.eaton.elements.editwebtable.EditWebTableRow;
+import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.attributes.AddAttributeAssignmentsModal;
 import com.eaton.elements.modals.attributes.EditAttributeAssignmentsModal;
 import com.eaton.framework.DriverExtensions;
@@ -18,55 +20,39 @@ import com.eaton.pages.PageBase;
 
 public class AttributesListPage extends PageBase {
     
-    private TextEditElement attributeName;
-    private WebTable attrDefTable;
-    private WebTable attrAsgmtTable;
-    private Section attrDefSection;
-    private Section attrAsgmtSection;
-    private Button createBtn;
-    private Button addBtn;
-
     public AttributesListPage(DriverExtensions driverExt) {
         super(driverExt);
         
         requiresLogin = true;
         pageUrl = Urls.Admin.ATTRIBUTES_LIST;
-
-        attrDefSection = new Section(driverExt, "Attribute Definitions");
-        attrAsgmtSection = new Section(driverExt, "Attribute Assignments");
-        attributeName = new TextEditElement(driverExt, "name", attrDefSection.getSection());
-        attrDefTable = new WebTable(driverExt, "compact-results-table", attrDefSection.getSection());
-        createBtn = new Button(driverExt, "Create", attrDefSection.getSection());
-        addBtn = new Button(driverExt, "Add", attrAsgmtSection.getSection());
-        attrAsgmtTable = new WebTable(driverExt, "compact-results-table", attrAsgmtSection.getSection());
     }
     
     public Button getCreateBtn() {
-        return createBtn;
+        return new Button(driverExt, "Create", getAttrDefSection().getSection());
     }   
     
     private Button getAddBtn() {
-        return addBtn;
+        return new Button(driverExt, "Add", getAttrAsgmtSection().getSection());
     }
     
     public TextEditElement getAttributeName() {
-        return attributeName;
+        return new TextEditElement(driverExt, "name", getAttrDefSection().getSection());
     }       
     
-    public WebTable getAttrDefTable() {
-        return attrDefTable;
+    public EditWebTable getAttrDefTable() {
+        return new EditWebTable(driverExt, "compact-results-table", getAttrDefSection().getSection());
     }
     
-    public WebTable getAttrAsgmtTable() {
-        return attrAsgmtTable;
+    public EditWebTable getAttrAsgmtTable() {
+        return new EditWebTable(driverExt, "compact-results-table", getAttrAsgmtSection().getSection());
     }
     
     public Section getAttrAsgmtSection() {
-        return attrAsgmtSection;
+        return new Section(driverExt, "Attribute Assignments");
     }
     
     public Section getAttrDefSection() {
-        return attrDefSection;
+        return new Section(driverExt, "Attribute Definitions");
     }
     
     public AddAttributeAssignmentsModal showAddAttrAsgmtAndWait() {
@@ -77,21 +63,31 @@ public class AttributesListPage extends PageBase {
         return new AddAttributeAssignmentsModal(driverExt, Optional.of("Add Attribute Assignment"), Optional.empty());
     }    
     
-    public EditAttributeAssignmentsModal showEditAttrAsgmtAndWaitByIndex(int index) {
-        WebTableRow row = getAttrAsgmtTable().getDataRowByIndex(index);
-        
-        row.showEditModalAndWaitByTitle("Edit Attribute Assignment");
-        
-        return new EditAttributeAssignmentsModal(this.driverExt, Optional.of("Edit Attribute Assignment"), Optional.empty());
-    }        
+//    public EditAttributeAssignmentsModal showEditAttrAsgmtAndWaitByIndex(int index) {
+//        WebTableRow row = getAttrAsgmtTable().getDataRowByIndex(index);
+//        
+//        row.showEditModalAndWaitByTitle("Edit Attribute Assignment");
+//        
+//        return new EditAttributeAssignmentsModal(this.driverExt, Optional.of("Edit Attribute Assignment"), Optional.empty());
+//    }        
     
-    public void editAttrDefNameByIndex(int index, String value) {
-        WebTableRow row = getAttrAsgmtTable().getDataRowByIndex(index);
+//    public void editAttrDefNameByIndex(int index, String value) {
+//        WebTableRow row = getAttrAsgmtTable().getDataRowByIndex(index);
+//        
+//        row.hoverAndClickGearAndSelectActionByIcon(Icons.PENCIL);
+//        
+//        TextEditElement el = new TextEditElement(this.driverExt, "name", row.getCell(0));
+//        
+//        el.setInputValue(value);
+//    }     
+    
+    public ConfirmModal showDeleteAttrDefByName(String name) {
+        EditWebTableRow row = getAttrDefTable().getDataRowByName(name);      
         
-        row.clickGearAndSelectActionByIcon(Icons.PENCIL);
+        row.showDeleteModalAndWait();
         
-        TextEditElement el = new TextEditElement(this.driverExt, "name", row.getCell(0));
-        
-        el.setInputValue(value);
-    }       
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("yukon_dialog_confirm");
+
+        return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of("yukon_dialog_confirm"));
+    }
 }

@@ -37,12 +37,12 @@ public class WebTable {
     
     private WebElement getTable() {
         if (this.parentElement != null) {
-            return this.parentElement.findElement(By.cssSelector("." + this.tableClassName));
+            return this.parentElement.findElement(By.cssSelector("table." + this.tableClassName));
         } else if (this.parent != null) {
-            return this.driverExt.findElement(By.cssSelector("[aria-describedby*='" + parent + "'] ." + this.tableClassName), Optional.of(3));   
+            return this.driverExt.findElement(By.cssSelector("[aria-describedby*='" + parent + "'] table." + this.tableClassName), Optional.of(3));   
 
         } else {
-            return this.driverExt.findElement(By.cssSelector("." + this.tableClassName), Optional.of(3)); 
+            return this.driverExt.findElement(By.cssSelector("table." + this.tableClassName), Optional.of(3)); 
         }
     }
 
@@ -200,7 +200,7 @@ public class WebTable {
         WebElement element = rowList.stream().filter(x -> x.findElement(By.cssSelector("a")).getText().contains(name)).findFirst().orElseThrow();
         
         return new WebTableRow(this.driverExt, element);
-    }   
+    }      
     
     public WebTableRow getDataRowByIndex(int index) {
         List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody tr"));
@@ -210,7 +210,7 @@ public class WebTable {
 
     private void findColumnHeaders() {
 
-        List<WebElement> headerList = this.getTable().findElements(By.cssSelector("thead tr th"));
+        List<WebElement> headerList = this.getTable().findElements(By.cssSelector("tr th"));
 
         this.columnHeaders = new ArrayList<>();
         for (WebElement element : headerList) {

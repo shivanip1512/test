@@ -301,7 +301,26 @@ public class SeleniumTestSetup {
             }
         }
     }
+    
+    public static void waitUntilDropDownMenuOpen() {
+        String display = "display: none;";
 
+        long startTime = System.currentTimeMillis();
+
+        while (display.equals("display: none;") && (System.currentTimeMillis() - startTime < 2000)) {
+            try {
+                 List<WebElement> menus = driverExt.findElements(By.cssSelector(".dropdown-menu"), Optional.of(0));
+                 
+                 Optional<WebElement> el = menus.stream().filter(x -> x.getAttribute("style").contains("disiplay: block;")).findFirst();
+                 
+                 if(el.isPresent()) {
+                     display = el.get().getAttribute("style");
+                 }
+            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
+            }
+        }
+    }
+        
     public static void navigate(String url) {
         String pageUrl = getBaseUrl() + url;
             
