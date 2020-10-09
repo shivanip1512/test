@@ -88,7 +88,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
 
     @Override
     @Transactional
-    public int create(ControlArea controlArea) {
+    public ControlArea create(ControlArea controlArea) {
         LMControlArea lmControlArea = getDBPersistent(controlArea.getControlAreaId());
         buildLMControlAreaDBPersistent(lmControlArea, controlArea);
 
@@ -108,12 +108,12 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
                 getProgramNamesString(lmControlArea.getLmControlAreaProgramVector()), startTime, stopTime,
                 ApiRequestContext.getContext().getLiteYukonUser());
 
-        return lmControlArea.getPAObjectID();
+        return buildControlAreaModel(lmControlArea);
     }
 
     @Override
     @Transactional
-    public int update(int controlAreaId, ControlArea controlArea) {
+    public ControlArea update(int controlAreaId, ControlArea controlArea) {
         dbCache.getAllLMControlAreas().stream()
                                       .filter(controlarea -> controlarea.getLiteID() == controlAreaId)
                                       .findFirst().orElseThrow(() -> new NotFoundException(" Control Area Id not found  " + controlAreaId ));
@@ -137,7 +137,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
           getProgramNamesString(lmControlArea.getLmControlAreaProgramVector()), startTime, stopTime,
           ApiRequestContext.getContext().getLiteYukonUser());
 
-        return lmControlArea.getPAObjectID();
+        return buildControlAreaModel(lmControlArea);
     }
 
     /**
