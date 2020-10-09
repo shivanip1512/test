@@ -36,7 +36,7 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
         editPage = new LoadGroupEmetconEditPage(driverExt, id);
     }
 
-    @AfterMethod
+    @AfterMethod(alwaysRun = true)
     public void afterMethod() {
         refreshPage(editPage);
     }

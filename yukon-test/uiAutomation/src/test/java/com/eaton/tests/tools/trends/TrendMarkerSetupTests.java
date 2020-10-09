@@ -33,7 +33,7 @@ public class TrendMarkerSetupTests extends SeleniumTestSetup {
         trendCreatePage = new TrendCreatePage(driverExt, Urls.Tools.TREND_CREATE);
     }
 
-    @AfterMethod
+    @AfterMethod(alwaysRun = true)
     public void afterMethod() {
         refreshPage(trendCreatePage);
     }

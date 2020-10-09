@@ -29,11 +29,9 @@ public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
     
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
         driverExt = getDriverExt();
         new SoftAssertions();
         randomNum = getRandomNum();
-        
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
         createPage = new LoadGroupEmetconCreatePage(driverExt);
     }

@@ -1,6 +1,7 @@
 package com.eaton.tests.tools.trends;
 
 import org.testng.annotations.Test;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -10,7 +11,6 @@ import org.assertj.core.api.SoftAssertions;
 import org.javatuples.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.testng.annotations.BeforeMethod;
 
 import com.eaton.builders.tools.trends.TrendCreateBuilder;
 import com.eaton.builders.tools.trends.TrendCreateService;
@@ -48,8 +48,8 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
         trendEditPage = new TrendEditPage(driverExt, Urls.Tools.TREND_EDIT, trendId);
     }
 
-    @BeforeMethod(alwaysRun = true)
-    public void beforeMethod() {
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
         refreshPage(trendEditPage);
     }
 
@@ -168,6 +168,8 @@ public class TrendsPointSetupTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
     public void trendPointSetup_EditPoint_ValuesCorrect() {
+        //Taking longer to create a trend so need to add refresh here
+        refreshPage(trendEditPage);
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_MODAL_TITLE = "Edit " + POINT_NAME;
         

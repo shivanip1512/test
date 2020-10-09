@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
 import org.json.simple.JSONObject;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.eaton.elements.WebTableRow;
 import com.eaton.elements.modals.commchannel.CreateTcpCommChannelModal;
@@ -70,8 +70,8 @@ public class CommChannelsListTests extends SeleniumTestSetup {
         statuses = listPage.getTable().getDataRowsTextByCellIndex(3);
     }
 
-    @BeforeMethod
-    public void beforeTest() {
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
         refreshPage(listPage);
     }
 

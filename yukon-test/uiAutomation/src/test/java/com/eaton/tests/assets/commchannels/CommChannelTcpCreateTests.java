@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.assertj.core.api.SoftAssertions;
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -28,11 +27,8 @@ public class CommChannelTcpCreateTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        WebDriver driver = getDriver();
         driverExt = getDriverExt();        
-        
-        driver.get(getBaseUrl() + Urls.Assets.COMM_CHANNELS_LIST);
-        
+        navigate(Urls.Assets.COMM_CHANNELS_LIST);
         listPage = new CommChannelsListPage(driverExt);
     }
     

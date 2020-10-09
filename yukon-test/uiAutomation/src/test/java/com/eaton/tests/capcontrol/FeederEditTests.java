@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -20,19 +21,23 @@ import com.eaton.pages.capcontrol.orphans.OrphansPage;
 public class FeederEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
+    private FeederEditPage editPage;    
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        navigate(Urls.CapControl.FEEDER_EDIT + "668" + Urls.EDIT);
+        editPage = new FeederEditPage(driverExt, 668);
+    }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        refreshPage(editPage);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void feederEdit_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Feeder: AT Feader";
-
-        navigate(Urls.CapControl.FEEDER_EDIT + "668" + Urls.EDIT);
-
-        FeederEditPage editPage = new FeederEditPage(driverExt, 668);
 
         String actualPageTitle = editPage.getPageTitle();
 
@@ -44,8 +49,6 @@ public class FeederEditTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = "Feeder was saved successfully.";
 
         navigate(Urls.CapControl.FEEDER_EDIT + "458" + Urls.EDIT);
-
-        FeederEditPage editPage = new FeederEditPage(driverExt, 458);
 
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
 
@@ -68,8 +71,6 @@ public class FeederEditTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = "Feeder AT Delete Feeder deleted successfully.";
 
         navigate(Urls.CapControl.FEEDER_EDIT + "575" + Urls.EDIT);
-
-        FeederEditPage editPage = new FeederEditPage(driverExt, 575);
 
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
 

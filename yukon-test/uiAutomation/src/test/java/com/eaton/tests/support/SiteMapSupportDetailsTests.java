@@ -21,12 +21,8 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
-        softly = new SoftAssertions();
-
-        driver.get(getBaseUrl() + Urls.SITE_MAP);
-
+        navigate(Urls.SITE_MAP);
         siteMapPage = new SiteMapPage(driverExt);
     }
 
@@ -55,19 +51,19 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
 
 //    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
 //    public void siteMapSupportDetails_pageBatteryNodeAnalysisLinkCorrect() {
+//        softly = new SoftAssertions();
 //        final String EXPECTED_ANCHOR = "Battery Node Analysis";
 //        final String EXPECTED_LINK = Urls.Support.BATTERY_NODE_ANALYSIS;
 //        final int POSITION = 0;
 //
-//        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-//                .isEqualTo(EXPECTED_ANCHOR);
-//        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION))
-//                .isEqualTo(EXPECTED_LINK);
+//        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+//        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
 //        softly.assertAll();
 //    }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
     public void siteMapSupportDetails_pageDataStreamingDeviceAttributesLinkCorrect() {
+        softly = new SoftAssertions();
     	final String EXPECTED_ANCHOR = "Data Streaming Device Attributes";
         final String EXPECTED_LINK = Urls.Support.DATA_STREAMING_DEVICE_ATTRIBUTES;
         final int POSITION = 0;
@@ -79,196 +75,181 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
     public void siteMapSupportDetails_pageDatabaseMigrationLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Database Migration";
         final String EXPECTED_LINK = Urls.Support.DATABASE_MIGRATION;
         final int POSITION = 1;
 
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION))
-                .isEqualTo(EXPECTED_LINK);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
     public void siteMapSupportDetails_pageDatabaseValidationLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Database Validation";
         final String EXPECTED_LINK = Urls.Support.DATABASE_VALIDATION;
         final int POSITION = 2;
 
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION))
-                .isEqualTo(EXPECTED_LINK);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
     public void siteMapSupportDetails_pageDeviceDefinitionsLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Device Definitions";
         final String EXPECTED_LINK = Urls.Support.DEVICE_DEFINITIONS;
         final int POSITION = 3;
 
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION))
-                .isEqualTo(EXPECTED_LINK);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
     public void siteMapSupportDetails_pageErrorCodesLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Error Codes";
         final String EXPECTED_LINK = Urls.Support.ERROR_CODES;
         final int POSITION = 4;
 
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION))
-                .isEqualTo(EXPECTED_LINK);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
     public void siteMapSupportDetails_pageEventLogLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Event Log";
         final String EXPECTED_LINK = Urls.Support.EVENT_LOG;
         final int POSITION = 5;
 
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION))
-                .isEqualTo(EXPECTED_LINK);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
     public void siteMapSupportDetails_pageFileExportHistoryLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "File Export History";
         final String EXPECTED_LINK = Urls.Support.FILE_EXPORT_HISTORY;
         final int POSITION = 6;
 
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION))
-                .isEqualTo(EXPECTED_LINK);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
     public void siteMapSupportDetails_pageLocalizationHelperLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Localization Helper";
         final String EXPECTED_LINK = Urls.Support.LOCALIZATION_HELPER;
         final int POSITION = 7;
 
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION))
-                .isEqualTo(EXPECTED_LINK);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
     public void siteMapSupportDetails_pageLogExplorerLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Log Explorer";
         final String EXPECTED_LINK = Urls.Support.LOG_EXPLORER;
         final int POSITION = 8;
 
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION))
-                .isEqualTo(EXPECTED_LINK);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
     public void siteMapSupportDetails_pageManageIndexesLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Manage Indexes";
         final String EXPECTED_LINK = Urls.Support.MANAGE_INDEXES;
         final int POSITION = 9;
 
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION))
-                .isEqualTo(EXPECTED_LINK);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
     public void siteMapSupportDetails_pageRouteUsageLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Route Usage";
         final String EXPECTED_LINK = Urls.Support.ROUTE_USAGE;
         final int POSITION = 10;
 
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION))
-                .isEqualTo(EXPECTED_LINK);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
     public void siteMapSupportDetails_pageSupportLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Support";
         final String EXPECTED_LINK = Urls.SUPPORT;
         final int POSITION = 11;
 
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION))
-                .isEqualTo(EXPECTED_LINK);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
     public void siteMapSupportDetails_pageSystemHealthLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "System Health";
         final String EXPECTED_LINK = Urls.Support.SYSTEM_HEALTH;
         final int POSITION = 12;
 
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION))
-                .isEqualTo(EXPECTED_LINK);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
     public void siteMapSupportDetails_pageSystemInfoLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "System Info";
         final String EXPECTED_LINK = Urls.Support.SYSTEM_INFO;
         final int POSITION = 13;
 
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION))
-                .isEqualTo(EXPECTED_LINK);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
     public void siteMapSupportDetails_pageThirdPartyLibrariesLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Third Party Libraries";
         final String EXPECTED_LINK = Urls.Support.THIRD_PARTY_LIBRARIES;
         final int POSITION = 14;
 
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION))
-                .isEqualTo(EXPECTED_LINK);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
     public void siteMapSupportDetails_pageThreadDumpLinkCorrect() {
+        softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Thread Dump";
         final String EXPECTED_LINK = Urls.Support.THREAD_DUMP;
         final int POSITION = 15;
 
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
-        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION))
-                .isEqualTo(EXPECTED_LINK);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 }

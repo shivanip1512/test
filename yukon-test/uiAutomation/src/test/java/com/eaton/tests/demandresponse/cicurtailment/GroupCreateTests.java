@@ -2,7 +2,6 @@ package com.eaton.tests.demandresponse.cicurtailment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -18,11 +17,8 @@ public class GroupCreateTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
-
-        driver.get(getBaseUrl() + Urls.DemandResponse.CI_GROUP_CREATE);
-
+        navigate(Urls.DemandResponse.CI_GROUP_CREATE);
         createPage = new GroupCreatePage(driverExt);
     }
 

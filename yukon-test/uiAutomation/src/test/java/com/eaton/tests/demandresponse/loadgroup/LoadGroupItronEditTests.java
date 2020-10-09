@@ -40,7 +40,7 @@ public class LoadGroupItronEditTests extends SeleniumTestSetup {
         editPage = new LoadGroupItronEditPage(driverExt, id);
     }
 
-    @AfterMethod
+    @AfterMethod(alwaysRun = true)
     public void afterMethod() {
         refreshPage(editPage);
     }

@@ -27,11 +27,8 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
         driverExt = getDriverExt();
-        
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
-        
         createPage = new LoadGroupCreatePage(driverExt);
     }
 

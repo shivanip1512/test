@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.Optional;
 
-import org.openqa.selenium.WebDriver;
+import org.testng.SkipException;
 import org.testng.annotations.*;
 
 import com.eaton.elements.SearchBoxElement;
@@ -22,11 +22,8 @@ public class CommChannelGlobalSearchTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        WebDriver driver = getDriver();
         driverExt = getDriverExt();
-
-        driver.get(getBaseUrl() + Urls.HOME);
-        
+        navigate(Urls.HOME);
         globalSearchPage = new GlobalSearchPage(driverExt);
     }
 
@@ -41,20 +38,24 @@ public class CommChannelGlobalSearchTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelGlobalSearch_ResultNavigatesTo_CommChannelListPage() {
-        globalSearchPage.getSearchBoxElement().setSearchValueAndClickResult("Comm Channels");
+        throw new SkipException("QA task created: QA-6229");
         
-        boolean pageLoaded = waitForUrlToLoad(Urls.Assets.COMM_CHANNELS_LIST, Optional.empty());
-        
-        assertThat(pageLoaded).isTrue();       
+//        globalSearchPage.getSearchBoxElement().setSearchValueAndClickResult("Comm Channels");
+//        
+//        boolean pageLoaded = waitForUrlToLoad(Urls.Assets.COMM_CHANNELS_LIST, Optional.empty());
+//        
+//        assertThat(pageLoaded).isTrue();       
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
     public void commChannelGlobalSearch_SearchCommResults_ContainsCommChannel() {
-        SearchBoxElement searchBox = globalSearchPage.getSearchBoxElement();
+        throw new SkipException("QA task created: QA-6229");
         
-        searchBox.setSearchValue("Comm Chann");
-        List<String> results = searchBox.getSearchResults();
-        
-        assertThat(results).contains("Comm Channels");
+//        SearchBoxElement searchBox = globalSearchPage.getSearchBoxElement();
+//        
+//        searchBox.setSearchValue("Comm Chann");
+//        List<String> results = searchBox.getSearchResults();
+//        
+//        assertThat(results).contains("Comm Channels");
     }        
 }

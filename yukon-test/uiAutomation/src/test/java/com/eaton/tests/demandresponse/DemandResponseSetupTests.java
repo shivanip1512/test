@@ -2,7 +2,6 @@ package com.eaton.tests.demandresponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -19,14 +18,9 @@ public class DemandResponseSetupTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         driverExt = getDriverExt();
-        
-        driver.get(getBaseUrl() + Urls.DemandResponse.SETUP);
-
+        navigate(Urls.DemandResponse.SETUP);
         page = new DemandResponseSetupPage(driverExt);
-        
     }
 
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })

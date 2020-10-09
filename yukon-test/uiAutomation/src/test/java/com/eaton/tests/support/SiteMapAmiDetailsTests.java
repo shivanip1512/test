@@ -3,7 +3,6 @@ package com.eaton.tests.support;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.assertj.core.api.SoftAssertions;
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -17,16 +16,11 @@ import com.eaton.pages.support.SiteMapPage;
 public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
 
     private SiteMapPage siteMapPage;
-    private SoftAssertions softly;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
-        softly = new SoftAssertions();
-
-        driver.get(getBaseUrl() + Urls.SITE_MAP);
-
+        navigate(Urls.SITE_MAP);
         siteMapPage = new SiteMapPage(driverExt);
     }
 
@@ -55,6 +49,7 @@ public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
     public void siteMapAmiDetails_pageAMIDashboardLinkCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "AMI Dashboard";
         final String EXPECTED_LINK = Urls.Ami.DASHBOARD;
         final int POSITION = 0;
@@ -67,180 +62,180 @@ public class SiteMapAmiDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
     public void siteMapAmiDetails_pageArchiveDataAnalysisLinkCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Archive Data Analysis";
         final String EXPECTED_LINK = Urls.Ami.ARCHIVE_DATA_ANALYSIS;
         final int POSITION = 1;
 
-        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
     public void siteMapAmiDetails_pageBillingLinkCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Billing";
         final String EXPECTED_LINK = Urls.Ami.BILLING;
         final int POSITION = 2;
 
-        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
     public void siteMapAmiDetails_pageBillingSchedulesLinkCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Billing Schedules";
         final String EXPECTED_LINK = Urls.Ami.BILLING_SCHEDULES;
         final int POSITION = 3;
 
-        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
     public void siteMapAmiDetails_pageBulkImportLinkCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Bulk Import";
         final String EXPECTED_LINK = Urls.Ami.BULK_IMPORT;
         final int POSITION = 4;
 
-        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
     public void siteMapAmiDetails_pageAMIBulkUpdateLinkCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Bulk Update";
         final String EXPECTED_LINK = Urls.Ami.BULK_UPDATE;
         final int POSITION = 5;
 
-        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
     public void siteMapAmiDetails_pageManageDashboardsLinkCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Manage Dashboards";
         final String EXPECTED_LINK = Urls.Ami.MANAGE_DASHBOARDS;
         final int POSITION = 6;
 
-        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
     public void siteMapAmiDetails_pageMeterEventsReportLinkCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Meter Events Report";
         //final String EXPECTED_LINK = Urls.Ami.METER_EVENTS_REPORTS;
         final int POSITION = 7;
 
-        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         //softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
     public void siteMapAmiDetails_pageMeterProgrammingLinkCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Meter Programming";
-         final String EXPECTED_LINK = Urls.Ami.METER_PROGRAMMING;
+        final String EXPECTED_LINK = Urls.Ami.METER_PROGRAMMING;
         final int POSITION = 8;
 
-        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
     public void siteMapAmiDetails_pageMeterReportsLinkCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Metering Reports";
         final String EXPECTED_LINK = Urls.Ami.REPORTS;
         final int POSITION = 9;
 
-        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
     public void siteMapAmiDetails_pagePhaseDetectionLinkCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Phase Detection";
         final String EXPECTED_LINK = Urls.Ami.PHASE_DETECTION;
         final int POSITION = 10;
 
-        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
     public void siteMapAmiDetails_pageAMIPointImportLinkCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Point Import";
         final String EXPECTED_LINK = Urls.Ami.POINT_IMPORT;
         final int POSITION = 11;
 
-        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
     public void siteMapAmiDetails_pageReviewFlaggedPointsLinkCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Review Flagged Points";
         final String EXPECTED_LINK = Urls.Ami.REVIEW_FLAGGED_POINTS;
         final int POSITION = 12;
 
-        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
     public void siteMapAmiDetails_pageTrendsLinkCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Trends";
         final String EXPECTED_LINK = Urls.Tools.TRENDS_LIST;
         final int POSITION = 13;
 
-        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
     public void siteMapAmiDetails_pageUsageThresholdReportLinkCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Usage Threshold Report";
         final String EXPECTED_LINK = Urls.Ami.USAGE_THRESHOLD_REPORT;
         final int POSITION = 14;
 
-        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
     public void siteMapAmiDetails_pageWaterLeakReportLinkCorrect() {
+        SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Water Leak Report";
         final String EXPECTED_LINK = Urls.Ami.WATER_LEAK_REPORT;
         final int POSITION = 15;
 
-        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAMISectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }

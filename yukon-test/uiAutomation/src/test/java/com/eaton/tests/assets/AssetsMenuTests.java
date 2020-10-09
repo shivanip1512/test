@@ -2,7 +2,6 @@ package com.eaton.tests.assets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -19,15 +18,10 @@ public class AssetsMenuTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
-
-        driver.get(getBaseUrl() + Urls.HOME);
-
+        navigate(Urls.HOME);
         page = new HomePage(driverExt);
     }
-
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
     public void assetsMenu_dashboardUrlCorrect() {
 
@@ -35,7 +29,6 @@ public class AssetsMenuTests extends SeleniumTestSetup {
 
         assertThat(url).contains(Urls.Assets.DASHBOARD);
     }
-
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.ASSETS })
     public void assetsMenu_gatewaysUrlCorrect() {
 

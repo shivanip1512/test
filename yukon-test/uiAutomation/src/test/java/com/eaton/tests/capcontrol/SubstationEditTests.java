@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -20,19 +21,23 @@ import com.eaton.pages.capcontrol.orphans.OrphansPage;
 public class SubstationEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
+    private SubstationEditPage editPage;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        navigate(Urls.CapControl.SUBSTATION_EDIT + "666" + Urls.EDIT);
+        editPage = new SubstationEditPage(driverExt, 666);
     }
 
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        refreshPage(editPage);
+    }
+    
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void substationEdit_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Substation: AT Substation";
-
-        navigate(Urls.CapControl.SUBSTATION_EDIT + "666" + Urls.EDIT);
-
-        SubstationEditPage editPage = new SubstationEditPage(driverExt, 666);
 
         String actualPageTitle = editPage.getPageTitle();
 
@@ -44,8 +49,6 @@ public class SubstationEditTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = "Substation was saved successfully.";
 
         navigate(Urls.CapControl.SUBSTATION_EDIT + "451" + Urls.EDIT);
-
-        SubstationEditPage editPage = new SubstationEditPage(driverExt, 451);
 
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
 
@@ -68,8 +71,6 @@ public class SubstationEditTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = "Substation AT Delete Substation deleted successfully.";
 
         navigate(Urls.CapControl.SUBSTATION_EDIT + "573" + Urls.EDIT);
-
-        SubstationEditPage editPage = new SubstationEditPage(driverExt, 573);
 
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
 

@@ -125,6 +125,8 @@ public:
 
    using Duration = std::chrono::duration<double>;
 
+   std::optional<int> findValueAsInt(const std::string& key);
+
    std::string       getValueAsString  (const std::string& Key, const std::string& defaultval = "");
    std::string       getValueAsPath    (const std::string& Key, const std::string& defaultval = "");
    int               getValueAsInt     (const std::string& key, int defaultval = 0);

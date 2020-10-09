@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.Optional;
 
 import org.assertj.core.api.SoftAssertions;
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -26,19 +25,15 @@ public class SupportDetailsCreateSupportBundleTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        WebDriver driver = getDriver();
         driverExt = getDriverExt();
         faker = SeleniumTestSetup.getFaker();
-
-        driver.get(getBaseUrl() + Urls.SUPPORT);
-
+        navigate(Urls.SUPPORT);
         supportPage = new SupportPage(driverExt);
     }
 
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
         refreshPage(supportPage);
-        supportPage = new SupportPage(driverExt);
     }
 
     // ================================================================================
@@ -46,7 +41,7 @@ public class SupportDetailsCreateSupportBundleTests extends SeleniumTestSetup {
     // ================================================================================
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void createSupportBundleRequiredFieldsOnlySuccess() {
+    public void createSupportBundle_RequiredFieldsOnly_Success() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_PENDING_STATUS = "Pending";
         final String EXPECTED_STATUS = "Finished";
@@ -65,7 +60,7 @@ public class SupportDetailsCreateSupportBundleTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void createSupportBundleRangeTwoWeeksSuccess() {
+    public void createSupportBundle_RangeTwoWeeks_Success() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_PENDING_STATUS = "Pending";
         final String EXPECTED_STATUS = "Finished";
@@ -85,7 +80,7 @@ public class SupportDetailsCreateSupportBundleTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void createSupportBundleRangeMonthSuccess() {
+    public void createSupportBundle_RangeMonth_Success() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_PENDING_STATUS = "Pending";
         final String EXPECTED_STATUS = "Finished";
@@ -105,7 +100,7 @@ public class SupportDetailsCreateSupportBundleTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void createSupportBundleRangeEverythingSuccess() {
+    public void createSupportBundle_RangeEverything_Success() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_PENDING_STATUS = "Pending";
         final String EXPECTED_STATUS = "Finished";
@@ -125,7 +120,7 @@ public class SupportDetailsCreateSupportBundleTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void createSupportBundleCommLogSuccess() {
+    public void createSupportBundle_CommLog_Success() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_PENDING_STATUS = "Pending";
         final String EXPECTED_STATUS = "Finished";
@@ -133,7 +128,7 @@ public class SupportDetailsCreateSupportBundleTests extends SeleniumTestSetup {
         String name = "Test " + timeStamp;
 
         supportPage.getCustomerName().setInputValue(name);
-        supportPage.getCommLogFiles().setValue(true);
+        supportPage.getCommLogFiles().setValue(true);        
         supportPage.getCreateBundleBtn().click();
 
         waitForPageToLoad(SupportBundlePage.PAGE_TITLE, Optional.empty());
@@ -145,29 +140,7 @@ public class SupportDetailsCreateSupportBundleTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void createSupportBundleNoteSuccess() {
-        SoftAssertions softly = new SoftAssertions();
-        final String EXPECTED_PENDING_STATUS = "Pending";
-        final String EXPECTED_STATUS = "Finished";
-        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
-        String name = "Test " + timeStamp;
-
-        String note = faker.lorem().characters(1024);
-
-        supportPage.getCustomerName().setInputValue(name);
-        supportPage.getNotes().setInputValue(note);
-        supportPage.getCreateBundleBtn().click();
-
-        waitForPageToLoad(SupportBundlePage.PAGE_TITLE, Optional.empty());
-
-        supportBundlePage = new SupportBundlePage(driverExt);
-        softly.assertThat(supportBundlePage.pollSupportBundleItemsStatusNot(EXPECTED_PENDING_STATUS)).isEqualTo(true);
-        softly.assertThat(supportBundlePage.pollSupportBundleStatus(EXPECTED_STATUS)).isEqualTo(true);
-        softly.assertAll();
-    }
-
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
-    public void createSupportBundleEverythingSuccess() {
+    public void createSupportBundle_AllFields_Success() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_PENDING_STATUS = "Pending";
         final String EXPECTED_STATUS = "Finished";

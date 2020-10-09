@@ -3,7 +3,6 @@ package com.eaton.tests.support;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.assertj.core.api.SoftAssertions;
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -21,11 +20,8 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();        
-
-        driver.get(getBaseUrl() + Urls.SITE_MAP);
-
+        navigate(Urls.SITE_MAP);
         siteMapPage = new SiteMapPage(driverExt);
     }
 
@@ -59,8 +55,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Admin.ACTIVE_JOBS;
         final int POSITION = 0;
 
-        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
@@ -72,8 +67,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Admin.REPORTS;
         final int POSITION = 1;
 
-        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
@@ -85,8 +79,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Admin.ALL_JOBS;
         final int POSITION = 2;
 
-        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
@@ -110,8 +103,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Admin.CI_REPORTS;
         final int POSITION = 4;
 
-        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
@@ -123,8 +115,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Admin.DASHBOARD;
         final int POSITION = 5;
 
-        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
@@ -136,8 +127,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Admin.DATABASE_REPORTS;
         final int POSITION = 6;
 
-        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
@@ -149,8 +139,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Admin.ENERGY_COMPANY_LIST;
         final int POSITION = 7;
 
-        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
@@ -162,8 +151,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Admin.JOB_STATUS;
         final int POSITION = 8;
 
-        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
@@ -175,8 +163,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Admin.MAINTENANCE;
         final int POSITION = 9;
 
-        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
@@ -188,8 +175,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Admin.MULTI_SPEAK;
         final int POSITION = 10;
 
-        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
@@ -201,8 +187,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Admin.STATISTICAL_REPORTS;
         final int POSITION = 11;
 
-        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
@@ -214,8 +199,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Admin.SUBSTATIONS;
         final int POSITION = 12;
 
-        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
@@ -227,8 +211,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Admin.SURVEYS;
         final int POSITION = 13;
 
-        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
@@ -240,8 +223,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Admin.THEMES;
         final int POSITION = 14;
 
-        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
@@ -253,8 +235,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Admin.USERS_AND_GROUPS;
         final int POSITION = 15;
 
-        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }
@@ -266,8 +247,7 @@ public class SiteMapAdminDetailsTests extends SeleniumTestSetup {
         final String EXPECTED_LINK = Urls.Admin.CONFIGURATION;
         final int POSITION = 16;
 
-        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION))
-                .isEqualTo(EXPECTED_ANCHOR);
+        softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
         softly.assertThat(siteMapPage.getAdminSectionSimpleList().getSimpleListItemLinkTextAt(POSITION)).isEqualTo(EXPECTED_LINK);
         softly.assertAll();
     }

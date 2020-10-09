@@ -52,6 +52,7 @@
     <entry key="yukon.common.point.updateType.ON_TIMER_AND_CHANGE">On Timer &amp; Change</entry>
     <entry key="yukon.common.point.updateType.CONSTANT">Constant</entry>
     <entry key="yukon.common.point.updateType.HISTORICAL">Historical</entry>
+    <entry key="yukon.common.point.updateType.BACKFILLED_HISTORICAL">Backfilled Historical</entry>
 
     <entry key="yukon.common.point.add">Create Point</entry>
     <entry key="yukon.common.point.new">New Point</entry>

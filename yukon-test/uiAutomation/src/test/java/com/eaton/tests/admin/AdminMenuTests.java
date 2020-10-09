@@ -1,7 +1,6 @@
 package com.eaton.tests.admin;
 
 import static org.assertj.core.api.Assertions.*;
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -15,17 +14,11 @@ public class AdminMenuTests extends SeleniumTestSetup {
 
     private HomePage page;
     private static final int ADMIN_INDEX = 5;
-    private String baseUrl;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
-
-        baseUrl = getBaseUrl();
-
-        driver.get(baseUrl + Urls.HOME);
-
+        navigate(Urls.HOME);
         page = new HomePage(driverExt);
     }
 

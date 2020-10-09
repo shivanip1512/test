@@ -48,7 +48,6 @@ public class SelectBoxElement {
     }
 
     public void addSingleAvailable(String value) {
-
         WebTable availableTable = getAvailabeTable();
 
         WebElement column = getColumnByColumnName(available);

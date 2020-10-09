@@ -96,6 +96,7 @@ public class CbcEditPage extends PageBase {
     }
     
     public ConfirmModal showAndWaitConfirmDeleteModal() {
+        SeleniumTestSetup.moveToElement(getDeleteBtn().getButton());
         
         getDeleteBtn().click();       
                       

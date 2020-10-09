@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 
 import org.assertj.core.api.SoftAssertions;
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -22,13 +21,8 @@ public class LoadGroupListTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
-        softly = new SoftAssertions();
-
-        driver.get(getBaseUrl() + Urls.DemandResponse.LOAD_GROUPS);
-
+        navigate(Urls.DemandResponse.LOAD_GROUPS);
         listPage = new LoadGroupListPage(driverExt);
     }
 
@@ -43,6 +37,7 @@ public class LoadGroupListTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldGrpList_columnHeadersCorrect() {
+        softly = new SoftAssertions();
         final int EXPECTED_COUNT = 6;
 
         List<String> headers = this.listPage.getTable().getListTableHeaders();

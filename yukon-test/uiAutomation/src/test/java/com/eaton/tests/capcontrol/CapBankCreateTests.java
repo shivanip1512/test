@@ -16,8 +16,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
-import org.openqa.selenium.WebDriver;
-
 public class CapBankCreateTests extends SeleniumTestSetup {
 
     private CapBankCreatePage createPage;
@@ -25,12 +23,15 @@ public class CapBankCreateTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        WebDriver driver = getDriver();
         driverExt = getDriverExt();
 
-        driver.get(getBaseUrl() + Urls.CapControl.CAP_BANK_CREATE);
-
-        this.createPage = new CapBankCreatePage(driverExt);
+        navigate(Urls.CapControl.CAP_BANK_CREATE);
+        createPage = new CapBankCreatePage(driverExt);
+    }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterTest() {
+        refreshPage(createPage);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
@@ -50,9 +51,9 @@ public class CapBankCreateTests extends SeleniumTestSetup {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 
         String name = "AT CapBank " + timeStamp;
-        this.createPage.getName().setInputValue(name);
+        createPage.getName().setInputValue(name);
 
-        this.createPage.getSaveBtn().click();
+        createPage.getSaveBtn().click();
 
         waitForPageToLoad("CapBank: " + name, Optional.empty());
 
@@ -61,10 +62,5 @@ public class CapBankCreateTests extends SeleniumTestSetup {
         String userMsg = detailsPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }
-
-    @AfterMethod(alwaysRun = true)
-    public void afterTest() {
-        refreshPage(createPage);
     }
 }

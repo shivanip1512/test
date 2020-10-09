@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.Optional;
 import java.util.Random;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -25,15 +24,15 @@ public class LoadGroupMeterDisconnectCreateTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         driverExt = getDriverExt();
-
-        driver.get(getBaseUrl() + Urls.DemandResponse.LOAD_GROUP_CREATE);
-
+        navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
         createPage = new LoadGroupCreatePage(driverExt);
-
         randomNum = getRandomNum();
+    }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterTest() {
+        refreshPage(createPage);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -91,10 +90,5 @@ public class LoadGroupMeterDisconnectCreateTests extends SeleniumTestSetup {
         String userMsg = detailsPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }
-    
-    @AfterMethod(alwaysRun = true)
-    public void afterTest() {
-        refreshPage(createPage);
-    }
+    }   
 }

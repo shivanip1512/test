@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 
 import org.assertj.core.api.SoftAssertions;
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -22,13 +21,8 @@ public class ProgramListTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
-        softly = new SoftAssertions();
-
-        driver.get(getBaseUrl() + Urls.DemandResponse.PROGRAMS);
-
+        navigate(Urls.DemandResponse.PROGRAMS);
         listPage = new ProgramListPage(driverExt);
     }
 
@@ -43,6 +37,7 @@ public class ProgramListTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void programList_columnHeadersCorrect() {
+        softly = new SoftAssertions();
         final int EXPECTED_COUNT = 8;
 
         List<String> headers = this.listPage.getTable().getListTableHeaders();
@@ -57,7 +52,6 @@ public class ProgramListTests extends SeleniumTestSetup {
         softly.assertThat(headers).contains("Current Gear");
         softly.assertThat(headers).contains("Priority");
         softly.assertThat(headers).contains("Reduction");
-
         softly.assertAll();
     }
 }

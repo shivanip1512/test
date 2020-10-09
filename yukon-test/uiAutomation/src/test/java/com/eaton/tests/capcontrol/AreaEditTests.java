@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -20,19 +21,25 @@ import com.eaton.pages.capcontrol.CapControlDashboardPage;
 public class AreaEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
+    private AreaEditPage editPage;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        
+        navigate(Urls.CapControl.AREA_EDIT + "672" + Urls.EDIT);
+
+        editPage = new AreaEditPage(driverExt, 672);
+    }
+    
+    @AfterMethod(alwaysRun = true)
+    public void afterTest() {
+        refreshPage(editPage);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
     public void areaEdit_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Area: AT Area";
-
-        navigate(Urls.CapControl.AREA_EDIT + "672" + Urls.EDIT);
-
-        AreaEditPage editPage = new AreaEditPage(driverExt, 672);
 
         String actualPageTitle = editPage.getPageTitle();
 
@@ -44,8 +51,6 @@ public class AreaEditTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = "Area was saved successfully.";
 
         navigate(Urls.CapControl.AREA_EDIT + "449" + Urls.EDIT);
-
-        AreaEditPage editPage = new AreaEditPage(driverExt, 449);
 
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
 
@@ -68,8 +73,6 @@ public class AreaEditTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = "Area AT Delete Area Deleted successfully.";
 
         navigate(Urls.CapControl.AREA_EDIT + "579" + Urls.EDIT);
-
-        AreaEditPage editPage = new AreaEditPage(driverExt, 579);
 
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
 

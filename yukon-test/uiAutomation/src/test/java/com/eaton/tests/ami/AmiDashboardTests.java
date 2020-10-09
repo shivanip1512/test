@@ -1,7 +1,6 @@
 package com.eaton.tests.ami;
 
 import static org.assertj.core.api.Assertions.*;
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -15,18 +14,14 @@ public class AmiDashboardTests extends SeleniumTestSetup {
 
     private AmiDashboardPage amiPage;
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-
-        WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
-
-        driver.get(getBaseUrl() + Urls.Ami.DASHBOARD);
-
+        navigate(Urls.Ami.DASHBOARD);
         amiPage = new AmiDashboardPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI})
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
     public void amiDashboard_pageTitleCorrect() {
         final String EXPECTED_TITLE = "Dashboard: Default AMI Dashboard";
         

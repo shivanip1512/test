@@ -83,7 +83,12 @@ public class BaseModal {
 
     // TODO need a unique way to select the save button
     public void clickOkAndWaitForModalToClose() {
-        getModal().findElement(By.cssSelector(".ui-dialog-buttonset .primary")).click();
+        WebElement el = getModal().findElement(By.cssSelector(".ui-dialog-buttonset .primary"));
+        
+        SeleniumTestSetup.moveToElement(el);
+        
+        el.click();
+        
         if (describedBy != null) {
             SeleniumTestSetup.waitUntilModalClosedByDescribedBy(describedBy);
         } else if (modalTitle != null) {

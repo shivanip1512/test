@@ -1,7 +1,6 @@
 package com.eaton.tests.admin.energycompany;
 
 import static org.assertj.core.api.Assertions.*;
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -18,11 +17,8 @@ public class EnergyCompanyListTests extends SeleniumTestSetup {
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
-        WebDriver driver = getDriver();        
         driverExt = getDriverExt();
-        
-        driver.get(getBaseUrl() + Urls.Admin.ENERGY_COMPANY_LIST);
-
+        navigate(Urls.Admin.ENERGY_COMPANY_LIST);
         page = new EnergyCompanyListPage(driverExt);
     }
 
