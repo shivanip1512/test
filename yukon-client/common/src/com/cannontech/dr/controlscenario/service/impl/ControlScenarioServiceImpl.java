@@ -35,22 +35,26 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
 
     @Override
     @Transactional
-    public int create(ControlScenario controlScenario) {
+    public ControlScenario create(ControlScenario controlScenario) {
         if (CollectionUtils.isNotEmpty(controlScenario.getAllPrograms())) {
             lmServiceHelper.validateProgramsAndGear(controlScenario);
         }
         LMScenario lmScenario = getDBPersistent(controlScenario);
         controlScenario.buildDBPersistent(lmScenario);
         dbPersistentDao.performDBChange(lmScenario, TransactionType.INSERT);
+        controlScenario.buildModel(lmScenario);
+        controlScenario.getAllPrograms().stream().forEach(program -> {
+            program.setGears(lmServiceHelper.getGearsforModel(program.getProgramId(), program.getGears()));
+        });
 
         logService.scenarioCreated(lmScenario.getPAOName(), getProgramNames(lmScenario.getAllThePrograms()),
                 ApiRequestContext.getContext().getLiteYukonUser());
-        return lmScenario.getPAObjectID();
+        return controlScenario;
     }
 
     @Override
     @Transactional
-    public int update(int controlScenarioId, ControlScenario controlScenario) {
+    public ControlScenario update(int controlScenarioId, ControlScenario controlScenario) {
         if (CollectionUtils.isNotEmpty(controlScenario.getAllPrograms())) {
             lmServiceHelper.validateProgramsAndGear(controlScenario);
         }
@@ -58,10 +62,14 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
         LMScenario lmScenario = getDBPersistent(controlScenario);
         controlScenario.buildDBPersistent(lmScenario);
         dbPersistentDao.performDBChange(lmScenario, TransactionType.UPDATE);
+        controlScenario.buildModel(lmScenario);
+        controlScenario.getAllPrograms().stream().forEach(program -> {
+            program.setGears(lmServiceHelper.getGearsforModel(program.getProgramId(), program.getGears()));
+        });
 
         logService.scenarioUpdated(lmScenario.getPAOName(), getProgramNames(lmScenario.getAllThePrograms()),
                 ApiRequestContext.getContext().getLiteYukonUser());
-        return lmScenario.getPAObjectID();
+        return controlScenario;
     }
 
     private String getProgramNames(Vector<LMControlScenarioProgram> allPrograms) {

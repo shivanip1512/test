@@ -75,21 +75,22 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
 
     @Override
     @Transactional
-    public int create(LoadGroupBase loadGroup) {
+    public LoadGroupBase create(LoadGroupBase loadGroup) {
         LMGroup lmGroup = getDBPersistent(loadGroup);
         loadGroup.buildDBPersistent(lmGroup);
 
         dbPersistentDao.performDBChange(lmGroup, TransactionType.INSERT);
         SimpleDevice device = SimpleDevice.of(lmGroup.getPAObjectID(), lmGroup.getPaoType());
         paoCreationHelper.addDefaultPointsToPao(device);
+        loadGroup.buildModel(lmGroup);
         logService.loadGroupCreated(loadGroup.getName(), loadGroup.getType(),
                 ApiRequestContext.getContext().getLiteYukonUser());
-        return lmGroup.getPAObjectID();
+        return loadGroup;
     }
 
     @Override
     @Transactional
-    public int update(int loadGroupId, LoadGroupBase loadGroup) {
+    public LoadGroupBase update(int loadGroupId, LoadGroupBase loadGroup) {
         Optional<LiteYukonPAObject> liteLoadGroup =
             dbCache.getAllLMGroups().stream().filter(group -> group.getLiteID() == loadGroupId).findFirst();
 
@@ -100,9 +101,10 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         LMGroup lmGroup = getDBPersistent(loadGroup);
         loadGroup.buildDBPersistent(lmGroup);
         dbPersistentDao.performDBChange(lmGroup, TransactionType.UPDATE);
+        loadGroup.buildModel(lmGroup);
         logService.loadGroupUpdated(loadGroup.getName(), loadGroup.getType(),
                 ApiRequestContext.getContext().getLiteYukonUser());
-        return lmGroup.getPAObjectID();
+        return loadGroup;
     }
 
     @Override
