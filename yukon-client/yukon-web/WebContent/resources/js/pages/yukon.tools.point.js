@@ -376,8 +376,6 @@ yukon.tools.point = (function () {
         }
         if (newValue === 'Constant') {
             row.find("input[class='js-calc-point-comp']").val(0);
-        } else {
-            row.find("input[class='js-calc-point-comp']").val('');
         }
     };
 

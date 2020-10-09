@@ -537,7 +537,7 @@ public class DirectProgramGearApiDoc {
     public void cleanUp() {
         ApiCallHelper.delete("programConstraints", "/" + programConstraint.getId().toString());
         loadGroups.forEach(group -> {
-            ApiCallHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
+            ApiCallHelper.delete("loadGroups", "/" + group.getId() );
         });
     }
 }

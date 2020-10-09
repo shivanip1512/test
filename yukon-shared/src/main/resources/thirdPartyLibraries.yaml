@@ -5575,15 +5575,15 @@ JavaScript :
     notes : 
 
   - project : highstock
-    version : 8.0.0
+    version : 8.2.0
     project URL : "https://www.highcharts.com/blog/products/highstock/"
     license : Eaton-owned
     license URLs : n/a
-    npm URL : "https://www.npmjs.com/package/highcharts/v/8.0.0"
-    md5 : 64082fd2a0792f16762669a1c8abe090
-    sha1 : 8834f42a88f83666390b328092c63f7c9da982d4
-    jira : YUK-21140
-    updated : 2020-02-27
+    npm URL : "https://www.npmjs.com/package/highcharts/v/8.2.0"
+    md5 : 24625afd24ad869519049d609893e4f2
+    sha1 : 2dff361bc7acd9fd12deae604a7eda3442aa8690
+    jira : YUK-22997
+    updated : 2020-10-06
     notes : Used for charting
 
   - project : jqgrid
@@ -5599,15 +5599,15 @@ JavaScript :
     notes : "This library is used to display a grid on the Collection Actions -> Device Report page. Up to 4.7 is MIT/GPL2 licensed, subsequently commercialized as 'Guriddo jqGrid JavaScript', see http://guriddo.net/?p=1 for details"
 
   - project : jquery
-    version : 3.4.1
+    version : 3.5.1
     project URL : "http://jquery.com/"
     license : MIT
     license URLs : "https://github.com/jquery/jquery/blob/master/LICENSE.txt"
-    npm URL : "https://www.npmjs.com/package/jquery/v/3.4.1"
-    md5 : 22bf90ce1d90e579e6d79d2ecf064b83
-    sha1 : 561193f2f30056e87e68c31d8107a2269315f13e
-    jira : YUK-21133
-    updated : 2020-02-11
+    npm URL : "https://www.npmjs.com/package/jquery/v/3.5.1"
+    md5 : 793ca595de394d333280a03210f12d9f
+    sha1 : 9e8e176264ababb6b15b516c7d80c2ae251a7efc
+    jira : YUK-22994
+    updated : 2020-06-10
     notes : 
 
   - project : jquery-ui
@@ -5672,16 +5672,16 @@ JavaScript :
     notes : Used for mapping
 
   - project : placeholder
-    version : 2.0.7
+    version : 2.3.1
     project URL : "https://github.com/mathiasbynens/jquery-placeholder"
     license : MIT
     license URLs : "https://opensource.org/licenses/mit-license.php"
-    npm URL : "https://www.npmjs.com/package/jquery-placeholder/v/2.0.7"
-    md5 : 8d610a320459682421a80028d278e183
-    sha1 : a4f659173acc554c934707dfebe837ef312f7a75
-    jira : YUK-12670
-    updated : 2013-10-28
-    notes : 
+    npm URL : "https://www.npmjs.com/package/jquery-placeholder/v/2.3.1"
+    md5 : 9954228b60fcca215a079d9ddac91f7a
+    sha1 : ea060f1818fcc8ac5e27de53eef47ce63b6c86e5
+    jira : YUK-22999
+    updated : 2020-10-06
+    notes : This library is used to display the text as a placeholder in input fields for e.g. search text is displayed in global search.
 
   - project : scroll.to
     version : 2.1.2
@@ -5720,15 +5720,15 @@ JavaScript :
     notes : 
 
   - project : spectrum
-    version : 1.8.0
+    version : 1.8.1
     project URL : "https://github.com/bgrins/spectrum"
     license : MIT
     license URLs : "https://github.com/bgrins/spectrum/blob/master/LICENSE"
     npm URL : "https://www.npmjs.com/package/spectrum-colorpicker"
-    md5 : b623be7db1bfa95379c323c95a991c43
-    sha1 : c7071fb0b10b25ec6315e36f3c25e39a713cf917
-    jira : YUK-21527
-    updated : 2020-03-11
+    md5 : 1035f8affb61bfbbbc029c1a50a4c2b5
+    sha1 : ef387b68a9279576299eb6d224a45f1955af21ce
+    jira : YUK-22998
+    updated : 2020-10-07
     notes : This library is used for selecting colors in Themes for Yukon.
 
   - project : time-picker

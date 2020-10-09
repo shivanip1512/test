@@ -55,19 +55,20 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
 
     @Override
     @Transactional
-    public int create(MacroLoadGroup macroLoadGroup) {
+    public MacroLoadGroup create(MacroLoadGroup macroLoadGroup) {
         LMGroup lmGroup = getMacroLoadGroupDBPersistent(macroLoadGroup, macroLoadGroup.getId());
         buildMacroLoadGroupDBPersistent(macroLoadGroup, lmGroup);
         dbPersistentDao.performDBChange(lmGroup, TransactionType.INSERT);
+        buildMacroLoadGroupModel(lmGroup, macroLoadGroup);
         logService.loadGroupCreated(macroLoadGroup.getName(), macroLoadGroup.getType(),
                 ApiRequestContext.getContext().getLiteYukonUser());
 
-        return lmGroup.getPAObjectID();
+        return macroLoadGroup;
     }
 
     @Override
     @Transactional
-    public int update(int loadGroupId, MacroLoadGroup macroLoadGroup) {
+    public MacroLoadGroup update(int loadGroupId, MacroLoadGroup macroLoadGroup) {
         Optional<LiteYukonPAObject> liteLoadGroup = getGroupFromCache(loadGroupId);
 
         if (liteLoadGroup.isEmpty()) {
@@ -76,9 +77,10 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
         LMGroup lmGroup = getMacroLoadGroupDBPersistent(macroLoadGroup, loadGroupId);
         buildMacroLoadGroupDBPersistent(macroLoadGroup, lmGroup);
         dbPersistentDao.performDBChange(lmGroup, TransactionType.UPDATE);
+        buildMacroLoadGroupModel(lmGroup, macroLoadGroup);
         logService.loadGroupUpdated(macroLoadGroup.getName(), macroLoadGroup.getType(),
                 ApiRequestContext.getContext().getLiteYukonUser());
-        return lmGroup.getPAObjectID();
+        return macroLoadGroup;
     }
 
     @Override

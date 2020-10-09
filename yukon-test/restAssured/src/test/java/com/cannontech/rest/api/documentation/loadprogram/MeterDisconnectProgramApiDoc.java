@@ -65,8 +65,8 @@ public class MeterDisconnectProgramApiDoc {
     public void meterDisconnectAssignedLoadGroup_Create(ITestContext context) {
 
         MockLoadGroupBase loadGroupDisconnect = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_METER_DISCONNECT);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroupDisconnect);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroupDisconnect);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
 
         List<MockLoadGroupBase> loadGroups = new ArrayList<>();
         Integer loadGroupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID);
@@ -87,7 +87,7 @@ public class MeterDisconnectProgramApiDoc {
         context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID, constraintId);
         context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME, programConstraint.getName());
         assertTrue("Constraint Id should not be Null", constraintId != null);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
     }
 
     /**
@@ -260,7 +260,7 @@ public class MeterDisconnectProgramApiDoc {
 
         List<MockLoadGroupBase> groups = (List<MockLoadGroupBase>) context.getAttribute("loadGroups");
         groups.forEach(group -> {
-            ExtractableResponse<?> response = ApiCallHelper.delete(group.getId(), group.getName(), "deleteloadgroup");
+            ExtractableResponse<?> response = ApiCallHelper.delete("loadGroups", "/" + group.getId());
             assertTrue("Status code should be 200", response.statusCode() == 200);
         });
 

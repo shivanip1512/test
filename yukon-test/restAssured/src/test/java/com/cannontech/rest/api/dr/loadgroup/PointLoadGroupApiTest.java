@@ -22,9 +22,9 @@ public class PointLoadGroupApiTest {
     public void loadGroupPoint_01_Create(ITestContext context) {
         Log.startTestCase("loadGroupPoint_01_Create");
         MockLoadGroupPoint loadGroup = (MockLoadGroupPoint) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_POINT);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID));
-        assertTrue(createResponse.statusCode() == 200, "Status code should be 200");
+        assertTrue(createResponse.statusCode() == 201, "Status code should be 201");
         assertTrue(createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID) != null, "Group Id should not be Null");
         loadGroup.setId(createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID));
         context.setAttribute("expectedloadGroup", loadGroup);
@@ -36,8 +36,8 @@ public class PointLoadGroupApiTest {
         Log.startTestCase("loadGroupPoint_02_Get");
         Log.info("Group Id of LmGroupPoint created is : " + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID));
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("getloadgroup",
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups",
+               "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
 
         MockLoadGroupPoint loadGroupResponse = getResponse.as(MockLoadGroupPoint.class);
@@ -66,13 +66,13 @@ public class PointLoadGroupApiTest {
         context.setAttribute("Point_GrpName", name);
 
         Log.info("Updated Load Group is :" + loadGroup);
-        ExtractableResponse<?> getResponse = ApiCallHelper.post("updateloadgroup",
+        ExtractableResponse<?> getResponse = ApiCallHelper.put("loadGroups",
                 loadGroup,
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+                "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
 
-        ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("getloadgroup",
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("loadGroups",
+               "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
 
         MockLoadGroupPoint updatedLoadGroupResponse = getupdatedResponse.as(MockLoadGroupPoint.class);
         assertTrue(name.equals(updatedLoadGroupResponse.getName()), "Name Should be : " + name);
@@ -88,13 +88,13 @@ public class PointLoadGroupApiTest {
         Log.startTestCase("loadGroupPoint_04_Copy");
         MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
                 .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_POINT)).build();
-        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup",
+        ExtractableResponse<?> copyResponse = ApiCallHelper.post("loadGroups",
                 loadGroupCopy,
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+               "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString() + "/copy");
         assertTrue(copyResponse.statusCode() == 200, "Status code should be 200");
         assertTrue(copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString() != null, "Group Id should not be Null");
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("getloadgroup",
-                copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups",
+               "/" + copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
 
         MockLoadGroupPoint loadGroupResponse = getResponse.as(MockLoadGroupPoint.class);
@@ -107,19 +107,13 @@ public class PointLoadGroupApiTest {
     public void loadGroupPoint_05_Delete(ITestContext context) {
         Log.startTestCase("loadGroupPoint_05_Delete");
 
-        MockLMDto lmDeleteObject = MockLMDto.builder().name(context.getAttribute("Point_GrpName").toString()).build();
-
-        Log.info("Delete Load Group is : " + lmDeleteObject);
-        ExtractableResponse<?> deleteResponse = ApiCallHelper.delete("deleteloadgroup",
-                lmDeleteObject,
-                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> deleteResponse = ApiCallHelper.delete("loadGroups",
+               "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue(deleteResponse.statusCode() == 200, "Status code should be 200");
 
         // Delete copy Load group
-        lmDeleteObject = MockLMDto.builder().name(context.getAttribute("Copied_Point_GrpName").toString()).build();
-        ExtractableResponse<?> deleteCopyResponse = ApiCallHelper.delete("deleteloadgroup",
-                lmDeleteObject,
-                context.getAttribute("Copied_Point_GrpId").toString());
+        ExtractableResponse<?> deleteCopyResponse = ApiCallHelper.delete("loadGroups",
+               "/" + context.getAttribute("Copied_Point_GrpId").toString());
         assertTrue(deleteCopyResponse.statusCode() == 200, "Status code should be 200");
 
         Log.endTestCase("loadGroupPoint_05_Delete");
@@ -135,7 +129,7 @@ public class PointLoadGroupApiTest {
 
         MockLoadGroupPoint loadGroup = (MockLoadGroupPoint) context.getAttribute("expectedloadGroup");
         loadGroup.setName(loadGroup.getName());
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
 
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -157,7 +151,7 @@ public class PointLoadGroupApiTest {
 
         MockLoadGroupPoint loadGroup = buildMockLoadGroup();
         loadGroup.setName("");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -177,7 +171,7 @@ public class PointLoadGroupApiTest {
 
         MockLoadGroupPoint loadGroup = buildMockLoadGroup();
         loadGroup.setName("Test\\,Point");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -198,7 +192,7 @@ public class PointLoadGroupApiTest {
 
         MockLoadGroupPoint loadGroup = buildMockLoadGroup();
         loadGroup.setName("TestPointMoreThanSixtyCharacter_TestPointMoreThanSixtyCharacters");
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -218,7 +212,7 @@ public class PointLoadGroupApiTest {
 
         MockLoadGroupPoint loadGroup = buildMockLoadGroup();
         loadGroup.setKWCapacity(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -240,7 +234,7 @@ public class PointLoadGroupApiTest {
 
         MockLoadGroupPoint loadGroup = buildMockLoadGroup();
         loadGroup.setKWCapacity(-1.000);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -261,7 +255,7 @@ public class PointLoadGroupApiTest {
 
         MockLoadGroupPoint loadGroup = buildMockLoadGroup();
         loadGroup.setKWCapacity(100000.0);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -285,7 +279,7 @@ public class PointLoadGroupApiTest {
         loadGroup.setDeviceUsage(deviceUsage);
         MockLMDto pointUsage = MockLMDto.builder().id(703078).build();
         loadGroup.setPointUsage(pointUsage);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -311,7 +305,7 @@ public class PointLoadGroupApiTest {
         loadGroup.setDeviceUsage(deviceUsage);
         MockLMDto pointUsage = MockLMDto.builder().id(176266).build();
         loadGroup.setPointUsage(pointUsage);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -335,7 +329,7 @@ public class PointLoadGroupApiTest {
         loadGroup.setDeviceUsage(deviceUsage);
         MockLMDto pointUsage = MockLMDto.builder().id(null).build();
         loadGroup.setPointUsage(pointUsage);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -356,7 +350,7 @@ public class PointLoadGroupApiTest {
 
         MockLoadGroupPoint loadGroup = buildMockLoadGroup();
         loadGroup.setStartControlRawState(null);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -381,7 +375,7 @@ public class PointLoadGroupApiTest {
         loadGroup.setDeviceUsage(deviceUsage);
         MockLMDto pointUsage = MockLMDto.builder().id(1235).build();
         loadGroup.setPointUsage(pointUsage);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
@@ -405,7 +399,7 @@ public class PointLoadGroupApiTest {
         loadGroup.setDeviceUsage(deviceUsage);
         MockLMDto pointUsage = MockLMDto.builder().id(1235).build();
         loadGroup.setPointUsage(pointUsage);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");

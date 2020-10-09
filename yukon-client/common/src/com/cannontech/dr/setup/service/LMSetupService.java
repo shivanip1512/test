@@ -5,12 +5,12 @@ public interface LMSetupService<T1, T2> {
     /**
      * Creates the LM object.
      */
-    int create(T1 lmObject);
+    T1 create(T1 lmObject);
     
     /**
      * Update the LM object.
      */
-    int update(int id, T1 lmObject);
+    T1 update(int id, T1 lmObject);
 
     /**
      * Retrieve LM objects based on id.
@@ -20,13 +20,7 @@ public interface LMSetupService<T1, T2> {
     /**
      * Delete the LM object.
      */
-    default int delete(int id, String name) {
-        return 0;
-    }
-   
-    default int delete(int id) {
-        return 0;
-    }
+    int delete(int id);
 
     /**
      * Copy the LM object.

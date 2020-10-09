@@ -46,19 +46,15 @@ public class MacroLoadGroupSetupApiController {
     @PutMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public ResponseEntity<Object> update(@Valid @RequestBody MacroLoadGroup loadGroup, @PathVariable int id) {
-        int paoId = macroLoadGroupService.update(id, loadGroup);
-        HashMap<String, Integer> paoIdMap = new HashMap<>();
-        paoIdMap.put("paoId", paoId);
-        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
+        MacroLoadGroup updateLoadGroup = macroLoadGroupService.update(id, loadGroup);
+        return new ResponseEntity<>(updateLoadGroup, HttpStatus.OK);
     }
 
     @PostMapping
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> create(@Valid @RequestBody MacroLoadGroup loadGroup) {
-        int paoId = macroLoadGroupService.create(loadGroup);
-        HashMap<String, Integer> paoIdMap = new HashMap<>();
-        paoIdMap.put("paoId", paoId);
-        return new ResponseEntity<>(paoIdMap, HttpStatus.CREATED);
+        MacroLoadGroup createLoadGroup = macroLoadGroupService.create(loadGroup);
+        return new ResponseEntity<>(createLoadGroup, HttpStatus.CREATED);
     }
 
     @PostMapping("/{id}/copy")

@@ -71,12 +71,9 @@ yukon.widget.trends = (function () {
                             this[name + 'DateBox'].on('click', function () {} );
                         }
                     });
-                    var highChartOptions = {
-                            lang:{
-                                rangeSelectorZoom: '',
-                                rangeSelectorFrom: ''
-                            }
-                    };
+                    var highChartOptions = yg.highcharts_options;
+                    highChartOptions.lang.rangeSelectorZoom = "";
+                    highChartOptions.lang.rangeSelectorFrom = "";
                     yukon.trends.buildChart(chartContainer, trend, chartOptions, highChartOptions);
                     chartContainer.find(".highcharts-input-group").attr('cursor','default');
                 }

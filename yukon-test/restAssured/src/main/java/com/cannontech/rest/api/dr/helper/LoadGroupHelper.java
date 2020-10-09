@@ -288,10 +288,8 @@ public class LoadGroupHelper {
         return ApiUtils.buildFriendlyName(paoType, "LM_GROUP_", "TestCopy");
     }
 
-    public static void deleteLoadGroup(String name, String groupId) {
-        MockLMDto lmDeleteObject = MockLMDto.builder().name(name).build();
-        Log.info("Delete load group is : " + lmDeleteObject);
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup", lmDeleteObject, groupId);
+    public static void deleteLoadGroup(String groupId) {
+        ExtractableResponse<?> response = ApiCallHelper.delete("loadGroups", "/" + groupId);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
@@ -309,8 +307,8 @@ public class LoadGroupHelper {
         MockLoadGroupBase loadGroup = buildLoadGroup(paoType);
         loadGroup.setName(name);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
+        assertTrue("Status code should be 201", createResponse.statusCode() == 201);
         loadGroup.setId(createResponse.path("groupId"));
 
         return loadGroup;
