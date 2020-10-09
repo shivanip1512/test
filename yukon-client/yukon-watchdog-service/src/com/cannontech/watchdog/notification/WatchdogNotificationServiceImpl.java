@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -57,7 +58,7 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
     @PostConstruct
     public void init() {
         messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
-        sendToEmailIds = getSubscribedUsersEmailId();
+        sendToEmailIds = subscriptionDao.getSubscribedEmails(SmartNotificationEventType.YUKON_WATCHDOG);
         sender = globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS);
     }
     
@@ -113,6 +114,9 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
             log.info("Not sending any notification now as notification was send at " + lastNotificationSendTime);
         } else {
             try {
+                if (CollectionUtils.isEmpty(sendToEmailIds)) {
+                    throw new NotFoundException("No user subscribed for notification for watchdog");
+                }
                 String subject = StringUtils.EMPTY;
                 String message = StringUtils.EMPTY;
                 StringBuilder msgBuilder = new StringBuilder();
@@ -131,7 +135,7 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
                     }
                     msgBuilder.append("\n\nSee " + webserverUrlResolver.getUrlBase());
                 }
-                
+
                 EmailMessage emailMessage = EmailMessage.newMessageBccOnly(subject, msgBuilder.toString(), sender,
                         sendToEmailIds);
                 emailService.sendMessage(emailMessage);
@@ -139,17 +143,6 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
                 log.error("Watch dog is unable to send Internal Notification " + e);
             }
         }
-    }
-    
-    /*
-     * Return list of users subscribed for watchdog notifications
-     */
-    private List<String> getSubscribedUsersEmailId() throws NotFoundException {
-        List<String> emailAddresses = subscriptionDao.getSubscribedEmails(SmartNotificationEventType.YUKON_WATCHDOG);
-        if (emailAddresses.isEmpty()) {
-            throw new NotFoundException("No user subscribed for notification for watchdog");
-        }
-        return emailAddresses;
     }
 
     /*
