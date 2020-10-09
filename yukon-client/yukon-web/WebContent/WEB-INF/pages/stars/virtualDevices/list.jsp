@@ -25,6 +25,7 @@
             <thead>
                 <tr>
                     <tags:sort column="${name}"/>
+                    <th><i:inline key="yukon.common.meterNumber"/></th>
                     <tags:sort column="${status}"/>
                 </tr>
             </thead>
@@ -33,12 +34,17 @@
                     <tr>
                         <cti:url var="detailUrl" value="/stars/virtualDevice/${device.id}"/>
                         <td><a href="${detailUrl}">${fn:escapeXml(device.name)}</a></td>
-                            <c:set var="cssClass" value="success" />
-                            <cti:msg2 var="status" key="yukon.common.enabled"/>
-                            <c:if test="${!device.enable}">
-                                <c:set var="cssClass" value="error" />
-                                <cti:msg2 var="status" key="yukon.common.disabled"/>
+                        <td>
+                            <c:if test="${device.type == virtualMeterType}">
+                                ${fn:escapeXml(device.meterNumber)}
                             </c:if>
+                        </td>
+                        <c:set var="cssClass" value="success" />
+                        <cti:msg2 var="status" key="yukon.common.enabled"/>
+                        <c:if test="${!device.enable}">
+                            <c:set var="cssClass" value="error" />
+                            <cti:msg2 var="status" key="yukon.common.disabled"/>
+                        </c:if>
                         <td class="${cssClass}">${status}</td>
                     </tr>
                 </c:forEach>

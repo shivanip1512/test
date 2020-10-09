@@ -10,9 +10,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.jms.Message;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -150,6 +152,8 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
     private final Logger log = YukonLogManager.getLogger(RfnLcrDataSimulatorServiceImpl.class);
     
     private static final int pqrEventBlobTlvTypeId = 87;
+    private static final Duration responseIndividualTimeout = Duration.standardSeconds(1);
+    private static final Duration responseOverallTimeout = Duration.standardSeconds(20);
 
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
     @Autowired private ExiParsingService<SimpleXPathTemplate> exiParsingService;
@@ -158,7 +162,8 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
     @Autowired private PerformanceVerificationDao performanceVerificationDao;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
-    private YukonJmsTemplate jmsTemplate;
+    private YukonJmsTemplate lcrReadingArchiveRequestTemplate;
+    private YukonJmsTemplate lcrReadingArchiveResponseTemplate;
     private static final JAXBContext jaxbContext = initJaxbContext();
     
     //minute of the day to send a request at/list of devices to send a read request to
@@ -178,15 +183,30 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
 
     @PostConstruct
     public void init() {
-        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_LCR_READ_ARCHIVE);
+        final var lcrReadArchive = JmsApiDirectory.RFN_LCR_READ_ARCHIVE; 
+        lcrReadingArchiveRequestTemplate = jmsTemplateFactory.createTemplate(lcrReadArchive);
+        lcrReadingArchiveResponseTemplate = jmsTemplateFactory.createResponseTemplate(lcrReadArchive, responseIndividualTimeout);
+        
     }
 
     @Override
     public void execute(int minuteOfTheDay) {
+        var receiveTimeout = Instant.now().plus(responseOverallTimeout); 
+        
         sendReadRequests(rangeDevices.get(minuteOfTheDay), rangeDevicesStatus);
         sendReadRequests(allDevices.get(minuteOfTheDay), allDevicesStatus);
+        
+        receiveReadResponses(receiveTimeout);
     }
      
+    private void receiveReadResponses(Instant receiveTimeout) {
+        int msgs = 0;
+        while (receiveTimeout.isAfterNow() && lcrReadingArchiveResponseTemplate.receive() != null) {
+            ++msgs;
+        }
+        log.debug("Flushed {} LcrReadArchiveResponse messages", msgs);
+    }
+
     /**
      * Sends read requests.
      * 
@@ -370,7 +390,7 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
     private void simulateLcrReadRequest(RfnLcrReadSimulatorDeviceParameters deviceParameters, RfnDataSimulatorStatus status) {
         try {
             RfnLcrReadingArchiveRequest readArchiveRequest = createReadArchiveRequest(deviceParameters);
-            jmsTemplate.convertAndSend(readArchiveRequest);
+            lcrReadingArchiveRequestTemplate.convertAndSend(readArchiveRequest);
             status.getSuccess().incrementAndGet();
             
         } catch (RfnLcrSimulatorException | IOException e) {

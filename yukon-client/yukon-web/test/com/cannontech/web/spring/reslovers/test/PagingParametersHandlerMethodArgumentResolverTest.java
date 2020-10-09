@@ -32,7 +32,7 @@ public class PagingParametersHandlerMethodArgumentResolverTest {
         ReflectionTestUtils.invokeMethod(pagingResolver, "getValidItemsPerPage", itemsPerPage);
     }
 
-    @Test(expected = InvalidPagingParametersException.class)
+    @Test
     public void testGetValidItemsPerPageForBigIntegerValue() {
         String itemsPerPage = "100000000000000000000000000";
         ReflectionTestUtils.invokeMethod(pagingResolver, "getValidItemsPerPage", itemsPerPage);
@@ -58,7 +58,7 @@ public class PagingParametersHandlerMethodArgumentResolverTest {
         ReflectionTestUtils.invokeMethod(pagingResolver, "getValidPageNumber", itemsPerPage);
     }
 
-    @Test(expected = InvalidPagingParametersException.class)
+    @Test
     public void testGetValidPageNumberForNullValue() {
         String itemsPerPage = null;
         ReflectionTestUtils.invokeMethod(pagingResolver, "getValidPageNumber", itemsPerPage);
@@ -70,7 +70,7 @@ public class PagingParametersHandlerMethodArgumentResolverTest {
         ReflectionTestUtils.invokeMethod(pagingResolver, "getValidPageNumber", itemsPerPage);
     }
 
-    @Test(expected = InvalidPagingParametersException.class)
+    @Test
     public void testGetValidPageNumberForBigIntegerValue() {
         String itemsPerPage = "100000000000000000000000000";
         ReflectionTestUtils.invokeMethod(pagingResolver, "getValidPageNumber", itemsPerPage);

@@ -41,22 +41,16 @@ public class ControlScenarioSetupApiController {
 
     @PostMapping
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
-    public ResponseEntity<HashMap<String, Integer>> create(
-            @Valid @RequestBody ControlScenario controlScenario) {
-        int paoId = controlScenarioService.create(controlScenario);
-        HashMap<String, Integer> paoIdMap = new HashMap<>();
-        paoIdMap.put("paoId", paoId);
-        return new ResponseEntity<>(paoIdMap, HttpStatus.CREATED);
+    public ResponseEntity<Object> create(@Valid @RequestBody ControlScenario controlScenario) {
+        ControlScenario createControlScenario = controlScenarioService.create(controlScenario);
+        return new ResponseEntity<>(createControlScenario, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
-    public ResponseEntity<HashMap<String, Integer>> update(@Valid @RequestBody ControlScenario controlScenario,
-            @PathVariable int id) {
-        int paoId = controlScenarioService.update(id, controlScenario);
-        HashMap<String, Integer> paoIdMap = new HashMap<>();
-        paoIdMap.put("paoId", paoId);
-        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
+    public ResponseEntity<Object> update(@Valid @RequestBody ControlScenario controlScenario, @PathVariable int id) {
+        ControlScenario updateControlScenario = controlScenarioService.update(id, controlScenario);
+        return new ResponseEntity<>(updateControlScenario, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

@@ -59,7 +59,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
     }
 
     @Override
-    public int create(ProgramConstraint programConstraint) {
+    public ProgramConstraint create(ProgramConstraint programConstraint) {
         Optional<LMDto> holidaySchedule = lmServiceHelper.getHolidaySchedule(programConstraint.getHolidaySchedule().getId());
         if (holidaySchedule.isEmpty()) {
             throw new NotFoundException("Holiday Schedule Id not found");
@@ -76,11 +76,19 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
         if (constraint.getConstraintID() == null) {
             dbPersistentDao.performDBChange(constraint, TransactionType.INSERT);
         }
-
+        programConstraint.buildModel(constraint);
+        if (holidaySchedule.isPresent()) {
+            programConstraint.getHolidaySchedule().setName(holidaySchedule.get().getName());
+        }
+        Optional<LMDto> seasonSchedule = lmServiceHelper.getSeasonSchedule(programConstraint.getSeasonSchedule().getId());
+        if (seasonSchedule.isPresent()) {
+            programConstraint.getSeasonSchedule().setName(seasonSchedule.get().getName());
+        }
+        
         demandResponseEventLogService.programConstraintCreated(constraint.getConstraintName(),
                                                                ApiRequestContext.getContext().getLiteYukonUser());
 
-        return constraint.getConstraintID();
+        return programConstraint;
     }
 
     @Override
@@ -104,7 +112,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
     }
 
     @Override
-    public int update(int constraintId, ProgramConstraint programConstraint) {
+    public ProgramConstraint update(int constraintId, ProgramConstraint programConstraint) {
         Optional<LiteLMConstraint> lmConstraint = 
                 dbCache.getAllLMProgramConstraints().stream()
                 .filter(liteLMConstraint -> liteLMConstraint.getConstraintID() == constraintId)
@@ -127,11 +135,19 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
         LMProgramConstraint lmprogramConstraint = new LMProgramConstraint();
         programConstraint.buildDBPersistent(lmprogramConstraint);
         dbPersistentDao.performDBChange(lmprogramConstraint, TransactionType.UPDATE);
+        programConstraint.buildModel(lmprogramConstraint);
+        if (holidaySchedule.isPresent()) {
+            programConstraint.getHolidaySchedule().setName(holidaySchedule.get().getName());
+        }
+        Optional<LMDto> seasonSchedule = lmServiceHelper.getSeasonSchedule(programConstraint.getSeasonSchedule().getId());
+        if (seasonSchedule.isPresent()) {
+            programConstraint.getSeasonSchedule().setName(seasonSchedule.get().getName());
+        }
 
         demandResponseEventLogService.programConstraintUpdated(lmprogramConstraint.getConstraintName(),
                                                                ApiRequestContext.getContext().getLiteYukonUser());
 
-        return lmprogramConstraint.getConstraintID();
+        return programConstraint;
     }
 
     @Override
