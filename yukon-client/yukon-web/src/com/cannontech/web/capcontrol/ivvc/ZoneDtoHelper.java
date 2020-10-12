@@ -13,6 +13,7 @@ import com.cannontech.capcontrol.model.AbstractZoneNotThreePhase;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.ZoneAssignmentCapBankRow;
 import com.cannontech.capcontrol.model.ZoneAssignmentPointRow;
+import com.cannontech.capcontrol.model.ZoneHierarchy;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
@@ -93,14 +94,46 @@ public class ZoneDtoHelper {
             possibleParentZoneTypes.add(ZoneType.GANG_OPERATED);
             possibleParentZoneTypes.add(ZoneType.THREE_PHASE);
             possibleParentZoneTypes.add(ZoneType.SINGLE_PHASE);
-        }        
-                
+        }
+        
+        ZoneHierarchy hierarchy = zoneService.getZoneHierarchyBySubBusId(zoneDto.getSubstationBusId());
+        //find the current zone
+        ZoneHierarchy foundZone = searchForNode(hierarchy, zoneDto.getZoneId(), false);
+        //remove all children from the list
+        ArrayList<Integer> childZoneIds = new ArrayList<Integer>();
+        if (foundZone != null) {
+            getAllChildZones(foundZone, childZoneIds);
+        }
+     
         List<Zone> possibleParentZones = parentZones.stream()
                 .filter(parent -> possibleParentZoneTypes.contains(parent.getZoneType()) 
-                        && parent.getId().intValue() != zoneDto.getZoneId().intValue())
+                        && parent.getId().intValue() != zoneDto.getZoneId().intValue()
+                        && !childZoneIds.contains(parent.getId()))
                 .collect(Collectors.toList());
 
         return possibleParentZones;
+    }
+    
+    private ZoneHierarchy searchForNode(ZoneHierarchy zone, Integer zoneId, Boolean foundNode) {
+        for (ZoneHierarchy child : zone.getChildren()) {
+            if (child.getZone().getZoneId().intValue() == zoneId.intValue()) {
+                foundNode = true;
+                return child;
+            }
+            
+            ZoneHierarchy foundZone = searchForNode(child, zoneId, foundNode);
+            if (foundZone != null) {
+                return foundZone;
+            }
+        }
+        return null;
+    }
+    
+    private void getAllChildZones(ZoneHierarchy zone, ArrayList<Integer> childZones) {
+        for (ZoneHierarchy child : zone.getChildren()) {
+            childZones.add(child.getZone().getZoneId());
+            getAllChildZones(child, childZones);
+        }
     }
     
     public List<Phase> getAvailableChildPhasesFromParentZone(AbstractZone parentZone) {
