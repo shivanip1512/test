@@ -6,6 +6,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.specification.RequestSpecification;
 
 public class ApiCallHelper {
+    //private static String userDirectory = System.getProperty("user.dir");
     public static final String AUTH_TOKEN = new ApiTokenAuthentication().getAuthToken();
 
     /**
@@ -46,6 +47,7 @@ public class ApiCallHelper {
     }
     
     private static RequestSpecification getHeader() {
-        return given().accept("application/json").contentType("application/json").header("Authorization", "Bearer " + AUTH_TOKEN).log().all();
+        return given().accept("application/json").contentType("application/json").header("Authorization",
+            "Bearer " + AUTH_TOKEN).log().all();
     }
 }

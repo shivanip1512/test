@@ -16,7 +16,8 @@ public class ApiTokenAuthentication {
 
     private static final long MINUTES_TO_REFRESH_TOKEN = 30;
     private String authToken = null;
-    private static Cache<String, String> tokenCache = CacheBuilder.newBuilder().expireAfterWrite(MINUTES_TO_REFRESH_TOKEN, TimeUnit.MINUTES).build();
+    private static Cache<String, String> tokenCache =
+        CacheBuilder.newBuilder().expireAfterWrite(MINUTES_TO_REFRESH_TOKEN, TimeUnit.MINUTES).build();
     private static final String AUTH_TOKEN_KEY = "authTokenKey";
 
     public String getAuthToken() {
@@ -34,16 +35,15 @@ public class ApiTokenAuthentication {
     private String generateToken() {
         
         JSONObject loginRequest = new JSONObject();
-        
+
         loginRequest.put("password", ValidUserLogin.getPassword());
         loginRequest.put("username", ValidUserLogin.getUserName());
         String authTokenValue = null;
-        System.out.println(loginRequest);
 
         try {
         ConfigFileReader configFileReader = new ConfigFileReader();
         baseURI =  configFileReader.getApplicationUrl();
-            authTokenValue = given().accept("application/json").contentType("application/json").body(loginRequest).when().post(
+            authTokenValue = given().accept("application/json").contentType("application/json").body(loginRequest.toString()).when().post(
                 "/api/token").then().extract().path("token").toString();
         } catch (Exception e) {
         }
