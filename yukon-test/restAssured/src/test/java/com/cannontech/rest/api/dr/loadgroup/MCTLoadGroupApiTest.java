@@ -24,10 +24,11 @@ public class MCTLoadGroupApiTest {
         Log.startTestCase("loadGroupMCT_01_Create");
         MockLoadGroupMCT loadGroup = (MockLoadGroupMCT) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_MCT);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
-        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID));
+        Integer groupId = createResponse.jsonPath().getInt("LM_GROUP_MCT.id");
+        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
         assertTrue(createResponse.statusCode() == 201, "Status code should be 201");
-        assertTrue(createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID) != null, "Group Id should not be Null");
-        loadGroup.setId(createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID));
+        assertTrue(groupId != null, "Group Id should not be Null");
+        loadGroup.setId(groupId);
         context.setAttribute("expectedloadGroup", loadGroup);
         Log.endTestCase("loadGroupMCT_01_Create");
     }
@@ -90,12 +91,11 @@ public class MCTLoadGroupApiTest {
         MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
                 .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_MCT)).build();
         ExtractableResponse<?> copyResponse = ApiCallHelper.post("loadGroups",
-                loadGroupCopy,
-               "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString() + "/copy");
+                loadGroupCopy, "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString() + "/copy");
+        Integer copyPaoId = copyResponse.jsonPath().getInt(LoadGroupHelper.CONTEXT_GROUP_ID);
         assertTrue(copyResponse.statusCode() == 200, "Status code should be 200");
-        assertTrue(copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString() != null, "Group Id should not be Null");
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups",
-                "/" + copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        assertTrue(copyPaoId != null, "Group Id should not be Null");
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups", "/" + copyPaoId);
         assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
 
         MockLoadGroupMCT loadGroupResponse = getResponse.as(MockLoadGroupMCT.class);

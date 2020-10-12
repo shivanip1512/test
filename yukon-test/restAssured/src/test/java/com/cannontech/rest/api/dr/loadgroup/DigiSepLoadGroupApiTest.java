@@ -48,9 +48,10 @@ public class DigiSepLoadGroupApiTest {
         Log.startTestCase("loadGroupDigiSep_01_Create");
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
-        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        Integer groupId = createResponse.jsonPath().getInt("LM_GROUP_DIGI_SEP.id");
+        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
         assertTrue("Status code should be 201", createResponse.statusCode() == 201);
-        assertTrue("Group Id should not be Null", createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString() != null);
+        assertTrue("Group Id should not be Null", groupId != null);
 
         Log.endTestCase("loadGroupDigiSep_01_Create");
     }
@@ -152,10 +153,9 @@ public class DigiSepLoadGroupApiTest {
                 .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_DIGI_SEP)).build();
 
         ExtractableResponse<?> copyResponse = ApiCallHelper.post("loadGroups",
-                loadGroupCopy,
-                "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString() + "/copy");
+                loadGroupCopy, "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString() + "/copy");
 
-        assertTrue("Group Id should not be Null", copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString() != null);
+        assertTrue("Group Id should not be Null", copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID) != null);
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
 
         // To tear down after all scripts
@@ -327,12 +327,12 @@ public class DigiSepLoadGroupApiTest {
         loadGroup.setKWCapacity((double) 99999.999);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
-        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        Integer groupId = createResponse.jsonPath().getInt("LM_GROUP_DIGI_SEP.id");
+        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
         assertTrue("Status code should be 201", createResponse.statusCode() == 201);
-        assertTrue("Load Group Id should not be Null", createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString() != null);
+        assertTrue("Load Group Id should not be Null", groupId != null);
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups",
-                "/" + createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups", "/" + groupId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
 
         MockLoadGroupDigiSep digiSepLoadGroup = getResponse.as(MockLoadGroupDigiSep.class);
@@ -391,14 +391,12 @@ public class DigiSepLoadGroupApiTest {
             loadGroup.setKWCapacity(kwCapacityList.get(i));
 
             ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
-            context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID,
-                    createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+            Integer groupId = createResponse.jsonPath().getInt("LM_GROUP_DIGI_SEP.id");
+            context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
             assertTrue("Status code should be 201", createResponse.statusCode() == 201);
-            assertTrue("Load Group Id should not be Null",
-                    createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString() != null);
+            assertTrue("Load Group Id should not be Null", groupId != null);
 
-            ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups",
-                    "/" + createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+            ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups", "/" + groupId);
             assertTrue("Status code should be 200", getResponse.statusCode() == 200);
 
             MockLoadGroupDigiSep digiSepLoadGroup = getResponse.as(MockLoadGroupDigiSep.class);
@@ -443,12 +441,12 @@ public class DigiSepLoadGroupApiTest {
         loadGroup.setUtilityEnrollmentGroup(1);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
-        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        Integer groupId = createResponse.jsonPath().getInt("LM_GROUP_DIGI_SEP.id");
+        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
         assertTrue("Status code should be 201", createResponse.statusCode() == 201);
-        assertTrue("Load Group Id should not be Null", createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString() != null);
+        assertTrue("Load Group Id should not be Null", groupId != null);
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups",
-                "/" + createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups", "/" + groupId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
 
         MockLoadGroupDigiSep digiSepLoadGroup = getResponse.as(MockLoadGroupDigiSep.class);
@@ -472,12 +470,12 @@ public class DigiSepLoadGroupApiTest {
         loadGroup.setUtilityEnrollmentGroup(255);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
-        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        Integer groupId = createResponse.jsonPath().getInt("LM_GROUP_DIGI_SEP.id");
+        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
         assertTrue("Status code should be 201", createResponse.statusCode() == 201);
-        assertTrue("Load Group Id should not be Null", createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString() != null);
+        assertTrue("Load Group Id should not be Null", groupId != null);
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups",
-                "/" + createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups", "/" + groupId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
 
         MockLoadGroupDigiSep digiSepLoadGroup = getResponse.as(MockLoadGroupDigiSep.class);
@@ -561,14 +559,12 @@ public class DigiSepLoadGroupApiTest {
         loadGroup.setRampInMinutes(-99999);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
-        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID,
-                createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        Integer groupId = createResponse.jsonPath().getInt("LM_GROUP_DIGI_SEP.id");
+        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
         assertTrue("Status code should be 201", createResponse.statusCode() == 201);
-        assertTrue("Load Group Id should not be Null",
-                createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString() != null);
+        assertTrue("Load Group Id should not be Null", groupId != null);
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups",
-                "/" + createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups", "/" + groupId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
 
         MockLoadGroupDigiSep digiSepLoadGroup = getResponse.as(MockLoadGroupDigiSep.class);
@@ -592,12 +588,12 @@ public class DigiSepLoadGroupApiTest {
         loadGroup.setRampInMinutes(99999);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
-        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        Integer groupId = createResponse.jsonPath().getInt("LM_GROUP_DIGI_SEP.id");
+        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
         assertTrue("Status code should be 201", createResponse.statusCode() == 201);
-        assertTrue("Load Group Id should not be Null", createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString() != null);
+        assertTrue("Load Group Id should not be Null", groupId != null);
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups",
-                "/" + createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups", "/" + groupId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
 
         MockLoadGroupDigiSep digiSepLoadGroup = getResponse.as(MockLoadGroupDigiSep.class);
@@ -621,12 +617,12 @@ public class DigiSepLoadGroupApiTest {
         loadGroup.setRampInMinutes(-99999);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
-        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        Integer groupId = createResponse.jsonPath().getInt("LM_GROUP_DIGI_SEP.id");
+        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
         assertTrue("Status code should be 201", createResponse.statusCode() == 201);
-        assertTrue("Load Group Id should not be Null", createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString() != null);
+        assertTrue("Load Group Id should not be Null", groupId != null);
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups",
-                "/" + createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups", "/" + groupId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
 
         MockLoadGroupDigiSep digiSepLoadGroup = getResponse.as(MockLoadGroupDigiSep.class);
@@ -650,12 +646,12 @@ public class DigiSepLoadGroupApiTest {
         loadGroup.setRampInMinutes(99999);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
-        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        Integer groupId = createResponse.jsonPath().getInt("LM_GROUP_DIGI_SEP.id");
+        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
         assertTrue("Status code should be 201", createResponse.statusCode() == 201);
-        assertTrue("Load Group Id should not be Null", createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString() != null);
+        assertTrue("Load Group Id should not be Null", groupId != null);
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups",
-               "/" + createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups", "/" + groupId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
 
         MockLoadGroupDigiSep digiSepLoadGroup = getResponse.as(MockLoadGroupDigiSep.class);

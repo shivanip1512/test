@@ -36,7 +36,7 @@ public class EcobeeLoadGroupApiTest {
     public void loadGroupEcobee_01_Create(ITestContext context) {
         Log.startTestCase("loadGroupEcobee_01_Create");
         ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
-        String paoId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        Integer paoId = createResponse.jsonPath().getInt("LM_GROUP_ECOBEE.id");
         context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, paoId);
         assertTrue("Status code should be 201", createResponse.statusCode() == 201);
         assertTrue("Group Id should not be Null", paoId != null);
@@ -105,7 +105,7 @@ public class EcobeeLoadGroupApiTest {
         ExtractableResponse<?> copyResponse = ApiCallHelper.post("loadGroups",
                 loadGroupCopy,
                 "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString() + "/copy");
-        String copyGroupId = copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        Integer copyGroupId = copyResponse.jsonPath().getInt(LoadGroupHelper.CONTEXT_GROUP_ID);
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
         assertTrue("Group Id should not be Null", copyGroupId != null);
         context.setAttribute("ecobee_CopyGrpId", copyGroupId);
