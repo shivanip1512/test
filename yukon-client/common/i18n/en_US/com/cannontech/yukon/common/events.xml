@@ -364,21 +364,21 @@
     <entry key="yukon.common.events.amr.disconnect.loadSideVoltageDetectedWhileDisconnected">Load side voltage detected on device {2} by {1}.</entry>
     
     <!--  Device Config -->
-    <entry key="yukon.common.events.device.configuration.assignConfigToDeviceInitiated">Assign device configuration {1} to {2} initiated by {3}.</entry>
-    <entry key="yukon.common.events.device.configuration.assignConfigToDeviceCompleted">Assign device configuration {1} to {2} by {3} {7,choice,0#failed|1#succeeded}.</entry>
-    <entry key="yukon.common.events.device.configuration.assignConfigToDeviceCompleted.7">Success(1)/Fail(0)</entry>
+    <entry key="yukon.common.events.device.configuration.changeConfigToDeviceInitiated">Change device configuration {1} to {2} initiated by {3}.</entry>
+    <entry key="yukon.common.events.device.configuration.changeConfigToDeviceCompleted">Change device configuration {1} to {2} by {3} {7,choice,0#failed|1#succeeded}.</entry>
+    <entry key="yukon.common.events.device.configuration.changeConfigToDeviceCompleted.7">Success(1)/Fail(0)</entry>
     
-    <entry key="yukon.common.events.device.configuration.unassignConfigFromDeviceInitiated">Unassign device configuration from {1} initiated by {2}.</entry>
-    <entry key="yukon.common.events.device.configuration.unassignConfigFromDeviceCompleted">Unassign device configuration from {1} by {2} {7,choice,0#failed|1#succeeded}.</entry>
-    <entry key="yukon.common.events.device.configuration.unassignConfigFromDeviceCompleted.7">Success(1)/Fail(0)</entry>    
+    <entry key="yukon.common.events.device.configuration.removeConfigFromDeviceInitiated">Remove device configuration from {1} initiated by {2}.</entry>
+    <entry key="yukon.common.events.device.configuration.removeConfigFromDeviceCompleted">Remove device configuration from {1} by {2} {7,choice,0#failed|1#succeeded}.</entry>
+    <entry key="yukon.common.events.device.configuration.removeConfigFromDeviceCompleted.7">Success(1)/Fail(0)</entry>    
     
-    <entry key="yukon.common.events.device.configuration.sendConfigToDeviceInitiated">Send device configuration to device {1} initiated by {2}.</entry>
-    <entry key="yukon.common.events.device.configuration.sendConfigToDeviceCompleted">Send device configuration to device {1} {7,choice,0#failed|1#succeeded}.</entry>
-    <entry key="yukon.common.events.device.configuration.sendConfigToDeviceCompleted.7">Success(1)/Fail(0)</entry>
+    <entry key="yukon.common.events.device.configuration.uploadConfigToDeviceInitiated">Upload device configuration to device {1} initiated by {2}.</entry>
+    <entry key="yukon.common.events.device.configuration.uploadConfigToDeviceCompleted">Upload device configuration to device {1} {7,choice,0#failed|1#succeeded}.</entry>
+    <entry key="yukon.common.events.device.configuration.uploadConfigToDeviceCompleted.7">Success(1)/Fail(0)</entry>
    
-    <entry key="yukon.common.events.device.configuration.readConfigFromDeviceInitiated">Read device configuration from device {1} initiated by {2}.</entry>
-    <entry key="yukon.common.events.device.configuration.readConfigFromDeviceCompleted">Read device configuration from device {1} {7,choice,0#failed|1#succeeded}.</entry>
-    <entry key="yukon.common.events.device.configuration.readConfigFromDeviceCompleted.7">Success(1)/Fail(0)</entry>
+    <entry key="yukon.common.events.device.configuration.validateConfigFromDeviceInitiated">Validate device configuration from device {1} initiated by {2}.</entry>
+    <entry key="yukon.common.events.device.configuration.validateConfigFromDeviceCompleted">Validate device configuration from device {1} {7,choice,0#failed|1#succeeded}.</entry>
+    <entry key="yukon.common.events.device.configuration.validateConfigFromDeviceCompleted.7">Success(1)/Fail(0)</entry>
 
     <entry key="yukon.common.events.device.configuration.verifyConfigFromDeviceInitiated">Verify device configuration on device {1} initiated by {2}.</entry>
     <entry key="yukon.common.events.device.configuration.verifyConfigFromDeviceCompleted">Verify device configuration on device {1} {7,choice,0#failed|1#succeeded}.</entry>

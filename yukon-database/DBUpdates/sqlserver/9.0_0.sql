@@ -35,6 +35,67 @@ UPDATE DeviceGroupComposed SET CompositionType = 'INTERSECTION'
 INSERT INTO DBUpdates VALUES ('YUK-23001', '9.0.0', GETDATE());
 /* @end YUK-23001 */
 
+/* @start YUK-22800 */
+
+/* assign to change */
+UPDATE EventLog 
+SET EventType = 'device.configuration.changeConfigInitiated' 
+WHERE EventType = 'device.configuration.assignConfigInitiated';
+UPDATE EventLog 
+SET EventType = 'device.configuration.changeConfigCompleted' 
+WHERE EventType = 'device.configuration.assignConfigCompleted';
+UPDATE EventLog 
+SET EventType = 'device.configuration.changeConfigToDeviceCompleted' 
+WHERE EventType = 'device.configuration.assignConfigToDeviceCompleted';
+
+/* unassign to remove */
+UPDATE EventLog 
+SET EventType = 'device.configuration.removeConfigInitiated' 
+WHERE EventType = 'device.configuration.unassignConfigInitiated';
+UPDATE EventLog 
+SET EventType = 'device.configuration.removeConfigCompleted' 
+WHERE EventType = 'device.configuration.unassignConfigCompleted';
+UPDATE EventLog 
+SET EventType = 'device.configuration.removeConfigToDeviceCompleted' 
+WHERE EventType = 'device.configuration.unassignConfigToDeviceCompleted';
+
+/* send to upload */
+UPDATE EventLog 
+SET EventType = 'device.configuration.uploadConfigInitiated' 
+WHERE EventType = 'device.configuration.sendConfigInitiated';
+UPDATE EventLog 
+SET EventType = 'device.configuration.uploadConfigCompleted' 
+WHERE EventType = 'device.configuration.sendConfigCompleted';
+UPDATE EventLog 
+SET EventType = 'device.configuration.uploadConfigCancelled' 
+WHERE EventType = 'device.configuration.sendConfigCancelled';
+UPDATE EventLog 
+SET EventType = 'device.configuration.uploadConfigToDeviceInitiated' 
+WHERE EventType = 'device.configuration.sendConfigToDeviceInitiated';
+UPDATE EventLog 
+SET EventType = 'device.configuration.uploadConfigToDeviceCompleted' 
+WHERE EventType = 'device.configuration.sendConfigToDeviceCompleted';
+
+/* read to validate */
+UPDATE EventLog 
+SET EventType = 'device.configuration.validateConfigInitiated' 
+WHERE EventType = 'device.configuration.readConfigInitiated';
+UPDATE EventLog 
+SET EventType = 'device.configuration.validateConfigCompleted' 
+WHERE EventType = 'device.configuration.readConfigCompleted';
+UPDATE EventLog 
+SET EventType = 'device.configuration.validateConfigCancelled' 
+WHERE EventType = 'device.configuration.readConfigCancelled';
+UPDATE EventLog 
+SET EventType = 'device.configuration.validateConfigFromDeviceInitiated' 
+WHERE EventType = 'device.configuration.readConfigFromDeviceInitiated';
+UPDATE EventLog 
+SET EventType = 'device.configuration.validateConfigToDeviceCompleted' 
+WHERE EventType = 'device.configuration.readConfigToDeviceCompleted';
+
+INSERT INTO DBUpdates VALUES ('YUK-22800', '9.0.0', GETDATE());
+/* @end YUK-22800 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
