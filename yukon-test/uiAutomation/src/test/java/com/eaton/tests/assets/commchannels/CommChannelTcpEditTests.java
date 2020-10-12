@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.assertj.core.api.SoftAssertions;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -102,7 +102,7 @@ public class CommChannelTcpEditTests extends SeleniumTestSetup {
         Object body = JsonFileHelper.parseJSONFile(payloadFile);
         jo = (JSONObject) body;
         jo.put("name", commChannelNameTcp);
-        ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
+        AssetsCreateRequestAPI.createCommChannel(body);
 
         EditTcpCommChannelModal editModal = detailPage.showTcpCommChannelEditModal();
 

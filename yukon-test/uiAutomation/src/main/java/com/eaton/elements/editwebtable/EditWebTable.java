@@ -7,8 +7,6 @@ import java.util.Optional;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import com.eaton.elements.WebTableColumnHeader;
-import com.eaton.elements.WebTableRow;
 import com.eaton.framework.DriverExtensions;
 
 public class EditWebTable {

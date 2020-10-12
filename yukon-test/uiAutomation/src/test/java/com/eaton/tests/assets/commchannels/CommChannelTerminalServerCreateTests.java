@@ -18,16 +18,19 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.assets.commchannels.CommChannelDetailPage;
 import com.eaton.pages.assets.commchannels.CommChannelsListPage;
+import com.github.javafaker.Faker;
 
 public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
     private CommChannelsListPage listPage;
     private DriverExtensions driverExt;
+    private Faker faker;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
         navigate(Urls.Assets.COMM_CHANNELS_LIST);
         listPage = new CommChannelsListPage(driverExt);
+        faker = SeleniumTestSetup.getFaker();
     }
     
     @AfterMethod(alwaysRun = true)
@@ -48,7 +51,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         createModal.getType().selectItemByValue("TSERVER_SHARED");
         waitForLoadingSpinner();
         createModal.getIpAddress().setInputValue("127.0.0.1");
-        createModal.getPortNumber().setInputValue(Integer.toString(getRandomNum().nextInt(65536)));
+        createModal.getPortNumber().setInputValue(Integer.toString(faker.number().numberBetween(1, 65536)));
         createModal.getBaudRate().selectItemByValue("BAUD_14400");
 
         createModal.clickOkAndWaitForModalToClose();

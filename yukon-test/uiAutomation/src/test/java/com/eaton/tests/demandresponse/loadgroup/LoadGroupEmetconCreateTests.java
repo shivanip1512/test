@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import org.assertj.core.api.SoftAssertions;
 import org.testng.annotations.AfterMethod;
@@ -20,19 +19,20 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupEmetconCreatePage;
+import com.github.javafaker.Faker;
 
 public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
 
     private LoadGroupEmetconCreatePage createPage;
     private DriverExtensions driverExt;
-    private Random randomNum;
+    private Faker faker;
     
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
         setRefreshPage(false);
         new SoftAssertions();
-        randomNum = getRandomNum();
+        faker = SeleniumTestSetup.getFaker();
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
         createPage = new LoadGroupEmetconCreatePage(driverExt);
     }
@@ -50,9 +50,7 @@ public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT emetcon " + timeStamp;
-        double randomDouble = randomNum.nextDouble();   
-        int randomInt = randomNum.nextInt(9999);
-        double capacity = randomDouble + randomInt;
+        double capacity = faker.number().randomDouble(2, 1, 9999);
         
         final String EXPECTED_MSG = name + " saved successfully.";
         

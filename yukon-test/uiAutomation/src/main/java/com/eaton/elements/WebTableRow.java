@@ -5,11 +5,7 @@ import java.util.Optional;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
-
-import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
-import com.eaton.framework.SeleniumTestSetup;
 
 public class WebTableRow{
 

@@ -8,7 +8,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
 import com.eaton.elements.WebTableRow.Icons;
-import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 
@@ -30,22 +29,21 @@ public class EditWebTableRow {
         
         List<WebElement> list = this.driverExt.findElements(By.cssSelector(".dropdown-menu"), Optional.of(1));
         
-        WebElement el = list.stream().filter(x -> x.getAttribute("style").contains("disiplay: block;")).findFirst().orElseThrow();
+        WebElement el = list.stream().filter(x -> x.getAttribute("style").contains("display: block;")).findFirst().orElseThrow();
         
-        el.findElement(By.cssSelector(icon.getIcon())).click();
-    }
+        el.findElement(By.cssSelector(".dropdown-option ." + icon.getIcon())).click();
+    }     
     
-    public ConfirmModal showDeleteModalAndWait() {
-        hoverAndClickGearAndSelectActionByIcon(Icons.DELETE);
-        
-        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("yukon_dialog_confirm");
-        
-        return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of("yukon_dialog_confirm"));
-    }
-    
-    public void showEditModalAndWaitByTitle(String title) {
-        hoverAndClickGearAndSelectActionByIcon(Icons.PENCIL);
-        
-        SeleniumTestSetup.waitUntilModalOpenByTitle(title);        
+    public WebElement getCellByIndex(int index) {
+
+        return this.row.findElement(By.cssSelector("td:nth-child(" + index + ")"));
     } 
+    
+    public void clickSave() {
+        this.row.findElement(By.cssSelector("td:nth-child(1) .button-group ." + Icons.SAVE.getIcon())).click();
+    }
+    
+    public void clickCancel() {
+        this.row.findElement(By.cssSelector("td:nth-child(1) .button-group ." + Icons.DELETE.getIcon())).click();
+    }
 }

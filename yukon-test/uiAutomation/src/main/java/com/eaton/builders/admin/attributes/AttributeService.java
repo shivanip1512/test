@@ -15,14 +15,6 @@ public class AttributeService {
                 .create();
     }
     
-    private static Pair<JSONObject, JSONObject> createAttributeAssignment(Integer attributeId, Optional<AttributeAsgmtTypes.PaoTypes> paoType, Optional<AttributeAsgmtTypes.PointTypes> pointType) {
-        return new AttributeAsgmtCreateBuilder.Builder(attributeId)
-                .withPaoType(paoType)
-                .withPointType(pointType)
-                .withMultiplier(Optional.empty())
-                .create();
-    }    
-    
     public Map<String, Pair<JSONObject, JSONObject>> createAttributeWithCalcAnalogPointTypeAssignments(List<AttributeAsgmtTypes.PaoTypes> paoTypes) {
         HashMap<String, Pair<JSONObject, JSONObject>> map = new HashMap<>();
 

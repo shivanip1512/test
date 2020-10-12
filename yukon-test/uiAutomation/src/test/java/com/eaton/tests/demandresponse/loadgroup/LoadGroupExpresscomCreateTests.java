@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
@@ -21,18 +20,19 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupExpresscomPage;
+import com.github.javafaker.Faker;
 
 public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
 
     private LoadGroupExpresscomPage createPage;
     WebDriver driver;
     private DriverExtensions driverExt;
-    private Random randomNum;
+    private Faker faker;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        randomNum = getRandomNum();
+        faker = SeleniumTestSetup.getFaker();
 
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
         createPage = new LoadGroupExpresscomPage(driverExt, Urls.DemandResponse.LOAD_GROUP_CREATE);
@@ -55,7 +55,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         createPage.getUsage().setTrueFalseByLabel("Splinter", "SPLINTER", true);
-        createPage.getSplinter().setInputValue(String.valueOf(randomNum.nextInt(254)));
+        createPage.getSplinter().setInputValue(String.valueOf(faker.number().numberBetween(1, 254)));
 
         createPage.getSaveBtn().click();
 
@@ -81,7 +81,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         // 55 = a_REPEATER-801
         createPage.getCommunicationRoute().selectItemByValue("55");
         createPage.getGeographicalAddress().setTrueFalseByLabel("Serial", "SERIAL", true);
-        createPage.getSerial().setInputValue(String.valueOf(randomNum.nextInt(999999999)));
+        createPage.getSerial().setInputValue(String.valueOf(faker.number().numberBetween(1, 999999999)));
         createPage.getUsage().setTrueFalseByLabel("Load", "LOAD", true);
         createPage.getLoads().setTrueFalseByLabel("Load 8", "Load_8", true);
 
@@ -99,9 +99,7 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
     public void ldGrpCreateExpresscom_AllFieldsWithoutSerialAddress_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Expresscom without Serial" + timeStamp;
-        double randomDouble = randomNum.nextDouble();
-        int randomInt = randomNum.nextInt(9999);
-        double capacity = randomDouble + randomInt;
+        double capacity = faker.number().randomDouble(2, 1, 9999);
 
         final String EXPECTED_MSG = name + " saved successfully.";
 
@@ -118,12 +116,12 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getGeographicalAddress().setTrueFalseByLabel("ZIP", "ZIP", true);
         createPage.getGeographicalAddress().setTrueFalseByLabel("User", "USER", true);
 
-        createPage.getSpid().setInputValue(String.valueOf(randomNum.nextInt(65534)));
-        createPage.getGeo().setInputValue(String.valueOf(randomNum.nextInt(65534)));
-        createPage.getSubstation().setInputValue(String.valueOf(randomNum.nextInt(65534)));
+        createPage.getSpid().setInputValue(String.valueOf(faker.number().numberBetween(1, 65534)));
+        createPage.getGeo().setInputValue(String.valueOf(faker.number().numberBetween(1, 65534)));
+        createPage.getSubstation().setInputValue(String.valueOf(faker.number().numberBetween(1, 65534)));
         createPage.getFeeder().setTrueFalseByLabel("10", "10", true);
-        createPage.getZip().setInputValue(String.valueOf(randomNum.nextInt(65534)));
-        createPage.getUser().setInputValue(String.valueOf(randomNum.nextInt(65534)));
+        createPage.getZip().setInputValue(String.valueOf(faker.number().numberBetween(1, 65534)));
+        createPage.getUser().setInputValue(String.valueOf(faker.number().numberBetween(1, 65534)));
 
         createPage.getUsage().setTrueFalseByLabel("Program", "PROGRAM", true);
         createPage.getUsage().setTrueFalseByLabel("Splinter", "SPLINTER", true);
@@ -132,8 +130,8 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         confirmModal.clickOkAndWaitForSpinner();
 
         createPage.getLoads().setTrueFalseByLabel("Load 8", "Load_8", true);
-        createPage.getProgram().setInputValue(String.valueOf(randomNum.nextInt(254)));
-        createPage.getSplinter().setInputValue(String.valueOf(randomNum.nextInt(254)));
+        createPage.getProgram().setInputValue(String.valueOf(faker.number().numberBetween(1, 254)));
+        createPage.getSplinter().setInputValue(String.valueOf(faker.number().numberBetween(1, 254)));
 
         createPage.getControlPriority().selectItemByValue("MEDIUM");
         createPage.getkWCapacity().setInputValue(String.valueOf(capacity));

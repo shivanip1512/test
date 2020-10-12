@@ -5,7 +5,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,8 +40,6 @@ public class SeleniumTestSetup {
 
     private static final String EXCEPTION_MSG = "Exception :";
 
-    private static Random randomNum;
-
     private static boolean loggedIn = false;
 
     private static String screenShotPath;
@@ -54,7 +51,6 @@ public class SeleniumTestSetup {
     @BeforeSuite(alwaysRun = true)
     public static void beforeSuite() {
         try {
-            setRandomNum(new Random());
             logger = setupLogger();
             initialSetup();
             navigateToLoginPage();
@@ -166,14 +162,6 @@ public class SeleniumTestSetup {
 
     public static String getBaseUrl() {
         return baseUrl;
-    }
-
-    public static Random getRandomNum() {
-        return randomNum;
-    }
-
-    public static void setRandomNum(Random randomNum) {
-        SeleniumTestSetup.randomNum = randomNum;
     }
 
     public static Logger getLogger() {
@@ -311,7 +299,7 @@ public class SeleniumTestSetup {
             try {
                  List<WebElement> menus = driverExt.findElements(By.cssSelector(".dropdown-menu"), Optional.of(0));
                  
-                 Optional<WebElement> el = menus.stream().filter(x -> x.getAttribute("style").contains("disiplay: block;")).findFirst();
+                 Optional<WebElement> el = menus.stream().filter(x -> x.getAttribute("style").contains("display: block;")).findFirst();
                  
                  if(el.isPresent()) {
                      display = el.get().getAttribute("style");

@@ -64,4 +64,8 @@ public class TextEditElement extends EditElement {
     public String getMaxLength() {
         return getEditElement().getAttribute("maxLength");
     }
+    
+    public String getPlaceHolder() {
+        return getEditElement().getAttribute("placeholder");
+    }
 }

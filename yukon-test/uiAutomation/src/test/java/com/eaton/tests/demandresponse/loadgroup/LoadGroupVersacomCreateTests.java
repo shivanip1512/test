@@ -6,10 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import org.assertj.core.api.SoftAssertions;
-import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -21,18 +19,18 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupVersacomCreatePage;
+import com.github.javafaker.Faker;
 
 public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
 
     private LoadGroupVersacomCreatePage createPage;
-    WebDriver driver;
     private DriverExtensions driverExt;
-    private Random randomNum;
+    private Faker faker;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        randomNum = getRandomNum();
+        faker = SeleniumTestSetup.getFaker();
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
         createPage = new LoadGroupVersacomCreatePage(driverExt);
     }
@@ -69,9 +67,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());        
         String name = "AT Versacom " + timeStamp;
-        double randomDouble = randomNum.nextDouble();
-        int randomInt = randomNum.nextInt(9999);
-        double capacity = randomDouble + randomInt;       
+        double capacity = faker.number().randomDouble(2, 1, 9999);      
 
         final String EXPECTED_MSG = name + " saved successfully.";
         
@@ -104,9 +100,7 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Versacom " + timeStamp;
-        double randomDouble = randomNum.nextDouble();
-        int randomInt = randomNum.nextInt(9999);
-        double capacity = randomDouble + randomInt;
+        double capacity = faker.number().randomDouble(2, 1, 9999);
 
         final String EXPECTED_MSG = name + " saved successfully.";
 
@@ -121,8 +115,8 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getAddressUsage().setTrueFalseByLabel("Class", "CLASS", true);
         createPage.getAddressUsage().setTrueFalseByLabel("Division", "DIVISION", true);
         
-        createPage.getUtilityAddress().setInputValue(String.valueOf(randomNum.nextInt(254)));
-        createPage.getSectionAddress().setInputValue(String.valueOf(randomNum.nextInt(255)));
+        createPage.getUtilityAddress().setInputValue(String.valueOf(faker.number().numberBetween(1, 254)));
+        createPage.getSectionAddress().setInputValue(String.valueOf(faker.number().numberBetween(1, 255)));
 
         createPage.getClassAddress().setTrueFalseByLabel("1", "1", true);
         createPage.getDivisionAddress().setTrueFalseByLabel("11", "11", true);

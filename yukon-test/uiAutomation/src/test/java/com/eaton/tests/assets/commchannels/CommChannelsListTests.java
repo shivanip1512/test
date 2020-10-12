@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Collections;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -45,7 +45,7 @@ public class CommChannelsListTests extends SeleniumTestSetup {
             JSONObject joTcp = (JSONObject) bodyTcp;
             String tcpChannelName = tcpChannel[i];
             joTcp.put("name", tcpChannelName);
-            ExtractableResponse<?> createResponseTcp = AssetsCreateRequestAPI.createCommChannel(bodyTcp);
+            AssetsCreateRequestAPI.createCommChannel(bodyTcp);
         }
         for (int j = 0; j < udpChannel.length; j++) {
             String payloadFileUdp = System.getProperty("user.dir")

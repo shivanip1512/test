@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
 import java.util.Optional;
-import java.util.Random;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -22,7 +21,6 @@ public class CbcCreateTests extends SeleniumTestSetup {
 
     private CbcCreatePage createPage;
     private DriverExtensions driverExt;
-    private Random randomNum;
     private Faker faker = new Faker();
 
     @BeforeClass(alwaysRun = true)
@@ -33,7 +31,6 @@ public class CbcCreateTests extends SeleniumTestSetup {
         navigate(Urls.CapControl.CBC_CREATE);
 
         createPage = new CbcCreatePage(driverExt);
-        randomNum = getRandomNum();
     }
     
     @AfterMethod(alwaysRun = true)
@@ -58,7 +55,7 @@ public class CbcCreateTests extends SeleniumTestSetup {
         setRefreshPage(true);
         final String EXPECTED_MSG = "CBC was successfully saved.";
 
-        int masterAddress = randomNum.nextInt(65000);
+        int masterAddress = faker.number().numberBetween(1, 65000);
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 

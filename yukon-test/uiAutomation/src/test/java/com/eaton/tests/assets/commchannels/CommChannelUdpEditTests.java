@@ -4,10 +4,9 @@ import com.eaton.framework.SeleniumTestSetup;
 import static org.assertj.core.api.Assertions.assertThat;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Random;
 
 import org.assertj.core.api.SoftAssertions;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -22,6 +21,7 @@ import com.eaton.pages.assets.commchannels.CommChannelUdpDetailPage;
 import com.eaton.rest.api.assets.AssetsCreateRequestAPI;
 import com.eaton.rest.api.assets.AssetsGetRequestAPI;
 import com.eaton.rest.api.drsetup.JsonFileHelper;
+import com.github.javafaker.Faker;
 
 import io.restassured.response.ExtractableResponse;
 
@@ -32,20 +32,20 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
     private Integer commChannelId;
     private String commChannelName;
     private Integer portNumber;
-    private Random randomNum;    
+    private Faker faker;   
     private JSONObject jo;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        randomNum = getRandomNum();
+        faker = SeleniumTestSetup.getFaker();
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         commChannelName = "UDP Comm Channel " + timeStamp;
 
         String payloadFile = System.getProperty("user.dir")
                 + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelUDP.json";
 
-        portNumber = randomNum.nextInt(65534);
+        portNumber = faker.number().numberBetween(1, 65534);
         Object body = JsonFileHelper.parseJSONFile(payloadFile);
         jo = (JSONObject) body;
         jo.put("name", commChannelName);
@@ -442,8 +442,8 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         Object body = JsonFileHelper.parseJSONFile(payloadFile);
         jo = (JSONObject) body;
         jo.put("name", commChannelNameUdp);
-        jo.put("portNumber", randomNum.nextInt(65534));
-        ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
+        jo.put("portNumber", faker.number().numberBetween(1, 65534));
+        AssetsCreateRequestAPI.createCommChannel(body);
 
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();
 
@@ -492,7 +492,6 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.COMM_CHANNELS })	
     public void commChannelUdpEdit_AllFields_Success() {	
         SoftAssertions softly = new SoftAssertions();
-        randomNum = getRandomNum();
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "UDP " + timeStamp;
         String updateName = "Update UPD " + timeStamp;
@@ -500,7 +499,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         String payloadFile = System.getProperty("user.dir")
                 + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelUDP.json";
 
-        Integer portNum = randomNum.nextInt(65534);
+        Integer portNum = faker.number().numberBetween(1, 65534);
         Object body = JsonFileHelper.parseJSONFile(payloadFile);
         jo = (JSONObject) body;
         jo.put("name", name);
@@ -514,7 +513,7 @@ public class CommChannelUdpEditTests extends SeleniumTestSetup {
         String configFieldsValues[] = { "55", "10", "20", "15", "500" };	
         String tabName = "Configuration";	
 	
-        portNum = randomNum.nextInt(65534);
+        portNum = faker.number().numberBetween(1, 65534);
         EditUdpCommChannelModal editModal = detailPage.showUdpCommChannelEditModal();	
         editModal.getName().setInputValue(updateName);	
         editModal.getBaudRate().selectItemByValue(baudRate);	

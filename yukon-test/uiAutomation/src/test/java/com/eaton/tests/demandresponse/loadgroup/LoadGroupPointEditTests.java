@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
 import java.util.Optional;
-import java.util.Random;
 
 import org.javatuples.Pair;
 import org.json.JSONObject;
@@ -23,20 +22,21 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.LoadGroupPointEditPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
+import com.github.javafaker.Faker;
 
 public class LoadGroupPointEditTests extends SeleniumTestSetup {
 
     private LoadGroupPointEditPage editPage;
     WebDriver driver;
     private DriverExtensions driverExt;
-    private Random randomNum;
     Builder builder;
     private Integer id;
+    private Faker faker;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        randomNum = getRandomNum();
+        faker = SeleniumTestSetup.getFaker();
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
@@ -59,9 +59,7 @@ public class LoadGroupPointEditTests extends SeleniumTestSetup {
         JSONObject response = pair.getValue1();
         id = response.getInt("id");
 
-        double randomDouble = randomNum.nextDouble();
-        int randomInt = randomNum.nextInt(9999);
-        double capacity = randomDouble + randomInt;
+        double capacity = faker.number().randomDouble(2, 1, 9999);
 
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
         editPage = new LoadGroupPointEditPage(driverExt, id);

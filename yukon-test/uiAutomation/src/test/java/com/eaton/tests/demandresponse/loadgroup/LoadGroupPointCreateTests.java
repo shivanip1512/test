@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
 import java.util.Optional;
-import java.util.Random;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -18,17 +17,19 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupPointCreatePage;
+import com.github.javafaker.Faker;
 
 public class LoadGroupPointCreateTests extends SeleniumTestSetup {
     private LoadGroupPointCreatePage createPage;
     private DriverExtensions driverExt;
-    private Random randomNum;
+    private Faker faker;
+
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
         setRefreshPage(false);
-        randomNum = getRandomNum();
+        faker = SeleniumTestSetup.getFaker();
 
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
         createPage = new LoadGroupPointCreatePage(driverExt);
@@ -47,9 +48,7 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Point " + timeStamp;
-        double randomDouble = randomNum.nextDouble();
-        int randomInt = randomNum.nextInt(9999);
-        double capacity = randomDouble + randomInt;
+        double capacity = faker.number().randomDouble(2, 1, 9999);
 
         final String EXPECTED_MSG = name + " saved successfully.";
 

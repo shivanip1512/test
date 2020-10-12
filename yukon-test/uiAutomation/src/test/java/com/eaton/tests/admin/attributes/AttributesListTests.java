@@ -13,7 +13,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.eaton.builders.admin.attributes.AttributeService;
-import com.eaton.builders.tools.trends.TrendCreateService;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
@@ -51,12 +50,12 @@ public class AttributesListTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }  
     
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.ADMIN})
     public void attributeList_AttributeDefinitionsSection_TitleCorrect() {
         assertThat(page.getAttrDefSection()).isNotNull();
     }  
     
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.ADMIN})
     public void attributeList_AttributeAsgmtsSection_TitleCorrect() {
         assertThat(page.getAttrAsgmtSection()).isNotNull();
     }      

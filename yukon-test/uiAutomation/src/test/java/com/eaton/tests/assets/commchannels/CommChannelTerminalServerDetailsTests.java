@@ -4,10 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Random;
 
 import org.assertj.core.api.SoftAssertions;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -22,6 +21,7 @@ import com.eaton.pages.assets.commchannels.CommChannelsListPage;
 import com.eaton.pages.assets.commchannels.CommChannelTerminalServerDetailPage;
 import com.eaton.rest.api.assets.AssetsCreateRequestAPI;
 import com.eaton.rest.api.drsetup.JsonFileHelper;
+import com.github.javafaker.Faker;
 
 import io.restassured.response.ExtractableResponse;
 
@@ -31,8 +31,8 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
     private Integer commChannelId;
     private String commChannelName;
     private JSONObject jo;
-    private Random randomNum;
     private Integer portNumber;
+    private Faker faker;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
@@ -47,10 +47,10 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
                 + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelTerminalServer.json";
 
         Object body = JsonFileHelper.parseJSONFile(payloadFile);
-        randomNum = getRandomNum();
+        faker = SeleniumTestSetup.getFaker();
         jo = (JSONObject) body;
         jo.put("name", commChannelName);
-        portNumber = randomNum.nextInt(65536);
+        portNumber = faker.number().numberBetween(1, 65536);
         jo.put("portNumber", portNumber);
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
         commChannelId = createResponse.path("id");
@@ -193,7 +193,7 @@ public class CommChannelTerminalServerDetailsTests extends SeleniumTestSetup {
         Object body = JsonFileHelper.parseJSONFile(payloadFile);
         jo = (JSONObject) body;
         jo.put("name", deleteCommChannelName);
-        Integer deletePortNumber = randomNum.nextInt(65536);
+        Integer deletePortNumber = faker.number().numberBetween(1, 65536);
         jo.put("portNumber", deletePortNumber);
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
         Integer deleteCommChannelId = createResponse.path("id");

@@ -1,5 +1,6 @@
 package com.eaton.framework;
 
+@SuppressWarnings("unused")
 public class ValidUserLogin {
 
     private ValidUserLogin() {

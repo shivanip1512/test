@@ -4,10 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Random;
 
 import org.assertj.core.api.SoftAssertions;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -22,6 +21,7 @@ import com.eaton.pages.assets.commchannels.CommChannelUdpDetailPage;
 import com.eaton.pages.assets.commchannels.CommChannelsListPage;
 import com.eaton.rest.api.assets.AssetsCreateRequestAPI;
 import com.eaton.rest.api.drsetup.JsonFileHelper;
+import com.github.javafaker.Faker;
 
 import io.restassured.response.ExtractableResponse;
 
@@ -32,7 +32,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
     private Integer commChannelId;
     private String commChannelName;
     private JSONObject jo;
-    private Random randomNum;
+    private Faker faker;
     private Integer portNumber;
 
     @BeforeClass(alwaysRun = true)
@@ -48,10 +48,10 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
                 + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelUDP.json";
 
         Object body = JsonFileHelper.parseJSONFile(payloadFile);
-        randomNum = getRandomNum();
+        faker = SeleniumTestSetup.getFaker();
         jo = (JSONObject) body;
         jo.put("name", commChannelName);
-        portNumber = randomNum.nextInt(65536);
+        portNumber = faker.number().numberBetween(1, 65536);
         jo.put("portNumber", portNumber);
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
         commChannelId = createResponse.path("id");
@@ -195,7 +195,7 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
         Object body = JsonFileHelper.parseJSONFile(payloadFile);
         jo = (JSONObject) body;
         jo.put("name", deleteCommChannelName);
-        jo.put("portNumber", randomNum.nextInt(65534));
+        jo.put("portNumber", faker.number().numberBetween(1, 65534));
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
         
         Integer deleteCommChannelId = createResponse.path("id");

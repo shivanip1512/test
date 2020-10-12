@@ -4,10 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Random;
 
 import org.assertj.core.api.SoftAssertions;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -19,6 +18,7 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.rest.api.drsetup.*;
+import com.github.javafaker.Faker;
 import com.eaton.pages.assets.commchannels.CommChannelTerminalServerDetailPage;
 import com.eaton.rest.api.assets.AssetsCreateRequestAPI;
 import com.eaton.rest.api.assets.AssetsGetRequestAPI;
@@ -31,7 +31,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
     private Integer commChannelId;
     private String commChannelName;
     private JSONObject jo;
-    private Random randomNum;
+    private Faker faker;
     private Integer portNumber;
 
     @BeforeClass(alwaysRun = true)
@@ -46,10 +46,10 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
                 + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelTerminalServer.json";
 
         Object body = JsonFileHelper.parseJSONFile(payloadFile);
-        randomNum = getRandomNum();
+        faker = SeleniumTestSetup.getFaker();
         jo = (JSONObject) body;
         jo.put("name", commChannelName);
-        portNumber = randomNum.nextInt(65536);
+        portNumber = faker.number().numberBetween(1, 65536);
         jo.put("portNumber", portNumber);
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
         commChannelId = createResponse.path("id");
@@ -108,12 +108,11 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
                 + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelTerminalServer.json";
 
         Object body = JsonFileHelper.parseJSONFile(payloadFile);
-        randomNum = getRandomNum();
         jo = (JSONObject) body;
         jo.put("name", name);
-        Integer portNum = randomNum.nextInt(65536);
+        Integer portNum = faker.number().numberBetween(1, 65536);
         jo.put("portNumber", portNum);
-        ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
+        AssetsCreateRequestAPI.createCommChannel(body);
 
         EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
@@ -414,10 +413,9 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
                 + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelTerminalServer.json";
 
         Object body = JsonFileHelper.parseJSONFile(payloadFile);
-        randomNum = getRandomNum();
         jo = (JSONObject) body;
         jo.put("name", name);
-        Integer portNum = randomNum.nextInt(65536);
+        Integer portNum = faker.number().numberBetween(1, 65536);
         jo.put("portNumber", portNum);
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
         Integer id = createResponse.path("id");
@@ -427,13 +425,13 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         String baudRate = "BAUD_4800";
         String configFieldsValues[] = { "55", "10", "20", "15", "500" };
         String tabName = "Configuration";
-        Integer port = randomNum.nextInt(65536);
+        Integer port = faker.number().numberBetween(1, 65536);
 
         EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
         editModal.getIpAddress().setInputValue("10.0.0.1");
         editModal.getName().setInputValue(updateName);
         editModal.getBaudRate().selectItemByValue(baudRate);
-        editModal.getPortNumber().setInputValue(portNum.toString());
+        editModal.getPortNumber().setInputValue(port.toString());
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getProtocolWrap().selectByValue("IDLC");

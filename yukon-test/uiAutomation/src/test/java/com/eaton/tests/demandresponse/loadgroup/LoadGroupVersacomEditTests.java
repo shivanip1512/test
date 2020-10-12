@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
 import java.util.Optional;
-import java.util.Random;
 
 import org.javatuples.Pair;
 import org.json.JSONObject;
@@ -20,19 +19,20 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupVersacomEditPage;
+import com.github.javafaker.Faker;
 
 public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
     private DriverExtensions driverExt;
+    private LoadGroupVersacomEditPage editPage;
     private Integer id;
     private String name;
-    private LoadGroupVersacomEditPage editPage;
-    private Random randomNum;
-    Builder builder;
+    private Faker faker;
+    private Builder builder;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        randomNum = getRandomNum();
+        faker = SeleniumTestSetup.getFaker();
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
@@ -52,9 +52,7 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
         JSONObject response = pair.getValue1();
         id = response.getInt("id");
 
-        double randomDouble = randomNum.nextDouble();
-        int randomInt = randomNum.nextInt(9999);
-        double capacity = randomDouble + randomInt;
+        double capacity = faker.number().randomDouble(2, 1, 9999);
 
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
         editPage = new LoadGroupVersacomEditPage(driverExt, id);
@@ -62,7 +60,7 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
         editPage.getName().setInputValue(editName);
         //28 - a_CCU-711
         editPage.getCommunicationRoute().selectItemByValue("28"); 
-        editPage.getUtilityAddress().setInputValue(String.valueOf(randomNum.nextInt(254)));
+        editPage.getUtilityAddress().setInputValue(String.valueOf(faker.number().numberBetween(1, 254)));
         editPage.getkWCapacity().setInputValue(String.valueOf(capacity));
         editPage.getDisableGroup().selectValue("Yes");
         editPage.getDisableControl().selectValue("Yes");
@@ -97,7 +95,7 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
         editPage.getAddressUsage().setTrueFalseByLabel("Section", "SECTION", true);
         editPage.getAddressUsage().setTrueFalseByLabel("Class", "CLASS", true);
 
-        editPage.getSectionAddress().setInputValue(String.valueOf(randomNum.nextInt(255)));
+        editPage.getSectionAddress().setInputValue(String.valueOf(faker.number().numberBetween(1, 255)));
         editPage.getClassAddress().setTrueFalseByLabel("10", "10", true);
 
         editPage.getSaveBtn().click();
@@ -127,7 +125,7 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
 
         editPage.getAddressUsage().setTrueFalseByLabel("Serial", "SERIAL", true);
 
-        editPage.getSerialAddress().setInputValue(String.valueOf(randomNum.nextInt(99999)));
+        editPage.getSerialAddress().setInputValue(String.valueOf(faker.number().numberBetween(1, 99999)));
 
         editPage.getSaveBtn().click();
 

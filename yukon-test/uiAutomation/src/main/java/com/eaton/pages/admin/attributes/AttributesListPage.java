@@ -5,14 +5,11 @@ import java.util.Optional;
 import com.eaton.elements.Button;
 import com.eaton.elements.Section;
 import com.eaton.elements.TextEditElement;
-import com.eaton.elements.WebTable;
-import com.eaton.elements.WebTableRow;
 import com.eaton.elements.WebTableRow.Icons;
 import com.eaton.elements.editwebtable.EditWebTable;
 import com.eaton.elements.editwebtable.EditWebTableRow;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.attributes.AddAttributeAssignmentsModal;
-import com.eaton.elements.modals.attributes.EditAttributeAssignmentsModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
@@ -61,33 +58,37 @@ public class AttributesListPage extends PageBase {
         SeleniumTestSetup.waitUntilModalOpenByTitle("Add Attribute Assignment");
         
         return new AddAttributeAssignmentsModal(driverExt, Optional.of("Add Attribute Assignment"), Optional.empty());
-    }    
+    }             
     
-//    public EditAttributeAssignmentsModal showEditAttrAsgmtAndWaitByIndex(int index) {
-//        WebTableRow row = getAttrAsgmtTable().getDataRowByIndex(index);
-//        
-//        row.showEditModalAndWaitByTitle("Edit Attribute Assignment");
-//        
-//        return new EditAttributeAssignmentsModal(this.driverExt, Optional.of("Edit Attribute Assignment"), Optional.empty());
-//    }        
+    public TextEditElement editAttributeDefByNameAndClickSave(String name, String value) {
+        EditWebTableRow row = getAttrDefTable().getDataRowByName(name);
+        
+        row.hoverAndClickGearAndSelectActionByIcon(Icons.PENCIL);
+        
+        TextEditElement el = new TextEditElement(this.driverExt, "name", row.getCellByIndex(1));
+        
+        el.setInputValue(value);
+        
+        row.clickSave();
+        
+        return el;
+    }   
     
-//    public void editAttrDefNameByIndex(int index, String value) {
-//        WebTableRow row = getAttrAsgmtTable().getDataRowByIndex(index);
-//        
-//        row.hoverAndClickGearAndSelectActionByIcon(Icons.PENCIL);
-//        
-//        TextEditElement el = new TextEditElement(this.driverExt, "name", row.getCell(0));
-//        
-//        el.setInputValue(value);
-//    }     
+    public TextEditElement editAttributeDefByName(String name) {
+        EditWebTableRow row = getAttrDefTable().getDataRowByName(name);
+        
+        row.hoverAndClickGearAndSelectActionByIcon(Icons.PENCIL);
+        
+        return new TextEditElement(this.driverExt, "name", row.getCellByIndex(1));
+    } 
     
     public ConfirmModal showDeleteAttrDefByName(String name) {
         EditWebTableRow row = getAttrDefTable().getDataRowByName(name);      
         
-        row.showDeleteModalAndWait();
+        row.hoverAndClickGearAndSelectActionByIcon(Icons.REMOVE);
         
         SeleniumTestSetup.waitUntilModalOpenByDescribedBy("yukon_dialog_confirm");
-
-        return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of("yukon_dialog_confirm"));
-    }
+        
+        return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of("yukon_dialog_confirm"));       
+    }   
 }
