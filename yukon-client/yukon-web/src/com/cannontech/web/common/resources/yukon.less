@@ -1070,12 +1070,15 @@ ol.error{ list-style-type: none; }
     color: #1c5b16 !important;
 }
 
-.user-message.info, .user-message.pending {
+.user-message.info, .user-message.pending, .user-message.help {
     background: #e0f1fd;
     color: #002f55 !important;
 }
 .user-message.info:before {
     background-position: -96px -192px;
+}
+.user-message.help:before {
+    background-position: -416px -176px;
 }
 .user-message.pending:before {
     background-image: url(../Icons/spinner.gif);
