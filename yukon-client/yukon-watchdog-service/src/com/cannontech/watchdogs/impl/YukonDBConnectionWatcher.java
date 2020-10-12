@@ -27,9 +27,9 @@ public class YukonDBConnectionWatcher extends DBConnectionWatchdogImpl {
         // If Database is running verify it by using SQL query. Save the results in file system so that it can be reused.
         if (serviceStatus == ServiceStatus.RUNNING) {
             try {
-            List<String> subscriberEmailIds = subscriptionDao.getSubscribedEmails(SmartNotificationEventType.YUKON_WATCHDOG);
-            //In YUK-22935, we will keep these IDs in file system.
-            }catch (RuntimeException e) {
+                List<String> subscriberEmailIds = subscriptionDao.getSubscribedEmails(SmartNotificationEventType.YUKON_WATCHDOG);
+                // In YUK-22935, we will keep these IDs in file system.
+            } catch (RuntimeException e) {
                 serviceStatus = ServiceStatus.STOPPED;
             }
         }

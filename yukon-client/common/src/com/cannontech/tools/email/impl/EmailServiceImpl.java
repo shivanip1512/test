@@ -23,6 +23,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.SmtpEncryptionType;
 import com.cannontech.common.config.SmtpHelper;
 import com.cannontech.common.config.SmtpPropertyType;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
@@ -32,6 +33,7 @@ public class EmailServiceImpl implements EmailService {
     private static final Logger log = YukonLogManager.getLogger(EmailServiceImpl.class);
     private static final String SMTP_AUTH_PROPERTY_NAME = "mail.smtp.auth";
 
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private SmtpHelper configurationSource;
 
@@ -44,6 +46,16 @@ public class EmailServiceImpl implements EmailService {
         encryptionType = globalSettingDao.getEnum(GlobalSettingType.SMTP_ENCRYPTION_TYPE, SmtpEncryptionType.class);
         username = globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME);
         password = globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD);
+
+        asyncDynamicDataSource.addDatabaseChangeEventListener(event -> {
+            if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.SMTP_ENCRYPTION_TYPE)) {
+                encryptionType = globalSettingDao.getEnum(GlobalSettingType.SMTP_ENCRYPTION_TYPE, SmtpEncryptionType.class);
+            } else if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.SMTP_USERNAME)) {
+                username = globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME);
+            } else if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.SMTP_PASSWORD)) {
+                password = globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD);
+            }
+        });
     }
 
     @Override

@@ -17,8 +17,9 @@ public class DBConnectionUtil {
         try {
             YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
             Connection connection = jdbcTemplate.getDataSource().getConnection();
-            if (connection == null || connection.isClosed())
+            if (connection == null || connection.isClosed()) {
                 return false;
+            }
         } catch (SQLException | RuntimeException e) {
             log.error("Database Connection Error", e);
             return false;
