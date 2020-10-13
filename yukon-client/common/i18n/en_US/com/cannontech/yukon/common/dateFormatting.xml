@@ -29,6 +29,9 @@
 <entry key="yukon.common.dateFormatting.MONTH_DAY_HM">MMM dd HH:mm a</entry>
 <entry key="yukon.common.dateFormatting.FILE_TIMESTAMP">YYYYMMddHHmm</entry>
 <entry key="yukon.common.dateFormatting.DATE_YYYYMMdd">YYYYMMdd</entry>
+<entry key="yukon.common.dateFormatting.FILE_DATA_BOTH">yyyy-MM-dd HH:mm:ss.SSS</entry>
+<entry key="yukon.common.dateFormatting.FILE_DATA_DATE">yyyy-MM-dd</entry>
+<entry key="yukon.common.dateFormatting.FILE_DATA_TIME">HH:mm:ss.SSS</entry>
 
 <!-- 
      Please see http://keith-wood.name/datetimeEntryRef.html for the following formats
