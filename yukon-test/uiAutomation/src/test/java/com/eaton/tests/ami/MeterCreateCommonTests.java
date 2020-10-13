@@ -16,7 +16,7 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.ami.AmiDashboardPage;
 
-public class CommonMeterCreateTests extends SeleniumTestSetup {
+public class MeterCreateCommonTests extends SeleniumTestSetup {
 
     private AmiDashboardPage amiDashboardPage;
     private DriverExtensions driverExt;
