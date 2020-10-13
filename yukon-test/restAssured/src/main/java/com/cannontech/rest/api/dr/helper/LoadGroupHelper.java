@@ -309,7 +309,7 @@ public class LoadGroupHelper {
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         assertTrue("Status code should be 201", createResponse.statusCode() == 201);
-        loadGroup.setId(createResponse.path("groupId"));
+        loadGroup = createResponse.as(MockLoadGroupBase.class);
 
         return loadGroup;
     }
