@@ -90,9 +90,9 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
         
         try {
             deviceConfigurationDao.assignConfigToDevice(configuration, device);
-            eventLogService.changeConfigToDeviceCompleted(configuration.getName(), deviceName, user, 1);
+            eventLogService.changeConfigOfDeviceCompleted(configuration.getName(), deviceName, user, 1);
         } catch (InvalidDeviceTypeException e) {
-            eventLogService.changeConfigToDeviceCompleted(configuration.getName(), deviceName, user, 0);
+            eventLogService.changeConfigOfDeviceCompleted(configuration.getName(), deviceName, user, 0);
             throw e;
         }
       

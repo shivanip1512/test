@@ -47,7 +47,7 @@ UPDATE EventLog
 SET EventType = 'device.configuration.changeConfigCompleted' 
 WHERE EventType = 'device.configuration.assignConfigCompleted';
 UPDATE EventLog 
-SET EventType = 'device.configuration.changeConfigToDeviceCompleted' 
+SET EventType = 'device.configuration.changeConfigOfDeviceCompleted' 
 WHERE EventType = 'device.configuration.assignConfigToDeviceCompleted';
 
 /* unassign to remove */
@@ -92,8 +92,8 @@ UPDATE EventLog
 SET EventType = 'device.configuration.validateConfigFromDeviceInitiated' 
 WHERE EventType = 'device.configuration.readConfigFromDeviceInitiated';
 UPDATE EventLog 
-SET EventType = 'device.configuration.validateConfigToDeviceCompleted' 
-WHERE EventType = 'device.configuration.readConfigToDeviceCompleted';
+SET EventType = 'device.configuration.validateConfigFromDeviceCompleted' 
+WHERE EventType = 'device.configuration.readConfigFromDeviceCompleted';
 
 INSERT INTO DBUpdates VALUES ('YUK-22800', '9.0.0', SYSDATE);
 /* @end YUK-22800 */

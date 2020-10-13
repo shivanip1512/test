@@ -7,7 +7,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface DeviceConfigEventLogService {
     
     @YukonEventLog(category = "device.configuration")
-    public void changeConfigToDeviceCompleted(@Arg(ArgEnum.deviceConfig) String deviceConfig,
+    public void changeConfigOfDeviceCompleted(@Arg(ArgEnum.deviceConfig) String deviceConfig,
                                               @Arg(ArgEnum.deviceName) String deviceName, 
                                               @Arg(ArgEnum.username) LiteYukonUser yukonUser, 
                                               Integer successOrFail);

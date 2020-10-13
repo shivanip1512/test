@@ -364,9 +364,9 @@
     <entry key="yukon.common.events.amr.disconnect.loadSideVoltageDetectedWhileDisconnected">Load side voltage detected on device {2} by {1}.</entry>
     
     <!--  Device Config -->
-    <entry key="yukon.common.events.device.configuration.changeConfigToDeviceInitiated">Change device configuration {1} to {2} initiated by {3}.</entry>
-    <entry key="yukon.common.events.device.configuration.changeConfigToDeviceCompleted">Change device configuration {1} to {2} by {3} {7,choice,0#failed|1#succeeded}.</entry>
-    <entry key="yukon.common.events.device.configuration.changeConfigToDeviceCompleted.7">Success(1)/Fail(0)</entry>
+    <entry key="yukon.common.events.device.configuration.changeConfigOfDeviceInitiated">Change device configuration to {1} for {2} initiated by {3}.</entry>
+    <entry key="yukon.common.events.device.configuration.changeConfigOfDeviceCompleted">Change device configuration to {1} for {2} by {3} {7,choice,0#failed|1#succeeded}.</entry>
+    <entry key="yukon.common.events.device.configuration.changeConfigOfDeviceCompleted.7">Success(1)/Fail(0)</entry>
     
     <entry key="yukon.common.events.device.configuration.removeConfigFromDeviceInitiated">Remove device configuration from {1} initiated by {2}.</entry>
     <entry key="yukon.common.events.device.configuration.removeConfigFromDeviceCompleted">Remove device configuration from {1} by {2} {7,choice,0#failed|1#succeeded}.</entry>

@@ -534,7 +534,7 @@ public class DevEventLogCreationService {
                 String input = "add config";
                 String statistics = "Completed: 1";
                 
-                deviceConfigEventLogService.changeConfigToDeviceCompleted(deviceConfig, deviceName, yukonUser, 1);
+                deviceConfigEventLogService.changeConfigOfDeviceCompleted(deviceConfig, deviceName, yukonUser, 1);
                 deviceConfigEventLogService.removeConfigFromDeviceCompleted(deviceName, yukonUser, 0);
                 
                 deviceConfigEventLogService.validateConfigFromDeviceInitiated(deviceName, yukonUser);
