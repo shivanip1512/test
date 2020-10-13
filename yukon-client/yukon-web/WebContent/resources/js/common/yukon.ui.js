@@ -143,7 +143,7 @@ yukon.ui = (function () {
             var dialog = $(this).closest('.ui-dialog').find(".ui-dialog-content");
             dialog.addMessage({
                 message: dialog.data("helpText"),
-                messageClass: 'info'
+                messageClass: 'help'
             });
             /* Reposition the dialog to the center of the screen after the help text is displayed. */
             dialog.dialog({

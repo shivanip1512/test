@@ -177,6 +177,9 @@
             <cti:navigableHierarchy var="zone" depth="depth" hierarchy="${zones}">
                 <tr>
                     <td style="width:25%;">
+                        <c:forEach begin="1" end="${depth}">
+                            -
+                        </c:forEach>
                         <cti:url var="url" value="/capcontrol/ivvc/zone/detail">
                             <cti:param name="zoneId" value="${zone.zoneId}"/>
                         </cti:url>
