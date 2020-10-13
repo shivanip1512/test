@@ -50,6 +50,7 @@
         <tags:alertBox type="success">Things went well.</tags:alertBox>
         <tags:alertBox type="info">You should know something.</tags:alertBox>
         <tags:alertBox type="pending">I'm still working on that...</tags:alertBox>
+        <tags:alertBox type="help">This is a sample help text.</tags:alertBox>
         <tags:alertBox type="warning">Be careful.</tags:alertBox>
         <tags:alertBox>You did a bad thing, and you should feel bad.</tags:alertBox>
         <c:if test="${not empty errorMsg}"><tags:alertBox>${errorMsg}</tags:alertBox></c:if>
