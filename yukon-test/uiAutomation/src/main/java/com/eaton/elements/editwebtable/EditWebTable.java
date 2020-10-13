@@ -80,7 +80,7 @@ public class EditWebTable {
     public EditWebTableRow getDataRowByName(String name) {
         List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody tr"));
         
-        WebElement element = rowList.stream().filter(x -> x.findElement(By.cssSelector("td:nth-child(1) span")).getText().contains(name)).findFirst().orElseThrow();
+        WebElement element = rowList.stream().filter(x -> x.findElement(By.cssSelector("td:nth-child(1) span")).getText().contains(name)).findFirst().orElseThrow();        
         
         return new EditWebTableRow(this.driverExt, element);
     } 

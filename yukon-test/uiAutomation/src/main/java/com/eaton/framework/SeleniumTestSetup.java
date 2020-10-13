@@ -191,7 +191,9 @@ public class SeleniumTestSetup {
 
     public void refreshPage(PageBase page) {
         if (getCurrentUrl().equals(getBaseUrl() + page.getPageUrl())) {
-            driver.navigate().refresh();
+            //driver.navigate().refresh();
+            JavascriptExecutor je = (JavascriptExecutor) driver;
+            je.executeScript("document.location.reload()");
         } else {
             navigate(page.getPageUrl());
         }
@@ -334,7 +336,7 @@ public class SeleniumTestSetup {
     public static void scrollToElement(WebElement element) {
         JavascriptExecutor je = (JavascriptExecutor) driver;
         je.executeScript("arguments[0].scrollIntoView(true);", element);
-    }
+    }    
     
     public boolean getRefreshPage() {
         return refreshPage;

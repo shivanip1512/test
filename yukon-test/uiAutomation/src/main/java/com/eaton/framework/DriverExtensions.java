@@ -152,5 +152,5 @@ public class DriverExtensions {
         driverWait.withTimeout(Duration.ofSeconds(1));
         
         driverWait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(locator)));
-    }
+    }    
 }

@@ -3,6 +3,8 @@ package com.eaton.elements;
 import java.util.Optional;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
@@ -12,6 +14,7 @@ import com.eaton.framework.SeleniumTestSetup;
 public class TextEditElement extends EditElement {
 
     private String elementName;
+    private WebElement parentElement;
 
     public TextEditElement(DriverExtensions driverExt, String elementName) {
         super(driverExt, elementName);
@@ -21,6 +24,7 @@ public class TextEditElement extends EditElement {
     public TextEditElement(DriverExtensions driverExt, String elementName, WebElement parentElement) {
         super(driverExt, elementName, parentElement);
         this.elementName = elementName;
+        this.parentElement = parentElement;
     }
 
     public TextEditElement(DriverExtensions driverExt, String elementName, String parentName) {
@@ -56,9 +60,24 @@ public class TextEditElement extends EditElement {
     }
 
     public String getValidationError() {
-        String by = "span[id='" + this.elementName + ".errors']";
+        String validationError = "";
         
-        return this.driverExt.findElement(By.cssSelector(by), Optional.of(3)).getText();        
+        long startTime = System.currentTimeMillis();
+
+        while (validationError.equals("") && (System.currentTimeMillis() - startTime) < 3000) {
+            try {
+                if (this.parentElement != null) {
+                    validationError = this.parentElement.findElement(By.cssSelector("span[id='" + this.elementName + ".errors']")).getText(); 
+                    System.out.println("parent error: " + validationError);
+                } else {
+                    validationError = this.driverExt.findElement(By.cssSelector("span[id='" + this.elementName + ".errors']"), Optional.empty()).getText();   
+                    System.out.println("error: " + validationError);
+                }
+            } catch (StaleElementReferenceException | NoSuchElementException ex) {
+            }
+        }
+        
+        return validationError;
     }
     
     public String getMaxLength() {

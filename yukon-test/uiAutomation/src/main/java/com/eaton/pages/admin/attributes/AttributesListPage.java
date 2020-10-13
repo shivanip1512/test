@@ -2,6 +2,8 @@ package com.eaton.pages.admin.attributes;
 
 import java.util.Optional;
 
+import org.openqa.selenium.WebElement;
+
 import com.eaton.elements.Button;
 import com.eaton.elements.Section;
 import com.eaton.elements.TextEditElement;
@@ -69,13 +71,13 @@ public class AttributesListPage extends PageBase {
         
         el.setInputValue(value);
         
-        row.clickSave();
+        row.clickSave();        
         
         return el;
     }   
     
     public TextEditElement editAttributeDefByName(String name) {
-        EditWebTableRow row = getAttrDefTable().getDataRowByName(name);
+        EditWebTableRow row = getAttrDefTable().getDataRowByName(name);                
         
         row.hoverAndClickGearAndSelectActionByIcon(Icons.PENCIL);
         
