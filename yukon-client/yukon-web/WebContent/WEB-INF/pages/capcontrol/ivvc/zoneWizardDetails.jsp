@@ -54,7 +54,7 @@
                             <c:forEach var="parentZone" items="${parentZones}">
                                 <form:option value="${parentZone.id}">
                                     <c:set var="regulator" value="${parentZone.regulators[0]}"/>
-                                    <%@ include file="zoneNameDisplay.jspf" %>
+                                    <%@ include file="zoneNameDisplay.jsp" %>
                                 </form:option>
                             </c:forEach>
                         </form:select>
@@ -62,7 +62,7 @@
                     <cti:displayForPageEditModes modes="CREATE">
                         <form:hidden path="parentId"/>
                         <c:set var="regulator" value="${parentZone.regulator}"/>
-                        <%@ include file="zoneNameDisplay.jspf" %>
+                        <%@ include file="zoneNameDisplay.jsp" %>
                     </cti:displayForPageEditModes>
                 </c:otherwise>
             </c:choose>
