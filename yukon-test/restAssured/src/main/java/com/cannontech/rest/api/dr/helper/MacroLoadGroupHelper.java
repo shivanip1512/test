@@ -58,7 +58,7 @@ public class MacroLoadGroupHelper {
         Integer copiedMacroLoadGroupId = copyResponse.path(MacroLoadGroupApiDoc.CONTEXT_COPIED_MACRO_GROUP_ID);
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
         assertTrue("Macro Load Group Id(paoId) should not be Null", copiedMacroLoadGroupId != null);
-        assertTrue("Copied Macro Load group Id(id) should be differect ",
+        assertTrue("Copied Macro Load group Id(paoId) should be differect ",
                 copiedMacroLoadGroupId != Integer.parseInt(macroLoadGroupIdToBeCopied));
         return copiedMacroLoadGroupId;
     }
