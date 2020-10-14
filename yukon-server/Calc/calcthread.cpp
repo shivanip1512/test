@@ -559,16 +559,10 @@ bool CtiCalculateThread::processHistoricalPoints(const PointTimeMap& dbTimeMap, 
     int calcQuality;
     DynamicTableData data;
     bool pointsInMulti = FALSE;
-    bool calcValid, reloaded = false;
-
-    reloaded = false;
+    bool calcValid;
 
     for( auto& [id, calcPoint] : _historicalPoints )
     {
-        if( reloaded )
-        {
-            break;
-        }
         if( ! calcPoint || ! calcPoint->ready() )
         {
             continue;
@@ -596,9 +590,7 @@ bool CtiCalculateThread::processHistoricalPoints(const PointTimeMap& dbTimeMap, 
         //  Check for any outside interference that may have occurred during the DB load
         if( wasPausedOrInterrupted(_historicalThreadFunc, pauseCount, CALLSITE) )
         {
-            reloaded = true;
-
-            continue;
+            return true;
         }
 
         componentCount = calcPoint->getComponentCount();
@@ -650,7 +642,7 @@ bool CtiCalculateThread::processHistoricalPoints(const PointTimeMap& dbTimeMap, 
         }
     }
 
-    return reloaded;
+    return false;
 }
 
 void CtiCalculateThread::baselineThread( void )
