@@ -25,7 +25,7 @@
             <thead>
                 <tr>
                     <tags:sort column="${name}"/>
-                    <th><i:inline key="yukon.common.meterNumber"/></th>
+                    <tags:sort column="${meterNumber}"/>
                     <tags:sort column="${status}"/>
                 </tr>
             </thead>
