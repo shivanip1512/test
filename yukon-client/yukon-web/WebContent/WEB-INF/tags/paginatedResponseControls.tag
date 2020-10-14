@@ -70,7 +70,7 @@
             <cti:list var="arguments">
                 <cti:item value="${response.totalItems > 0 ? startIndex : 0}"/>
                 <cti:item value="${endIndex}"/>
-                <cti:item value="${response.totalItems}"/>
+                <cti:item value="${response.totalItems > 0 ? response.totalItems : 0}"/>
             </cti:list>
             <i:inline key="yukon.common.paging.viewing" arguments="${arguments}"/>
         </span>
