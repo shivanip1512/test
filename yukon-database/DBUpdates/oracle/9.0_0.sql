@@ -89,10 +89,10 @@ UPDATE EventLog
 SET EventType = 'device.configuration.validateConfigCancelled' 
 WHERE EventType = 'device.configuration.readConfigCancelled';
 UPDATE EventLog 
-SET EventType = 'device.configuration.validateConfigFromDeviceInitiated' 
+SET EventType = 'device.configuration.validateConfigOnDeviceInitiated' 
 WHERE EventType = 'device.configuration.readConfigFromDeviceInitiated';
 UPDATE EventLog 
-SET EventType = 'device.configuration.validateConfigFromDeviceCompleted' 
+SET EventType = 'device.configuration.validateConfigOnDeviceCompleted' 
 WHERE EventType = 'device.configuration.readConfigFromDeviceCompleted';
 
 INSERT INTO DBUpdates VALUES ('YUK-22800', '9.0.0', SYSDATE);

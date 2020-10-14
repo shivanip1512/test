@@ -537,8 +537,8 @@ public class DevEventLogCreationService {
                 deviceConfigEventLogService.changeConfigOfDeviceCompleted(deviceConfig, deviceName, yukonUser, 1);
                 deviceConfigEventLogService.removeConfigFromDeviceCompleted(deviceName, yukonUser, 0);
                 
-                deviceConfigEventLogService.validateConfigFromDeviceInitiated(deviceName, yukonUser);
-                deviceConfigEventLogService.validateConfigFromDeviceCompleted(deviceName, 1);
+                deviceConfigEventLogService.validateConfigOnDeviceInitiated(deviceName, yukonUser);
+                deviceConfigEventLogService.validateConfigOnDeviceCompleted(deviceName, 1);
                 
                 deviceConfigEventLogService.uploadConfigToDeviceInitiated(deviceName, yukonUser);
                 deviceConfigEventLogService.uploadConfigToDeviceCompleted(deviceName, 0);

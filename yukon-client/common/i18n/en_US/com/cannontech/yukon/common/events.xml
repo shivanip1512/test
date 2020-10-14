@@ -376,9 +376,9 @@
     <entry key="yukon.common.events.device.configuration.uploadConfigToDeviceCompleted">Upload device configuration to device {1} {7,choice,0#failed|1#succeeded}.</entry>
     <entry key="yukon.common.events.device.configuration.uploadConfigToDeviceCompleted.7">Success(1)/Fail(0)</entry>
    
-    <entry key="yukon.common.events.device.configuration.validateConfigFromDeviceInitiated">Validate device configuration from device {1} initiated by {2}.</entry>
-    <entry key="yukon.common.events.device.configuration.validateConfigFromDeviceCompleted">Validate device configuration from device {1} {7,choice,0#failed|1#succeeded}.</entry>
-    <entry key="yukon.common.events.device.configuration.validateConfigFromDeviceCompleted.7">Success(1)/Fail(0)</entry>
+    <entry key="yukon.common.events.device.configuration.validateConfigOnDeviceInitiated">Validate device configuration on device {1} initiated by {2}.</entry>
+    <entry key="yukon.common.events.device.configuration.validateConfigOnDeviceCompleted">Validate device configuration on device {1} {7,choice,0#failed|1#succeeded}.</entry>
+    <entry key="yukon.common.events.device.configuration.validateConfigOnDeviceCompleted.7">Success(1)/Fail(0)</entry>
 
     <entry key="yukon.common.events.device.configuration.verifyConfigFromDeviceInitiated">Verify device configuration on device {1} initiated by {2}.</entry>
     <entry key="yukon.common.events.device.configuration.verifyConfigFromDeviceCompleted">Verify device configuration on device {1} {7,choice,0#failed|1#succeeded}.</entry>

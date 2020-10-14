@@ -465,7 +465,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         int status = BooleanUtils.toInteger(isSuccessful);
         String deviceName = dbCache.getAllPaosMap().get(device.getDeviceId()).getPaoName();
         if (action == LogAction.READ) {
-            eventLogService.validateConfigFromDeviceCompleted(deviceName, status);
+            eventLogService.validateConfigOnDeviceCompleted(deviceName, status);
         } else if (action == LogAction.VERIFY) {
             eventLogService.verifyConfigFromDeviceCompleted(deviceName, status);
         } else if (action == LogAction.SEND) {
@@ -480,7 +480,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         for (SimpleDevice device : devices) {
             String deviceName = dbCache.getAllPaosMap().get(device.getDeviceId()).getPaoName();
             if (action == LogAction.READ) {
-                eventLogService.validateConfigFromDeviceInitiated(deviceName, user);
+                eventLogService.validateConfigOnDeviceInitiated(deviceName, user);
             } else if (action == LogAction.VERIFY) {
                 eventLogService.verifyConfigFromDeviceInitiated(deviceName, user);
             } else if (action == LogAction.SEND) {

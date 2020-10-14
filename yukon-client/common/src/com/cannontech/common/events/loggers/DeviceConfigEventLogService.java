@@ -61,11 +61,11 @@ public interface DeviceConfigEventLogService {
                                     @Arg(ArgEnum.resultKey)String resultKey);
 
     @YukonEventLog(category = "device.configuration")
-    public void validateConfigFromDeviceInitiated(@Arg(ArgEnum.deviceName) String deviceName,
+    public void validateConfigOnDeviceInitiated(@Arg(ArgEnum.deviceName) String deviceName,
                                               @Arg(ArgEnum.username) LiteYukonUser yukonUser);
 
     @YukonEventLog(category = "device.configuration")
-    public void validateConfigFromDeviceCompleted(@Arg(ArgEnum.deviceName) String deviceName,
+    public void validateConfigOnDeviceCompleted(@Arg(ArgEnum.deviceName) String deviceName,
                                               Integer successOrFail);
 
     @YukonEventLog(category = "device.configuration")
