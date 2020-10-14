@@ -1,0 +1,31 @@
+Token-Generate-Request:
+  title: Token-Generate-Request
+  required:
+      - username
+      - password
+  type: object
+  properties:
+      username:
+        type: string
+      password:
+        type: string
+
+Token-Generate:
+  title: Token-Generate
+  required:
+    - token
+  type: object
+  properties:
+    token:
+      type: string
+components:
+  examples:
+    Login:
+      value:
+        username: yukon
+        password: yukon 
+    Token:
+      value:
+        token: eceyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJZdWtvbiIsInN1YiI6IjIxMiIsImF1ZCI6IldlYiIsImlhdCI6MTU5OTExMzg1NCwiZXhwIjoxNTk5MTE1NjU0fQ.du6SKHbnIKD6PXuam70DFeKA4qkTVHKQR6OqILL4kW8TsTnReBl_KrjK3w_LYhuaiwIXC4rTpPvzIPpxc9WJpw
+                
+    

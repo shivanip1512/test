@@ -6,5 +6,5 @@
     <entry key="yukon.watchdog.notification.MESSAGEBROKER">Yukon Message Broker</entry>
     <entry key="yukon.watchdog.notification.SERVICEMANAGER">Yukon Service Manager</entry>
     <entry key="yukon.watchdog.notification.NOTIFICATIONSERVICE">Yukon Notification Server</entry>
-    <entry key="yukon.watchdog.notification.DATABASE">Database connection</entry>
+    <entry key="yukon.watchdog.notification.DATABASE">Database Connection</entry>
 </properties>

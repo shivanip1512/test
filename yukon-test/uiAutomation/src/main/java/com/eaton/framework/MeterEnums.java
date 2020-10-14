@@ -3,6 +3,20 @@ package com.eaton.framework;
 public class MeterEnums {
 	
 	public enum MeterType {
+		MCT310CT("MCT-310CT"),
+		MCT310IDL("MCT-310IDL"),
+		MCT310IL("MCT-310IL"),
+		MCT318L("MCT-318L"),
+		MCT360("MCT-360"),
+		MCT370("MCT-370"),
+		MCT410CL("MCT-410cL"),
+		MCT420CD("MCT-420cD"),
+		MCT420CL("MCT-420cL"),
+		MCT420FD("MCT-420fD"),
+		MCT430A("MCT-430A"),
+		MCT430A3("MCT-430A3"),
+		MCT430S4("MCT-430S4"),
+		MCT470("MCT-470"),
 		RFG201(Manufacturer.GAS2, "RFG-201", "Pulse-201"),
 		RFN410CL(Manufacturer.ITRON, "RFN-410cL", "C1SX"),
 		RFN420CD(Manufacturer.ITRON, "RFN-420cD", "C2SX-SD"),
@@ -63,6 +77,10 @@ public class MeterEnums {
 	    	this.manufacturer = manufacturer;
 	    	this.meterType = meterType;
 	    	this.model = model;
+	    }
+	    
+	    MeterType(String meterType) {
+	    	this(null, meterType, null);
 	    }
 	        
 	    public Manufacturer getManufacturer() {
