@@ -658,6 +658,7 @@
                                                 buttonStyleClass="M0"
                                                 destinationFieldId="calc-component-point-${status.index}-input"
                                                 viewOnlyMode="${mode == 'VIEW'}"
+                                                removeValue="0"
                                                 includeRemoveButton="${true}"/>
                                             <cti:displayForPageEditModes modes="VIEW">
                                                 <c:if test="${calcComponent.componentPointID == 0}">

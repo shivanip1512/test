@@ -1,0 +1,42 @@
+openapi: 3.0.0
+info:
+  title: Yukon API Documentation
+  version: 9.0.0
+  description: 'Yukon provides REST based API support for different modules like Load Management,Point,Comm Channel,Trends and Virtual Devices.'
+servers:
+  - url: /api/
+    description: Default - Works if documentation is hosted in same service as Yukon
+  - url: 'http://{baseURI}/api/'
+    description: Configurable - Works if documentation is hosted outside of Yukon
+    variables:
+      baseURI:
+        default: 'localhost:8080'
+        description: Base URI
+security:
+  - bearerAuth: []
+
+paths:
+  /token:
+    $ref: 'api/tokenApi.yaml#/token-generate'
+
+  /devices/commChannels:
+    $ref: 'api/commChannelsApi.yaml#/post-operation'
+  '/devices/commChannels/{id}':
+    $ref: 'api/commChannelsApi.yaml#/get-update-delete-operation'
+   
+  /trends:
+    $ref: 'api/trendsApi.yaml#/post-operation'
+  '/trends/{trendId}':
+    $ref: 'api/trendsApi.yaml#/get-update-delete-operation'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+tags:
+  - name: Token Generation
+  - name: Comm Channel
+  - name: Trend
+   
