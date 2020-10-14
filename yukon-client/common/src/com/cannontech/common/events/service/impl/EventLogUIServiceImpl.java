@@ -83,8 +83,8 @@ public class EventLogUIServiceImpl implements EventLogUIService {
             
             List<String> dataRow = Lists.newArrayListWithCapacity(4);
             dataRow.add(eventLog.getEventType());
-            dataRow.add(dateFormattingService.format(eventLog.getDateTime().getTime(), dateDisplayFormat, userContext));
-            dataRow.add(dateFormattingService.format(eventLog.getDateTime().getTime(), timeDisplayFormat, userContext));
+            dataRow.add(dateFormattingService.format(eventLog.getDateTime(), dateDisplayFormat, userContext));
+            dataRow.add(dateFormattingService.format(eventLog.getDateTime(), timeDisplayFormat, userContext));
 
             String eventLogMessage = messageSourceAccessor.getMessage(eventLog.getMessageSourceResolvable());
             dataRow.add(eventLogMessage);

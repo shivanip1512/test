@@ -34,7 +34,6 @@ public interface DateFormattingService {
         TIMEZONE_EXTENDED(MidnightMode.NORMAL),
         DATE(MidnightMode.NORMAL), 
         BOTH(MidnightMode.NORMAL),
-        BOTH_WITH_MILLIS(MidnightMode.NORMAL), 
         FULL(MidnightMode.NORMAL), 
         DATEHM(MidnightMode.NORMAL), 
         DATEHM_12(MidnightMode.NORMAL), 
