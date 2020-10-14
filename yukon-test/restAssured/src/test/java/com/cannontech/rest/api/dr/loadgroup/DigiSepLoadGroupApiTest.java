@@ -153,9 +153,10 @@ public class DigiSepLoadGroupApiTest {
                 .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_DIGI_SEP)).build();
 
         ExtractableResponse<?> copyResponse = ApiCallHelper.post("loadGroups",
-                loadGroupCopy, "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString() + "/copy");
+                loadGroupCopy,
+                "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString() + "/copy");
 
-        assertTrue("Group Id should not be Null", copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID) != null);
+        assertTrue("Group Id should not be Null", copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString() != null);
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
 
         // To tear down after all scripts
@@ -340,7 +341,7 @@ public class DigiSepLoadGroupApiTest {
                 loadGroup.getKWCapacity().equals(digiSepLoadGroup.getKWCapacity()));
 
         // To tear down after all scripts
-        groups.put(createResponse.path("groupId"), digiSepLoadGroup.getName());
+        groups.put(groupId, digiSepLoadGroup.getName());
 
         Log.endTestCase("loadGroupDigiSep_12_CreateGroupWithMaxKwCapacity");
     }
@@ -404,7 +405,7 @@ public class DigiSepLoadGroupApiTest {
                     expectedKwCapacityList.get(i).equals(digiSepLoadGroup.getKWCapacity()));
 
             // To tear down after all scripts
-            groups.put(createResponse.path("groupId"), digiSepLoadGroup.getName());
+            groups.put(groupId, digiSepLoadGroup.getName());
         }
 
         Log.endTestCase("loadGroupDigiSep_14_CreateGroupWithMoreThanFourDecimalInKwCapacity");
@@ -454,7 +455,7 @@ public class DigiSepLoadGroupApiTest {
                 loadGroup.getUtilityEnrollmentGroup().equals(digiSepLoadGroup.getUtilityEnrollmentGroup()));
 
         // To tear down after all scripts
-        groups.put(createResponse.path("groupId"), digiSepLoadGroup.getName());
+        groups.put(groupId, digiSepLoadGroup.getName());
 
         Log.endTestCase("loadGroupDigiSep_16_CreateGroupWithMinValueInUtilityEnrollmentGroup");
     }
@@ -483,7 +484,7 @@ public class DigiSepLoadGroupApiTest {
                 loadGroup.getUtilityEnrollmentGroup().equals(digiSepLoadGroup.getUtilityEnrollmentGroup()));
 
         // To tear down after all scripts
-        groups.put(createResponse.path("groupId"), digiSepLoadGroup.getName());
+        groups.put(groupId, digiSepLoadGroup.getName());
 
         Log.endTestCase("loadGroupDigiSep_17_CreateWithMaxValueInUtilityEnrollmentGroup");
     }
@@ -572,7 +573,7 @@ public class DigiSepLoadGroupApiTest {
                 loadGroup.getRampInMinutes().equals(digiSepLoadGroup.getRampInMinutes()));
 
         // To tear down after all scripts
-        groups.put(createResponse.path("groupId"), digiSepLoadGroup.getName());
+        groups.put(groupId, digiSepLoadGroup.getName());
 
         Log.endTestCase("loadGroupDigiSep_21_CreateGroupWithMinValueInRampInMinutes");
     }
@@ -601,7 +602,7 @@ public class DigiSepLoadGroupApiTest {
                 loadGroup.getRampInMinutes().equals(digiSepLoadGroup.getRampInMinutes()));
 
         // To tear down after all scripts
-        groups.put(createResponse.path("groupId"), digiSepLoadGroup.getName());
+        groups.put(groupId, digiSepLoadGroup.getName());
 
         Log.endTestCase("loadGroupDigiSep_22_CreateGroupWithMaxValueInRampInMinutes");
     }
@@ -630,7 +631,7 @@ public class DigiSepLoadGroupApiTest {
                 loadGroup.getRampOutMinutes().equals(digiSepLoadGroup.getRampOutMinutes()));
 
         // To tear down after all scripts
-        groups.put(createResponse.path("groupId"), digiSepLoadGroup.getName());
+        groups.put(groupId, digiSepLoadGroup.getName());
 
         Log.endTestCase("loadGroupDigiSep_23_CreateGroupWithMinValueInRampOutMinutes");
     }
@@ -659,7 +660,7 @@ public class DigiSepLoadGroupApiTest {
                 loadGroup.getRampOutMinutes().equals(digiSepLoadGroup.getRampOutMinutes()));
 
         // To tear down after all scripts
-        groups.put(createResponse.path("groupId"), digiSepLoadGroup.getName());
+        groups.put(groupId, digiSepLoadGroup.getName());
 
         Log.endTestCase("loadGroupDigiSep_24_CreateGroupWithMaxValueInRampOutMinutes");
     }

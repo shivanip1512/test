@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.ApiUtils;
 import com.cannontech.rest.api.common.model.MockLMDto;
@@ -36,12 +33,10 @@ import com.cannontech.rest.api.loadgroup.request.MockLoads;
 import com.cannontech.rest.api.loadgroup.request.MockRelays;
 import com.cannontech.rest.api.loadgroup.request.MockSepDeviceClass;
 import com.cannontech.rest.api.loadgroup.request.MockVersacomAddressUsage;
-import com.cannontech.rest.api.utilities.Log;
 
 import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupHelper {
-    private static final Logger log = LogManager.getLogger(LoadGroupHelper.class);
     public final static String CONTEXT_GROUP_ID = "groupId";
     public final static String CONTEXT_GROUP_ID_DESC = "Load Group Id";
     public final static int INVALID_ROUTE_ID = 2222222;
