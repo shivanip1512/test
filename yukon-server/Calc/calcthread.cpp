@@ -551,17 +551,7 @@ void CtiCalculateThread::historicalThread( void )
 
 bool CtiCalculateThread::processHistoricalPoints(const PointTimeMap& dbTimeMap, PointTimeMap& unlistedPoints, PointTimeMap& updatedPoints, CtiMultiMsg* pChg, const int initialDays, const size_t pauseCount)
 {
-    long pointID;
-    long componentCount;
-    double newPointValue;
-    CtiTime calcTime;
-    CtiTime lastTime;
-    int calcQuality;
-    DynamicTableData data;
-    bool pointsInMulti = FALSE;
-    bool calcValid;
-
-    for( auto& [id, calcPoint] : _historicalPoints )
+    for( auto& [pointID, calcPoint] : _historicalPoints )
     {
         if( ! calcPoint || ! calcPoint->ready() )
         {
@@ -573,7 +563,7 @@ bool CtiCalculateThread::processHistoricalPoints(const PointTimeMap& dbTimeMap, 
             continue;
         }
 
-        pointID = calcPoint->getPointId( );
+        CtiTime lastTime;
 
         if( const auto dbTime = Cti::mapFind(dbTimeMap, pointID) )//Entry is in the database
         {
@@ -585,6 +575,8 @@ bool CtiCalculateThread::processHistoricalPoints(const PointTimeMap& dbTimeMap, 
             unlistedPoints.insert(PointTimeMap::value_type(pointID, lastTime));
         }
 
+        DynamicTableData data;
+
         getHistoricalTableData(*calcPoint, lastTime, data);
 
         //  Check for any outside interference that may have occurred during the DB load
@@ -593,7 +585,7 @@ bool CtiCalculateThread::processHistoricalPoints(const PointTimeMap& dbTimeMap, 
             return true;
         }
 
-        componentCount = calcPoint->getComponentCount();
+        const auto componentCount = calcPoint->getComponentCount();
 
         CtiTime newTime = (unsigned long)0;
         for( const auto& [dynamicTime, dynamicValues] : data )
@@ -604,8 +596,11 @@ bool CtiCalculateThread::processHistoricalPoints(const PointTimeMap& dbTimeMap, 
                 setHistoricalPointStore(dynamicValues);//Takes the value/paoid pair and sets the values in the point store
 
                 CtiPointStoreElement* calcPointPtr = CtiPointStore::find(calcPoint->getPointId());
+                CtiTime calcTime;
+                int calcQuality;
+                bool calcValid;
 
-                newPointValue = calcPoint->calculate( calcQuality, calcTime, calcValid );
+                auto newPointValue = calcPoint->calculate( calcQuality, calcTime, calcValid );
 
                 calcPoint->setNextInterval(calcPoint->getUpdateInterval());
 
@@ -628,7 +623,6 @@ bool CtiCalculateThread::processHistoricalPoints(const PointTimeMap& dbTimeMap, 
                 newTime = dynamicTime;//we do this in order of time, so the last one is the time we want.
 
                 pChg->getData( ).push_back( pointData );
-                pointsInMulti = TRUE;
 
                 if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                 {
