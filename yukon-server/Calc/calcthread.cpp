@@ -440,17 +440,14 @@ void CtiCalculateThread::historicalThread( void )
 {
     try
     {
-        bool calcValid, reloaded = false;
-        bool pointsInMulti;
+        bool reloaded = false;
         PointTimeMap unlistedPoints, updatedPoints;
-        DynamicTableData data;
         int frequencyInSeconds = 60 * 60;  //  60 minutes
         int initialDays = 0;  //  0 days
 
-        int calcQuality;
         CtiTime nextCalcTime;
 
-        CtiTime now, lastTime, start;
+        CtiTime now, start;
         ThreadStatusKeeper threadStatus("CalcLogicSvc HistoricalThread");
 
         constexpr auto keyFrequency = "CALC_HISTORICAL_FREQUENCY_IN_SECONDS";
@@ -495,7 +492,6 @@ void CtiCalculateThread::historicalThread( void )
             start = start.now();
 
             auto pChg = std::make_unique<CtiMultiMsg>();
-            pointsInMulti = FALSE;
 
             PointTimeMap dbTimeMap;
             getCalcHistoricalLastUpdatedTime(dbTimeMap);
@@ -506,99 +502,10 @@ void CtiCalculateThread::historicalThread( void )
                 continue;
             }
 
-            long pointID;
-            long componentCount;
-            double newPointValue;
-            CtiTime calcTime;
-
             reloaded = false;
 
-            for( auto& [id, calcPoint] : _historicalPoints )
-            {
-                if( reloaded )
-                {
-                    break;
-                }
-                if( ! calcPoint || ! calcPoint->ready() )
-                {
-                    continue;
-                }
-
-                if( calcPoint->isBaselineCalc() )
-                {
-                    continue;
-                }
-
-                pointID = calcPoint->getPointId( );
-
-                if( const auto dbTime = Cti::mapFind(dbTimeMap, pointID) )//Entry is in the database
-                {
-                    lastTime = *dbTime;
-                }
-                else
-                {
-                    lastTime = CtiTime((unsigned)0, (unsigned)0) - initialDays*60*60*24;//This should return today, -initialDays days.
-                    unlistedPoints.insert(PointTimeMap::value_type(pointID, lastTime));
-                }
-
-                getHistoricalTableData(*calcPoint, lastTime, data);
-
-                //  Check for any outside interference that may have occurred during the DB load
-                if( wasPausedOrInterrupted(_historicalThreadFunc, pauseCount, CALLSITE) )
-                {
-                    reloaded = true;
-
-                    continue;
-                }
-
-                componentCount = calcPoint->getComponentCount();
-
-                CtiTime newTime = (unsigned long)0;
-                for( const auto& [dynamicTime, dynamicValues] : data )
-                {
-                    if( dynamicValues.size() == componentCount )
-                    {
-                        //This means all the necessary points in historical have been updated, we can do a calc
-                        setHistoricalPointStore(dynamicValues);//Takes the value/paoid pair and sets the values in the point store
-
-                        CtiPointStoreElement* calcPointPtr = CtiPointStore::find(calcPoint->getPointId());
-
-                        newPointValue = calcPoint->calculate( calcQuality, calcTime, calcValid );
-
-                        calcPoint->setNextInterval(calcPoint->getUpdateInterval());
-
-                        if(!calcValid)
-                        {
-                            //even if we were invalid, we need to move on and try the next time, otherwise we will constantly retry
-                            if(_CALC_DEBUG & CALC_DEBUG_POSTCALC_VALUE)
-                            {
-                                CTILOG_DEBUG(dout, "Calculation of historical point "<< calcPoint->getPointId() <<" was invalid (ex. div by zero or sqrt(<0)).");
-                            }
-
-                            calcQuality = NonUpdatedQuality;
-                            newPointValue = 0;
-                        }
-
-                        const auto pointDescription = makeUpdateText(pointID);
-
-                        CtiPointDataMsg *pointData = CTIDBG_new CtiPointDataMsg(pointID, newPointValue, NormalQuality, InvalidPointType, pointDescription);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
-                        pointData->setTime(dynamicTime);//The time these points were entered in the historical log
-                        newTime = dynamicTime;//we do this in order of time, so the last one is the time we want.
-
-                        pChg->getData( ).push_back( pointData );
-                        pointsInMulti = TRUE;
-
-                        if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
-                        {
-                            CTILOG_DEBUG(dout, "HistoricCalc setting Calc Point ID: "<< pointID <<" to New Value: "<< newPointValue);
-                        }
-                    }
-                }
-                if( newTime > (unsigned long)0 && unlistedPoints.count(calcPoint->getPointId()) == 0 )
-                {
-                    updatedPoints.insert(PointTimeMap::value_type(calcPoint->getPointId(), newTime));
-                }
-            }
+            reloaded |= processHistoricalPoints(dbTimeMap, unlistedPoints, updatedPoints, pChg.get(), initialDays, pauseCount);
+            //reloaded |= processBackfillingHistoricalPoints();
 
             if( !reloaded )
             {
@@ -614,7 +521,7 @@ void CtiCalculateThread::historicalThread( void )
             updatedPoints.clear();//Next time through these need to be clear.
             unlistedPoints.clear();
 
-            if( pointsInMulti )
+            if( ! pChg->getData().empty() )
             {
                 {
                     CtiLockGuard<CtiCriticalSection> outboxGuard(outboxMux);
@@ -639,6 +546,111 @@ void CtiCalculateThread::historicalThread( void )
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
+}
+
+
+bool CtiCalculateThread::processHistoricalPoints(const PointTimeMap& dbTimeMap, PointTimeMap& unlistedPoints, PointTimeMap& updatedPoints, CtiMultiMsg* pChg, const int initialDays, const size_t pauseCount)
+{
+    long pointID;
+    long componentCount;
+    double newPointValue;
+    CtiTime calcTime;
+    CtiTime lastTime;
+    int calcQuality;
+    DynamicTableData data;
+    bool pointsInMulti = FALSE;
+    bool calcValid, reloaded = false;
+
+    reloaded = false;
+
+    for( auto& [id, calcPoint] : _historicalPoints )
+    {
+        if( reloaded )
+        {
+            break;
+        }
+        if( ! calcPoint || ! calcPoint->ready() )
+        {
+            continue;
+        }
+
+        if( calcPoint->isBaselineCalc() )
+        {
+            continue;
+        }
+
+        pointID = calcPoint->getPointId( );
+
+        if( const auto dbTime = Cti::mapFind(dbTimeMap, pointID) )//Entry is in the database
+        {
+            lastTime = *dbTime;
+        }
+        else
+        {
+            lastTime = CtiTime((unsigned)0, (unsigned)0) - initialDays*60*60*24;//This should return today, -initialDays days.
+            unlistedPoints.insert(PointTimeMap::value_type(pointID, lastTime));
+        }
+
+        getHistoricalTableData(*calcPoint, lastTime, data);
+
+        //  Check for any outside interference that may have occurred during the DB load
+        if( wasPausedOrInterrupted(_historicalThreadFunc, pauseCount, CALLSITE) )
+        {
+            reloaded = true;
+
+            continue;
+        }
+
+        componentCount = calcPoint->getComponentCount();
+
+        CtiTime newTime = (unsigned long)0;
+        for( const auto& [dynamicTime, dynamicValues] : data )
+        {
+            if( dynamicValues.size() == componentCount )
+            {
+                //This means all the necessary points in historical have been updated, we can do a calc
+                setHistoricalPointStore(dynamicValues);//Takes the value/paoid pair and sets the values in the point store
+
+                CtiPointStoreElement* calcPointPtr = CtiPointStore::find(calcPoint->getPointId());
+
+                newPointValue = calcPoint->calculate( calcQuality, calcTime, calcValid );
+
+                calcPoint->setNextInterval(calcPoint->getUpdateInterval());
+
+                if(!calcValid)
+                {
+                    //even if we were invalid, we need to move on and try the next time, otherwise we will constantly retry
+                    if(_CALC_DEBUG & CALC_DEBUG_POSTCALC_VALUE)
+                    {
+                        CTILOG_DEBUG(dout, "Calculation of historical point "<< calcPoint->getPointId() <<" was invalid (ex. div by zero or sqrt(<0)).");
+                    }
+
+                    calcQuality = NonUpdatedQuality;
+                    newPointValue = 0;
+                }
+
+                const auto pointDescription = makeUpdateText(pointID);
+
+                CtiPointDataMsg *pointData = CTIDBG_new CtiPointDataMsg(pointID, newPointValue, NormalQuality, InvalidPointType, pointDescription);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
+                pointData->setTime(dynamicTime);//The time these points were entered in the historical log
+                newTime = dynamicTime;//we do this in order of time, so the last one is the time we want.
+
+                pChg->getData( ).push_back( pointData );
+                pointsInMulti = TRUE;
+
+                if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
+                {
+                    CTILOG_DEBUG(dout, "HistoricCalc setting Calc Point ID: "<< pointID <<" to New Value: "<< newPointValue);
+                }
+            }
+        }
+        if( newTime > (unsigned long)0 && unlistedPoints.count(calcPoint->getPointId()) == 0 )
+        {
+            updatedPoints.insert(PointTimeMap::value_type(calcPoint->getPointId(), newTime));
+        }
+    }
+
+    return reloaded;
 }
 
 void CtiCalculateThread::baselineThread( void )

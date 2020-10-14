@@ -75,6 +75,8 @@ private:
     void getCurtailedDates(DatesSet &curtailedDates, long pointID, CtiTime &startTime);
     bool processDay(long pointID, CtiTime curTime, DynamicTableSinglePointData &data, DynamicTableSinglePointData &percentData, int percent, HourlyValues &results);
 
+    bool processHistoricalPoints(const PointTimeMap& dbTimeMap, PointTimeMap& unlistedPoints, PointTimeMap& updatedPoints, CtiMultiMsg* pChg, const int initialDays, const size_t pauseCount);
+
 public:
 
     CtiCalculateThread();
