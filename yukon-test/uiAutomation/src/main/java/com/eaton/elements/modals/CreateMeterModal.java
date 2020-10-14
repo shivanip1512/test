@@ -23,7 +23,7 @@ public class CreateMeterModal extends BaseModal {
         return new DropDownSearchElement(this.driverExt, "meter_type_chosen", PARENT_NAME);
     }
     
-    public TextEditElement getdeviceName() {
+    public TextEditElement getDeviceName() {
         return  new TextEditElement(this.driverExt, "name", PARENT_NAME);
     }
     
@@ -31,7 +31,7 @@ public class CreateMeterModal extends BaseModal {
         return new TextEditElement(this.driverExt, "meterNumber", PARENT_NAME);
     }
     
-    public TextEditElement getPhycialAddress() {
+    public TextEditElement getPhysicalAddress() {
         return new TextEditElement(this.driverExt, "address", PARENT_NAME);
     }
     
