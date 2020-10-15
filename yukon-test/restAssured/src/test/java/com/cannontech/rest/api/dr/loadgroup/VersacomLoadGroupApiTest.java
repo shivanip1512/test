@@ -23,6 +23,7 @@ import com.cannontech.rest.api.utilities.ValidationHelper;
 import io.restassured.response.ExtractableResponse;
 
 public class VersacomLoadGroupApiTest {
+    private static final String contextGroupId = "LM_GROUP_VERSACOM.id";
 
     /**
      * This test case validates creation of Versacom load group with default values
@@ -32,7 +33,7 @@ public class VersacomLoadGroupApiTest {
         Log.startTestCase("loadGroupVersacom_01_Create");
         MockLoadGroupVersacom loadGroup = (MockLoadGroupVersacom) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_VERSACOM);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
-        Integer groupId = createResponse.jsonPath().getInt("LM_GROUP_VERSACOM.id");
+        Integer groupId = createResponse.jsonPath().getInt(contextGroupId);
         context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
         assertTrue(createResponse.statusCode() == 201, "Status code should be 201");
         assertTrue(groupId != null, "Group Id should not be Null");
@@ -398,7 +399,7 @@ public class VersacomLoadGroupApiTest {
         assertTrue(createResponse.statusCode() == 201, "Status code should be " + 201);
 
         ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups",
-                "/" + createResponse.jsonPath().getInt("LM_GROUP_VERSACOM.id"));
+                "/" + createResponse.jsonPath().getInt(contextGroupId));
         assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
 
         MockLoadGroupVersacom loadGroupGetResponse = getResponse.as(MockLoadGroupVersacom.class);
@@ -456,7 +457,7 @@ public class VersacomLoadGroupApiTest {
         assertTrue(createResponse.statusCode() == 201, "Status code should be " + 201);
 
         ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups",
-                "/" + createResponse.jsonPath().getInt("LM_GROUP_VERSACOM.id"));
+                "/" + createResponse.jsonPath().getInt(contextGroupId));
         assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
 
         MockLoadGroupVersacom loadGroupGetResponse = getResponse.as(MockLoadGroupVersacom.class);

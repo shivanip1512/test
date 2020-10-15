@@ -25,6 +25,7 @@ import io.restassured.response.ExtractableResponse;
 public class EmetconLoadGroupApiTest {
 
     MockLoadGroupEmetcon loadGroup = null;
+    private static final String contextGroupId = "LM_GROUP_EMETCON.id";
 
     @BeforeClass
     public void setUp() {
@@ -39,7 +40,7 @@ public class EmetconLoadGroupApiTest {
 
         Log.startTestCase("loadGroupEmetcon_01_Create");
         ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
-        Integer groupId = createResponse.jsonPath().getInt("LM_GROUP_EMETCON.id");
+        Integer groupId = createResponse.jsonPath().getInt(contextGroupId);
         context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
         assertTrue("Status code should be 201", createResponse.statusCode() == 201);
         assertTrue("Load Group Id should not be Null", groupId != null);

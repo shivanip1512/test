@@ -17,13 +17,14 @@ import com.cannontech.rest.api.utilities.ValidationHelper;
 import io.restassured.response.ExtractableResponse;
 
 public class PointLoadGroupApiTest {
+    private static final String contextGroupId = "LM_GROUP_POINT.id";
 
     @Test
     public void loadGroupPoint_01_Create(ITestContext context) {
         Log.startTestCase("loadGroupPoint_01_Create");
         MockLoadGroupPoint loadGroup = (MockLoadGroupPoint) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_POINT);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
-        Integer groupId = createResponse.jsonPath().getInt("LM_GROUP_POINT.id");
+        Integer groupId = createResponse.jsonPath().getInt(contextGroupId);
         context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
         assertTrue(createResponse.statusCode() == 201, "Status code should be 201");
         assertTrue(groupId != null, "Group Id should not be Null");

@@ -23,6 +23,7 @@ import io.restassured.response.ExtractableResponse;
 public class HoneywellLoadGroupApiTest {
 
     MockLoadGroupHoneywell loadGroup = null;
+    private static final String contextGroupId = "LM_GROUP_HONEYWELL.id";
 
     @BeforeClass
     public void setUp() {
@@ -36,7 +37,7 @@ public class HoneywellLoadGroupApiTest {
     public void loadGroupHoneywell_01_Create(ITestContext context) {
         Log.startTestCase("loadGroupHoneywell_01_Create");
         ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
-        Integer groupId = createResponse.jsonPath().getInt("LM_GROUP_HONEYWELL.id");
+        Integer groupId = createResponse.jsonPath().getInt(contextGroupId);
         context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
         assertTrue("Status code should be 201", createResponse.statusCode() == 201);
         assertTrue("Group Id should not be Null", groupId != null);

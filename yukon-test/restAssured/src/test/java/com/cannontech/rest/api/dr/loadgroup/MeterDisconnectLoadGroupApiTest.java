@@ -16,6 +16,7 @@ import io.restassured.response.ExtractableResponse;
 
 public class MeterDisconnectLoadGroupApiTest {
     MockLoadGroupBase loadGroup = null;
+    private static final String contextGroupId = "LM_GROUP_METER_DISCONNECT.id";
 
     @BeforeClass
     public void setUp() {
@@ -27,7 +28,7 @@ public class MeterDisconnectLoadGroupApiTest {
         Log.startTestCase("loadGroupMeterDisconnect_01_Create");
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
-        Integer groupId = createResponse.jsonPath().getInt("LM_GROUP_METER_DISCONNECT.id");
+        Integer groupId = createResponse.jsonPath().getInt(contextGroupId);
         context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
 
         assertTrue("Status code should be 201", createResponse.statusCode() == 201);
