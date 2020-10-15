@@ -504,7 +504,11 @@ void CtiCalculateThread::historicalThread( void )
 
             reloaded = false;
 
-            reloaded |= processHistoricalPoints(dbTimeMap, unlistedPoints, updatedPoints, pChg.get(), initialDays, pauseCount);
+            const auto wasReloaded = [&reloaded, pauseCount, this](Cti::CallSite cs) {
+                return reloaded |= wasPausedOrInterrupted(_historicalThreadFunc, pauseCount, cs);
+            };
+
+            processHistoricalPoints(dbTimeMap, unlistedPoints, updatedPoints, pChg.get(), initialDays, wasReloaded);
             //reloaded |= processBackfillingHistoricalPoints();
 
             if( !reloaded )
@@ -549,9 +553,9 @@ void CtiCalculateThread::historicalThread( void )
 }
 
 
-bool CtiCalculateThread::processHistoricalPoints(const PointTimeMap& dbTimeMap, PointTimeMap& unlistedPoints, PointTimeMap& updatedPoints, CtiMultiMsg* pChg, const int initialDays, const size_t pauseCount)
+void CtiCalculateThread::processHistoricalPoints(const PointTimeMap& dbTimeMap, PointTimeMap& unlistedPoints, PointTimeMap& updatedPoints, CtiMultiMsg* pChg, const int initialDays, const std::function<bool(Cti::CallSite)> wasReloaded)
 {
-    for( auto& [pointID, calcPoint] : _historicalPoints )
+    for( const auto& [pointID, calcPoint] : _historicalPoints )
     {
         if( ! calcPoint || ! calcPoint->ready() )
         {
@@ -578,9 +582,9 @@ bool CtiCalculateThread::processHistoricalPoints(const PointTimeMap& dbTimeMap, 
         const auto data = getHistoricalTableData(*calcPoint, lastTime);
 
         //  Check for any outside interference that may have occurred during the DB load
-        if( wasPausedOrInterrupted(_historicalThreadFunc, pauseCount, CALLSITE) )
+        if( wasReloaded(CALLSITE) )
         {
-            return true;
+            return;
         }
 
         const auto componentCount = calcPoint->getComponentCount();
@@ -633,8 +637,6 @@ bool CtiCalculateThread::processHistoricalPoints(const PointTimeMap& dbTimeMap, 
             updatedPoints.emplace(calcPoint->getPointId(), newTime);
         }
     }
-
-    return false;
 }
 
 void CtiCalculateThread::baselineThread( void )
@@ -1554,7 +1556,7 @@ void CtiCalculateThread::updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlis
             writer << pointId << lastUpdate;
             if( ! Cti::Database::executeCommand( writer, CALLSITE ))
             {
-                CTILOG_ERROR(dout, "Failed to insert point ID " << pointId << " in CalcHistoricalUpdatedTime");
+                CTILOG_ERROR(dout, "Failed to insert point ID " << pointId << "@" << lastUpdate << " in CalcHistoricalUpdatedTime");
                 break;
             }
         }
@@ -1567,7 +1569,7 @@ void CtiCalculateThread::updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlis
             writer << lastUpdate << pointId;
             if( ! Cti::Database::executeCommand(writer, CALLSITE) )
             {
-                CTILOG_ERROR(dout, "Failed to update point ID " << pointId << " in CalcHistoricalUpdatedTime");
+                CTILOG_ERROR(dout, "Failed to update point ID " << pointId << "@" << lastUpdate << " in CalcHistoricalUpdatedTime");
                 break;
             }
         }
