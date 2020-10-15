@@ -1,0 +1,148 @@
+post-operation:
+  post:
+    tags:
+     - Program Constraint
+    summary: 'Create Program Constraint'
+    description: 'API to create Program Constraint.'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/programConstraintsSchema.yaml#/ProgramConstraint'
+          examples:
+            Program Constraints:
+              $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ProgramConstraint'
+      required: true
+    responses:
+      '201':
+        description: Created
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/programConstraintsSchema.yaml#/ProgramConstraint'
+            examples:
+              Program Constraints:
+                $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ProgramConstraint'
+get-update-delete-operation:
+  get:
+    tags:
+     - Program Constraint
+    summary: 'Retrieve Program Constraint'
+    description: 'API to retrieve Program Constraint based on passed programConstraintId.'
+    parameters:
+      - name: programConstraintId
+        in: path
+        schema:
+          type: integer
+        required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/programConstraintsSchema.yaml#/ProgramConstraint'
+            examples:
+              Program Constraints:
+                $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ProgramConstraint'
+  put:
+    tags:
+     - Program Constraint
+    summary: 'Update Program Constraint'
+    description: 'API to update Program Constraint based on passed programConstraintId.'
+    parameters:
+      - name: programConstraintId
+        in: path
+        schema:
+          type: integer
+        required: true
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/programConstraintsSchema.yaml#/ProgramConstraint'
+          examples:
+            Program Constraints:
+              $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ProgramConstraint'
+      required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/programConstraintsSchema.yaml#/ProgramConstraint'
+            examples:
+              Program Constraints:
+                $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ProgramConstraint'
+  delete:
+    tags:
+     - Program Constraint
+    summary: 'Delete Program Constraint'
+    description: 'API to delete Program Constraint based on passed programConstraintId.'
+    parameters:
+      - name: programConstraintId
+        in: path
+        schema:
+          type: integer
+        required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/programConstraintsSchema.yaml#/id'
+            examples:
+              ProgramConstraintId:
+                $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ProgramConstraintId'
+
+season-schedules:
+  get:
+    tags:
+       - Program Constraint
+    summary: 'Retrieve all seasons schedules.'
+    description: 'API to retrieve all seasons schedules.'
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/programConstraintsSchema.yaml#/season-schedule-dto'
+            examples:
+              Season Schedules:
+                $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ItemtList'
+holiday-schedules:
+  get:
+    tags:
+       - Program Constraint
+    summary: 'Retrieve all holiday schedules.'
+    description: 'API to retrieve all holiday schedules.'
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/programConstraintsSchema.yaml#/holiday-schedule-dto'
+            examples:
+              Holiday Schedules:
+                $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ItemtList'
+
+program-constraints:
+  get:
+    tags:
+       - Program Constraint
+    summary: 'Retrieve all program constraints.'
+    description: 'API to retrieve all program constraints.'
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/programConstraintsSchema.yaml#/program-constraint-dto'
+            examples:
+              Program Constraints:
+                $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ItemtList'

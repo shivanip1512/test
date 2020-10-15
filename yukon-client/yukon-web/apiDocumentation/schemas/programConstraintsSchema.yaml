@@ -1,0 +1,174 @@
+ProgramConstraint:
+  title: Program Constraints
+  required:
+    - name
+    - seasonSchedule
+    - holidaySchedule
+    - maxActivateSeconds
+    - maxDailyOps
+    - minRestartSeconds
+    - maxHoursDaily
+    - maxHoursMonthly
+    - maxHoursAnnually
+    - maxHoursSeasonal
+  type: object
+  properties:
+    name:
+      type: string
+      maxLength: 60
+      description: 'Program Constraint Name'
+    seasonSchedule:
+      type: object
+      properties:
+        name:
+          type: string
+          description: 'Season Schedule Name. Optional to pass with seasonSchedule'
+        id:
+          type: integer
+          description: 'Season Schedule Id. Mandatory to pass with seasonSchedule'
+    maxActivateSeconds:
+      type: integer
+      minimum: 0
+      maximum: 99999
+      description: 'Max Activate Seconds.'
+    maxDailyOps:
+      type: integer
+      minimum: 0
+      maximum: 99999
+      description: 'Max Daily OpsSeconds.'
+    minRestartSeconds:
+      type: integer
+      minimum: 0
+      maximum: 99999
+      description: 'Min Restart Seconds.'
+    daySelection:
+      type: string
+      default: NULL
+      description: 'Day Selection.'
+      enum:
+        - SUNDAY
+        - MONDAY
+        - TUESDAY 
+        - WEDNESDAY
+        - THURSDAY
+        - FRIDAY
+        - SATURDAY
+    holidaySchedule:
+      type: object
+      properties:
+        name:
+          type: string
+          description: 'Holiday Schedule Name.Optional to pass with holidaySchedule'
+        id:
+          type: integer
+          description: 'Holiday Schedule Id. Mandatory to pass with holidaySchedule'
+    holidayUsage:
+      type: string
+      default: NONE
+      description: 'Holiday Usage.'
+      enum:
+        - EXCLUDE
+        - FORCE
+        - NONE
+    maxHoursDaily:
+      type: integer
+      minimum: 0
+      maximum: 99999
+      description: 'Max Hours Daily.'
+    maxHoursMonthly:
+      type: integer
+      minimum: 0
+      maximum: 99999
+      description: 'Max Hours Monthly.'
+    maxHoursAnnually:
+      type: integer
+      minimum: 0
+      maximum: 99999
+      description: 'Max Hours Annually.'
+    maxHoursSeasonal:
+      type: integer
+      minimum: 0
+      maximum: 99999
+      description: 'Max Hours Seasonal.'
+
+id:
+  title: id
+  required:
+    - id
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Program Constraint id'
+
+season-schedule-dto:
+  type: array
+  items:
+    type: object
+    required: id
+    properties:
+      name:
+        type: string
+        description: 'Season Schedule Name'
+      id:
+        type: integer
+        description: 'Season Schedule Id'
+
+holiday-schedule-dto:
+  type: array
+  items:
+    type: object
+    required: id
+    properties:
+      name:
+        type: string
+        description: 'Holiday Schedule Name'
+      id:
+        type: integer
+        description: 'Holiday Schedule Id'
+
+program-constraint-dto:
+  type: array
+  items:
+    type: object
+    required: id
+    properties:
+      name:
+        type: string
+        description: 'Program Constraint Name'
+      id:
+        type: integer
+        description: 'Program Constraint Id'
+
+components:
+  examples:
+    ProgramConstraint:
+      value:
+        name: LM Constraint
+        seasonSchedule:
+          name: Test Season Schedule
+          id: 1
+        maxActivateSeconds: 12
+        maxDailyOps: 13
+        minActivateSeconds: 14
+        minRestartSeconds: 15
+        daySelection:
+          - SUNDAY
+        holidaySchedule:
+          name: Test Holiday Schedule
+          id: 1
+        holidayUsage: EXCLUDE
+        maxHoursDaily: 1
+        maxHoursMonthly: 2
+        maxHoursAnnually: 4
+        maxHoursSeasonal: 3
+    ProgramConstraintId:
+      value:
+        id: 11
+    ItemtList:
+      value:
+        - id: 1
+          name: Item1
+        - id: 2
+          name: Item2
+      

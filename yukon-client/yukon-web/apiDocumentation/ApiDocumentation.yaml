@@ -23,11 +23,25 @@ paths:
     $ref: 'api/commChannelsApi.yaml#/post-operation'
   '/devices/commChannels/{id}':
     $ref: 'api/commChannelsApi.yaml#/get-update-delete-operation'
-   
+
   /trends:
     $ref: 'api/trendsApi.yaml#/post-operation'
   '/trends/{trendId}':
     $ref: 'api/trendsApi.yaml#/get-update-delete-operation'
+
+  /dr/constraints:
+    $ref: 'api/programConstraintsApi.yaml#/post-operation'
+  '/dr/constraints/{programConstraintId}':
+    $ref: 'api/programConstraintsApi.yaml#/get-update-delete-operation'
+
+  /dr/constraints/getSeasonSchedules:
+    $ref: 'api/programConstraintsApi.yaml#/season-schedules'
+
+  /dr/constraints/getHolidaySchedules:
+    $ref: 'api/programConstraintsApi.yaml#/holiday-schedules'
+
+  /dr/constraints/getAllProgramConstraint:
+    $ref: 'api/programConstraintsApi.yaml#/program-constraints'
 
 components:
   securitySchemes:
@@ -39,4 +53,4 @@ tags:
   - name: Token Generation
   - name: Comm Channel
   - name: Trend
-   
+  - name: Program Constraint
