@@ -66,14 +66,14 @@ private:
     Cti::CalcLogic::CalcWorkerThread    _baselineThreadFunc;
 
     void getCalcHistoricalLastUpdatedTime(PointTimeMap &dbTimeMap);
-    void getHistoricalTableData(CtiCalc& calcPoint, CtiTime &lastTime, DynamicTableData &data);
-    void getHistoricalTableSinglePointData(long calcPoint, CtiTime &lastTime, DynamicTableSinglePointData &data);
+    auto getHistoricalTableData(CtiCalc& calcPoint, CtiTime &lastTime) -> DynamicTableData;
+    auto getHistoricalTableSinglePointData(long calcPoint, CtiTime &lastTime) -> DynamicTableSinglePointData;
     void setHistoricalPointStore(const HistoricalPointValueMap& valueMap);
     void updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlistedPoints, PointTimeMap &updatedPoints);
     void getCalcBaselineMap(PointBaselineMap &baselineMap);
     void getBaselineMap(BaselineMap &baselineMap);
     void getCurtailedDates(DatesSet &curtailedDates, long pointID, CtiTime &startTime);
-    bool processDay(long pointID, CtiTime curTime, DynamicTableSinglePointData &data, DynamicTableSinglePointData &percentData, int percent, HourlyValues &results);
+    bool processDay(long pointID, CtiTime curTime, const DynamicTableSinglePointData& data, const DynamicTableSinglePointData& percentData, int percent, HourlyValues &results);
 
     bool processHistoricalPoints(const PointTimeMap& dbTimeMap, PointTimeMap& unlistedPoints, PointTimeMap& updatedPoints, CtiMultiMsg* pChg, const int initialDays, const size_t pauseCount);
 

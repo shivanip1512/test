@@ -575,9 +575,7 @@ bool CtiCalculateThread::processHistoricalPoints(const PointTimeMap& dbTimeMap, 
             unlistedPoints.emplace(pointID, lastTime);
         }
 
-        DynamicTableData data;
-
-        getHistoricalTableData(*calcPoint, lastTime, data);
+        const auto data = getHistoricalTableData(*calcPoint, lastTime);
 
         //  Check for any outside interference that may have occurred during the DB load
         if( wasPausedOrInterrupted(_historicalThreadFunc, pauseCount, CALLSITE) )
@@ -646,8 +644,6 @@ void CtiCalculateThread::baselineThread( void )
         bool calcValid, reloaded = false;
         BOOL pointsInMulti;
         PointTimeMap unlistedPoints, updatedPoints;
-        DynamicTableSinglePointData data;
-        DynamicTableSinglePointData percentData;
         DatesSet curtailedDates;
         int frequencyInSeconds = 24*60*60;//24 hours;
         int initialDays = 30;//30 days
@@ -798,8 +794,8 @@ void CtiCalculateThread::baselineThread( void )
                 searchTime = lastTime - baselineDataPtr->maxSearchDays*24*60*60;//Go back maxSearchDays days.
 
                 //grab all the data we could ever possibly want, this gives us just 2 db reads.
-                getHistoricalTableSinglePointData(baselineID, searchTime, data);
-                getHistoricalTableSinglePointData(baselinePercentID, searchTime, percentData);
+                const auto data = getHistoricalTableSinglePointData(baselineID, searchTime);
+                const auto percentData = getHistoricalTableSinglePointData(baselinePercentID, searchTime);
                 getCurtailedDates(curtailedDates, pointID, searchTime);
 
                 //  Check for any outside interference that may have occurred during the DB load
@@ -817,7 +813,7 @@ void CtiCalculateThread::baselineThread( void )
                     searchTime = lastTime;
                     searchTime.addDays(-1*baselineDataPtr->maxSearchDays);
 
-                    DynamicTableSinglePointData::iterator lastIter;
+                    DynamicTableSinglePointData::const_iterator lastIter;
                     if( !data.empty() )
                     {
                         lastIter = data.end();
@@ -1438,14 +1434,14 @@ void CtiCalculateThread::getCalcHistoricalLastUpdatedTime(PointTimeMap &dbTimeMa
 
 }
 
-void CtiCalculateThread::getHistoricalTableData(CtiCalc& calcPoint, CtiTime &lastTime, DynamicTableData &data)
+auto CtiCalculateThread::getHistoricalTableData(CtiCalc& calcPoint, CtiTime &lastTime) -> DynamicTableData
 {
-    data.clear();
-
     if( calcPoint.getComponentIDList().empty() )
     {
-        return;
+        return {};
     }
+
+    DynamicTableData data;
 
     try
     {
@@ -1482,16 +1478,18 @@ void CtiCalculateThread::getHistoricalTableData(CtiCalc& calcPoint, CtiTime &las
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
+
+    return data;
 }
 
-void CtiCalculateThread::getHistoricalTableSinglePointData(long calcPoint, CtiTime &lastTime, DynamicTableSinglePointData &data)
+auto CtiCalculateThread::getHistoricalTableSinglePointData(long calcPoint, CtiTime &lastTime) -> DynamicTableSinglePointData
 {
-    data.clear();
-
     if( ! calcPoint )
     {
-        return;
+        return {};
     }
+
+    DynamicTableSinglePointData data;
 
     try
     {
@@ -1523,6 +1521,8 @@ void CtiCalculateThread::getHistoricalTableSinglePointData(long calcPoint, CtiTi
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
+
+    return data;
 }
 
 void CtiCalculateThread::setHistoricalPointStore(const HistoricalPointValueMap& valueMap)
@@ -1582,7 +1582,6 @@ void CtiCalculateThread::updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlis
 void CtiCalculateThread::getCalcBaselineMap(PointBaselineMap &pointBaselineMap)
 {
     pointBaselineMap.clear();
-    long pointid, baselineID;
 
     try
     {
@@ -1601,8 +1600,8 @@ void CtiCalculateThread::getCalcBaselineMap(PointBaselineMap &pointBaselineMap)
         {
 
             //  read 'em in, and append to the class
-            rdr["POINTID"] >> pointid;
-            rdr["BASELINEID"] >> baselineID;
+            const long pointid = rdr["POINTID"].as<long>();
+            const long baselineID = rdr["BASELINEID"].as<long>();
 
             pointBaselineMap.emplace(pointid, baselineID);
         }
@@ -1695,7 +1694,7 @@ void CtiCalculateThread::getCurtailedDates(DatesSet &curtailedDates, long pointI
 
 //Anything from 00:00:01 to 25:00:00 (next day) is counted for today, when the final values are recorded,
 //They are placed with a timestamp of 25:00:00 (hh:mm:ss)
-bool CtiCalculateThread::processDay(long baselineID, CtiTime curTime, DynamicTableSinglePointData &data, DynamicTableSinglePointData &percentData, int percent, HourlyValues &results)
+bool CtiCalculateThread::processDay(long baselineID, CtiTime curTime, const DynamicTableSinglePointData& data, const DynamicTableSinglePointData& percentData, int percent, HourlyValues &results)
 {
     results.clear();
     results.resize(24,0);
@@ -1716,7 +1715,7 @@ bool CtiCalculateThread::processDay(long baselineID, CtiTime curTime, DynamicTab
     {
         double value = 0;
         int count = 0;
-        DynamicTableSinglePointData::iterator iter;
+        DynamicTableSinglePointData::const_iterator iter;
         if( (iter = data.lower_bound(curTime)) != data.end() )
         {
             if( iter->first == curTime ) //at 00:00
