@@ -16,8 +16,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 
-public class WatchdogFileCryptoUtil {
-    private static final Logger log = YukonLogManager.getLogger(WatchdogFileCryptoUtil.class);
+public class WatchdogCryptoUtil {
+    private static final Logger log = YukonLogManager.getLogger(WatchdogCryptoUtil.class);
 
     private static final String CHARACTER_SET = "UTF-16";
     private static final String ENCRYPTION_ALGORITHM = "AES";
@@ -62,6 +62,13 @@ public class WatchdogFileCryptoUtil {
         setKey();
         setChiper(Cipher.ENCRYPT_MODE);
         return new String(Base64.getEncoder().encode(cipher.doFinal(strToEncrypt.getBytes(CHARACTER_SET))));
+    }
+
+    public static String decrypt(String strToDecrypt)
+            throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
+        setKey();
+        setChiper(Cipher.DECRYPT_MODE);
+        return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)), CHARACTER_SET);
     }
 
 }

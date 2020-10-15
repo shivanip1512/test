@@ -5,16 +5,24 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.mail.MessagingException;
+
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
+import com.cannontech.common.version.VersionTools;
+import com.cannontech.database.db.version.CTIDatabase;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.watchdog.base.Watchdog;
+import com.cannontech.watchdog.base.YukonServices;
+import com.cannontech.watchdogs.util.WatchdogDatabaseFileUtil;
+import com.cannontech.watchdogs.util.WatchdogEmailUtil;
 
 public class WatchdogService {
 
@@ -25,6 +33,7 @@ public class WatchdogService {
     private List<Watchdog> watchdog;
     private static ScheduledFuture<?> schdfuture;
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
+    static ApplicationContext applicationContext = null;
     
     public static void main(String args[]) {
         CtiUtilities.setClientAppName(ApplicationId.WATCHDOG);
@@ -35,11 +44,19 @@ public class WatchdogService {
             service.start();
             getLogger().info("Started watchdog service.");
         } catch (Throwable t) {
+            CTIDatabase database = VersionTools.getDatabaseVersion();
+            if(database == null) {
+                try {
+                    WatchdogEmailUtil.sendEmail();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
             getLogger().error("Error in watchdog service", t);
             System.exit(1);
         }
     }
-    
+
     /*
      * This method checks and starts watchdogs, if the watchdog should to be started.
      * It attempts to start watchdog daily until all watchdogs have started.
