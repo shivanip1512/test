@@ -572,7 +572,7 @@ bool CtiCalculateThread::processHistoricalPoints(const PointTimeMap& dbTimeMap, 
         else
         {
             lastTime = CtiTime((unsigned)0, (unsigned)0) - initialDays*60*60*24;//This should return today, -initialDays days.
-            unlistedPoints.insert(PointTimeMap::value_type(pointID, lastTime));
+            unlistedPoints.emplace(pointID, lastTime);
         }
 
         DynamicTableData data;
@@ -632,7 +632,7 @@ bool CtiCalculateThread::processHistoricalPoints(const PointTimeMap& dbTimeMap, 
         }
         if( newTime > (unsigned long)0 && unlistedPoints.count(calcPoint->getPointId()) == 0 )
         {
-            updatedPoints.insert(PointTimeMap::value_type(calcPoint->getPointId(), newTime));
+            updatedPoints.emplace(calcPoint->getPointId(), newTime);
         }
     }
 
@@ -763,7 +763,7 @@ void CtiCalculateThread::baselineThread( void )
                 {
                     lastTime = CtiTime((unsigned)0, (unsigned)0);
                     lastTime.addDays(-1*initialDays);//This should return 30 days ago, at 00:00:00
-                    unlistedPoints.insert(PointTimeMap::value_type(pointID, lastTime));
+                    unlistedPoints.emplace(pointID, lastTime);
 
                     if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
                     {
@@ -945,7 +945,7 @@ void CtiCalculateThread::baselineThread( void )
                         }
                         else
                         {
-                            updatedPoints.insert(PointTimeMap::value_type(pointID, pointTime));
+                            updatedPoints.emplace(pointID, pointTime);
 
                             if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
                             {
@@ -1543,22 +1543,18 @@ void CtiCalculateThread::setHistoricalPointStore(const HistoricalPointValueMap& 
 void CtiCalculateThread::updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlistedPoints, PointTimeMap &updatedPoints)
 {
     //The plan is to update the updated points and add the unlisted points.
-    long pointid;
-    CtiTime updateTime;
-    PointTimeMap::iterator iter;
-
     try
     {
         static const string insertSql = "insert into DYNAMICCALCHISTORICAL values (?, ?)";
         DatabaseConnection connection { getCalcQueryTimeout() };
         DatabaseWriter writer { connection, insertSql };
 
-        for( iter = unlistedPoints.begin(); iter != unlistedPoints.end(); iter++ )
+        for( const auto [pointId, lastUpdate] : unlistedPoints )
         {
-            writer << iter->first << iter->second;
+            writer << pointId << lastUpdate;
             if( ! Cti::Database::executeCommand( writer, CALLSITE ))
             {
-                CTILOG_ERROR(dout, "Failed to insert in CalcHistoricalUpdatedTime");
+                CTILOG_ERROR(dout, "Failed to insert point ID " << pointId << " in CalcHistoricalUpdatedTime");
                 break;
             }
         }
@@ -1566,12 +1562,15 @@ void CtiCalculateThread::updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlis
         static const string updateSql = "update DYNAMICCALCHISTORICAL set LASTUPDATE = ? where POINTID = ?";
         writer.setCommandText(updateSql);
 
-        for( iter = updatedPoints.begin(); iter != updatedPoints.end(); iter++ )
+        for( const auto [pointId, lastUpdate] : updatedPoints )
         {
-            writer << iter->second << iter->first;
-            Cti::Database::executeCommand( writer, CALLSITE );
+            writer << lastUpdate << pointId;
+            if( ! Cti::Database::executeCommand(writer, CALLSITE) )
+            {
+                CTILOG_ERROR(dout, "Failed to update point ID " << pointId << " in CalcHistoricalUpdatedTime");
+                break;
+            }
         }
-
     }
     catch(...)
     {
@@ -1605,7 +1604,7 @@ void CtiCalculateThread::getCalcBaselineMap(PointBaselineMap &pointBaselineMap)
             rdr["POINTID"] >> pointid;
             rdr["BASELINEID"] >> baselineID;
 
-            pointBaselineMap.insert(PointBaselineMap::value_type(pointid, baselineID));
+            pointBaselineMap.emplace(pointid, baselineID);
         }
 
     }
@@ -1637,7 +1636,6 @@ void CtiCalculateThread::getBaselineMap(BaselineMap &baselineMap)
         //  iterate through the components
         while( rdr() )
         {
-
             //  read 'em in, and append to the class
             rdr["BASELINEID"] >> baselineID;
             rdr["DAYSUSED"] >> baseline.maxSearchDays;
@@ -1647,7 +1645,7 @@ void CtiCalculateThread::getBaselineMap(BaselineMap &baselineMap)
             rdr["HOLIDAYSCHEDULEID"] >> baseline.holidays;
 
             //The copy is unfortunate, but relatively inexpensive for a small number of objects
-            baselineMap.insert(BaselineMap::value_type(baselineID, baseline));
+            baselineMap.emplace(baselineID, baseline);
         }
 
     }
