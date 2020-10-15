@@ -2,6 +2,7 @@ package com.eaton.pages.admin.attributes;
 
 import java.util.Optional;
 
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 
 import com.eaton.elements.Button;
@@ -62,8 +63,8 @@ public class AttributesListPage extends PageBase {
         return new AddAttributeAssignmentsModal(driverExt, Optional.of("Add Attribute Assignment"), Optional.empty());
     }             
     
-    public TextEditElement editAttributeDefByNameAndClickSave(String name, String value) {
-        EditWebTableRow row = getAttrDefTable().getDataRowByName(name);
+    public void editAttributeDefNameAndClickSave(String attrName, String value) {        
+        EditWebTableRow row = getAttrDefTable().getDataRowByName(attrName);   
         
         row.hoverAndClickGearAndSelectActionByIcon(Icons.PENCIL);
         
@@ -71,10 +72,29 @@ public class AttributesListPage extends PageBase {
         
         el.setInputValue(value);
         
-        row.clickSave();        
-        
-        return el;
+        row.clickSave();                 
     }   
+    
+    public TextEditElement waitForSave(String id) {
+        boolean staleElement = true;
+        TextEditElement te = null;
+        WebElement r = null;
+        long startTime = System.currentTimeMillis();
+        
+        while(staleElement && (System.currentTimeMillis() - startTime < 20000)) {
+            try {
+                EditWebTable table = getAttrDefTable();
+                r = table.getEditDataRowBySpanClassName("attribute-" + id);                                
+                te = new TextEditElement(this.driverExt, "name", r);
+                
+                staleElement = false;
+                
+            } catch(StaleElementReferenceException ex) {
+            }
+        }
+        
+        return te;        
+    }
     
     public TextEditElement editAttributeDefByName(String name) {
         EditWebTableRow row = getAttrDefTable().getDataRowByName(name);                

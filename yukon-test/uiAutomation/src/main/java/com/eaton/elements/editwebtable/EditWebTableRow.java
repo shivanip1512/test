@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
@@ -18,7 +21,7 @@ public class EditWebTableRow {
 
     public EditWebTableRow(DriverExtensions driverExt, WebElement row) {
         this.driverExt = driverExt;
-        this.row = row;
+        this.row = row;        
     }
     
     public void hoverAndClickGearAndSelectActionByIcon(Icons icon) {
@@ -34,13 +37,12 @@ public class EditWebTableRow {
         el.findElement(By.cssSelector(".dropdown-option ." + icon.getIcon())).click();
     }     
     
-    public WebElement getCellByIndex(int index) {
-
+    public WebElement getCellByIndex(int index) {        
         return this.row.findElement(By.cssSelector("td:nth-child(" + index + ")"));
     } 
-    
+          
     public void clickSave() {
-        this.row.findElement(By.cssSelector("td:nth-child(1) .button-group ." + Icons.SAVE.getIcon())).click();
+        this.row.findElement(By.cssSelector("td:nth-child(1) .button-group ." + Icons.SAVE.getIcon())).click();                
     }
     
     public void clickCancel() {

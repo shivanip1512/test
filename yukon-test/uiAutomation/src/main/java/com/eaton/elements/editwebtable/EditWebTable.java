@@ -16,6 +16,7 @@ public class EditWebTable {
     private List<EditWebTableColumnHeader> columnHeaders = null;
     private WebElement parentElement; 
     private String parent;
+    private String editClass;
 
     public EditWebTable(DriverExtensions driverExt, String tableClassName) {
         this.driverExt = driverExt;
@@ -78,10 +79,40 @@ public class EditWebTable {
     }    
     
     public EditWebTableRow getDataRowByName(String name) {
-        List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody tr"));
+        List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody>tr"));
         
-        WebElement element = rowList.stream().filter(x -> x.findElement(By.cssSelector("td:nth-child(1) span")).getText().contains(name)).findFirst().orElseThrow();        
+        WebElement element = rowList.stream().filter(x -> x.findElement(By.cssSelector("td:nth-child(1) span:nth-child(1)")).getText().contains(name)).findFirst().orElseThrow();   
         
         return new EditWebTableRow(this.driverExt, element);
     } 
+    
+    public WebElement getEditDataRowBySpanClassName(String name) {
+        List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody>tr>td>span"));
+        
+//        for (WebElement row : rowList) {
+//            String attr = row.getAttribute("class");
+//            if (attr.contains("js-edit-" + name)) {
+//                return row;
+//            }
+//        }
+//        
+//        return null;
+        
+        return rowList.stream().filter(x -> x.getAttribute("class").contains("js-edit-" + name)).findFirst().orElseThrow();
+    }
+    
+    public WebElement getViewDataRowBySpanClassName(String name) {
+        List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody>tr>td>span"));
+        
+//        for (WebElement row : rowList) {
+//            String attr = row.getAttribute("class");
+//            if (attr.contains("js-edit-" + name)) {
+//                return row;
+//            }
+//        }
+//        
+//        return null;
+        
+        return rowList.stream().filter(x -> x.getAttribute("class").contains("js-view-" + name)).findFirst().orElseThrow();
+    }
 }

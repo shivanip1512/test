@@ -2,6 +2,7 @@ package com.eaton.tests.admin.attributes;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.text.SimpleDateFormat;
 import java.util.Optional;
 
 import org.javatuples.Pair;
@@ -23,6 +24,7 @@ public class AttributeEditTests extends SeleniumTestSetup {
     private AttributesListPage page;
     private DriverExtensions driverExt;
     private String name;
+    private Integer id;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
@@ -33,6 +35,7 @@ public class AttributeEditTests extends SeleniumTestSetup {
 
         JSONObject response = pair.getValue1();
         name = response.getString("name");
+        id = response.getInt("customAttributeId");
 
         navigate(Urls.Admin.ATTRIBUTES_LIST);
         page = new AttributesListPage(driverExt);
@@ -61,21 +64,28 @@ public class AttributeEditTests extends SeleniumTestSetup {
 
         JSONObject response = pair.getValue1();
         String updateName = response.getString("name");
-        //refreshPage(page);
+        refreshPage(page);
 
-        page.editAttributeDefByNameAndClickSave(name, updateName);
-
-        assertThat(page.getUserMessage()).isEqualTo(updateName
-                + " could not be saved. Error: Unable to update Custom Attribute. An attribute with this name may already exist.");
+        page.editAttributeDefNameAndClickSave(name, updateName);
+        
+        assertThat(page.getUserMessage()).isEqualTo(updateName + " could not be saved. Error: Unable to update Custom Attribute. An attribute with this name may already exist.");
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void attributeEdit_AttributeName_RequiredValidation() {
         setRefreshPage(true);
+        Pair<JSONObject, JSONObject> pair = AttributeService.createAttribute(Optional.empty());
 
-        page.editAttributeDefByNameAndClickSave(name, "");
+        JSONObject response = pair.getValue1();
+        String attrName = response.getString("name");
+        Integer attrId = response.getInt("customAttributeId");
+        refreshPage(page);
 
-        String actualErrorMsg = page.getAttributeName().getValidationError();
+        page.editAttributeDefNameAndClickSave(attrName, "");
+        
+        TextEditElement el = page.waitForSave(attrId.toString());
+
+        String actualErrorMsg = el.getValidationError();
 
         assertThat(actualErrorMsg).isEqualTo("Attribute Name is required.");
     }
@@ -84,10 +94,31 @@ public class AttributeEditTests extends SeleniumTestSetup {
     public void attributeEdit_AttributeName_InvalidCharsValidation() {
         setRefreshPage(true);
 
-        page.editAttributeDefByNameAndClickSave(name, "Edit. /|");
+        page.editAttributeDefNameAndClickSave(name, "Edit. /|");
+        
+        TextEditElement el = page.waitForSave(id.toString());
 
-        String actualErrorMsg = page.getAttributeName().getValidationError();
+        String actualErrorMsg = el.getValidationError();
 
         assertThat(actualErrorMsg).isEqualTo("Name must not contain any of the following characters: / \\ , ' \" |.");
+    }
+    
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
+    public void attributeEdit_AllFields_Success() {
+        setRefreshPage(true);
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        Pair<JSONObject, JSONObject> pair = AttributeService.createAttribute(Optional.empty());
+
+        JSONObject response = pair.getValue1();
+        String attrName = response.getString("name");
+        Integer attrId = response.getInt("customAttributeId");
+        refreshPage(page);
+
+        String updatedName = "AT Attr Edit " + timeStamp;
+        page.editAttributeDefNameAndClickSave(attrName, updatedName);
+        
+        page.waitForSave(attrId.toString());
+
+        assertThat(page.getUserMessage()).isEqualTo(updatedName + " saved successfully.");
     }
 }
