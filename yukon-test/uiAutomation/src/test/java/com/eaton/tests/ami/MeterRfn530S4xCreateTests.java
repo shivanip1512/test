@@ -34,12 +34,12 @@ public class MeterRfn530S4xCreateTests extends SeleniumTestSetup {
         navigate(Urls.Ami.AMI_DASHBOARD);
         amiDashboardPage = new AmiDashboardPage(driverExt);
     }
-    
+
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
-    	if(getRefreshPage()) {
-    		refreshPage(amiDashboardPage);
-    	}
+        if (getRefreshPage()) {
+            refreshPage(amiDashboardPage);
+        }
     }
 
     @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.AMI })

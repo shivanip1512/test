@@ -13,6 +13,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.builders.admin.attributes.AttributeService;
 import com.eaton.elements.TextEditElement;
+import com.eaton.elements.editwebtable.EditWebTableRow;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
@@ -49,7 +50,7 @@ public class AttributeEditTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.ADMIN })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void attributeEdit_AttributeName_MaxLength60Chars() {
         TextEditElement el = page.editAttributeDefByName(name);
 
@@ -57,7 +58,7 @@ public class AttributeEditTests extends SeleniumTestSetup {
         assertThat(maxLength).isEqualTo("60");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.ADMIN })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void attributeEdit_AttributeName_AlreadyExistsValidation() {
         setRefreshPage(true);
         Pair<JSONObject, JSONObject> pair = AttributeService.createAttribute(Optional.empty());
@@ -71,7 +72,7 @@ public class AttributeEditTests extends SeleniumTestSetup {
         assertThat(page.getUserMessage()).isEqualTo(updateName + " could not be saved. Error: Unable to update Custom Attribute. An attribute with this name may already exist.");
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void attributeEdit_AttributeName_RequiredValidation() {
         setRefreshPage(true);
         Pair<JSONObject, JSONObject> pair = AttributeService.createAttribute(Optional.empty());
@@ -90,7 +91,7 @@ public class AttributeEditTests extends SeleniumTestSetup {
         assertThat(actualErrorMsg).isEqualTo("Attribute Name is required.");
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void attributeEdit_AttributeName_InvalidCharsValidation() {
         setRefreshPage(true);
 
@@ -103,7 +104,7 @@ public class AttributeEditTests extends SeleniumTestSetup {
         assertThat(actualErrorMsg).isEqualTo("Name must not contain any of the following characters: / \\ , ' \" |.");
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void attributeEdit_AllFields_Success() {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -111,14 +112,23 @@ public class AttributeEditTests extends SeleniumTestSetup {
 
         JSONObject response = pair.getValue1();
         String attrName = response.getString("name");
-        Integer attrId = response.getInt("customAttributeId");
         refreshPage(page);
 
         String updatedName = "AT Attr Edit " + timeStamp;
-        page.editAttributeDefNameAndClickSave(attrName, updatedName);
+        page.editAttributeDefNameClickSaveAndWait(attrName, updatedName);
         
-        page.waitForSave(attrId.toString());
-
         assertThat(page.getUserMessage()).isEqualTo(updatedName + " saved successfully.");
+    }
+    
+    
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    public void attributeEdit_Cancel_Success() {
+        setRefreshPage(true);
+
+        page.editAttributeDefNameAndClickCancelAndWait(name, "Atr No Edit");    
+        
+        EditWebTableRow row = page.getAttrDefTable().getDataRowByName(name);
+        
+        assertThat(row).isNotNull();
     }
 }

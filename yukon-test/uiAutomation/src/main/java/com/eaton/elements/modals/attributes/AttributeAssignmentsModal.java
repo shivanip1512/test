@@ -21,8 +21,8 @@ public class AttributeAssignmentsModal extends BaseModal {
         super(driverExt, modalTitle, describedBy);
         
         attributeName = new DropDownElement(driverExt, "attributeId", getModal());
-        pointType = new DropDownElement(driverExt, "", getModal());
-        pointOffset = new TextEditElement(driverExt, "", getModal());
+        pointType = new DropDownElement(driverExt, "pointType", getModal());
+        pointOffset = new TextEditElement(driverExt, "offset", getModal());
     }
 
     public DropDownElement getAttributeName() {

@@ -18,6 +18,4 @@ public class AddAttributeAssignmentsModal  extends AttributeAssignmentsModal {
     public DropDownMultiSelectElement getDeviceType() {
         return deviceType;
     }
-    
-
 }

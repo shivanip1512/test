@@ -87,31 +87,13 @@ public class EditWebTable {
     } 
     
     public WebElement getEditDataRowBySpanClassName(String name) {
-        List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody>tr>td>span"));
-        
-//        for (WebElement row : rowList) {
-//            String attr = row.getAttribute("class");
-//            if (attr.contains("js-edit-" + name)) {
-//                return row;
-//            }
-//        }
-//        
-//        return null;
+        List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody>tr>td>span"));        
         
         return rowList.stream().filter(x -> x.getAttribute("class").contains("js-edit-" + name)).findFirst().orElseThrow();
     }
     
     public WebElement getViewDataRowBySpanClassName(String name) {
         List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody>tr>td>span"));
-        
-//        for (WebElement row : rowList) {
-//            String attr = row.getAttribute("class");
-//            if (attr.contains("js-edit-" + name)) {
-//                return row;
-//            }
-//        }
-//        
-//        return null;
         
         return rowList.stream().filter(x -> x.getAttribute("class").contains("js-view-" + name)).findFirst().orElseThrow();
     }

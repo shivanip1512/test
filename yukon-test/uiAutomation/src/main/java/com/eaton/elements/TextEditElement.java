@@ -63,7 +63,7 @@ public class TextEditElement extends EditElement {
         String validationError = "";
         long startTime = System.currentTimeMillis();
 
-        while (validationError.equals("") && (System.currentTimeMillis() - startTime) < 15000) {
+        while (validationError.equals("") && (System.currentTimeMillis() - startTime) < 5000) {
             try {
                 if (this.parentElement != null) {
                     validationError = this.parentElement.findElement(By.cssSelector("span[id='" + this.elementName + ".errors']")).getText(); 

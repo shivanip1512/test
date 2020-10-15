@@ -4,9 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
@@ -39,13 +37,54 @@ public class EditWebTableRow {
     
     public WebElement getCellByIndex(int index) {        
         return this.row.findElement(By.cssSelector("td:nth-child(" + index + ")"));
-    } 
+    }     
+    
+    public String getCellTextByIndex(int index) {
+        WebElement cell = this.row.findElement(By.cssSelector("td:nth-child(" + index + ")"));
+        
+        WebElement el = cell.findElement(By.cssSelector("js-view-*"));
+        
+        return el.getText();
+    }
           
-    public void clickSave() {
-        this.row.findElement(By.cssSelector("td:nth-child(1) .button-group ." + Icons.SAVE.getIcon())).click();                
+    public void clickSaveAndWait() {
+        this.row.findElement(By.cssSelector("td:nth-child(1) .button-group ." + Icons.SAVE.getIcon())).click();  
+        
+        long startTime = System.currentTimeMillis();
+        String style = "none";
+        
+        while(style.equals("none") && (System.currentTimeMillis() - startTime < 3000)) {
+            try {
+                WebElement editRow = this.row.findElement(By.cssSelector("td:nth-child(1) span[class*='js-view']"));
+                
+                style = editRow.getCssValue("display");
+                
+            } catch(StaleElementReferenceException ex) {
+            }
+        }
     }
     
-    public void clickCancel() {
-        this.row.findElement(By.cssSelector("td:nth-child(1) .button-group ." + Icons.DELETE.getIcon())).click();
+    public void clickSave() {
+        this.row.findElement(By.cssSelector("td:nth-child(1) .button-group ." + Icons.SAVE.getIcon())).click(); 
     }
+    
+    public void clickCancelAndWait() {
+        this.row.findElement(By.cssSelector("td:nth-child(1) .button-group ." + Icons.DELETE.getIcon())).click();
+        
+        WebElement editRow = this.row.findElement(By.cssSelector("td:nth-child(1) span[class*='js-view']"));
+        
+        String style = editRow.getCssValue("display");
+        
+        long startTime = System.currentTimeMillis();
+        
+        while(style.equals("none") && (System.currentTimeMillis() - startTime < 2000)) {
+            
+            style = this.row.getAttribute("style");
+        }
+    }    
+    
+//    public boolean isEditable() {
+//        String style = this.row.getAttribute("style");
+//        
+//    }
 }

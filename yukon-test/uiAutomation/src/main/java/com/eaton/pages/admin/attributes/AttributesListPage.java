@@ -1,7 +1,9 @@
 package com.eaton.pages.admin.attributes;
 
+import java.util.List;
 import java.util.Optional;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 
@@ -32,7 +34,7 @@ public class AttributesListPage extends PageBase {
     }   
     
     private Button getAddBtn() {
-        return new Button(driverExt, "Add", getAttrAsgmtSection().getSection());
+        return new Button(driverExt, "Add");
     }
     
     public TextEditElement getAttributeName() {
@@ -63,6 +65,30 @@ public class AttributesListPage extends PageBase {
         return new AddAttributeAssignmentsModal(driverExt, Optional.of("Add Attribute Assignment"), Optional.empty());
     }             
     
+    public void editAttributeDefNameClickSaveAndWait(String attrName, String value) {        
+        EditWebTableRow row = getAttrDefTable().getDataRowByName(attrName);   
+        
+        row.hoverAndClickGearAndSelectActionByIcon(Icons.PENCIL);
+        
+        TextEditElement el = new TextEditElement(this.driverExt, "name", row.getCellByIndex(1));
+        
+        el.setInputValue(value);
+        
+        row.clickSaveAndWait();                
+    }   
+    
+    public void editAttributeDefNameAndClickCancelAndWait(String attrName, String value) {        
+        EditWebTableRow row = getAttrDefTable().getDataRowByName(attrName);   
+        
+        row.hoverAndClickGearAndSelectActionByIcon(Icons.PENCIL);
+        
+        TextEditElement el = new TextEditElement(this.driverExt, "name", row.getCellByIndex(1));
+        
+        el.setInputValue(value);
+        
+        row.clickCancelAndWait();                
+    }  
+    
     public void editAttributeDefNameAndClickSave(String attrName, String value) {        
         EditWebTableRow row = getAttrDefTable().getDataRowByName(attrName);   
         
@@ -72,8 +98,8 @@ public class AttributesListPage extends PageBase {
         
         el.setInputValue(value);
         
-        row.clickSave();                 
-    }   
+        row.clickSave();                
+    } 
     
     public TextEditElement waitForSave(String id) {
         boolean staleElement = true;
@@ -81,7 +107,7 @@ public class AttributesListPage extends PageBase {
         WebElement r = null;
         long startTime = System.currentTimeMillis();
         
-        while(staleElement && (System.currentTimeMillis() - startTime < 20000)) {
+        while(staleElement && (System.currentTimeMillis() - startTime < 3000)) {
             try {
                 EditWebTable table = getAttrDefTable();
                 r = table.getEditDataRowBySpanClassName("attribute-" + id);                                
@@ -113,4 +139,30 @@ public class AttributesListPage extends PageBase {
         
         return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of("yukon_dialog_confirm"));       
     }   
+    
+    public String attrAsgmtErrorMsg() {
+        String msg = "";
+        long startTime = System.currentTimeMillis();
+        
+        while(msg.equals("") && (System.currentTimeMillis() - startTime < 3000)) {
+            try {
+                WebElement sec = getAttrAsgmtSection().getSection();
+                
+                List<WebElement> list = sec.findElements(By.cssSelector("#user-message"));
+                
+                //el = list.stream().filter(x -> x.getCssValue("display").contains("none")).findFirst().orElseThrow();
+                
+                for (WebElement element : list) {
+                    String display = element.getCssValue("display");
+                    if (!display.equals("none")) {
+                        msg = element.getText();
+                    }
+                }
+                
+            } catch(StaleElementReferenceException ex) {
+            }
+        }
+        
+        return msg;
+    }
 }
