@@ -1,0 +1,175 @@
+post-operation:
+  post:
+    tags:
+      - Comm Channel
+    summary: Create CommChannel 
+    description: |-
+      API to create any type of CommChannel. 
+      Below are the supported CommChannel.
+      - TCP Port 
+      - UDP Terminal Server 
+      - Terminal Server
+      - Local Shared Port
+    requestBody:
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '../schemas/commChannelsSchema.yaml#/TCPPORT'
+              - $ref: '../schemas/commChannelsSchema.yaml#/UDPPORT'
+              - $ref: '../schemas/commChannelsSchema.yaml#/TSERVER_SHARED'
+              - $ref: '../schemas/commChannelsSchema.yaml#/LOCAL_SHARED'
+          examples:
+            TCP Port:
+              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/TCP Port' 
+            UDP Terminal Server:
+              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/UDP Terminal Server'
+            Terminal Server:
+              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Terminal Server'
+            Local Shared Port:
+              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Local Shared Port'
+      required: true
+    responses:
+        '200':
+          description: 'Created'
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '../schemas/commChannelsSchema.yaml#/TCPPORT'
+                  - $ref: '../schemas/commChannelsSchema.yaml#/UDPPORT'
+                  - $ref: '../schemas/commChannelsSchema.yaml#/TSERVER_SHARED'
+                  - $ref: '../schemas/commChannelsSchema.yaml#/LOCAL_SHARED'
+              examples:
+                TCP Port:
+                  $ref: '../schemas/commChannelsSchema.yaml#/components/examples/TCP Port' 
+                UDP Terminal Server:
+                  $ref: '../schemas/commChannelsSchema.yaml#/components/examples/UDP Terminal Server'
+                Terminal Server:
+                  $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Terminal Server'
+                Local Shared Port:
+                  $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Local Shared Port'
+get-update-delete-operation:
+  get:
+    tags:
+      - Comm Channel
+    summary: Retrieve CommChannel
+    description: |-
+      API to retrieve any type of CommChannel based on passed id.
+      Below are the supported CommChannel.
+      - TCP Port 
+      - UDP Terminal Server 
+      - Terminal Server
+      - Local Shared Port
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'CommChannel id'
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+                oneOf:
+                  - $ref: '../schemas/commChannelsSchema.yaml#/TCPPORT'
+                  - $ref: '../schemas/commChannelsSchema.yaml#/UDPPORT'
+                  - $ref: '../schemas/commChannelsSchema.yaml#/TSERVER_SHARED'
+                  - $ref: '../schemas/commChannelsSchema.yaml#/LOCAL_SHARED'
+            examples:
+              TCP Port:
+                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/TCP Port' 
+              UDP Terminal Server:
+                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/UDP Terminal Server'
+              Terminal Server:
+                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Terminal Server'
+              Local Shared Port:
+                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Local Shared Port'
+  patch:
+    tags:
+      - Comm Channel
+    summary: Update CommChannel
+    description: |-
+      API to update any type of CommChannel based on passed id.
+      Below are the supported CommChannel.
+      - TCP Port 
+      - UDP Terminal Server 
+      - Terminal Server
+      - Local Shared Port
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'CommChannel id'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '../schemas/commChannelsSchema.yaml#/TCPPORT'
+              - $ref: '../schemas/commChannelsSchema.yaml#/UDPPORT'
+              - $ref: '../schemas/commChannelsSchema.yaml#/TSERVER_SHARED'
+              - $ref: '../schemas/commChannelsSchema.yaml#/LOCAL_SHARED'
+          examples:
+            TCP Port:
+              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/TCP Port' 
+            UDP Terminal Server:
+              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/UDP Terminal Server'
+            Terminal Server:
+              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Terminal Server'
+            Local Shared Port:
+              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Local Shared Port'
+      required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              oneOf:
+               - $ref: '../schemas/commChannelsSchema.yaml#/TCPPORT'
+               - $ref: '../schemas/commChannelsSchema.yaml#/UDPPORT'
+               - $ref: '../schemas/commChannelsSchema.yaml#/TSERVER_SHARED'
+               - $ref: '../schemas/commChannelsSchema.yaml#/LOCAL_SHARED'
+            examples:
+              TCP Port:
+                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/TCP Port' 
+              UDP Terminal Server:
+                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/UDP Terminal Server'
+              Terminal Server:
+                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Terminal Server'
+              Local Shared Port:
+                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Local Shared Port'
+  delete:
+    tags:
+      - Comm Channel
+    summary: Delete CommChannel
+    description: |-
+      API to delete any type of Comm channel based on passed id.
+      Below are the supported CommChannel.
+      - TCP Port 
+      - UDP Terminal Server 
+      - Terminal Server
+      - Local Shared Port
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'CommChannel id'
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/commChannelsSchema.yaml#/id'
+            examples:
+              CommChannel Id:
+                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/CommChannel Id'

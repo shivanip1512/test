@@ -26,21 +26,22 @@ public class MeterWRL420cDCreateTests extends SeleniumTestSetup {
     private static final String CREATED = " created successfully.";
     private static final String METER = "Meter ";
 
-    private static final String DATE_FORMAT = "ddMMyyyyHHmmss";
-
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
+        faker = SeleniumTestSetup.getFaker();
 
         navigate(Urls.Ami.AMI_DASHBOARD);
 
         amiDashboardPage = new AmiDashboardPage(driverExt);
-        faker = SeleniumTestSetup.getFaker();
     }
-    
+
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(amiDashboardPage);
+        if (getRefreshPage()) {
+            refreshPage(amiDashboardPage);
+        }
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
@@ -52,11 +53,11 @@ public class MeterWRL420cDCreateTests extends SeleniumTestSetup {
         int serialNumber = faker.number().numberBetween(1, 99999999);
         String manufacturer = MeterEnums.MeterType.WRL420CD.getManufacturer().getManufacturer();
         String model = MeterEnums.MeterType.WRL420CD.getModel();
-        String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 
         String name = "AT " + MeterEnums.MeterType.WRL420CD.getMeterType() + " Meter " + timeStamp;
         createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.WRL420CD.getMeterType());
-        createModal.getdeviceName().setInputValue(name);
+        createModal.getDeviceName().setInputValue(name);
         createModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
         createModal.getSerialNumber().setInputValue(String.valueOf(serialNumber));
         createModal.getManufacturer().setInputValue(manufacturer);

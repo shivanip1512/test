@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.model.DeviceBaseModel;
+import com.cannontech.common.device.virtualDevice.VirtualDeviceBaseModel;
 import com.cannontech.common.device.virtualDevice.VirtualDeviceSortableField;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -82,9 +82,9 @@ public class VirtualDeviceController {
             ub.addParameter("page", Integer.toString(paging.getPage()));
 
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForParameterizedTypeObject(userContext, request, ub.toString(), 
-                                                                                        HttpMethod.GET, DeviceBaseModel.class, Object.class);
+                                                                                        HttpMethod.GET, VirtualDeviceBaseModel.class, Object.class);
             if (response.getStatusCode() == HttpStatus.OK) {
-                PaginatedResponse<DeviceBaseModel> pageResponse = (PaginatedResponse) response.getBody();
+                PaginatedResponse<VirtualDeviceBaseModel> pageResponse = (PaginatedResponse) response.getBody();
                 model.addAttribute("virtualDevices", pageResponse);
             }
                         
@@ -139,6 +139,7 @@ public class VirtualDeviceController {
     public enum VirtualSortBy implements DisplayableEnum {
 
         name(VirtualDeviceSortableField.PAO_NAME),
+        meterNumber(VirtualDeviceSortableField.METER_NUMBER),
         status(VirtualDeviceSortableField.DISABLE_FLAG);
         
         private final VirtualDeviceSortableField value;

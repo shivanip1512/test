@@ -19,42 +19,41 @@ import com.github.javafaker.Faker;
 
 public class MeterRfn420flCreateTests extends SeleniumTestSetup {
 
-    private AmiDashboardPage amiDashboardPage;
+    private AmiDashboardPage page;
     private DriverExtensions driverExt;
     private Faker faker;
     private static final String CREATED = " created successfully.";
     private static final String METER = "Meter ";
-    
-    private static final String DATE_FORMAT = "ddMMyyyyHHmmss";
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
+        faker = SeleniumTestSetup.getFaker();
 
         navigate(Urls.Ami.AMI_DASHBOARD);
-
-        amiDashboardPage = new AmiDashboardPage(driverExt);
-        
-        faker = SeleniumTestSetup.getFaker();
+        page = new AmiDashboardPage(driverExt);
     }
-    
-    @AfterMethod(alwaysRun=true)
+
+    @AfterMethod(alwaysRun = true)
     public void afterTest() {
-        refreshPage(amiDashboardPage);
+        if (getRefreshPage()) {
+            refreshPage(page);
+        }
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.AMI })
     public void meterRfn420flCreate_AllFields_Success() {
-        CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
+        CreateMeterModal createModal = page.showAndWaitCreateMeterModal();
 
         int meterNumber = faker.number().numberBetween(1, 999999);
         int serialNumber = faker.number().numberBetween(1, 99999999);
         String manufacturer = faker.company().industry();
-        String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 
         String name = "AT RFN-420fL Meter " + timeStamp;
         createModal.getType().selectItemByTextSearch("RFN-420fL");
-        createModal.getdeviceName().setInputValue(name);
+        createModal.getDeviceName().setInputValue(name);
         createModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
         createModal.getSerialNumber().setInputValue(String.valueOf(serialNumber));
         createModal.getManufacturer().setInputValue(manufacturer);

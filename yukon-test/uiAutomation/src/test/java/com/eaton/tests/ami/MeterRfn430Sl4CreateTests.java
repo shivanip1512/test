@@ -24,21 +24,23 @@ public class MeterRfn430Sl4CreateTests extends SeleniumTestSetup {
     private Faker faker;
     private static final String CREATED = " created successfully.";
     private static final String METER = "Meter ";
-    private static final String DATE_FORMAT = "ddMMyyyyHHmmss";
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        setRefreshPage(false);
+        faker = SeleniumTestSetup.getFaker();
 
         navigate(Urls.Ami.AMI_DASHBOARD);
-        
+
         amiDashboardPage = new AmiDashboardPage(driverExt);
-        faker = getFaker();
-    }   
-    
-    @AfterMethod(alwaysRun=true)
+    }
+
+    @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        refreshPage(amiDashboardPage);
+        if (getRefreshPage()) {
+            refreshPage(amiDashboardPage);
+        }
     }
 
     @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.AMI })
@@ -48,11 +50,11 @@ public class MeterRfn430Sl4CreateTests extends SeleniumTestSetup {
         int meterNumber = faker.number().numberBetween(1, 999999);
         int serialNumber = faker.number().numberBetween(1, 99999999);
         String manufacturer = faker.company().industry();
-        String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 
         String name = "AT RFN-430SL4 Meter " + timeStamp;
         createModal.getType().selectItemByTextSearch("RFN-430SL4");
-        createModal.getdeviceName().setInputValue(name);
+        createModal.getDeviceName().setInputValue(name);
         createModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
         createModal.getSerialNumber().setInputValue(String.valueOf(serialNumber));
         createModal.getManufacturer().setInputValue(manufacturer);
@@ -67,6 +69,5 @@ public class MeterRfn430Sl4CreateTests extends SeleniumTestSetup {
         String userMsg = detailPage.getUserMessage();
 
         assertThat(METER + name + CREATED).isEqualTo(userMsg);
-    }       
+    }
 }
-
