@@ -493,8 +493,7 @@ void CtiCalculateThread::historicalThread( void )
 
             auto pChg = std::make_unique<CtiMultiMsg>();
 
-            PointTimeMap dbTimeMap;
-            getCalcHistoricalLastUpdatedTime(dbTimeMap);
+            const auto dbTimeMap = getCalcHistoricalLastUpdatedTime();
 
             //  Check for any outside interference that may have occurred during the DB load
             if( wasPausedOrInterrupted(_historicalThreadFunc, pauseCount, CALLSITE) )
@@ -701,10 +700,9 @@ void CtiCalculateThread::baselineThread( void )
             auto pChg = std::make_unique<CtiMultiMsg>();
             pointsInMulti = FALSE;
 
-            PointTimeMap dbTimeMap;
             PointBaselineMap calcBaselineMap;
             BaselineMap baselineMap;
-            getCalcHistoricalLastUpdatedTime(dbTimeMap);
+            const auto dbTimeMap = getCalcHistoricalLastUpdatedTime();
             getCalcBaselineMap(calcBaselineMap);
             getBaselineMap(baselineMap);
             CtiHolidayManager& holidayManager = CtiHolidayManager::getInstance();
@@ -716,7 +714,7 @@ void CtiCalculateThread::baselineThread( void )
                 continue;
             }
 
-            PointTimeMap::iterator dbTimeMapIter;
+            PointTimeMap::const_iterator dbTimeMapIter;
             long pointID, baselinePercentID, baselineID;
             double newPointValue;
             CtiTime calcTime;
@@ -1402,9 +1400,9 @@ void CtiCalculateThread::sendUserQuit( const std::string & who )
 }
 
 //Function to load a map with the data from DynamicCalcHistorical.
-void CtiCalculateThread::getCalcHistoricalLastUpdatedTime(PointTimeMap &dbTimeMap)
+auto CtiCalculateThread::getCalcHistoricalLastUpdatedTime() -> PointTimeMap
 {
-    dbTimeMap.clear();
+    PointTimeMap dbTimeMap;
 
     try
     {
@@ -1434,6 +1432,7 @@ void CtiCalculateThread::getCalcHistoricalLastUpdatedTime(PointTimeMap &dbTimeMa
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
+    return dbTimeMap;
 }
 
 auto CtiCalculateThread::getHistoricalTableData(CtiCalc& calcPoint, CtiTime &lastTime) -> DynamicTableData

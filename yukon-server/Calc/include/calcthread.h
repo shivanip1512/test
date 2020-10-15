@@ -65,7 +65,7 @@ private:
     Cti::CalcLogic::CalcWorkerThread    _historicalThreadFunc;
     Cti::CalcLogic::CalcWorkerThread    _baselineThreadFunc;
 
-    void getCalcHistoricalLastUpdatedTime(PointTimeMap &dbTimeMap);
+    auto getCalcHistoricalLastUpdatedTime() -> PointTimeMap;
     auto getHistoricalTableData(CtiCalc& calcPoint, CtiTime &lastTime) -> DynamicTableData;
     auto getHistoricalTableSinglePointData(long calcPoint, CtiTime &lastTime) -> DynamicTableSinglePointData;
     void setHistoricalPointStore(const HistoricalPointValueMap& valueMap);
