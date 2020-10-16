@@ -6,6 +6,10 @@
 
 #include "ctitime.h"
 
+#include <boost/range/adaptor/filtered.hpp>
+#include <boost/range/adaptor/indirected.hpp>
+#include <boost/range/adaptor/transformed.hpp>
+
 extern ULONG _CALC_DEBUG;
 
 using namespace std;
@@ -567,18 +571,11 @@ int CtiCalc::getComponentCount()
     return getComponentIDList().size();
 }
 
-set<long> CtiCalc::getComponentIDList()
+set<long> CtiCalc::getComponentIDList() const
 {
-    set<long> componentIDList;
-
-    for( auto& tmpComponent : _components )
-    {
-        const long componentPointID = tmpComponent->getComponentPointId();
-
-        if( componentPointID > 0 ) //This is a valid point
-        {
-            componentIDList.insert(componentPointID);
-        }
-    }
-    return componentIDList;
+    return boost::copy_range<set<long>>(
+        _components
+            | boost::adaptors::indirected
+            | boost::adaptors::transformed(std::mem_fn(&CtiCalcComponent::getComponentPointId))
+            | boost::adaptors::filtered([](int id) { return id > 0; }));
 }

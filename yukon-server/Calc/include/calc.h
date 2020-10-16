@@ -47,7 +47,7 @@ public:
     int      getUpdateInterval( ) const;
     long     getRegressionComponentId() const;
     int      getComponentCount();
-    std::set<long> getComponentIDList();
+    std::set<long> getComponentIDList() const;
     long findDemandAvgComponentPointId();
 
     long getPointId( void ) const
