@@ -32,7 +32,11 @@ paths:
     $ref: 'api/loadGroupsApi.yaml#/post-operation'
   '/dr/loadGroups/{id}':
     $ref: 'api/loadGroupsApi.yaml#/get-update-delete-operation'
-  
+
+  /dr/macroLoadGroups:
+    $ref: 'api/MacroLoadGroupsApi.yaml#/post-operation'
+  '/dr/macroLoadGroups/{id}':
+    $ref: 'api/MacroLoadGroupsApi.yaml#/get-update-delete-operation'
 
 components:
   securitySchemes:
@@ -45,4 +49,5 @@ tags:
   - name: Comm Channel
   - name: Trend
   - name: Load Group
- 
+  - name: Macro Load Group
+
