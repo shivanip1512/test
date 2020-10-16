@@ -1006,7 +1006,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
     for ( ; PortManagerThreadCount && MaxCloseTimeout.count(); --MaxCloseTimeout )
     {
-        CTILOG_INFO( dout, "Waiting for PortManager threads to shut down." );
+        CTILOG_INFO( dout, "Waiting for " << PortManagerThreadCount << " PortManager " << ( PortManagerThreadCount == 1 ? "thread" : "threads" ) << " to shut down." );
 
         Sleep( 1000 );
     }
