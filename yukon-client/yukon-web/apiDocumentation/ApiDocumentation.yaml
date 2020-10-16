@@ -26,8 +26,13 @@ paths:
    
   /trends:
     $ref: 'api/trendsApi.yaml#/post-operation'
-  '/trends/{trendId}':
+  '/trends/{id}':
     $ref: 'api/trendsApi.yaml#/get-update-delete-operation'
+  /dr/loadGroups:
+    $ref: 'api/loadGroupsApi.yaml#/post-operation'
+  '/dr/loadGroups/{id}':
+    $ref: 'api/loadGroupsApi.yaml#/get-update-delete-operation'
+  
 
 components:
   securitySchemes:
@@ -39,4 +44,5 @@ tags:
   - name: Token Generation
   - name: Comm Channel
   - name: Trend
-   
+  - name: Load Group
+ 

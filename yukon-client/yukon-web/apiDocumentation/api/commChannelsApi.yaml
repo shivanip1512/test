@@ -62,12 +62,13 @@ get-update-delete-operation:
       - Terminal Server
       - Local Shared Port
     parameters:
-      - name: id
+      - name: CommChannelId
         in: path
         schema:
           type: integer
+          description: 'CommChannelId'
         required: true
-        description: 'CommChannel id'
+        
     responses:
       '200':
         description: OK
@@ -100,12 +101,12 @@ get-update-delete-operation:
       - Terminal Server
       - Local Shared Port
     parameters:
-      - name: id
+      - name: CommChannelId
         in: path
         schema:
           type: integer
         required: true
-        description: 'CommChannel id'
+        description: 'CommChannelId'
     requestBody:
       content:
         application/json:
@@ -157,12 +158,12 @@ get-update-delete-operation:
       - Terminal Server
       - Local Shared Port
     parameters:
-      - name: id
+      - name: CommChannelId
         in: path
         schema:
           type: integer
         required: true
-        description: 'CommChannel id'
+        description: 'CommChannelId'
     responses:
       '200':
         description: OK
@@ -172,4 +173,4 @@ get-update-delete-operation:
               $ref: '../schemas/commChannelsSchema.yaml#/id'
             examples:
               CommChannel Id:
-                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/CommChannel Id'
+                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/id'
