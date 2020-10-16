@@ -4,8 +4,8 @@ post-operation:
       - Comm Channel
     summary: Create CommChannel 
     description: |-
-      API to create any type of CommChannel. 
-      Below are the supported CommChannel.
+      API to create any type of commChannel. 
+      Below are the supported commChannel.
       - TCP Port 
       - UDP Terminal Server 
       - Terminal Server
@@ -55,19 +55,20 @@ get-update-delete-operation:
       - Comm Channel
     summary: Retrieve CommChannel
     description: |-
-      API to retrieve any type of CommChannel based on passed id.
-      Below are the supported CommChannel.
+      API to retrieve any type of commChannel based on passed id.
+      Below are the supported commChannel.
       - TCP Port 
       - UDP Terminal Server 
       - Terminal Server
       - Local Shared Port
     parameters:
-      - name: CommChannelId
+      - name: id
         in: path
         schema:
           type: integer
-          description: 'CommChannelId'
         required: true
+        description: 'Unique identifier for the commChannel.'
+        
         
     responses:
       '200':
@@ -94,19 +95,19 @@ get-update-delete-operation:
       - Comm Channel
     summary: Update CommChannel
     description: |-
-      API to update any type of CommChannel based on passed id.
-      Below are the supported CommChannel.
+      API to update any type of commChannel based on passed id.
+      Below are the supported commChannel.
       - TCP Port 
       - UDP Terminal Server 
       - Terminal Server
       - Local Shared Port
     parameters:
-      - name: CommChannelId
+      - name: id
         in: path
         schema:
           type: integer
         required: true
-        description: 'CommChannelId'
+        description: 'Unique identifier for the commChannel.'
     requestBody:
       content:
         application/json:
@@ -151,19 +152,19 @@ get-update-delete-operation:
       - Comm Channel
     summary: Delete CommChannel
     description: |-
-      API to delete any type of Comm channel based on passed id.
-      Below are the supported CommChannel.
+      API to delete any type of comm channel based on passed id.
+      Below are the supported commChannel.
       - TCP Port 
       - UDP Terminal Server 
       - Terminal Server
       - Local Shared Port
     parameters:
-      - name: CommChannelId
+      - name: id
         in: path
         schema:
           type: integer
         required: true
-        description: 'CommChannelId'
+        description: 'Unique identifier for the commChannel.'
     responses:
       '200':
         description: OK

@@ -4,8 +4,8 @@ post-operation:
       - Load Group 
     summary: Create Load Group
     description: |-
-      API to create any type of Load Group.
-      Below are the supported Load Group.
+      API to create any type of load group.
+      Below are the supported load group.
       - DigiSep 
       - Ecobee
       - Emetcon
@@ -108,8 +108,8 @@ get-update-delete-operation:
       - Load Group
     summary: Retrieve Load Group
     description: |-
-      API to retrieve any type of Load Group based on passed id.
-      Below are the supported Load Group.
+      API to retrieve any type of load group based on passed id.
+      Below are the supported load group.
       - DigiSep 
       - Ecobee
       - Emetcon
@@ -174,8 +174,8 @@ get-update-delete-operation:
       - Load Group
     summary: Update Load Group
     description: |-
-      API to update any type of Load Group based on passed id.
-      Below are the supported Load Group.
+      API to update any type of load group based on passed id.
+      Below are the supported load group.
       - DigiSep 
       - Ecobee
       - Emetcon
@@ -281,8 +281,8 @@ get-update-delete-operation:
       - Load Group
     summary: Delete Load Group
     description: |-
-      API to delete any type of Load Group based on passed id.
-      Below are the supported Load Group.
+      API to delete any type of load group based on passed id.
+      Below are the supported load group.
       - DigiSep 
       - Ecobee
       - Emetcon  
