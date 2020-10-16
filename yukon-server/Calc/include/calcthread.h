@@ -75,7 +75,7 @@ private:
     void getCurtailedDates(DatesSet &curtailedDates, long pointID, CtiTime &startTime);
     bool processDay(long pointID, CtiTime curTime, const DynamicTableSinglePointData& data, const DynamicTableSinglePointData& percentData, int percent, HourlyValues &results);
 
-    void processHistoricalPoints(const PointTimeMap& dbTimeMap, PointTimeMap& unlistedPoints, PointTimeMap& updatedPoints, CtiMultiMsg* pChg, const int initialDays, const std::function<bool(Cti::CallSite)> wasReloaded);
+    std::unique_ptr<CtiMultiMsg> processHistoricalPoints(const int initialDays, const std::function<bool(Cti::CallSite)> wasReloaded);
 
 public:
 
