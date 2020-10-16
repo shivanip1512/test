@@ -335,6 +335,10 @@ public:
     static const Attribute  HeatSetTemperature;
 
     static const Attribute  DeliveredkWh;
+    static const Attribute  DeliveredkWhRateA;
+    static const Attribute  DeliveredkWhRateB;
+    static const Attribute  DeliveredkWhRateC;
+    static const Attribute  DeliveredkWhRateD;
     static const Attribute  ReceivedkWh;
     static const Attribute  ReceivedkWhFrozen;
     static const Attribute  ReceivedkWhRateA;
@@ -365,6 +369,10 @@ public:
 
     static const Attribute  UsageperInterval;
     static const Attribute  DeliveredkWhperInterval;
+    static const Attribute  DeliveredkWhRateAperInterval;
+    static const Attribute  DeliveredkWhRateBperInterval;
+    static const Attribute  DeliveredkWhRateCperInterval;
+    static const Attribute  DeliveredkWhRateDperInterval;
     static const Attribute  ReceivedkWhperInterval;
     static const Attribute  SumkWhperInterval;
     static const Attribute  NetkWhperInterval;
