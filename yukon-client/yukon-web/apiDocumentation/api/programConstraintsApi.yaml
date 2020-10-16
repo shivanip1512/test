@@ -1,9 +1,9 @@
 post-operation:
   post:
     tags:
-     - Program Constraint
+     - Program Constraints
     summary: 'Create Program Constraint'
-    description: 'API to create Program Constraint.'
+    description: 'API to create program constraint.'
     requestBody:
       content:
         application/json:
@@ -26,7 +26,7 @@ post-operation:
 get-update-delete-operation:
   get:
     tags:
-     - Program Constraint
+     - Program Constraints
     summary: 'Retrieve Program Constraint'
     description: 'API to retrieve program constraint based on passed program constraint id.'
     parameters:
@@ -47,9 +47,9 @@ get-update-delete-operation:
                 $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ProgramConstraint'
   put:
     tags:
-     - Program Constraint
-    summary: 'Update Program Constraint'
-    description: 'API to update Program Constraint based on passed program constraint id.'
+     - Program Constraints
+    summary: 'Update Program Constraints'
+    description: 'API to update program constraint based on passed program constraint id.'
     parameters:
       - name: id
         in: path
@@ -77,8 +77,8 @@ get-update-delete-operation:
                 $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ProgramConstraint'
   delete:
     tags:
-     - Program Constraint
-    summary: 'Delete Program Constraint'
+     - Program Constraints
+    summary: 'Delete Program Constraints'
     description: 'API to delete program constraint based on passed program constraint id.'
     parameters:
       - name: id
@@ -100,7 +100,7 @@ get-update-delete-operation:
 season-schedules:
   get:
     tags:
-       - Program Constraint
+       - Program Constraints
     summary: 'Retrieve all Seasons Schedules'
     description: 'API to retrieve all seasons schedules.'
     responses:
@@ -116,7 +116,7 @@ season-schedules:
 holiday-schedules:
   get:
     tags:
-       - Program Constraint
+       - Program Constraints
     summary: 'Retrieve all Holiday Schedules'
     description: 'API to retrieve all holiday schedules.'
     responses:
@@ -133,8 +133,8 @@ holiday-schedules:
 program-constraints:
   get:
     tags:
-       - Program Constraint
-    summary: 'Retrieve all Program Constraint.'
+       - Program Constraints
+    summary: 'Retrieve all Program Constraints.'
     description: 'API to retrieve all program constraints.'
     responses:
       '200':
