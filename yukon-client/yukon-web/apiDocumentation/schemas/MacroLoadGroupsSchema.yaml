@@ -8,12 +8,13 @@ MacroLoadGroup:
     name:
       type: string
       maxLength: 60
-      description: 'Macro Load Group Name'
+      description: 'Name of the macro load group.'
     type:
       type: string
-      description: 'Macro Load Group type'
+      description: 'Type of the macro load group.'
       Enum: MACRO_GROUP
     assignedLoadGroups:
+      description: 'Load groups that are assigned to the macro load group.'
       $ref: '#/assignedLoadGroups'
 
 assignedLoadGroups:
@@ -23,13 +24,13 @@ assignedLoadGroups:
     properties:
       id:
         type: integer
-        description: 'Assigned Load Group Id.'
+        description: 'Unique identifier of the assigned load group.'
       name:
         type: string
-        description: 'Assigned Load Group Name'
+        description: 'Name of the assigned load group.'
       type:
         type: string
-        description: 'Assigned Load Group Type.'
+        description: 'Type of the assigned load group.'
         enum:
           - LM_GROUP_DIGI_SEP
           - LM_GROUP_ECOBEE
@@ -50,15 +51,15 @@ id:
   properties:
     id:
       type: integer
-      description: 'Macro Load Group id'
+      description: 'Unique identifier of the macro load group.'
 
 components:
   examples:
     MacroLoadGroup:
       value:
         name: Test Macro Load Group
-        type : MACRO_GROUP
-        trendSeries:
+        type: MACRO_GROUP
+        assignedLoadGroups:
           - id: 1
             name: Test MCT
             type: LM_GROUP_MCT

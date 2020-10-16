@@ -3,7 +3,7 @@ post-operation:
     tags:
      - Macro Load Group
     summary: 'Create Macro Load Group'
-    description: 'API to create Macro Load Group.'
+    description: 'API to create macro load group.'
     requestBody:
       content:
         application/json:
@@ -28,7 +28,7 @@ get-update-delete-operation:
     tags:
      - Macro Load Group
     summary: 'Retrieve Macro Load Group'
-    description: 'API to retrieve Macro Load Group based on passed Macro Load Group Id.'
+    description: 'API to retrieve macro load group based on passed macro load group id.'
     parameters:
       - name: macroLoadGroupId
         in: path
@@ -49,7 +49,7 @@ get-update-delete-operation:
     tags:
      - Macro Load Group
     summary: 'Update Macro Load Group'
-    description: 'API to update Macro Load Group based on passed Macro Load Group id.'
+    description: 'API to update macro load group based on passed macro load group id.'
     parameters:
       - name: macroLoadGroupId
         in: path
@@ -79,7 +79,7 @@ get-update-delete-operation:
     tags:
      - Macro Load Group
     summary: 'Delete Macro Load Group'
-    description: 'API to delete Macro Load Group based on passed Macro Load Group id.'
+    description: 'API to delete macro load group based on passed macro load group id.'
     parameters:
       - name: macroLoadGroupId
         in: path
