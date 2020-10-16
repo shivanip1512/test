@@ -344,6 +344,10 @@ INIT_ATTRIBUTE( CoolSetTemperature,                                 "COOL_SET_TE
 INIT_ATTRIBUTE( HeatSetTemperature,                                 "HEAT_SET_TEMPERATURE" );
 
 INIT_ATTRIBUTE( DeliveredkWh,                                       "DELIVERED_KWH" );
+INIT_ATTRIBUTE( DeliveredkWhRateA,                                  "DELIVERED_KWH_RATE_A" );
+INIT_ATTRIBUTE( DeliveredkWhRateB,                                  "DELIVERED_KWH_RATE_B" );
+INIT_ATTRIBUTE( DeliveredkWhRateC,                                  "DELIVERED_KWH_RATE_C" );
+INIT_ATTRIBUTE( DeliveredkWhRateD,                                  "DELIVERED_KWH_RATE_D" );
 INIT_ATTRIBUTE( ReceivedkWh,                                        "RECEIVED_KWH" );
 INIT_ATTRIBUTE( ReceivedkWhFrozen,                                  "RECEIVED_KWH_FROZEN" );
 INIT_ATTRIBUTE( ReceivedkWhRateA,                                   "RECEIVED_KWH_RATE_A" );
@@ -374,6 +378,10 @@ INIT_ATTRIBUTE( SumkVArhRateD,                                      "SUM_KVARH_R
 
 INIT_ATTRIBUTE( UsageperInterval,                                   "USAGE_PER_INTERVAL" );
 INIT_ATTRIBUTE( DeliveredkWhperInterval,                            "DELIVERED_KWH_PER_INTERVAL" );
+INIT_ATTRIBUTE( DeliveredkWhRateAperInterval,                       "DELIVERED_KWH_RATE_A_PER_INTERVAL");
+INIT_ATTRIBUTE( DeliveredkWhRateBperInterval,                       "DELIVERED_KWH_RATE_B_PER_INTERVAL");
+INIT_ATTRIBUTE( DeliveredkWhRateCperInterval,                       "DELIVERED_KWH_RATE_C_PER_INTERVAL");
+INIT_ATTRIBUTE( DeliveredkWhRateDperInterval,                       "DELIVERED_KWH_RATE_D_PER_INTERVAL");
 INIT_ATTRIBUTE( ReceivedkWhperInterval,                             "RECEIVED_KWH_PER_INTERVAL" );
 INIT_ATTRIBUTE( SumkWhperInterval,                                  "SUM_KWH_PER_INTERVAL" );
 INIT_ATTRIBUTE( NetkWhperInterval,                                  "NET_KWH_PER_INTERVAL" );
