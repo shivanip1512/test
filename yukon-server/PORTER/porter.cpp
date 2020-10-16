@@ -1002,10 +1002,12 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     //  here for up to 2 minutes maximum for the threads to all stop - reflected in the PortManagerThreadCount
     //  variable.  If we timeout before the threads all stop, so be it... crash dump...
 
-    int MaxCloseTimeout = 120; // seconds
+    std::chrono::seconds MaxCloseTimeout{ 120 };
 
-    while ( PortManagerThreadCount && MaxCloseTimeout-- )
+    for ( ; PortManagerThreadCount && MaxCloseTimeout.count(); --MaxCloseTimeout )
     {
+        CTILOG_INFO( dout, "Waiting for PortManager threads to shut down." );
+
         Sleep( 1000 );
     }
 
