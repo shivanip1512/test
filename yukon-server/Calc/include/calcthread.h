@@ -78,6 +78,7 @@ private:
     std::unique_ptr<CtiMultiMsg> processHistoricalPoints(const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
     std::vector<std::unique_ptr<CtiPointDataMsg>> calcHistoricalPoints(const PointTimeMap& dbTimeMap, PointTimeMap& unlistedPoints, PointTimeMap& updatedPoints, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
     std::vector<std::unique_ptr<CtiPointDataMsg>> calcHistoricalPoint(CtiCalc* calcPoint, const DynamicTableData& data, const CtiTime lastTime, PointTimeMap& unlistedPoints, PointTimeMap& updatedPoints, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
+    std::vector<std::unique_ptr<CtiPointDataMsg>> calcBackfilledPoint(CtiCalc* calcPoint, const DynamicTableData& data, const CtiTime lastTime, PointTimeMap& unlistedPoints, PointTimeMap& updatedPoints, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
 
 public:
 
