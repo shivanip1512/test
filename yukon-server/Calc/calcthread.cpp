@@ -544,11 +544,8 @@ std::unique_ptr<CtiMultiMsg> CtiCalculateThread::processHistoricalPoints(const C
     }
 
     auto pChg = std::make_unique<CtiMultiMsg>();
-    PointTimeMap unlistedPoints, updatedPoints;
 
-    auto messages = calcHistoricalPoints(dbTimeMap, unlistedPoints, updatedPoints, earliestCalcDate, wasReloaded);
-
-    updateCalcHistoricalLastUpdatedTime(unlistedPoints, updatedPoints);  //  Write these back out to the database
+    auto messages = calcHistoricalPoints(dbTimeMap, earliestCalcDate, wasReloaded);
 
     for( auto& msg : messages )
     {
@@ -558,9 +555,12 @@ std::unique_ptr<CtiMultiMsg> CtiCalculateThread::processHistoricalPoints(const C
     return pChg;
 }
 
-std::vector<std::unique_ptr<CtiPointDataMsg>> CtiCalculateThread::calcHistoricalPoints(const PointTimeMap& dbTimeMap, PointTimeMap& unlistedPoints, PointTimeMap& updatedPoints, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded)
+auto CtiCalculateThread::calcHistoricalPoints(const PointTimeMap& dbTimeMap, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded)
+    -> PointDataMsgs
 {
-    std::vector<std::unique_ptr<CtiPointDataMsg>> messages;
+    PointDataMsgs messages;
+
+    PointTimeMap unlistedPoints, updatedPoints;
 
     static const auto pointProcessors = {
         std::make_tuple(std::ref(_historicalPoints), std::mem_fn(&CtiCalculateThread::calcHistoricalPoint)),
@@ -597,25 +597,41 @@ std::vector<std::unique_ptr<CtiPointDataMsg>> CtiCalculateThread::calcHistorical
             //  Check for any outside interference that may have occurred during the DB load
             if( wasReloaded(CALLSITE) )
             {
-                return messages;
+                goto reloaded_return;  //  This allows us to keep unlistedPoints/updatedPoints local to this function.
             }
 
-            auto pointMessages = pointCalculator(this, calcPoint.get(), data, lastTime, unlistedPoints, updatedPoints, earliestCalcDate, wasReloaded);
+            auto [newTime, pointMessages] = pointCalculator(this, calcPoint.get(), data, lastTime, earliestCalcDate, wasReloaded);
+
+            if( newTime.isValid() )
+            {
+                if( auto unlistedTime = Cti::mapFind(unlistedPoints, pointID) )
+                {
+                    *unlistedTime = newTime;
+                }
+                else
+                {
+                    updatedPoints.emplace(pointID, newTime);
+                }
+            }
 
             std::move(
                 pointMessages.begin(),
                 pointMessages.end(),
-            std::back_inserter(messages));
+                std::back_inserter(messages));
         }
     }
+
+reloaded_return:
+    updateCalcHistoricalLastUpdatedTime(unlistedPoints, updatedPoints);  //  Write these back out to the database
 
     return messages;
 }
 
 
-std::vector<std::unique_ptr<CtiPointDataMsg>> CtiCalculateThread::calcHistoricalPoint(CtiCalc* calcPoint, const DynamicTableData& data, const CtiTime lastTime, PointTimeMap& unlistedPoints, PointTimeMap& updatedPoints, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded)
+auto CtiCalculateThread::calcHistoricalPoint(CtiCalc* calcPoint, const DynamicTableData& data, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded)
+    -> HistoricalResults
 {
-    std::vector<std::unique_ptr<CtiPointDataMsg>> messages;
+    PointDataMsgs messages;
 
     const auto pointID = calcPoint->getPointId();
     const auto componentCount = calcPoint->getComponentCount();
@@ -663,17 +679,14 @@ std::vector<std::unique_ptr<CtiPointDataMsg>> CtiCalculateThread::calcHistorical
             }
         }
     }
-    if( newTime.isValid() && unlistedPoints.count(calcPoint->getPointId()) == 0 )
-    {
-        updatedPoints.emplace(calcPoint->getPointId(), newTime);
-    }
 
-    return messages;
+    return HistoricalResults { newTime, std::move(messages) };
 }
 
-std::vector<std::unique_ptr<CtiPointDataMsg>> CtiCalculateThread::calcBackfilledPoint(CtiCalc* calcPoint, const DynamicTableData& data, const CtiTime lastTime, PointTimeMap& unlistedPoints, PointTimeMap& updatedPoints, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded)
+auto CtiCalculateThread::calcBackfilledPoint(CtiCalc* calcPoint, const DynamicTableData& data, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded)
+    -> HistoricalResults
 {
-    return {};
+    return HistoricalResults { CtiTime::not_a_time, {} };
 }
 
 void CtiCalculateThread::baselineThread( void )
