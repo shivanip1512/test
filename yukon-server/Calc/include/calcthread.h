@@ -51,6 +51,11 @@ private:
     typedef std::map<CtiTime, HistoricalPointValueMap >::iterator DynamicTableDataIter;
     typedef std::map<CtiTime, PointValuePair> DynamicTableSinglePointData;
     typedef std::map<CtiTime, PointValuePair >::iterator DynamicTableSinglePointDataIter;
+    using PointDataMsgs = std::vector<std::unique_ptr<CtiPointDataMsg>>;
+    struct HistoricalResults {
+        CtiTime newTime;
+        PointDataMsgs messages;
+    };
 
     void periodicThread( void );
     void onUpdateThread( void );
@@ -76,9 +81,9 @@ private:
     bool processDay(long pointID, CtiTime curTime, const DynamicTableSinglePointData& data, const DynamicTableSinglePointData& percentData, int percent, HourlyValues &results);
 
     std::unique_ptr<CtiMultiMsg> processHistoricalPoints(const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
-    std::vector<std::unique_ptr<CtiPointDataMsg>> calcHistoricalPoints(const PointTimeMap& dbTimeMap, PointTimeMap& unlistedPoints, PointTimeMap& updatedPoints, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
-    std::vector<std::unique_ptr<CtiPointDataMsg>> calcHistoricalPoint(CtiCalc* calcPoint, const DynamicTableData& data, const CtiTime lastTime, PointTimeMap& unlistedPoints, PointTimeMap& updatedPoints, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
-    std::vector<std::unique_ptr<CtiPointDataMsg>> calcBackfilledPoint(CtiCalc* calcPoint, const DynamicTableData& data, const CtiTime lastTime, PointTimeMap& unlistedPoints, PointTimeMap& updatedPoints, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
+    PointDataMsgs calcHistoricalPoints(const PointTimeMap& dbTimeMap, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
+    HistoricalResults calcHistoricalPoint(CtiCalc* calcPoint, const DynamicTableData& data, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
+    HistoricalResults calcBackfilledPoint(CtiCalc* calcPoint, const DynamicTableData& data, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
 
 public:
 
