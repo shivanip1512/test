@@ -29,6 +29,11 @@ paths:
   '/trends/{trendId}':
     $ref: 'api/trendsApi.yaml#/get-update-delete-operation'
 
+  /dr/macroLoadGroups:
+    $ref: 'api/MacroLoadGroupsApi.yaml#/post-operation'
+  '/dr/macroLoadGroups/{id}':
+    $ref: 'api/MacroLoadGroupsApi.yaml#/get-update-delete-operation'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -39,4 +44,5 @@ tags:
   - name: Token Generation
   - name: Comm Channel
   - name: Trend
+  - name: Macro Load Group
    
