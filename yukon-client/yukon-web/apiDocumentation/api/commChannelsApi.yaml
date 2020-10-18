@@ -151,7 +151,7 @@ get-update-delete-operation:
       - Comm Channel
     summary: Delete CommChannel
     description: |-
-      API to delete any type of comm channel based on passed id.
+      API to delete any type of commChannel based on passed id.
       Below are the supported commChannel.
       - TCP Port 
       - UDP Terminal Server 
