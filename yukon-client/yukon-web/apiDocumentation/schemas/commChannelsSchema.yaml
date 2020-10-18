@@ -262,14 +262,13 @@ sharing:
       description: 'Shared Socket Number.When Shared Port type is NONE then Socket Number is 1025.'  
 
 id:
-  title: id
   required:
     - id
   type: object
   properties:
     id:
       type: integer
-      description: 'CommChannel id.'
+      description: 'Unique identifier of the CommChannel.'
 
 components:
   examples:
@@ -344,7 +343,7 @@ components:
           sharedPortType: ACS
           sharedSocketNumber: 100
         physicalPort: com2
-    CommChannel Id:
+    id:
       value:
         id: 39223
   

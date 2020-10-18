@@ -2,24 +2,27 @@ Trend:
   title: Trend
   required:
     - name
+   
   type: object
   properties:
     name:
       type: string
       maxLength: 40
-      description: 'Trend Name'
+      description: 'Name of the trend.'
     trendSeries:
       $ref: '#/trendSeries'
 
 trendSeries:
   type: array
   items:
+    required:
+    - label
     type: object
     properties:
       type:
         type: string
         default: BASIC_TYPE
-        description: 'Graph Type.'
+        description: 'Graph Type of trend.'
         enum:
           - BASIC_TYPE
           - USAGE_TYPE
@@ -33,8 +36,7 @@ trendSeries:
       label:
         type: string
         maxLength: 40
-        default:  Device name / Point name
-        description: 'Label for the selected point.'
+        description: 'Label for the selected point. label is mandatory when trendSeries is passed.'
       color:
         type: string
         default: BLUE
@@ -104,6 +106,6 @@ components:
             multiplier: 1.2
             style: LINE
             date: 07/22/2020
-    TrendId:
+    id:
       value:
         id: 11
