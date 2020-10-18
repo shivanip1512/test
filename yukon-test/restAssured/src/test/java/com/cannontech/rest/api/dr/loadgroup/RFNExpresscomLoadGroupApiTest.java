@@ -17,6 +17,7 @@ import com.cannontech.rest.api.utilities.ValidationHelper;
 
 public class RFNExpresscomLoadGroupApiTest {
     MockLoadGroupExpresscom loadGroup = null;
+    private static final String contextGroupId = "LM_GROUP_EXPRESSCOMM.id";
 
     /**
      * This test case validates creation of RFNExpresscomm load group with default values
@@ -28,7 +29,7 @@ public class RFNExpresscomLoadGroupApiTest {
         loadGroup = (MockLoadGroupExpresscom) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RFN_EXPRESSCOMM);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
-        String groupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        Integer groupId = createResponse.jsonPath().getInt(contextGroupId);
         context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
         assertTrue(createResponse.statusCode() == 201, "Status code should be 201");
         assertTrue(groupId != null, "Group Id should not be Null");

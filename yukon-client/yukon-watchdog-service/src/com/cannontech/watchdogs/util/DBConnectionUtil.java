@@ -22,7 +22,7 @@ public class DBConnectionUtil {
                 return false;
             }
         } catch (SQLException | RuntimeException e) {
-            log.error("Database Connection Error", e);
+            log.error("Error Connecting " + dbName + " database.", e);
             return false;
         }
         return true;
