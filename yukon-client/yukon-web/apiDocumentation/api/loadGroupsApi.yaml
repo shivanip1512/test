@@ -57,9 +57,7 @@ post-operation:
               $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Ripple Group' 
             Expresscomm Group:
               $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Expresscomm Group'
-              
-            
-         
+   
       required: true
     responses:
         '200':

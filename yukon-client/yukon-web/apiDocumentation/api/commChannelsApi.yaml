@@ -68,8 +68,7 @@ get-update-delete-operation:
           type: integer
         required: true
         description: 'Unique identifier for the commChannel.'
-        
-        
+     
     responses:
       '200':
         description: OK
