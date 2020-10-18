@@ -364,26 +364,37 @@
     <entry key="yukon.common.events.amr.disconnect.loadSideVoltageDetectedWhileDisconnected">Load side voltage detected on device {2} by {1}.</entry>
     
     <!--  Device Config -->
-    <entry key="yukon.common.events.device.configuration.changeConfigOfDeviceInitiated">Change device configuration to {1} for {2} initiated by {3}.</entry>
+    <entry key="yukon.common.events.device.configuration.changeConfigInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
+    <entry key="yukon.common.events.device.configuration.changeConfigCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
     <entry key="yukon.common.events.device.configuration.changeConfigOfDeviceCompleted">Change device configuration to {1} for {2} by {3} {7,choice,0#failed|1#succeeded}.</entry>
     <entry key="yukon.common.events.device.configuration.changeConfigOfDeviceCompleted.7">Success(1)/Fail(0)</entry>
-    
-    <entry key="yukon.common.events.device.configuration.removeConfigFromDeviceInitiated">Remove device configuration from {1} initiated by {2}.</entry>
+
+    <entry key="yukon.common.events.device.configuration.removeConfigInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
+    <entry key="yukon.common.events.device.configuration.removeConfigCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
     <entry key="yukon.common.events.device.configuration.removeConfigFromDeviceCompleted">Remove device configuration from {1} by {2} {7,choice,0#failed|1#succeeded}.</entry>
     <entry key="yukon.common.events.device.configuration.removeConfigFromDeviceCompleted.7">Success(1)/Fail(0)</entry>    
-    
+
+    <entry key="yukon.common.events.device.configuration.uploadConfigInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
+    <entry key="yukon.common.events.device.configuration.uploadConfigCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.device.configuration.uploadConfigCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
     <entry key="yukon.common.events.device.configuration.uploadConfigToDeviceInitiated">Upload device configuration to device {1} initiated by {2}.</entry>
     <entry key="yukon.common.events.device.configuration.uploadConfigToDeviceCompleted">Upload device configuration to device {1} {7,choice,0#failed|1#succeeded}.</entry>
     <entry key="yukon.common.events.device.configuration.uploadConfigToDeviceCompleted.7">Success(1)/Fail(0)</entry>
-   
+
+    <entry key="yukon.common.events.device.configuration.validateConfigInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
+    <entry key="yukon.common.events.device.configuration.validateConfigCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.device.configuration.validateConfigCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
     <entry key="yukon.common.events.device.configuration.validateConfigOnDeviceInitiated">Validate device configuration on device {1} initiated by {2}.</entry>
     <entry key="yukon.common.events.device.configuration.validateConfigOnDeviceCompleted">Validate device configuration on device {1} {7,choice,0#failed|1#succeeded}.</entry>
     <entry key="yukon.common.events.device.configuration.validateConfigOnDeviceCompleted.7">Success(1)/Fail(0)</entry>
 
+    <entry key="yukon.common.events.device.configuration.verifyConfigInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
+    <entry key="yukon.common.events.device.configuration.verifyConfigCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.device.configuration.verifyConfigCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
     <entry key="yukon.common.events.device.configuration.verifyConfigFromDeviceInitiated">Verify device configuration on device {1} initiated by {2}.</entry>
     <entry key="yukon.common.events.device.configuration.verifyConfigFromDeviceCompleted">Verify device configuration on device {1} {7,choice,0#failed|1#succeeded}.</entry>
     <entry key="yukon.common.events.device.configuration.verifyConfigFromDeviceCompleted.7">Success(1)/Fail(0)</entry>
-    
+
      <!--  Meter Programming -->
     <entry key="yukon.common.events.device.programming.initiateMeterProgramUploadInitiated">Meter program upload to device {1} initiated by {2}.</entry>
     <entry key="yukon.common.events.device.programming.initiateMeterProgramUploadCompleted">Meter program upload to device {1} {7,choice,0#failed|1#succeeded}. Initiated by {2}.</entry>
@@ -912,17 +923,7 @@
     <entry key="yukon.common.events.amr.demand.reset.demandResetInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.amr.demand.reset.demandResetCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
     <entry key="yukon.common.events.amr.demand.reset.demandResetCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
-    
-    <entry key="yukon.common.events.device.configuration.sendConfigInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
-    <entry key="yukon.common.events.device.configuration.sendConfigCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
-    <entry key="yukon.common.events.device.configuration.sendConfigCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
-    <entry key="yukon.common.events.device.configuration.readConfigInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
-    <entry key="yukon.common.events.device.configuration.readConfigCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
-    <entry key="yukon.common.events.device.configuration.readConfigCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
-    <entry key="yukon.common.events.device.configuration.verifyConfigInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
-    <entry key="yukon.common.events.device.configuration.verifyConfigCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
-    <entry key="yukon.common.events.device.configuration.verifyConfigCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
-    
+
     <entry key="yukon.common.events.endpoint.device.changeInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.endpoint.device.changeCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
     <entry key="yukon.common.events.endpoint.device.changeTypeInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
@@ -937,11 +938,6 @@
     <entry key="yukon.common.events.endpoint.point.pointsDeleteInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.endpoint.point.pointsDeleteCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
 
-    <entry key="yukon.common.events.device.configuration.assignConfigInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
-    <entry key="yukon.common.events.device.configuration.assignConfigCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
-    <entry key="yukon.common.events.device.configuration.unassignConfigInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
-    <entry key="yukon.common.events.device.configuration.unassignConfigCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
-    
     <entry key="yukon.common.events.system.rfn.dataStreaming.configDataStreamingInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.system.rfn.dataStreaming.configDataStreamingCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
     <entry key="yukon.common.events.system.rfn.dataStreaming.configDataStreamingCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
