@@ -17,16 +17,18 @@ import com.cannontech.rest.api.utilities.ValidationHelper;
 import io.restassured.response.ExtractableResponse;
 
 public class RippleLoadGroupApiTest {
+    private static final String contextGroupId = "LM_GROUP_RIPPLE.id";
 
     @Test
     public void loadGroupRipple_01_Create(ITestContext context) {
         Log.startTestCase("loadGroupRipple_01_Create");
         MockLoadGroupRipple loadGroup = (MockLoadGroupRipple) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RIPPLE);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
-        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID));
+        Integer groupId = createResponse.jsonPath().getInt(contextGroupId);
+        context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
         assertTrue(createResponse.statusCode() == 201, "Status code should be 201");
-        assertTrue(createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID) != null, "Group Id should not be Null");
-        loadGroup.setId(createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID));
+        assertTrue(groupId != null, "Group Id should not be Null");
+        loadGroup.setId(groupId);
         context.setAttribute("expectedloadGroup", loadGroup);
         Log.endTestCase("loadGroupRipple_01_Create");
     }
@@ -83,12 +85,12 @@ public class RippleLoadGroupApiTest {
 
         Log.startTestCase("loadGroupRipple_04_Copy");
         MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_RIPPLE)).build();
-        ExtractableResponse<?> copyResponse = ApiCallHelper.post("loadGroups",
-                                                                 loadGroupCopy,
-                                                                 "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString() + "/copy");
+        ExtractableResponse<?> copyResponse = ApiCallHelper.post("loadGroups", loadGroupCopy,
+                                     "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString() + "/copy");
+        Integer copyPaoId = copyResponse.jsonPath().getInt(LoadGroupHelper.CONTEXT_GROUP_ID);
         assertTrue(copyResponse.statusCode() == 200, "Status code should be 200");
-        assertTrue(copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString() != null, "Group Id should not be Null");
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups", "/" + copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        assertTrue(copyPaoId != null, "Group Id should not be Null");
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("loadGroups", "/" + copyPaoId);
         assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
 
         MockLoadGroupRipple loadGroupResponse = getResponse.as(MockLoadGroupRipple.class);

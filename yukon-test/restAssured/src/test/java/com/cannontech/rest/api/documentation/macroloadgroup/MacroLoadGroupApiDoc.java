@@ -39,7 +39,7 @@ public class MacroLoadGroupApiDoc {
     private RequestSpecification documentationSpec;
     private Integer macroGroupId = null;
     private MockLoadGroupBase loadGroup = null;
-    public final static String CONTEXT_MACRO_GROUP_ID = "paoId"; 
+    public final static String CONTEXT_MACRO_GROUP_ID = "id"; 
     public final static String CONTEXT_COPIED_MACRO_GROUP_ID = "paoId"; 
 
     @BeforeMethod

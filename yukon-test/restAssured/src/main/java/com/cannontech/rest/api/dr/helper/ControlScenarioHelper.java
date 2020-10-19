@@ -10,7 +10,7 @@ import com.cannontech.rest.api.loadProgram.request.MockLoadProgram;
 
 public class ControlScenarioHelper {
 
-    public final static String CONTEXT_CONTROL_SCENARIO_ID = "paoId";
+    public final static String CONTEXT_CONTROL_SCENARIO_ID = "id";
     public final static String CONTEXT_CONTROL_SCENARIO_NAME = "name";
 
     public static MockControlScenario buildControlScenario(MockLoadProgram loadProgram) {

@@ -16,6 +16,7 @@ import io.restassured.response.ExtractableResponse;
 
 public class MeterDisconnectLoadGroupApiTest {
     MockLoadGroupBase loadGroup = null;
+    private static final String contextGroupId = "LM_GROUP_METER_DISCONNECT.id";
 
     @BeforeClass
     public void setUp() {
@@ -27,7 +28,7 @@ public class MeterDisconnectLoadGroupApiTest {
         Log.startTestCase("loadGroupMeterDisconnect_01_Create");
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
-        String groupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        Integer groupId = createResponse.jsonPath().getInt(contextGroupId);
         context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
 
         assertTrue("Status code should be 201", createResponse.statusCode() == 201);
@@ -101,7 +102,7 @@ public class MeterDisconnectLoadGroupApiTest {
         ExtractableResponse<?> copyResponse = ApiCallHelper.post("loadGroups",
                 loadGroupCopy,
                 "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString() + "/copy");
-        String copyGroupId = copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        Integer copyGroupId = copyResponse.jsonPath().getInt(LoadGroupHelper.CONTEXT_GROUP_ID);
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
         assertTrue("Group Id should not be Null", copyGroupId != null);
         context.setAttribute("MR_CopyGrpId", copyGroupId);

@@ -26,8 +26,17 @@ paths:
 
   /trends:
     $ref: 'api/trendsApi.yaml#/post-operation'
-  '/trends/{trendId}':
+  '/trends/{id}':
     $ref: 'api/trendsApi.yaml#/get-update-delete-operation'
+  /dr/loadGroups:
+    $ref: 'api/loadGroupsApi.yaml#/post-operation'
+  '/dr/loadGroups/{id}':
+    $ref: 'api/loadGroupsApi.yaml#/get-update-delete-operation'
+
+  /dr/macroLoadGroups:
+    $ref: 'api/MacroLoadGroupsApi.yaml#/post-operation'
+  '/dr/macroLoadGroups/{id}':
+    $ref: 'api/MacroLoadGroupsApi.yaml#/get-update-delete-operation'
 
   /dr/constraints:
     $ref: 'api/programConstraintsApi.yaml#/post-operation'
@@ -51,3 +60,5 @@ tags:
   - name: Comm Channel
   - name: Trend
   - name: Program Constraints
+  - name: Load Group
+  - name: Macro Load Group
