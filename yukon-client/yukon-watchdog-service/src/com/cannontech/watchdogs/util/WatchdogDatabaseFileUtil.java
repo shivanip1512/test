@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -20,26 +19,17 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.SmtpEncryptionType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.tools.smtp.SmtpMetadataCacheUtil;
+import com.cannontech.tools.smtp.SmtpMetadataConstants;
 
 public class WatchdogDatabaseFileUtil {
 
     private static final Logger log = YukonLogManager.getLogger(WatchdogDatabaseFileUtil.class);
 
-    @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private SmtpMetadataCacheUtil databaseCacheUtil;
 
-    public static final String SUBSCRIBER_EMAIL_IDS = "subscriber_email_ids";
-    public static final String SMTP_HOST = "smtp_host";
-    public static final String SMTP_PORT = "smtp_port";
-    public static final String SMTP_ENCRYPTION_TYPE = "smtp_encryption_ype";
-    public static final String SMTP_USERNAME = "smtp_username";
-    public static final String SMTP_PASSWORD = "smtp_password";
-    public static final String SEPARATOR = ":";
-    public static final String MAIL_FROM_ADDRESS = "mail_from_address";
-
+    private static final String SEPARATOR = ":";
     private static final String FILE_NAME = "/Server/Config/System/SmtpMetadata.txt";
     private static File SMTP_META_DATA_FILE = null;
     static {
@@ -60,40 +50,50 @@ public class WatchdogDatabaseFileUtil {
      */
     public void writeToFile(String subscriberEmailIds) {
         try {
-            List<String> smtpMetaData = new ArrayList<String>();
-            smtpMetaData.add(WatchdogCryptoUtil.encrypt(SUBSCRIBER_EMAIL_IDS).concat(SEPARATOR)
-                    .concat(WatchdogCryptoUtil.encrypt(subscriberEmailIds)));
-            smtpMetaData.addAll(getSmtpDetails());
-            Files.write(SMTP_META_DATA_FILE.toPath(), smtpMetaData, StandardCharsets.UTF_8);
+            List<String> smtpMetadata = new ArrayList<String>();
+            databaseCacheUtil.update(SmtpMetadataConstants.SUBSCRIBER_EMAIL_IDS, subscriberEmailIds);
+            smtpMetadata.addAll(getSmtpMetadataDetails());
+            Files.write(SMTP_META_DATA_FILE.toPath(), smtpMetadata);
         } catch (IOException | IllegalBlockSizeException | BadPaddingException e) {
-            log.error("Error writting encrypted SMTP meta data to file", e);
+            log.error("Error writting encrypted SMTP metadata to file", e);
         }
     }
 
     /**
      * Method to retrieve SMTP metadata from database.
      */
-    private List<String> getSmtpDetails() throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
+    private List<String> getSmtpMetadataDetails()
+            throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
         List<String> notificationInfo = new ArrayList<String>();
-        notificationInfo.add(WatchdogCryptoUtil.encrypt(SMTP_HOST).concat(SEPARATOR)
-                .concat(WatchdogCryptoUtil.encrypt(globalSettingDao.getString(GlobalSettingType.SMTP_HOST))));
-        notificationInfo.add(WatchdogCryptoUtil.encrypt(SMTP_PORT).concat(SEPARATOR)
-                .concat(WatchdogCryptoUtil.encrypt(globalSettingDao.getString(GlobalSettingType.SMTP_PORT))));
-        notificationInfo.add(WatchdogCryptoUtil.encrypt(SMTP_ENCRYPTION_TYPE).concat(SEPARATOR).concat(
-                globalSettingDao.getEnum(GlobalSettingType.SMTP_ENCRYPTION_TYPE, SmtpEncryptionType.class).getProtocol()));
-        notificationInfo.add(WatchdogCryptoUtil.encrypt(SMTP_USERNAME).concat(SEPARATOR)
-                .concat(WatchdogCryptoUtil.encrypt(globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME))));
-        notificationInfo.add(WatchdogCryptoUtil.encrypt(SMTP_PASSWORD).concat(SEPARATOR)
-                .concat(WatchdogCryptoUtil.encrypt(globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD))));
-        notificationInfo.add(WatchdogCryptoUtil.encrypt(MAIL_FROM_ADDRESS).concat(SEPARATOR)
-                .concat(WatchdogCryptoUtil.encrypt(globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS))));
+        notificationInfo.add(WatchdogCryptoUtil.encrypt(SmtpMetadataConstants.SMTP_HOST)
+                        .concat(SEPARATOR)
+                        .concat(WatchdogCryptoUtil.encrypt(databaseCacheUtil.getValue(SmtpMetadataConstants.SMTP_HOST))));
+        
+        notificationInfo.add(WatchdogCryptoUtil.encrypt(SmtpMetadataConstants.SMTP_PORT)
+                        .concat(SEPARATOR)
+                        .concat(WatchdogCryptoUtil.encrypt(databaseCacheUtil.getValue(SmtpMetadataConstants.SMTP_PORT))));
+        notificationInfo.add(WatchdogCryptoUtil.encrypt(SmtpMetadataConstants.SMTP_ENCRYPTION_TYPE)
+                        .concat(SEPARATOR)
+                        .concat(WatchdogCryptoUtil.encrypt(databaseCacheUtil.getValue(SmtpMetadataConstants.SMTP_ENCRYPTION_TYPE))));
+        notificationInfo.add(WatchdogCryptoUtil.encrypt(SmtpMetadataConstants.SMTP_USERNAME)
+                        .concat(SEPARATOR)
+                        .concat(WatchdogCryptoUtil.encrypt(databaseCacheUtil.getValue(SmtpMetadataConstants.SMTP_USERNAME))));
+        notificationInfo.add(WatchdogCryptoUtil.encrypt(SmtpMetadataConstants.SMTP_PASSWORD)
+                        .concat(SEPARATOR)
+                        .concat(WatchdogCryptoUtil.encrypt(databaseCacheUtil.getValue(SmtpMetadataConstants.SMTP_PASSWORD))));
+        notificationInfo.add(WatchdogCryptoUtil.encrypt(SmtpMetadataConstants.MAIL_FROM_ADDRESS)
+                        .concat(SEPARATOR)
+                        .concat(WatchdogCryptoUtil.encrypt(databaseCacheUtil.getValue(SmtpMetadataConstants.MAIL_FROM_ADDRESS))));
+        notificationInfo.add(WatchdogCryptoUtil.encrypt(SmtpMetadataConstants.SUBSCRIBER_EMAIL_IDS)
+                        .concat(SEPARATOR)
+                        .concat(WatchdogCryptoUtil.encrypt(databaseCacheUtil.getValue(SmtpMetadataConstants.SUBSCRIBER_EMAIL_IDS))));
         return notificationInfo;
     }
 
     /**
-     * Methods to read the SMTP meta data from the file.
+     * Methods to read the SMTP metadata from the file.
      */
-    public static Map<String, String> readFromFile() throws IOException {
+    public static Map<String, String> readFromFile() {
         Map<String, String> metadataMap = new HashMap<String, String>();
         try (Stream<String> lines = Files.lines(Paths.get(SMTP_META_DATA_FILE.toURI()), Charset.defaultCharset())) {
             lines.forEach(line -> {
@@ -104,6 +104,8 @@ public class WatchdogDatabaseFileUtil {
                     log.error("Error retrieving SMTP meta data from file", e);
                 }
             });
+        } catch (IOException exception) {
+            log.error("Error reading SmtpMetadata.txt file", exception);
         }
         return metadataMap;
     }

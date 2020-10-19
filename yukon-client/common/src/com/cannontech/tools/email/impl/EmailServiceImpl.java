@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.annotation.PostConstruct;
 import javax.mail.Authenticator;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
@@ -23,43 +22,28 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.SmtpEncryptionType;
 import com.cannontech.common.config.SmtpHelper;
 import com.cannontech.common.config.SmtpPropertyType;
-import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.EmailService;
+import com.cannontech.tools.smtp.SmtpMetadataConstants;
+import com.cannontech.tools.smtp.SmtpMetadataCacheUtil;
 
 public class EmailServiceImpl implements EmailService {
     private static final Logger log = YukonLogManager.getLogger(EmailServiceImpl.class);
     private static final String SMTP_AUTH_PROPERTY_NAME = "mail.smtp.auth";
 
-    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private SmtpHelper configurationSource;
+    @Autowired private SmtpMetadataCacheUtil metadataCacheUtil;
 
-    private static SmtpEncryptionType encryptionType;
-    private static String username;
-    private static String password;
-
-    @PostConstruct
-    public void init() {
-        encryptionType = globalSettingDao.getEnum(GlobalSettingType.SMTP_ENCRYPTION_TYPE, SmtpEncryptionType.class);
-        username = globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME);
-        password = globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD);
-
-        asyncDynamicDataSource.addDatabaseChangeEventListener(event -> {
-            if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.SMTP_ENCRYPTION_TYPE)) {
-                encryptionType = globalSettingDao.getEnum(GlobalSettingType.SMTP_ENCRYPTION_TYPE, SmtpEncryptionType.class);
-            } else if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.SMTP_USERNAME)) {
-                username = globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME);
-            } else if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.SMTP_PASSWORD)) {
-                password = globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD);
-            }
-        });
-    }
+    private SmtpEncryptionType encryptionType;
+    private String username;
+    private String password;
 
     @Override
     public void sendMessage(EmailMessage data) throws MessagingException {
+        populateMetadata();
         Session session = getSession();
         MimeMessage message = new MimeMessage(session);
         message.setHeader("X-Mailer", "YukonEmail");
@@ -92,7 +76,23 @@ public class EmailServiceImpl implements EmailService {
         // Ready to go, send the message.
         send(message, session);
     }
-    
+
+    /**
+     * Method to update SMTP metadata information.
+     */
+    private void populateMetadata() {
+        try {
+            encryptionType = globalSettingDao.getEnum(GlobalSettingType.SMTP_ENCRYPTION_TYPE, SmtpEncryptionType.class);
+            username = globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME);
+            password = globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD);
+        } catch (Exception e) {
+            log.error("Error Retrieving data from Database. Populating old values from cache.");
+            encryptionType = SmtpEncryptionType.valueOf(metadataCacheUtil.getValue(SmtpMetadataConstants.SMTP_ENCRYPTION_TYPE));
+            username = metadataCacheUtil.getValue(SmtpMetadataConstants.SMTP_USERNAME);
+            password = metadataCacheUtil.getValue(SmtpMetadataConstants.SMTP_PASSWORD);
+        }
+    }
+
     /**
      * Attempts to get any authentication information required for the SMTP server and
      * send the email message. No modification is done to the message itself.
