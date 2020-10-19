@@ -20,7 +20,7 @@ ProgramConstraint:
     seasonSchedule:
       description: 'Schedule that defines the load control seasons.'
       required:
-        -id
+        - id
       type: object
       properties: 
         name:
