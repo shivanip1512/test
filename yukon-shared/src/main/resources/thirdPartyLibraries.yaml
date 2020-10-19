@@ -5118,20 +5118,6 @@ Network Manager :
     updated : 2020-09-02
     jira : NM-1732
     notes : 
-
-  - filename : snakeyaml-1.18.2.jar
-    yukon group : Jackson
-    project : SnakeYAML
-    version : 1.18.2
-    project URL : "https://github.com/DroidsOnRoids/snakeyaml"
-    license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/pl.droidsonroids.yaml/snakeyaml/1.18.2"
-    md5 : 3041218f98b3798eee443b317d91e28f
-    sha1 : aacf63abc979a710ddc0172509f7857cb69ff241
-    updated : 2020-10-19
-    jira : NM-1770
-    notes : 
     
   - filename : tomcat-coyote.jar
     yukon group : Tomcat
