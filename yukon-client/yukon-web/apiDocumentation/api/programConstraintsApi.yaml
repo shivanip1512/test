@@ -2,7 +2,7 @@ post-operation:
   post:
     tags:
      - Program Constraints
-    summary: 'Create Program Constraint'
+    summary: 'Create Program Constraints'
     description: 'API to create program constraint.'
     requestBody:
       content:
@@ -27,10 +27,11 @@ get-update-delete-operation:
   get:
     tags:
      - Program Constraints
-    summary: 'Retrieve Program Constraint'
+    summary: 'Retrieve Program Constraints'
     description: 'API to retrieve program constraint based on passed program constraint id.'
     parameters:
       - name: id
+        description: 'Unique identifier of the program constraint.'
         in: path
         schema:
           type: integer
@@ -52,6 +53,7 @@ get-update-delete-operation:
     description: 'API to update program constraint based on passed program constraint id.'
     parameters:
       - name: id
+        description: 'Unique identifier of the program constraint.'
         in: path
         schema:
           type: integer
@@ -82,6 +84,7 @@ get-update-delete-operation:
     description: 'API to delete program constraint based on passed program constraint id.'
     parameters:
       - name: id
+        description: 'Unique identifier of the program constraint.'
         in: path
         schema:
           type: integer
@@ -134,7 +137,7 @@ program-constraints:
   get:
     tags:
        - Program Constraints
-    summary: 'Retrieve all Program Constraints.'
+    summary: 'Retrieve all Program Constraints'
     description: 'API to retrieve all program constraints.'
     responses:
       '200':

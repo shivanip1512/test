@@ -18,9 +18,11 @@ ProgramConstraint:
       maxLength: 60
       description: 'Name of the program constraint.'
     seasonSchedule:
-      type: object
       description: 'Schedule that defines the load control seasons.'
-      properties:
+      required:
+        -id
+      type: object
+      properties: 
         name:
           type: string
           description: 'Name of the season season schedule. name is optional to pass with season schedule.'
@@ -55,6 +57,8 @@ ProgramConstraint:
         - FRIDAY
         - SATURDAY
     holidaySchedule:
+      required:
+        -id
       type: object
       properties:
         name:

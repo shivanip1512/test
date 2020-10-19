@@ -1,0 +1,311 @@
+post-operation:
+  post:
+    tags:
+      - Load Group 
+    summary: Create Load Group
+    description: |-
+      API to create any type of load group.
+      Below are the supported load group.
+      - DigiSep 
+      - Ecobee
+      - Emetcon
+      - Expresscom
+      - Honeywell
+      - Itron
+      - Meter Disconnect
+      - Versacomm
+      - Point Group
+      - MCT
+      - Ripple
+    requestBody:
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_DIGI_SEP'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EMETCON'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_ECOBEE'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_METER_DISCONNECT'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_VERSACOM'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_ITRON'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_HONEYWELL'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_NEST'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_MCT'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_RIPPLE'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EXPRESSCOMM'
+             
+          examples:
+            Digi SEP Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Digi SEP Group' 
+            Emetcon Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Emetcon Group' 
+            ecobee Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/ecobee Group'
+            Meter Disconnect Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Meter Disconnect Group' 
+            Versacom Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Versacom Group' 
+            Itron Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Itron Group'
+            HoneyWell Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/HoneyWell Group' 
+            Nest Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Nest Group' 
+            MCT Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/MCT Group'
+            Ripple Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Ripple Group' 
+            Expresscomm Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Expresscomm Group'
+   
+      required: true
+    responses:
+        '200':
+          description: 'Created'
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_DIGI_SEP'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EMETCON'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_ECOBEE'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_METER_DISCONNECT'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_VERSACOM'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_ITRON'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_HONEYWELL'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_NEST'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_MCT'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_RIPPLE'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EXPRESSCOMM'
+              examples:
+                Digi SEP Group:
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Digi SEP Group' 
+                Emetcon Group:
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Emetcon Group' 
+                ecobee Group:
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/ecobee Group'
+                Meter Disconnect Group:
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Meter Disconnect Group' 
+                Versacom Group:
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Versacom Group' 
+                Itron Group:
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Itron Group'
+                HoneyWell Group:
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/HoneyWell Group' 
+                Nest Group:
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Nest Group' 
+                MCT Group:
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/MCT Group'
+                Ripple Group:
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Ripple Group' 
+                Expresscomm Group:
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Expresscomm Group'
+get-update-delete-operation:
+  get:
+    tags:
+      - Load Group
+    summary: Retrieve Load Group
+    description: |-
+      API to retrieve any type of load group based on passed id.
+      Below are the supported load group.
+      - DigiSep 
+      - Ecobee
+      - Emetcon
+      - Expresscom
+      - Honeywell
+      - Itron
+      - Meter Disconnect
+      - Versacomm
+      - Point Group
+      - MCT
+      - Ripple
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'Load Group id'
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_DIGI_SEP'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EMETCON'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_ECOBEE'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_METER_DISCONNECT'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_VERSACOM'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_ITRON'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_HONEYWELL'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_NEST'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_MCT'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_RIPPLE'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EXPRESSCOMM'
+            examples:
+              Digi SEP Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Digi SEP Group' 
+              Emetcon Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Emetcon Group' 
+              ecobee Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/ecobee Group'
+              Meter Disconnect Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Meter Disconnect Group' 
+              Versacom Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Versacom Group' 
+              Itron Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Itron Group'
+              HoneyWell Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/HoneyWell Group' 
+              Nest Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Nest Group' 
+              MCT Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/MCT Group'
+              Ripple Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Ripple Group' 
+              Expresscomm Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Expresscomm Group'
+  put:
+    tags:
+      - Load Group
+    summary: Update Load Group
+    description: |-
+      API to update any type of load group based on passed id.
+      Below are the supported load group.
+      - DigiSep 
+      - Ecobee
+      - Emetcon
+      - Expresscom
+      - Honeywell
+      - Itron
+      - Meter Disconnect
+      - Versacomm
+      - Point Group
+      - MCT
+      - Ripple
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'Load Group id'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_DIGI_SEP'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EMETCON'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_ECOBEE'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_METER_DISCONNECT'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_VERSACOM'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_ITRON'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_HONEYWELL'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_NEST'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_MCT'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_RIPPLE'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EXPRESSCOMM'
+          examples:
+            Digi SEP Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Digi SEP Group' 
+            Emetcon Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Emetcon Group' 
+            ecobee Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/ecobee Group'
+            Meter Disconnect Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Meter Disconnect Group' 
+            Versacom Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Versacom Group' 
+            Itron Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Itron Group'
+            HoneyWell Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/HoneyWell Group' 
+            Nest Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Nest Group' 
+            MCT Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/MCT Group'
+            Ripple Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Ripple Group' 
+            Expresscomm Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Expresscomm Group'
+      required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_DIGI_SEP'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EMETCON'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_ECOBEE'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_METER_DISCONNECT'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_VERSACOM'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_ITRON'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_HONEYWELL'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_NEST'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_MCT'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_RIPPLE'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EXPRESSCOMM'
+            examples:
+              Digi SEP Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Digi SEP Group' 
+              Emetcon Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Emetcon Group' 
+              ecobee Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/ecobee Group'
+              Meter Disconnect Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Meter Disconnect Group' 
+              Versacom Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Versacom Group' 
+              Itron Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Itron Group'
+              HoneyWell Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/HoneyWell Group' 
+              Nest Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Nest Group' 
+              MCT Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/MCT Group'
+              Ripple Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Ripple Group' 
+              Expresscomm Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Expresscomm Group'
+             
+  delete:
+    tags:
+      - Load Group
+    summary: Delete Load Group
+    description: |-
+      API to delete any type of load group based on passed id.
+      Below are the supported load group.
+      - DigiSep 
+      - Ecobee
+      - Emetcon  
+      - Expresscom
+      - Honeywell
+      - Itron
+      - Meter Disconnect
+      - Versacomm
+      - Point Group
+      - MCT
+      - Ripple
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'Load Group id'
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/loadGroupsSchema.yaml#/id'
+            examples:
+              CommChannel Id:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/id'
