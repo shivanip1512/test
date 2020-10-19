@@ -3,7 +3,6 @@ package com.cannontech.web.api;
 public class ApiURL {
 
     public static final String drLoadGroupUrl = "/dr/loadGroups";
-    public static final String drRetrieveAvailableLoadGroupsUrl = "/dr/loadGroups/availableLoadGroup";
     public static final String drPointGroupStartStateUrl = "/dr/loadGroups/getPointGroupStartState/";
 
 
@@ -19,7 +18,6 @@ public class ApiURL {
     public static final String drAvailableLoadGroupsUrl = "/dr/loadPrograms/availableLoadGroups/";
     public static final String drAvailableNotificationGroupsUrl = "/dr/loadPrograms/availableNotificationGroups/";
     public static final String drAvailableDirectMemberControlsUrl = "/dr/loadPrograms/availableDirectMemberControls/";
-    public static final String drLoadProgramAvailableProgramsUrl = "/dr/loadPrograms/availablePrograms";
     public static final String drGetGearsForLoadProgram = "/dr/loadPrograms/getGearsForProgram/";
     public static final String drGearRetrieveUrl = "/dr/loadPrograms/gear/";
 
