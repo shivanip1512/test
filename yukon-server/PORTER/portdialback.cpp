@@ -26,6 +26,7 @@ void PortDialbackThread(void *pid)
     extern Cti::Pil::PilServer PIL;
     extern CtiPortManager       PortManager;
     extern CtiDeviceManager     DeviceManager;
+    extern std::atomic_int PortManagerThreadCount;
 
     INT            i, status = ClientErrors::None;
     LONG           portid = (LONG)pid;      // NASTY CAST HERE!!!
@@ -42,6 +43,8 @@ void PortDialbackThread(void *pid)
         CTILOG_ERROR(dout, "PortDialbackThread for port: "<< Port->getPortID() <<" / "<< Port->getName() <<"- Unable to start");
         return;
     }
+
+    PortManagerThreadCount++;
 
     CTILOG_INFO(dout, "PortDialbackThread for port: "<< Port->getPortID() <<" / "<< Port->getName() <<" - Started");
 
@@ -263,5 +266,5 @@ void PortDialbackThread(void *pid)
 
     CTILOG_INFO(dout, "Shutdown PortDialbackThread for port: "<< Port->getPortID() <<" / "<< Port->getName());
 
-    return;
+    PortManagerThreadCount--;
 }
