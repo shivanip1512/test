@@ -125,7 +125,8 @@ get-update-delete-operation:
         schema:
           type: integer
         required: true
-        description: 'Load Group id'
+        description: 'Unique identifier for load group'
+
     responses:
       '200':
         description: OK
@@ -191,7 +192,8 @@ get-update-delete-operation:
         schema:
           type: integer
         required: true
-        description: 'Load Group id'
+        description: 'Unique identifier for load group'
+
     requestBody:
       content:
         application/json:
@@ -298,7 +300,8 @@ get-update-delete-operation:
         schema:
           type: integer
         required: true
-        description: 'Load Group id'
+        description: 'Unique identifier for load group'
+
     responses:
       '200':
         description: OK
