@@ -35,6 +35,19 @@ UPDATE DeviceGroupComposed SET CompositionType = 'INTERSECTION'
 INSERT INTO DBUpdates VALUES ('YUK-23001', '9.0.0', GETDATE());
 /* @end YUK-23001 */
 
+/* @start YUK-22758 */
+DELETE FROM DeviceConfigState dcs
+WHERE dcs.PaObjectId IN
+    (SELECT ypo.PAObjectID 
+     FROM YukonPAObject ypo
+     LEFT OUTER JOIN RfnAddress rfn
+     ON ypo.PAObjectID = rfn.DeviceId
+     WHERE rfn.DeviceId IS NULL
+     AND ypo.PAOName LIKE '%template%')
+
+INSERT INTO DBUpdates VALUES ('YUK-22758', '9.0.0', GETDATE());
+/* @end YUK-22758 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.dataStreaming.model.DataStreamingConfig;
 import com.cannontech.amr.rfn.dataStreaming.model.DiscrepancyResult;
 import com.cannontech.amr.rfn.dataStreaming.service.DataStreamingService;
@@ -38,6 +39,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.impl.PaoDaoImpl;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -64,6 +66,7 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
     @Autowired private MeterProgrammingSummaryDao meterProgrammingSummaryDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
 
     private ExecutorService executor = Executors.newCachedThreadPool();
 
@@ -126,7 +129,8 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
         boolean enableMeterProgramming = configurationSource.isLicenseEnabled(MasterConfigLicenseKey.METER_PROGRAMMING_ENABLED);
         if (enableMeterProgramming) {
             boolean deviceSupported = paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), PaoTag.METER_PROGRAMMING);
-            if (deviceSupported) {
+            boolean isDeviceTemplate = rfnDeviceDao.getDevice(device).getRfnIdentifier().isBlank();
+            if (deviceSupported && !isDeviceTemplate) {
                 model.addAttribute("showMeterProgramming", true);
                 try {
                     MeterProgramSummaryDetail program = meterProgrammingSummaryDao.getProgramConfigurationByDeviceId(deviceId, userContext);
