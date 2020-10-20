@@ -95,5 +95,5 @@ get-update-delete-operation:
               $ref: '../schemas/trendsSchema.yaml#/id'
             examples:
               TrendId:
-                $ref: '../schemas/trendsSchema.yaml#/components/examples/TrendId'
+                $ref: '../schemas/trendsSchema.yaml#/components/examples/id'
             

@@ -52,7 +52,6 @@
        <bean class="com.cannontech.watchdogs.util.WatchdogCapControlClientConnection"/>
        <bean class="com.cannontech.watchdogs.util.WatchdogPorterClientConnection"/>
        <bean class="com.cannontech.watchdogs.util.WatchdogMACSConnection"/>
-       <bean class="com.cannontech.watchdogs.util.WatchdogDatabaseFileUtil"/>
        
        <bean class="com.cannontech.watchdog.notification.WatchdogNotificationServiceImpl"/>
        

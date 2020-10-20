@@ -3,6 +3,7 @@ MacroLoadGroup:
   required:
     - name
     - type
+    - assignedLoadGroups
   type: object
   properties:
     name:

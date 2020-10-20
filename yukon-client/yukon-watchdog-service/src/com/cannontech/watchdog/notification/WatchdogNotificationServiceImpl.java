@@ -29,7 +29,7 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.tools.smtp.SmtpMetadataCacheUtil;
+import com.cannontech.tools.email.EmailSettingsCacheService;
 import com.cannontech.tools.smtp.SmtpMetadataConstants;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.watchdog.base.YukonServices;
@@ -46,7 +46,7 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
     @Autowired private SmartNotificationSubscriptionDao subscriptionDao;
     @Autowired private WebserverUrlResolver webserverUrlResolver;
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private SmtpMetadataCacheUtil metadataCacheUtil;
+    @Autowired private EmailSettingsCacheService emailSettingsCacheService;
     
     private List<ServiceStatusWatchdog> serviceStatusWatchers;
     private MessageSourceAccessor messageSourceAccessor;
@@ -123,8 +123,7 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
     }
 
     /**
-     * /**
-     * Method to update Email IDs of subscribers and Sender.
+     * Update Email IDs of subscribers and Sender.
      */
     private void loadEmailIds() {
         try {
@@ -133,10 +132,9 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
         } catch (Exception e) {
             log.error("Error Retrieving data from Database. Populating old values from cache.");
             sendToEmailIds = Arrays
-                    .asList(metadataCacheUtil.getValue(SmtpMetadataConstants.SUBSCRIBER_EMAIL_IDS).split("\\s*,\\s*"));
-            sender = metadataCacheUtil.getValue(SmtpMetadataConstants.MAIL_FROM_ADDRESS);
+                    .asList(emailSettingsCacheService.getValue(SmtpMetadataConstants.SUBSCRIBER_EMAIL_IDS).split("\\s*,\\s*"));
+            sender = emailSettingsCacheService.getValue(SmtpMetadataConstants.MAIL_FROM_ADDRESS);
         }
-
     }
 
     /*

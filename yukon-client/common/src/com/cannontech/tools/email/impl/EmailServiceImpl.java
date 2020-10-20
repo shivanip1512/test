@@ -14,11 +14,14 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationLoader;
 import com.cannontech.common.config.SmtpEncryptionType;
 import com.cannontech.common.config.SmtpHelper;
 import com.cannontech.common.config.SmtpPropertyType;
@@ -26,20 +29,26 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.EmailService;
+import com.cannontech.tools.email.EmailSettingsCacheService;
 import com.cannontech.tools.smtp.SmtpMetadataConstants;
-import com.cannontech.tools.smtp.SmtpMetadataCacheUtil;
 
 public class EmailServiceImpl implements EmailService {
     private static final Logger log = YukonLogManager.getLogger(EmailServiceImpl.class);
     private static final String SMTP_AUTH_PROPERTY_NAME = "mail.smtp.auth";
+    private static final String SMTP_CONFIGURATION_KEY_ALIAS = "smtp";
+    private static final String SMTP_HOST = "mail.smtp.host";
+    private static final String SMTP_PORT = "mail.smtp.port";
 
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private SmtpHelper configurationSource;
-    @Autowired private SmtpMetadataCacheUtil metadataCacheUtil;
+    @Autowired private EmailSettingsCacheService emailSettingsCacheService;
 
     private SmtpEncryptionType encryptionType;
     private String username;
     private String password;
+    private String host;
+    private String port;
+    private Map<String, String> smtpSettings = new HashedMap<String, String>();
 
     @Override
     public void sendMessage(EmailMessage data) throws MessagingException {
@@ -85,12 +94,81 @@ public class EmailServiceImpl implements EmailService {
             encryptionType = globalSettingDao.getEnum(GlobalSettingType.SMTP_ENCRYPTION_TYPE, SmtpEncryptionType.class);
             username = globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME);
             password = globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD);
+            host = configurationSource.getCommonProperty(SmtpPropertyType.HOST);
+            port = configurationSource.getCommonProperty(SmtpPropertyType.PORT);
+            smtpSettings = configurationSource.getSmtpConfigSettings();
         } catch (Exception e) {
-            log.error("Error Retrieving data from Database. Populating old values from cache.");
-            encryptionType = SmtpEncryptionType.valueOf(metadataCacheUtil.getValue(SmtpMetadataConstants.SMTP_ENCRYPTION_TYPE));
-            username = metadataCacheUtil.getValue(SmtpMetadataConstants.SMTP_USERNAME);
-            password = metadataCacheUtil.getValue(SmtpMetadataConstants.SMTP_PASSWORD);
+            //When database goes down on a running system, retrieve the configurations from cache.
+            if(emailSettingsCacheService != null) {
+                populateFromCache();
+            } else {
+                //When database is down and and try to start services, retrieve configurations from cache.
+                populateFromFile();
+            }
         }
+    }
+
+    /**
+     * Retrieve the configurations from cache.
+     */
+    private void populateFromCache() {
+        log.error("Error Retrieving data from Database. Populating old values from cache.");
+        encryptionType = SmtpEncryptionType
+                .valueOf(emailSettingsCacheService.getValue(SmtpMetadataConstants.SMTP_ENCRYPTION_TYPE));
+        username = emailSettingsCacheService.getValue(SmtpMetadataConstants.SMTP_USERNAME);
+        password = emailSettingsCacheService.getValue(SmtpMetadataConstants.SMTP_PASSWORD);
+        host = emailSettingsCacheService.getValue(SmtpMetadataConstants.SMTP_HOST);
+        port = emailSettingsCacheService.getValue(SmtpMetadataConstants.SMTP_PORT);
+        smtpSettings.clear();
+        Map<String, String> configs = getConfigurations();
+        if (!CollectionUtils.isEmpty(configs)) {
+            smtpSettings.putAll(configs);
+        }
+        smtpSettings.put(SMTP_HOST, host);
+        smtpSettings.put(SMTP_PORT, port);
+        SmtpEncryptionType encryptionType = SmtpEncryptionType
+                .valueOf(emailSettingsCacheService.getValue(SmtpMetadataConstants.SMTP_ENCRYPTION_TYPE));
+        if (encryptionType == SmtpEncryptionType.TLS) {
+            smtpSettings.put(SmtpPropertyType.START_TLS_ENABLED.getKey(false), "true");
+        } else {
+            smtpSettings.remove(SmtpPropertyType.START_TLS_ENABLED.getKey(false));
+        }
+    }
+
+    /**
+     * Retrieve the configurations from file.
+     */
+    private void populateFromFile() {
+        log.error("Error Retrieving data from Database. Populating old values from file.");
+        EmailSettingsCacheService cacheService = new EmailSettingsCacheServiceImpl();
+        Map<SmtpMetadataConstants, String> metadataMap = cacheService.readFromFile();
+        encryptionType = SmtpEncryptionType.valueOf(metadataMap.get(SmtpMetadataConstants.SMTP_ENCRYPTION_TYPE));
+        username = metadataMap.get(SmtpMetadataConstants.SMTP_USERNAME);
+        password = metadataMap.get(SmtpMetadataConstants.SMTP_PASSWORD);
+        host = metadataMap.get(SmtpMetadataConstants.SMTP_HOST);
+        port = metadataMap.get(SmtpMetadataConstants.SMTP_PORT);
+        smtpSettings.clear();
+        Map<String, String> configs = getConfigurations();
+        if (!CollectionUtils.isEmpty(configs)) {
+            smtpSettings.putAll(configs);
+        }
+        smtpSettings.put(SMTP_HOST, host);
+        smtpSettings.put(SMTP_PORT, port);
+        SmtpEncryptionType encryptionType = SmtpEncryptionType
+                .valueOf(metadataMap.get(SmtpMetadataConstants.SMTP_ENCRYPTION_TYPE));
+        if (encryptionType == SmtpEncryptionType.TLS) {
+            smtpSettings.put(SmtpPropertyType.START_TLS_ENABLED.getKey(false), "true");
+        } else {
+            smtpSettings.remove(SmtpPropertyType.START_TLS_ENABLED.getKey(false));
+        }
+    }
+
+    /**
+     * Retrieve additional configurations from configuration.properties file.
+     */
+    private Map<String, String> getConfigurations() {
+        ConfigurationLoader loader = new ConfigurationLoader();
+        return loader.getConfigSettings().get(SMTP_CONFIGURATION_KEY_ALIAS);
     }
 
     /**
@@ -109,8 +187,6 @@ public class EmailServiceImpl implements EmailService {
             if (authentication != null) {
                 String username = authentication.getUserName();
                 String password = authentication.getPassword();
-                String host = configurationSource.getCommonProperty(SmtpPropertyType.HOST);
-                String port = configurationSource.getCommonProperty(SmtpPropertyType.PORT);
                 if (!StringUtils.isEmpty(port)) {
                     transport.connect(host, Integer.parseInt(port), username, password);
                 } else {
@@ -140,7 +216,6 @@ public class EmailServiceImpl implements EmailService {
      */
     private Session getSession() throws MessagingException {
         Properties properties = new Properties();
-        Map<String, String> smtpSettings = configurationSource.getSmtpConfigSettings();
         if (smtpSettings != null) {
             smtpSettings.forEach((key, value) -> properties.put(key, value));
         }

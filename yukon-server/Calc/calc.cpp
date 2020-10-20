@@ -6,18 +6,22 @@
 
 #include "ctitime.h"
 
+#include <boost/range/adaptor/filtered.hpp>
+#include <boost/range/adaptor/indirected.hpp>
+#include <boost/range/adaptor/transformed.hpp>
+
 extern ULONG _CALC_DEBUG;
 
 using namespace std;
 
 // static const strings
-const std::string CtiCalc::UpdateTypes::Periodic   = "On Timer";
-const std::string CtiCalc::UpdateTypes::AllChange  = "On All Change";
-const std::string CtiCalc::UpdateTypes::OneChange  = "On First Change";
-const std::string CtiCalc::UpdateTypes::Historical = "Historical";
-const std::string CtiCalc::UpdateTypes::BackfilledHistorical = "Backfilled Historical";
-const std::string CtiCalc::UpdateTypes::PeriodicPlusUpdate = "On Timer+Change";
-const std::string CtiCalc::UpdateTypes::Constant   = "Constant";
+const std::string CtiCalc::UpdateTypeDbStrings::Periodic   = "On Timer";
+const std::string CtiCalc::UpdateTypeDbStrings::AllChange  = "On All Change";
+const std::string CtiCalc::UpdateTypeDbStrings::OneChange  = "On First Change";
+const std::string CtiCalc::UpdateTypeDbStrings::Historical = "Historical";
+const std::string CtiCalc::UpdateTypeDbStrings::BackfilledHistorical = "Backfilled Historical";
+const std::string CtiCalc::UpdateTypeDbStrings::PeriodicPlusUpdate = "On Timer+Change";
+const std::string CtiCalc::UpdateTypeDbStrings::Constant   = "Constant";
 
 CtiCalc::CtiCalc( long pointId, const string &updateType, int updateInterval, const string &qualityFlag )
 {
@@ -37,40 +41,40 @@ CtiCalc::CtiCalc( long pointId, const string &updateType, int updateInterval, co
         _calculateQuality = true;
     }
 
-    if( (ciStringEqual(updateType,UpdateTypes::Periodic))
+    if( (ciStringEqual(updateType,UpdateTypeDbStrings::Periodic))
         && (updateInterval > 0) )
     {
         _updateInterval = updateInterval;
         setNextInterval (updateInterval);
         _updateType = CalcUpdateType::Periodic;
     }
-    else if( ciStringEqual(updateType,UpdateTypes::AllChange))
+    else if( ciStringEqual(updateType,UpdateTypeDbStrings::AllChange))
     {
         _updateInterval = 0;
         _updateType = CalcUpdateType::AllUpdate;
     }
-    else if( ciStringEqual(updateType,UpdateTypes::OneChange))
+    else if( ciStringEqual(updateType,UpdateTypeDbStrings::OneChange))
     {
         _updateInterval = 0;
         _updateType = CalcUpdateType::AnyUpdate;
     }
-    else if( ciStringEqual(updateType,UpdateTypes::Historical))
+    else if( ciStringEqual(updateType,UpdateTypeDbStrings::Historical))
     {
         _updateInterval = 0;
         _updateType = CalcUpdateType::Historical;
     }
-    else if( ciStringEqual(updateType, UpdateTypes::BackfilledHistorical) )
+    else if( ciStringEqual(updateType, UpdateTypeDbStrings::BackfilledHistorical) )
     {
         _updateInterval = 0;
         _updateType = CalcUpdateType::BackfilledHistorical;
     }
-    else if( ciStringEqual(updateType,UpdateTypes::PeriodicPlusUpdate) )
+    else if( ciStringEqual(updateType,UpdateTypeDbStrings::PeriodicPlusUpdate) )
     {
         _updateInterval = updateInterval;
         setNextInterval (updateInterval);
         _updateType = CalcUpdateType::PeriodicPlusUpdate;
     }
-    else if( ciStringEqual(updateType,UpdateTypes::Constant) )
+    else if( ciStringEqual(updateType,UpdateTypeDbStrings::Constant) )
     {
         _updateInterval = 0;
         _updateType = CalcUpdateType::Constant;
@@ -567,18 +571,11 @@ int CtiCalc::getComponentCount()
     return getComponentIDList().size();
 }
 
-set<long> CtiCalc::getComponentIDList()
+set<long> CtiCalc::getComponentIDList() const
 {
-    set<long> componentIDList;
-
-    for( auto& tmpComponent : _components )
-    {
-        const long componentPointID = tmpComponent->getComponentPointId();
-
-        if( componentPointID > 0 ) //This is a valid point
-        {
-            componentIDList.insert(componentPointID);
-        }
-    }
-    return componentIDList;
+    return boost::copy_range<set<long>>(
+        _components
+            | boost::adaptors::indirected
+            | boost::adaptors::transformed(std::mem_fn(&CtiCalcComponent::getComponentPointId))
+            | boost::adaptors::filtered([](int id) { return id > 0; }));
 }

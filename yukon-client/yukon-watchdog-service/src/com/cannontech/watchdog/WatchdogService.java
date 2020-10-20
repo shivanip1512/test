@@ -1,13 +1,19 @@
 package com.cannontech.watchdog;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ApplicationId;
@@ -16,14 +22,21 @@ import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.db.version.CTIDatabase;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.tools.email.EmailMessage;
+import com.cannontech.tools.email.EmailService;
+import com.cannontech.tools.email.EmailSettingsCacheService;
+import com.cannontech.tools.email.impl.EmailServiceImpl;
+import com.cannontech.tools.email.impl.EmailSettingsCacheServiceImpl;
+import com.cannontech.tools.smtp.SmtpMetadataConstants;
 import com.cannontech.watchdog.base.Watchdog;
-import com.cannontech.watchdogs.util.WatchdogEmailUtil;
 
 public class WatchdogService {
 
     private static class LogHolder {
         static final Logger log = YukonLogManager.getLogger(WatchdogService.class);
     }
+
+    private static final String RESOURCE_PATH = "\\common\\i18n\\en_US\\com\\cannontech\\yukon\\watchdog\\root";
 
     private List<Watchdog> watchdog;
     private static ScheduledFuture<?> schdfuture;
@@ -40,10 +53,45 @@ public class WatchdogService {
         } catch (Throwable t) {
             CTIDatabase database = VersionTools.getDatabaseVersion();
             if (database == null) {
-                WatchdogEmailUtil.sendEmail();
+                sendEmail();
             }
             getLogger().error("Error in watchdog service", t);
             System.exit(1);
+        }
+    }
+
+    /**
+     * Send email notification to the subscribers.
+     */
+    private static void sendEmail() {
+        try {
+            EmailSettingsCacheService cacheService = new EmailSettingsCacheServiceImpl();
+            Map<SmtpMetadataConstants, String> metadataMap = cacheService.readFromFile();
+            if (StringUtils.isEmpty(metadataMap.get(SmtpMetadataConstants.SUBSCRIBER_EMAIL_IDS))) {
+                getLogger().warn("No user subscribed for notification for watchdog.");
+                return;
+            }
+            // Setup message source for reading i18n messages.
+            ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+            String userDir = System.getProperty("user.dir");
+            String resourceDir = userDir.substring(0, userDir.lastIndexOf("\\") + 1).concat(RESOURCE_PATH);
+            messageSource.setBasename(new File(resourceDir).toURI().toString());
+
+            String subject = messageSource.getMessage("yukon.watchdog.notification.subject", null, Locale.ENGLISH);
+
+            StringBuilder msgBuilder = new StringBuilder(
+                    messageSource.getMessage("yukon.watchdog.notification.text", null, Locale.ENGLISH));
+            msgBuilder.append("\n\n");
+            msgBuilder.append(messageSource.getMessage("yukon.watchdog.notification.DATABASE", null, Locale.ENGLISH));
+            String commaSeparatedIds = metadataMap.get(SmtpMetadataConstants.SUBSCRIBER_EMAIL_IDS);
+            List<String> sendToEmailIds = Arrays.asList(commaSeparatedIds.split("\\s*,\\s*"));
+            EmailMessage emailMessage = EmailMessage.newMessageBccOnly(subject, msgBuilder.toString(),
+                    metadataMap.get(SmtpMetadataConstants.MAIL_FROM_ADDRESS),
+                    sendToEmailIds);
+            EmailService emailService = new EmailServiceImpl();
+            emailService.sendMessage(emailMessage);
+        } catch (Exception e) {
+            getLogger().error("Unable to send Emial", e);
         }
     }
 

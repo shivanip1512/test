@@ -11,12 +11,13 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.smartNotification.dao.SmartNotificationSubscriptionDao;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
+import com.cannontech.tools.email.EmailSettingsCacheService;
+import com.cannontech.tools.smtp.SmtpMetadataConstants;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarningType;
 import com.cannontech.watchdog.model.WatchdogWarnings;
 import com.cannontech.watchdog.model.Watchdogs;
 import com.cannontech.watchdogs.util.DBConnectionUtil;
-import com.cannontech.watchdogs.util.WatchdogDatabaseFileUtil;
 
 @Service
 public class YukonDBConnectionWatcher extends ServiceStatusWatchdogImpl {
@@ -28,7 +29,7 @@ public class YukonDBConnectionWatcher extends ServiceStatusWatchdogImpl {
     Logger log = YukonLogManager.getLogger(YukonDBConnectionWatcher.class);
 
     @Autowired private SmartNotificationSubscriptionDao subscriptionDao;
-    @Autowired private WatchdogDatabaseFileUtil watchdogDatabaseUtil;
+    @Autowired private EmailSettingsCacheService emailSettingsCacheService;
 
     @Override
     public List<WatchdogWarnings> watch() {
@@ -38,7 +39,9 @@ public class YukonDBConnectionWatcher extends ServiceStatusWatchdogImpl {
         if (serviceStatus == ServiceStatus.RUNNING) {
             try {
                 List<String> subscriberEmailIds = subscriptionDao.getSubscribedEmails(SmartNotificationEventType.YUKON_WATCHDOG);
-                watchdogDatabaseUtil.writeToFile(StringUtils.join(subscriberEmailIds, ","));
+                emailSettingsCacheService.update(SmtpMetadataConstants.SUBSCRIBER_EMAIL_IDS,
+                        StringUtils.join(subscriberEmailIds, ","));
+                emailSettingsCacheService.writeToFile();
             } catch (RuntimeException e) {
                 serviceStatus = ServiceStatus.STOPPED;
             }
