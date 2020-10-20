@@ -18,7 +18,7 @@ class CtiCalc
     bool                 _isBaseline;
     bool                 _reuseRegression;
 
-    struct UpdateTypes {
+    struct UpdateTypeDbStrings {
         // text from the database
         static const std::string Periodic;
         static const std::string AllChange;
@@ -47,7 +47,7 @@ public:
     int      getUpdateInterval( ) const;
     long     getRegressionComponentId() const;
     int      getComponentCount();
-    std::set<long> getComponentIDList();
+    std::set<long> getComponentIDList() const;
     long findDemandAvgComponentPointId();
 
     long getPointId( void ) const
