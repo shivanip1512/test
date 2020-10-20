@@ -17,6 +17,7 @@
     <OPENSSL>$(CPP_LIBRARIES)\openssl\1.1.1g-vc142-1</OPENSSL>
     <LIBCOAP>$(CPP_LIBRARIES)\libcoap\4.1.2-vc141-1</LIBCOAP>
     <MICROSOFT>$(CPP_LIBRARIES)\microsoft</MICROSOFT>
+    <MICROSOFT_GSL>$(MICROSOFT)\gsl\3.1.0</MICROSOFT_GSL>
     <MICROSOFT_SQL>$(MICROSOFT)\sql-server-client-dll\2000.80.194.0</MICROSOFT_SQL>
     <DBGHELP>$(MICROSOFT)\dbghelp\6.12.2.633-vc140-1</DBGHELP>
     <YAML_CPP>$(CPP_LIBRARIES)\yaml-cpp\0.6.2-vc141</YAML_CPP>
@@ -88,6 +89,10 @@
     </BuildMacro>
     <BuildMacro Include="MICROSOFT">
       <Value>$(MICROSOFT)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="MICROSOFT_GSL">
+      <Value>$(MICROSOFT_GSL)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
     <BuildMacro Include="MICROSOFT_SQL">

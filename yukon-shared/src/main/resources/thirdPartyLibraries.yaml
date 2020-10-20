@@ -5936,6 +5936,20 @@ C++ :
     jira : YUK-21543
     notes : 
     
+  - project : Microsoft Guidelines Support Library
+    path : MICROSOFT_GSL
+    version : 3.1.0
+    project URL : "https://github.com/microsoft/GSL"
+    license : MIT
+    license URLs : "https://github.com/microsoft/GSL/blob/v3.1.0/LICENSE"
+    md5 : bd754642756bc03a614e88e8891214c2
+    sha1 : b2416a4802494f6128431e3fdb860e8521874e13 
+    fileCount : 10
+    totalSize : 176964
+    updated : 2020-10-19  
+    jira : YUK-22841
+    notes : 
+    
   - project : Microsoft SQL Server Client
     path : MICROSOFT_SQL
     version : 2000.80.194.0
