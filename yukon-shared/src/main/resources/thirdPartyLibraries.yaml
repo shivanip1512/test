@@ -5570,10 +5570,10 @@ JavaScript :
     license : MIT,GPL
     license URLs : "https://github.com/malsup/form#copyright-and-license"
     npm URL : "n/a"
-    md5 : 39eb832aa48f3a60b905928c2d879e03
-    sha1 : bbc84d21ce03ee9995d1c5c3aa21b451025b13ee
-    jira : YUK-21525
-    updated : 2020-03-23
+    md5 : f0538b8cb5513dca91c96cf1f3504f86
+    sha1 : b90a4f6a12b7ae7e99fe0aaca2e0e97c757a307f
+    jira : YUK-23003
+    updated : 2020-10-20
     notes : The jQuery code in Yukon intensively uses ajaxSumbit method. We also use ajaxForm method. These methods are offered by this library.
 
   - project : google-code-prettify
