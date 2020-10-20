@@ -24,6 +24,8 @@
 
 #include "std_helper.h"
 
+#include <gsl/gsl_util>
+
 #include <memory>
 
 using namespace std;
@@ -562,6 +564,10 @@ auto CtiCalculateThread::calcHistoricalPoints(const PointTimeMap& dbTimeMap, con
 
     PointTimeMap unlistedPoints, updatedPoints;
 
+    gsl::finally([&]() {
+        updateCalcHistoricalLastUpdatedTime(unlistedPoints, updatedPoints);  //  Write these back out to the database on any return
+    });
+
     static const auto pointProcessors = {
         std::make_tuple(std::ref(_historicalPoints), std::mem_fn(&CtiCalculateThread::calcHistoricalPoint)),
         std::make_tuple(std::ref(_backfilledPoints), std::mem_fn(&CtiCalculateThread::calcBackfilledPoint)) };
@@ -597,7 +603,7 @@ auto CtiCalculateThread::calcHistoricalPoints(const PointTimeMap& dbTimeMap, con
             //  Check for any outside interference that may have occurred during the DB load
             if( wasReloaded(CALLSITE) )
             {
-                goto reloaded_return;  //  This allows us to keep unlistedPoints/updatedPoints local to this function.
+                return messages;
             }
 
             auto [newTime, pointMessages] = pointCalculator(this, calcPoint.get(), data, lastTime, earliestCalcDate, wasReloaded);
@@ -620,9 +626,6 @@ auto CtiCalculateThread::calcHistoricalPoints(const PointTimeMap& dbTimeMap, con
                 std::back_inserter(messages));
         }
     }
-
-reloaded_return:
-    updateCalcHistoricalLastUpdatedTime(unlistedPoints, updatedPoints);  //  Write these back out to the database
 
     return messages;
 }
