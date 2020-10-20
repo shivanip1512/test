@@ -191,7 +191,7 @@ public class ControlScenarioSetupController {
 
             if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 HashMap<String, Integer> paoIdMap = (HashMap<String, Integer>) response.getBody();
-                int controlScenarioId = paoIdMap.get("paoId");
+                int controlScenarioId = paoIdMap.get("id");
                 flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", controlScenario.getName()));
                 return "redirect:/dr/setup/controlScenario/" + controlScenarioId;
             }
