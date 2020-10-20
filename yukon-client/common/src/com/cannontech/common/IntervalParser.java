@@ -1,4 +1,4 @@
-package com.cannontech.web.common;
+package com.cannontech.common;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -171,8 +171,7 @@ public class IntervalParser {
             localTime = localTime.plus(interval.getSeconds(), ChronoUnit.SECONDS);
         }
         ZonedDateTime zonedDateTime = localTime.atZone(zone);
-        Instant newDate = new Instant(zonedDateTime.toInstant().toEpochMilli());
-        return newDate;
+        return new Instant(zonedDateTime.toInstant().toEpochMilli());
     }
 
     /**

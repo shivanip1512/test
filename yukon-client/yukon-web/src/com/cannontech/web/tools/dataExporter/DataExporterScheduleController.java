@@ -92,7 +92,7 @@ public class DataExporterScheduleController {
     @Autowired private ToolsEventLogService toolsEventLogService;
     @Autowired private AttributeType attributeTypeEditor;
     
-    public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
+    public static final String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
     private ScheduledFileExportValidator scheduledFileExportValidator = new ScheduledFileExportValidator(this.getClass());
     
     @RequestMapping("/data-exporter/scheduleReport")

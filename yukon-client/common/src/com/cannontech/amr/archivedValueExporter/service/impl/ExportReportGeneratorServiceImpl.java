@@ -4,11 +4,13 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -34,6 +36,7 @@ import com.cannontech.amr.archivedValueExporter.model.Preview;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
 import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorService;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.IntervalParser;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -53,8 +56,10 @@ import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.service.PaoSelectionService;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.point.PointTypeId;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ReadableRange;
+import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.util.TimeZoneFormat;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
@@ -63,8 +68,10 @@ import com.cannontech.core.dao.RawPointHistoryDao.OrderBy;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -76,21 +83,24 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
+import com.google.common.collect.TreeMultimap;
 
 public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorService {
 
-    @Autowired private PaoSelectionService paoSelectionService;
     @Autowired private AttributeService attributeService;
+    @Autowired private ConfigurationSource configSource;
+    @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private PaoSelectionService paoSelectionService;
     @Autowired private PointDao pointDao;
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
-    @Autowired private UnitMeasureDao unitMeasureDao;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private ConfigurationSource configSource;
-    @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private StateGroupDao stateGroupDao;
+    @Autowired private UnitMeasureDao unitMeasureDao;
 
-    public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
+    public static final String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
 
     private static String previewUOMValueKey = baseKey + "previewUOMValue";
     private static String previewPointStateKey = baseKey + "previewPointState";
@@ -108,7 +118,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      * as a Fixed Value, and SKIP_RECORD_SKIP_RECORD is longer than the 20 characters allowed for MissingAttributeValue, thus
      * making it impossible to be used as Fixed Value.
      */
-    private static String SKIP_RECORD = "SKIP_RECORD_SKIP_RECORD";
+    private static final String SKIP_RECORD = "SKIP_RECORD_SKIP_RECORD";
 
     private static double previewValue = 1234546.012;
     private static PointQuality previewQuality = PointQuality.Normal;
@@ -166,8 +176,11 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             ExportFormat format,
             DataRange range,
             YukonUserContext userContext,
-            Attribute[] attributes, BufferedWriter writer) throws IOException {
-
+            Attribute[] attributes, 
+            BufferedWriter writer,
+            boolean isOnInterval,
+            TimeIntervals interval) throws IOException {
+        
         log.info("Generating report for {} attributes {}", allPaos.size(), attributes);
 
         Set<OptionalField> requestedFields = new HashSet<>();
@@ -220,10 +233,13 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             case DATE_RANGE:
                 Range<Instant> dateRange = range.getLocalDateRange().getInstantDateRange(userContext);
                 for (Attribute attribute : attributes) {
-                    ListMultimap<PaoIdentifier, PointValueQualityHolder> dateRangeAttributeData = getDynamicAttributeData(
+                    ListMultimap<PaoIdentifier, PointValueQualityHolder> pointData = getDynamicAttributeData(
                             paosSublist, attribute, dateRange, range, null, format);
-                    generateDynamicBody(paosSublist, paoDataByPao, format, userContext, attribute,
-                            dateRangeAttributeData, unitMeasureLookupTable, writer);
+                    if (isOnInterval) {
+                        pointData = transformIntoIntervalOnlyData(pointData, attribute, interval, dateRange.getMin(), dateRange.getMax(), userContext);
+                    }
+                    generateDynamicBody(paosSublist, paoDataByPao, format, userContext, attribute, pointData, 
+                                        unitMeasureLookupTable, writer);
                 }
 
                 break;
@@ -233,10 +249,14 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 Range<Instant> previousDaysDateRange = Range.exclusiveInclusive(start, now);
 
                 for (Attribute attribute : attributes) {
-                    ListMultimap<PaoIdentifier, PointValueQualityHolder> previousDaysAttributeData = getDynamicAttributeData(
+                    ListMultimap<PaoIdentifier, PointValueQualityHolder> pointData = getDynamicAttributeData(
                             paosSublist, attribute, previousDaysDateRange, range, null, format);
-                    generateDynamicBody(paosSublist, paoDataByPao, format, userContext, attribute,
-                            previousDaysAttributeData, unitMeasureLookupTable, writer);
+                    if (isOnInterval) {
+                        Instant intervalStartDate = previousDaysDateRange.getMin().plus(interval.getDuration());
+                        pointData = transformIntoIntervalOnlyData(pointData, attribute, interval, intervalStartDate, previousDaysDateRange.getMax(), userContext);
+                    }
+                    generateDynamicBody(paosSublist, paoDataByPao, format, userContext, attribute, pointData, 
+                                        unitMeasureLookupTable, writer);
                 }
 
                 break;
@@ -354,8 +374,8 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 if (paoDataByPao != null) {
                     data = paoDataByPao.get(pao);
                 }
-                String reportRow = generateReportRow(format, pao, attribute, data,
-                        pointValueQualityHolder, userContext, unitMeasureLookupTable);
+                String reportRow = generateReportRow(format, pao, attribute, data, pointValueQualityHolder, userContext, 
+                                                     unitMeasureLookupTable);
                 if (!reportRow.equals(SKIP_RECORD)) {
                     writer.write(reportRow);
                     writer.newLine();
@@ -372,7 +392,8 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             Attribute attribute,
             PaoData paoData,
             PointValueQualityHolder pointValueQualityHolder,
-            YukonUserContext userContext, Table<Integer, PointIdentifier, UnitOfMeasure> unitMeasureLookupTable) {
+            YukonUserContext userContext, 
+            Table<Integer, PointIdentifier, UnitOfMeasure> unitMeasureLookupTable) {
 
         StringBuilder reportRow = new StringBuilder();
         Instant now = Instant.now(); // time all rows/report were generated
@@ -414,7 +435,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             TimeZoneFormat tzFormat,
             Table<Integer, PointIdentifier, UnitOfMeasure> unitMeasureLookupTable,
             Instant reportRunTime) {
-//test
+        
         switch (exportField.getField().getType()) {
         case METER_NUMBER:
             return StringUtils.isEmpty(paoData.getMeterNumber()) ? "" : paoData.getMeterNumber();
@@ -456,6 +477,9 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 return getQuality(exportField, pointValueQualityHolder);
             case POINT_STATE:
                 return getPointState(userContext, pao, pointValueQualityHolder);
+            default:
+                throw new IllegalArgumentException(
+                    exportField.getAttributeField() + "is not currently supported in the export report process.");
             }
         case RUNTIME:
             return getTimestamp(exportField, reportRunTime.toDate(), userContext, tzFormat);
@@ -584,6 +608,106 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         return attributeDataValues;
     }
 
+    private ListMultimap<PaoIdentifier, PointValueQualityHolder> transformIntoIntervalOnlyData(
+            ListMultimap<PaoIdentifier, PointValueQualityHolder> data, Attribute attribute, TimeIntervals interval, 
+            Instant startDate, Instant stopDate, YukonUserContext userContext) {
+        
+        IntervalParser intervalParser = new IntervalParser(startDate, stopDate, interval, dateFormattingService, userContext, log);
+        if (!intervalParser.hasValidInterval()) {
+            throw new IllegalArgumentException("Selected date range and interval does not allow for any valid dates.");
+        }
+        
+        // Create an ordered multimap - paoId key order doesn't matter, but point values are ordered by timestamp.
+        Multimap<PaoIdentifier, PointValueQualityHolder> transformedData = 
+                TreeMultimap.create(paoIdentifierIndifferentComparator, pointValueTimestampComparator);
+        
+        for (PaoIdentifier paoIdentifier : data.keySet()) {
+            List<Date> intervalDates = intervalParser.getIntervals();
+            
+            // Get the point ID and type, from the point data if there is any, or by doing an attribute lookup
+            PointTypeId pointTypeAndId = getPointTypeAndId(data, paoIdentifier, attribute);
+            
+            // Add all on-interval data to the new collection
+            for (PointValueQualityHolder pointValue : data.get(paoIdentifier)) {
+                Date dataTimestamp = pointValue.getPointDataTimeStamp();
+                if (intervalDates.contains(dataTimestamp)) {
+                    //This data is on the interval, add it to the new collection
+                    transformedData.put(paoIdentifier, pointValue);
+                    intervalDates.remove(dataTimestamp);
+                } 
+                //else - This is off-interval data, ignore it
+            }
+            
+            // Check for any intervals where the pao had no data, and insert an "empty" point value with an "estimated"
+            // quality and a value of 0.
+            if (!intervalDates.isEmpty()) {
+                for (Date intervalDate : intervalDates) {
+                    PointValueQualityHolder emptyPointValue = emptyPointValue(intervalDate, pointTypeAndId);
+                    transformedData.put(paoIdentifier, emptyPointValue);
+                }
+            }
+        }
+        
+        return ArrayListMultimap.create(transformedData);
+    }
+    
+    private static final Comparator<PointValueQualityHolder> pointValueTimestampComparator = (o1, o2) -> o1.getPointDataTimeStamp().compareTo(o2.getPointDataTimeStamp());
+    private static final Comparator<PaoIdentifier> paoIdentifierIndifferentComparator = (o1, o2) -> 0;
+    
+    /**
+     * Get the point ID and type, from the point data if there is any, or by doing an attribute lookup.
+     */
+    private PointTypeId getPointTypeAndId(ListMultimap<PaoIdentifier, PointValueQualityHolder> data, 
+            PaoIdentifier paoIdentifier, Attribute attribute) {
+        
+        Optional<PointValueQualityHolder> anyPointValue = data.get(paoIdentifier).stream().findAny();
+        if (anyPointValue.isPresent()) {
+            return new PointTypeId(anyPointValue.get().getPointType(), anyPointValue.get().getId());
+        }
+        
+        LitePoint point = attributeService.findPointForAttribute(paoIdentifier, attribute);
+        return new PointTypeId(point.getPointTypeEnum(), point.getPointID());
+    }
+    
+    /**
+     * Generate an "empty" point value quality holder with value 0 and "estimated" quality.
+     */
+    private PointValueQualityHolder emptyPointValue(Date timestamp, PointTypeId pointTypeAndId) {
+        return new PointValueQualityHolder() {
+            Date pointDataTimestamp = new Date(timestamp.getTime());
+            
+            @Override
+            public int getId() {
+                return pointTypeAndId.getPointId();
+            }
+        
+            @Override
+            public Date getPointDataTimeStamp() {
+                return pointDataTimestamp;
+            }
+        
+            @Override
+            public int getType() {
+                return pointTypeAndId.getPointType().getPointTypeId();
+            }
+        
+            @Override
+            public double getValue() {
+                return 0;
+            }
+        
+            @Override
+            public PointQuality getPointQuality() {
+                return PointQuality.Estimated;
+            }
+        
+            @Override
+            public PointType getPointType() {
+                return pointTypeAndId.getPointType();
+            }
+        };
+    }
+    
     /**
      * Builds the data row for the report. If the value was not found, and a user
      * selected to skip a record, it returns "SKIP_RECORD_SKIP_RECORD".
@@ -711,8 +835,11 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     /**
      * Gets the value. Returns "" if the value was not found.
      */
-    private String getPointValue(ExportField field, PointValueQualityHolder pointValueQualityHolder) {
-        if (pointValueQualityHolder == null) {
+    private String getPointValue(ExportField field, PointValueQualityHolder pointValueQualityHolder) { 
+        if (pointValueQualityHolder == null || 
+                // PointQuality.Estimated and value == 0 indicates an "empty" interval
+                (pointValueQualityHolder.getPointQuality() == PointQuality.Estimated 
+                 && pointValueQualityHolder.getValue() == 0)) {
             return "";
         }
 

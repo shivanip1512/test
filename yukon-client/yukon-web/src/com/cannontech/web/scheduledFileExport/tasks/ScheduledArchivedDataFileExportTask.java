@@ -74,7 +74,9 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 		try (
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(archiveFile)));
 		){
-		    exportReportGeneratorService.generateReport(meters, format, dataRange, getUserContext(), attributesArray, writer);
+		    //TODO: pass in actual isOnInterval & interval parameters
+		    exportReportGeneratorService.generateReport(meters, format, dataRange, getUserContext(), attributesArray, 
+		                                                writer, false, null);
 		} catch(IOException e) {
 			throw new FileCreationException("Unable to generate Scheduled Archived Data file due to I/O errors.", e);
 		}

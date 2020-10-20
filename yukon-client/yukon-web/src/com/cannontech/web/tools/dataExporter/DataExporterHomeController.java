@@ -222,7 +222,7 @@ public class DataExporterHomeController {
                                  YukonUserContext userContext)
     throws IOException, ServletRequestBindingException, DeviceCollectionCreationException {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
-        archivedValuesExporter.setDeviceCollection(deviceCollection); // TODO It would be awesome if we could just bind this, but we don't have a way just yet.
+        archivedValuesExporter.setDeviceCollection(deviceCollection);
 
         bindingResult.pushNestedPath("runDataRange");
         dataRangeValidator.validate(archivedValuesExporter.getRunDataRange(), bindingResult);
@@ -248,8 +248,9 @@ public class DataExporterHomeController {
         
         OutputStream outputStream = response.getOutputStream();
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+        //TODO: pass in actual isOnInterval & interval parameters
         exportReportGeneratorService.generateReport(deviceList, format, dataRange, userContext,
-            archivedValuesExporter.getAttributesArray(), writer);
+            archivedValuesExporter.getAttributesArray(), writer, false, null);
         
         return null;
     }
