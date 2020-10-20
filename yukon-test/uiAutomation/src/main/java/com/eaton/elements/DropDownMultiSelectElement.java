@@ -31,6 +31,12 @@ public class DropDownMultiSelectElement {
         this.parentElement = parentElement;
     }
     
+    /**
+     * Select the text in Dropdown with input having class 'chosen-search-input'
+     * 
+     * @param searchText text to select in Dropdown
+     *                 
+     */
     public void selectItemByText(String searchText) {
         WebElement dropDown = getElement();
         
@@ -63,7 +69,22 @@ public class DropDownMultiSelectElement {
         }        
     } 
 
+    
     public String getValidationError() {
         return this.driverExt.findElement(By.cssSelector("span[id='" + this.elementName + ".errors']"), Optional.of(3)).getText();
-     }
+    }
+    
+    
+    /**
+     * Clears the text in Dropdown with input having class 'chosen-search-input'
+     */
+    public void clearSelectedItem() {
+    	WebElement dropDown = getElement();
+        
+        dropDown.click();
+        
+        WebElement search = dropDown.findElement(By.cssSelector(".chosen-search-input"));
+        
+        search.sendKeys("\u0008");
+    }
 }

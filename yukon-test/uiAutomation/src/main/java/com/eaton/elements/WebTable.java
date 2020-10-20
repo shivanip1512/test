@@ -46,7 +46,7 @@ public class WebTable {
         }
     }
 
-    private List<WebTableColumnHeader> getColumnHeaders() {
+    public List<WebTableColumnHeader> getColumnHeaders() {
 
         if (this.columnHeaders == null) {
             findColumnHeaders();

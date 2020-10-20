@@ -10,7 +10,8 @@ public final class Urls {
     public static final String EDIT = "/edit";
     public static final String SEARCH = "/search";
     public static final String SEARCH_PARAM = "?q=";
-
+    public static final String OTHER_ACTIONS = "bulk/collectionActions?collectionType=idList&idList.ids=";
+    
     public static final class Ami {
         public static final String AMI_DASHBOARD = "/dashboards/-2/view?dashboardPageType=AMI";
         public static final String ARCHIVE_DATA_ANALYSIS = "/bulk/archiveDataAnalysis/list/view";
@@ -193,6 +194,8 @@ public final class Urls {
         public static final String VIRTUAL_DEVICES_STATUS_ASC = "/stars/virtualDevices?sort=status&dir=asc";
         public static final String VIRTUAL_DEVICES_STATUS_DESC = "/stars/virtualDevices?sort=status&dir=desc";
         public static final String VIRTUAL_DEVICES_EDIT = "/stars/virtualDevice";
+        public static final String VIRTUAl_DEVICE_DETAIL = "/stars/virtualDevice/";
+        
     }
 
     public static final class Tools {
@@ -219,6 +222,8 @@ public final class Urls {
         public static final String PROBABILITY_PEAK_LOAD = "/multispeak/visualDisplays/probabilityForPeak/home";
         public static final String RECENT_RESULTS = "/collectionActions/recentResults";
         public static final String DATA_STREAMING = "/tools/dataStreaming/configurations";
+        
+        public static final String POINT = "/tools/points/";
     }
 
     public static final class Admin {
