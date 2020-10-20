@@ -23,7 +23,7 @@
     	<package name="com.eaton.tests.support"/>
     	<package name="com.eaton.tests.tools"/>
     	<package name="com.eaton.tests.tools.trends"/>
-    	<package name="com.eaton.tests.assets.virtualdevice"/>
+    	<package name="com.eaton.tests.assets.virtualdevices"/>
     </packages>
   </test>
 </suite>
