@@ -14,6 +14,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.eaton.builders.drsetup.loadgroup.LoadGroupHoneywellCreateBuilder;
+import com.eaton.elements.Section;
 import com.eaton.elements.modals.gears.CreateHoneywellPrgmGearModal;
 import com.eaton.elements.tabs.LoadGroupsTab;
 import com.eaton.framework.DriverExtensions;
@@ -25,228 +26,395 @@ import com.eaton.pages.demandresponse.LoadProgramDetailPage;
 
 public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
-    private LoadProgramCreatePage createPage;
-    private DriverExtensions driverExt;
-    private String ldGrpName;
+	private LoadProgramCreatePage createPage;
+	private DriverExtensions driverExt;
+	private String ldGrpName;
 
-    @BeforeClass(alwaysRun = true)
-    public void beforeClass() {
-        driverExt = getDriverExt();
-        setRefreshPage(false);
-        
-        Pair<JSONObject, JSONObject> pair = new LoadGroupHoneywellCreateBuilder.Builder(Optional.empty())
-                .withKwCapacity(Optional.empty())
-                .create();
-        
-        JSONObject response = pair.getValue1();
-        
-        ldGrpName = response.getString("name");
-        
-        createPage = new LoadProgramCreatePage(driverExt);
-    }
+	@BeforeClass(alwaysRun = true)
+	public void beforeClass() {
+		driverExt = getDriverExt();
+		setRefreshPage(false);
 
-    @AfterMethod(alwaysRun = true)
-    public void afterMethod() {
-        refreshPage(createPage);
-    }
+		Pair<JSONObject, JSONObject> pair = new LoadGroupHoneywellCreateBuilder.Builder(Optional.empty())
+				.withKwCapacity(Optional.empty()).create();
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldPrgmHoneywellCreate_RequiredFieldsOnly_Success() {
-        setRefreshPage(true);
-        navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+		JSONObject response = pair.getValue1();
 
-        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT LM Honeywell Program " + timeStamp;
+		ldGrpName = response.getString("name");
 
-        final String EXPECTED_MSG = name + " saved successfully.";
+		createPage = new LoadProgramCreatePage(driverExt);
+	}
 
-        createPage.getName().setInputValue(name);
-        createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
-        waitForLoadingSpinner();
+	@AfterMethod(alwaysRun = true)
+	public void afterMethod() {
+		refreshPage(createPage);
+	}
 
-        CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
+	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	public void ldPrgmHoneywellCreate_RequiredFieldsOnly_Success() {
+		setRefreshPage(true);
+		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
 
-        modal.getGearName().setInputValue("TC " + timeStamp);
-        modal.getGearType().selectItemByValue("HoneywellSetpoint");
-        waitForLoadingSpinner();
-        modal.clickOkAndWaitForModalCloseDisplayNone();
+		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+		String name = "AT LM Honeywell Program " + timeStamp;
 
-        LoadGroupsTab groupsTab = createPage.getLoadGroupTab();
+		final String EXPECTED_MSG = name + " saved successfully.";
 
-        groupsTab.clickTabAndWait("Load Groups");
-        groupsTab.getLoadGroups().addSingleAvailable(ldGrpName);
+		createPage.getName().setInputValue(name);
+		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
+		waitForLoadingSpinner();
 
-        createPage.getSaveBtn().click();
+		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
 
-        waitForPageToLoad("Load Program: " + name, Optional.empty());
+		modal.getGearName().setInputValue("TestGear " + timeStamp);
+		modal.getGearType().selectItemByValue("HoneywellSetpoint");
+		waitForLoadingSpinner();
+		modal.clickOkAndWaitForModalCloseDisplayNone();
 
-        LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt);
+		LoadGroupsTab groupsTab = createPage.getLoadGroupTab();
 
-        String userMsg = detailsPage.getUserMessage();
+		groupsTab.clickTabAndWait("Load Groups");
+		groupsTab.getLoadGroups().addSingleAvailable(ldGrpName);
 
-        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }
-    
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldPrgmHoneywellCreate_AllFields_Success() {
-        setRefreshPage(true);
-        navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+		createPage.getSaveBtn().click();
 
-        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT LM Honeywell Program " + timeStamp;
+		waitForPageToLoad("Load Program: " + name, Optional.empty());
 
-        final String EXPECTED_MSG = name + " saved successfully.";
+		LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt);
 
-        createPage.getName().setInputValue(name);
-        createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
-        waitForLoadingSpinner();
+		String userMsg = detailsPage.getUserMessage();
 
-        CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
+		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+	}
 
-        modal.getGearName().setInputValue("TC " + timeStamp);
-        modal.getGearType().selectItemByValue("HoneywellSetpoint");
-        waitForLoadingSpinner();
-        modal.clickOkAndWaitForModalCloseDisplayNone();
-        
-        createPage.getTriggerOffset().setInputValue("78");
-        createPage.getRestoreOffset().setInputValue("1000");
-        
-        createPage.getUseWindowOne().selectValue("Yes");
-        createPage.getStartTimeWindowOne().setValue("12:57");
-        createPage.getStopTimeWindowOne().setValue("23:59");
-        createPage.getUseWindowTwo().selectValue("No");
+	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	public void ldPrgmHoneywellCreate_AllFields_Success() {
+		setRefreshPage(true);
+		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
 
-        LoadGroupsTab groupsTab = createPage.getLoadGroupTab();
+		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+		String name = "AT LM Honeywell Program " + timeStamp;
 
-        groupsTab.clickTabAndWait("Load Groups");
-        groupsTab.getLoadGroups().addSingleAvailable(ldGrpName);
+		final String EXPECTED_MSG = name + " saved successfully.";
 
-        createPage.getSaveBtn().click();
+		createPage.getName().setInputValue(name);
+		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
+		waitForLoadingSpinner();
 
-        waitForPageToLoad("Load Program: " + name, Optional.empty());
+		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
 
-        LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt);
+		modal.getGearName().setInputValue("TestGear " + timeStamp);
+		modal.getGearType().selectItemByValue("HoneywellSetpoint");
+		waitForLoadingSpinner();
+		modal.clickOkAndWaitForModalCloseDisplayNone();
 
-        String userMsg = detailsPage.getUserMessage();
+		createPage.getTriggerOffset().setInputValue("78");
+		createPage.getRestoreOffset().setInputValue("1000");
 
-        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }
-    
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldPrgmHoneywellCreate_GearTypeHoneywellCycle_Success() {
-        setRefreshPage(true);
-        navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+		createPage.getUseWindowOne().selectValue("Yes");
+		createPage.getStartTimeWindowOne().setValue("12:57");
+		createPage.getStopTimeWindowOne().setValue("23:59");
+		createPage.getUseWindowTwo().selectValue("No");
 
-        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT LM Honeywell Program " + timeStamp;
+		LoadGroupsTab groupsTab = createPage.getLoadGroupTab();
 
-        final String EXPECTED_MSG = name + " saved successfully.";
+		groupsTab.clickTabAndWait("Load Groups");
+		groupsTab.getLoadGroups().addSingleAvailable(ldGrpName);
 
-        createPage.getName().setInputValue(name);
-        createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
-        waitForLoadingSpinner();
+		createPage.getSaveBtn().click();
 
-        CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
+		waitForPageToLoad("Load Program: " + name, Optional.empty());
 
-        modal.getGearName().setInputValue("TC " + timeStamp);
-        modal.getGearType().selectItemByValue("HoneywellCycle");
-        waitForLoadingSpinner();
-        modal.clickOkAndWaitForModalCloseDisplayNone();
+		LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt);
 
-        LoadGroupsTab groupsTab = createPage.getLoadGroupTab();
+		String userMsg = detailsPage.getUserMessage();
 
-        groupsTab.clickTabAndWait("Load Groups");
-        groupsTab.getLoadGroups().addSingleAvailable(ldGrpName);
+		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+	}
 
-        createPage.getSaveBtn().click();
+	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	public void ldPrgmHoneywellCreate_GearTypeHoneywellCycle_Success() {
+		setRefreshPage(true);
+		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
 
-        waitForPageToLoad("Load Program: " + name, Optional.empty());
+		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+		String name = "AT LM Honeywell Program " + timeStamp;
 
-        LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt);
+		final String EXPECTED_MSG = name + " saved successfully.";
 
-        String userMsg = detailsPage.getUserMessage();
+		createPage.getName().setInputValue(name);
+		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
+		waitForLoadingSpinner();
 
-        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }
-    
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldPrgmHoneywellCreate_GearTypeValues_Correct() {
-        setRefreshPage(true);
-        navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
 
-        createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
-        waitForLoadingSpinner();
+		modal.getGearName().setInputValue("TestGear " + timeStamp);
+		modal.getGearType().selectItemByValue("HoneywellCycle");
+		waitForLoadingSpinner();
+		modal.clickOkAndWaitForModalCloseDisplayNone();
 
-        CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
+		LoadGroupsTab groupsTab = createPage.getLoadGroupTab();
 
-        List<String> actualDropDownValues = modal.getGearType().getOptionValues();
-        
-        List<String> expectedDropDownValues = new ArrayList<>(
-                List.of("Select", "Honeywell Cycle", "Honeywell Setpoint"));
+		groupsTab.clickTabAndWait("Load Groups");
+		groupsTab.getLoadGroups().addSingleAvailable(ldGrpName);
 
-        assertThat(actualDropDownValues).containsExactlyElementsOf(expectedDropDownValues);
-        
-    }
-    
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldPrgmHoneywellCreate_SetpointGearControlParamSection_LabelsCorrect() {
-    	String sectionName = "Control Parameters";
-        setRefreshPage(true);
-        navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+		createPage.getSaveBtn().click();
 
-        createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
-        waitForLoadingSpinner();
+		waitForPageToLoad("Load Program: " + name, Optional.empty());
 
-        CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
-        modal.getGearType().selectItemByValue("HoneywellSetpoint");
-        List<String> actualLabels = modal.getPageSection(sectionName).getSectionLabels();
-        List<String> expectedLabels = new ArrayList<>(List.of("Mandatory:", "Mode:", "Setpoint Offset:", "How To Stop Control:"));
-        
-        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
-    }
-    
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldPrgmHoneywellCreate_CycleGearControlParamSection_LabelsCorrect() {
-    	String sectionName = "Control Parameters";
-        setRefreshPage(true);
-        navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+		LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt);
 
-        createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
-        waitForLoadingSpinner();
+		String userMsg = detailsPage.getUserMessage();
 
-        CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
-        modal.getGearType().selectItemByValue("HoneywellCycle");
-        List<String> actualLabels = modal.getPageSection(sectionName).getSectionLabels();
-        List<String> expectedLabels = new ArrayList<>(List.of("Mandatory:", "Control Percent:", "Cycle Period:", "How To Stop Control:"));
-        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
-    }
-    
-//    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-//    public void ldPrgmHoneywellCreate_SetpointGearSetpointOffset_RequiredValidation() {
-//        setRefreshPage(true);
-//        navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
-//
-//        createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
-//        waitForLoadingSpinner();
-//
-//        CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
-//        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-//        modal.getGearName().setInputValue("TC " + timeStamp);
-//        modal.getGearType().selectItemByValue("HoneywellSetpoint");
-//        waitForLoadingSpinner();
-//        modal.getSetpointOffset().clearInputValue();
-//        modal.clickOkAndWaitForModalCloseDisplayNone();
-//
-//        createPage.getSaveBtn().click();
-//        modal = createPage.showCreateHoneywellPrgmGearModal();
-//        assertThat(modal.getSetpointOffset().getValidationError()).isEqualTo("Setpoint Offset is required.");
-//    }
+		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+	}
 
-//    
-//    ldPrgmHoneywellCreate_CycleGearControlPercent_RequiredValidation
-//    ldPrgmHoneywellCreate_CycleGearControlPercent_MaxRangeValidation
-//    ldPrgmHoneywellCreate_CycleGearControlPercent_MinRangeValidation
-//    ldPrgmHoneywellCreate_InvalidGearNameErrorMessage_Displayed
-//    ldPrgmHoneywellCreate_CycleGearRampInRampOutSection_TitleCorrect
-//    ldPrgmHoneywellCreate_CycleGearRampInRampOutSection_LabelsCorrect
+	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	public void ldPrgmHoneywellCreate_GearTypeValues_Correct() {
+		setRefreshPage(true);
+		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+
+		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
+		waitForLoadingSpinner();
+
+		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
+
+		List<String> actualDropDownValues = modal.getGearType().getOptionValues();
+
+		List<String> expectedDropDownValues = new ArrayList<>(
+				List.of("Select", "Honeywell Cycle", "Honeywell Setpoint"));
+
+		assertThat(actualDropDownValues).containsExactlyElementsOf(expectedDropDownValues);
+
+	}
+
+	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	public void ldPrgmHoneywellCreate_SetpointGearControlParamSection_LabelsCorrect() {
+		String sectionName = "Control Parameters";
+		setRefreshPage(true);
+		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+
+		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
+		waitForLoadingSpinner();
+
+		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
+		modal.getGearType().selectItemByValue("HoneywellSetpoint");
+		List<String> actualLabels = modal.getPageSection(sectionName).getSectionLabels();
+		List<String> expectedLabels = new ArrayList<>(
+				List.of("Mandatory:", "Mode:", "Setpoint Offset:", "How To Stop Control:"));
+
+		assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
+	}
+
+	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	public void ldPrgmHoneywellCreate_CycleGearControlParamSection_LabelsCorrect() {
+		String sectionName = "Control Parameters";
+		setRefreshPage(true);
+		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+
+		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
+		waitForLoadingSpinner();
+
+		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
+		modal.getGearType().selectItemByValue("HoneywellCycle");
+		List<String> actualLabels = modal.getPageSection(sectionName).getSectionLabels();
+		List<String> expectedLabels = new ArrayList<>(
+				List.of("Mandatory:", "Control Percent:", "Cycle Period:", "How To Stop Control:"));
+		assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
+	}
+
+	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	public void ldPrgmHoneywellCreate_SetpointGearSetpointOffset_RequiredValidation() {
+		setRefreshPage(true);
+		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+
+		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
+		waitForLoadingSpinner();
+
+		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
+		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+		String gearName = "TestGear " + timeStamp;
+		modal.getGearName().setInputValue(gearName);
+		modal.getGearType().selectItemByValue("HoneywellSetpoint");
+		waitForLoadingSpinner();
+		modal.getSetpointOffset().clearInputValue();
+		modal.clickOkAndWaitForModalCloseDisplayNone();
+
+		createPage.getSaveBtn().click();
+		createPage.getGears().clickGearByName(gearName);
+		modal = new CreateHoneywellPrgmGearModal(this.driverExt, Optional.of(gearName), Optional.empty());
+		assertThat(modal.getSetpointOffset().getValidationError()).isEqualTo("Setpoint Offset is required.");
+	}
+
+	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	public void ldPrgmHoneywellCreate_SetpointGearSetpointOffset_MaxRangeValidation() {
+		setRefreshPage(true);
+		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+
+		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
+		waitForLoadingSpinner();
+
+		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
+		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+		String gearName = "TestGear " + timeStamp;
+		modal.getGearName().setInputValue(gearName);
+		modal.getGearType().selectItemByValue("HoneywellSetpoint");
+		waitForLoadingSpinner();
+		modal.getSetpointOffset().setInputValue("20");
+		modal.clickOkAndWaitForModalCloseDisplayNone();
+
+		createPage.getSaveBtn().click();
+		createPage.getGears().clickGearByName(gearName);
+		modal = new CreateHoneywellPrgmGearModal(this.driverExt, Optional.of(gearName), Optional.empty());
+		assertThat(modal.getSetpointOffset().getValidationError()).isEqualTo("Must be between -10 and 10.");
+	}
+
+	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	public void ldPrgmHoneywellCreate_SetpointGearSetpointOffset_MinRangeValidation() {
+		setRefreshPage(true);
+		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+
+		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
+		waitForLoadingSpinner();
+
+		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
+		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+		String gearName = "TestGear " + timeStamp;
+		modal.getGearName().setInputValue(gearName);
+		modal.getGearType().selectItemByValue("HoneywellSetpoint");
+		waitForLoadingSpinner();
+		modal.getSetpointOffset().setInputValue("-100");
+		modal.clickOkAndWaitForModalCloseDisplayNone();
+
+		createPage.getSaveBtn().click();
+		createPage.getGears().clickGearByName(gearName);
+		modal = new CreateHoneywellPrgmGearModal(this.driverExt, Optional.of(gearName), Optional.empty());
+		assertThat(modal.getSetpointOffset().getValidationError()).isEqualTo("Must be between -10 and 10.");
+	}
+
+	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	public void ldPrgmHoneywellCreate_CycleGearControlPercent_RequiredValidation() {
+		setRefreshPage(true);
+		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+
+		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
+		waitForLoadingSpinner();
+
+		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
+		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+		String gearName = "TestGear " + timeStamp;
+		modal.getGearName().setInputValue(gearName);
+		modal.getGearType().selectItemByValue("HoneywellCycle");
+		waitForLoadingSpinner();
+		modal.getControlPercent().clearInputValue();
+		modal.clickOkAndWaitForModalCloseDisplayNone();
+
+		createPage.getSaveBtn().click();
+		createPage.getGears().clickGearByName(gearName);
+		modal = new CreateHoneywellPrgmGearModal(this.driverExt, Optional.of(gearName), Optional.empty());
+		assertThat(modal.getControlPercent().getValidationError()).isEqualTo("Control Percent is required.");
+	}
+
+	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	public void ldPrgmHoneywellCreate_CycleGearControlPercent_MaxRangeValidation() {
+		setRefreshPage(true);
+		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+
+		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
+		waitForLoadingSpinner();
+
+		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
+		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+		String gearName = "TestGear " + timeStamp;
+		modal.getGearName().setInputValue(gearName);
+		modal.getGearType().selectItemByValue("HoneywellCycle");
+		waitForLoadingSpinner();
+		modal.getControlPercent().setInputValue("200");
+		modal.clickOkAndWaitForModalCloseDisplayNone();
+
+		createPage.getSaveBtn().click();
+		createPage.getGears().clickGearByName(gearName);
+		modal = new CreateHoneywellPrgmGearModal(this.driverExt, Optional.of(gearName), Optional.empty());
+		assertThat(modal.getControlPercent().getValidationError()).isEqualTo("Must be between 0 and 100.");
+	}
+
+	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	public void ldPrgmHoneywellCreate_CycleGearControlPercent_MinRangeValidation() {
+		setRefreshPage(true);
+		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+
+		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
+		waitForLoadingSpinner();
+
+		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
+		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+		String gearName = "TestGear " + timeStamp;
+		modal.getGearName().setInputValue(gearName);
+		modal.getGearType().selectItemByValue("HoneywellCycle");
+		waitForLoadingSpinner();
+		modal.getControlPercent().setInputValue("-100");
+		modal.clickOkAndWaitForModalCloseDisplayNone();
+
+		createPage.getSaveBtn().click();
+		createPage.getGears().clickGearByName(gearName);
+		modal = new CreateHoneywellPrgmGearModal(this.driverExt, Optional.of(gearName), Optional.empty());
+		assertThat(modal.getControlPercent().getValidationError()).isEqualTo("Must be between 0 and 100.");
+	}
+
+	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	public void ldPrgmHoneywellCreate_InvalidGearNameErrorMessage_Displayed() {
+		setRefreshPage(true);
+		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+
+		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
+		waitForLoadingSpinner();
+
+		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
+		String gearName = "/sda@3#";
+		modal.getGearName().setInputValue(gearName);
+		modal.getGearType().selectItemByValue("HoneywellCycle");
+		waitForLoadingSpinner();
+		modal.clickOkAndWaitForModalCloseDisplayNone();
+
+		createPage.getSaveBtn().click();
+		createPage.getGears().clickGearByName(gearName);
+		modal = new CreateHoneywellPrgmGearModal(this.driverExt, Optional.of(gearName), Optional.empty());
+		assertThat(modal.getGearName().getValidationError())
+				.isEqualTo("Name must not contain any of the following characters: / \\ , ' \" |.");
+	}
+
+	@Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	public void ldPrgmHoneywellCreate_CycleGearRampInRampOutSection_TitleCorrect() {
+		setRefreshPage(true);
+		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+
+		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
+		waitForLoadingSpinner();
+
+		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
+		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+		String gearName = "TestGear " + timeStamp;
+		modal.getGearName().setInputValue(gearName);
+		modal.getGearType().selectItemByValue("HoneywellCycle");
+		waitForLoadingSpinner();
+		Section generalSection = modal.getPageSection("Ramp In / Ramp Out");
+
+		assertThat(generalSection.getSection()).isNotNull();
+	}
+
+	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	public void ldPrgmHoneywellCreate_CycleGearRampInRampOutSection_LabelsCorrect() {
+		String sectionName = "Ramp In / Ramp Out";
+		setRefreshPage(true);
+		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+
+		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
+		waitForLoadingSpinner();
+
+		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
+		modal.getGearType().selectItemByValue("HoneywellCycle");
+		List<String> actualLabels = modal.getPageSection(sectionName).getSectionLabels();
+		List<String> expectedLabels = new ArrayList<>(List.of("Ramp In/Out:"));
+		assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
+	}
 }

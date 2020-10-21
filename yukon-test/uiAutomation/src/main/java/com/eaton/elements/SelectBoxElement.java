@@ -83,6 +83,12 @@ public class SelectBoxElement {
 
         return new WebTable(this.driverExt, "compact-results-table", column);
     }
+    
+    public void clickGearByName(String gearName) {
+		List<WebElement> gearsList = getSelectBox().findElements(By.cssSelector(".js-gear-details-link"));
+
+		gearsList.stream().filter(element -> element.getText().contains(gearName)).findFirst().orElseThrow().click();
+	}
 
     private void clickAdd() {
         getColumnByColumnName(available).findElement(By.cssSelector("[aria-label='Add']")).click();

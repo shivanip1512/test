@@ -35,10 +35,13 @@ public class CreateHoneywellPrgmGearModal extends CreateGearsModal {
 	public DropDownElement getCyclePeriod() {
 		return new DropDownElement(this.driverExt, "fields.cyclePeriodInMinutes", getModal());
 	}
-	// TODO Control Percent element does not have a unique way to select it
 
 	public TextEditElement getSetpointOffset() {
 		return new TextEditElement(this.driverExt, "fields.setpointOffset", getModal());
+	}
+	
+	public TextEditElement getControlPercent() {
+		return new TextEditElement(this.driverExt, "fields.controlPercent", getModal());
 	}
 
 	public DropDownElement getHowToStopControl() {
@@ -46,8 +49,6 @@ public class CreateHoneywellPrgmGearModal extends CreateGearsModal {
 	}
 
 	// Optional Attributes
-	// TODO Group Capacity Reduction element does not have a unique way to select it
-
 	public DropDownElement getWhenToChange() {
 		return new DropDownElement(this.driverExt, "fields.whenToChangeFields.whenToChange", getModal());
 	}
