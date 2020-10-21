@@ -5538,7 +5538,19 @@ JavaScript :
     sha1 : 1098b8dfc26d37c5504d7cddf296203f85338470
     jira : YUK-13284
     updated : 2014-05-13
-    notes : 
+    notes : Used for creating Tree Views in our UI - Being replaced by fancytree
+    
+  - project : fancytree
+    version : 2.37.0
+    project URL : "https://github.com/mar10/fancytree"
+    license : MIT
+    license URLs : "https://github.com/mar10/fancytree/wiki/LicenseInfo"
+    npm URL : "https://www.npmjs.com/package/jquery.fancytree"
+    md5 : 96455a77cbbbd3bf83d9828f760835c4
+    sha1 : d7fbd4e664bdc18f0c3647cd623673af8397435c
+    jira : YUK-22264
+    updated : 2020-10-20
+    notes : Used for creating Tree Views in our UI
 
   - project : fileupload
     version : 10.8.0
