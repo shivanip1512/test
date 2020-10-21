@@ -34,10 +34,10 @@ import com.cannontech.tools.email.SystemEmailSettingsType;
 
 public class EmailServiceImpl implements EmailService {
     private static final Logger log = YukonLogManager.getLogger(EmailServiceImpl.class);
-    private static final String SMTP_AUTH_PROPERTY_NAME = "mail.smtp.auth";
-    private static final String SMTP_CONFIGURATION_KEY_ALIAS = "smtp";
-    private static final String SMTP_HOST = "mail.smtp.host";
-    private static final String SMTP_PORT = "mail.smtp.port";
+    private static final String smtpAuthPropertyName = "mail.smtp.auth";
+    private static final String smtpConfigurationKeyAlias = "smtp";
+    private static final String smtpHost = "mail.smtp.host";
+    private static final String smtpPort = "mail.smtp.port";
 
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private SmtpHelper configurationSource;
@@ -52,7 +52,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendMessage(EmailMessage data) throws MessagingException {
-        populateMetadata();
+        populateEmailSettings();
         Session session = getSession();
         MimeMessage message = new MimeMessage(session);
         message.setHeader("X-Mailer", "YukonEmail");
@@ -89,7 +89,7 @@ public class EmailServiceImpl implements EmailService {
     /**
      * Method to update SMTP metadata information.
      */
-    private void populateMetadata() {
+    private void populateEmailSettings() {
         try {
             encryptionType = globalSettingDao.getEnum(GlobalSettingType.SMTP_ENCRYPTION_TYPE, SmtpEncryptionType.class);
             username = globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME);
@@ -124,8 +124,8 @@ public class EmailServiceImpl implements EmailService {
         if (!CollectionUtils.isEmpty(configs)) {
             smtpSettings.putAll(configs);
         }
-        smtpSettings.put(SMTP_HOST, host);
-        smtpSettings.put(SMTP_PORT, port);
+        smtpSettings.put(smtpHost, host);
+        smtpSettings.put(smtpPort, port);
         SmtpEncryptionType encryptionType = SmtpEncryptionType
                 .valueOf(emailSettingsCacheService.getValue(SystemEmailSettingsType.SMTP_ENCRYPTION_TYPE));
         if (encryptionType == SmtpEncryptionType.TLS) {
@@ -151,8 +151,8 @@ public class EmailServiceImpl implements EmailService {
         if (!CollectionUtils.isEmpty(configs)) {
             smtpSettings.putAll(configs);
         }
-        smtpSettings.put(SMTP_HOST, host);
-        smtpSettings.put(SMTP_PORT, port);
+        smtpSettings.put(smtpHost, host);
+        smtpSettings.put(smtpPort, port);
         SmtpEncryptionType encryptionType = SmtpEncryptionType
                 .valueOf(metadataMap.get(SystemEmailSettingsType.SMTP_ENCRYPTION_TYPE));
         if (encryptionType == SmtpEncryptionType.TLS) {
@@ -167,7 +167,7 @@ public class EmailServiceImpl implements EmailService {
      */
     private Map<String, String> getConfigurations() {
         ConfigurationLoader loader = new ConfigurationLoader();
-        return loader.getConfigSettings().get(SMTP_CONFIGURATION_KEY_ALIAS);
+        return loader.getConfigSettings().get(smtpConfigurationKeyAlias);
     }
 
     /**
@@ -221,7 +221,7 @@ public class EmailServiceImpl implements EmailService {
         SmtpAuthenticator authenticator = new SmtpAuthenticator();
         if (authenticator.getPasswordAuthentication() != null) {
             // Make sure we use authentication.
-            properties.put(SMTP_AUTH_PROPERTY_NAME, "true");
+            properties.put(smtpAuthPropertyName, "true");
             return Session.getInstance(properties, authenticator);
         }
 

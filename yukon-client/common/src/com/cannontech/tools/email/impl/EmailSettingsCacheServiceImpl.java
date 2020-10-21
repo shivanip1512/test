@@ -42,13 +42,13 @@ public class EmailSettingsCacheServiceImpl implements EmailSettingsCacheService 
     private final Map<SystemEmailSettingsType, String> systemEmailSettingsCache = new ConcurrentHashMap<>(7);
     private static final String separator = ":";
 
-    private static final String fineName = "/Server/Config/System/emailSettings.txt";
+    private static final String fileName = "/Server/Config/System/emailSettings.txt";
     private static File emailSettingsFile = null;
 
     static {
         try {
             String yukonBase = CtiUtilities.getYukonBase();
-            emailSettingsFile = new File(yukonBase, fineName);
+            emailSettingsFile = new File(yukonBase, fileName);
             if (!emailSettingsFile.exists()) {
                 emailSettingsFile.getParentFile().mkdir();
                 emailSettingsFile.createNewFile();
