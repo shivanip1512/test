@@ -147,7 +147,6 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("JOIN YukonPAObject ypo ON ypo.PAObjectID = dcs.PAObjectID");
         sql.append("JOIN DeviceConfigurationDeviceMap scdm ON dcs.PAObjectID = scdm.DeviceId");
         sql.append("JOIN DeviceConfiguration dc ON dc.DeviceConfigurationID = scdm.DeviceConfigurationId");
-        sql.append("AND ypo.PAOName NOT").startsWith(rfTemplatePrefix);
         if (!selectCount) {
             sql.append("LEFT JOIN CommandRequestExecResult crer ON crer.CommandRequestExecId = dcs.CommandRequestExecId AND dcs.PAObjectID=crer.DeviceId");
         }
@@ -163,6 +162,7 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         } else {
             sql.append("AND CurrentState").in_k(filter.getStateSelection().getStates());
         }
+        sql.append("AND ypo.PAOName NOT").startsWith(rfTemplatePrefix);
         return sql;
     }
 
