@@ -129,7 +129,7 @@ yukon.dr.curtailment = (function () {
             //Display the actions and auto-refresh if the current active tab is Trends
             var isTrendsTabActive = $(".ui-tabs").find(".ui-tabs-active").hasClass('ccTrends');
             if (isTrendsTabActive) {
-                $('.page-actions').css({'display' : ''});
+                $('.page-actions').css({'display' : '', 'display' : 'block'});
             } else {
                 $('.page-actions').css({'display':'none'});
             }
@@ -241,9 +241,8 @@ yukon.dr.curtailment = (function () {
                 _enableDisableActionsMenu();
             });
 
-            $(document).ready(_enableDisableActionsMenu());
-
             $(function () {
+                _enableDisableActionsMenu();
                 $(document).on('click', '#assigned-groups', function (ev) {
                     var button = $(ev.target).closest('button');
                     debug.log('moving assigned group to unassigned');

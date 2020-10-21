@@ -90,20 +90,16 @@
         <%-- TRENDS TAB --%>
         <cti:msg2 var="trendName" key=".trends" />
         <cti:tab title="${trendName}" selected="${showTrends}" headerClasses="ccTrends">
-            <div id="page-buttons">
-                <span class="form-control"><i:inline key="yukon.web.modules.tools.trends.autoRefresh"/></span>
-                <div id="trend-updater" class="button-group button-group-toggle">
-                    <c:set var="onClasses" value="${autoUpdate ? 'on yes' : 'yes'}"/>
-                    <cti:button nameKey="on" classes="${onClasses}"/>
-                    <c:set var="offClasses" value="${autoUpdate ? 'no' : 'on no'}"/>
-                    <cti:button nameKey="off" classes="${offClasses}"/>
+            <c:if test="${not empty trends}">
+                <div id="page-buttons">
+                    <%@ include file="../../common/trends/trendsAutoRefresh.jsp" %>
                 </div>
-            </div>
-            <div id="page-actions" class="dn">
-                <cm:dropdownOption key="yukon.web.modules.tools.printTrend" icon="icon-printer" classes="js-print"/>
-                <cm:dropdownOption key="yukon.web.modules.tools.downloadJpg" icon="icon-picture" classes="js-dl-jpg"/>
-                <cm:dropdownOption key="yukon.web.modules.tools.downloadCsv" icon="icon-page-white-excel" classes="js-dl-csv" data-trend-id="${trendId}"/>
-            </div>
+                <div id="page-actions" class="dn">
+                    <cm:dropdownOption key="yukon.web.modules.tools.printTrend" icon="icon-printer" classes="js-print"/>
+                    <cm:dropdownOption key="yukon.web.modules.tools.downloadJpg" icon="icon-picture" classes="js-dl-jpg"/>
+                    <cm:dropdownOption key="yukon.web.modules.tools.downloadCsv" icon="icon-page-white-excel" classes="js-dl-csv" data-trend-id="${trendId}"/>
+                </div>
+            </c:if>
 
             <div id="label-json" class="dn">${fn:escapeXml(labels)}</div>
 
