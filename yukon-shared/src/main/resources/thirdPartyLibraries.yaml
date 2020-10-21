@@ -5546,8 +5546,8 @@ JavaScript :
     license : MIT
     license URLs : "https://github.com/mar10/fancytree/wiki/LicenseInfo"
     npm URL : "https://www.npmjs.com/package/jquery.fancytree"
-    md5 : 96455a77cbbbd3bf83d9828f760835c4
-    sha1 : d7fbd4e664bdc18f0c3647cd623673af8397435c
+    md5 : dfad8e02cf08797247fa32e1928189ec
+    sha1 : ec2f38be5ebd584a8611ba04465b70b7c3b6ba99
     jira : YUK-22264
     updated : 2020-10-20
     notes : Used for creating Tree Views in our UI
