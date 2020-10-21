@@ -82,6 +82,10 @@ void UnsolicitedHandler::startLog()
 
 void UnsolicitedHandler::run( void )
 {
+    extern std::atomic_int PortManagerThreadCount;
+
+    PortManagerThreadCount++;
+
     startLog();
 
     CTILOG_INFO(dout, describePort() <<" started");
@@ -150,6 +154,8 @@ void UnsolicitedHandler::run( void )
     }
 
     CTILOG_INFO(dout, describePort() <<" shutdown");
+
+    PortManagerThreadCount--;
 }
 
 

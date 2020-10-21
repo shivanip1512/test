@@ -51,6 +51,11 @@ private:
     typedef std::map<CtiTime, HistoricalPointValueMap >::iterator DynamicTableDataIter;
     typedef std::map<CtiTime, PointValuePair> DynamicTableSinglePointData;
     typedef std::map<CtiTime, PointValuePair >::iterator DynamicTableSinglePointDataIter;
+    using PointDataMsgs = std::vector<std::unique_ptr<CtiPointDataMsg>>;
+    struct HistoricalResults {
+        CtiTime newTime;
+        PointDataMsgs messages;
+    };
 
     void periodicThread( void );
     void onUpdateThread( void );
@@ -65,15 +70,20 @@ private:
     Cti::CalcLogic::CalcWorkerThread    _historicalThreadFunc;
     Cti::CalcLogic::CalcWorkerThread    _baselineThreadFunc;
 
-    void getCalcHistoricalLastUpdatedTime(PointTimeMap &dbTimeMap);
-    void getHistoricalTableData(CtiCalc& calcPoint, CtiTime &lastTime, DynamicTableData &data);
-    void getHistoricalTableSinglePointData(long calcPoint, CtiTime &lastTime, DynamicTableSinglePointData &data);
-    void setHistoricalPointStore(HistoricalPointValueMap &valueMap);
+    auto getCalcHistoricalLastUpdatedTime() -> PointTimeMap;
+    auto getHistoricalTableData(const CtiCalc& calcPoint, const CtiTime lastTime) -> DynamicTableData;
+    auto getHistoricalTableSinglePointData(const long calcPoint, const CtiTime lastTime) -> DynamicTableSinglePointData;
+    void setHistoricalPointStore(const HistoricalPointValueMap& valueMap);
     void updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlistedPoints, PointTimeMap &updatedPoints);
     void getCalcBaselineMap(PointBaselineMap &baselineMap);
     void getBaselineMap(BaselineMap &baselineMap);
     void getCurtailedDates(DatesSet &curtailedDates, long pointID, CtiTime &startTime);
-    bool processDay(long pointID, CtiTime curTime, DynamicTableSinglePointData &data, DynamicTableSinglePointData &percentData, int percent, HourlyValues &results);
+    bool processDay(long pointID, CtiTime curTime, const DynamicTableSinglePointData& data, const DynamicTableSinglePointData& percentData, int percent, HourlyValues &results);
+
+    std::unique_ptr<CtiMultiMsg> processHistoricalPoints(const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
+    PointDataMsgs calcHistoricalPoints(const PointTimeMap& dbTimeMap, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
+    HistoricalResults calcHistoricalPoint(CtiCalc* calcPoint, const DynamicTableData& data, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
+    HistoricalResults calcBackfilledPoint(CtiCalc* calcPoint, const DynamicTableData& data, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
 
 public:
 

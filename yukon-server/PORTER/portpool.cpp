@@ -37,6 +37,7 @@ void PortPoolDialoutThread(void *pid)
 {
     extern CtiClientConnection  VanGoghConnection;
     extern CtiPortManager PortManager;
+    extern std::atomic_int PortManagerThreadCount;
 
     INT            i, status = ClientErrors::None;
     LONG           portid = (LONG)pid;      // NASTY CAST HERE!!!
@@ -59,6 +60,8 @@ void PortPoolDialoutThread(void *pid)
         CTILOG_ERROR(dout, "PortPoolDialoutThread for port: "<< ParentPort->getPortID() <<" / "<< ParentPort->getName() <<" - Not poolable");
         return;
     }
+
+    PortManagerThreadCount++;
 
     CTILOG_INFO(dout, "PortPoolDialoutThread for port: "<< ParentPort->getPortID() <<" / "<< ParentPort->getName() <<" - Started");
 
@@ -258,7 +261,7 @@ void PortPoolDialoutThread(void *pid)
 
     CTILOG_INFO(dout, "Shutdown PortPoolDialoutThread for port: "<< ParentPort->getPortID() <<" / "<< ParentPort->getName());
 
-    return;
+    PortManagerThreadCount--;
 }
 
 

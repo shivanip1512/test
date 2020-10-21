@@ -5091,6 +5091,20 @@ Network Manager :
     jira : none
     notes : 
 
+  - filename : snakeyaml-1.18.2.jar
+    yukon group : Jackson
+    project : SnakeYAML
+    version : 1.18.2
+    project URL : "https://github.com/DroidsOnRoids/snakeyaml"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/pl.droidsonroids.yaml/snakeyaml/1.18.2"
+    md5 : 3041218f98b3798eee443b317d91e28f
+    sha1 : aacf63abc979a710ddc0172509f7857cb69ff241
+    updated : 2020-10-19
+    jira : NM-1770
+    notes :
+    
   - filename : tomcat-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
@@ -5104,7 +5118,7 @@ Network Manager :
     updated : 2020-09-02
     jira : NM-1732
     notes : 
-
+    
   - filename : tomcat-coyote.jar
     yukon group : Tomcat
     project : Apache Tomcat
@@ -5920,6 +5934,20 @@ C++ :
     totalSize : 9562547
     updated : 2020-06-19  
     jira : YUK-21543
+    notes : 
+    
+  - project : Microsoft Guidelines Support Library
+    path : MICROSOFT_GSL
+    version : 3.1.0
+    project URL : "https://github.com/microsoft/GSL"
+    license : MIT
+    license URLs : "https://github.com/microsoft/GSL/blob/v3.1.0/LICENSE"
+    md5 : bd754642756bc03a614e88e8891214c2
+    sha1 : b2416a4802494f6128431e3fdb860e8521874e13 
+    fileCount : 10
+    totalSize : 176964
+    updated : 2020-10-19  
+    jira : YUK-22841
     notes : 
     
   - project : Microsoft SQL Server Client

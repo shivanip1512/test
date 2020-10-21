@@ -89,6 +89,8 @@
 #include <boost/range/adaptor/filtered.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 
+#include <atomic>
+
 using namespace std;
 using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
@@ -124,6 +126,9 @@ void commFail(const CtiDeviceSPtr &Device);
 bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero);
 
 DLLIMPORT extern BOOL PorterQuit;
+
+// Keep a running count of all the running threads stored in the PortManager
+std::atomic_int PortManagerThreadCount = 0;
 
 extern INT RunningInConsole;              // From portmain.cpp
 
@@ -991,6 +996,20 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     _CrtSetAllocHook(pfnOldCrtAllocHook);
 
     writeDynamicPaoInfo();
+
+    // When this function ends, the PortManager smartmap will be destroyed.  This is OK if its contained
+    //  threads have all stopped, but if some are still running we will get a crash dump.  We will wait
+    //  here for up to 2 minutes maximum for the threads to all stop - reflected in the PortManagerThreadCount
+    //  variable.  If we timeout before the threads all stop, so be it... crash dump...
+
+    std::chrono::seconds MaxCloseTimeout{ 120 };
+
+    for ( ; PortManagerThreadCount && MaxCloseTimeout.count(); --MaxCloseTimeout )
+    {
+        CTILOG_INFO( dout, "Waiting for " << PortManagerThreadCount << " PortManager " << ( PortManagerThreadCount == 1 ? "thread" : "threads" ) << " to shut down." );
+
+        Sleep( 1000 );
+    }
 
     return 0;
 }

@@ -23,11 +23,31 @@ paths:
     $ref: 'api/commChannelsApi.yaml#/post-operation'
   '/devices/commChannels/{id}':
     $ref: 'api/commChannelsApi.yaml#/get-update-delete-operation'
-   
+
   /trends:
     $ref: 'api/trendsApi.yaml#/post-operation'
-  '/trends/{trendId}':
+  '/trends/{id}':
     $ref: 'api/trendsApi.yaml#/get-update-delete-operation'
+  /dr/loadGroups:
+    $ref: 'api/loadGroupsApi.yaml#/post-operation'
+  '/dr/loadGroups/{id}':
+    $ref: 'api/loadGroupsApi.yaml#/get-update-delete-operation'
+
+  /dr/macroLoadGroups:
+    $ref: 'api/MacroLoadGroupsApi.yaml#/post-operation'
+  '/dr/macroLoadGroups/{id}':
+    $ref: 'api/MacroLoadGroupsApi.yaml#/get-update-delete-operation'
+
+  /dr/constraints:
+    $ref: 'api/programConstraintsApi.yaml#/post-operation'
+  '/dr/constraints/{id}':
+    $ref: 'api/programConstraintsApi.yaml#/get-update-delete-operation'
+  /dr/constraints/getSeasonSchedules:
+    $ref: 'api/programConstraintsApi.yaml#/season-schedules'
+  /dr/constraints/getHolidaySchedules:
+    $ref: 'api/programConstraintsApi.yaml#/holiday-schedules'
+  /dr/constraints/getAllProgramConstraint:
+    $ref: 'api/programConstraintsApi.yaml#/program-constraints'
 
 components:
   securitySchemes:
@@ -39,4 +59,7 @@ tags:
   - name: Token Generation
   - name: Comm Channel
   - name: Trend
-   
+  - name: Load Group
+  - name: Macro Load Group
+  - name: Program Constraints
+  
