@@ -45,7 +45,6 @@ import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
-import com.cannontech.database.db.device.lm.LMProgram;
 import com.cannontech.dr.area.service.ControlAreaSetupService;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
 import com.cannontech.message.DbChangeManager;
@@ -406,16 +405,6 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
                 lmControlArea.getLmControlAreaProgramVector().add(lmControlAreaProgram);
             });
         }
-    }
-
-    @Override
-    public List<LMDto> retrieveUnassignedPrograms() {
-        List<Integer> unassignedPrgIds = LMProgram.getUnassignedPrograms();
-
-        return unassignedPrgIds.stream()
-                               .map(programId -> dbCache.getAllPaosMap().get(programId))
-                               .map(program -> buildProgramAssignment(program))
-                               .collect(Collectors.toList());
     }
 
     private LMDto buildProgramAssignment(LiteYukonPAObject program) {

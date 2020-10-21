@@ -42,42 +42,6 @@ public class LMProgram extends com.cannontech.database.db.DBPersistent
         return constraintID;
     }
 
-    /**
-     * This method returns all the LMProgram ID's that are not assgined
-     *  to a Control Area.
-     */
-    public static java.util.Vector<Integer> getUnassignedPrograms() {
-        java.util.Vector<Integer> returnVector = null;
-        java.sql.Connection conn = null;
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-        
-        
-        String sql = "SELECT DeviceID FROM " + TABLE_NAME + " where " +
-                         " deviceid not in (select lmprogramdeviceid from " + LMControlAreaProgram.TABLE_NAME +
-                         ") ORDER BY deviceid";
-        
-        try {
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-            
-            if (conn == null) {
-                throw new IllegalStateException("Error getting database connection.");
-            }
-            pstmt = conn.prepareStatement(sql.toString());
-            rset = pstmt.executeQuery();
-            returnVector = new Vector<Integer>(5); //rset.getFetchSize()
-            
-            while (rset.next()) {
-                returnVector.addElement(new Integer(rset.getInt("DeviceID")));
-            }        
-        } catch( java.sql.SQLException e ) {
-            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-        } finally {
-            SqlUtils.close(rset, pstmt, conn );
-        }
-        return returnVector;
-    }
-
     @Override
     public void retrieve() throws java.sql.SQLException {
         Object constraintValues[] = { getDeviceID() };    

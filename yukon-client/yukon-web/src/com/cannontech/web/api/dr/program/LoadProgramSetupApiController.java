@@ -79,31 +79,11 @@ public class LoadProgramSetupApiController {
         LoadProgram updateLoadProgram = loadProgramService.update(id, loadProgram);
         return new ResponseEntity<>(updateLoadProgram, HttpStatus.OK);
     }
-
-    @GetMapping("/allAvailableNotificationGroups")
-    public ResponseEntity<Object> getAllAvailableProgramNotificationGroups() {
-        List<NotificationGroup> notificationGroups = loadProgramService.getAllAvailableProgramNotificationGroups();
-        return new ResponseEntity<>(notificationGroups, HttpStatus.OK);
-    }
     
     @GetMapping("/gear/{gearId}")
     public ResponseEntity<Object> getProgramGear(@PathVariable Integer gearId) {
         ProgramGear programGear = loadProgramService.getProgramGear(gearId);
         return new ResponseEntity<>(programGear, HttpStatus.OK);
-    }
-
-    @GetMapping("/allAvailableDirectMemberControls")
-    @CheckRoleProperty(YukonRoleProperty.ALLOW_MEMBER_PROGRAMS)
-    public ResponseEntity<Object> getAllAvailableDirectMemberControls() {
-        List<ProgramDirectMemberControl> directMemberControls =
-            loadProgramService.getAllAvailableDirectMemberControls();
-        return new ResponseEntity<>(directMemberControls, HttpStatus.OK);
-    }
-
-    @GetMapping("/allAvailableLoadGroups/{programType}")
-    public ResponseEntity<Object> getAllAvailableProgramLoadGroups(@PathVariable PaoType programType) {
-        List<ProgramGroup> programGroups = loadProgramService.getAllAvailableProgramLoadGroups(programType);
-        return new ResponseEntity<>(programGroups, HttpStatus.OK);
     }
 
     @GetMapping("/availableLoadGroups/{id}")
@@ -126,11 +106,6 @@ public class LoadProgramSetupApiController {
         List<ProgramDirectMemberControl> directMemberControls =
             loadProgramService.getAvailableDirectMemberControls(id);
         return new ResponseEntity<>(directMemberControls, HttpStatus.OK);
-    }
-
-    @GetMapping("/availablePrograms")
-    public ResponseEntity<List<ProgramDetails>> getAvailablePrograms() {
-        return new ResponseEntity<>(loadProgramService.getAvailablePrograms(), HttpStatus.OK);
     }
 
     @GetMapping("/getGearsForProgram/{programId}")

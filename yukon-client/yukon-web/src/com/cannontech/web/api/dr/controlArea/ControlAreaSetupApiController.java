@@ -62,12 +62,6 @@ public class ControlAreaSetupApiController {
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
-    @GetMapping("/unAssignedPrograms")
-    public ResponseEntity<List<LMDto>> getAvailablePrograms() {
-        List<LMDto> programs = controlAreaService.retrieveUnassignedPrograms();
-        return new ResponseEntity<>(programs, HttpStatus.OK);
-    }
-
     @GetMapping("/normalState/{pointId}")
     public ResponseEntity<Object> getNormalState(@PathVariable int pointId) {
         List<LMDto> normalStates = controlAreaService.retrieveNormalState(pointId);
