@@ -21,6 +21,7 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 
 import com.eaton.pages.demandresponse.LoadProgramCreatePage;
+import com.eaton.pages.demandresponse.LoadProgramDetailPage;
 
 public class LoadProgramMeterDisconnectCreateTests extends SeleniumTestSetup {
 
@@ -64,7 +65,7 @@ public class LoadProgramMeterDisconnectCreateTests extends SeleniumTestSetup {
         LoadGroupsTab groupsTab = createPage.getLoadGroupTab();
 
         groupsTab.clickTabAndWait("Load Groups");
-        groupsTab.getLoadGroups().addSingleAvailable(ldGrpName);
+        groupsTab.getLoadGroups().addSingleAvailable("sasa");
 
 		CreateMeterDisconnectPrgmModal createGearModal = createPage.showCreateMeterDiconnectPrgmModal();
 		createGearModal.getGearName().setInputValue(gearName);
@@ -74,9 +75,11 @@ public class LoadProgramMeterDisconnectCreateTests extends SeleniumTestSetup {
 
 		createPage.getSaveBtn().click();
 
-		LoadProgramCreatePage createPage = new LoadProgramCreatePage(driverExt);
-		
-		String userMsg = createPage.getUserMessage();
+		waitForPageToLoad("Load Program: " + ldPrgmName, Optional.empty());
+
+		LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt);
+
+		String userMsg = detailsPage.getUserMessage();
 
 		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
 
@@ -85,7 +88,7 @@ public class LoadProgramMeterDisconnectCreateTests extends SeleniumTestSetup {
 	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmMeterDisconnect_AllFields_Success() {
 		timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		String ldPrgmName = "Meter Disconnect LoadProgrampp" + timeStamp;
+		String ldPrgmName = "Meter Disconnect LoadProgram" + timeStamp;
 		String gearName = "Meter Disconnect Gear";
 
 		final String EXPECTED_MSG = ldPrgmName + " saved successfully.";
@@ -111,7 +114,7 @@ public class LoadProgramMeterDisconnectCreateTests extends SeleniumTestSetup {
         LoadGroupsTab groupsTab = createPage.getLoadGroupTab();
 
         groupsTab.clickTabAndWait("Load Groups");
-        groupsTab.getLoadGroups().addSingleAvailable(ldGrpName);
+        groupsTab.getLoadGroups().addSingleAvailable("sasa");
 
 		CreateMeterDisconnectPrgmModal createGearModal = createPage.showCreateMeterDiconnectPrgmModal();
 		createGearModal.getGearName().setInputValue(gearName);
@@ -121,9 +124,11 @@ public class LoadProgramMeterDisconnectCreateTests extends SeleniumTestSetup {
 
 		createPage.getSaveBtn().click();
 
-		LoadProgramCreatePage createPage = new LoadProgramCreatePage(driverExt);
+		waitForPageToLoad("Load Program: " + ldPrgmName, Optional.empty());
 
-		String userMsg = createPage.getUserMessage();
+		LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt);
+
+		String userMsg = detailsPage.getUserMessage();
 
 		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
 
