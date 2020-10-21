@@ -91,6 +91,11 @@ public class LoadProgramSEPCreateTests extends SeleniumTestSetup {
         gearModal.clickOkAndWaitForModalCloseDisplayNone();
         createPage.getTriggerOffset().setInputValue("22");
         createPage.getRestoreOffset().setInputValue("25");
+        createPage.getUseWindowOne().selectValue("Yes");
+        createPage.getStartTimeWindowOne().setValue("12:57");
+        createPage.getStopTimeWindowOne().setValue("23:59");
+        createPage.getUseWindowTwo().selectValue("No");
+        
         LoadGroupsTab groupsTab = createPage.getLoadGroupTab();
         groupsTab.clickTabAndWait("Load Groups");
         groupsTab.getLoadGroups().addSingleAvailable(ldGrpName);
