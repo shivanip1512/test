@@ -303,16 +303,17 @@ public class YukonValidationUtils extends ValidationUtils {
    }
     
     public static void validatePort(Errors errors, String field, String fieldName, String fieldValue) {
-    	checkIsBlank(errors, "port", fieldValue, fieldName, false);
-        if (!errors.hasFieldErrors(field)) {
-            Range<Integer> range = Range.inclusive(1, 65535);
-            try {
-                 Integer portID = Integer.valueOf(fieldValue);
-                 checkRange(errors, field, fieldName, Integer.valueOf(portID), range, true);
-             } catch (Exception e) {
-                 errors.rejectValue(field, "yukon.web.error.outOfRangeObject", new Object[] { fieldName, range.getMin(),
-                         range.getMax() }, "");
-              }
+        if (!StringUtils.isBlank(fieldValue)) {
+            if (!errors.hasFieldErrors(field)) {
+                Range<Integer> range = Range.inclusive(1, 65535);
+                try {
+                    Integer portID = Integer.valueOf(fieldValue);
+                    checkRange(errors, field, fieldName, Integer.valueOf(portID), range, true);
+                } catch (Exception e) {
+                    errors.rejectValue(field, "yukon.web.error.outOfRangeObject", new Object[] { fieldName, range.getMin(),
+                            range.getMax() }, "");
+                }
+            }
         }
     }
   
