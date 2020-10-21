@@ -346,7 +346,7 @@ public class CapControlImportController {
         try {
             FileUploadUtils.validateTabularDataUploadFileType(dataFile);
             importStarted(ImportType.IVVC_ZONE.getFormatKey(), userContext, dataFile.getOriginalFilename());
-            //TODO: Create IVVC Zone replacements for these
+            //TODO: Create IVVC Zone replacements for these in YUK-22962
 /*            List<HierarchyImportData> hierarchyImportData =
                 fileImporterDao.getHierarchyImportData(inputStream, results);
 

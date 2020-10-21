@@ -24,7 +24,9 @@ public enum CapControlIvvcZoneImportField {
     IGNORE(InputType.VALUE_DEPENDENT, "IGNORE", String.class, false, true, "TYPE", ZoneImportType.VOLTAGE_POINT),
     ;
 
-    public enum InputType {REQUIRED, VALUE_DEPENDENT, OPTIONAL}
+    public enum InputType {
+        REQUIRED, VALUE_DEPENDENT, OPTIONAL
+    }
 
     private InputType inputType;
     private String name;
@@ -34,16 +36,18 @@ public enum CapControlIvvcZoneImportField {
     private String dependedColumnName;
     private Object[] dependedColumnValues;
 
-    CapControlIvvcZoneImportField(InputType inputType, String name, Class<?> typeClass){
+    CapControlIvvcZoneImportField(InputType inputType, String name, Class<?> typeClass) {
         this(inputType, name, typeClass, false, false);
     }
 
-    CapControlIvvcZoneImportField(InputType inputType, String name, Class<?> typeClass, boolean nullable, boolean uppercaseValue){
+    CapControlIvvcZoneImportField(InputType inputType, String name, Class<?> typeClass, boolean nullable,
+                                  boolean uppercaseValue) {
         this(inputType, name, typeClass, nullable, uppercaseValue, null);
     }
 
-    CapControlIvvcZoneImportField(InputType inputType, String name, Class<?> typeClass, boolean nullable, boolean uppercaseValue, 
-            String dependedColumnName, Object... dependentValues){
+    CapControlIvvcZoneImportField(InputType inputType, String name, Class<?> typeClass, boolean nullable,
+                                  boolean uppercaseValue,
+                                  String dependedColumnName, Object... dependentValues) {
         this.inputType = inputType;
         this.name = name;
         this.typeClass = typeClass;
@@ -81,30 +85,31 @@ public enum CapControlIvvcZoneImportField {
         return dependedColumnValues;
     }
 
-    public static List<String> getRequiredFieldNames(){
+    public static List<String> getRequiredFieldNames() {
         List<String> requiredFields = Lists.newArrayList();
-        for(CapControlIvvcZoneImportField format : values()){
-            if(format.getInputType() == InputType.REQUIRED){
+        for (CapControlIvvcZoneImportField format : values()) {
+            if (format.getInputType() == InputType.REQUIRED) {
                 requiredFields.add(format.getName());
 
             }
         }
         return requiredFields;
     }
-    
-    public static List<String> getValueDependentFieldNames(){
+
+    public static List<String> getValueDependentFieldNames() {
         List<String> valueDependentFields = Lists.newArrayList();
-        for(CapControlIvvcZoneImportField format : values()){
-            if(format.getInputType() == InputType.VALUE_DEPENDENT){
+        for (CapControlIvvcZoneImportField format : values()) {
+            if (format.getInputType() == InputType.VALUE_DEPENDENT) {
                 valueDependentFields.add(format.getName());
             }
         }
         return valueDependentFields;
     }
-    public static List<String> getOptionalFieldNames(){
+
+    public static List<String> getOptionalFieldNames() {
         List<String> optionalFields = Lists.newArrayList();
-        for(CapControlIvvcZoneImportField format : values()){
-            if(format.getInputType() == InputType.OPTIONAL){
+        for (CapControlIvvcZoneImportField format : values()) {
+            if (format.getInputType() == InputType.OPTIONAL) {
                 optionalFields.add(format.getName());
             }
         }
