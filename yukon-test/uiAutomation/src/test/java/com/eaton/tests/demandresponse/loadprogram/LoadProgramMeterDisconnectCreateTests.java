@@ -65,7 +65,7 @@ public class LoadProgramMeterDisconnectCreateTests extends SeleniumTestSetup {
         LoadGroupsTab groupsTab = createPage.getLoadGroupTab();
 
         groupsTab.clickTabAndWait("Load Groups");
-        groupsTab.getLoadGroups().addSingleAvailable("sasa");
+        groupsTab.getLoadGroups().addSingleAvailable(ldGrpName);
 
 		CreateMeterDisconnectPrgmModal createGearModal = createPage.showCreateMeterDiconnectPrgmModal();
 		createGearModal.getGearName().setInputValue(gearName);
@@ -114,7 +114,7 @@ public class LoadProgramMeterDisconnectCreateTests extends SeleniumTestSetup {
         LoadGroupsTab groupsTab = createPage.getLoadGroupTab();
 
         groupsTab.clickTabAndWait("Load Groups");
-        groupsTab.getLoadGroups().addSingleAvailable("sasa");
+        groupsTab.getLoadGroups().addSingleAvailable(ldGrpName);
 
 		CreateMeterDisconnectPrgmModal createGearModal = createPage.showCreateMeterDiconnectPrgmModal();
 		createGearModal.getGearName().setInputValue(gearName);
