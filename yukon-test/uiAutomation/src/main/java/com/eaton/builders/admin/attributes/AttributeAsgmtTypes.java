@@ -38,29 +38,35 @@ public class AttributeAsgmtTypes {
     }
 
     public enum PaoTypesUI {
-        LCR6200_RFN("LCR-6200 RFN"),
-        LCR6600_RFN("LCR-6600 RFN"),
-        LCR6700_RFN("LCR-6700 RFN"),
-        MCTBROADCAST("MCT Broadcast"),
-        MCT310IL("MCT-310IL"),
-        MCT430A("MCT-430A"),
-        RFN410CL("RFN-410cL"),
-        RFN420CD("RFN-420cD"),
-        RFN420FL("RFN-420fL"),
-        RFN430SL4("RFN-430SL4"),
-        RFN530S4X("RFN-530S4x"),
-        VIRTUAL_SYSTEM("Virtual System"),
-        WRL420CD("WRL-420cD"),
-        WRL420CL("WRL-420cL");
+        LCR6200_RFN("LCR-6200 RFN", 0),
+        LCR6600_RFN("LCR-6600 RFN", 1),
+        LCR6700_RFN("LCR-6700 RFN", 2),
+        MCTBROADCAST("MCT Broadcast", 3),
+        MCT310IL("MCT-310IL", 4),
+        MCT430A("MCT-430A", 5),
+        RFN410CL("RFN-410cL", 6),
+        RFN420CD("RFN-420cD", 7),
+        RFN420FL("RFN-420fL", 8),
+        RFN430SL4("RFN-430SL4", 9),
+        RFN530S4X("RFN-530S4x", 10),
+        VIRTUAL_SYSTEM("Virtual System", 11),
+        WRL420CD("WRL-420cD", 12),
+        WRL420CL("WRL-420cL", 13);
 
         private final String paoType;
+        private final Integer index;
 
-        PaoTypesUI(String paoType) {
+        PaoTypesUI(String paoType, Integer index) {
             this.paoType = paoType;
+            this.index = index;
         }
 
         public String getPaoType() {
             return this.paoType;
+        }
+        
+        public Integer getIndex() {
+            return this.index;
         }
 
         public static PaoTypesUI getRandomPaoType() {
@@ -72,13 +78,13 @@ public class AttributeAsgmtTypes {
     public enum PointTypes {
         STATUS("Status"),
         ANALOG("Analog"),
-        PULSE_ACCUMULATOR("PulseAccumulator"),
-        DEMAND_ACCUMULATOR("DemandAccumulator"),
-        CALC_ANALOG("CalcAnalog"),
-        STATUS_OUTPUT("StatusOutput"),
-        ANALOG_OUTPUT("AnalogOutput"),
+        PULSEACCUMULATOR("PulseAccumulator"),
+        DEMANDACCUMULATOR("DemandAccumulator"),
+        CALCANALOG("CalcAnalog"),
+        STATUSOUTPUT("StatusOutput"),
+        ANALOGOUTPUT("AnalogOutput"),
         SYSTEM("System"),
-        CALC_STATUS("CalcStatus");
+        CALCSTATUS("CalcStatus");
     
         private final String pointType;
         
@@ -99,13 +105,13 @@ public class AttributeAsgmtTypes {
     public enum PointTypesUI {
         STATUS("Status"),
         ANALOG("Analog"),
-        PULSE_ACCUMULATOR("Pulse Accumulator"),
-        DEMAND_ACCUMULATOR("Demand Accumulator"),
-        CALC_ANALOG("Calc Analog"),
-        STATUS_OUTPUT("Status Output"),
-        ANALOG_OUTPUT("Analog Output"),
+        PULSEACCUMULATOR("Pulse Accumulator"),
+        DEMANDACCUMULATOR("Demand Accumulator"),
+        CALCANALOG("Calc Analog"),
+        STATUSOUTPUT("Status Output"),
+        ANALOGOUTPUT("Analog Output"),
         SYSTEM("System"),
-        CALC_STATUS("Calc Status");
+        CALCSTATUS("Calc Status");
     
         private final String pointType;
         

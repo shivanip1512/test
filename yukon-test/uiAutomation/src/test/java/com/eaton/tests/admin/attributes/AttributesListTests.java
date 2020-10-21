@@ -3,6 +3,7 @@ package com.eaton.tests.admin.attributes;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.assertj.core.api.SoftAssertions;
@@ -60,8 +61,19 @@ public class AttributesListTests extends SeleniumTestSetup {
         assertThat(page.getAttrAsgmtSection()).isNotNull();
     }      
     
+    
     @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.ADMIN})
-    public void attributeList_AttributeAsgmtColumnHeaders_Correct() {
+    public void attributeList_AttrDefinitionsColumnHeaders_Correct() {
+        SoftAssertions softly = new SoftAssertions();
+        List<String> headers = page.getAttrDefTable().getListTableHeaders();
+        
+        softly.assertThat(2).isEqualTo(headers.size());
+        softly.assertThat(headers.get(0)).isEqualTo("Attribute Name");
+        softly.assertAll();
+    } 
+    
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.ADMIN})
+    public void attributeAssignmentList_AttrAsgmtColumnHeaders_Correct() {
         SoftAssertions softly = new SoftAssertions();
         List<String> headers = page.getAttrAsgmtTable().getListTableHeaders();
         
@@ -70,16 +82,6 @@ public class AttributesListTests extends SeleniumTestSetup {
         softly.assertThat(headers.get(1)).isEqualTo("Device Type");
         softly.assertThat(headers.get(2)).isEqualTo("Point Type");
         softly.assertThat(headers.get(3)).isEqualTo("Point Offset");
-        softly.assertAll();
-    }  
-    
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.ADMIN})
-    public void attributeList_AttributeDefinitionsColumnHeaders_Correct() {
-        SoftAssertions softly = new SoftAssertions();
-        List<String> headers = page.getAttrDefTable().getListTableHeaders();
-        
-        softly.assertThat(2).isEqualTo(headers.size());
-        softly.assertThat(headers.get(0)).isEqualTo("Attribute Name");
         softly.assertAll();
     } 
     
@@ -101,5 +103,23 @@ public class AttributesListTests extends SeleniumTestSetup {
         String userMsg = page.getUserMessage();
 
         assertThat(userMsg).isEqualTo(expectedMessage);
+    }
+    
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN, TestConstants.Features.ATTRIBUTES })
+    public void attributeList_DeleteAttrAsgmt_Success() {
+        setRefreshPage(true);
+        Map<String, Pair<JSONObject, JSONObject>> map = AttributeService.createAttributeWithAssignment(Optional.empty());
+        refreshPage(page);
+
+        Pair<JSONObject, JSONObject> pair = map.get("Attribute");
+        
+        JSONObject response = pair.getValue1();
+        String name = response.getString("name");
+
+        ConfirmModal modal = page.showDeleteAttrAsgmtAndWait(name);
+                
+        modal.clickOkAndWaitForModalToClose();
+
+        assertThat(page.getAttrAsgmtErrorMsg()).isEqualTo("Assignment for attribute: " + name + " has been successfully deleted.");
     }
 }

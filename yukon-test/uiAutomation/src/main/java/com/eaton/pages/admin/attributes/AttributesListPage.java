@@ -10,11 +10,14 @@ import org.openqa.selenium.WebElement;
 import com.eaton.elements.Button;
 import com.eaton.elements.Section;
 import com.eaton.elements.TextEditElement;
+import com.eaton.elements.WebTable;
+import com.eaton.elements.WebTableRow;
 import com.eaton.elements.WebTableRow.Icons;
 import com.eaton.elements.editwebtable.EditWebTable;
 import com.eaton.elements.editwebtable.EditWebTableRow;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.attributes.AddAttributeAssignmentsModal;
+import com.eaton.elements.modals.attributes.EditAttributeAssignmentsModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
@@ -45,8 +48,8 @@ public class AttributesListPage extends PageBase {
         return new EditWebTable(driverExt, "compact-results-table", getAttrDefSection().getSection());
     }
     
-    public EditWebTable getAttrAsgmtTable() {
-        return new EditWebTable(driverExt, "compact-results-table", getAttrAsgmtSection().getSection());
+    public WebTable getAttrAsgmtTable() {
+        return new WebTable(driverExt, "compact-results-table", getAttrAsgmtSection().getSection());
     }
     
     public Section getAttrAsgmtSection() {
@@ -63,7 +66,27 @@ public class AttributesListPage extends PageBase {
         SeleniumTestSetup.waitUntilModalOpenByTitle("Add Attribute Assignment");
         
         return new AddAttributeAssignmentsModal(driverExt, Optional.of("Add Attribute Assignment"), Optional.empty());
-    }             
+    }   
+    
+    public EditAttributeAssignmentsModal showEditAttrAsgmtAndWait(String name) {
+        WebTableRow row = getAttrAsgmtTable().getDataRowByName(name);
+        
+        row.hoverAndClickGearAndSelectActionByIcon(Icons.PENCIL);
+        
+        SeleniumTestSetup.waitUntilModalOpenByTitle("Edit Attribute Assignment");
+        
+        return new EditAttributeAssignmentsModal(driverExt, Optional.of("Edit Attribute Assignment"), Optional.empty());
+    } 
+    
+    public ConfirmModal showDeleteAttrAsgmtAndWait(String name) {
+        WebTableRow row = getAttrAsgmtTable().getDataRowByName(name);
+        
+        row.hoverAndClickGearAndSelectActionByIcon(Icons.REMOVE);
+        
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("yukon_dialog_confirm");
+        
+        return new ConfirmModal(driverExt, Optional.empty(), Optional.of("yukon_dialog_confirm"));
+    } 
     
     public void editAttributeDefNameClickSaveAndWait(String attrName, String value) {        
         EditWebTableRow row = getAttrDefTable().getDataRowByName(attrName);   
@@ -140,7 +163,7 @@ public class AttributesListPage extends PageBase {
         return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of("yukon_dialog_confirm"));       
     }   
     
-    public String attrAsgmtErrorMsg() {
+    public String getAttrAsgmtErrorMsg() {
         String msg = "";
         long startTime = System.currentTimeMillis();
         

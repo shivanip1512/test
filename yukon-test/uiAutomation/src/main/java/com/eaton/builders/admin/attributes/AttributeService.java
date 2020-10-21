@@ -28,7 +28,7 @@ public class AttributeService {
         for (AttributeAsgmtTypes.PaoTypes type : paoTypes) {
             Pair<JSONObject, JSONObject> attributeAsgmtPair = new AttributeAsgmtCreateBuilder.Builder(attributeId)
                     .withPaoType(Optional.of(type))
-                    .withPointType(Optional.of(AttributeAsgmtTypes.PointTypes.CALC_ANALOG))
+                    .withPointType(Optional.of(AttributeAsgmtTypes.PointTypes.CALCANALOG))
                     .withMultiplier(Optional.empty())
                     .create();
 
@@ -39,7 +39,7 @@ public class AttributeService {
         return map;
     }
     
-    public static Map<String, Pair<JSONObject, JSONObject>> createAttributeWithAssignment(AttributeAsgmtTypes.PaoTypes paoType, AttributeAsgmtTypes.PointTypes pointType, Integer pointOffset, Optional<String> name) {
+    public static Map<String, Pair<JSONObject, JSONObject>> createAttributeWithSpecificAssignment(AttributeAsgmtTypes.PaoTypes paoType, AttributeAsgmtTypes.PointTypes pointType, Integer pointOffset, Optional<String> name) {
         HashMap<String, Pair<JSONObject, JSONObject>> map = new HashMap<>();
         Pair<JSONObject, JSONObject> attributePair = createAttribute(name);
         
@@ -52,6 +52,26 @@ public class AttributeService {
                 .withPaoType(Optional.of(paoType))
                 .withPointType(Optional.of(pointType))
                 .withMultiplier(Optional.of(pointOffset))
+                .create();
+        
+        map.put("AttributeAsgmt", attributeAsgmtPair);
+        
+        return map;
+    }
+    
+    public static Map<String, Pair<JSONObject, JSONObject>> createAttributeWithAssignment(Optional<String> name) {
+        HashMap<String, Pair<JSONObject, JSONObject>> map = new HashMap<>();
+        Pair<JSONObject, JSONObject> attributePair = createAttribute(name);
+        
+        JSONObject response = attributePair.getValue1();
+        Integer attributeId = response.getInt("customAttributeId");
+        
+        map.put("Attribute", attributePair);
+        
+        Pair<JSONObject, JSONObject> attributeAsgmtPair = new AttributeAsgmtCreateBuilder.Builder(attributeId)
+                .withPaoType(Optional.empty())
+                .withPointType(Optional.empty())
+                .withMultiplier(Optional.empty())
                 .create();
         
         map.put("AttributeAsgmt", attributeAsgmtPair);

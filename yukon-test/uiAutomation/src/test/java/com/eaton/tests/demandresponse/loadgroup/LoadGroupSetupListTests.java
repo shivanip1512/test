@@ -160,7 +160,7 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
         listPage.getName().setInputValue(name);
         listPage.getSaveBtn().click();
 
-        WebTableRow row = listPage.getTable().getDataRowByName(name);
+        WebTableRow row = listPage.getTable().getDataRowByLinkName(name);
 
         String link = row.getCellLinkByIndex(0);
 

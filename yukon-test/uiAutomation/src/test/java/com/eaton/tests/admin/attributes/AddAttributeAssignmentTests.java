@@ -65,11 +65,11 @@ public class AddAttributeAssignmentTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void addAttributeAssignment_Add_OpensCorrectModal() {
         setRefreshPage(true);
-        String EXPECTED_MODAL_TITLE = "Add Attribute Assignment";
+        String expectedModalTitle = "Add Attribute Assignment";
         AddAttributeAssignmentsModal modal = page.showAddAttrAsgmtAndWait();
         String actualModalTitle = modal.getModalTitle();
 
-        assertThat(actualModalTitle).isEqualTo(EXPECTED_MODAL_TITLE);
+        assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
     }
     
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
@@ -172,7 +172,7 @@ public class AddAttributeAssignmentTests extends SeleniumTestSetup {
         modal.getpointOffSet().setInputValue("0");
         modal.clickOkAndWaitForModalToClose();
         
-        assertThat(page.attrAsgmtErrorMsg()).isEqualTo("Attribute: " + name + " has been successfully assigned to the following device types: VIRTUAL SYSTEM.");
+        assertThat(page.getAttrAsgmtErrorMsg()).isEqualTo("Attribute: " + name + " has been successfully assigned to the following device types: VIRTUAL SYSTEM.");
     }
     
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
@@ -191,6 +191,6 @@ public class AddAttributeAssignmentTests extends SeleniumTestSetup {
         modal.getpointOffSet().setInputValue(pointOffset.toString());
         modal.clickOkAndWaitForModalToClose();
         
-        assertThat(page.attrAsgmtErrorMsg()).isEqualTo("Attribute: " + name + " has been successfully assigned to the following device types: LCR-6200 RFN, LCR-6600 RFN, LCR-6700 RFN, MCT Broadcast, MCT-310IL, MCT-430A, RFN-410cL, RFN-420cD, RFN-420fL, RFN-430SL4, RFN-530S4x, VIRTUAL SYSTEM, WRL-420cD, WRL-420cL.");
+        assertThat(page.getAttrAsgmtErrorMsg()).isEqualTo("Attribute: " + name + " has been successfully assigned to the following device types: LCR-6200 RFN, LCR-6600 RFN, LCR-6700 RFN, MCT Broadcast, MCT-310IL, MCT-430A, RFN-410cL, RFN-420cD, RFN-420fL, RFN-430SL4, RFN-530S4x, VIRTUAL SYSTEM, WRL-420cD, WRL-420cL.");
     }
 }

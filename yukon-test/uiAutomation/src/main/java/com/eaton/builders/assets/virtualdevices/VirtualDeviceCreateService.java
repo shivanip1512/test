@@ -297,22 +297,22 @@ public class VirtualDeviceCreateService {
             final AttributeAsgmtTypes.PaoTypes paoType = AttributeAsgmtTypes.PaoTypes.VIRTUAL_SYSTEM;
             
             PointCreateService.buildAndCreateAnalogPointOnlyRequiredFields(paoId, Optional.of(point + numA), Optional.of(offSet));
-            AttributeService.createAttributeWithAssignment(paoType, AttributeAsgmtTypes.PointTypes.ANALOG, offSet, Optional.of("zttr-" + numA));
+            AttributeService.createAttributeWithSpecificAssignment(paoType, AttributeAsgmtTypes.PointTypes.ANALOG, offSet, Optional.of("zttr-" + numA));
             
             PointCreateService.buildAndCreateStatusPointOnlyRequiredFields(paoId, Optional.of(point + numB), Optional.of(offSet));
-            AttributeService.createAttributeWithAssignment(paoType, AttributeAsgmtTypes.PointTypes.STATUS, offSet, Optional.of("zttr-" + numB));
+            AttributeService.createAttributeWithSpecificAssignment(paoType, AttributeAsgmtTypes.PointTypes.STATUS, offSet, Optional.of("zttr-" + numB));
             
             PointCreateService.buildAndCreateCalcAnalogPointOnlyRequiredFields(paoId, Optional.of(point + numC), Optional.of(offSet));
-            AttributeService.createAttributeWithAssignment(paoType, AttributeAsgmtTypes.PointTypes.CALC_ANALOG, offSet, Optional.of("zttr-" + numC));
+            AttributeService.createAttributeWithSpecificAssignment(paoType, AttributeAsgmtTypes.PointTypes.CALCANALOG, offSet, Optional.of("zttr-" + numC));
             
             PointCreateService.buildAndCreateCalcStatusPointOnlyRequiredFields(paoId, Optional.of(point + numD), Optional.of(offSet));
-            AttributeService.createAttributeWithAssignment(paoType, AttributeAsgmtTypes.PointTypes.CALC_STATUS, offSet, Optional.of("zttr-" + numD));
+            AttributeService.createAttributeWithSpecificAssignment(paoType, AttributeAsgmtTypes.PointTypes.CALCSTATUS, offSet, Optional.of("zttr-" + numD));
             
             PointCreateService.buildAndCreatePulseAccumulatorPointOnlyRequiredFields(paoId, Optional.of(point + numE), Optional.of(offSet));
-            AttributeService.createAttributeWithAssignment(paoType, AttributeAsgmtTypes.PointTypes.PULSE_ACCUMULATOR, offSet, Optional.of("zttr-" + numE));
+            AttributeService.createAttributeWithSpecificAssignment(paoType, AttributeAsgmtTypes.PointTypes.PULSEACCUMULATOR, offSet, Optional.of("zttr-" + numE));
             
             PointCreateService.buildAndCreateDemandAccumulatorPointOnlyRequiredFields(paoId, Optional.of(point + numF), Optional.of(offSet));
-            AttributeService.createAttributeWithAssignment(paoType, AttributeAsgmtTypes.PointTypes.DEMAND_ACCUMULATOR, offSet, Optional.of("zttr-" + numF));
+            AttributeService.createAttributeWithSpecificAssignment(paoType, AttributeAsgmtTypes.PointTypes.DEMANDACCUMULATOR, offSet, Optional.of("zttr-" + numF));
         }
     }
 }
