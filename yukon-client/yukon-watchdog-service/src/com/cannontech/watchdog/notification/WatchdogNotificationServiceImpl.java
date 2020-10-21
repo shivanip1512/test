@@ -30,7 +30,7 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.tools.email.EmailSettingsCacheService;
-import com.cannontech.tools.smtp.SmtpMetadataConstants;
+import com.cannontech.tools.email.SystemEmailSettingsType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarnings;
@@ -132,8 +132,8 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
         } catch (Exception e) {
             log.error("Error Retrieving data from Database. Populating old values from cache.");
             sendToEmailIds = Arrays
-                    .asList(emailSettingsCacheService.getValue(SmtpMetadataConstants.SUBSCRIBER_EMAIL_IDS).split("\\s*,\\s*"));
-            sender = emailSettingsCacheService.getValue(SmtpMetadataConstants.MAIL_FROM_ADDRESS);
+                    .asList(emailSettingsCacheService.getValue(SystemEmailSettingsType.SUBSCRIBER_EMAIL_IDS).split("\\s*,\\s*"));
+            sender = emailSettingsCacheService.getValue(SystemEmailSettingsType.MAIL_FROM_ADDRESS);
         }
     }
 

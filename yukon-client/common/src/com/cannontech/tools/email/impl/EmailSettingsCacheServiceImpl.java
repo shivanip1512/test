@@ -30,7 +30,7 @@ import com.cannontech.encryption.SystemPublisherMetadataCryptoUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailSettingsCacheService;
-import com.cannontech.tools.smtp.SmtpMetadataConstants;
+import com.cannontech.tools.email.SystemEmailSettingsType;
 
 public class EmailSettingsCacheServiceImpl implements EmailSettingsCacheService {
 
@@ -39,19 +39,19 @@ public class EmailSettingsCacheServiceImpl implements EmailSettingsCacheService 
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private SmartNotificationSubscriptionDao subscriptionDao;
 
-    private final Map<SmtpMetadataConstants, String> smtpMetadataCache = new ConcurrentHashMap<>(7);
-    private static final String SEPARATOR = ":";
+    private final Map<SystemEmailSettingsType, String> systemEmailSettingsCache = new ConcurrentHashMap<>(7);
+    private static final String separator = ":";
 
-    private static final String FILE_NAME = "/Server/Config/System/emailSettings.txt";
-    private static File SMTP_META_DATA_FILE = null;
+    private static final String fineName = "/Server/Config/System/emailSettings.txt";
+    private static File emailSettingsFile = null;
 
     static {
         try {
             String yukonBase = CtiUtilities.getYukonBase();
-            SMTP_META_DATA_FILE = new File(yukonBase, FILE_NAME);
-            if (!SMTP_META_DATA_FILE.exists()) {
-                SMTP_META_DATA_FILE.getParentFile().mkdir();
-                SMTP_META_DATA_FILE.createNewFile();
+            emailSettingsFile = new File(yukonBase, fineName);
+            if (!emailSettingsFile.exists()) {
+                emailSettingsFile.getParentFile().mkdir();
+                emailSettingsFile.createNewFile();
             }
 
         } catch (IOException e) {
@@ -61,49 +61,49 @@ public class EmailSettingsCacheServiceImpl implements EmailSettingsCacheService 
 
     @PostConstruct
     public void init() {
-        update(SmtpMetadataConstants.SMTP_HOST, globalSettingDao.getString(GlobalSettingType.SMTP_HOST));
-        update(SmtpMetadataConstants.SMTP_PORT, globalSettingDao.getString(GlobalSettingType.SMTP_PORT));
-        update(SmtpMetadataConstants.SMTP_ENCRYPTION_TYPE, globalSettingDao.getString(GlobalSettingType.SMTP_ENCRYPTION_TYPE));
-        update(SmtpMetadataConstants.SMTP_USERNAME, globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME));
-        update(SmtpMetadataConstants.SMTP_PASSWORD, globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD));
-        update(SmtpMetadataConstants.MAIL_FROM_ADDRESS, globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS));
-        update(SmtpMetadataConstants.SUBSCRIBER_EMAIL_IDS,
+        update(SystemEmailSettingsType.SMTP_HOST, globalSettingDao.getString(GlobalSettingType.SMTP_HOST));
+        update(SystemEmailSettingsType.SMTP_PORT, globalSettingDao.getString(GlobalSettingType.SMTP_PORT));
+        update(SystemEmailSettingsType.SMTP_ENCRYPTION_TYPE, globalSettingDao.getString(GlobalSettingType.SMTP_ENCRYPTION_TYPE));
+        update(SystemEmailSettingsType.SMTP_USERNAME, globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME));
+        update(SystemEmailSettingsType.SMTP_PASSWORD, globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD));
+        update(SystemEmailSettingsType.MAIL_FROM_ADDRESS, globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS));
+        update(SystemEmailSettingsType.SUBSCRIBER_EMAIL_IDS,
                 StringUtils.join(subscriptionDao.getSubscribedEmails(SmartNotificationEventType.YUKON_WATCHDOG), ","));
 
         // SUBSCIBER_EMAIL_IDS is not updated through dbChange
         // when new emails are loaded, cached should be called and updated at that time. See YukonDBCOnnectionWatcher for example.
         asyncDynamicDataSource.addDatabaseChangeEventListener(event -> {
             if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.SMTP_HOST)) {
-                update(SmtpMetadataConstants.SMTP_HOST, globalSettingDao.getString(GlobalSettingType.SMTP_HOST));
+                update(SystemEmailSettingsType.SMTP_HOST, globalSettingDao.getString(GlobalSettingType.SMTP_HOST));
             } else if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.SMTP_PORT)) {
-                update(SmtpMetadataConstants.SMTP_PORT, globalSettingDao.getString(GlobalSettingType.SMTP_PORT));
+                update(SystemEmailSettingsType.SMTP_PORT, globalSettingDao.getString(GlobalSettingType.SMTP_PORT));
             } else if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.SMTP_ENCRYPTION_TYPE)) {
-                update(SmtpMetadataConstants.SMTP_ENCRYPTION_TYPE,
+                update(SystemEmailSettingsType.SMTP_ENCRYPTION_TYPE,
                         globalSettingDao.getString(GlobalSettingType.SMTP_ENCRYPTION_TYPE));
             } else if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.SMTP_USERNAME)) {
-                update(SmtpMetadataConstants.SMTP_USERNAME, globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME));
+                update(SystemEmailSettingsType.SMTP_USERNAME, globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME));
             } else if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.SMTP_PASSWORD)) {
-                update(SmtpMetadataConstants.SMTP_PASSWORD, globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD));
+                update(SystemEmailSettingsType.SMTP_PASSWORD, globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD));
             }
         });
     }
 
     @Override
-    public String getValue(SmtpMetadataConstants key) {
-        return smtpMetadataCache.get(key);
+    public String getValue(SystemEmailSettingsType key) {
+        return systemEmailSettingsCache.get(key);
     }
 
     @Override
-    public void update(SmtpMetadataConstants key, String value) {
-        smtpMetadataCache.put(key, value);
+    public void update(SystemEmailSettingsType key, String value) {
+        systemEmailSettingsCache.put(key, value);
     }
 
     @Override
     public void writeToFile() {
         try {
-            List<String> smtpMetadata = new ArrayList<String>();
-            smtpMetadata.addAll(getEncryptedSettings());
-            Files.write(SMTP_META_DATA_FILE.toPath(), smtpMetadata);
+            List<String> systemEmailSettings = new ArrayList<String>();
+            systemEmailSettings.addAll(getEncryptedSettings());
+            Files.write(emailSettingsFile.toPath(), systemEmailSettings);
         } catch (IOException | IllegalBlockSizeException | BadPaddingException e) {
             log.error("Error writing encrypted settings to emailSettings.txt file", e);
         }
@@ -115,13 +115,13 @@ public class EmailSettingsCacheServiceImpl implements EmailSettingsCacheService 
     private List<String> getEncryptedSettings()
             throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
         List<String> settings = new ArrayList<String>();
-        encryptSetting(settings, SmtpMetadataConstants.SMTP_HOST);
-        encryptSetting(settings, SmtpMetadataConstants.SMTP_PORT);
-        encryptSetting(settings, SmtpMetadataConstants.SMTP_ENCRYPTION_TYPE);
-        encryptSetting(settings, SmtpMetadataConstants.SMTP_USERNAME);
-        encryptSetting(settings, SmtpMetadataConstants.SMTP_PASSWORD);
-        encryptSetting(settings, SmtpMetadataConstants.MAIL_FROM_ADDRESS);
-        encryptSetting(settings, SmtpMetadataConstants.SUBSCRIBER_EMAIL_IDS);
+        encryptSetting(settings, SystemEmailSettingsType.SMTP_HOST);
+        encryptSetting(settings, SystemEmailSettingsType.SMTP_PORT);
+        encryptSetting(settings, SystemEmailSettingsType.SMTP_ENCRYPTION_TYPE);
+        encryptSetting(settings, SystemEmailSettingsType.SMTP_USERNAME);
+        encryptSetting(settings, SystemEmailSettingsType.SMTP_PASSWORD);
+        encryptSetting(settings, SystemEmailSettingsType.MAIL_FROM_ADDRESS);
+        encryptSetting(settings, SystemEmailSettingsType.SUBSCRIBER_EMAIL_IDS);
         return settings;
     }
 
@@ -129,21 +129,20 @@ public class EmailSettingsCacheServiceImpl implements EmailSettingsCacheService 
      * Return an encrypted key value pair.
      * List entry formatted as: [encryptedKey:encryptedValue]
      */
-    private void encryptSetting(List<String> settings, SmtpMetadataConstants key)
+    private void encryptSetting(List<String> settings, SystemEmailSettingsType key)
             throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
         settings.add(SystemPublisherMetadataCryptoUtils.encrypt(key.toString())
-                .concat(SEPARATOR)
+                .concat(separator)
                 .concat(SystemPublisherMetadataCryptoUtils.encrypt(getValue(key))));
     }
 
-    @Override
-    public Map<SmtpMetadataConstants, String> readFromFile() {
-        Map<SmtpMetadataConstants, String> metadataMap = new HashMap<SmtpMetadataConstants, String>();
-        try (Stream<String> lines = Files.lines(Paths.get(SMTP_META_DATA_FILE.toURI()), Charset.defaultCharset())) {
+    public static Map<SystemEmailSettingsType, String> readFromFile() {
+        Map<SystemEmailSettingsType, String> systemEmailSettingsMap = new HashMap<SystemEmailSettingsType, String>();
+        try (Stream<String> lines = Files.lines(Paths.get(emailSettingsFile.toURI()), Charset.defaultCharset())) {
             lines.forEach(line -> {
                 try {
-                    String tokens[] = line.split(SEPARATOR);
-                    metadataMap.put(SmtpMetadataConstants.valueOf(SystemPublisherMetadataCryptoUtils.decrypt(tokens[0])),
+                    String tokens[] = line.split(separator);
+                    systemEmailSettingsMap.put(SystemEmailSettingsType.valueOf(SystemPublisherMetadataCryptoUtils.decrypt(tokens[0])),
                             SystemPublisherMetadataCryptoUtils.decrypt(tokens[1]));
                 } catch (IllegalBlockSizeException | BadPaddingException | UnsupportedEncodingException e) {
                     log.error("Error decrypting data from emailSettings.txt file", e);
@@ -152,6 +151,6 @@ public class EmailSettingsCacheServiceImpl implements EmailSettingsCacheService 
         } catch (IOException exception) {
             log.error("Error reading emailSettings.txt file", exception);
         }
-        return metadataMap;
+        return systemEmailSettingsMap;
     }
 }

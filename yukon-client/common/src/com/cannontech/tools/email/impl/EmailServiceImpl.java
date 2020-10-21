@@ -30,7 +30,7 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.tools.email.EmailSettingsCacheService;
-import com.cannontech.tools.smtp.SmtpMetadataConstants;
+import com.cannontech.tools.email.SystemEmailSettingsType;
 
 public class EmailServiceImpl implements EmailService {
     private static final Logger log = YukonLogManager.getLogger(EmailServiceImpl.class);
@@ -114,11 +114,11 @@ public class EmailServiceImpl implements EmailService {
     private void populateFromCache() {
         log.error("Error Retrieving data from Database. Populating old values from cache.");
         encryptionType = SmtpEncryptionType
-                .valueOf(emailSettingsCacheService.getValue(SmtpMetadataConstants.SMTP_ENCRYPTION_TYPE));
-        username = emailSettingsCacheService.getValue(SmtpMetadataConstants.SMTP_USERNAME);
-        password = emailSettingsCacheService.getValue(SmtpMetadataConstants.SMTP_PASSWORD);
-        host = emailSettingsCacheService.getValue(SmtpMetadataConstants.SMTP_HOST);
-        port = emailSettingsCacheService.getValue(SmtpMetadataConstants.SMTP_PORT);
+                .valueOf(emailSettingsCacheService.getValue(SystemEmailSettingsType.SMTP_ENCRYPTION_TYPE));
+        username = emailSettingsCacheService.getValue(SystemEmailSettingsType.SMTP_USERNAME);
+        password = emailSettingsCacheService.getValue(SystemEmailSettingsType.SMTP_PASSWORD);
+        host = emailSettingsCacheService.getValue(SystemEmailSettingsType.SMTP_HOST);
+        port = emailSettingsCacheService.getValue(SystemEmailSettingsType.SMTP_PORT);
         smtpSettings.clear();
         Map<String, String> configs = getConfigurations();
         if (!CollectionUtils.isEmpty(configs)) {
@@ -127,7 +127,7 @@ public class EmailServiceImpl implements EmailService {
         smtpSettings.put(SMTP_HOST, host);
         smtpSettings.put(SMTP_PORT, port);
         SmtpEncryptionType encryptionType = SmtpEncryptionType
-                .valueOf(emailSettingsCacheService.getValue(SmtpMetadataConstants.SMTP_ENCRYPTION_TYPE));
+                .valueOf(emailSettingsCacheService.getValue(SystemEmailSettingsType.SMTP_ENCRYPTION_TYPE));
         if (encryptionType == SmtpEncryptionType.TLS) {
             smtpSettings.put(SmtpPropertyType.START_TLS_ENABLED.getKey(false), "true");
         } else {
@@ -140,13 +140,12 @@ public class EmailServiceImpl implements EmailService {
      */
     private void populateFromFile() {
         log.error("Error Retrieving data from Database. Populating old values from file.");
-        EmailSettingsCacheService cacheService = new EmailSettingsCacheServiceImpl();
-        Map<SmtpMetadataConstants, String> metadataMap = cacheService.readFromFile();
-        encryptionType = SmtpEncryptionType.valueOf(metadataMap.get(SmtpMetadataConstants.SMTP_ENCRYPTION_TYPE));
-        username = metadataMap.get(SmtpMetadataConstants.SMTP_USERNAME);
-        password = metadataMap.get(SmtpMetadataConstants.SMTP_PASSWORD);
-        host = metadataMap.get(SmtpMetadataConstants.SMTP_HOST);
-        port = metadataMap.get(SmtpMetadataConstants.SMTP_PORT);
+        Map<SystemEmailSettingsType, String> metadataMap = EmailSettingsCacheServiceImpl.readFromFile();
+        encryptionType = SmtpEncryptionType.valueOf(metadataMap.get(SystemEmailSettingsType.SMTP_ENCRYPTION_TYPE));
+        username = metadataMap.get(SystemEmailSettingsType.SMTP_USERNAME);
+        password = metadataMap.get(SystemEmailSettingsType.SMTP_PASSWORD);
+        host = metadataMap.get(SystemEmailSettingsType.SMTP_HOST);
+        port = metadataMap.get(SystemEmailSettingsType.SMTP_PORT);
         smtpSettings.clear();
         Map<String, String> configs = getConfigurations();
         if (!CollectionUtils.isEmpty(configs)) {
@@ -155,7 +154,7 @@ public class EmailServiceImpl implements EmailService {
         smtpSettings.put(SMTP_HOST, host);
         smtpSettings.put(SMTP_PORT, port);
         SmtpEncryptionType encryptionType = SmtpEncryptionType
-                .valueOf(metadataMap.get(SmtpMetadataConstants.SMTP_ENCRYPTION_TYPE));
+                .valueOf(metadataMap.get(SystemEmailSettingsType.SMTP_ENCRYPTION_TYPE));
         if (encryptionType == SmtpEncryptionType.TLS) {
             smtpSettings.put(SmtpPropertyType.START_TLS_ENABLED.getKey(false), "true");
         } else {

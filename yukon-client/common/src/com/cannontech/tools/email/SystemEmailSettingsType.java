@@ -1,6 +1,6 @@
-package com.cannontech.tools.smtp;
+package com.cannontech.tools.email;
 
-public enum SmtpMetadataConstants {
+public enum SystemEmailSettingsType {
     SUBSCRIBER_EMAIL_IDS,
     SMTP_HOST,
     SMTP_PORT,

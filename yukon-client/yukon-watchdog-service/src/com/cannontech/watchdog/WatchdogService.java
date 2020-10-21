@@ -24,10 +24,9 @@ import com.cannontech.database.db.version.CTIDatabase;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.tools.email.EmailSettingsCacheService;
+import com.cannontech.tools.email.SystemEmailSettingsType;
 import com.cannontech.tools.email.impl.EmailServiceImpl;
 import com.cannontech.tools.email.impl.EmailSettingsCacheServiceImpl;
-import com.cannontech.tools.smtp.SmtpMetadataConstants;
 import com.cannontech.watchdog.base.Watchdog;
 
 public class WatchdogService {
@@ -36,7 +35,7 @@ public class WatchdogService {
         static final Logger log = YukonLogManager.getLogger(WatchdogService.class);
     }
 
-    private static final String RESOURCE_PATH = "\\common\\i18n\\en_US\\com\\cannontech\\yukon\\watchdog\\root";
+    private static final String resourcePath = "\\common\\i18n\\en_US\\com\\cannontech\\yukon\\watchdog\\root";
 
     private List<Watchdog> watchdog;
     private static ScheduledFuture<?> schdfuture;
@@ -65,16 +64,15 @@ public class WatchdogService {
      */
     private static void sendEmail() {
         try {
-            EmailSettingsCacheService cacheService = new EmailSettingsCacheServiceImpl();
-            Map<SmtpMetadataConstants, String> metadataMap = cacheService.readFromFile();
-            if (StringUtils.isEmpty(metadataMap.get(SmtpMetadataConstants.SUBSCRIBER_EMAIL_IDS))) {
+            Map<SystemEmailSettingsType, String> metadataMap = EmailSettingsCacheServiceImpl.readFromFile();
+            if (StringUtils.isEmpty(metadataMap.get(SystemEmailSettingsType.SUBSCRIBER_EMAIL_IDS))) {
                 getLogger().warn("No user subscribed for notification for watchdog.");
                 return;
             }
             // Setup message source for reading i18n messages.
             ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
             String userDir = System.getProperty("user.dir");
-            String resourceDir = userDir.substring(0, userDir.lastIndexOf("\\") + 1).concat(RESOURCE_PATH);
+            String resourceDir = userDir.substring(0, userDir.lastIndexOf("\\") + 1).concat(resourcePath);
             messageSource.setBasename(new File(resourceDir).toURI().toString());
 
             String subject = messageSource.getMessage("yukon.watchdog.notification.subject", null, Locale.ENGLISH);
@@ -83,10 +81,10 @@ public class WatchdogService {
                     messageSource.getMessage("yukon.watchdog.notification.text", null, Locale.ENGLISH));
             msgBuilder.append("\n\n");
             msgBuilder.append(messageSource.getMessage("yukon.watchdog.notification.DATABASE", null, Locale.ENGLISH));
-            String commaSeparatedIds = metadataMap.get(SmtpMetadataConstants.SUBSCRIBER_EMAIL_IDS);
+            String commaSeparatedIds = metadataMap.get(SystemEmailSettingsType.SUBSCRIBER_EMAIL_IDS);
             List<String> sendToEmailIds = Arrays.asList(commaSeparatedIds.split("\\s*,\\s*"));
             EmailMessage emailMessage = EmailMessage.newMessageBccOnly(subject, msgBuilder.toString(),
-                    metadataMap.get(SmtpMetadataConstants.MAIL_FROM_ADDRESS),
+                    metadataMap.get(SystemEmailSettingsType.MAIL_FROM_ADDRESS),
                     sendToEmailIds);
             EmailService emailService = new EmailServiceImpl();
             emailService.sendMessage(emailMessage);
