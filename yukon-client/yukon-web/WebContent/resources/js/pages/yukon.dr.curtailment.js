@@ -131,7 +131,7 @@ yukon.dr.curtailment = (function () {
             if (isTrendsTabActive) {
                 $('.page-actions').css({'display' : '', 'display' : 'block'});
             } else {
-                $('.page-actions').css({'display':'none'});
+                $('.page-actions').css('display':'none');
             }
         },
 
