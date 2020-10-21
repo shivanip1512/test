@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.RadioButtonElement;
+import com.eaton.elements.SwitchBtnYesNoElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
 import com.eaton.framework.DriverExtensions;
 
@@ -14,8 +15,9 @@ public class CreateEcobeePrgmGearModal extends CreateGearsModal {
     }
 
     // Control Parameters
-    public TrueFalseCheckboxElement getMandatory() {
-        return new TrueFalseCheckboxElement(this.driverExt, "fields.mandatory", getModal());
+    public SwitchBtnYesNoElement getMandatory() {
+        //return new TrueFalseCheckboxElement(this.driverExt, "fields.mandatory", getModal());
+        return new SwitchBtnYesNoElement(this.driverExt, "fields.mandatory");
     }
 
     // TODO Control Percent element does not have a unique way to select it

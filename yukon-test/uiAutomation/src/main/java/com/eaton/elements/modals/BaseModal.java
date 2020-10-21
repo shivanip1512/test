@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
+import com.eaton.elements.Section;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 
@@ -177,4 +178,8 @@ public class BaseModal {
         
         return !list.isEmpty();
     }
+    
+    public Section getPageSection(String sectionName) {
+        return new Section(this.driverExt, sectionName);
+    } 
 }
