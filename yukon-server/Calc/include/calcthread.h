@@ -84,6 +84,7 @@ private:
     PointDataMsgs calcHistoricalPoints(const PointTimeMap& dbTimeMap, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
     HistoricalResults calcHistoricalPoint(CtiCalc* calcPoint, const DynamicTableData& data, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
     HistoricalResults calcBackfilledPoint(CtiCalc* calcPoint, const DynamicTableData& data, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
+    std::unique_ptr<CtiPointDataMsg> calcFromValues(CtiCalc* calcPoint, const CtiTime dynamicTime, const HistoricalPointValueMap& dynamicValues);
 
 public:
 
