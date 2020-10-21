@@ -4,8 +4,9 @@ import java.util.Optional;
 
 import com.eaton.elements.Button;
 import com.eaton.elements.DropDownElement;
+import com.eaton.elements.SwitchBtnYesNoElement;
 import com.eaton.elements.TextEditElement;
-import com.eaton.elements.TrueFalseCheckboxElement;
+import com.eaton.elements.TimePickerElement;
 import com.eaton.elements.modals.gears.CreateDirectPrgmGearModal;
 import com.eaton.elements.modals.gears.CreateEcobeePrgmGearModal;
 import com.eaton.elements.modals.gears.CreateHoneywellPrgmGearModal;
@@ -20,12 +21,20 @@ import com.eaton.pages.PageBase;
 public class LoadProgramCreatePage extends PageBase {
 
     private static final String DESCRIBEDBY = "gear-create-popup-LM_DIRECT_PROGRAM";
+    private TimePickerElement startTimeWindowOne;
+    private TimePickerElement stopTimeWindowOne;
+    private TimePickerElement startTimeWindowTwo;
+    private TimePickerElement stopTimeWindowTwo;
 
     public LoadProgramCreatePage(DriverExtensions driverExt) {
         super(driverExt);
         
         requiresLogin = true;
         pageUrl = Urls.DemandResponse.LOAD_PROGRAM_CREATE;
+        startTimeWindowOne = new TimePickerElement(this.driverExt, "startTimeWindowOne_inputField");
+        stopTimeWindowOne = new TimePickerElement(this.driverExt, "stopTimeWindowOne_inputField");
+        startTimeWindowTwo = new TimePickerElement(this.driverExt, "startTimeWindowTwo_inputField");
+        stopTimeWindowTwo = new TimePickerElement(this.driverExt, "startTimeWindowTwo_inputField");
     }
 
     // General
@@ -55,12 +64,28 @@ public class LoadProgramCreatePage extends PageBase {
     }
 
     // Control Window
-    public TrueFalseCheckboxElement getUseWindowOne() {
-        return new TrueFalseCheckboxElement(this.driverExt, "controlWindowOne");
+    public SwitchBtnYesNoElement getUseWindowOne() {
+        return new SwitchBtnYesNoElement(this.driverExt, "controlWindowOne");
+    }
+    
+    public TimePickerElement getStartTimeWindowOne() {
+        return startTimeWindowOne;
+    }
+    
+    public TimePickerElement getStopTimeWindowOne() {
+        return stopTimeWindowOne;
+    }
+    
+    public TimePickerElement getStartTimeWindowTwo() {
+        return startTimeWindowTwo;
+    }
+    
+    public TimePickerElement getStopTimeWindowTwo() {
+        return stopTimeWindowTwo;
     }
 
-    public TrueFalseCheckboxElement getUseWindowTwo() {
-        return new TrueFalseCheckboxElement(this.driverExt, "controlWindowTwo");
+    public SwitchBtnYesNoElement getUseWindowTwo() {
+        return new SwitchBtnYesNoElement(this.driverExt, "controlWindowTwo");
     }
 
     public Button getSaveBtn() {
@@ -90,7 +115,7 @@ public class LoadProgramCreatePage extends PageBase {
     public CreateHoneywellPrgmGearModal showCreateHoneywellPrgmGearModal() {
         getGearsCreateBtn().click();
 
-        return new CreateHoneywellPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
+        return new CreateHoneywellPrgmGearModal(this.driverExt, Optional.empty(), Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
     }
 
     public CreateItronPrgmGearModal showCreateItronPrgmGearModal() {
