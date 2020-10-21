@@ -209,13 +209,15 @@
             <cti:tab title="${zoneHierarchy}" headerClasses="js-zone-hierarchy">
                 <div class="column-10-14">
                     <div class="column one">
-                        <cti:url var="treeUrl" value="/capcontrol/ivvc/bus/${subBusId}/zoneHierarchy"/>
-                        <fancyTree:inlineTree id="zoneHierarchyTree" dataUrl="${treeUrl}"/>
-                        <c:if test="${hasEditingRole}">
-                            <div class="action-area">         
-                                <cti:button nameKey="create" onclick="yukon.da.zone.wizard.showZoneCreationWizard('${zoneCreatorUrl}', '${zoneCreationWizardTitle}');" icon="icon-add"/>
-                            </div>
-                        </c:if>
+                        <tags:boxContainer2 nameKey="zones" hideEnabled="false">
+                            <cti:url var="treeUrl" value="/capcontrol/ivvc/bus/${subBusId}/zoneHierarchy"/>
+                            <fancyTree:inlineTree id="zoneHierarchyTree" dataUrl="${treeUrl}" includeControlBar="true"/>
+                            <c:if test="${hasEditingRole}">
+                                <div class="action-area">         
+                                    <cti:button nameKey="create" onclick="yukon.da.zone.wizard.showZoneCreationWizard('${zoneCreatorUrl}', '${zoneCreationWizardTitle}');" icon="icon-add"/>
+                                </div>
+                            </c:if>
+                        </tags:boxContainer2>
                     </div>
                     <div class="column two nogutter">
                         <!-- TODO: Zone Detail will be displayed here in YUK-22267 -->

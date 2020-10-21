@@ -217,7 +217,7 @@ span.dynatree-folder a {
 ul.fancytree-container {
     font-family: helvetica, sans-serif;
     font-size: 13px;
-    border: 1px solid @gray_light;
+    border: none;
 }
 
 .fancytree-container .fancytree-title:hover {
@@ -225,6 +225,32 @@ ul.fancytree-container {
     background-color: @gray_light;
     border-color: @gray;
 }
+
+.fancytree-node.found .fancytree-title {
+    border-color: @primary-color;
+}
+
+.inline-tree .fancytree-controls { margin-bottom: 3px; }
+
+.fancytree-controls .fancytree-search { 
+    margin-left: 4px;
+    width: 50%;
+}
+
+.fancytree-controls .fancytree-open-all, 
+.fancytree-controls .fancytree-close-all {
+    float: left;
+    overflow: hidden;
+    width: 16px;
+    height: 1px;
+    margin: 5px 4px 0 0;
+    padding-top: 15px;
+    background-position: left top;
+    background-color: transparent;
+}
+
+.fancytree-controls .fancytree-open-all { background-image: url('../../../resources/js/lib/fancytree/tree/expand.png'); }
+.fancytree-controls .fancytree-close-all { background-image: url('../../../resources/js/lib/fancytree/tree/collapse.png'); }
 
 /* jQuery UI Overrides */
 .ui-autocomplete { z-index: 1000 !important; }

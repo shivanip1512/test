@@ -136,14 +136,16 @@ public class BusViewController {
         //system root node - needed for display
         JsTreeNode systemRoot = new JsTreeNode();
         
-        JsTreeNode rootZone = new JsTreeNode();
-        rootZone.setAttribute("id", hierarchy.getZone().getZoneId());
-        rootZone.setAttribute("text", hierarchy.getZone().getName());
-        
-        // recursively add child zones
-        addChildren(hierarchy, rootZone);
-        
-        systemRoot.addChild(rootZone);
+        if (hierarchy != null) {
+            JsTreeNode rootZone = new JsTreeNode();
+            rootZone.setAttribute("id", hierarchy.getZone().getZoneId());
+            rootZone.setAttribute("text", hierarchy.getZone().getName());
+            
+            // recursively add child zones
+            addChildren(hierarchy, rootZone);
+            
+            systemRoot.addChild(rootZone);
+        }
                 
         JsTreeNode.setLeaf(systemRoot);
         

@@ -4,6 +4,8 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 
 <%@ attribute name="id" required="true" description="The id of the tree element."%>
+<%@ attribute name="includeControlBar" type="java.lang.Boolean" description="If true, display options to expand/collapse all nodes and search nodes. Default is false."%>
+<%@ attribute name="styleClass" type="java.lang.String" description="Styling class to add to the outer div for the tree."%>
 <%@ attribute name="maxHeight" type="java.lang.Integer"
     description="The max-height in pixels for the internal tree div. Example: maxHeight='300'. Default is 500."%>
 <%@ attribute name="dataJson" type="java.lang.String" description="A dictionary starting with attributes of the root node."%>
@@ -11,10 +13,26 @@
 
 <c:set var="maxHeight" value="${not empty maxHeight and maxHeight > 0  ? maxHeight : 500}" />
 
-<div id="${id}" data-url="${dataUrl}" class="js-fancy-tree" style="width:100%;overflow:auto;max-height:${maxHeight}px;">
-    <c:if test="${not empty dataJson}">
-        <cti:toJson id="js-json-data" object="${dataJson}"/>
+<div id="internalTreeContainer_${id}" class="inline-tree ${pageScope.styleClass}">
+    <c:if test="${not empty pageScope.includeControlBar and pageScope.includeControlBar}">
+        <div class="fancytree-controls clearfix">
+            <cti:msg2 var="expand" key="yukon.common.expandAll" />
+            <cti:msg2 var="collapse" key="yukon.common.collapseAll" />
+            <cti:msg2 var="search" key="yukon.common.search.placeholder" />
+            <cti:msg2 var="tooltip" key="yukon.web.components.jstree.input.search.tooltip" />
+            <a href="javascript:void(0);" class="fancytree-open-all fl" data-tree-id="${id}" title="${expand}">${expand}</a>
+            <a href="javascript:void(0);" class="fancytree-close-all fl" data-tree-id="${id}" title="${collapse}">${collapse}</a>
+            <input type="text" class="fancytree-search fl" data-tree-id="${id}" placeholder="${search}" title="${tooltip}" />
+        </div>
     </c:if>
+        
+    <div class="tree_container clearfix">
+        <div id="${id}" data-url="${dataUrl}" class="tree-canvas js-fancy-tree" style="width:100%;overflow:auto;max-height:${maxHeight}px;">
+            <c:if test="${not empty dataJson}">
+                <cti:toJson id="js-json-data" object="${dataJson}"/>
+            </c:if>
+        </div>
+    </div>
 </div>
 
 <cti:includeScript link="/resources/js/common/yukon.ui.fancyTree.js"/>
