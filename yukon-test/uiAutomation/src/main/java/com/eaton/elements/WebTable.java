@@ -8,14 +8,12 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 
-import com.eaton.elements.WebTableColumnHeader.SortDirection;
 import com.eaton.framework.DriverExtensions;
 
 public class WebTable {
 
     private DriverExtensions driverExt;
     private String tableClassName;
-    private List<WebTableColumnHeader> columnHeaders = null;
     private WebElement parentElement;
     private String parent;
 
@@ -48,61 +46,73 @@ public class WebTable {
         }
     }
 
-    public List<WebTableColumnHeader> getColumnHeaders() {
-
-        if (this.columnHeaders == null) {
-            findColumnHeaders();
-        }
-
-        return this.columnHeaders;
-    }
-
     public List<String> getListTableHeaders() {
-        List<WebTableColumnHeader> headers = getColumnHeaders();
+        List<WebElement> headers = getColumnHeaders();
 
         List<String> headerList = new ArrayList<>();
 
-        for (WebTableColumnHeader header : headers) {
-            headerList.add(header.getColumnName());
+        for (WebElement header : headers) {
+            headerList.add(header.getText());
         }
 
         return headerList;
     }
 
     public void sortTableHeaderByIndex(int index, SortDirection direction) {
-        List<WebTableColumnHeader> headers = getColumnHeaders();
-
-        WebTableColumnHeader header = headers.get(index);
-
-        String sortedBy = header.getSortedBy();
+        List<WebElement> headers = getColumnHeaders();
+        WebElement header = headers.get(index);
+        String sortedBy = getSortedBy(index);
 
         if (sortedBy.equals("")) {
-            header.clickHeader();
-            waitForSort(index);
-
-            headers = getColumnHeaders();
-            header = headers.get(index);
-            sortedBy = header.getSortedBy();
+            header.findElement(By.cssSelector("a")).click();
+            sortedBy = getSortedBy(index);
         }
 
-        if ((!sortedBy.equals("")) && (!sortedBy.equals(direction.getSortDirection()))) {
-            header.clickHeader();
-            waitForSort(index);
+        if (!direction.getSortDirection().equals(sortedBy)) {
+            headers = getColumnHeaders();
+            header = headers.get(index);
+            header.findElement(By.cssSelector("a")).click();
+            waitForSorting(index, direction);
         }
     }
 
-    private void waitForSort(int index) {
+    private String getSortedBy(int index) {
         long startTime = System.currentTimeMillis();
-        String sortedBy = "";
+        String sortable = "";
         try {
-            while (sortedBy == "") {
-                List<WebTableColumnHeader> headers = getColumnHeaders();
-                WebTableColumnHeader header = headers.get(index);
+            while (sortable.equals("") && (System.currentTimeMillis() - startTime) < 10000) {
+                List<WebElement> headers = getColumnHeaders();
 
-                sortedBy = header.getSortedBy();
+                WebElement header = headers.get(index);
+
+                sortable = header.findElement(By.cssSelector("a")).getAttribute("class");
             }
         } catch (StaleElementReferenceException ex) {
         }
+
+        if (sortable.toLowerCase().contains(SortDirection.ASCENDING.getSortDirection())) {
+            return "SortDirection.ASCENDING.getSortDirection()";
+        } else if (sortable.toLowerCase().contains(SortDirection.DESCENDING.getSortDirection())) {
+            return SortDirection.DESCENDING.getSortDirection();
+        } else {
+            return "";
+        }
+    }
+    
+    private void waitForSorting(int index, SortDirection direction) {
+        long startTime = System.currentTimeMillis();
+        String sortedBy = "";
+        String sortDirection = direction.getSortDirection();
+        try {
+            while((sortedBy.equals("") || !sortDirection.contains(sortedBy)) && (System.currentTimeMillis() - startTime) < 10000) {
+                List<WebElement> headers = getColumnHeaders();
+                
+                WebElement header = headers.get(index);
+                
+                sortedBy = header.findElement(By.cssSelector("a")).getAttribute("class");
+            }
+            
+        }catch (StaleElementReferenceException ex) {}
     }
 
     public List<String> getDataRowsTextByCellIndex(int index) {
@@ -283,18 +293,26 @@ public class WebTable {
         return new WebTableRow(this.driverExt, rowList.get(index));
     }
 
-    private void findColumnHeaders() {
-
-        List<WebElement> headerList = this.getTable().findElements(By.cssSelector("tr th"));
-
-        this.columnHeaders = new ArrayList<>();
-        for (WebElement element : headerList) {
-
-            this.columnHeaders.add(new WebTableColumnHeader(element));
-        }
+    private List<WebElement> getColumnHeaders() {
+        return this.getTable().findElements(By.cssSelector("tr th"));
     }
 
     public String getTableMessage() {
         return this.driverExt.findElement(By.cssSelector(".empty-list"), Optional.of(2)).getText();
+    }
+
+    public enum SortDirection {
+        ASCENDING("asc"),
+        DESCENDING("desc");
+
+        private final String direction;
+
+        SortDirection(String direction) {
+            this.direction = direction;
+        }
+
+        public String getSortDirection() {
+            return this.direction;
+        }
     }
 }

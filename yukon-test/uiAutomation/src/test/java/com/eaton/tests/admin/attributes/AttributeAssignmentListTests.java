@@ -3,20 +3,18 @@ package com.eaton.tests.admin.attributes;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import org.javatuples.Pair;
-import org.json.JSONObject;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.eaton.builders.admin.attributes.AttributeService;
-import com.eaton.elements.WebTableColumnHeader.SortDirection;
-import com.eaton.elements.modals.ConfirmModal;
+import com.eaton.elements.WebTable.SortDirection;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
@@ -30,7 +28,8 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
     private List<String> attrNames;
     private List<String> deviceTypes;
     private List<String> pointTypes;
-    private List<String> pointOffsets;
+    private List<String> offsets;
+    private List<Integer> pointOffsets = new ArrayList<Integer>();
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
@@ -51,7 +50,8 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
         attrNames = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(1);
         deviceTypes = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(2);
         pointTypes = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(3);
-        pointOffsets = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(4);
+        offsets = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(4);
+        pointOffsets.addAll(offsets.stream().map(Integer::valueOf).collect(Collectors.toList()));
     }
 
     @AfterMethod
@@ -136,24 +136,27 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.ADMIN, TestConstants.Features.ATTRIBUTES })
     public void attributeList_AttrAsgmtSortPointOffsetAsc_Correct() {
         setRefreshPage(true);
-        Collections.sort(pointOffsets, String.CASE_INSENSITIVE_ORDER);
+        Collections.sort(pointOffsets);  
 
         page.getAttrAsgmtTable().sortTableHeaderByIndex(3, SortDirection.ASCENDING);
 
         List<String> pointOffsetList = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(4);
-        assertThat(pointOffsets).isEqualTo(pointOffsetList);
+        List<Integer> offsetList = new ArrayList<Integer>();
+        offsetList.addAll(pointOffsetList.stream().map(Integer::valueOf).collect(Collectors.toList()));
+        assertThat(pointOffsets).isEqualTo(offsetList);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.ADMIN, TestConstants.Features.ATTRIBUTES })
     public void attributeList_AttrAsgmtSortPointOffsetDesc_Correct() {
         setRefreshPage(true);
-        Collections.sort(pointOffsets, String.CASE_INSENSITIVE_ORDER);
+        Collections.sort(pointOffsets);
         Collections.reverse(pointOffsets);
 
         page.getAttrAsgmtTable().sortTableHeaderByIndex(3, SortDirection.DESCENDING);
 
         List<String> pointOffsetList = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(4);
-
+        List<Integer> offsetList = new ArrayList<Integer>();
+        offsetList.addAll(pointOffsetList.stream().map(Integer::valueOf).collect(Collectors.toList()));
         assertThat(pointOffsets).isEqualTo(pointOffsetList);
     }
 }
