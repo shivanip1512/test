@@ -606,7 +606,7 @@ auto CtiCalculateThread::calcHistoricalPoints(const PointTimeMap& dbTimeMap, con
                 return messages;
             }
 
-            auto [newTime, pointMessages] = pointCalculator(this, calcPoint.get(), data, lastTime, earliestCalcDate, wasReloaded);
+            auto [newTime, pointMessages] = pointCalculator(this, *calcPoint, data, lastTime, earliestCalcDate, wasReloaded);
 
             if( newTime.isValid() )
             {
@@ -631,13 +631,13 @@ auto CtiCalculateThread::calcHistoricalPoints(const PointTimeMap& dbTimeMap, con
 }
 
 
-auto CtiCalculateThread::calcHistoricalPoint(CtiCalc* calcPoint, const DynamicTableData& data, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded)
+auto CtiCalculateThread::calcHistoricalPoint(CtiCalc& calcPoint, const DynamicTableData& data, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded)
     -> HistoricalResults
 {
     PointDataMsgs messages;
 
-    const auto pointID = calcPoint->getPointId();
-    const auto componentCount = calcPoint->getComponentCount();
+    const auto pointID = calcPoint.getPointId();
+    const auto componentCount = calcPoint.getComponentCount();
 
     CtiTime newTime { CtiTime::not_a_time };
     for( const auto& [dynamicTime, dynamicValues] : data )
@@ -655,28 +655,28 @@ auto CtiCalculateThread::calcHistoricalPoint(CtiCalc* calcPoint, const DynamicTa
     return HistoricalResults{ newTime, std::move(messages) };
 }
 
-std::unique_ptr<CtiPointDataMsg> CtiCalculateThread::calcFromValues(CtiCalc* calcPoint, const CtiTime dynamicTime, const HistoricalPointValueMap& dynamicValues)
+std::unique_ptr<CtiPointDataMsg> CtiCalculateThread::calcFromValues(CtiCalc& calcPoint, const CtiTime dynamicTime, const HistoricalPointValueMap& dynamicValues)
 {
-    const auto pointID = calcPoint->getPointId();
+    const auto pointID = calcPoint.getPointId();
 
     //This means all the necessary points in historical have been updated, we can do a calc
     setHistoricalPointStore(dynamicValues);//Takes the value/paoid pair and sets the values in the point store
 
-    CtiPointStoreElement* calcPointPtr = CtiPointStore::find(calcPoint->getPointId());
+    CtiPointStoreElement* calcPointPtr = CtiPointStore::find(calcPoint.getPointId());
     CtiTime calcTime;
     int calcQuality;
     bool calcValid;
 
-    auto newPointValue = calcPoint->calculate( calcQuality, calcTime, calcValid );
+    auto newPointValue = calcPoint.calculate( calcQuality, calcTime, calcValid );
 
-    calcPoint->setNextInterval(calcPoint->getUpdateInterval());
+    calcPoint.setNextInterval(calcPoint.getUpdateInterval());
 
     if(!calcValid)
     {
         //even if we were invalid, we need to move on and try the next time, otherwise we will constantly retry
         if(_CALC_DEBUG & CALC_DEBUG_POSTCALC_VALUE)
         {
-            CTILOG_DEBUG(dout, "Calculation of historical point "<< calcPoint->getPointId() <<" was invalid (ex. div by zero or sqrt(<0)).");
+            CTILOG_DEBUG(dout, "Calculation of historical point "<< calcPoint.getPointId() <<" was invalid (ex. div by zero or sqrt(<0)).");
         }
 
         calcQuality = NonUpdatedQuality;
@@ -696,7 +696,7 @@ std::unique_ptr<CtiPointDataMsg> CtiCalculateThread::calcFromValues(CtiCalc* cal
     return pointData;
 }
 
-auto CtiCalculateThread::calcBackfilledPoint(CtiCalc* calcPoint, const DynamicTableData& data, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded)
+auto CtiCalculateThread::calcBackfilledPoint(CtiCalc& calcPoint, const DynamicTableData& data, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded)
     -> HistoricalResults
 {
     return HistoricalResults { CtiTime::not_a_time, {} };
