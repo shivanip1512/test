@@ -283,7 +283,7 @@ public class ControlScenarioSetupController {
 
     private List<LiteGear> retrieveGears(Integer programId, YukonUserContext userContext, HttpServletRequest request) {
         List<LiteGear> liteGears = new ArrayList<>();
-        String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramUrl + programId + "/gears");
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramUrl + "/" +  programId + "/gears");
         try {
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForList(userContext, request, url,
                 LiteGear.class, HttpMethod.GET, LiteGear.class);
