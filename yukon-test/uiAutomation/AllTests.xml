@@ -23,6 +23,7 @@
     	<package name="com.eaton.tests.support"/>
     	<package name="com.eaton.tests.tools"/>
     	<package name="com.eaton.tests.tools.trends"/>
+    	<package name="com.eaton.tests.demandresponse.loadprogram"/>
     </packages>
   </test>
 </suite>
