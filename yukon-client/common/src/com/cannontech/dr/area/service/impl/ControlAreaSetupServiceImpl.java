@@ -16,24 +16,17 @@ import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.dr.setup.ControlArea;
 import com.cannontech.common.dr.setup.ControlAreaProgramAssignment;
-import com.cannontech.common.dr.setup.ControlAreaProjection;
-import com.cannontech.common.dr.setup.ControlAreaProjectionType;
-import com.cannontech.common.dr.setup.ControlAreaTrigger;
-import com.cannontech.common.dr.setup.ControlAreaTriggerType;
-import com.cannontech.common.dr.setup.DailyDefaultState;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMServiceHelper;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.exception.LMObjectDeletionFailureException;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
-import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
-import com.cannontech.database.TFBoolean;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.lm.LMControlArea;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -42,7 +35,6 @@ import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
-import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
 import com.cannontech.database.db.device.lm.LMProgram;
@@ -76,7 +68,9 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
                                                                  .orElseThrow(() -> new NotFoundException("Control area Id not found " + areaId));
 
         LMControlArea lmControlArea = (LMControlArea) dbPersistentDao.retrieveDBPersistent(liteControlArea);
-        ControlArea controlArea = buildControlAreaModel(lmControlArea);
+        ControlArea controlArea = new ControlArea();
+        controlArea.buildModel(lmControlArea);
+        getProgramAssignmentName(lmControlArea, controlArea);
         List<ControlAreaProgramAssignment> assignedProgramList = controlArea.getProgramAssignment();
         if (assignedProgramList != null) {
             Comparator<ControlAreaProgramAssignment> comparator = controlArea.getStartPriorityComparator();
@@ -90,7 +84,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
     @Transactional
     public ControlArea create(ControlArea controlArea) {
         LMControlArea lmControlArea = getDBPersistent(controlArea.getControlAreaId());
-        buildLMControlAreaDBPersistent(lmControlArea, controlArea);
+        controlArea.buildDBPersistent(lmControlArea);
 
         dbPersistentDao.performDBChange(lmControlArea, TransactionType.INSERT);
 
@@ -108,7 +102,10 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
                 getProgramNamesString(lmControlArea.getLmControlAreaProgramVector()), startTime, stopTime,
                 ApiRequestContext.getContext().getLiteYukonUser());
 
-        return buildControlAreaModel(lmControlArea);
+        controlArea.buildModel(lmControlArea);
+        getProgramAssignmentName(lmControlArea, controlArea);
+ 
+       return controlArea;
     }
 
     @Override
@@ -124,7 +121,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
         // scenario(s) or not.
         validateUpdate(controlArea.getProgramAssignment(), lmControlArea.getLmControlAreaProgramVector());
 
-        buildLMControlAreaDBPersistent(lmControlArea, controlArea);
+        controlArea.buildDBPersistent(lmControlArea);
         lmControlArea.setPAObjectID(controlAreaId);
         dbPersistentDao.performDBChange(lmControlArea, TransactionType.UPDATE);
 
@@ -137,7 +134,9 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
           getProgramNamesString(lmControlArea.getLmControlAreaProgramVector()), startTime, stopTime,
           ApiRequestContext.getContext().getLiteYukonUser());
 
-        return buildControlAreaModel(lmControlArea);
+        controlArea.buildModel(lmControlArea);
+        getProgramAssignmentName(lmControlArea, controlArea);
+        return controlArea;
     }
 
     /**
@@ -187,106 +186,20 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
     }
 
     /**
-     * Build trigger model for Control Area.
+     * Retrieve Program assignment names of program for Control Area.
      */
-    private void buildTriggerModel(LMControlArea lmControlArea, ControlArea controlArea) {
-        Integer triggerOrder = 1;
-        List<ControlAreaTrigger> areaTriggers = new ArrayList<>();
-        for (LMControlAreaTrigger areaTrigger : lmControlArea.getLmControlAreaTriggerVector()) {
-            ControlAreaTrigger controlAreaTrigger = new ControlAreaTrigger();
-            controlAreaTrigger.setTriggerId(areaTrigger.getTriggerID());
-            controlAreaTrigger.setTriggerNumber(triggerOrder);
-            controlAreaTrigger.setTriggerType(ControlAreaTriggerType.getTriggerValue(areaTrigger.getTriggerType()));
-            controlAreaTrigger.setTriggerPointId(areaTrigger.getPointID());
-
-            if (areaTrigger.getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_STATUS)) {
-                controlAreaTrigger.setNormalState(areaTrigger.getNormalState());
-            } else {
-                controlAreaTrigger.setMinRestoreOffset(areaTrigger.getMinRestoreOffset());
-                controlAreaTrigger.setPeakPointId(areaTrigger.getPeakPointID());
-                if ((areaTrigger.getTriggerType()).equalsIgnoreCase(IlmDefines.TYPE_THRESHOLD_POINT)) {
-                    controlAreaTrigger.setThresholdPointId(areaTrigger.getThresholdPointID());
-                } else {
-                    controlAreaTrigger.setThreshold(areaTrigger.getThreshold());
-                    ControlAreaProjection projection = new ControlAreaProjection();
-                    projection.setProjectionType(
-                        ControlAreaProjectionType.getProjectionValue(areaTrigger.getProjectionType()));
-                    projection.setProjectAheadDuration(areaTrigger.getProjectAheadDuration());
-                    projection.setProjectionPoint(areaTrigger.getProjectionPoints());
-                    controlAreaTrigger.setControlAreaProjection(projection);
-                    controlAreaTrigger.setAtku(areaTrigger.getThresholdKickPercent());
-                }
-            }
-            areaTriggers.add(controlAreaTrigger);
-            triggerOrder++;
-        }
-
-        if (CollectionUtils.isNotEmpty(areaTriggers)) {
-            controlArea.setTriggers(areaTriggers);
-        }
-    }
-
-    /**
-     * Build program assignment model for control area.
-     */
-    private void buildProgramAssignmentModel(LMControlArea lmControlArea, ControlArea controlArea) {
-        List<ControlAreaProgramAssignment> programAssignment = new ArrayList<>();
-
-        lmControlArea.getLmControlAreaProgramVector().forEach(program -> {
-            ControlAreaProgramAssignment controlAreaProgramAssignment = new ControlAreaProgramAssignment();
-            controlAreaProgramAssignment.setProgramId(program.getLmProgramDeviceID());
-            controlAreaProgramAssignment.setStartPriority(program.getStartPriority());
-            controlAreaProgramAssignment.setStopPriority(program.getStopPriority());
-
-            LiteYukonPAObject pao = dbCache.getAllPaosMap().get(program.getLmProgramDeviceID());
-            controlAreaProgramAssignment.setProgramName(pao.getPaoName());
-
-            programAssignment.add(controlAreaProgramAssignment);
+    private void getProgramAssignmentName(LMControlArea lmControlArea, ControlArea controlArea) {
+        lmControlArea.getLmControlAreaProgramVector().forEach(lmprogram -> {
+            LiteYukonPAObject pao = dbCache.getAllPaosMap().get(lmprogram.getLmProgramDeviceID());
+            controlArea.getProgramAssignment()
+                    .forEach(program -> {
+                        if (program.getProgramId() == lmprogram.getLmProgramDeviceID()) {
+                            program.setProgramName(pao.getPaoName());
+                        }
+                    });
         });
-
-        if (CollectionUtils.isNotEmpty(programAssignment)) {
-            controlArea.setProgramAssignment(programAssignment);
-        }
-
     }
 
-    /**
-     * Build Control Area Model object
-     */
-    private ControlArea buildControlAreaModel(LMControlArea lmControlArea) {
-        ControlArea controlArea = new ControlArea();
-        com.cannontech.database.db.device.lm.LMControlArea lmcontrolarea = lmControlArea.getControlArea();
-        controlArea.setControlAreaId(lmControlArea.getPAObjectID());
-        controlArea.setName(lmControlArea.getPAOName());
-
-        controlArea.setControlInterval(lmcontrolarea.getControlInterval());
-
-        controlArea.setMinResponseTime(lmcontrolarea.getMinResponseTime());
-
-        controlArea.setDailyDefaultState(DailyDefaultState.valueOf(lmcontrolarea.getDefOperationalState()));
-
-        controlArea.setDailyStartTimeInMinutes(
-            lmcontrolarea.getDefDailyStartTime() == com.cannontech.database.db.device.lm.LMControlArea.OPTIONAL_VALUE_UNUSED
-                ? null : lmcontrolarea.getDefDailyStartTime() / 60);
-
-        controlArea.setDailyStopTimeInMinutes(
-            lmcontrolarea.getDefDailyStopTime() == com.cannontech.database.db.device.lm.LMControlArea.OPTIONAL_VALUE_UNUSED
-                ? null : lmcontrolarea.getDefDailyStopTime() / 60);
-
-        if (lmcontrolarea.getRequireAllTriggersActiveFlag().equals(TFBoolean.TRUE.getDatabaseRepresentation())) {
-            controlArea.setAllTriggersActiveFlag(true);
-        } else {
-            controlArea.setAllTriggersActiveFlag(false);
-        }
-        buildTriggerModel(lmControlArea, controlArea);
-        buildProgramAssignmentModel(lmControlArea, controlArea);
-
-        return controlArea;
-    }
-
-    /**
-     * Return DB Persistent object
-     */
     private LMControlArea getDBPersistent(Integer paoId) {
         LMControlArea lmControlArea = new LMControlArea();
         if (paoId != null) {
@@ -294,118 +207,6 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
             lmControlArea = (LMControlArea) dbPersistentDao.retrieveDBPersistent(pao);
         }
         return lmControlArea;
-    }
-
-    /**
-     * Build DB Persistent object for LMControlArea.
-     */
-    private LMControlArea buildLMControlAreaDBPersistent(LMControlArea lmControlArea, ControlArea controlArea) {
-        lmControlArea.setPAOName(controlArea.getName());
-        com.cannontech.database.db.device.lm.LMControlArea lmDbControlArea = lmControlArea.getControlArea();
-        lmDbControlArea.setControlInterval(controlArea.getControlInterval());
-        lmDbControlArea.setMinResponseTime(controlArea.getMinResponseTime());
-
-        lmDbControlArea.setDefOperationalState(controlArea.getDailyDefaultState().name());
-
-        if (controlArea.getAllTriggersActiveFlag() != null) {
-            TFBoolean triggersActive = TFBoolean.valueOf(controlArea.getAllTriggersActiveFlag());
-            lmDbControlArea.setRequireAllTriggersActiveFlag((Character) triggersActive.getDatabaseRepresentation());
-        }
-        
-        if (controlArea.getDailyStartTimeInMinutes() != null) {
-            lmDbControlArea.setDefDailyStartTime(controlArea.getDailyStartTimeInMinutes() * 60);
-        } else {
-            lmDbControlArea.setDefDailyStartTime(com.cannontech.database.db.device.lm.LMControlArea.OPTIONAL_VALUE_UNUSED);
-        }
-
-        if (controlArea.getDailyStopTimeInMinutes() != null) {
-            lmDbControlArea.setDefDailyStopTime(controlArea.getDailyStopTimeInMinutes() * 60);
-        } else {
-            lmDbControlArea.setDefDailyStopTime(com.cannontech.database.db.device.lm.LMControlArea.OPTIONAL_VALUE_UNUSED);
-        }
-
-        buildAreaTriggersDBPersistent(lmControlArea, controlArea);
-        buildAreaProgramAssignmentDBPersistent(lmControlArea, controlArea);
-
-        return lmControlArea;
-
-    }
-
-    private void buildAreaTriggersDBPersistent(LMControlArea lmControlArea, ControlArea controlArea) {
-        Integer triggerOrder = 1;
-        if (CollectionUtils.isNotEmpty(lmControlArea.getLmControlAreaTriggerVector())) {
-            lmControlArea.getLmControlAreaTriggerVector().clear();
-        }
-        if (CollectionUtils.isNotEmpty(controlArea.getTriggers())) {
-            for (ControlAreaTrigger areaTrigger : controlArea.getTriggers()) {
-
-                LMControlAreaTrigger lmControlAreaTrigger = new LMControlAreaTrigger();
-                lmControlAreaTrigger.setPointID(areaTrigger.getTriggerPointId());
-                lmControlAreaTrigger.setTriggerType(areaTrigger.getTriggerType().getTriggerTypeValue());
-                lmControlAreaTrigger.setTriggerNumber(triggerOrder);
-                buildTriggerByType(lmControlAreaTrigger,areaTrigger);
-                lmControlArea.getLmControlAreaTriggerVector().add(lmControlAreaTrigger);
-                triggerOrder++;
-            }
-        }
-    }
-
-    private void buildTriggerByType(LMControlAreaTrigger lmControlAreaTrigger, ControlAreaTrigger areaTrigger) {
-
-        if (areaTrigger.getTriggerType().getTriggerTypeValue().equalsIgnoreCase(IlmDefines.TYPE_STATUS)) {
-            lmControlAreaTrigger.setNormalState(areaTrigger.getNormalState());
-            lmControlAreaTrigger.setThreshold(0.0);
-        } else {
-            lmControlAreaTrigger.setNormalState(IlmDefines.INVALID_INT_VALUE);
-            if ((areaTrigger.getTriggerType().getTriggerTypeValue()).equalsIgnoreCase( IlmDefines.TYPE_THRESHOLD_POINT)) {
-                lmControlAreaTrigger.setThreshold(0.0);
-                lmControlAreaTrigger.setThresholdPointID(areaTrigger.getThresholdPointId());
-            } else {
-                lmControlAreaTrigger.setThreshold(areaTrigger.getThreshold());
-                if (areaTrigger.getAtku() != null) {
-                    lmControlAreaTrigger.setThresholdKickPercent(areaTrigger.getAtku());
-                }
-                String projectionType=areaTrigger.getControlAreaProjection().getProjectionType().getProjectionTypeValue();
-                lmControlAreaTrigger.setProjectionType(projectionType);
-                if(projectionType.equals(ControlAreaProjectionType.NONE.getDatabaseRepresentation())) {
-                     lmControlAreaTrigger.setProjectionPoints(5);
-                     lmControlAreaTrigger.setProjectAheadDuration(TimeIntervals.MINUTES_5.getSeconds());
-                }else {
-                     lmControlAreaTrigger.setProjectionPoints(areaTrigger.getControlAreaProjection().getProjectionPoint());
-                     lmControlAreaTrigger.setProjectAheadDuration(areaTrigger.getControlAreaProjection().getProjectAheadDuration());
-                }
-            }
-
-            if (areaTrigger.getMinRestoreOffset() != null) {
-                lmControlAreaTrigger.setMinRestoreOffset(areaTrigger.getMinRestoreOffset());
-            }
-
-            if (areaTrigger.getPeakPointId() != null) {
-                lmControlAreaTrigger.setPeakPointID(areaTrigger.getPeakPointId());
-            } else {
-                lmControlAreaTrigger.setPeakPointID(IlmDefines.INVALID_INT_VALUE);
-            }
-        }
-    }
-
-    private void buildAreaProgramAssignmentDBPersistent(LMControlArea lmControlArea, ControlArea controlArea) {
-
-        if (CollectionUtils.isNotEmpty(lmControlArea.getLmControlAreaProgramVector())) {
-            lmControlArea.getLmControlAreaProgramVector().clear();
-        }
-        if (CollectionUtils.isNotEmpty(controlArea.getProgramAssignment())) {
-            controlArea.getProgramAssignment().forEach(assignedProgram -> {
-                LMControlAreaProgram lmControlAreaProgram = new LMControlAreaProgram();
-                lmControlAreaProgram.setLmProgramDeviceID(assignedProgram.getProgramId());
-                if (assignedProgram.getStartPriority() != null) {
-                    lmControlAreaProgram.setStartPriority(assignedProgram.getStartPriority());
-                }
-                if (assignedProgram.getStopPriority() != null) {
-                    lmControlAreaProgram.setStopPriority(assignedProgram.getStopPriority());
-                }
-                lmControlArea.getLmControlAreaProgramVector().add(lmControlAreaProgram);
-            });
-        }
     }
 
     @Override
