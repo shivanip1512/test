@@ -86,7 +86,7 @@ public class LoadProgramSetupApiController {
         return new ResponseEntity<>(notificationGroups, HttpStatus.OK);
     }
     
-    @GetMapping("/gear/{gearId}")
+    @GetMapping("/gears/{id}")
     public ResponseEntity<Object> getProgramGear(@PathVariable Integer gearId) {
         ProgramGear programGear = loadProgramService.getProgramGear(gearId);
         return new ResponseEntity<>(programGear, HttpStatus.OK);
@@ -106,13 +106,13 @@ public class LoadProgramSetupApiController {
         return new ResponseEntity<>(programGroups, HttpStatus.OK);
     }
 
-    @GetMapping("/availableLoadGroups/{id}")
+    @GetMapping("/{id}/loadGroups/available")
     public ResponseEntity<Object> getAvailableProgramLoadGroups(@PathVariable int id) {
         List<ProgramGroup> programGroups = loadProgramService.getAvailableProgramLoadGroups(id);
         return new ResponseEntity<>(programGroups, HttpStatus.OK);
     }
 
-    @GetMapping("/availableNotificationGroups/{id}")
+    @GetMapping("/{id}/notificationGroups/available")
     public ResponseEntity<Object> getAvailableProgramNotificationGroups(@PathVariable int id) {
         List<NotificationGroup> notificationGroups =
             loadProgramService.getAvailableProgramNotificationGroups(id);
@@ -120,7 +120,7 @@ public class LoadProgramSetupApiController {
     }
 
     
-    @GetMapping("/availableDirectMemberControls/{id}")
+    @GetMapping("/{id}/directMemberControls/available")
     @CheckRoleProperty(YukonRoleProperty.ALLOW_MEMBER_PROGRAMS)
     public ResponseEntity<Object> getAvailableDirectMemberControls(@PathVariable int id) {
         List<ProgramDirectMemberControl> directMemberControls =
@@ -133,7 +133,7 @@ public class LoadProgramSetupApiController {
         return new ResponseEntity<>(loadProgramService.getAvailablePrograms(), HttpStatus.OK);
     }
 
-    @GetMapping("/getGearsForProgram/{programId}")
+    @GetMapping("/{id}/gears")
     public ResponseEntity<List<LiteGear>> getGearsForProgram(@PathVariable int programId) {
         return new ResponseEntity<>(loadProgramService.getGearsForProgram(programId), HttpStatus.OK);
     }
