@@ -5,15 +5,17 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <table class="compact-results-table row-highlighting">
-    <tr>
-        <tags:sort column="${POINTNAME}" />
-        <tags:sort column="${ATTRIBUTE}" />
-        <th></th>
-        <th><i:inline key="yukon.common.value"/></th>
-        <th><i:inline key="yukon.common.dateTime"/></th>
-        <tags:sort column="${POINTTYPE}" />
-        <tags:sort column="${POINTOFFSET}" />
-    </tr>
+    <thead>
+        <tr>
+            <tags:sort column="${POINTNAME}" />
+            <tags:sort column="${ATTRIBUTE}" />
+            <th></th>
+            <th><i:inline key="yukon.common.value"/></th>
+            <th><i:inline key="yukon.common.dateTime"/></th>
+            <tags:sort column="${POINTTYPE}" />
+            <tags:sort column="${POINTOFFSET}" />
+        </tr>
+    </thead>
     <tbody>
         <c:forEach var="point" items="${points.resultList}">
             <tr>
