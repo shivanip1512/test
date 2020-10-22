@@ -37,7 +37,7 @@ YukonError_t RfBatteryNodeDevice::executePutConfig(CtiRequestMsg* pReq, CtiComma
                     pReq, parse, returnMsgs, rfnRequests, *configPart,
                     bindConfigMethod( &RfBatteryNodeDevice::executePutConfigIntervals, this ) );
             
-            if( ! ret )
+            if( ! ret && ! parse.isKeyValid("verify") )
             {
                 requestMsgs.emplace_back(makeVerifyMsg(*pReq));
             }

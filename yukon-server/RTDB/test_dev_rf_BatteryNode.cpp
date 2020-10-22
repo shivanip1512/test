@@ -218,7 +218,7 @@ BOOST_AUTO_TEST_CASE(test_putconfig_install_all_verify_match)
 
     BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
     BOOST_CHECK(rfnRequests.empty());
-    BOOST_REQUIRE_EQUAL(1, requestMsgs.size());
+    BOOST_CHECK(requestMsgs.empty());
 
     {
         const auto& returnMsg = *returnMsgs.front();
@@ -227,13 +227,6 @@ BOOST_AUTO_TEST_CASE(test_putconfig_install_all_verify_match)
         BOOST_CHECK_EQUAL(returnMsg.ResultString(), "Config all is current.");
         BOOST_CHECK_EQUAL(returnMsg.ExpectMore(), false);
         BOOST_CHECK_EQUAL(returnMsg.UserMessageId(), userMessageId);
-    }
-    {
-        const auto& requestMsg = *requestMsgs.front();
-
-        BOOST_CHECK_EQUAL(requestMsg.CommandString(), "putconfig install all verify");
-        BOOST_CHECK_EQUAL(requestMsg.getConnectionHandle().getConnectionId(), connectionHandle.getConnectionId());
-        BOOST_CHECK_EQUAL(requestMsg.UserMessageId(), userMessageId);
     }
 }
 

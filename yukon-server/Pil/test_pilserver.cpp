@@ -303,7 +303,7 @@ BOOST_AUTO_TEST_CASE(test_rfnBatteryNode_verifySuccess)
 
     pilServer.executeRequest(&reqMsg);
 
-    BOOST_REQUIRE_EQUAL(2, pilServer.retList.size());
+    BOOST_REQUIRE_EQUAL(1, pilServer.retList.size());
     auto retList_itr = pilServer.retList.cbegin();
 
     {
@@ -311,18 +311,9 @@ BOOST_AUTO_TEST_CASE(test_rfnBatteryNode_verifySuccess)
 
         BOOST_REQUIRE(retMsg);
         
-        BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+        BOOST_CHECK_EQUAL(retMsg->ExpectMore(), false);
         BOOST_CHECK_EQUAL(retMsg->Status(), 0);
         BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config all is current.");
-    }
-    {  //  This is the bug.  We should not be submitting another verify on success.
-        auto reqMsg = dynamic_cast<const CtiRequestMsg*>(retList_itr++->get());
-
-        BOOST_REQUIRE(reqMsg);
-
-        BOOST_CHECK_EQUAL(reqMsg->CommandString(), "putconfig install all verify");
-        BOOST_CHECK(reqMsg->getConnectionHandle(), handle);
-        BOOST_CHECK(reqMsg->UserMessageId(), UserMessageId);
     }
 }
 
