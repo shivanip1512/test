@@ -72,7 +72,6 @@ public class LoadProgramEcobeeCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldPrgmEcobeeCreate_AllFields_Success() {
-        navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
         // generate dynamic name for Ecobee Program name
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String loadProgramName = "AT LM Ecobee Program " + timeStamp;

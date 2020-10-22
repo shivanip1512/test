@@ -116,7 +116,7 @@ public class LoadProgramCreatePage extends PageBase {
     public CreateHoneywellPrgmGearModal showCreateHoneywellPrgmGearModal() {
         getGearsCreateBtn().click();
 
-        return new CreateHoneywellPrgmGearModal(this.driverExt, Optional.empty(), Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
+        return new CreateHoneywellPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
     }
 
     public CreateItronPrgmGearModal showCreateItronPrgmGearModal() {
