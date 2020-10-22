@@ -170,10 +170,20 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
                 lmValidatorHelper.checkIfFieldRequired("programId", errors, programAssignment.getProgramId(), "Program Id");
                 Integer areaId = null;
                 if (!errors.hasFieldErrors("programId")) {
+                    Set<Integer> unassignedPrograms = new LinkedHashSet<>(LMProgram.getUnassignedPrograms());
                     if (ServletUtils.getPathVariable("id") != null) {
                         areaId = Integer.valueOf(ServletUtils.getPathVariable("id"));
                         Set<Integer> assignedProgramIds = controlAreaDao.getProgramIdsForControlArea(areaId);
-                     }
+                        if (!assignedProgramIds.contains(programAssignment.getProgramId())) {
+                            if (!unassignedPrograms.contains(programAssignment.getProgramId())) {
+                                errors.rejectValue("programId", key + "programId.doesNotExist");
+                            }
+                        }
+                    } else {
+                        if (!unassignedPrograms.contains(programAssignment.getProgramId())) {
+                            errors.rejectValue("programId", key + "programId.doesNotExist");
+                        }
+                    }
                 }
 
                 lmValidatorHelper.checkIfFieldRequired("startPriority", errors, programAssignment.getStartPriority(), "Start Priority");

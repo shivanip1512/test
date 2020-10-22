@@ -232,11 +232,15 @@ private javax.swing.JComboBox getJComboBoxLMProgram() {
 			synchronized( cache )
 			{
 				java.util.List l = cache.getAllLMPrograms();
+				Vector unassignedPrgIDs = LMProgram.getUnassignedPrograms();
 
 				// fills our JComboBox with LiteDevices!!
 				for( int i = 0; i < l.size(); i++ )
 				{
 					LiteYukonPAObject lite = (LiteYukonPAObject)l.get(i);
+					 
+					if( unassignedPrgIDs.contains( new Integer(lite.getYukonID()) ) )
+						ivjJComboBoxLMProgram.addItem( lite );
 				}
 			}
 			
@@ -911,6 +915,8 @@ public boolean isInputValid() {
     // check to see if any of our programs are already assigned to another
     boolean ret = true;
 
+    Vector unassignedPrgIDs = LMProgram.getUnassignedPrograms();
+
     for (int i = 0; i < getJTableModel().getRowCount(); i++) 
     {
         ControlAreaProgramTableModel.ProgramRow row = getJTableModel().getRowAt(i);
@@ -919,7 +925,12 @@ public boolean isInputValid() {
         
         Integer deviceID =row.getProgramList().getDeviceID();
         
-        if( deviceID != null && myDeviceID.intValue() == deviceID.intValue() ) 
+        if (unassignedPrgIDs.contains(programID))
+        {
+            ret = true;
+        } else
+        {
+            if( deviceID != null && myDeviceID.intValue() == deviceID.intValue() ) 
             {
                 ret = true;
             }else
@@ -929,6 +940,7 @@ public boolean isInputValid() {
                 ret = false;
                 break;
             }
+        }
     }
 
     return ret;
