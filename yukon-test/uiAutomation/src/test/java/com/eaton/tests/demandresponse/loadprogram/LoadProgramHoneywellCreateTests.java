@@ -42,6 +42,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 		ldGrpName = response.getString("name");
 
 		createPage = new LoadProgramCreatePage(driverExt);
+		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
 	}
 
 	@AfterMethod(alwaysRun = true)
@@ -51,7 +52,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmHoneywellCreate_RequiredFieldsOnly_Success() {
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+		
 
 		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 		String name = "AT LM Honeywell Program " + timeStamp;
@@ -87,7 +88,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmHoneywellCreate_AllFields_Success() {
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+		
 
 		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 		String name = "AT LM Honeywell Program " + timeStamp;
@@ -131,7 +132,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmHoneywellCreate_GearTypeHoneywellCycle_Success() {
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+		
 
 		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 		String name = "AT LM Honeywell Program " + timeStamp;
@@ -167,7 +168,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmHoneywellCreate_GearTypeValues_Correct() {
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+		
 
 		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
 		waitForLoadingSpinner();
@@ -186,7 +187,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmHoneywellCreate_SetpointGearControlParamSection_LabelsCorrect() {
 		String sectionName = "Control Parameters";
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+		
 
 		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
 		waitForLoadingSpinner();
@@ -205,7 +206,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmHoneywellCreate_CycleGearControlParamSection_LabelsCorrect() {
 		String sectionName = "Control Parameters";
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+		
 
 		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
 		waitForLoadingSpinner();
@@ -222,7 +223,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmHoneywellCreate_SetpointGearSetpointOffset_RequiredValidation() {
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+		
 
 		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
 		waitForLoadingSpinner();
@@ -245,7 +246,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmHoneywellCreate_SetpointGearSetpointOffset_MaxRangeValidation() {
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+		
 
 		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
 		waitForLoadingSpinner();
@@ -268,7 +269,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmHoneywellCreate_SetpointGearSetpointOffset_MinRangeValidation() {
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+		
 
 		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
 		waitForLoadingSpinner();
@@ -291,7 +292,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmHoneywellCreate_CycleGearControlPercent_RequiredValidation() {
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+		
 
 		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
 		waitForLoadingSpinner();
@@ -314,7 +315,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmHoneywellCreate_CycleGearControlPercent_MaxRangeValidation() {
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+		
 
 		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
 		waitForLoadingSpinner();
@@ -337,7 +338,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmHoneywellCreate_CycleGearControlPercent_MinRangeValidation() {
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+		
 
 		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
 		waitForLoadingSpinner();
@@ -360,7 +361,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmHoneywellCreate_InvalidGearNameErrorMessage_Displayed() {
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+		
 
 		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
 		waitForLoadingSpinner();
@@ -382,7 +383,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 	@Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmHoneywellCreate_CycleGearRampInRampOutSection_TitleCorrect() {
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+		
 
 		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
 		waitForLoadingSpinner();
@@ -402,7 +403,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmHoneywellCreate_CycleGearRampInRampOutSection_LabelsCorrect() {
 		String sectionName = "Ramp In / Ramp Out";
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+		
 
 		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
 		waitForLoadingSpinner();
