@@ -23,6 +23,7 @@ import com.eaton.pages.PageBase;
 public class LoadProgramCreatePage extends PageBase {
 
 	private static final String DESCRIBEDBY = "gear-create-popup-LM_DIRECT_PROGRAM";
+	private static final String HONEYWELL_GEAR_MODAL_DESCRIBEDBY = "gear-create-popup-LM_HONEYWELL_PROGRAM";
 	private TimePickerElement startTimeWindowOne;
 	private TimePickerElement stopTimeWindowOne;
 	private TimePickerElement startTimeWindowTwo;
@@ -118,7 +119,7 @@ public class LoadProgramCreatePage extends PageBase {
 		getGearsCreateBtn().click();
 
 		return new CreateHoneywellPrgmGearModal(this.driverExt, Optional.empty(),
-				Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
+				Optional.of(HONEYWELL_GEAR_MODAL_DESCRIBEDBY));
 	}
 
 	public CreateItronPrgmGearModal showCreateItronPrgmGearModal() {

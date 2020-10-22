@@ -6,7 +6,6 @@ import org.openqa.selenium.WebElement;
 
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.RadioButtonElement;
-import com.eaton.elements.Section;
 import com.eaton.elements.SwitchBtnYesNoElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
@@ -56,9 +55,5 @@ public class CreateHoneywellPrgmGearModal extends CreateGearsModal {
 	// RampIn/RampOut
 	public TrueFalseCheckboxElement getRampInOut() {
 		return new TrueFalseCheckboxElement(this.driverExt, "fields.rampInOut", getModal());
-	}
-
-	public Section getPageSection(String sectionName) {
-		return new Section(this.driverExt, sectionName);
 	}
 }
