@@ -87,8 +87,8 @@ public class LoadProgramSetupApiController {
     }
     
     @GetMapping("/gears/{id}")
-    public ResponseEntity<Object> getProgramGear(@PathVariable Integer gearId) {
-        ProgramGear programGear = loadProgramService.getProgramGear(gearId);
+    public ResponseEntity<Object> getProgramGear(@PathVariable Integer id) {
+        ProgramGear programGear = loadProgramService.getProgramGear(id);
         return new ResponseEntity<>(programGear, HttpStatus.OK);
     }
 
@@ -134,8 +134,8 @@ public class LoadProgramSetupApiController {
     }
 
     @GetMapping("/{id}/gears")
-    public ResponseEntity<List<LiteGear>> getGearsForProgram(@PathVariable int programId) {
-        return new ResponseEntity<>(loadProgramService.getGearsForProgram(programId), HttpStatus.OK);
+    public ResponseEntity<List<LiteGear>> getGearsForProgram(@PathVariable int id) {
+        return new ResponseEntity<>(loadProgramService.getGearsForProgram(id), HttpStatus.OK);
     }
 
     @InitBinder("loadProgramCopy")
