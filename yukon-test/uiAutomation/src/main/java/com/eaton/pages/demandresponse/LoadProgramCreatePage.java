@@ -23,6 +23,8 @@ import com.eaton.pages.PageBase;
 public class LoadProgramCreatePage extends PageBase {
 
 	private static final String DESCRIBEDBY = "gear-create-popup-LM_DIRECT_PROGRAM";
+	private static final String ITRON_GEAR_MODAL_DESCRIBEDBY = "gear-create-popup-LM_ITRON_PROGRAM";
+	
 	private TimePickerElement startTimeWindowOne;
 	private TimePickerElement stopTimeWindowOne;
 	private TimePickerElement startTimeWindowTwo;
@@ -123,9 +125,9 @@ public class LoadProgramCreatePage extends PageBase {
 
 	public CreateItronPrgmGearModal showCreateItronPrgmGearModal() {
 		getGearsCreateBtn().click();
-
+		
 		return new CreateItronPrgmGearModal(this.driverExt, Optional.empty(), 
-				Optional.of("gear-create-popup-LM_ITRON_PROGRAM"));
+				Optional.of(ITRON_GEAR_MODAL_DESCRIBEDBY));
 	}
 
 	public CreateMeterDisconnectPrgmModal showCreateMeterDiconnectPrgmModal() {

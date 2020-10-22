@@ -36,7 +36,7 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup{
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        setRefreshPage(false);
+        
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         ldGrpName = "Before Class " + timeStamp;
         
@@ -51,15 +51,11 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup{
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        if(getRefreshPage()) {
-            refreshPage(createPage);    
-        }
-        setRefreshPage(false);
+    	refreshPage(createPage);    
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmItronCreate_RequiredFieldsOnly_Success() {
-        setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT LM Direct Program " + timeStamp;
 
@@ -94,8 +90,7 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup{
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmItronCreate_AllFields_Success() {
-		setRefreshPage(true);
-        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT LM Direct Program " + timeStamp;
 
         final String EXPECTED_MSG = name + " saved successfully.";
@@ -141,10 +136,7 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup{
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmItronCreate_GearType_ValuesCorrect() {
-    	setRefreshPage(true);
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
-
-		createPage.getType().selectItemByValue(TYPE);
+    	createPage.getType().selectItemByValue(TYPE);
 		waitForLoadingSpinner();
 
 		CreateItronPrgmGearModal modal = createPage.showCreateItronPrgmGearModal();
@@ -159,8 +151,7 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup{
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmItronCreate_WithMultipleGears_Success() {
-    	setRefreshPage(true);
-        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+    	String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT LM Direct Program " + timeStamp;
 
         final String EXPECTED_MSG = name + " saved successfully.";
@@ -169,9 +160,10 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup{
         createPage.getType().selectItemByValue(TYPE);
         waitForLoadingSpinner();
         
+        //Adding 2 gears
         for (int i=1; i<=2; i++) {
 	        CreateItronPrgmGearModal modal = createPage.showCreateItronPrgmGearModal();
-	        
+	        waitForLoadingSpinner();
 	        modal.getGearName().setInputValue("IC Gear " + i);
 	        modal.getGearType().selectItemByValue("ItronCycle");
 	        waitForLoadingSpinner();
@@ -197,9 +189,7 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup{
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmItronCreate_ItronCycleGearControlParamSection_LabelsCorrect() {
     	String sectionName = "Control Parameters";
-		setRefreshPage(true);
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
-
+		
 		createPage.getType().selectItemByValue(TYPE);
 		waitForLoadingSpinner();
 
@@ -216,9 +206,7 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup{
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmItronCreate_ItronCycleGearRampInRampOutSection_LabelsCorrect() {
     	String sectionName = "Ramp In / Ramp Out";
-		setRefreshPage(true);
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
-
+		
 		createPage.getType().selectItemByValue(TYPE);
 		waitForLoadingSpinner();
 
