@@ -129,7 +129,7 @@ yukon.dr.curtailment = (function () {
             //Display the actions and auto-refresh if the current active tab is Trends
             var isTrendsTabActive = $(".ui-tabs").find(".ui-tabs-active").hasClass('ccTrends');
             if (isTrendsTabActive) {
-                $('.page-actions').css('display' : 'block');
+                $('.page-actions').css('display':'block');
             } else {
                 $('.page-actions').css('display':'none');
             }
