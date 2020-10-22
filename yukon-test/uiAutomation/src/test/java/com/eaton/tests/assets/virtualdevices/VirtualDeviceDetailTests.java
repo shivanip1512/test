@@ -7,7 +7,6 @@ import org.testng.annotations.BeforeClass;
 import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 
 import org.assertj.core.api.SoftAssertions;
@@ -85,15 +84,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 	
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_PageTitle_Correct() {
-  /*  	Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceOnlyRequiredFields();
-	  
-    	JSONObject response = pair.getValue1();
-	  
-    	Integer id = response.getInt("id"); 
-    	String name = response.getString("name");
-*/	  
     	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + virtualDeviceId);
-	 
     	
     	String expectedTitle = virtualDeviceName;
         
@@ -169,7 +160,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     	setRefreshPage(true);
     	
     	final String EXP_MODAL_TITLE = "Create Virtual Device";
-    	
+    	waitForLoadingSpinner();
     	CreateVirtualDeviceModal createModal = detailPage.showAndWaitCreateVirtualDeviceModal();
     	
     	String title = createModal.getModalTitle();
@@ -217,8 +208,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_CreateAnalogPointUrl_Correct() {
-    	setRefreshPage(true);
-    	
     	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAnalogPoint();
     	
     	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
@@ -248,8 +237,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_CreateCalcAnalogPointUrl_Correct() {
-    	setRefreshPage(true);
-    	
     	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithCalcAnalogPoint();
     	
     	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
@@ -279,8 +266,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_CreateCalcStatusPointUrl_Correct() {
-    	setRefreshPage(true);
-    	
     	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithCalcStatusPoint();
     	
     	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
@@ -310,8 +295,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_CreateDemandAccPointUrl_Correct() {
-    	setRefreshPage(true);
-    	
     	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithDemandAccumulatorPoint();
     	
     	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
@@ -341,8 +324,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_CreatePulseAccPointUrl_Correct() {
-    	setRefreshPage(true);
-    	
     	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithPulseAccumulatorPoint();
     	
     	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
@@ -373,7 +354,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_CreateStatusPointUrl_Correct() {
     	setRefreshPage(true);
-    	
     	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithStatusPoint();
     	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
     	Pair<JSONObject, JSONObject> statusPoint = pair.get("StatusPoint");        
@@ -402,8 +382,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_DevPtsPointNameUrl_Correct() throws IOException {
-    	setRefreshPage(true);
-    	
     	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAnalogPoint();
     	
     	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
@@ -431,8 +409,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_DevPtsDateTime_OpensCorrectModal() {
-    	setRefreshPage(true);
-    	
     	final String EXP_MODAL_TITLE = "Recent Archived Readings";
     	
     	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAnalogPoint();
@@ -703,8 +679,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_DeleteModalMessage_Correct() {
-    	setRefreshPage(true);
-    	
     	Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceOnlyRequiredFields();     
     	
     	JSONObject response = pair.getValue1();    
@@ -725,8 +699,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_DeleteWithPt_Success() {
-    	setRefreshPage(true);
-    	
     	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAnalogPoint();
     	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
     	
@@ -750,8 +722,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_DeleteWithOutPt_Success() {
-    	setRefreshPage(true);
-    	
     	Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceOnlyRequiredFields();
     	
     	JSONObject virtDevResponse = pair.getValue1();   

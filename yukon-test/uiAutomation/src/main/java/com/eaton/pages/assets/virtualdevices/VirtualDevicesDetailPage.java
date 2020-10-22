@@ -1,21 +1,26 @@
 package com.eaton.pages.assets.virtualdevices;
 
 import java.util.Optional;
+
+import com.eaton.elements.ActionBtnDropDownElement;
 import com.eaton.elements.Button;
 import com.eaton.elements.DropDownMultiSelectElement;
 import com.eaton.elements.WebTableColumnHeader;
 import com.eaton.elements.WebTableRow;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.RecentArchievedRadingsModal;
+import com.eaton.elements.modals.virtualdevices.CreateVirtualDeviceModal;
 import com.eaton.elements.modals.virtualdevices.EditVirtualDeviceModal;
 import com.eaton.elements.panels.Panels;
 import com.eaton.elements.panels.VirtualDeviceInfoPanel;
 import com.eaton.elements.panels.VirtualDevicePointsPanel;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.pages.PageBase;
 
-public class VirtualDevicesDetailPage extends VirtualDevicesListPage {
+public class VirtualDevicesDetailPage extends PageBase {
     int virtualDeviceID;
+    private ActionBtnDropDownElement actionBtn;
     private Panels panels;
     private Button editButton;
     private Button filterButton;
@@ -32,6 +37,7 @@ public class VirtualDevicesDetailPage extends VirtualDevicesListPage {
         this.pageUrl = pageUrl + virtualDeviceID;;
         panels = new Panels(driverExt);
 
+        this.actionBtn = new ActionBtnDropDownElement(this.driverExt);
         this.editButton = new Button(this.driverExt, "Edit");
         this.filterButton = new Button(this.driverExt, "Filter");
         this.pointTypeDropdown = new DropDownMultiSelectElement(this.driverExt, "pointTypeSelector");
@@ -39,6 +45,10 @@ public class VirtualDevicesDetailPage extends VirtualDevicesListPage {
         this.devicePointPanel = new VirtualDevicePointsPanel(this.driverExt, getPanelList().getListOfPanelNames().get(1));
     }
 
+    public ActionBtnDropDownElement getActionBtn() {
+		return actionBtn;
+	}
+    
     public Button getEdit() {
         return editButton;
     }
@@ -68,6 +78,15 @@ public class VirtualDevicesDetailPage extends VirtualDevicesListPage {
 		WebTableColumnHeader headerRow = (WebTableColumnHeader) getVirtualDevicePointsPanel().getTable().getColumnHeaders();
 		return headerRow;
 		
+	}
+	
+	public CreateVirtualDeviceModal showAndWaitCreateVirtualDeviceModal() {
+		actionBtn.clickAndSelectOptionByText("Create");
+
+		SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-create-virtual-device-popup");
+
+		return new CreateVirtualDeviceModal(this.driverExt, Optional.empty(),
+				Optional.of("js-create-virtual-device-popup"));
 	}
 	
 	public EditVirtualDeviceModal showAndWaitEditVirtualDeviceModal() {
