@@ -46,7 +46,7 @@ public class ControlAreaProgramAssignment implements DBPersistentConverter<LMCon
     }
 
     /**
-     * Build program assignment model for control area.
+     * Build program assignment model.
      */
     @Override
     public void buildModel(LMControlAreaProgram lmControlAreaProgram) {
@@ -56,7 +56,7 @@ public class ControlAreaProgramAssignment implements DBPersistentConverter<LMCon
     }
 
     /**
-     * Build DBPersistent for program assignment for control area.
+     * Build DBPersistent for program assignment.
      */
     @Override
     public void buildDBPersistent(LMControlAreaProgram lmControlAreaProgram) {

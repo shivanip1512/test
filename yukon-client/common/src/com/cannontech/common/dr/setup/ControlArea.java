@@ -170,7 +170,7 @@ public class ControlArea implements DBPersistentConverter<LMControlArea> {
             setAllTriggersActiveFlag(false);
         }
 
-        // Calling build Trigger model
+        // Build model for Trigger
         Integer triggerOrder = 1;
         List<ControlAreaTrigger> areaTriggers = new ArrayList<>();
         for (LMControlAreaTrigger areaTrigger : lmControlArea.getLmControlAreaTriggerVector()) {
@@ -184,7 +184,7 @@ public class ControlArea implements DBPersistentConverter<LMControlArea> {
             setTriggers(areaTriggers);
         }
 
-        // Calling ProgramAssignment build model
+        // Build model for ProgramAssignment
         List<ControlAreaProgramAssignment> programAssignment = new ArrayList<>();
         lmControlArea.getLmControlAreaProgramVector().forEach(program -> {
             ControlAreaProgramAssignment controlAreaProgramAssignment = new ControlAreaProgramAssignment();
@@ -226,7 +226,7 @@ public class ControlArea implements DBPersistentConverter<LMControlArea> {
             lmDbControlArea.setDefDailyStopTime(com.cannontech.database.db.device.lm.LMControlArea.OPTIONAL_VALUE_UNUSED);
         }
 
-        // Calling TriggerDBPersistent
+        // Build DBPersistance for Trigger
         Integer triggerOrder = 1;
         if (CollectionUtils.isNotEmpty(lmControlArea.getLmControlAreaTriggerVector())) {
             lmControlArea.getLmControlAreaTriggerVector().clear();
@@ -240,7 +240,7 @@ public class ControlArea implements DBPersistentConverter<LMControlArea> {
                 triggerOrder++;
             }
         }
-        // Calling ProgramAssignmentDBPersistent 
+        // Build DBPersistance for ProgramAssignment 
         if (CollectionUtils.isNotEmpty(lmControlArea.getLmControlAreaProgramVector())) {
             lmControlArea.getLmControlAreaProgramVector().clear();
         }

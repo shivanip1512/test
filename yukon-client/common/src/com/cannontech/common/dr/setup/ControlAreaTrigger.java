@@ -127,7 +127,7 @@ public class ControlAreaTrigger implements DBPersistentConverter<LMControlAreaTr
     }
 
     /**
-     * Build trigger model for Control Area.
+     * Build trigger model.
      */
     @Override
     public void buildModel(LMControlAreaTrigger areaTrigger) {
@@ -156,7 +156,7 @@ public class ControlAreaTrigger implements DBPersistentConverter<LMControlAreaTr
     }
 
     /**
-     * Build DBPersistent for trigger for Control Area.
+     * Build DBPersistent for trigger.
      */
     @Override
     public void buildDBPersistent(LMControlAreaTrigger lmControlAreaTrigger) {
