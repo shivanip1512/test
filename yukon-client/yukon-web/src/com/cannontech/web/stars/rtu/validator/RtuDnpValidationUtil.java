@@ -25,7 +25,7 @@ public class RtuDnpValidationUtil extends ValidationUtils {
     
     private static final String basekey = "yukon.web.modules.operator.rtuDetail.error";
     public void validateName(RtuDnp rtuDnp, Errors errors, boolean isCopyOperation) {
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.isBlank");
+        YukonValidationUtils.checkIsBlank(errors, "name", rtuDnp.getName(), "Name", false);
         if (!errors.hasFieldErrors("name")) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", rtuDnp.getName(), 60);
             if (!errors.hasFieldErrors("name")) {
