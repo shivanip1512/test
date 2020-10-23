@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
-import com.cannontech.amr.rfn.impl.NmSyncServiceImpl;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -42,7 +41,6 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
     private LoadingCache<PaoIdentifier, RfnGatewayData> cache;
     private Executor executor;
 
-    @Autowired private NmSyncServiceImpl nmSyncService;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
     //Created in post-construct
@@ -132,10 +130,10 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
         public RfnGatewayData get(PaoIdentifier key) throws ExecutionException {
             //return cached data, if present
             RfnGatewayData data = cacheMap.get(key);
-            if (data != null) {
+            if (data != null) {;
                 return data;
             }
-            
+            log.debug("Loading gateway data for {}", key);
             //Prepare the request
             RfnDevice device = rfnDeviceDao.getDeviceForId(key.getPaoId());
             RfnIdentifier rfnIdentifier = device.getRfnIdentifier();
@@ -146,7 +144,6 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
             BlockingJmsReplyHandler<GatewayDataResponse> replyHandler = new BlockingJmsReplyHandler<>(GatewayDataResponse.class);
             requestTemplate.send(request, replyHandler);
             GatewayDataResponse response = replyHandler.waitForCompletion();
-            nmSyncService.syncGatewayName(device, response.getName());
             //If the response rfnId has a newer model, update the Yukon gateway device
             RfnIdentifier responseRfnIdentifier = response.getRfnIdentifier();
             if (rfnIdentifier.getSensorModel().equalsIgnoreCase(GATEWAY_1_MODEL_STRING) &&
