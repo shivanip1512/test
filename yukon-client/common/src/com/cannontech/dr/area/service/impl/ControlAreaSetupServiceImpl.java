@@ -70,7 +70,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
         LMControlArea lmControlArea = (LMControlArea) dbPersistentDao.retrieveDBPersistent(liteControlArea);
         ControlArea controlArea = new ControlArea();
         controlArea.buildModel(lmControlArea);
-        getProgramAssignmentName(lmControlArea, controlArea);
+        setProgramAssignmentName(lmControlArea, controlArea);
         List<ControlAreaProgramAssignment> assignedProgramList = controlArea.getProgramAssignment();
         if (assignedProgramList != null) {
             Comparator<ControlAreaProgramAssignment> comparator = controlArea.getStartPriorityComparator();
@@ -103,7 +103,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
                 ApiRequestContext.getContext().getLiteYukonUser());
 
         controlArea.buildModel(lmControlArea);
-        getProgramAssignmentName(lmControlArea, controlArea);
+        setProgramAssignmentName(lmControlArea, controlArea);
  
        return controlArea;
     }
@@ -135,7 +135,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
           ApiRequestContext.getContext().getLiteYukonUser());
 
         controlArea.buildModel(lmControlArea);
-        getProgramAssignmentName(lmControlArea, controlArea);
+        setProgramAssignmentName(lmControlArea, controlArea);
         return controlArea;
     }
 
@@ -186,9 +186,9 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
     }
 
     /**
-     * Retrieve Program assignment names of program for Control Area.
+     * Set names of assigned Programs for Control Area..
      */
-    private void getProgramAssignmentName(LMControlArea lmControlArea, ControlArea controlArea) {
+    private void setProgramAssignmentName(LMControlArea lmControlArea, ControlArea controlArea) {
         lmControlArea.getLmControlAreaProgramVector().forEach(lmprogram -> {
             LiteYukonPAObject pao = dbCache.getAllPaosMap().get(lmprogram.getLmProgramDeviceID());
             controlArea.getProgramAssignment()
