@@ -14,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.rfn.impl.NmSyncServiceImpl;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigLicenseKey;
@@ -52,7 +51,6 @@ public class GatewayDataTopicListener implements MessageListener {
     @Autowired private GatewayCertificateUpdateDao certificateUpdateDao;
     @Autowired private ConfigurationSource configSource;
     @Autowired private RfnGatewayService rfnGatewayService;
-    @Autowired private NmSyncServiceImpl nmSyncService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     
     private boolean isDataStreamingEnabled;
@@ -87,10 +85,8 @@ public class GatewayDataTopicListener implements MessageListener {
         RfnIdentifier rfnIdentifier = message.getRfnIdentifier();
         try {
             RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
-            log.debug("Handling gateway data message: " + message);
+            log.debug("Recieved message from SM. Updating RfnGatewayDataCache with the new value. Message: {} ", message);
             RfnGatewayData data = new RfnGatewayData(message, rfnDevice.getName());
-            
-            nmSyncService.syncGatewayName(rfnDevice, message.getName());
             
             cache.put(rfnDevice.getPaoIdentifier(), data);
             
