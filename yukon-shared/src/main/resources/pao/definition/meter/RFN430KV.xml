@@ -59,6 +59,10 @@
         <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
         <pointInfo name="Delivered kWh" init="true" attributes="USAGE,DELIVERED_KWH"/>
         <pointInfo name="Delivered kWh per Interval" init="true" attributes="DELIVERED_KWH_PER_INTERVAL"/>
+        <pointInfo name="Delivered kWh Rate A per Interval" attributes="DELIVERED_KWH_RATE_A_PER_INTERVAL"/>
+        <pointInfo name="Delivered kWh Rate B per Interval" attributes="DELIVERED_KWH_RATE_B_PER_INTERVAL"/>
+        <pointInfo name="Delivered kWh Rate C per Interval" attributes="DELIVERED_KWH_RATE_C_PER_INTERVAL"/>
+        <pointInfo name="Delivered kWh Rate D per Interval" attributes="DELIVERED_KWH_RATE_D_PER_INTERVAL"/>
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
         <pointInfo name="Demand Threshold Exceeded Warning" attributes="DEMAND_THRESHOLD_EXCEEDED_WARNING"/>
         <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
@@ -122,7 +126,7 @@
         <pointInfo name="Rate A Coincident Peak kW"/>
         <pointInfo name="Rate A Coincident Power Factor"/>
         <pointInfo name="Rate A Cumulative Peak kW"/>
-        <pointInfo name="Rate A kWh" init="true" attributes="USAGE_RATE_A"/>
+        <pointInfo name="Rate A kWh" init="true" attributes="USAGE_RATE_A,DELIVERED_KWH_RATE_A"/>
         <pointInfo name="Rate A Peak kVA"/>
         <pointInfo name="Rate A Peak kVAr" attributes="PEAK_KVAR_RATE_A"/>
         <pointInfo name="Rate B Avg Power Factor"/>
@@ -131,7 +135,7 @@
         <pointInfo name="Rate B Coincident Peak kW"/>
         <pointInfo name="Rate B Coincident Power Factor"/>
         <pointInfo name="Rate B Cumulative Peak kW"/>
-        <pointInfo name="Rate B kWh" attributes="USAGE_RATE_B"/>
+        <pointInfo name="Rate B kWh" attributes="USAGE_RATE_B,DELIVERED_KWH_RATE_B"/>
         <pointInfo name="Rate B Peak kVA"/>
         <pointInfo name="Rate B Peak kVAr" attributes="PEAK_KVAR_RATE_B"/>
         <pointInfo name="Rate C Avg Power Factor"/>
@@ -140,7 +144,7 @@
         <pointInfo name="Rate C Coincident Peak kW"/>
         <pointInfo name="Rate C Coincident Power Factor"/>
         <pointInfo name="Rate C Cumulative Peak kW"/>
-        <pointInfo name="Rate C kWh" attributes="USAGE_RATE_C"/>
+        <pointInfo name="Rate C kWh" attributes="USAGE_RATE_C,DELIVERED_KWH_RATE_C"/>
         <pointInfo name="Rate C Peak kVA"/>
         <pointInfo name="Rate C Peak kVAr" attributes="PEAK_KVAR_RATE_C"/>
         <pointInfo name="Rate D Avg Power Factor"/>
@@ -149,7 +153,7 @@
         <pointInfo name="Rate D Coincident Peak kW"/>
         <pointInfo name="Rate D Coincident Power Factor"/>
         <pointInfo name="Rate D Cumulative Peak kW"/>
-        <pointInfo name="Rate D kWh" attributes="USAGE_RATE_D"/>
+        <pointInfo name="Rate D kWh" attributes="USAGE_RATE_D,DELIVERED_KWH_RATE_D"/>
         <pointInfo name="Rate D Peak kVA"/>
         <pointInfo name="Rate D Peak kVAr" attributes="PEAK_KVAR_RATE_D"/>
         <pointInfo name="Received Coincident Peak kVAr" attributes="RECEIVED_COIN_PEAK_KVAR"/>
