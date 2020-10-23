@@ -8,6 +8,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
 
 public class EditWebTable {
     
@@ -16,7 +17,6 @@ public class EditWebTable {
     private List<EditWebTableColumnHeader> columnHeaders = null;
     private WebElement parentElement; 
     private String parent;
-    private String editClass;
 
     public EditWebTable(DriverExtensions driverExt, String tableClassName) {
         this.driverExt = driverExt;
@@ -35,14 +35,40 @@ public class EditWebTable {
         this.parent = parent;
     }
     
-    private WebElement getTable() {
+//    private WebElement getTable() {
+//        if (this.parentElement != null) {
+//            return this.parentElement.findElement(By.cssSelector("table." + this.tableClassName));
+//        } else if (this.parent != null) {
+//            return this.driverExt.findElement(By.cssSelector("[aria-describedby*='" + parent + "'] table." + this.tableClassName), Optional.of(3));   
+//
+//        } else {
+//            return this.driverExt.findElement(By.cssSelector("table." + this.tableClassName), Optional.of(3)); 
+//        }
+//    }
+    
+    public WebElement getEditHeaderTable() {
         if (this.parentElement != null) {
-            return this.parentElement.findElement(By.cssSelector("table." + this.tableClassName));
+            List<WebElement> list = this.parentElement.findElements(By.cssSelector("table." + this.tableClassName));
+            return list.get(0);
         } else if (this.parent != null) {
-            return this.driverExt.findElement(By.cssSelector("[aria-describedby*='" + parent + "'] table." + this.tableClassName), Optional.of(3));   
-
+            List<WebElement> list = this.driverExt.findElements(By.cssSelector("[aria-describedby*='" + parent + "'] table." + this.tableClassName), Optional.of(3));   
+            return list.get(0);
         } else {
-            return this.driverExt.findElement(By.cssSelector("table." + this.tableClassName), Optional.of(3)); 
+            List<WebElement> list = this.driverExt.findElements(By.cssSelector("table." + this.tableClassName), Optional.of(3)); 
+            return list.get(0);
+        }
+    }
+    
+    public WebElement getEditRowTable() {
+        if (this.parentElement != null) {
+            List<WebElement> list = this.parentElement.findElements(By.cssSelector("table." + this.tableClassName));
+            return list.get(1);
+        } else if (this.parent != null) {
+            List<WebElement> list = this.driverExt.findElements(By.cssSelector("[aria-describedby*='" + parent + "'] table." + this.tableClassName), Optional.of(3));   
+            return list.get(1);
+        } else {
+            List<WebElement> list = this.driverExt.findElements(By.cssSelector("table." + this.tableClassName), Optional.of(3)); 
+            return list.get(1);
         }
     }
 
@@ -68,32 +94,30 @@ public class EditWebTable {
     }
     
     private void findColumnHeaders() {
-
-        List<WebElement> headerList = this.getTable().findElements(By.cssSelector("tr th"));
+        List<WebElement> headerList = this.getEditHeaderTable().findElements(By.cssSelector("tr th"));
 
         this.columnHeaders = new ArrayList<>();
         for (WebElement element : headerList) {
-
             this.columnHeaders.add(new EditWebTableColumnHeader(element));
         }
     }    
     
-    public EditWebTableRow getDataRowByName(String name) {
-        List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody>tr"));
+    public EditWebTableRow getDataRowByName(String name) {        
+        List<WebElement> rowList = this.getEditRowTable().findElements(By.cssSelector("tbody tr"));
         
-        WebElement element = rowList.stream().filter(x -> x.findElement(By.cssSelector("td:nth-child(1) span:nth-child(1)")).getText().contains(name)).findFirst().orElseThrow();   
+        WebElement element = rowList.stream().filter(x -> x.findElement(By.cssSelector("td span")).getText().contains(name)).findFirst().orElseThrow();
         
         return new EditWebTableRow(this.driverExt, element);
     } 
     
     public WebElement getEditDataRowBySpanClassName(String name) {
-        List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody>tr>td>span"));        
+        List<WebElement> rowList = this.getEditRowTable().findElements(By.cssSelector("tbody>tr>td>span"));        
         
         return rowList.stream().filter(x -> x.getAttribute("class").contains("js-edit-" + name)).findFirst().orElseThrow();
     }
     
     public WebElement getViewDataRowBySpanClassName(String name) {
-        List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody>tr>td>span"));
+        List<WebElement> rowList = this.getEditRowTable().findElements(By.cssSelector("tbody>tr>td>span"));
         
         return rowList.stream().filter(x -> x.getAttribute("class").contains("js-view-" + name)).findFirst().orElseThrow();
     }

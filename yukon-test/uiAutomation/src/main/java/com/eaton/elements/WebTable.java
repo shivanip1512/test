@@ -61,14 +61,18 @@ public class WebTable {
     public void sortTableHeaderByIndex(int index, SortDirection direction) {
         List<WebElement> headers = getColumnHeaders();
         WebElement header = headers.get(index);
+        
         String sortedBy = getSortedBy(index);
-
-        if (sortedBy.equals("")) {
+        
+        if (sortedBy == "") {
             header.findElement(By.cssSelector("a")).click();
+            waitForSorting(index, SortDirection.DESCENDING);
             sortedBy = getSortedBy(index);
         }
-
-        if (!direction.getSortDirection().equals(sortedBy)) {
+        
+        String sortDirection = direction.getSortDirection();
+        
+        if (!sortDirection.equals(sortedBy)) {
             headers = getColumnHeaders();
             header = headers.get(index);
             header.findElement(By.cssSelector("a")).click();
@@ -91,7 +95,7 @@ public class WebTable {
         }
 
         if (sortable.toLowerCase().contains(SortDirection.ASCENDING.getSortDirection())) {
-            return "SortDirection.ASCENDING.getSortDirection()";
+            return SortDirection.ASCENDING.getSortDirection();
         } else if (sortable.toLowerCase().contains(SortDirection.DESCENDING.getSortDirection())) {
             return SortDirection.DESCENDING.getSortDirection();
         } else {
@@ -104,7 +108,7 @@ public class WebTable {
         String sortedBy = "";
         String sortDirection = direction.getSortDirection();
         try {
-            while((sortedBy.equals("") || !sortDirection.contains(sortedBy)) && (System.currentTimeMillis() - startTime) < 10000) {
+            while((sortedBy.equals("") || !sortDirection.contains(sortedBy)) && (System.currentTimeMillis() - startTime) < 2000) {
                 List<WebElement> headers = getColumnHeaders();
                 
                 WebElement header = headers.get(index);
@@ -132,10 +136,20 @@ public class WebTable {
         List<WebTableRow> rows = getDataRowsFromBody();
 
         List<String> cellRowsData = new ArrayList<>();
-
+        
+        long startTime = System.currentTimeMillis();
         for (WebTableRow row : rows) {
-            WebElement cell = row.getCellByIndex(index);
-            cellRowsData.add(cell.getText());
+            String text = "";
+            try {
+                while(text.equals("") && (System.currentTimeMillis() - startTime) < 2000) {
+                    WebElement cell = row.getCellByIndex(index);
+                    text = cell.getText();
+                    if(!text.equals("")) {
+                        cellRowsData.add(text);   
+                    } 
+                }
+            } catch (StaleElementReferenceException ex)  {}
+            
         }
 
         return cellRowsData;

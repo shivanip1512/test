@@ -32,7 +32,7 @@ public class AddAttributeAssignmentTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         setRefreshPage(false);
-        faker = SeleniumTestSetup.getFaker();
+        faker = SeleniumTestSetup.getFaker();        
 
         navigate(Urls.Admin.ATTRIBUTES_LIST);
         page = new AttributesListPage(driverExt);
@@ -159,11 +159,13 @@ public class AddAttributeAssignmentTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void addAttributeAssignment_CalcAnalogPointType_Success() {
         setRefreshPage(true);
+        
         Pair<JSONObject, JSONObject> pair = AttributeService.createAttribute(Optional.empty());        
 
         JSONObject response = pair.getValue1();
         String name = response.getString("name");
         Integer id = response.getInt("customAttributeId");
+        
         AddAttributeAssignmentsModal modal = page.showAddAttrAsgmtAndWait();
         
         modal.getAttributeName().selectItemByValue(id.toString());

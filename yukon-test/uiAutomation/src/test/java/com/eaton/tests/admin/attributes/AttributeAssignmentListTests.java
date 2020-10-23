@@ -43,6 +43,8 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
         for (String name : attributeName) {
             AttributeService.createAttributeWithAssignment(Optional.of(name));
         }
+        
+        AttributeService.createAttribute(Optional.empty());
 
         navigate(Urls.Admin.ATTRIBUTES_LIST);
 
@@ -157,6 +159,15 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
         List<String> pointOffsetList = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(4);
         List<Integer> offsetList = new ArrayList<Integer>();
         offsetList.addAll(pointOffsetList.stream().map(Integer::valueOf).collect(Collectors.toList()));
-        assertThat(pointOffsets).isEqualTo(pointOffsetList);
+        assertThat(pointOffsets).isEqualTo(offsetList);
+    }
+    
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.ADMIN, TestConstants.Features.ATTRIBUTES })
+    public void attributeList_AttrAsgmtFilterByAttributeNoAssgmt_NoResultsFound() {
+        setRefreshPage(true);
+        final String EXPECTED_MSG = "No results found.";
+
+
+        //assertThat(EXPECTED_MSG).isEqualTo(userMsg);
     }
 }
