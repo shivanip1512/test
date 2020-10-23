@@ -31,6 +31,7 @@ import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.dr.loadprogram.service.LoadProgramSetupService;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -50,15 +51,15 @@ public class LoadProgramSetupApiController {
 
     @PostMapping
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
-    public ResponseEntity<Object> create(@Valid @RequestBody LoadProgram loadProgram) {
-        LoadProgram createLoadProgram = loadProgramService.create(loadProgram);
+    public ResponseEntity<Object> create(@Valid @RequestBody LoadProgram loadProgram, YukonUserContext userContext) {
+        LoadProgram createLoadProgram = loadProgramService.create(loadProgram, userContext.getYukonUser());
         return new ResponseEntity<>(createLoadProgram, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.OWNER)
-    public ResponseEntity<Object> delete(@PathVariable int id) {
-        int paoId = loadProgramService.delete(id);
+    public ResponseEntity<Object> delete(@PathVariable int id, YukonUserContext userContext) {
+        int paoId = loadProgramService.delete(id, userContext.getYukonUser());
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("id", paoId);
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
@@ -66,8 +67,9 @@ public class LoadProgramSetupApiController {
 
     @PostMapping("/{id}/copy")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
-    public ResponseEntity<Object> copy(@Valid @RequestBody LoadProgramCopy loadProgramCopy, @PathVariable int id) {
-        int paoId = loadProgramService.copy(id, loadProgramCopy);
+    public ResponseEntity<Object> copy(@Valid @RequestBody LoadProgramCopy loadProgramCopy, @PathVariable int id,
+            YukonUserContext userContext) {
+        int paoId = loadProgramService.copy(id, loadProgramCopy, userContext.getYukonUser());
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("programId", paoId);
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
@@ -75,8 +77,9 @@ public class LoadProgramSetupApiController {
 
     @PutMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
-    public ResponseEntity<Object> update(@Valid @RequestBody LoadProgram loadProgram, @PathVariable int id) {
-        LoadProgram updateLoadProgram = loadProgramService.update(id, loadProgram);
+    public ResponseEntity<Object> update(@Valid @RequestBody LoadProgram loadProgram, @PathVariable int id,
+            YukonUserContext userContext) {
+        LoadProgram updateLoadProgram = loadProgramService.update(id, loadProgram, userContext.getYukonUser());
         return new ResponseEntity<>(updateLoadProgram, HttpStatus.OK);
     }
 

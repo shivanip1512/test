@@ -12,7 +12,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.dr.setup.ControlArea;
 import com.cannontech.common.dr.setup.ControlAreaProgramAssignment;
@@ -41,6 +40,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
@@ -88,7 +88,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
 
     @Override
     @Transactional
-    public ControlArea create(ControlArea controlArea) {
+    public ControlArea create(ControlArea controlArea, LiteYukonUser liteYukonUser) {
         LMControlArea lmControlArea = getDBPersistent(controlArea.getControlAreaId());
         buildLMControlAreaDBPersistent(lmControlArea, controlArea);
 
@@ -105,15 +105,14 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
                 .fromMinutesToHHmm(controlArea.getDailyStopTimeInMinutes()) : null;
 
         logService.controlAreaCreated(controlArea.getName(), getTriggerNamesString(lmControlArea.getLmControlAreaTriggerVector()),
-                getProgramNamesString(lmControlArea.getLmControlAreaProgramVector()), startTime, stopTime,
-                ApiRequestContext.getContext().getLiteYukonUser());
+                getProgramNamesString(lmControlArea.getLmControlAreaProgramVector()), startTime, stopTime, liteYukonUser);
 
         return buildControlAreaModel(lmControlArea);
     }
 
     @Override
     @Transactional
-    public ControlArea update(int controlAreaId, ControlArea controlArea) {
+    public ControlArea update(int controlAreaId, ControlArea controlArea, LiteYukonUser liteYukonUser) {
         dbCache.getAllLMControlAreas().stream()
                                       .filter(controlarea -> controlarea.getLiteID() == controlAreaId)
                                       .findFirst().orElseThrow(() -> new NotFoundException(" Control Area Id not found  " + controlAreaId ));
@@ -134,8 +133,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
                 .fromMinutesToHHmm(controlArea.getDailyStopTimeInMinutes()) : null;
 
           logService.controlAreaUpdated(lmControlArea.getPAOName(), getTriggerNamesString(lmControlArea.getLmControlAreaTriggerVector()),
-          getProgramNamesString(lmControlArea.getLmControlAreaProgramVector()), startTime, stopTime,
-          ApiRequestContext.getContext().getLiteYukonUser());
+          getProgramNamesString(lmControlArea.getLmControlAreaProgramVector()), startTime, stopTime, liteYukonUser);
 
         return buildControlAreaModel(lmControlArea);
     }
@@ -169,7 +167,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
 
     @Override
     @Transactional
-    public int delete(int areaId) {
+    public int delete(int areaId, LiteYukonUser liteYukonUser) {
         LiteYukonPAObject controlArea = dbCache.getAllLMControlAreas()
                                                          .stream()
                                                          .filter(area -> area.getLiteID() == areaId)
@@ -182,7 +180,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
         YukonPAObject lmControlArea = (YukonPAObject) LiteFactory.createDBPersistent(controlArea);
         dbPersistentDao.performDBChange(lmControlArea, TransactionType.DELETE);
 
-        logService.controlAreaDeleted(lmControlArea.getPAOName(), ApiRequestContext.getContext().getLiteYukonUser());
+        logService.controlAreaDeleted(lmControlArea.getPAOName(), liteYukonUser);
         return lmControlArea.getPAObjectID();
     }
 
@@ -439,7 +437,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
     }
 
     @Override
-    public int copy(int id, LMCopy lmCopy) {
+    public int copy(int id, LMCopy lmCopy, LiteYukonUser liteYukonUser) {
         throw new UnsupportedOperationException("Not supported copy operation");
     }
 

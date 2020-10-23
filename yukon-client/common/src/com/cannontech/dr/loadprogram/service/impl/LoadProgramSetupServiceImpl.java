@@ -85,7 +85,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
     @Override
     @Transactional
-    public LoadProgram create(LoadProgram loadProgram) {
+    public LoadProgram create(LoadProgram loadProgram, LiteYukonUser liteYukonUser) {
         LMProgramBase lmProgram = getDBPersistent(loadProgram.getProgramId(), loadProgram.getType());
         buildLMProgramBaseDBPersistent(lmProgram, loadProgram);
 
@@ -97,14 +97,14 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
 
         // Logging events during load program creation
-        processEventLogsForProgramCreate(loadProgram);
+        processEventLogsForProgramCreate(loadProgram, liteYukonUser);
 
         return buildLoadProgramModel(lmProgram);
     }
 
     @Override
     @Transactional
-    public LoadProgram update(int programId, LoadProgram loadProgram) {
+    public LoadProgram update(int programId, LoadProgram loadProgram, LiteYukonUser liteYukonUser) {
         // Validate programId
         getProgramFromCache(programId);
         List<LMProgramDirectGear> oldGears = null;
@@ -125,7 +125,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         dbPersistentDao.performDBChange(lmProgramBase, TransactionType.UPDATE);
 
         // Logging events during load program update
-        processEventLogsForProgramUpdate(loadProgram, oldGears);
+        processEventLogsForProgramUpdate(loadProgram, oldGears, liteYukonUser);
 
         return buildLoadProgramModel(lmProgramBase);
     }
@@ -139,7 +139,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
     @Override
     @Transactional
-    public int delete(int programId) {
+    public int delete(int programId, LiteYukonUser liteYukonUser) {
         LiteYukonPAObject loadProgram = dbCache.getAllLMPrograms().stream()
                                                                   .filter( program -> program.getLiteID() == programId)
                                                                   .findFirst().orElseThrow(() -> new NotFoundException("Id not found"));;
@@ -154,14 +154,14 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         dbPersistentDao.performDBChange(lmProgram, TransactionType.DELETE);
 
         // Logging events during load program deletion
-        processEventLogsForProgramDelete(lmProgram, gears);
+        processEventLogsForProgramDelete(lmProgram, gears, liteYukonUser);
 
         return lmProgram.getPAObjectID();
     }
 
     @Override
     @Transactional
-    public int copy(int programId, LoadProgramCopy loadProgramCopy) {
+    public int copy(int programId, LoadProgramCopy loadProgramCopy, LiteYukonUser liteYukonUser) {
 
         LiteYukonPAObject lmProgram = getProgramFromCache(programId);
  
@@ -200,7 +200,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
 
         // Logging events during load program copy
-        processEventLogsForProgramCopy(directBase);
+        processEventLogsForProgramCopy(directBase, liteYukonUser);
 
         return program.getPAObjectID();
     }
@@ -886,14 +886,14 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     /*
      * Process event log for program creation and gear creation
      */
-    private void processEventLogsForProgramCreate(LoadProgram loadProgram) {
+    private void processEventLogsForProgramCreate(LoadProgram loadProgram, LiteYukonUser liteYukonUser) {
 
         LiteLMConstraint litelmConstraint = getProgramConstraint(loadProgram.getConstraint().getConstraintId());
         String gearNames = getGearNamesString(loadProgram);
         String loadGroupNames = getLoadGroupNamesString(loadProgram);
 
         // event log for gear creation
-        logEventsForGearCreation(loadProgram);
+        logEventsForGearCreation(loadProgram, liteYukonUser);
 
         // event log for program creation
         demandResponseEventLogService.loadProgramCreated(loadProgram.getName(),
@@ -901,13 +901,14 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                                                          litelmConstraint.getConstraintName(),
                                                          gearNames,
                                                          loadGroupNames,
-                                                         ApiRequestContext.getContext().getLiteYukonUser());
+                                                         liteYukonUser);
     }
 
     /*
      * Process event log for updating load program
      */
-    private void processEventLogsForProgramUpdate(LoadProgram loadProgram, List<LMProgramDirectGear> oldGears) {
+    private void processEventLogsForProgramUpdate(LoadProgram loadProgram, List<LMProgramDirectGear> oldGears,
+            LiteYukonUser liteYukonUser) {
 
         LiteLMConstraint litelmConstraint = getProgramConstraint(loadProgram.getConstraint().getConstraintId());
         String gearNames = getGearNamesString(loadProgram);
@@ -919,11 +920,11 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                                                       lmProgramDirectGear.getControlMethod().name(),
                                                       loadProgram.getName(),
                                                       lmProgramDirectGear.getGearNumber(),
-                                                      ApiRequestContext.getContext().getLiteYukonUser());
+                                                      liteYukonUser);
         }
 
         // event log for gear creation
-        logEventsForGearCreation(loadProgram);
+        logEventsForGearCreation(loadProgram, liteYukonUser);
 
         // event log for program update
         demandResponseEventLogService.loadProgramUpdated(loadProgram.getName(),
@@ -931,13 +932,13 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                                                          litelmConstraint.getConstraintName(),
                                                          gearNames,
                                                          loadGroupNames,
-                                                         ApiRequestContext.getContext().getLiteYukonUser());
+                                                         liteYukonUser);
     }
 
     /*
      * Process event log for program deletion and gear deletion
      */
-    private void processEventLogsForProgramDelete(YukonPAObject lmProgram, List<LiteGear> gears) {
+    private void processEventLogsForProgramDelete(YukonPAObject lmProgram, List<LiteGear> gears, LiteYukonUser liteYukonUser) {
 
         // event log for gear deletion
         for (LiteGear liteGear : gears) {
@@ -945,13 +946,13 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                                                       liteGear.getGearType(),
                                                       lmProgram.getPAOName(),
                                                       liteGear.getGearNumber(),
-                                                      ApiRequestContext.getContext().getLiteYukonUser());
+                                                      liteYukonUser);
         }
 
         // event log for program deletion
         demandResponseEventLogService.loadProgramDeleted(lmProgram.getPAOName(),
                                                          lmProgram.getPaoType(),
-                                                         ApiRequestContext.getContext().getLiteYukonUser());
+                                                         liteYukonUser);
 
        
     }
@@ -959,7 +960,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     /**
      * Process event log for load program copy
      */
-    private void processEventLogsForProgramCopy(LMProgramDirectBase directBase) {
+    private void processEventLogsForProgramCopy(LMProgramDirectBase directBase, LiteYukonUser liteYukonUser) {
 
         List<LMProgramDirectGear> gears = directBase.getLmProgramDirectGearVector().stream()
                                                                                    .collect(Collectors.toList());
@@ -977,7 +978,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                                                       lmProgramDirectGear.getControlMethod().name(),
                                                       directBase.getPAOName(),
                                                       lmProgramDirectGear.getGearNumber(),
-                                                      ApiRequestContext.getContext().getLiteYukonUser());
+                                                      liteYukonUser);
         }
 
         // event log for copying load program
@@ -986,7 +987,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                                                          litelmConstraint.getConstraintName(),
                                                          reducedGearNames,
                                                          null, // In case of load program copy, load groups didn't copied
-                                                         ApiRequestContext.getContext().getLiteYukonUser());
+                                                         liteYukonUser);
     }
 
     /**
@@ -1024,13 +1025,13 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     /**
      *  Log events for gear creation from Program Gear Object
      */
-    private void logEventsForGearCreation(LoadProgram loadProgram) {
+    private void logEventsForGearCreation(LoadProgram loadProgram, LiteYukonUser liteYukonUser) {
         for (ProgramGear programGear : loadProgram.getGears()) {
             demandResponseEventLogService.gearCreated(programGear.getGearName(),
                                                       programGear.getControlMethod().name(),
                                                       loadProgram.getName(),
                                                       programGear.getGearNumber(),
-                                                      ApiRequestContext.getContext().getLiteYukonUser());
+                                                      liteYukonUser);
         }
     }
 }
