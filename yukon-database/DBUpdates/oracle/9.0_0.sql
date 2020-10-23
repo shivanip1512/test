@@ -37,6 +37,19 @@ UPDATE DeviceGroupComposed SET CompositionType = 'INTERSECTION'
 INSERT INTO DBUpdates VALUES ('YUK-23001', '9.0.0', SYSDATE);
 /* @end YUK-23001 */
 
+/* @start YUK-22983 */
+/* @error ignore-begin */
+ALTER TABLE MeterProgramStatus DROP CONSTRAINT FK_MeterProgramStatus_Device;
+ALTER TABLE MeterProgramStatus DROP CONSTRAINT FK_MeterProgramStatus_DeviceMG;
+/* @error ignore-end */
+ALTER TABLE MeterProgramStatus
+    ADD CONSTRAINT FK_MeterProgramStatus_DeviceMG FOREIGN KEY (DeviceId)
+    REFERENCES DEVICEMETERGROUP (DEVICEID)
+    ON DELETE CASCADE;
+
+INSERT INTO DBUpdates VALUES ('YUK-22983', '9.0.0', SYSDATE);
+/* @end YUK-22983 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
