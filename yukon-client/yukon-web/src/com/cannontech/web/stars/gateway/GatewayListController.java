@@ -297,7 +297,6 @@ public class GatewayListController {
         }
     }
 
-    //Capital
     public enum FirmwareUpdatesSortBy implements DisplayableEnum {
         TIMESTAMP,
         FAILED,
