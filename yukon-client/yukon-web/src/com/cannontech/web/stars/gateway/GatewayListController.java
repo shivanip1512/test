@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -75,7 +76,7 @@ public class GatewayListController {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private PaoNotesService paoNotesService;
     private Map<SortBy, Comparator<CertificateUpdate>> sorters;
-    
+
     @PostConstruct
     public void initialize() {
         Builder<SortBy, Comparator<CertificateUpdate>> builder = ImmutableMap.builder();
@@ -83,7 +84,7 @@ public class GatewayListController {
         builder.put(SortBy.CERTIFICATE, getCertificateFileNameComparator());
         sorters = builder.build();
     }
-    
+
     @RequestMapping(value = { "/gateways", "/gateways/" }, method = RequestMethod.GET)
     public String gateways(ModelMap model, YukonUserContext userContext, FlashScope flash,
                            @DefaultSort(dir = Direction.desc, sort = "TIMESTAMP") SortingParameters sorting) {
@@ -131,11 +132,7 @@ public class GatewayListController {
         }
         model.addAttribute("certUpdates", certUpdates);
         helper.addText(model, userContext);
-        
-        List<RfnGatewayFirmwareUpdateSummary> firmwareUpdates = rfnGatewayFirmwareUpgradeService.getFirmwareUpdateSummaries();
-        firmwareUpdates.sort((first, second) -> second.getSendDate().compareTo(first.getSendDate()));
-        model.addAttribute("firmwareUpdates", firmwareUpdates);
-        
+
         List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(gateways.stream()
                                                                              .map(gateway -> gateway.getPaoIdentifier().getPaoId())
                                                                              .collect(Collectors.toList()));
@@ -143,11 +140,43 @@ public class GatewayListController {
         
         return "gateways/list.jsp";
     }
-    
+
+    @GetMapping("/gateways/firmwareDetails")
+    public String firmwareDetails(ModelMap model, YukonUserContext userContext,
+            @DefaultSort(dir = Direction.desc, sort = "TIMESTAMP") SortingParameters sorting) {
+        List<RfnGatewayFirmwareUpdateSummary> firmwareUpdates = rfnGatewayFirmwareUpgradeService.getFirmwareUpdateSummaries();
+        Direction dir = sorting.getDirection();
+        FirmwareUpdatesSortBy sortBy = FirmwareUpdatesSortBy.valueOf(sorting.getSort());
+        Comparator<RfnGatewayFirmwareUpdateSummary> comparator = (o1, o2) -> {
+            return o1.getSendDate().compareTo(o2.getSendDate());
+        };
+        if (sortBy == FirmwareUpdatesSortBy.PENDING) {
+            comparator = (o1, o2) -> (o1.getGatewayUpdatesPending() - o2.getGatewayUpdatesPending());
+        }
+        if (sortBy == FirmwareUpdatesSortBy.FAILED) {
+            comparator = (o1, o2) -> (o1.getGatewayUpdatesFailed() - o2.getGatewayUpdatesFailed());
+        }
+        if (sortBy == FirmwareUpdatesSortBy.SUCCESSFUL) {
+            comparator = (o1, o2) -> (o1.getGatewayUpdatesSuccessful() - o2.getGatewayUpdatesSuccessful());
+        }
+        if (sorting.getDirection() == Direction.desc) {
+            comparator = Collections.reverseOrder(comparator);
+        }
+        Collections.sort(firmwareUpdates, comparator);
+        model.addAttribute("firmwareUpdates", firmwareUpdates);
+        helper.addText(model, userContext);
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        for (FirmwareUpdatesSortBy column : FirmwareUpdatesSortBy.values()) {
+            String text = accessor.getMessage(column);
+            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+            model.addAttribute(column.name(), col);
+        }
+        return "gateways/firmwareUpdates.jsp";
+    }
+
     @RequestMapping("/gateways/data")
     public @ResponseBody Map<Integer, Object> data(YukonUserContext userContext) {
         String defaultUpdateServerUrl = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
-        
         Map<Integer, Object> json = new HashMap<>();
         Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
         List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(gateways.stream()
@@ -267,7 +296,19 @@ public class GatewayListController {
             return "yukon.web.modules.operator.gateways.certUpdate.tableheader." + name();
         }
     }
-    
+
+    public enum FirmwareUpdatesSortBy implements DisplayableEnum {
+        TIMESTAMP,
+        FAILED,
+        SUCCESSFUL,
+        PENDING;
+
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.operator.gateways.manageFirmware." + name();
+        }
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class DataTypeContainer {
         public DataType[] types;
