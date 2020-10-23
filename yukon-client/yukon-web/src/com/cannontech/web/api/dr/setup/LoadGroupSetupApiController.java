@@ -76,14 +76,6 @@ public class LoadGroupSetupApiController {
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
-    @GetMapping("/availableLoadGroup")
-    public ResponseEntity<Object> retrieveAvailableLoadGroup() {
-        List<LMPaoDto> availableLoadGroups = loadGroupService.retrieveAvailableLoadGroup();
-        HashMap<String, List<LMPaoDto>> paoIdMap = new HashMap<>();
-        paoIdMap.put("availableLoadGroups", availableLoadGroups);
-        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
-    }
-
     @GetMapping("/getPointGroupStartState/{pointId}")
     public ResponseEntity<List<ControlRawState>> getPointGroupStartState(@PathVariable int pointId) {
         return new ResponseEntity<>(loadGroupService.getPointGroupStartState(pointId), HttpStatus.OK);
