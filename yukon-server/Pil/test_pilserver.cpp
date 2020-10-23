@@ -4,6 +4,7 @@
 #include "msg_pcreturn.h"
 #include "dev_rfn.h"
 #include "cmd_rfn_demandFreeze.h"
+#include "config_data_rfn.h"
 
 #include "rtdb_test_helpers.h"
 #include "boost_test_helpers.h"
@@ -191,6 +192,128 @@ BOOST_AUTO_TEST_CASE(test_rfnExpectMore)
         BOOST_CHECK_EQUAL(reqMsg->CommandString(), "putconfig install all verify");
         BOOST_CHECK(reqMsg->getConnectionHandle(), handle);
         BOOST_CHECK(reqMsg->UserMessageId(), UserMessageId);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(test_rfnBatteryNode_verifyFailure)
+{
+    Test_PilServer pilServer;
+    auto cfg = boost::make_shared<Cti::Test::test_DeviceConfig>();
+    Cti::Test::Override_ConfigManager overrideConfigManager { cfg };
+
+    cfg->insertValue(Cti::Config::RfnStrings::WaterNodeConfiguration::ReportingIntervalSeconds, "86400");
+    cfg->insertValue(Cti::Config::RfnStrings::WaterNodeConfiguration::RecordingIntervalSeconds, "1800");
+
+    constexpr auto DeviceId = 501;
+    constexpr auto UserMessageId = 11235;
+    const Cti::ConnectionHandle handle{ 55441 };
+
+    auto dev = pilServer.dev_mgr.getDeviceByID(DeviceId);
+
+    BOOST_REQUIRE(dev);
+
+    auto devRfBatteryNode = dynamic_cast<Cti::Test::test_RfBatteryNodeDevice*>(dev.get());
+
+    BOOST_REQUIRE(devRfBatteryNode);
+
+    Cti::Messaging::Rfn::RfnGetChannelConfigReplyMessage msg;
+    msg.rfnIdentifier.manufacturer = "Croctober";
+    msg.rfnIdentifier.model = "7";
+    msg.rfnIdentifier.serialNumber = "2020";
+    msg.replyCode = Cti::Messaging::Rfn::RfnGetChannelConfigReplyMessage::SUCCESS;
+    msg.recordingInterval = 60;
+    msg.reportingInterval = 360;
+
+    devRfBatteryNode->channelConfigReplyMsg = msg;
+
+    CtiRequestMsg reqMsg(DeviceId, "putconfig install all verify", UserMessageId);
+    reqMsg.setConnectionHandle(handle);
+    reqMsg.setSOE(97);  //  prevents us from attempting DB access by calling SystemLogIdGen()
+
+    pilServer.executeRequest(&reqMsg);
+
+    BOOST_REQUIRE_EQUAL(3, pilServer.retList.size());
+    auto retList_itr = pilServer.retList.cbegin();
+
+    {
+        auto retMsg = dynamic_cast<const CtiReturnMsg*>(retList_itr++->get());
+
+        BOOST_REQUIRE(retMsg);
+
+        BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+        BOOST_CHECK_EQUAL(retMsg->Status(), 219);
+        BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config Reporting Interval did not match. Config: 86400, Meter: 360");
+    }
+    {
+        auto retMsg = dynamic_cast<const CtiReturnMsg*>(retList_itr++->get());
+
+        BOOST_REQUIRE(retMsg);
+
+        BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+        BOOST_CHECK_EQUAL(retMsg->Status(), 219);
+        BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config Recording Interval did not match. Config: 1800, Meter: 60");
+    }
+    {
+        auto retMsg = dynamic_cast<const CtiReturnMsg*>(retList_itr++->get());
+
+        BOOST_REQUIRE(retMsg);
+
+        BOOST_CHECK_EQUAL(retMsg->ExpectMore(), false);
+        BOOST_CHECK_EQUAL(retMsg->Status(), 219);
+        BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config all is NOT current.");
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(test_rfnBatteryNode_verifySuccess)
+{
+    Test_PilServer pilServer;
+    auto cfg = boost::make_shared<Cti::Test::test_DeviceConfig>();
+    Cti::Test::Override_ConfigManager overrideConfigManager{ cfg };
+
+    cfg->insertValue(Cti::Config::RfnStrings::WaterNodeConfiguration::ReportingIntervalSeconds, "86400");
+    cfg->insertValue(Cti::Config::RfnStrings::WaterNodeConfiguration::RecordingIntervalSeconds, "1800");
+
+    constexpr auto DeviceId = 501;
+    constexpr auto UserMessageId = 11235;
+    const Cti::ConnectionHandle handle{ 55441 };
+
+    auto dev = pilServer.dev_mgr.getDeviceByID(DeviceId);
+
+    BOOST_REQUIRE(dev);
+
+    auto devRfBatteryNode = dynamic_cast<Cti::Test::test_RfBatteryNodeDevice*>(dev.get());
+
+    BOOST_REQUIRE(devRfBatteryNode);
+
+    Cti::Messaging::Rfn::RfnGetChannelConfigReplyMessage msg;
+    msg.rfnIdentifier.manufacturer = "Croctober";
+    msg.rfnIdentifier.model = "7";
+    msg.rfnIdentifier.serialNumber = "2020";
+    msg.replyCode = Cti::Messaging::Rfn::RfnGetChannelConfigReplyMessage::SUCCESS;
+    msg.recordingInterval = 1800;
+    msg.reportingInterval = 86400;
+
+    devRfBatteryNode->channelConfigReplyMsg = msg;
+
+    CtiRequestMsg reqMsg(DeviceId, "putconfig install all verify", UserMessageId);
+    reqMsg.setConnectionHandle(handle);
+    reqMsg.setSOE(97);  //  prevents us from attempting DB access by calling SystemLogIdGen()
+
+    pilServer.executeRequest(&reqMsg);
+
+    BOOST_REQUIRE_EQUAL(1, pilServer.retList.size());
+    auto retList_itr = pilServer.retList.cbegin();
+
+    {
+        auto retMsg = dynamic_cast<const CtiReturnMsg*>(retList_itr++->get());
+
+        BOOST_REQUIRE(retMsg);
+        
+        BOOST_CHECK_EQUAL(retMsg->ExpectMore(), false);
+        BOOST_CHECK_EQUAL(retMsg->Status(), 0);
+        BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config all is current.");
     }
 }
 
