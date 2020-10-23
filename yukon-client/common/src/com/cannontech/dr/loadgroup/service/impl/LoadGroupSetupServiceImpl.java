@@ -54,21 +54,6 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
     @Autowired private DbChangeManager dbChangeManager;
     private static final Logger log = YukonLogManager.getLogger(LoadGroupSetupServiceImpl.class);
 
-    @Override
-    public List<LMPaoDto> retrieveAvailableLoadGroup() {
-        List<LiteYukonPAObject> list = dbCache.getAllLMGroups();
-
-        if (list.size() == 0) {
-            throw new NotFoundException("No load group available.");
-        }
-        
-        List<LMPaoDto> availableLoadGroups = list.stream()
-                                                 .filter(yukonPAObject -> yukonPAObject.getPaoType().supportsMacroGroup() && yukonPAObject.getPaoType() != PaoType.MACRO_GROUP)
-                                                 .map(yukonPAObject -> createLMPaoDto(yukonPAObject))
-                                                 .collect(Collectors.toList());
-        return availableLoadGroups;
-    }
-    
     private LMPaoDto createLMPaoDto(LiteYukonPAObject yukonPAObject) {
         return new LMPaoDto(yukonPAObject.getYukonID(), yukonPAObject.getPaoName(), yukonPAObject.getPaoType());
     }

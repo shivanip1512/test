@@ -635,16 +635,6 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     }
 
     @Override
-    public List<ProgramGroup> getAllAvailableProgramLoadGroups(PaoType programType) {
-        
-        if(!programType.isLmProgram()) {
-            throw new LoadProgramProcessingException("ProgramType not supported");
-        }
-
-        return getAllProgramLoadGroups(programType);
-    }
-
-    @Override
     public List<ProgramGroup> getAvailableProgramLoadGroups(int programId) {
         LiteYukonPAObject lmProgram = getProgramFromCache(programId);
 
@@ -739,12 +729,6 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     }
 
     @Override
-    public List<NotificationGroup> getAllAvailableProgramNotificationGroups() {
-        List<NotificationGroup> notificationGroups = getAllProgramNotificationGroups();
-        return notificationGroups;
-    }
-
-    @Override
     public List<NotificationGroup> getAvailableProgramNotificationGroups(int programId) {
 
         LiteYukonPAObject lmProgram = getProgramFromCache(programId);
@@ -766,22 +750,6 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                                                                           .map(group ->  new NotificationGroup(group.getNotificationGroupID(), group.getNotificationGroupName()))
                                                                           .collect(Collectors.toList());
         return notificationGroups;
-    }
-
-    @Override
-    public List<ProgramDirectMemberControl> getAllAvailableDirectMemberControls() {
-
-        List<LiteYukonPAObject> programs = dbCache.getAllLMPrograms();
-        List<LiteLMPAOExclusion> currentlyExcluded = dbCache.getAllLMPAOExclusions();
-
-        List<LiteYukonPAObject> lmSubordinates =
-                programs.stream()
-                         .filter(program -> (program.getPaoType().isDirectProgram()
-                                 && !(isMasterProgram(program.getLiteID(), currentlyExcluded))))
-                         .collect(Collectors.toList());
-
-        return buildProgramDirectMemberControl(lmSubordinates);
-
     }
 
     @Override

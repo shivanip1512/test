@@ -11,6 +11,7 @@
     <property name="log.dir" value="${basedir}/yukon-build/logs" />
     <property name="dist.dir" value="${basedir}/yukon-build/dist" />
     <property name="temp.dir" value="${basedir}/yukon-build/temp" />
+    <property name="apiDocumentationTemp.dir" value="${basedir}/yukon-build/apiDocumentationTemp" />
     <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter" />
 
     <target name="targets">
@@ -395,6 +396,10 @@
             <fileset dir="${basedir}/yukon-database/DBUpdates/sqlserver" />
         </copy>
         
+
+        <antcall target="apiDocumentation">
+            <param name="tempDir" value="${temp.dir}"/>
+        </antcall>
         <mkdir dir="${dist.dir}" />
         
         <zip destfile="${dist.dir}/yukon_${DSTAMP}_${TSTAMP}_${version.external.filenameSafe}_${yukon-build-number}.zip">
@@ -484,5 +489,22 @@
             <source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/lib/jQuery/plugins/jqGrid/jqGridHelper.js" />
         </jsdoctoolkit>
     </target>
+
+
+    <target name="apiDocumentation">
+        <mkdir dir="${apiDocumentationTemp.dir}" />      
+        <copy todir="${apiDocumentationTemp.dir}/apiDocumentation">
+            <fileset dir="${basedir}/yukon-build/swagger-ui" />
+        </copy>
+        <copy todir="${apiDocumentationTemp.dir}/apiDocumentation/apiDocumentation">
+            <fileset dir="${basedir}/yukon-client/yukon-web/apiDocumentation" />
+        </copy>
+
+        <zip destfile="${tempDir}/apiDocumentation.zip">
+            <fileset dir="${apiDocumentationTemp.dir}/apiDocumentation" />
+        </zip>
+
+        <delete dir="${apiDocumentationTemp.dir}" />  
+    </target> 
 
 </project>
