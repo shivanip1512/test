@@ -130,7 +130,7 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
         public RfnGatewayData get(PaoIdentifier key) throws ExecutionException {
             //return cached data, if present
             RfnGatewayData data = cacheMap.get(key);
-            if (data != null) {;
+            if (data != null) {
                 return data;
             }
             log.debug("Loading gateway data for {}", key);
