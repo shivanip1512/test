@@ -155,6 +155,30 @@
         <property name="loadProfile" value="KVA_LOAD_PROFILE"></property>
         <qualifier value="kVAh"/>
     </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="DELIVERED_KWH_RATE_A"/>
+        <property name="perInterval" value="DELIVERED_KWH_RATE_A_PER_INTERVAL"></property>
+        <property name="loadProfile"><null/></property>
+        <qualifier value="kWhRateA"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="DELIVERED_KWH_RATE_B"/>
+        <property name="perInterval" value="DELIVERED_KWH_RATE_B_PER_INTERVAL"></property>
+        <property name="loadProfile"><null/></property>
+        <qualifier value="kWhRateB"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="DELIVERED_KWH_RATE_C"/>
+        <property name="perInterval" value="DELIVERED_KWH_RATE_C_PER_INTERVAL"></property>
+        <property name="loadProfile"><null/></property>
+        <qualifier value="kWhRateC"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="DELIVERED_KWH_RATE_D"/>
+        <property name="perInterval" value="DELIVERED_KWH_RATE_D_PER_INTERVAL"></property>
+        <property name="loadProfile"><null/></property>
+        <qualifier value="kWhRateD"/>
+    </bean>
     <bean id= "missingGatewayFirstDataTimes" class="java.util.concurrent.ConcurrentHashMap"/>
        
     <bean class="com.cannontech.services.calculated.CalculatedPointDataProducer"/>

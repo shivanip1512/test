@@ -45,7 +45,6 @@ import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
-import com.cannontech.database.db.device.lm.LMProgram;
 import com.cannontech.dr.area.service.ControlAreaSetupService;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
 import com.cannontech.message.DbChangeManager;
@@ -88,7 +87,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
 
     @Override
     @Transactional
-    public int create(ControlArea controlArea) {
+    public ControlArea create(ControlArea controlArea) {
         LMControlArea lmControlArea = getDBPersistent(controlArea.getControlAreaId());
         buildLMControlAreaDBPersistent(lmControlArea, controlArea);
 
@@ -108,12 +107,12 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
                 getProgramNamesString(lmControlArea.getLmControlAreaProgramVector()), startTime, stopTime,
                 ApiRequestContext.getContext().getLiteYukonUser());
 
-        return lmControlArea.getPAObjectID();
+        return buildControlAreaModel(lmControlArea);
     }
 
     @Override
     @Transactional
-    public int update(int controlAreaId, ControlArea controlArea) {
+    public ControlArea update(int controlAreaId, ControlArea controlArea) {
         dbCache.getAllLMControlAreas().stream()
                                       .filter(controlarea -> controlarea.getLiteID() == controlAreaId)
                                       .findFirst().orElseThrow(() -> new NotFoundException(" Control Area Id not found  " + controlAreaId ));
@@ -137,7 +136,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
           getProgramNamesString(lmControlArea.getLmControlAreaProgramVector()), startTime, stopTime,
           ApiRequestContext.getContext().getLiteYukonUser());
 
-        return lmControlArea.getPAObjectID();
+        return buildControlAreaModel(lmControlArea);
     }
 
     /**
@@ -406,16 +405,6 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
                 lmControlArea.getLmControlAreaProgramVector().add(lmControlAreaProgram);
             });
         }
-    }
-
-    @Override
-    public List<LMDto> retrieveUnassignedPrograms() {
-        List<Integer> unassignedPrgIds = LMProgram.getUnassignedPrograms();
-
-        return unassignedPrgIds.stream()
-                               .map(programId -> dbCache.getAllPaosMap().get(programId))
-                               .map(program -> buildProgramAssignment(program))
-                               .collect(Collectors.toList());
     }
 
     private LMDto buildProgramAssignment(LiteYukonPAObject program) {

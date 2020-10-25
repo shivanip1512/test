@@ -1,0 +1,111 @@
+Trend:
+  title: Trend
+  required:
+    - name
+   
+  type: object
+  properties:
+    name:
+      type: string
+      maxLength: 40
+      description: 'Name of the trend.'
+    trendSeries:
+      $ref: '#/trendSeries'
+
+trendSeries:
+  type: array
+  items:
+    required:
+    - label
+    type: object
+    properties:
+      type:
+        type: string
+        default: BASIC_TYPE
+        description: 'Graph Type of trend.'
+        enum:
+          - BASIC_TYPE
+          - USAGE_TYPE
+          - PEAK_TYPE
+          - YESTERDAY_TYPE
+          - MARKER_TYPE
+          - DATE_TYPE
+      pointId:
+        type: number
+        description: 'Point Id. Point Id for MARKER_TYPE is -100.'
+      label:
+        type: string
+        maxLength: 40
+        description: 'Label for the selected point. label is mandatory when trendSeries is passed.'
+      color:
+        type: string
+        default: BLUE
+        description: 'Color.'
+        enum:
+        - BLACK
+        - BLUE
+        - CYAN
+        - GREY
+        - GREEN
+        - MAGENTA
+        - ORANGE
+        - PINK
+        - RED
+        - YELLOW
+      axis:
+        type: string
+        default: LEFT
+        description: 'Axis.'
+        enum:
+        - LEFT
+        - RIGHT
+      multiplier:
+        type: number
+        default: 1
+        description: 'Multiplier.'
+      style:
+        type: string
+        default: LINE
+        description: 'Render Style. Render Style for MARKER_TYPE is LINE.'
+        enum:
+        - LINE
+        - LINE_SHAPES
+        - LINE_AREA
+        - LINE_AREA_SHAPES
+        - STEP
+        - STEP_SHAPES
+        - STEP_AREA
+        - STEP_AREA_SHAPES
+        - BAR
+        - BAR_3D
+      date:
+        type: string
+        format: date-type
+        description: 'Date in MM/dd/yyyy format. Applicable only when type is DATE_TYPE.'
+id:
+  title: id
+  required:
+    - id
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Trend id'
+
+components:
+  examples:
+    Trend:
+      value:
+        name: Test Trend
+        trendSeries:
+          - type: DATE_TYPE
+            pointId: -110
+            label: System Device / System Point
+            color: BLACK
+            axis: LEFT
+            multiplier: 1.2
+            style: LINE
+            date: 07/22/2020
+    id:
+      value:
+        id: 11

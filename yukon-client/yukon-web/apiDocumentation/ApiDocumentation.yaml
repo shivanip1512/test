@@ -1,0 +1,65 @@
+openapi: 3.0.0
+info:
+  title: Yukon API Documentation
+  version: 9.0.0
+  description: 'Yukon provides REST based API support for different modules like Load Management,Point,Comm Channel,Trends and Virtual Devices.'
+servers:
+  - url: /api/
+    description: Default - Works if documentation is hosted in same service as Yukon
+  - url: 'http://{baseURI}/api/'
+    description: Configurable - Works if documentation is hosted outside of Yukon
+    variables:
+      baseURI:
+        default: 'localhost:8080'
+        description: Base URI
+security:
+  - bearerAuth: []
+
+paths:
+  /token:
+    $ref: 'api/tokenApi.yaml#/token-generate'
+
+  /devices/commChannels:
+    $ref: 'api/commChannelsApi.yaml#/post-operation'
+  '/devices/commChannels/{id}':
+    $ref: 'api/commChannelsApi.yaml#/get-update-delete-operation'
+
+  /trends:
+    $ref: 'api/trendsApi.yaml#/post-operation'
+  '/trends/{id}':
+    $ref: 'api/trendsApi.yaml#/get-update-delete-operation'
+  /dr/loadGroups:
+    $ref: 'api/loadGroupsApi.yaml#/post-operation'
+  '/dr/loadGroups/{id}':
+    $ref: 'api/loadGroupsApi.yaml#/get-update-delete-operation'
+
+  /dr/macroLoadGroups:
+    $ref: 'api/MacroLoadGroupsApi.yaml#/post-operation'
+  '/dr/macroLoadGroups/{id}':
+    $ref: 'api/MacroLoadGroupsApi.yaml#/get-update-delete-operation'
+
+  /dr/constraints:
+    $ref: 'api/programConstraintsApi.yaml#/post-operation'
+  '/dr/constraints/{id}':
+    $ref: 'api/programConstraintsApi.yaml#/get-update-delete-operation'
+  /dr/constraints/getSeasonSchedules:
+    $ref: 'api/programConstraintsApi.yaml#/season-schedules'
+  /dr/constraints/getHolidaySchedules:
+    $ref: 'api/programConstraintsApi.yaml#/holiday-schedules'
+  /dr/constraints/getAllProgramConstraint:
+    $ref: 'api/programConstraintsApi.yaml#/program-constraints'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+tags:
+  - name: Token Generation
+  - name: Comm Channel
+  - name: Trend
+  - name: Load Group
+  - name: Macro Load Group
+  - name: Program Constraints
+  

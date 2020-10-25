@@ -287,7 +287,7 @@
     
     <!-- Wanted to format date so millis displayed but was unable to get DateFormatEnum syntax to work with java MessageSource 
          Default formatting of Dates in i18n is "MM/dd/yy, hh:mm a"
-         Wanted to do something like the following but couldn't get it to work : start={11,date,BOTH_WITH_MILLIS}
+         Wanted to do something like the following but couldn't get it to work : start={11,date,FILE_DATA_BOTH}
          So instead, hardcoded it to something that closely matches default, but includes ss.SSS as well: start={11,date,MM/dd/yy, hh:mm:ss.SSS a} 
     -->
     <entry key="yukon.common.events.system.rfn.outageEventReceived">Received {2} with state {3} for meter {1}: start={11,date,MM/dd/yy, hh:mm:ss.SSS a} stop={12,date,MM/dd/yy, hh:mm:ss.SSS a}.</entry>

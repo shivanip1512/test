@@ -23,6 +23,7 @@ import io.restassured.response.ExtractableResponse;
 public class HoneywellLoadGroupApiTest {
 
     MockLoadGroupHoneywell loadGroup = null;
+    private static final String contextGroupId = "LM_GROUP_HONEYWELL.id";
 
     @BeforeClass
     public void setUp() {
@@ -36,7 +37,7 @@ public class HoneywellLoadGroupApiTest {
     public void loadGroupHoneywell_01_Create(ITestContext context) {
         Log.startTestCase("loadGroupHoneywell_01_Create");
         ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
-        String groupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        Integer groupId = createResponse.jsonPath().getInt(contextGroupId);
         context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
         assertTrue("Status code should be 201", createResponse.statusCode() == 201);
         assertTrue("Group Id should not be Null", groupId != null);
@@ -112,7 +113,7 @@ public class HoneywellLoadGroupApiTest {
                "/" + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString() + "/copy");
 
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
-        String copyGroupId = copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
+        Integer copyGroupId= copyResponse.jsonPath().getInt(LoadGroupHelper.CONTEXT_GROUP_ID);
         assertTrue("Group Id should not be Null", copyGroupId != null);
         context.setAttribute("honeywell_CopyGrpId", copyGroupId);
         context.setAttribute("honeywell_CopyGrpName", loadGroupCopy.getName());

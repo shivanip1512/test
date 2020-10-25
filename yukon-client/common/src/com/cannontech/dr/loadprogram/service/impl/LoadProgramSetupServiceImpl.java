@@ -85,7 +85,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
     @Override
     @Transactional
-    public int create(LoadProgram loadProgram) {
+    public LoadProgram create(LoadProgram loadProgram) {
         LMProgramBase lmProgram = getDBPersistent(loadProgram.getProgramId(), loadProgram.getType());
         buildLMProgramBaseDBPersistent(lmProgram, loadProgram);
 
@@ -99,12 +99,12 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         // Logging events during load program creation
         processEventLogsForProgramCreate(loadProgram);
 
-        return lmProgram.getPAObjectID();
+        return buildLoadProgramModel(lmProgram);
     }
 
     @Override
     @Transactional
-    public int update(int programId, LoadProgram loadProgram) {
+    public LoadProgram update(int programId, LoadProgram loadProgram) {
         // Validate programId
         getProgramFromCache(programId);
         List<LMProgramDirectGear> oldGears = null;
@@ -127,7 +127,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         // Logging events during load program update
         processEventLogsForProgramUpdate(loadProgram, oldGears);
 
-        return lmProgramBase.getPAObjectID();
+        return buildLoadProgramModel(lmProgramBase);
     }
 
     @Override
@@ -635,16 +635,6 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     }
 
     @Override
-    public List<ProgramGroup> getAllAvailableProgramLoadGroups(PaoType programType) {
-        
-        if(!programType.isLmProgram()) {
-            throw new LoadProgramProcessingException("ProgramType not supported");
-        }
-
-        return getAllProgramLoadGroups(programType);
-    }
-
-    @Override
     public List<ProgramGroup> getAvailableProgramLoadGroups(int programId) {
         LiteYukonPAObject lmProgram = getProgramFromCache(programId);
 
@@ -739,12 +729,6 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     }
 
     @Override
-    public List<NotificationGroup> getAllAvailableProgramNotificationGroups() {
-        List<NotificationGroup> notificationGroups = getAllProgramNotificationGroups();
-        return notificationGroups;
-    }
-
-    @Override
     public List<NotificationGroup> getAvailableProgramNotificationGroups(int programId) {
 
         LiteYukonPAObject lmProgram = getProgramFromCache(programId);
@@ -766,22 +750,6 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                                                                           .map(group ->  new NotificationGroup(group.getNotificationGroupID(), group.getNotificationGroupName()))
                                                                           .collect(Collectors.toList());
         return notificationGroups;
-    }
-
-    @Override
-    public List<ProgramDirectMemberControl> getAllAvailableDirectMemberControls() {
-
-        List<LiteYukonPAObject> programs = dbCache.getAllLMPrograms();
-        List<LiteLMPAOExclusion> currentlyExcluded = dbCache.getAllLMPAOExclusions();
-
-        List<LiteYukonPAObject> lmSubordinates =
-                programs.stream()
-                         .filter(program -> (program.getPaoType().isDirectProgram()
-                                 && !(isMasterProgram(program.getLiteID(), currentlyExcluded))))
-                         .collect(Collectors.toList());
-
-        return buildProgramDirectMemberControl(lmSubordinates);
-
     }
 
     @Override

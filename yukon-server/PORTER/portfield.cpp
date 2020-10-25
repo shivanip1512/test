@@ -67,6 +67,10 @@ using namespace Cti;
 /* Threads that handle each port for communications */
 void PortThread(void *pid)
 {
+    extern std::atomic_int PortManagerThreadCount;
+
+    PortManagerThreadCount++;
+
     YukonError_t   status;
 
     CtiTime        nowTime, nextExpireTime, nextLogPoke;
@@ -362,6 +366,8 @@ void PortThread(void *pid)
     }
 
     CTILOG_INFO(dout, "Shutdown PortThread for port "<< Port->getPortID() <<" / "<< Port->getName());
+
+    PortManagerThreadCount--;
 }
 
 /* Routine to initialize a remote based on it's type */

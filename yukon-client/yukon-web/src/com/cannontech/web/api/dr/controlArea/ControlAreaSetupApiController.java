@@ -41,19 +41,16 @@ public class ControlAreaSetupApiController {
 
     @PostMapping
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
-    public ResponseEntity<HashMap<String, Integer>> create(@Valid @RequestBody ControlArea controlArea) {
-        int controlAreaId = controlAreaService.create(controlArea);
-        HashMap<String, Integer> paoIdMap = new HashMap<>();
-        paoIdMap.put("controlAreaId", controlAreaId);
-        return new ResponseEntity<>(paoIdMap, HttpStatus.CREATED);
+    public ResponseEntity<Object> create(@Valid @RequestBody ControlArea controlArea) {
+        ControlArea createControlArea= controlAreaService.create(controlArea);
+        return new ResponseEntity<>(createControlArea, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
-    public ResponseEntity<HashMap<String, Integer>> update(@Valid @RequestBody ControlArea controlArea,
-            @PathVariable int id) {
-        int controlAreaId = controlAreaService.update(id, controlArea);
-        return buildResponse(controlAreaId);
+    public ResponseEntity<Object> update(@Valid @RequestBody ControlArea controlArea, @PathVariable int id) {
+        ControlArea updateControlArea = controlAreaService.update(id, controlArea);
+        return new ResponseEntity<>(updateControlArea, HttpStatus.OK);
     }
 
     @DeleteMapping("/{controlAreaId}")
@@ -65,22 +62,10 @@ public class ControlAreaSetupApiController {
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
-    @GetMapping("/unAssignedPrograms")
-    public ResponseEntity<List<LMDto>> getAvailablePrograms() {
-        List<LMDto> programs = controlAreaService.retrieveUnassignedPrograms();
-        return new ResponseEntity<>(programs, HttpStatus.OK);
-    }
-
     @GetMapping("/normalState/{pointId}")
     public ResponseEntity<Object> getNormalState(@PathVariable int pointId) {
         List<LMDto> normalStates = controlAreaService.retrieveNormalState(pointId);
         return new ResponseEntity<>(normalStates, HttpStatus.OK);
-    }
-
-    private ResponseEntity<HashMap<String, Integer>> buildResponse(int controlAreaId) {
-        HashMap<String, Integer> paoIdMap = new HashMap<>();
-        paoIdMap.put("controlAreaId", controlAreaId);
-        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
     
     @InitBinder("controlArea")

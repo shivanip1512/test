@@ -125,7 +125,7 @@ public class ApiRequestHelper {
         });
         paramTypeObjectRefMap.put(ProgramGear.class, new ParameterizedTypeReference<ProgramGear>() {
         });
-        paramTypeObjectRefMap.put(DeviceBaseModel.class, new ParameterizedTypeReference<PaginatedResponse<VirtualDeviceBaseModel<?>>>() {
+        paramTypeObjectRefMap.put(VirtualDeviceBaseModel.class, new ParameterizedTypeReference<PaginatedResponse<VirtualDeviceBaseModel<?>>>() {
         });
     }
 

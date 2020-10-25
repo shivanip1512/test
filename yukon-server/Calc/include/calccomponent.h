@@ -74,7 +74,7 @@ public:
     };
 
     const std::string& getFunctionName() {return _functionName;};
-    long getComponentPointId() {return _componentPointId;};
+    long getComponentPointId() const {return _componentPointId;};
     
     BOOL isValid( void )  {  return _valid;};
 

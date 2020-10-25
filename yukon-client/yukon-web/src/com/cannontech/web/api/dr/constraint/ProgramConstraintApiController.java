@@ -43,21 +43,16 @@ public class ProgramConstraintApiController {
 
     @PostMapping
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
-    public ResponseEntity<HashMap<String, Integer>> create(@Valid @RequestBody ProgramConstraint programConstraint) {
-        Integer constraintId = programConstraintService.create(programConstraint);
-        HashMap<String, Integer> constraintIdMap = new HashMap<>();
-        constraintIdMap.put("id", constraintId);
-        return new ResponseEntity<>(constraintIdMap, HttpStatus.CREATED);
+    public ResponseEntity<Object> create(@Valid @RequestBody ProgramConstraint programConstraint) {
+        ProgramConstraint createProgramConstraint = programConstraintService.create(programConstraint);
+        return new ResponseEntity<>(createProgramConstraint, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
-    public ResponseEntity<HashMap<String, Integer>> update(@Valid @RequestBody ProgramConstraint programConstraint,
-            @PathVariable int id) {
-        Integer constraintId = programConstraintService.update(id, programConstraint);
-        HashMap<String, Integer> constraintIdMap = new HashMap<>();
-        constraintIdMap.put("id", constraintId);
-        return new ResponseEntity<>(constraintIdMap, HttpStatus.OK);
+    public ResponseEntity<Object> update(@Valid @RequestBody ProgramConstraint programConstraint, @PathVariable int id) {
+        ProgramConstraint updateProgramConstraint = programConstraintService.update(id, programConstraint);
+        return new ResponseEntity<>(updateProgramConstraint, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

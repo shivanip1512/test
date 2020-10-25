@@ -25,6 +25,7 @@
                     buttonStyleClass="M0"
                     destinationFieldId="calc-component-point-${uniqueId}-input"
                     viewOnlyMode="${false}"
+                    removeValue="0"
                     includeRemoveButton="${true}"/>
             </span>
         </td>

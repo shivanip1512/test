@@ -46,19 +46,15 @@ public class LoadGroupSetupApiController {
     @PostMapping
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> create(@Valid @RequestBody LoadGroupBase loadGroup) {
-        int paoId = loadGroupService.create(loadGroup);
-        HashMap<String, Integer> paoIdMap = new HashMap<>();
-        paoIdMap.put("groupId", paoId);
-        return new ResponseEntity<>(paoIdMap, HttpStatus.CREATED);
+        LoadGroupBase createLoadGroup = loadGroupService.create(loadGroup);
+        return new ResponseEntity<>(createLoadGroup, HttpStatus.CREATED);
     }
     
     @PutMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public ResponseEntity<Object> update(@Valid @RequestBody LoadGroupBase loadGroup, @PathVariable int id) {
-        int paoId = loadGroupService.update(id, loadGroup);
-        HashMap<String, Integer> paoIdMap = new HashMap<>();
-        paoIdMap.put("groupId", paoId);
-        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
+        LoadGroupBase updateLoadGroup = loadGroupService.update(id, loadGroup);
+        return new ResponseEntity<>(updateLoadGroup, HttpStatus.OK);
     }
 
     @PostMapping("/{id}/copy")
@@ -77,14 +73,6 @@ public class LoadGroupSetupApiController {
         int paoId = loadGroupService.delete(id);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("id", paoId);
-        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
-    }
-
-    @GetMapping("/availableLoadGroup")
-    public ResponseEntity<Object> retrieveAvailableLoadGroup() {
-        List<LMPaoDto> availableLoadGroups = loadGroupService.retrieveAvailableLoadGroup();
-        HashMap<String, List<LMPaoDto>> paoIdMap = new HashMap<>();
-        paoIdMap.put("availableLoadGroups", availableLoadGroups);
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
