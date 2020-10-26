@@ -374,8 +374,16 @@ public:
     static const Attribute  DeliveredkWhRateCperInterval;
     static const Attribute  DeliveredkWhRateDperInterval;
     static const Attribute  ReceivedkWhperInterval;
+    static const Attribute  ReceivedkWhRateAperInterval;
+    static const Attribute  ReceivedkWhRateBperInterval;
+    static const Attribute  ReceivedkWhRateCperInterval;
+    static const Attribute  ReceivedkWhRateDperInterval;
     static const Attribute  SumkWhperInterval;
     static const Attribute  NetkWhperInterval;
+    static const Attribute  NetkWhRateAperInterval;
+    static const Attribute  NetkWhRateBperInterval;
+    static const Attribute  NetkWhRateCperInterval;
+    static const Attribute  NetkWhRateDperInterval;
     static const Attribute  SumkVAhperInterval;
     static const Attribute  DeliveredkVArhperInterval;
     static const Attribute  SumkVArhperInterval;

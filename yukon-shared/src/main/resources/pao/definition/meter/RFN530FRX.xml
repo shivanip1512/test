@@ -74,6 +74,10 @@
         <pointInfo name="Net kWh (Rate C kWh)" attributes="NET_KWH_RATE_C"/>
         <pointInfo name="Net kWh (Rate D kWh)" attributes="NET_KWH_RATE_D"/>
         <pointInfo name="Net kWh per Interval" attributes="NET_KWH_PER_INTERVAL"/>
+        <pointInfo name="Net kWh Rate A per Interval" attributes="NET_KWH_RATE_A_PER_INTERVAL"/>
+        <pointInfo name="Net kWh Rate B per Interval" attributes="NET_KWH_RATE_B_PER_INTERVAL"/>
+        <pointInfo name="Net kWh Rate C per Interval" attributes="NET_KWH_RATE_C_PER_INTERVAL"/>
+        <pointInfo name="Net kWh Rate D per Interval" attributes="NET_KWH_RATE_D_PER_INTERVAL"/>
         <pointInfo name="Non Volatile Mem Failure" attributes="NON_VOLATILE_MEM_FAILURE"/>
         <pointInfo name="Outage Count" init="true" attributes="RFN_OUTAGE_COUNT"/>
         <pointInfo name="Outage Restore Count" init="true" attributes="RFN_OUTAGE_RESTORE_COUNT"/>
@@ -105,6 +109,10 @@
         <pointInfo name="Received kWh (Rate C kWh)" attributes="RECEIVED_KWH_RATE_C"/>
         <pointInfo name="Received kWh (Rate D kWh)" attributes="RECEIVED_KWH_RATE_D"/>
         <pointInfo name="Received kWh per Interval" attributes="RECEIVED_KWH_PER_INTERVAL"/>
+        <pointInfo name="Received kWh Rate A per Interval" attributes="RECEIVED_KWH_RATE_A_PER_INTERVAL"/>
+        <pointInfo name="Received kWh Rate B per Interval" attributes="RECEIVED_KWH_RATE_B_PER_INTERVAL"/>
+        <pointInfo name="Received kWh Rate C per Interval" attributes="RECEIVED_KWH_RATE_C_PER_INTERVAL"/>
+        <pointInfo name="Received kWh Rate D per Interval" attributes="RECEIVED_KWH_RATE_D_PER_INTERVAL"/>
         <pointInfo name="Reverse Rotation" attributes="REVERSE_POWER_FLAG"/>
         <pointInfo name="RF Demand Reset Status" init="true" attributes="RF_DEMAND_RESET_STATUS"/>
         <pointInfo name="RFN High Temperature Threshold Exceeded" attributes="RFN_TEMPERATURE_ALARM"/>
