@@ -10,7 +10,7 @@ Note: For attributes that reference the modifiers of "Quadrant" directly, the mo
 Note: Look at BuiltInAttribute as that follows the same convention. 
 -->
     <highestOffsets>
-        <analog offset="406"/>
+        <analog offset="410"/>
         <calcAnalog offset="0"/>
         <demandAccumulator offset="251"/>
         <status offset="102"/>
@@ -1999,6 +1999,30 @@ Note: Look at BuiltInAttribute as that follows the same convention.
     </point>
     <point offset="406" type="Analog">
         <name>Net kWh Rate D per Interval</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="407" type="Analog">
+        <name>Sum kWh Rate A per Interval</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="408" type="Analog">
+        <name>Sum kWh Rate B per Interval</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="409" type="Analog">
+        <name>Sum kWh Rate C per Interval</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="410" type="Analog">
+        <name>Sum kWh Rate D per Interval</name>
         <multiplier value="1"/>
         <unitofmeasure value="KWH"/>
         <decimalplaces value="0"/>

@@ -384,6 +384,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RECEIVED_KWH_RATE_C_PER_INTERVAL("Recieved kWh Rate C per Interval", AttributeGroup.USAGE, false), //calculated, not readable
     RECEIVED_KWH_RATE_D_PER_INTERVAL("Recieved kWh Rate D per Interval", AttributeGroup.USAGE, false), //calculated, not readable
     SUM_KWH_PER_INTERVAL("Sum kWh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    SUM_KWH_RATE_A_PER_INTERVAL("Sum kWh Rate A per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    SUM_KWH_RATE_B_PER_INTERVAL("Sum kWh Rate B per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    SUM_KWH_RATE_C_PER_INTERVAL("Sum kWh Rate C per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    SUM_KWH_RATE_D_PER_INTERVAL("Sum kWh Rate D per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
     NET_KWH_PER_INTERVAL("Net kWh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
     NET_KWH_RATE_A_PER_INTERVAL("Net kWh Rate A per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
     NET_KWH_RATE_B_PER_INTERVAL("Net kWh Rate B per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
