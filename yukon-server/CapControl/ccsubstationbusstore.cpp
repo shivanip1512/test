@@ -9714,7 +9714,24 @@ bool CtiCCSubstationBusStore::reloadZoneFromDatabase(const long zoneId)
         }
         else
         {
+            auto beforeBusID = _zoneManager.getZone( zoneId )->getSubbusId();
+
             _zoneManager.reload(zoneId);
+
+            reloadMonitorPointsFromDatabase( beforeBusID,
+                                             &_paobject_capbank_map, &_paobject_feeder_map,
+                                             &_paobject_subbus_map, &_pointid_capbank_map,
+                                             &_pointid_subbus_map );
+
+            auto afterBusID = _zoneManager.getZone( zoneId )->getSubbusId();
+
+            if ( beforeBusID != afterBusID )
+            {
+                reloadMonitorPointsFromDatabase( afterBusID,
+                                                 &_paobject_capbank_map, &_paobject_feeder_map,
+                                                 &_paobject_subbus_map, &_pointid_capbank_map,
+                                                 &_pointid_subbus_map );
+            }
         }
     }
     catch(...)
