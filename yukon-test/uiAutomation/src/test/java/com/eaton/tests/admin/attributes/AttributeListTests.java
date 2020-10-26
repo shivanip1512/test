@@ -21,7 +21,7 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.admin.attributes.AttributesListPage;
 
-public class AttributesListTests extends SeleniumTestSetup {
+public class AttributeListTests extends SeleniumTestSetup {
 
     private AttributesListPage page;
     private DriverExtensions driverExt;
