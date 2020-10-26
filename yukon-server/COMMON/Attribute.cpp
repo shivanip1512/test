@@ -388,6 +388,10 @@ INIT_ATTRIBUTE( ReceivedkWhRateBperInterval,                        "RECEIVED_KW
 INIT_ATTRIBUTE( ReceivedkWhRateCperInterval,                        "RECEIVED_KWH_RATE_C_PER_INTERVAL" );
 INIT_ATTRIBUTE( ReceivedkWhRateDperInterval,                        "RECEIVED_KWH_RATE_D_PER_INTERVAL" );
 INIT_ATTRIBUTE( SumkWhperInterval,                                  "SUM_KWH_PER_INTERVAL" );
+INIT_ATTRIBUTE( SumkWhRateAperInterval,                             "SUM_KWH_RATE_A_PER_INTERVAL" );
+INIT_ATTRIBUTE( SumkWhRateBperInterval,                             "SUM_KWH_RATE_B_PER_INTERVAL" );
+INIT_ATTRIBUTE( SumkWhRateCperInterval,                             "SUM_KWH_RATE_C_PER_INTERVAL" );
+INIT_ATTRIBUTE( SumkWhRateDperInterval,                             "SUM_KWH_RATE_D_PER_INTERVAL" );
 INIT_ATTRIBUTE( NetkWhperInterval,                                  "NET_KWH_PER_INTERVAL" );
 INIT_ATTRIBUTE( NetkWhRateAperInterval,                             "NET_KWH_RATE_A_PER_INTERVAL" );
 INIT_ATTRIBUTE( NetkWhRateBperInterval,                             "NET_KWH_RATE_B_PER_INTERVAL" );
