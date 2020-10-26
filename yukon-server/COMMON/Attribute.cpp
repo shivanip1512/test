@@ -378,13 +378,21 @@ INIT_ATTRIBUTE( SumkVArhRateD,                                      "SUM_KVARH_R
 
 INIT_ATTRIBUTE( UsageperInterval,                                   "USAGE_PER_INTERVAL" );
 INIT_ATTRIBUTE( DeliveredkWhperInterval,                            "DELIVERED_KWH_PER_INTERVAL" );
-INIT_ATTRIBUTE( DeliveredkWhRateAperInterval,                       "DELIVERED_KWH_RATE_A_PER_INTERVAL");
-INIT_ATTRIBUTE( DeliveredkWhRateBperInterval,                       "DELIVERED_KWH_RATE_B_PER_INTERVAL");
-INIT_ATTRIBUTE( DeliveredkWhRateCperInterval,                       "DELIVERED_KWH_RATE_C_PER_INTERVAL");
-INIT_ATTRIBUTE( DeliveredkWhRateDperInterval,                       "DELIVERED_KWH_RATE_D_PER_INTERVAL");
+INIT_ATTRIBUTE( DeliveredkWhRateAperInterval,                       "DELIVERED_KWH_RATE_A_PER_INTERVAL" );
+INIT_ATTRIBUTE( DeliveredkWhRateBperInterval,                       "DELIVERED_KWH_RATE_B_PER_INTERVAL" );
+INIT_ATTRIBUTE( DeliveredkWhRateCperInterval,                       "DELIVERED_KWH_RATE_C_PER_INTERVAL" );
+INIT_ATTRIBUTE( DeliveredkWhRateDperInterval,                       "DELIVERED_KWH_RATE_D_PER_INTERVAL" );
 INIT_ATTRIBUTE( ReceivedkWhperInterval,                             "RECEIVED_KWH_PER_INTERVAL" );
+INIT_ATTRIBUTE( ReceivedkWhRateAperInterval,                        "RECEIVED_KWH_RATE_A_PER_INTERVAL" );
+INIT_ATTRIBUTE( ReceivedkWhRateBperInterval,                        "RECEIVED_KWH_RATE_B_PER_INTERVAL" );
+INIT_ATTRIBUTE( ReceivedkWhRateCperInterval,                        "RECEIVED_KWH_RATE_C_PER_INTERVAL" );
+INIT_ATTRIBUTE( ReceivedkWhRateDperInterval,                        "RECEIVED_KWH_RATE_D_PER_INTERVAL" );
 INIT_ATTRIBUTE( SumkWhperInterval,                                  "SUM_KWH_PER_INTERVAL" );
 INIT_ATTRIBUTE( NetkWhperInterval,                                  "NET_KWH_PER_INTERVAL" );
+INIT_ATTRIBUTE( NetkWhRateAperInterval,                             "NET_KWH_RATE_A_PER_INTERVAL" );
+INIT_ATTRIBUTE( NetkWhRateBperInterval,                             "NET_KWH_RATE_B_PER_INTERVAL" );
+INIT_ATTRIBUTE( NetkWhRateCperInterval,                             "NET_KWH_RATE_C_PER_INTERVAL" );
+INIT_ATTRIBUTE( NetkWhRateDperInterval,                             "NET_KWH_RATE_D_PER_INTERVAL" );
 INIT_ATTRIBUTE( SumkVAhperInterval,                                 "SUM_KVAH_PER_INTERVAL" );
 INIT_ATTRIBUTE( DeliveredkVArhperInterval,                          "DELIVERED_KVARH_PER_INTERVAL" );
 INIT_ATTRIBUTE( SumkVArhperInterval,                                "SUM_KVARH_PER_INTERVAL" );
