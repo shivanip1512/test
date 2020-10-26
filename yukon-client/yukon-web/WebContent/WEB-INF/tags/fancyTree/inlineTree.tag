@@ -4,6 +4,8 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 
 <%@ attribute name="id" required="true" description="The id of the tree element."%>
+<%@ attribute name="treeCss" description="Customize the styling of the tree's icons, etc."%>
+<%@ attribute name="treeParameters" description="This should be a JSON object with arguments for tree initialization."%>
 <%@ attribute name="includeControlBar" type="java.lang.Boolean" description="If true, display options to expand/collapse all nodes and search nodes. Default is false."%>
 <%@ attribute name="styleClass" type="java.lang.String" description="Styling class to add to the outer div for the tree."%>
 <%@ attribute name="maxHeight" type="java.lang.Integer"
@@ -31,10 +33,16 @@
             <c:if test="${not empty dataJson}">
                 <cti:toJson id="js-json-data" object="${dataJson}"/>
             </c:if>
+            <c:if test="${not empty treeParameters}">            
+                <cti:toJson id="js-tree-parameters" object="${treeParameters}"/>
+            </c:if>
         </div>
     </div>
 </div>
 
 <cti:includeScript link="/resources/js/common/yukon.ui.fancyTree.js"/>
-<cti:includeScript link="/resources/js/lib/fancytree/jquery.fancytree.min.js" />
-<cti:includeCss link="/resources/js/lib/fancytree/skins/skin-lion/ui.fancytree.css" /> 
+<cti:includeScript link="/resources/js/lib/fancytree/jquery.fancytree.min.js"/>
+<cti:includeCss link="/resources/js/lib/fancytree/skins/skin-lion/ui.fancytree.css"/>
+<c:if test="${not empty pageScope.treeCss}">
+    <cti:includeCss link="${treeCss}" />
+</c:if>
