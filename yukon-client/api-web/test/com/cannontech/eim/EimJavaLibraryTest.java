@@ -265,6 +265,8 @@ enum IgnoredThirdPartyJavaLibraries {
     ANT("ant.jar", IgnoreReason.ANT_BUILD_HELPERS),
     ANT_JUNIT4("ant-junit4.jar", IgnoreReason.ANT_BUILD_HELPERS),
     ANT_JUNIT("ant-junit.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    JACOCO("jacocoant.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    JACOCO_AGENT("jacocoagent.jar", IgnoreReason.ANT_BUILD_HELPERS),
 
     ITRON_DEVICE_MANAGER_TYPES("itronDeviceManagerTypes_v1_8.jar", IgnoreReason.COMPILED_ITRON_WSDL),
     ITRON_SERVICE_POINT_MANAGER_TYPES("itronServicePointManagerTypes_v1_3.jar", IgnoreReason.COMPILED_ITRON_WSDL),
