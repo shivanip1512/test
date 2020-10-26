@@ -456,7 +456,10 @@
                        <fileset dir="${basedir}/yukon-client/common/build/com/cannontech">
                            <exclude name="**/*dao*.class" />
                            <exclude name="**/*Dao*.class" />
+                           <exclude name="**/dao/**/*.class" />
                            <exclude name="**/*Model.class" />
+                           <exclude name="**/model/**/*.class" />
+                           <exclude name="**/simulators/**/*.class" />
                            <exclude name="**/clientutils/commander/*.class" />
                            <exclude name="**/clientutils/popup/*.class" />
                            <exclude name="**/common/editor/*.class" />
