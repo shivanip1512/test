@@ -85,7 +85,7 @@ public class GatewayDataTopicListener implements MessageListener {
         RfnIdentifier rfnIdentifier = message.getRfnIdentifier();
         try {
             RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
-            log.debug("Recieved message from SM. Updating RfnGatewayDataCache with the new value. Message: {} ", message);
+            log.debug("Received message from SM. Updating RfnGatewayDataCache with the new value. Message: {} ", message);
             RfnGatewayData data = new RfnGatewayData(message, rfnDevice.getName());
             
             cache.put(rfnDevice.getPaoIdentifier(), data);
