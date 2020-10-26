@@ -469,7 +469,6 @@
                            <exclude name="**/common/database/model/*.class" />
                            <exclude name="**/common/loadcontrol/displays/*.class" />
                            <exclude name="**/common/loadcontrol/events/*.class" />
-                           <exclude name="**/**/model/**/*.class" />
                        </fileset>
                     </classfiles>
                     <sourcefiles>
