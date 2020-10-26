@@ -19,12 +19,6 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class LoadProgramCreatePage extends PageBase {
-	
-
-	private TimePickerElement startTimeWindowOne;
-	private TimePickerElement stopTimeWindowOne;
-	private TimePickerElement startTimeWindowTwo;
-	private TimePickerElement stopTimeWindowTwo;
 
     private static final String DESCRIBEDBY = "gear-create-popup-LM_DIRECT_PROGRAM";
 
@@ -33,11 +27,6 @@ public class LoadProgramCreatePage extends PageBase {
         
         requiresLogin = true;
         pageUrl = Urls.DemandResponse.LOAD_PROGRAM_CREATE;
-        
-		startTimeWindowOne = new TimePickerElement(this.driverExt, "startTimeWindowOne_inputField");
-		stopTimeWindowOne = new TimePickerElement(this.driverExt, "stopTimeWindowOne_inputField");
-		startTimeWindowTwo = new TimePickerElement(this.driverExt, "startTimeWindowTwo_inputField");
-		stopTimeWindowTwo = new TimePickerElement(this.driverExt, "stopTimeWindowTwo_inputField");
 		
     }
 
@@ -73,11 +62,11 @@ public class LoadProgramCreatePage extends PageBase {
 	}
 
 	public TimePickerElement getStartTimeWindowOne() {
-		return startTimeWindowOne;
+		return new TimePickerElement(this.driverExt, "startTimeWindowOne_inputField");
 	}
 
 	public TimePickerElement getStopTimeWindowOne() {
-		return stopTimeWindowOne;
+		return new TimePickerElement(this.driverExt, "stopTimeWindowOne_inputField");
 	}
 
 	public SwitchBtnYesNoElement getUseWindowTwo() {
@@ -85,11 +74,11 @@ public class LoadProgramCreatePage extends PageBase {
 	}
 
 	public TimePickerElement getStartTimeWindowTwo() {
-		return startTimeWindowTwo;
+		return new TimePickerElement(this.driverExt, "startTimeWindowTwo_inputField");
 	}
 
 	public TimePickerElement getStopTimeWindowTwo() {
-		return stopTimeWindowTwo;
+		return new TimePickerElement(this.driverExt, "stopTimeWindowTwo_inputField");
 	}
 
     public Button getSaveBtn() {
