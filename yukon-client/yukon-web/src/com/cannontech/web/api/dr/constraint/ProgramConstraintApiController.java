@@ -64,17 +64,17 @@ public class ProgramConstraintApiController {
         return new ResponseEntity<>(constraintIdMap, HttpStatus.OK);
     }
 
-    @GetMapping("/getSeasonSchedules")
+    @GetMapping("/seasonSchedules")
     public ResponseEntity<List<LMDto>> getSeasonSchedules() {
         return new ResponseEntity<>(programConstraintService.getSeasonSchedules(), HttpStatus.OK);
     }
 
-    @GetMapping("/getHolidaySchedules")
+    @GetMapping("/holidaySchedules")
     public ResponseEntity<List<LMDto>> getHolidaySchedules() {
         return new ResponseEntity<>(programConstraintService.getHolidaySchedules(), HttpStatus.OK);
     }
 
-    @GetMapping("/getAllProgramConstraint")
+    @GetMapping
     public ResponseEntity<List<LMDto>> getAllProgramConstraint() {
         return new ResponseEntity<>(programConstraintService.getAllProgramConstraint(), HttpStatus.OK);
     }

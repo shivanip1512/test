@@ -21,10 +21,9 @@ public class ApiURL {
     public static final String drGetGearsForLoadProgram = "/dr/loadPrograms/getGearsForProgram/";
     public static final String drGearRetrieveUrl = "/dr/loadPrograms/gear/";
 
-    public static final String drAllProgramConstraintUrl = "/dr/constraints/getAllProgramConstraint";
     public static final String drProgramConstraintUrl = "/dr/constraints";
-    public static final String drHolidayScheduleUrl = "/dr/constraints/getHolidaySchedules";
-    public static final String drSeasonScheduleUrl = "/dr/constraints/getSeasonSchedules";
+    public static final String drHolidayScheduleUrl = "/dr/constraints/holidaySchedules";
+    public static final String drSeasonScheduleUrl = "/dr/constraints/seasonSchedules";
 
     public static final String drControlAreaUrl = "/dr/controlAreas";
     public static final String drNormalStateUrl = "/dr/controlAreas/normalState/";
