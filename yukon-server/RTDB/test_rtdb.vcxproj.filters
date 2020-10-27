@@ -245,5 +245,8 @@
     <ClCompile Include="test_cmd_rfn_Metrology.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_dev_rf_BatteryNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

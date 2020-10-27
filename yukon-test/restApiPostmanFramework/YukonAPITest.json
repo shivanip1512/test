@@ -336,26 +336,6 @@
 					"name": "ControlScenario",
 					"item": [
 						{
-							"name": "GetAllPrograms",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{api-url}}/api/dr/loadPrograms/availablePrograms",
-									"host": [
-										"{{api-url}}"
-									],
-									"path": [
-										"api",
-										"dr",
-										"loadPrograms",
-										"availablePrograms"
-									]
-								}
-							},
-							"response": []
-						},
-						{
 							"name": "Delete",
 							"request": {
 								"method": "DELETE",

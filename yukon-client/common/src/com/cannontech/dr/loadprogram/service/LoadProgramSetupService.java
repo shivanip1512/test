@@ -17,16 +17,6 @@ import com.cannontech.dr.setup.service.LMSetupService;
 public interface LoadProgramSetupService extends LMSetupService<LoadProgram, LoadProgramCopy> {
 
     /**
-     * Get all program Notification Groups.
-     */
-    List<NotificationGroup> getAllAvailableProgramNotificationGroups();
-
-    /**
-     * Get all program Member control Groups.
-     */
-    List<ProgramDirectMemberControl> getAllAvailableDirectMemberControls();
-
-    /**
      * Get program Load Groups associated with paoType and programId.
      */
     List<ProgramGroup> getAvailableProgramLoadGroups(int programId);
@@ -41,12 +31,6 @@ public interface LoadProgramSetupService extends LMSetupService<LoadProgram, Loa
      */
 
     List<ProgramDirectMemberControl> getAvailableDirectMemberControls(int programId);
-
-    /**
-     * Get all program Load Groups associated with paoType.
-     */
-
-    List<ProgramGroup> getAllAvailableProgramLoadGroups(PaoType programType);
     
     /**
      * Get all program Load Groups associated with paoType and groups.

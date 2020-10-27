@@ -465,11 +465,11 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         int status = BooleanUtils.toInteger(isSuccessful);
         String deviceName = dbCache.getAllPaosMap().get(device.getDeviceId()).getPaoName();
         if (action == LogAction.READ) {
-            eventLogService.readConfigFromDeviceCompleted(deviceName, status);
+            eventLogService.validateConfigOnDeviceCompleted(deviceName, status);
         } else if (action == LogAction.VERIFY) {
             eventLogService.verifyConfigFromDeviceCompleted(deviceName, status);
         } else if (action == LogAction.SEND) {
-            eventLogService.sendConfigToDeviceCompleted(deviceName, status);
+            eventLogService.uploadConfigToDeviceCompleted(deviceName, status);
         }
     }
     
@@ -480,11 +480,11 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         for (SimpleDevice device : devices) {
             String deviceName = dbCache.getAllPaosMap().get(device.getDeviceId()).getPaoName();
             if (action == LogAction.READ) {
-                eventLogService.readConfigFromDeviceInitiated(deviceName, user);
+                eventLogService.validateConfigOnDeviceInitiated(deviceName, user);
             } else if (action == LogAction.VERIFY) {
                 eventLogService.verifyConfigFromDeviceInitiated(deviceName, user);
             } else if (action == LogAction.SEND) {
-                eventLogService.sendConfigToDeviceInitiated(deviceName, user);
+                eventLogService.uploadConfigToDeviceInitiated(deviceName, user);
             }
         }
     }
