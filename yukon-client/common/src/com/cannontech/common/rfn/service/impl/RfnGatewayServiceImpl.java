@@ -489,7 +489,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             request.setRfnIdentifier(existingGateway.getRfnIdentifier());
             request.setData(editData);
             
-            log.debug("Sending gateway edit request: " + request);
+            log.debug("Sending gateway update request to NM for gateway:{} request:{}", gateway, request);
             BlockingJmsReplyHandler<GatewayUpdateResponse> replyHandler = 
                     new BlockingJmsReplyHandler<>(GatewayUpdateResponse.class);
             updateRequestTemplate.send(request, replyHandler);
