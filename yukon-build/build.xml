@@ -486,7 +486,7 @@
                      <sourcefiles>
                           <fileset dir="${basedir}/yukon-client/yukon-web/src"/>
                      </sourcefiles>
-                          </group>
+                </group>
                 <group name="services">
                      <classfiles>
                           <fileset dir="${basedir}/yukon-client/services/build"/>

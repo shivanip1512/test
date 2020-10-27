@@ -45,12 +45,12 @@ public enum IgnoredThirdPartyJavaLibraries {
     YUKON_WEB("yukon-web.jar", YUKON_PROJECT),
     YUKON_WEB_JSP("yukon-web-jsp.jar", YUKON_PROJECT),
 
+    ANT_JACOCO("jacocoant.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_JACOCO_AGENT("jacocoagent.jar", IgnoreReason.ANT_BUILD_HELPERS),
     ANT_LAUNCHER("ant-launcher.jar", ANT_BUILD_HELPERS),
     ANT("ant.jar", ANT_BUILD_HELPERS), 
     ANT_JUNIT4("ant-junit4.jar", ANT_BUILD_HELPERS), 
     ANT_JUNIT("ant-junit.jar", ANT_BUILD_HELPERS),
-    JACOCO("jacocoant.jar", IgnoreReason.ANT_BUILD_HELPERS),
-    JACOCO_AGENT("jacocoagent.jar", IgnoreReason.ANT_BUILD_HELPERS),
     
     ITRON_DEVICE_MANAGER_TYPES("itronDeviceManagerTypes_v1_8.jar", COMPILED_ITRON_WSDL), 
     ITRON_SERVICE_POINT_MANAGER_TYPES("itronServicePointManagerTypes_v1_3.jar", COMPILED_ITRON_WSDL),
