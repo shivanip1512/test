@@ -8,9 +8,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.api.token.ApiRequestContext;
-import com.cannontech.common.device.model.PaoModelFactory;
 import com.cannontech.common.device.model.DeviceBaseModel;
+import com.cannontech.common.device.model.PaoModelFactory;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.port.BaudRate;
 import com.cannontech.common.device.port.PortBase;
@@ -22,6 +21,7 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.port.PortFactory;
 import com.cannontech.yukon.IDatabaseCache;
@@ -36,7 +36,7 @@ public class PortServiceImpl implements PortService {
 
     @Override
     @Transactional
-    public PortBase<? extends DirectPort> create(PortBase port) {
+    public PortBase<? extends DirectPort> create(PortBase port, LiteYukonUser liteYukonUser) {
         DirectPort directPort = PortFactory.createPort(port.getType());
         port.buildDBPersistent(directPort);
         dbPersistentDao.performDBChange(directPort, TransactionType.INSERT);
@@ -48,7 +48,7 @@ public class PortServiceImpl implements PortService {
         commChannelEventLogService.commChannelCreated(port.getName(),
                                                       port.getType(),
                                                       port.getBaudRate(),
-                                                      ApiRequestContext.getContext().getLiteYukonUser());
+                                                      liteYukonUser);
 
         return port;
     }
@@ -71,7 +71,7 @@ public class PortServiceImpl implements PortService {
 
     @Override
     @Transactional
-    public PortBase<? extends DirectPort> update(int portId, PortBase port) {
+    public PortBase<? extends DirectPort> update(int portId, PortBase port, LiteYukonUser liteYukonUser) {
         Optional<LiteYukonPAObject> litePort = dbCache.getAllPorts()
                                                       .stream()
                                                       .filter(group -> group.getLiteID() == portId)
@@ -88,14 +88,14 @@ public class PortServiceImpl implements PortService {
         commChannelEventLogService.commChannelUpdated(port.getName(),
                                                       port.getType(),
                                                       port.getBaudRate(),
-                                                      ApiRequestContext.getContext().getLiteYukonUser());
+                                                      liteYukonUser);
 
         return port;
     }
    
     @Override
     @Transactional
-    public int delete(int portId) {
+    public int delete(int portId, LiteYukonUser liteYukonUser) {
         Optional<LiteYukonPAObject> litePort = dbCache.getAllPorts()
                                                       .stream()
                                                       .filter(group -> group.getLiteID() == portId)
@@ -116,7 +116,7 @@ public class PortServiceImpl implements PortService {
         commChannelEventLogService.commChannelDeleted(directPort.getPortName(),
                                                       directPort.getPaoType(),
                                                       BaudRate.getForRate(directPort.getPortSettings().getBaudRate()),
-                                                      ApiRequestContext.getContext().getLiteYukonUser());
+                                                      liteYukonUser);
 
         return directPort.getPAObjectID();
     }
