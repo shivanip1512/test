@@ -261,7 +261,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
             GatewayUpdateResult updateResult = rfnGatewayService.updateGateway(gateway, userContext.getYukonUser());
             
             if (updateResult == GatewayUpdateResult.SUCCESSFUL) {
-                log.info("Gateway updated: " + gateway);
+                log.info("NM updated gateway: {}", gateway);
                 gatewayEventLogService.updatedGateway(userContext.getYukonUser(), gateway.getName(), 
                                                       gateway.getRfnIdentifier().getSensorSerialNumber(), 
                                                       settings.getIpAddress(),
