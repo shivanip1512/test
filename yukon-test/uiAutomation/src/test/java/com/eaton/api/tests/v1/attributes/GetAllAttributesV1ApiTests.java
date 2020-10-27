@@ -19,7 +19,7 @@ import io.restassured.response.ExtractableResponse;
 
 public class GetAllAttributesV1ApiTests {
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void getAllAttributeApi_200Success() {
         SoftAssertions softly = new SoftAssertions();
         Pair<JSONObject, JSONObject> pair = new AttributesCreateBuilder.Builder(Optional.empty())

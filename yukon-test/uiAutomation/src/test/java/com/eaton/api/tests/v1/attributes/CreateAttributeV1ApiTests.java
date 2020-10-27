@@ -20,7 +20,7 @@ import io.restassured.response.ExtractableResponse;
 public class CreateAttributeV1ApiTests {
     private Faker faker = new Faker();
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void createAttributeApi_AllFields_201Created() {
         SoftAssertions softly = new SoftAssertions();
         Pair<JSONObject, JSONObject> pair = new AttributesCreateBuilder.Builder(Optional.empty())
@@ -34,7 +34,7 @@ public class CreateAttributeV1ApiTests {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void createAttributeApi_NoName_422Unprocessable() {
         JSONObject request = new AttributesCreateBuilder.Builder(Optional.of(""))
                 .build();
@@ -44,7 +44,7 @@ public class CreateAttributeV1ApiTests {
         assertThat(createResponse.statusCode()).isEqualTo(422);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void createAttributeApi_InvalidName_422Unprocessable() {
         JSONObject request = new AttributesCreateBuilder.Builder(Optional.of("Create Attr / \\\\ , ' \\\" |"))
                 .build();
@@ -54,7 +54,7 @@ public class CreateAttributeV1ApiTests {
         assertThat(createResponse.statusCode()).isEqualTo(422);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void createAttributeApi_Name61Char_422Unprocessable() {
         JSONObject request = new AttributesCreateBuilder.Builder(Optional.of(faker.lorem().characters(61)))
                 .build();
@@ -64,7 +64,7 @@ public class CreateAttributeV1ApiTests {
         assertThat(createResponse.statusCode()).isEqualTo(422);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void createAttributeApi_MissingName_422Unprocessable() {
         JSONObject request = new AttributesCreateBuilder.Builder(Optional.of(faker.lorem().characters(61)))
                 .build();
@@ -76,7 +76,7 @@ public class CreateAttributeV1ApiTests {
         assertThat(createResponse.statusCode()).isEqualTo(422);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void createAttributeApi_DuplicateName_400BadRequest() {
         String attrName = faker.internet().uuid().replaceAll("-", "");
 

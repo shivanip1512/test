@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.javatuples.Pair;
 import org.json.JSONObject;
+import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -35,7 +36,7 @@ public class EditAttributeV1ApiTests {
         attrName = createdResponse.getString("name");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void editAttributeApi_AllFields_200Success() {
         Pair<JSONObject, JSONObject> pair = new AttributesCreateBuilder.Builder(Optional.empty())
                 .create();
@@ -51,7 +52,7 @@ public class EditAttributeV1ApiTests {
         assertThat(response.statusCode()).isEqualTo(200);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void editAttributeApi_NoName_422Unprocessable() {
         JSONObject request = new AttributeEditBuilder.Builder(Optional.of(""))
                 .build();
@@ -61,7 +62,7 @@ public class EditAttributeV1ApiTests {
         assertThat(response.statusCode()).isEqualTo(422);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void editAttributeApi_InvalidName_422Unprocessable() {
         JSONObject request = new AttributesCreateBuilder.Builder(Optional.of("Create Attr / \\\\ , ' \\\" |"))
                 .build();
@@ -71,7 +72,7 @@ public class EditAttributeV1ApiTests {
         assertThat(response.statusCode()).isEqualTo(422);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void editAttributeApi_Name61Char_422Unprocessable() {
         JSONObject request = new AttributesCreateBuilder.Builder(Optional.of(faker.lorem().characters(61)))
                 .build();
@@ -81,7 +82,7 @@ public class EditAttributeV1ApiTests {
         assertThat(response.statusCode()).isEqualTo(422);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void editAttributeApi_MissingName_422Unprocessable() {
         JSONObject jo = new JSONObject();
 
@@ -90,7 +91,7 @@ public class EditAttributeV1ApiTests {
         assertThat(response.statusCode()).isEqualTo(422);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void editAttributeApi_DuplicateName_400BadRequest() {
         String name = faker.internet().uuid().replaceAll("-", "");
         
@@ -106,14 +107,39 @@ public class EditAttributeV1ApiTests {
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
-    public void editAttributeApi_InvalidAttributeId_302Found() {
-        JSONObject request = new AttributesCreateBuilder.Builder(Optional.of(attrName))
-                .build();
-        
-        String InvalidId = faker.number().digits(9);
-        
-        ExtractableResponse<?> response = ApiCallHelper.patch(InvalidId, request.toString());
-
-        assertThat(response.statusCode()).isEqualTo(302);
+    public void editAttributeApi_NotFoundId_404NotFound() {
+        throw new SkipException("Inquiry: YUK-23190");
+//        String invalidId = faker.number().digits(9);
+//        
+//        JSONObject request = new AttributesCreateBuilder.Builder(Optional.of(attrName))
+//                .build();
+//        
+//        ExtractableResponse<?> response = ApiCallHelper.patch(invalidId, request.toString());
+//        
+//        assertThat(response.statusCode()).isEqualTo(404);
+    }
+    
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    public void editAttributeApi_InvalidAttrId_400BadRequest() {
+        throw new SkipException("Inquiry: YUK-23190");
+//        String invalidId = faker.number().digits(12);
+//        
+//        JSONObject request = new AttributesCreateBuilder.Builder(Optional.of(attrName))
+//                .build();
+//        
+//        ExtractableResponse<?> response = ApiCallHelper.patch(invalidId, request.toString());
+//        
+//        assertThat(response.statusCode()).isEqualTo(400);
+    }
+    
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    public void editAttributeApi_EmptyId_404NotFound() {
+        throw new SkipException("Inquiry: YUK-23190");
+//        JSONObject request = new AttributesCreateBuilder.Builder(Optional.of(attrName))
+//                .build();
+//        
+//        ExtractableResponse<?> response = ApiCallHelper.patch("", request.toString());
+//        
+//        assertThat(response.statusCode()).isEqualTo(404);
     }
 }

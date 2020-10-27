@@ -21,7 +21,7 @@ public class DeleteAttributeV1ApiTests {
     
     private Faker faker = new Faker();
     
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void deleteAttributeApi_200Success() {
         Pair<JSONObject, JSONObject> pair = new AttributesCreateBuilder.Builder(Optional.empty())
                 .create();
@@ -34,13 +34,28 @@ public class DeleteAttributeV1ApiTests {
         assertThat(response.statusCode()).isEqualTo(200);
     }
     
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
-    public void deleteAttributeApi_InvalidAttrId_400BadRequest() {
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    public void deleteAttributeApi_NotFoundId_400BadRequest() {
         String invalidId = faker.number().digits(9);
         
         ExtractableResponse<?> response = ApiCallHelper.delete(APIs.Attributes.DELETE_ATTRIBUTE + invalidId);
-
+        
         assertThat(response.statusCode()).isEqualTo(400);
     }
-
+    
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    public void deleteAttributeApi_InvalidAttrId_400BadRequest() {
+        String invalidId = faker.number().digits(12);
+        
+        ExtractableResponse<?> response = ApiCallHelper.delete(APIs.Attributes.DELETE_ATTRIBUTE + invalidId);
+        
+        assertThat(response.statusCode()).isEqualTo(400);
+    }
+    
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    public void deleteAttributeApi_EmptyId_404NotFound() {
+        ExtractableResponse<?> response = ApiCallHelper.delete(APIs.Attributes.DELETE_ATTRIBUTE + "");
+        
+        assertThat(response.statusCode()).isEqualTo(404);
+    }
 }

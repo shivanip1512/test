@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.assertj.core.api.SoftAssertions;
 import org.javatuples.Pair;
 import org.json.JSONObject;
+import org.testng.SkipException;
 import org.testng.annotations.Test;
 
 import com.eaton.builders.admin.attributes.AttributesCreateBuilder;
@@ -20,7 +21,7 @@ import io.restassured.response.ExtractableResponse;
 public class GetByIdAttributeV1ApiTests {
     private Faker faker = new Faker();
     
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void getByIdAttributeApi_200Success() {
         SoftAssertions softly = new SoftAssertions();
         Pair<JSONObject, JSONObject> pair = new AttributesCreateBuilder.Builder(Optional.empty())
@@ -41,17 +42,17 @@ public class GetByIdAttributeV1ApiTests {
         softly.assertAll();
     }
     
-    //SKIP due to defect
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
-    public void getByIdAttributeApi_NotFoundId_404NotFound() {
-        String InvalidId = faker.number().digits(9);
-        
-        ExtractableResponse<?> response = ApiCallHelper.get(APIs.Attributes.GET_ATTRIBUTE + InvalidId);
-        
-        assertThat(response.statusCode()).isEqualTo(404);
+    public void getByIdAttributeApi_NotFoundId_400BadRequest() {
+        throw new SkipException("Defect: YUK-23189");
+//        String InvalidId = faker.number().digits(9);
+//        
+//        ExtractableResponse<?> response = ApiCallHelper.get(APIs.Attributes.GET_ATTRIBUTE + InvalidId);
+//        
+//        assertThat(response.statusCode()).isEqualTo(400);
     }
     
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void getByIdAttributeApi_InvalidId_400BadRequest() {
         String InvalidId = faker.number().digits(12);
         
@@ -60,7 +61,7 @@ public class GetByIdAttributeV1ApiTests {
         assertThat(response.statusCode()).isEqualTo(400);
     }
     
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void getByIdAttributeApi_EmptyId_404NotFound() {
         ExtractableResponse<?> response = ApiCallHelper.get(APIs.Attributes.GET_ATTRIBUTE + "");
         
