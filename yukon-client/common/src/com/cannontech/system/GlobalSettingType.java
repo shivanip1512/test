@@ -132,10 +132,10 @@ public enum GlobalSettingType implements DisplayableEnum {
     ITRON_SFTP_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_SFTP_PRIVATE_KEY_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
     RUNTIME_CALCULATION_INTERVAL_HOURS(GlobalSettingSubCategory.DR, 2, Range.inclusive(1, 24)),
-    PX_USERNAME(GlobalSettingSubCategory.DR, stringType(), null),
-    PX_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
-    PX_SITE_GUID(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.guidValidator),
-    PX_URL(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.urlValidator),
+    PX_MIDDLEWARE_USERNAME(GlobalSettingSubCategory.DR, stringType(), null),
+    PX_MIDDLEWARE_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
+    PX_MIDDLEWARE_SITE_GUID(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.guidValidator),
+    PX_MIDDLEWARE_URL(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.urlValidator),
 
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
@@ -255,8 +255,8 @@ public enum GlobalSettingType implements DisplayableEnum {
             ITRON_SFTP_PRIVATE_KEY_PASSWORD,
             NETWORK_MANAGER_DB_PASSWORD,
             CLOUD_IOT_HUB_CONNECTION_STRING,
-            PX_USERNAME,
-            PX_PASSWORD);
+            PX_MIDDLEWARE_USERNAME,
+            PX_MIDDLEWARE_PASSWORD);
         }
 
     private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue) {
