@@ -42,12 +42,10 @@ paths:
     $ref: 'api/programConstraintsApi.yaml#/post-operation'
   '/dr/constraints/{id}':
     $ref: 'api/programConstraintsApi.yaml#/get-update-delete-operation'
-  /dr/constraints/getSeasonSchedules:
+  /dr/constraints/seasonSchedules:
     $ref: 'api/programConstraintsApi.yaml#/season-schedules'
-  /dr/constraints/getHolidaySchedules:
+  /dr/constraints/holidaySchedules:
     $ref: 'api/programConstraintsApi.yaml#/holiday-schedules'
-  /dr/constraints/getAllProgramConstraint:
-    $ref: 'api/programConstraintsApi.yaml#/program-constraints'
 
 components:
   securitySchemes:
