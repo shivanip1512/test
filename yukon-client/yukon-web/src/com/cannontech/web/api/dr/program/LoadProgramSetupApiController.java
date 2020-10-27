@@ -87,26 +87,6 @@ public class LoadProgramSetupApiController {
         return new ResponseEntity<>(programGear, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}/loadGroups/available")
-    public ResponseEntity<Object> getAvailableProgramLoadGroups(@PathVariable int id) {
-        List<ProgramGroup> programGroups = loadProgramService.getAvailableProgramLoadGroups(id);
-        return new ResponseEntity<>(programGroups, HttpStatus.OK);
-    }
-
-    @GetMapping("/{id}/notificationGroups/available")
-    public ResponseEntity<Object> getAvailableProgramNotificationGroups(@PathVariable int id) {
-        List<NotificationGroup> notificationGroups = loadProgramService.getAvailableProgramNotificationGroups(id);
-        return new ResponseEntity<>(notificationGroups, HttpStatus.OK);
-    }
-
-    
-    @GetMapping("/{id}/directMemberControls/available")
-    @CheckRoleProperty(YukonRoleProperty.ALLOW_MEMBER_PROGRAMS)
-    public ResponseEntity<Object> getAvailableDirectMemberControls(@PathVariable int id) {
-        List<ProgramDirectMemberControl> directMemberControls = loadProgramService.getAvailableDirectMemberControls(id);
-        return new ResponseEntity<>(directMemberControls, HttpStatus.OK);
-    }
-
     @GetMapping("/{id}/gears")
     public ResponseEntity<List<LiteGear>> getGearsForProgram(@PathVariable int id) {
         return new ResponseEntity<>(loadProgramService.getGearsForProgram(id), HttpStatus.OK);

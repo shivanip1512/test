@@ -15,23 +15,7 @@ import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.dr.setup.service.LMSetupService;
 
 public interface LoadProgramSetupService extends LMSetupService<LoadProgram, LoadProgramCopy> {
-
-    /**
-     * Get program Load Groups associated with paoType and programId.
-     */
-    List<ProgramGroup> getAvailableProgramLoadGroups(int programId);
-
-    /**
-     * Get program Notification Groups associated with programId.
-     */
-    List<NotificationGroup> getAvailableProgramNotificationGroups(int programId);
-
-    /**
-     * Get program Member control Groups associated with programId.
-     */
-
-    List<ProgramDirectMemberControl> getAvailableDirectMemberControls(int programId);
-    
+  
     /**
      * Get all program Load Groups associated with paoType and groups.
      */

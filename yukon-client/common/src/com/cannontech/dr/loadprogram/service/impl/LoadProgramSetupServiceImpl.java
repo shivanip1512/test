@@ -635,23 +635,6 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     }
 
     @Override
-    public List<ProgramGroup> getAvailableProgramLoadGroups(int programId) {
-        LiteYukonPAObject lmProgram = getProgramFromCache(programId);
-
-        LMProgramDirectBase dirProg = (LMProgramDirectBase) getDBPersistent(lmProgram.getLiteID(), lmProgram.getPaoType());
-
-        List<ProgramGroup> programGroups = getAllProgramLoadGroups(lmProgram.getPaoType());
-
-        List<ProgramGroup> availableProgramLoadGroups = programGroups.stream()
-                                                .filter(group -> dirProg.getLmProgramStorageVector().stream()
-                                                                                                    .allMatch(dirGroup -> dirGroup.getDeviceID().intValue() != group.getGroupId().intValue()))
-                                                .collect(Collectors.toList());
-        
-       return availableProgramLoadGroups;
-           
-    }
-
-    @Override
     public List<ProgramGroup> getAllProgramLoadGroups(PaoType programType) {
         List<LiteYukonPAObject> groups = dbCache.getAllLoadManagement();
         return getAllProgramLoadGroups(programType, groups);
@@ -726,84 +709,6 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     
     private boolean isGroupMeterDisconnectCompatible(PaoType groupType) {
         return groupType == PaoType.LM_GROUP_METER_DISCONNECT;
-    }
-
-    @Override
-    public List<NotificationGroup> getAvailableProgramNotificationGroups(int programId) {
-
-        LiteYukonPAObject lmProgram = getProgramFromCache(programId);
-
-        LMProgramDirectBase dirProg = (LMProgramDirectBase) getDBPersistent(lmProgram.getLiteID(), lmProgram.getPaoType());
-        List<NotificationGroup> notificationGroups = getAllProgramNotificationGroups();
-
-        List<NotificationGroup> availableNotificationGroups =
-            notificationGroups.stream()
-                              .filter(group -> dirProg.getLmProgramDirectNotifyGroupVector().stream()
-                                                                                            .allMatch(dirGroup -> dirGroup.getNotificationGroupID().intValue() != group.getNotificationGrpID().intValue()))
-                              .collect(Collectors.toList());
-        return availableNotificationGroups;
-    }
-
-    private List<NotificationGroup> getAllProgramNotificationGroups() {
-        List<LiteNotificationGroup> allNotificationGroups = dbCache.getAllContactNotificationGroups();
-        List<NotificationGroup> notificationGroups = allNotificationGroups.stream()
-                                                                          .map(group ->  new NotificationGroup(group.getNotificationGroupID(), group.getNotificationGroupName()))
-                                                                          .collect(Collectors.toList());
-        return notificationGroups;
-    }
-
-    @Override
-    public List<ProgramDirectMemberControl> getAvailableDirectMemberControls(int programId) {
-
-        List<LiteYukonPAObject> programs = dbCache.getAllLMPrograms();
-
-        LiteYukonPAObject lmProgram = getProgramFromCache(programId);
-
-        LMProgramDirectBase dirProg = (LMProgramDirectBase) getDBPersistent(lmProgram.getLiteID(), lmProgram.getPaoType());
-
-        List<LiteLMPAOExclusion> currentlyExcluded = dbCache.getAllLMPAOExclusions();
-
-        // init storage that will contain exclusion (member control) information
-        // make sure this program itself isn't showing up as an available subordinate
-        List<LiteYukonPAObject> lmSubordinates = programs.stream()
-                                                         .filter(program -> (program.getPaoType().isDirectProgram()
-                                                                 && !(isMasterProgram(program.getLiteID(), currentlyExcluded)) && (program.getLiteID() != programId)))
-                                                         .collect(Collectors.toList());
-
-        List<LiteYukonPAObject> availableLmSubordinates =
-                lmSubordinates.stream()
-                              .filter(group -> dirProg.getPAOExclusionVector().stream()
-                                                                              .allMatch(dirGroup -> dirGroup.getExcludedPaoID().intValue() != group.getLiteID()))
-                              .collect(Collectors.toList());
-
-        return buildProgramDirectMemberControl(availableLmSubordinates);
-
-    }
-
-    private List<ProgramDirectMemberControl> buildProgramDirectMemberControl(List<LiteYukonPAObject> availableLmSubordinates) {
-        List<ProgramDirectMemberControl> directMemberControls = new ArrayList<>();
-        availableLmSubordinates.forEach(lmSubordinate -> {
-            ProgramDirectMemberControl directMemberControl = new ProgramDirectMemberControl();
-            directMemberControl.setSubordinateProgId(lmSubordinate.getLiteID());
-            directMemberControl.setSubordinateProgName(lmSubordinate.getPaoName());
-            directMemberControls.add(directMemberControl);
-        });
-        return directMemberControls;
-    }
- 
-    /**
-     * makes sure it is a direct program and it is not already a master
-     */
-    private boolean isMasterProgram(int programId, List<LiteLMPAOExclusion> liteLMPAOExclusions) {
-        Boolean isMasterProgram = false;
-        if (liteLMPAOExclusions != null) {
-
-            isMasterProgram =
-                    liteLMPAOExclusions.stream()
-                                       .anyMatch(paoExclusion -> programId == paoExclusion.getMasterPaoID());
-
-        }
-        return isMasterProgram;
     }
 
     @Override
