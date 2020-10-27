@@ -15,11 +15,7 @@ public class ApiURL {
     public static final String drMacroLoadGroupUrl = "/dr/macroLoadGroups";
 
     public static final String drLoadProgramUrl = "/dr/loadPrograms";
-    public static final String drAvailableLoadGroupsUrl = "/dr/loadPrograms/availableLoadGroups/";
-    public static final String drAvailableNotificationGroupsUrl = "/dr/loadPrograms/availableNotificationGroups/";
-    public static final String drAvailableDirectMemberControlsUrl = "/dr/loadPrograms/availableDirectMemberControls/";
-    public static final String drGetGearsForLoadProgram = "/dr/loadPrograms/getGearsForProgram/";
-    public static final String drGearRetrieveUrl = "/dr/loadPrograms/gear/";
+    public static final String drGearRetrieveUrl = "/dr/loadPrograms/gears";
 
     public static final String drAllProgramConstraintUrl = "/dr/constraints/getAllProgramConstraint";
     public static final String drProgramConstraintUrl = "/dr/constraints";

@@ -81,37 +81,35 @@ public class LoadProgramSetupApiController {
         return new ResponseEntity<>(updateLoadProgram, HttpStatus.OK);
     }
     
-    @GetMapping("/gear/{gearId}")
-    public ResponseEntity<Object> getProgramGear(@PathVariable Integer gearId) {
-        ProgramGear programGear = loadProgramService.getProgramGear(gearId);
+   @GetMapping("/gears/{id}")
+    public ResponseEntity<Object> getProgramGear(@PathVariable Integer id) {
+        ProgramGear programGear = loadProgramService.getProgramGear(id);
         return new ResponseEntity<>(programGear, HttpStatus.OK);
     }
 
-    @GetMapping("/availableLoadGroups/{id}")
+    @GetMapping("/{id}/loadGroups/available")
     public ResponseEntity<Object> getAvailableProgramLoadGroups(@PathVariable int id) {
         List<ProgramGroup> programGroups = loadProgramService.getAvailableProgramLoadGroups(id);
         return new ResponseEntity<>(programGroups, HttpStatus.OK);
     }
 
-    @GetMapping("/availableNotificationGroups/{id}")
+    @GetMapping("/{id}/notificationGroups/available")
     public ResponseEntity<Object> getAvailableProgramNotificationGroups(@PathVariable int id) {
-        List<NotificationGroup> notificationGroups =
-            loadProgramService.getAvailableProgramNotificationGroups(id);
+        List<NotificationGroup> notificationGroups = loadProgramService.getAvailableProgramNotificationGroups(id);
         return new ResponseEntity<>(notificationGroups, HttpStatus.OK);
     }
 
     
-    @GetMapping("/availableDirectMemberControls/{id}")
+    @GetMapping("/{id}/directMemberControls/available")
     @CheckRoleProperty(YukonRoleProperty.ALLOW_MEMBER_PROGRAMS)
     public ResponseEntity<Object> getAvailableDirectMemberControls(@PathVariable int id) {
-        List<ProgramDirectMemberControl> directMemberControls =
-            loadProgramService.getAvailableDirectMemberControls(id);
+        List<ProgramDirectMemberControl> directMemberControls = loadProgramService.getAvailableDirectMemberControls(id);
         return new ResponseEntity<>(directMemberControls, HttpStatus.OK);
     }
 
-    @GetMapping("/getGearsForProgram/{programId}")
-    public ResponseEntity<List<LiteGear>> getGearsForProgram(@PathVariable int programId) {
-        return new ResponseEntity<>(loadProgramService.getGearsForProgram(programId), HttpStatus.OK);
+    @GetMapping("/{id}/gears")
+    public ResponseEntity<List<LiteGear>> getGearsForProgram(@PathVariable int id) {
+        return new ResponseEntity<>(loadProgramService.getGearsForProgram(id), HttpStatus.OK);
     }
 
     @InitBinder("loadProgramCopy")
