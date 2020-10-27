@@ -8,6 +8,7 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 
 import com.eaton.elements.Button;
+import com.eaton.elements.DropDownMultiSelectElement;
 import com.eaton.elements.Section;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.WebTable;
@@ -58,6 +59,18 @@ public class AttributesListPage extends PageBase {
     
     public Section getAttrDefSection() {
         return new Section(driverExt, "Attribute Definitions");
+    }
+    
+    public DropDownMultiSelectElement getFilterByAttr() {
+        return new DropDownMultiSelectElement(driverExt, "selectedAttributes");
+    }
+    
+    public DropDownMultiSelectElement getFilterByDeviceTypes() {
+        return new DropDownMultiSelectElement(driverExt, "selectedDeviceTypes");
+    }
+    
+    public Button getFilterBtn() {
+        return new Button(driverExt, "Filter");
     }
     
     public AddAttributeAssignmentsModal showAddAttrAsgmtAndWait() {

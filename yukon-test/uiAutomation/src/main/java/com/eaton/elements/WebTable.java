@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.eaton.framework.DriverExtensions;
 
@@ -264,6 +265,12 @@ public class WebTable {
         }
 
         return newList;
+    }
+    
+    public void waitForFilter() {
+        WebElement table = this.getTable();
+        
+        driverExt.waitUntilStalenessOfElement(table.findElement(By.cssSelector("tbody tr"))); 
     }
 
     /**
