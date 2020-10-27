@@ -3,6 +3,7 @@ package com.eaton.framework;
 public final class TestConstants {    
     
     public static final String DATE_FORMAT = "MMddyyyyHHmmssSSS"; 
+    public static final String API = "api";
     
     public static final class Priority {
         public static final String CRITICAL = "Critical";
