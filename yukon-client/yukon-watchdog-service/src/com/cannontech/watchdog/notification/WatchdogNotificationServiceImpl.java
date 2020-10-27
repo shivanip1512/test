@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.SmtpHelper;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.smartNotification.dao.SmartNotificationSubscriptionDao;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
@@ -29,7 +30,6 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.tools.email.EmailSettingsCacheService;
 import com.cannontech.tools.email.SystemEmailSettingsType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.watchdog.base.YukonServices;
@@ -46,7 +46,7 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
     @Autowired private SmartNotificationSubscriptionDao subscriptionDao;
     @Autowired private WebserverUrlResolver webserverUrlResolver;
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private EmailSettingsCacheService emailSettingsCacheService;
+    @Autowired private SmtpHelper smtpHelper;
     
     private List<ServiceStatusWatchdog> serviceStatusWatchers;
     private MessageSourceAccessor messageSourceAccessor;
@@ -131,9 +131,8 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
             sender = globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS);
         } catch (Exception e) {
             log.error("Error Retrieving data from Database. Populating old values from cache.");
-            sendToEmailIds = Arrays
-                    .asList(emailSettingsCacheService.getValue(SystemEmailSettingsType.SUBSCRIBER_EMAIL_IDS).split("\\s*,\\s*"));
-            sender = emailSettingsCacheService.getValue(SystemEmailSettingsType.MAIL_FROM_ADDRESS);
+            sendToEmailIds = Arrays.asList(smtpHelper.getValue(SystemEmailSettingsType.SUBSCRIBER_EMAIL_IDS).split("\\s*,\\s*"));
+            sender = smtpHelper.getValue(SystemEmailSettingsType.MAIL_FROM_ADDRESS);
         }
     }
 

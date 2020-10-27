@@ -14,14 +14,11 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationLoader;
 import com.cannontech.common.config.SmtpEncryptionType;
 import com.cannontech.common.config.SmtpHelper;
 import com.cannontech.common.config.SmtpPropertyType;
@@ -29,30 +26,20 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.tools.email.EmailSettingsCacheService;
 import com.cannontech.tools.email.SystemEmailSettingsType;
 
 public class EmailServiceImpl implements EmailService {
     private static final Logger log = YukonLogManager.getLogger(EmailServiceImpl.class);
     private static final String smtpAuthPropertyName = "mail.smtp.auth";
-    private static final String smtpConfigurationKeyAlias = "smtp";
     private static final String smtpHost = "mail.smtp.host";
     private static final String smtpPort = "mail.smtp.port";
+    private SmtpHelper smtpHelper;
 
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private SmtpHelper configurationSource;
-    @Autowired private EmailSettingsCacheService emailSettingsCacheService;
-
-    private SmtpEncryptionType encryptionType;
-    private String username;
-    private String password;
-    private String host;
-    private String port;
-    private Map<String, String> smtpSettings = new HashedMap<String, String>();
 
     @Override
     public void sendMessage(EmailMessage data) throws MessagingException {
-        populateEmailSettings();
+        smtpHelper = new SmtpHelper();
         Session session = getSession();
         MimeMessage message = new MimeMessage(session);
         message.setHeader("X-Mailer", "YukonEmail");
@@ -87,90 +74,6 @@ public class EmailServiceImpl implements EmailService {
     }
 
     /**
-     * Method to update SMTP metadata information.
-     */
-    private void populateEmailSettings() {
-        try {
-            encryptionType = globalSettingDao.getEnum(GlobalSettingType.SMTP_ENCRYPTION_TYPE, SmtpEncryptionType.class);
-            username = globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME);
-            password = globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD);
-            host = configurationSource.getCommonProperty(SmtpPropertyType.HOST);
-            port = configurationSource.getCommonProperty(SmtpPropertyType.PORT);
-            smtpSettings = configurationSource.getSmtpConfigSettings();
-        } catch (Exception e) {
-            //When database goes down on a running system, retrieve the configurations from cache.
-            if(emailSettingsCacheService != null) {
-                populateFromCache();
-            } else {
-                //When database is down and and try to start services, retrieve configurations from cache.
-                populateFromFile();
-            }
-        }
-    }
-
-    /**
-     * Retrieve the configurations from cache.
-     */
-    private void populateFromCache() {
-        log.error("Error Retrieving data from Database. Populating old values from cache.");
-        encryptionType = SmtpEncryptionType
-                .valueOf(emailSettingsCacheService.getValue(SystemEmailSettingsType.SMTP_ENCRYPTION_TYPE));
-        username = emailSettingsCacheService.getValue(SystemEmailSettingsType.SMTP_USERNAME);
-        password = emailSettingsCacheService.getValue(SystemEmailSettingsType.SMTP_PASSWORD);
-        host = emailSettingsCacheService.getValue(SystemEmailSettingsType.SMTP_HOST);
-        port = emailSettingsCacheService.getValue(SystemEmailSettingsType.SMTP_PORT);
-        smtpSettings.clear();
-        Map<String, String> configs = getConfigurations();
-        if (!CollectionUtils.isEmpty(configs)) {
-            smtpSettings.putAll(configs);
-        }
-        smtpSettings.put(smtpHost, host);
-        smtpSettings.put(smtpPort, port);
-        SmtpEncryptionType encryptionType = SmtpEncryptionType
-                .valueOf(emailSettingsCacheService.getValue(SystemEmailSettingsType.SMTP_ENCRYPTION_TYPE));
-        if (encryptionType == SmtpEncryptionType.TLS) {
-            smtpSettings.put(SmtpPropertyType.START_TLS_ENABLED.getKey(false), "true");
-        } else {
-            smtpSettings.remove(SmtpPropertyType.START_TLS_ENABLED.getKey(false));
-        }
-    }
-
-    /**
-     * Retrieve the configurations from file.
-     */
-    private void populateFromFile() {
-        log.error("Error Retrieving data from Database. Populating old values from file.");
-        Map<SystemEmailSettingsType, String> metadataMap = EmailSettingsCacheServiceImpl.readFromFile();
-        encryptionType = SmtpEncryptionType.valueOf(metadataMap.get(SystemEmailSettingsType.SMTP_ENCRYPTION_TYPE));
-        username = metadataMap.get(SystemEmailSettingsType.SMTP_USERNAME);
-        password = metadataMap.get(SystemEmailSettingsType.SMTP_PASSWORD);
-        host = metadataMap.get(SystemEmailSettingsType.SMTP_HOST);
-        port = metadataMap.get(SystemEmailSettingsType.SMTP_PORT);
-        smtpSettings.clear();
-        Map<String, String> configs = getConfigurations();
-        if (!CollectionUtils.isEmpty(configs)) {
-            smtpSettings.putAll(configs);
-        }
-        smtpSettings.put(smtpHost, host);
-        smtpSettings.put(smtpPort, port);
-        SmtpEncryptionType encryptionType = SmtpEncryptionType
-                .valueOf(metadataMap.get(SystemEmailSettingsType.SMTP_ENCRYPTION_TYPE));
-        if (encryptionType == SmtpEncryptionType.TLS) {
-            smtpSettings.put(SmtpPropertyType.START_TLS_ENABLED.getKey(false), "true");
-        } else {
-            smtpSettings.remove(SmtpPropertyType.START_TLS_ENABLED.getKey(false));
-        }
-    }
-
-    /**
-     * Retrieve additional configurations from configuration.properties file.
-     */
-    private Map<String, String> getConfigurations() {
-        ConfigurationLoader loader = new ConfigurationLoader();
-        return loader.getConfigSettings().get(smtpConfigurationKeyAlias);
-    }
-
-    /**
      * Attempts to get any authentication information required for the SMTP server and
      * send the email message. No modification is done to the message itself.
      * @param message - The email message being sent.
@@ -178,6 +81,14 @@ public class EmailServiceImpl implements EmailService {
      * SMTP server or send the message.
      */
     private void send(final MimeMessage message, Session session) throws MessagingException {
+        String host = smtpHelper.getValue(SystemEmailSettingsType.SMTP_HOST);
+        if (StringUtils.isEmpty(host)) {
+            // The SMTP host name must be configured in configuration.properties file or in the GlobalSettings.
+            throw new MessagingException(
+                    "SMTP host name not defined in configuration.properties file or in the GlobalSettings table in the database.");
+        }
+        String port = smtpHelper.getValue(SystemEmailSettingsType.SMTP_PORT);
+        SmtpEncryptionType encryptionType = SmtpEncryptionType.valueOf(smtpHelper.getValue(SystemEmailSettingsType.SMTP_ENCRYPTION_TYPE));
         SmtpAuthenticator authenticator = new SmtpAuthenticator();
         PasswordAuthentication authentication = authenticator.getPasswordAuthentication();
         Transport transport = null;
@@ -215,6 +126,17 @@ public class EmailServiceImpl implements EmailService {
      */
     private Session getSession() throws MessagingException {
         Properties properties = new Properties();
+        Map<String, String> smtpSettings = smtpHelper.getSmtpConfigSettings();
+        // Populate Host, Port and EncryptionType from File/Cache.
+        smtpSettings.put(smtpHost, smtpHelper.getValue(SystemEmailSettingsType.SMTP_HOST));
+        smtpSettings.put(smtpPort, smtpHelper.getValue(SystemEmailSettingsType.SMTP_PORT));
+        SmtpEncryptionType encryptionType = SmtpEncryptionType
+                .valueOf(smtpHelper.getValue(SystemEmailSettingsType.SMTP_ENCRYPTION_TYPE));
+        if (encryptionType == SmtpEncryptionType.TLS) {
+            smtpSettings.put(SmtpPropertyType.START_TLS_ENABLED.getKey(false), "true");
+        } else {
+            smtpSettings.remove(SmtpPropertyType.START_TLS_ENABLED.getKey(false));
+        }
         if (smtpSettings != null) {
             smtpSettings.forEach((key, value) -> properties.put(key, value));
         }
@@ -234,6 +156,8 @@ public class EmailServiceImpl implements EmailService {
      * call when the Session for sending emails is retrieved.
      */
     private class SmtpAuthenticator extends Authenticator {
+        String username = smtpHelper.getValue(SystemEmailSettingsType.SMTP_USERNAME);
+        String password = smtpHelper.getValue(SystemEmailSettingsType.SMTP_USERNAME);
         private PasswordAuthentication authentication = null;
         
         public SmtpAuthenticator() {

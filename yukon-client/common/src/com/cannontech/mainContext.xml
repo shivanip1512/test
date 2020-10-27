@@ -51,8 +51,6 @@
         </constructor-arg>
     </bean>
 
-    <bean class="com.cannontech.tools.email.impl.EmailSettingsCacheServiceImpl"/>
-
     <bean id="databaseVendorResolver" class="com.cannontech.database.vendor.MetaDataDatabaseVendorResolver"/>
     <bean id="vendorSpecificSqlBuilderFactory" class="com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory"/>
 

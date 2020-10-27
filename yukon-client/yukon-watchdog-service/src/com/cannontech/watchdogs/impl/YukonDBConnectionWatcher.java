@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.SmtpHelper;
 import com.cannontech.common.smartNotification.dao.SmartNotificationSubscriptionDao;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
-import com.cannontech.tools.email.EmailSettingsCacheService;
 import com.cannontech.tools.email.SystemEmailSettingsType;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarningType;
@@ -29,7 +29,7 @@ public class YukonDBConnectionWatcher extends ServiceStatusWatchdogImpl {
     Logger log = YukonLogManager.getLogger(YukonDBConnectionWatcher.class);
 
     @Autowired private SmartNotificationSubscriptionDao subscriptionDao;
-    @Autowired private EmailSettingsCacheService emailSettingsCacheService;
+    @Autowired private SmtpHelper SmtpHelper;
 
     @Override
     public List<WatchdogWarnings> watch() {
@@ -39,9 +39,9 @@ public class YukonDBConnectionWatcher extends ServiceStatusWatchdogImpl {
         if (serviceStatus == ServiceStatus.RUNNING) {
             try {
                 List<String> subscriberEmailIds = subscriptionDao.getSubscribedEmails(SmartNotificationEventType.YUKON_WATCHDOG);
-                emailSettingsCacheService.update(SystemEmailSettingsType.SUBSCRIBER_EMAIL_IDS,
+                SmtpHelper.update(SystemEmailSettingsType.SUBSCRIBER_EMAIL_IDS,
                         StringUtils.join(subscriberEmailIds, ","));
-                emailSettingsCacheService.writeToFile();
+                SmtpHelper.writeToFile();
             } catch (RuntimeException e) {
                 serviceStatus = ServiceStatus.STOPPED;
             }

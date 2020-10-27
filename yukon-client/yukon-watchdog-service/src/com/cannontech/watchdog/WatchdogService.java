@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -16,6 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.SmtpHelper;
 import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
@@ -26,7 +26,6 @@ import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.tools.email.SystemEmailSettingsType;
 import com.cannontech.tools.email.impl.EmailServiceImpl;
-import com.cannontech.tools.email.impl.EmailSettingsCacheServiceImpl;
 import com.cannontech.watchdog.base.Watchdog;
 
 public class WatchdogService {
@@ -52,7 +51,7 @@ public class WatchdogService {
         } catch (Throwable t) {
             CTIDatabase database = VersionTools.getDatabaseVersion();
             if (database == null) {
-                sendEmail();
+                sendDatabaseConnectionEmail();
             }
             getLogger().error("Error in watchdog service", t);
             System.exit(1);
@@ -62,10 +61,10 @@ public class WatchdogService {
     /**
      * Send email notification to the subscribers.
      */
-    private static void sendEmail() {
+    private static void sendDatabaseConnectionEmail() {
         try {
-            Map<SystemEmailSettingsType, String> metadataMap = EmailSettingsCacheServiceImpl.readFromFile();
-            if (StringUtils.isEmpty(metadataMap.get(SystemEmailSettingsType.SUBSCRIBER_EMAIL_IDS))) {
+            SmtpHelper smtpHelper = new SmtpHelper();
+            if (StringUtils.isEmpty(smtpHelper.getValue(SystemEmailSettingsType.SUBSCRIBER_EMAIL_IDS))) {
                 getLogger().warn("No user subscribed for notification for watchdog.");
                 return;
             }
@@ -81,10 +80,10 @@ public class WatchdogService {
                     messageSource.getMessage("yukon.watchdog.notification.text", null, Locale.ENGLISH));
             msgBuilder.append("\n\n");
             msgBuilder.append(messageSource.getMessage("yukon.watchdog.notification.DATABASE", null, Locale.ENGLISH));
-            String commaSeparatedIds = metadataMap.get(SystemEmailSettingsType.SUBSCRIBER_EMAIL_IDS);
+            String commaSeparatedIds = smtpHelper.getValue(SystemEmailSettingsType.SUBSCRIBER_EMAIL_IDS);
             List<String> sendToEmailIds = Arrays.asList(commaSeparatedIds.split("\\s*,\\s*"));
             EmailMessage emailMessage = EmailMessage.newMessageBccOnly(subject, msgBuilder.toString(),
-                    metadataMap.get(SystemEmailSettingsType.MAIL_FROM_ADDRESS),
+                    smtpHelper.getValue(SystemEmailSettingsType.MAIL_FROM_ADDRESS),
                     sendToEmailIds);
             EmailService emailService = new EmailServiceImpl();
             emailService.sendMessage(emailMessage);
