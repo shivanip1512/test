@@ -101,7 +101,11 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     @Autowired private UnitMeasureDao unitMeasureDao;
 
     public static final String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
-
+    private static final Comparator<PointValueQualityHolder> pointValueTimestampComparator = 
+            (o1, o2) -> o1.getPointDataTimeStamp().compareTo(o2.getPointDataTimeStamp());
+    private static final Comparator<PaoIdentifier> paoIdentifierIndifferentComparator = (o1, o2) -> 0;
+    private static final Logger log = YukonLogManager.getLogger(ExportReportGeneratorServiceImpl.class);
+    
     private static String previewUOMValueKey = baseKey + "previewUOMValue";
     private static String previewPointStateKey = baseKey + "previewPointState";
     private static String previewMeterNumberKey = baseKey + "previewMeterNumber";
@@ -109,7 +113,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     private static String previewMeterAddressKey = baseKey + "previewMeterAddress";
     private static String previewMeterRouteKey = baseKey + "previewMeterRoute";
 
-    private static final Logger log = YukonLogManager.getLogger(ExportReportGeneratorServiceImpl.class);
+    
 
     /*
      * The value to be returned in case the meter information we
@@ -236,7 +240,8 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                     ListMultimap<PaoIdentifier, PointValueQualityHolder> pointData = getDynamicAttributeData(
                             paosSublist, attribute, dateRange, range, null, format);
                     if (isOnInterval) {
-                        pointData = transformIntoIntervalOnlyData(pointData, attribute, interval, dateRange.getMin(), dateRange.getMax(), userContext);
+                        pointData = transformIntoIntervalOnlyData(paosSublist, pointData, attribute, interval, 
+                                                                  dateRange.getMin(), dateRange.getMax(), userContext);
                     }
                     generateDynamicBody(paosSublist, paoDataByPao, format, userContext, attribute, pointData, 
                                         unitMeasureLookupTable, writer);
@@ -253,7 +258,9 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                             paosSublist, attribute, previousDaysDateRange, range, null, format);
                     if (isOnInterval) {
                         Instant intervalStartDate = previousDaysDateRange.getMin().plus(interval.getDuration());
-                        pointData = transformIntoIntervalOnlyData(pointData, attribute, interval, intervalStartDate, previousDaysDateRange.getMax(), userContext);
+                        pointData = transformIntoIntervalOnlyData(paosSublist, pointData, attribute, interval, 
+                                                                  intervalStartDate, previousDaysDateRange.getMax(), 
+                                                                  userContext);
                     }
                     generateDynamicBody(paosSublist, paoDataByPao, format, userContext, attribute, pointData, 
                                         unitMeasureLookupTable, writer);
@@ -268,11 +275,21 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
 
                 for (Attribute attribute : attributes) {
                     log.info("Getting data for attribute:{} attribute devices:{}", attribute, paosSublist.size());
-                    ListMultimap<PaoIdentifier, PointValueQualityHolder> sinceLastChangeIdAttributeData = getDynamicAttributeData(
+                    ListMultimap<PaoIdentifier, PointValueQualityHolder> pointData = getDynamicAttributeData(
                             paosSublist, attribute, null, range, changeIdRange, format);
-                    log.info("Found values since the last change id {}", sinceLastChangeIdAttributeData.size());
+                    log.info("Found values since the last change id {}", pointData.size());
+                    if (isOnInterval) {
+                        //Get start date immediately after the excluded first changeId
+                        PointValueQualityHolder startPoint = rawPointHistoryDao.getPointValueQualityForChangeId(firstChangeId);
+                        Instant startDate = new Instant(startPoint.getPointDataTimeStamp()).plus(1);
+                        //Get end date from included last changeId
+                        PointValueQualityHolder endPoint = rawPointHistoryDao.getPointValueQualityForChangeId(lastChangeId);
+                        Instant endDate = new Instant(endPoint.getPointDataTimeStamp());
+                        pointData = transformIntoIntervalOnlyData(paosSublist, pointData, attribute, interval, 
+                                                                  startDate, endDate, userContext);
+                    }
                     generateDynamicBody(paosSublist, paoDataByPao, format, userContext, attribute,
-                            sinceLastChangeIdAttributeData, unitMeasureLookupTable, writer);
+                            pointData, unitMeasureLookupTable, writer);
                     log.info("Finished writing to file");
                 }
                 break;
@@ -609,7 +626,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     }
 
     private ListMultimap<PaoIdentifier, PointValueQualityHolder> transformIntoIntervalOnlyData(
-            ListMultimap<PaoIdentifier, PointValueQualityHolder> data, Attribute attribute, TimeIntervals interval, 
+            List<? extends YukonPao> paos, ListMultimap<PaoIdentifier, PointValueQualityHolder> data, Attribute attribute, TimeIntervals interval, 
             Instant startDate, Instant stopDate, YukonUserContext userContext) {
         
         IntervalParser intervalParser = new IntervalParser(startDate, stopDate, interval, dateFormattingService, userContext, log);
@@ -621,7 +638,8 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         Multimap<PaoIdentifier, PointValueQualityHolder> transformedData = 
                 TreeMultimap.create(paoIdentifierIndifferentComparator, pointValueTimestampComparator);
         
-        for (PaoIdentifier paoIdentifier : data.keySet()) {
+        for (YukonPao pao : paos) {
+            PaoIdentifier paoIdentifier = pao.getPaoIdentifier();
             List<Date> intervalDates = intervalParser.getIntervals();
             
             // Get the point ID and type, from the point data if there is any, or by doing an attribute lookup
@@ -650,9 +668,6 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         
         return ArrayListMultimap.create(transformedData);
     }
-    
-    private static final Comparator<PointValueQualityHolder> pointValueTimestampComparator = (o1, o2) -> o1.getPointDataTimeStamp().compareTo(o2.getPointDataTimeStamp());
-    private static final Comparator<PaoIdentifier> paoIdentifierIndifferentComparator = (o1, o2) -> 0;
     
     /**
      * Get the point ID and type, from the point data if there is any, or by doing an attribute lookup.

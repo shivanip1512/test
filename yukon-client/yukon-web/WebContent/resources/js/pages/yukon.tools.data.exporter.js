@@ -156,12 +156,28 @@ yukon.tools.dataExporter = (function () {
                 _submitForm('selectDevices');
             });
             
-            $('.js-time-check').each( function () {
+            $('.js-time-check').each(function() {
                 $(this).closest('.js-dynamic,.js-fixed').find('.js-time').prop('disabled', ! $(this).is(':checked'));
             });
             
-            $('.js-time-check').click(function () {
+            $('.js-time-check').click(function() {
                 $(this).closest('.js-dynamic,.js-fixed').find('.js-time').prop('disabled', ! $(this).is(':checked'));
+                if ($(this).is(':checked')) {
+                    $(this).closest('.js-dynamic,.js-fixed').find('.js-on-interval-check').prop('checked', false);
+                    $(this).closest('.js-dynamic,.js-fixed').find('.js-intervals').prop('disabled', true);
+                }
+            });
+            
+            $('.js-on-interval-check').each(function() {
+                $(this).closest('.js-dynamic,.js-fixed').find('.js-intervals').prop('disabled', ! $(this).is(':checked'));
+            });
+            
+            $('.js-on-interval-check').click(function() {
+                $(this).closest('.js-dynamic,.js-fixed').find('.js-intervals').prop('disabled', ! $(this).is(':checked'));
+                if ($(this).is(':checked')) {
+                    $(this).closest('.js-dynamic,.js-fixed').find('.js-time-check').prop('checked', false);
+                    $(this).closest('.js-dynamic,.js-fixed').find('.js-time').prop('disabled', true);
+                }
             });
             
             $('#format-id').change(function(event) {
