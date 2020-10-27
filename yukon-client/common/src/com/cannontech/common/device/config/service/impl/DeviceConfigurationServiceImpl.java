@@ -90,9 +90,9 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
         
         try {
             deviceConfigurationDao.assignConfigToDevice(configuration, device);
-            eventLogService.assignConfigToDeviceCompleted(configuration.getName(), deviceName, user, 1);
+            eventLogService.changeConfigOfDeviceCompleted(configuration.getName(), deviceName, user, 1);
         } catch (InvalidDeviceTypeException e) {
-            eventLogService.assignConfigToDeviceCompleted(configuration.getName(), deviceName, user, 0);
+            eventLogService.changeConfigOfDeviceCompleted(configuration.getName(), deviceName, user, 0);
             throw e;
         }
       
@@ -112,9 +112,9 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
 
         try {
             deviceConfigurationDao.unassignConfig(device);
-            eventLogService.unassignConfigFromDeviceCompleted(deviceName, user, 1);
+            eventLogService.removeConfigFromDeviceCompleted(deviceName, user, 1);
         } catch (InvalidDeviceTypeException e) {
-            eventLogService.unassignConfigFromDeviceCompleted(deviceName, user, 0);
+            eventLogService.removeConfigFromDeviceCompleted(deviceName, user, 0);
             throw e;
         }
 

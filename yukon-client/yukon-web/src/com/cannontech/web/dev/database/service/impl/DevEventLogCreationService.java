@@ -534,35 +534,35 @@ public class DevEventLogCreationService {
                 String input = "add config";
                 String statistics = "Completed: 1";
                 
-                deviceConfigEventLogService.assignConfigToDeviceCompleted(deviceConfig, deviceName, yukonUser, 1);
-                deviceConfigEventLogService.unassignConfigFromDeviceCompleted(deviceName, yukonUser, 0);
+                deviceConfigEventLogService.changeConfigOfDeviceCompleted(deviceConfig, deviceName, yukonUser, 1);
+                deviceConfigEventLogService.removeConfigFromDeviceCompleted(deviceName, yukonUser, 0);
                 
-                deviceConfigEventLogService.readConfigFromDeviceInitiated(deviceName, yukonUser);
-                deviceConfigEventLogService.readConfigFromDeviceCompleted(deviceName, 1);
+                deviceConfigEventLogService.validateConfigOnDeviceInitiated(deviceName, yukonUser);
+                deviceConfigEventLogService.validateConfigOnDeviceCompleted(deviceName, 1);
                 
-                deviceConfigEventLogService.sendConfigToDeviceInitiated(deviceName, yukonUser);
-                deviceConfigEventLogService.sendConfigToDeviceCompleted(deviceName, 0);
+                deviceConfigEventLogService.uploadConfigToDeviceInitiated(deviceName, yukonUser);
+                deviceConfigEventLogService.uploadConfigToDeviceCompleted(deviceName, 0);
                 
                 deviceConfigEventLogService.verifyConfigFromDeviceInitiated(deviceName, yukonUser);
                 deviceConfigEventLogService.verifyConfigFromDeviceCompleted(deviceName, 1);
                 
-                deviceConfigEventLogService.sendConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
-                deviceConfigEventLogService.sendConfigCompleted(action, input, statistics, creStatus, resultKey);
-                deviceConfigEventLogService.sendConfigCancelled(action, input, statistics, yukonUser, resultKey);
+                deviceConfigEventLogService.uploadConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
+                deviceConfigEventLogService.uploadConfigCompleted(action, input, statistics, creStatus, resultKey);
+                deviceConfigEventLogService.uploadConfigCancelled(action, input, statistics, yukonUser, resultKey);
                 
-                deviceConfigEventLogService.readConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
-                deviceConfigEventLogService.readConfigCompleted(action, input, statistics, creStatus, resultKey);
-                deviceConfigEventLogService.readConfigCancelled(action, input, statistics, yukonUser, resultKey);
+                deviceConfigEventLogService.validateConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
+                deviceConfigEventLogService.validateConfigCompleted(action, input, statistics, creStatus, resultKey);
+                deviceConfigEventLogService.validateConfigCancelled(action, input, statistics, yukonUser, resultKey);
                 
                 deviceConfigEventLogService.verifyConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
                 deviceConfigEventLogService.verifyConfigCompleted(action, input, statistics, creStatus, resultKey);
                 deviceConfigEventLogService.verifyConfigCancelled(action, input, statistics, yukonUser, resultKey);
                 
-                deviceConfigEventLogService.assignConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
-                deviceConfigEventLogService.assignConfigCompleted(action, input, statistics, creStatus, resultKey);
+                deviceConfigEventLogService.changeConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
+                deviceConfigEventLogService.changeConfigCompleted(action, input, statistics, creStatus, resultKey);
                 
-                deviceConfigEventLogService.unassignConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
-                deviceConfigEventLogService.unassignConfigCompleted(action, input, statistics, creStatus, resultKey);
+                deviceConfigEventLogService.removeConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
+                deviceConfigEventLogService.removeConfigCompleted(action, input, statistics, creStatus, resultKey);
             }
         });
         executables.put(LogType.DISCONNECT, new DevEventLogExecutable() {

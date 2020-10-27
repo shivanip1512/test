@@ -24,6 +24,7 @@ import com.cannontech.common.dr.setup.ProgramConstraint;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.dr.constraint.service.ProgramConstraintService;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.dr.setup.LMDeleteValidator;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
@@ -43,22 +44,25 @@ public class ProgramConstraintApiController {
 
     @PostMapping
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
-    public ResponseEntity<Object> create(@Valid @RequestBody ProgramConstraint programConstraint) {
-        ProgramConstraint createProgramConstraint = programConstraintService.create(programConstraint);
+    public ResponseEntity<Object> create(@Valid @RequestBody ProgramConstraint programConstraint, YukonUserContext userContext) {
+        ProgramConstraint createProgramConstraint = programConstraintService.create(programConstraint,
+                userContext.getYukonUser());
         return new ResponseEntity<>(createProgramConstraint, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
-    public ResponseEntity<Object> update(@Valid @RequestBody ProgramConstraint programConstraint, @PathVariable int id) {
-        ProgramConstraint updateProgramConstraint = programConstraintService.update(id, programConstraint);
+    public ResponseEntity<Object> update(@Valid @RequestBody ProgramConstraint programConstraint, @PathVariable int id,
+            YukonUserContext userContext) {
+        ProgramConstraint updateProgramConstraint = programConstraintService.update(id, programConstraint,
+                userContext.getYukonUser());
         return new ResponseEntity<>(updateProgramConstraint, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.OWNER)
-    public ResponseEntity<HashMap<String, Integer>> delete(@PathVariable int id) {
-        Integer constraintId = programConstraintService.delete(id);
+    public ResponseEntity<HashMap<String, Integer>> delete(@PathVariable int id, YukonUserContext userContext) {
+        Integer constraintId = programConstraintService.delete(id, userContext.getYukonUser());
         HashMap<String, Integer> constraintIdMap = new HashMap<>();
         constraintIdMap.put("id", constraintId);
         return new ResponseEntity<>(constraintIdMap, HttpStatus.OK);

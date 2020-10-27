@@ -15,7 +15,6 @@ import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.IAlarmDefs;
-import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.device.dao.DevicePointDao;
 import com.cannontech.common.device.dao.DevicePointDao.SortBy;
 import com.cannontech.common.device.model.DevicePointDetail;
@@ -527,7 +526,7 @@ public class PointEditorServiceImpl implements PointEditorService {
 
         List<AlarmTableEntry> alarmTableEntries = updateExistingAlarmTableEntries(pointBase, pointBaseModel, ptType);
         
-        save(pointBase, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
+        save(pointBase, alarmTableEntries, userContext.getYukonUser());
 
         StaleData staleData = getStaleData(pointId);
         if (pointBaseModel.getStaleData() != null) {

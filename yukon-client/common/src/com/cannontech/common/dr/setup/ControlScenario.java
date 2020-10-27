@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.apache.commons.collections4.CollectionUtils;
+
+import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.collect.Lists;
 
-public class ControlScenario {
+public class ControlScenario implements DBPersistentConverter<LMScenario> {
 
     @JsonIgnoreProperties(value={"id"}, allowGetters= true)
     private Integer id;
@@ -44,6 +46,7 @@ public class ControlScenario {
         this.allPrograms = allPrograms;
     }
 
+    @Override
     public void buildModel(LMScenario controlScenario) {
         setId(controlScenario.getPAObjectID());
         setName(controlScenario.getPAOName());
@@ -65,6 +68,7 @@ public class ControlScenario {
                                   .collect(Collectors.toList()));
     }
 
+    @Override
     public void buildDBPersistent(LMScenario controlScenario) {
         // Setting Control Scenario details
         controlScenario.setScenarioID(getId());

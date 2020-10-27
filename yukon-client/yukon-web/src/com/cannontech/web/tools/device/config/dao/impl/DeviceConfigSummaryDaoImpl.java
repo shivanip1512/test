@@ -162,6 +162,7 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         } else {
             sql.append("AND CurrentState").in_k(filter.getStateSelection().getStates());
         }
+        sql.append("AND ypo.PAOName NOT").startsWith(rfTemplatePrefix);
         return sql;
     }
 
