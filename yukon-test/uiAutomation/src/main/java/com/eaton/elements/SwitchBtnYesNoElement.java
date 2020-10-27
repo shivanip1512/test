@@ -11,18 +11,23 @@ import com.eaton.framework.DriverExtensions;
 public class SwitchBtnYesNoElement {
 
     private String elementName;
+    private Boolean inverted;
     private WebElement parentElement;
     private DriverExtensions driverExt;
 
     public SwitchBtnYesNoElement(DriverExtensions driverExt, String elementName, WebElement parentElement) {
+    	this(driverExt, elementName, parentElement, false);
+    }
+    
+    public SwitchBtnYesNoElement(DriverExtensions driverExt, String elementName, WebElement parentElement, Boolean inverted) {
         this.driverExt = driverExt;
         this.elementName = elementName;
-        this.parentElement = parentElement;        
+        this.parentElement = parentElement;
+        this.inverted = inverted;
     }
     
     public SwitchBtnYesNoElement(DriverExtensions driverExt, String elementName) {
-        this.driverExt = driverExt;
-        this.elementName = elementName;
+    	this(driverExt, elementName, null, false);
     }
     
 	public void selectValue(String value) {
@@ -70,10 +75,20 @@ public class SwitchBtnYesNoElement {
             String id = btn.getAttribute("id");
             String isChecked = btn.getAttribute("checked");
             
-            if(isChecked == null) {
-                return parentElement.findElement(By.cssSelector("label[for='" + id + "'].button.no")).getText();
-            } else {
-                return parentElement.findElement(By.cssSelector("label[for='" + id + "'].button.yes")).getText();
+            if(inverted) {
+            	 if(isChecked == null) {
+            		 return parentElement.findElement(By.cssSelector("label[for='" + id + "'].button.yes")).getText();
+            		 
+                 } else {
+                	 return parentElement.findElement(By.cssSelector("label[for='" + id + "'].button.no")).getText();
+                 }
+            }
+            else {            
+	            if(isChecked == null) {
+	                return parentElement.findElement(By.cssSelector("label[for='" + id + "'].button.no")).getText();
+	            } else {
+	                return parentElement.findElement(By.cssSelector("label[for='" + id + "'].button.yes")).getText();
+	            }
             }
         } else {
             WebElement btn = this.driverExt.findElement(By.cssSelector("input[name='" + this.elementName + "']"), Optional.of(3));
@@ -81,11 +96,27 @@ public class SwitchBtnYesNoElement {
             String id = btn.getAttribute("id");
             String isChecked = btn.getAttribute("checked");
             
-            if(isChecked == null) {
-                return this.driverExt.findElement(By.cssSelector("label[for='" + id + "'].button.no"), Optional.empty()).getText();
+            if(inverted) {
+            	if(isChecked == null) {
+            		return this.driverExt.findElement(By.cssSelector("label[for='" + id + "'].button.yes"), Optional.empty()).getText();
+	            } else {
+	            	return this.driverExt.findElement(By.cssSelector("label[for='" + id + "'].button.no"), Optional.empty()).getText();
+	            }
             } else {
-                return this.driverExt.findElement(By.cssSelector("label[for='" + id + "'].button.yes"), Optional.empty()).getText();
+	            if(isChecked == null) {
+	                return this.driverExt.findElement(By.cssSelector("label[for='" + id + "'].button.no"), Optional.empty()).getText();
+	            } else {
+	                return this.driverExt.findElement(By.cssSelector("label[for='" + id + "'].button.yes"), Optional.empty()).getText();
+	            }
             }
         }
+    }
+
+    public Boolean getInverted() {
+    	return inverted;
+    }
+    
+    public void setInverted(Boolean inverted) {
+    	this.inverted = inverted;
     }
 }

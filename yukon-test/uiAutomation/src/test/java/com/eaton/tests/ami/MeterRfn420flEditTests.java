@@ -37,7 +37,7 @@ public class MeterRfn420flEditTests extends SeleniumTestSetup {
 
         EditMeterModal editModal = meterDetailsPage.showMeterEditModal();
 
-        editModal.getdeviceName().setInputValue(name);
+        editModal.getDeviceName().setInputValue(name);
         editModal.clickOkAndWaitForModalToClose();
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL + 492, Optional.of(10));
