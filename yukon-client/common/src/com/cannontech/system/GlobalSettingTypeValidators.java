@@ -166,7 +166,7 @@ public class GlobalSettingTypeValidators {
         @Override
         public void validate(String value, Errors errors, GlobalSettingType globalSettingType) {
             Pattern guidPattern = Pattern.compile("^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$");
-            if (value != null && !guidPattern.matcher(value).find()) {
+            if (!StringUtils.isBlank(value) && !guidPattern.matcher(value).find()) {
                 errors.rejectValue("values[" + globalSettingType + "]", baseKey + "invalidGuid", null, "");
             }
         }
