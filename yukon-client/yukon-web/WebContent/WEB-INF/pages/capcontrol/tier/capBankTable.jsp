@@ -5,10 +5,15 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:includeScript link="JQUERY_TREE" />
+<cti:includeScript link="/resources/js/common/yukon.ui.fancyTree.js"/>
+<cti:includeScript link="/resources/js/lib/fancytree/jquery.fancytree.min.js"/>
+<cti:includeCss link="/resources/js/lib/fancytree/skins/skin-lion/ui.fancytree.css"/>
+
+<%-- <cti:includeScript link="JQUERY_TREE" />
 <cti:includeScript link="JQUERY_TREE_HELPERS" />
-<cti:includeCss link="/resources/js/lib/dynatree/skin/ui.dynatree.css"/>
-    <c:set var="hasControlAttr" value="data-has-control" />
+<cti:includeCss link="/resources/js/lib/dynatree/skin/ui.dynatree.css"/> --%>
+
+<c:set var="hasControlAttr" value="data-has-control" />
 
 <cti:checkRolesAndProperties value="CAPBANK_COMMANDS_AND_ACTIONS" level="ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,
     ALL_DEVICE_COMMANDS_WITHOUT_YUKON_ACTIONS,NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,

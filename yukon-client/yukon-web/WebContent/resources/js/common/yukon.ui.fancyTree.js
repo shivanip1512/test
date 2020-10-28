@@ -51,7 +51,8 @@ yukon.ui.fancyTree= (function () {
         $('.js-fancy-tree').each(function() {
             var dataUrl = $(this).data('url'),
                 treeParameters = yukon.fromJson($(this).find('#js-tree-parameters')),
-                source = dataUrl ? { url: dataUrl } : yukon.fromJson($(this).find('#js-json-data')),
+                jsonData = $(this).find('#js-json-data'),
+                source = dataUrl ? { url: dataUrl } : JSON.parse(yukon.fromJson(jsonData)),
                 options = $.extend({
                     source: source,
                     minExpandLevel: 2,

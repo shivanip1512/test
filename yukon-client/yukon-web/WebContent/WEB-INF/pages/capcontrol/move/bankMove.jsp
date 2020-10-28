@@ -2,6 +2,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="fancyTree" tagdir="/WEB-INF/tags/fancyTree" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
@@ -9,6 +10,7 @@
 <cti:msgScope paths="yukon.web.modules.capcontrol.bankMove">
 
 <script type="text/javascript"> 
+
 updateFeederBankInfo = function () {
     var params = {'feederId': $("#selectedFeeder").val()};
     $.ajax({
@@ -27,6 +29,7 @@ selectFeeder = function (fid) {
 }
 
 function handleNodeClick(node, event) {
+    alert("TEST");
     if (node.getLevel() == 4) {
         node.select();
         selectFeeder(node.data.key);
@@ -38,7 +41,7 @@ function handleNodeClick(node, event) {
     }
 }
 
-function getTreeStructure() {
+ function getTreeStructure() {
     var areas = [];
     <c:forEach var="area" items="${allAreas}">
         var area = {title: '${cti:escapeJavaScript(area.name)}', icon: false};
@@ -65,7 +68,7 @@ function getTreeStructure() {
         areas.push(area);
     </c:forEach>
     return areas;
-}
+} 
 </script>
 
 <div>
@@ -90,12 +93,15 @@ function getTreeStructure() {
 
         <h3><i:inline key=".feedersContainer.title"/></h3>
 
-        <jsTree:inlineTree id="feederTree" maxHeight="250" styleClass="stacked" 
+        <fancyTree:inlineTree id="feederId" maxHeight="250" styleClass="stacked" 
+            dataJson="${areaJson}" includeControlBar="true"
+            treeParameters='{"minExpandLevel": "1"}'/>
+<%--         <jsTree:inlineTree id="feederTree" maxHeight="250" styleClass="stacked" 
             treeParameters="{children: getTreeStructure(),
                              minExpandLevel:1,
                              clickFolderMode: 3,
                              onClick: handleNodeClick,
-                             selectMode: 1}"/>
+                             selectMode: 1}"/> --%>
 
         <div id="controlOrders"></div>
         
@@ -112,5 +118,7 @@ function getTreeStructure() {
 </div>
 <script type="text/javascript">
 updateFeederBankInfo();
+//yukon.ui.fancyTree.init();
+
 </script>
 </cti:msgScope>

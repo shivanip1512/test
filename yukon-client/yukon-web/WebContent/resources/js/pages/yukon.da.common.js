@@ -91,7 +91,7 @@ yukon.da.common = (function () {
                 moveBankOpener.click(function (event) {
                     mod.showDialog(moveBankTitle,
                             yukon.url('/capcontrol/move/bankMove?bankid=' + encodeURIComponent(bankId)), 
-                            {'height': 650, 'width': 650, 'modal': true}, 
+                            {"data-height": 650, "data-width": 650, "data-load-event": "yukon:da:bank:move"}, 
                     '#contentPopup');
                 });
 
@@ -119,15 +119,26 @@ yukon.da.common = (function () {
             bankInfoOpener.click(function (event) {
                 mod.showDialog(bankInfoTitle, 
                         '../addInfo/bank?bankId=' + encodeURIComponent(bankId), 
-                        { width: 450 });
+                        { 'data-width': 450 });
             });
             
             cbcInfoOpener.click(function (event) {
                 mod.showDialog(cbcInfoTitle, 
                         '../capbank/cbcPoints?cbcId=' + encodeURIComponent(cbcId), 
-                        { width: 600, height: 600 });
+                        { 'data-width': 600, 'data-height': 600 });
             });
 
+        });
+    },
+    
+    _updateFeederBankInfo = function () {
+        var params = {'feederId': $("#selectedFeeder").val()};
+        $.ajax({
+            url: yukon.url('/capcontrol/move/feederBankInfo'),
+            method: 'post',
+            data: params
+        }).done(function (data, textStatus, jqXHR) {
+            $('#controlOrders').html(data);
         });
     },
     
@@ -257,6 +268,12 @@ yukon.da.common = (function () {
             
             $(document).on("click", ".js-save-comment", function () {
                 yukon.da.comments.addComment();
+            });
+            
+            //User selected Bank Move cog option
+            $(document).on('yukon:da:bank:move', function (ev) {
+                yukon.ui.fancyTree.init();
+                _updateFeederBankInfo();
             });
         },
         
@@ -470,16 +487,15 @@ yukon.da.common = (function () {
         showDialog: function (title, url, options, selector) {
             
             var dialogArgs = {
-                'title': title,
-                'width': 'auto',
-                'height': 'auto',
-                'modal': true
+                "data-url": url,
+                "data-title": title,
+                "data-destroy-dialog-on-close": ""
             },
-            selector = selector || '<div></div>',
-            dialog = $(selector);
+            selector = selector || '<div></div>';
             
             $.extend(dialogArgs, options);
-            dialog.load(url).dialog(dialogArgs);
+            yukon.ui.dialog($("<div/>").attr(dialogArgs));
+            //$(selector).load(url).dialog(dialogArgs);
         },
         
         /** 
