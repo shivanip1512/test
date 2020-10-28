@@ -114,7 +114,7 @@ public class IntervalParser {
                     intervals.values().stream().map(time -> format(new Instant(time.getTime()), context))
                             .collect(Collectors.joining(",")));
         } else {
-            log.info("selected:[{}-{}] intervals created:{}", format(startDate, context), format(stopDate, context),
+            log.info("selected:[{}-{}] intervals created: {}", format(startDate, context), format(stopDate, context),
                     intervals.size());
         }
     }

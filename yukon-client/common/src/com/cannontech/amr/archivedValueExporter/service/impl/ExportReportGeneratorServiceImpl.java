@@ -83,7 +83,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 import com.google.common.collect.TreeMultimap;
 
@@ -100,11 +99,22 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private UnitMeasureDao unitMeasureDao;
 
-    public static final String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
-    private static final Comparator<PointValueQualityHolder> pointValueTimestampComparator = 
-            (o1, o2) -> o1.getPointDataTimeStamp().compareTo(o2.getPointDataTimeStamp());
-    private static final Comparator<PaoIdentifier> paoIdentifierIndifferentComparator = (o1, o2) -> 0;
     private static final Logger log = YukonLogManager.getLogger(ExportReportGeneratorServiceImpl.class);
+    public static final String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
+    
+    /**
+     * This comparator first compares the point data timestamps, then compares point IDs. It does not differentiate by
+     * quality or the actual point value, so all values of the same point on the same timestamp will be considered equal
+     * by this comparator.
+     */
+    private static final Comparator<PointValueQualityHolder> pointValueTimestampFirstComparator = (pointValue1, pointValue2) -> {
+        int timestampComparison = pointValue1.getPointDataTimeStamp().compareTo(pointValue2.getPointDataTimeStamp());
+        if (timestampComparison != 0) {
+            return timestampComparison;
+        }
+        
+        return Integer.valueOf(pointValue1.getId()).compareTo(pointValue2.getId());
+    };
     
     private static String previewUOMValueKey = baseKey + "previewUOMValue";
     private static String previewPointStateKey = baseKey + "previewPointState";
@@ -112,8 +122,6 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     private static String previewMeterNameKey = baseKey + "previewMeterName";
     private static String previewMeterAddressKey = baseKey + "previewMeterAddress";
     private static String previewMeterRouteKey = baseKey + "previewMeterRoute";
-
-    
 
     /*
      * The value to be returned in case the meter information we
@@ -185,7 +193,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             boolean isOnInterval,
             TimeIntervals interval) throws IOException {
         
-        log.info("Generating report for {} attributes {}", allPaos.size(), attributes);
+        log.info("Generating report for {} devices. Attributes: {}", allPaos.size(), attributes);
 
         Set<OptionalField> requestedFields = new HashSet<>();
         boolean needsName = false;
@@ -630,18 +638,26 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             Instant startDate, Instant stopDate, YukonUserContext userContext) {
         
         IntervalParser intervalParser = new IntervalParser(startDate, stopDate, interval, dateFormattingService, userContext, log);
+        
+        if (log.isDebugEnabled()) {
+            log.debug("Transforming raw data to interval data. Attribute: {}. Range = {} - {}. Interval = {}", 
+                      attribute, startDate, stopDate, interval);
+            log.debug("Paos: {}", paos);
+        }
+        
+        // Bail out if the range is so small that there are no valid intervals.
         if (!intervalParser.hasValidInterval()) {
-            throw new IllegalArgumentException("Selected date range and interval does not allow for any valid dates.");
+            log.warn("There are no valid {} intervals in the selected date range.", interval);
+            return ArrayListMultimap.create();
         }
         
         // Create an ordered multimap - paoId key order doesn't matter, but point values are ordered by timestamp.
-        Multimap<PaoIdentifier, PointValueQualityHolder> transformedData = 
-                TreeMultimap.create(paoIdentifierIndifferentComparator, pointValueTimestampComparator);
+        TreeMultimap<PaoIdentifier, PointValueQualityHolder> transformedData = 
+                TreeMultimap.create(PaoIdentifier.COMPARATOR, pointValueTimestampFirstComparator);
         
         for (YukonPao pao : paos) {
             PaoIdentifier paoIdentifier = pao.getPaoIdentifier();
             List<Date> intervalDates = intervalParser.getIntervals();
-            
             // Get the point ID and type, from the point data if there is any, or by doing an attribute lookup
             PointTypeId pointTypeAndId = getPointTypeAndId(data, paoIdentifier, attribute);
             
@@ -652,8 +668,12 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                     //This data is on the interval, add it to the new collection
                     transformedData.put(paoIdentifier, pointValue);
                     intervalDates.remove(dataTimestamp);
-                } 
+                    log.trace("Kept data with value {} for pao {}. Timestamp {} is a valid interval time.", 
+                              pointValue.getValue(), pao, dataTimestamp);
+                }
                 //else - This is off-interval data, ignore it
+                log.trace("Discarded data with value {} for pao {}. Timestamp {} is not a valid interval time.",
+                          pointValue.getValue(), pao, dataTimestamp);
             }
             
             // Check for any intervals where the pao had no data, and insert an "empty" point value with an "estimated"
@@ -662,7 +682,12 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 for (Date intervalDate : intervalDates) {
                     PointValueQualityHolder emptyPointValue = emptyPointValue(intervalDate, pointTypeAndId);
                     transformedData.put(paoIdentifier, emptyPointValue);
+                    log.trace("Inserted \"empty\" data for pao {}. There was no data for interval timestamp {}", 
+                              pao, intervalDate);
                 }
+            } else {
+                log.debug("All interval dates for pao {} are accounted for. No \"empty\" interval values were added.",
+                          pao);
             }
         }
         
@@ -675,13 +700,24 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     private PointTypeId getPointTypeAndId(ListMultimap<PaoIdentifier, PointValueQualityHolder> data, 
             PaoIdentifier paoIdentifier, Attribute attribute) {
         
+        // Check for any point value in the data. If there is one, use that point type and ID.
+        // This may not find a point value if there was no data for the pao/attribute in the selected range.
         Optional<PointValueQualityHolder> anyPointValue = data.get(paoIdentifier).stream().findAny();
         if (anyPointValue.isPresent()) {
             return new PointTypeId(anyPointValue.get().getPointType(), anyPointValue.get().getId());
         }
         
+        // If we have no point data, try to do an attribute lookup.
+        // This may not find a point if the attribute isn't supported by the pao, or the supported point isn't present
+        // on the pao.
         LitePoint point = attributeService.findPointForAttribute(paoIdentifier, attribute);
-        return new PointTypeId(point.getPointTypeEnum(), point.getPointID());
+        if (point != null) {
+            return new PointTypeId(point.getPointTypeEnum(), point.getPointID());
+        }
+        
+        // Having failed to find a suitable point, we give up and return a fake point
+        //TODO: Determine if this might have negative consequences.
+        return new PointTypeId(PointType.System, 0); 
     }
     
     /**
@@ -851,16 +887,21 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      * Gets the value. Returns "" if the value was not found.
      */
     private String getPointValue(ExportField field, PointValueQualityHolder pointValueQualityHolder) { 
-        if (pointValueQualityHolder == null || 
-                // PointQuality.Estimated and value == 0 indicates an "empty" interval
-                (pointValueQualityHolder.getPointQuality() == PointQuality.Estimated 
-                 && pointValueQualityHolder.getValue() == 0)) {
+        if (pointValueQualityHolder == null || isEmptyInterval(pointValueQualityHolder)) {
             return "";
         }
 
         return field.formatValue(pointValueQualityHolder.getValue());
     }
 
+    /**
+     * Determines whether a point value represents an "empty" interval - a value of 0 and quality "estimated"
+     */
+    private boolean isEmptyInterval(PointValueQualityHolder pointValue) {
+        return (pointValue.getPointQuality() == PointQuality.Estimated 
+                && pointValue.getValue() == 0);
+    }
+    
     /**
      * Gets the timestamp. Returns "" if the timestamp was not found.
      */
