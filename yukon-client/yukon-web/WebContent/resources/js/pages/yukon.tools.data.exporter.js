@@ -23,16 +23,25 @@ yukon.tools.dataExporter = (function () {
     
     /** Exports the format. */
     _runOkPressed = function() {
+        var selectedIndex = $('.js-run-inputs').find('select.js-intervals').prop('selectedIndex');
+        alert(selectedIndex);
+        
         $('#run-dialog').dialog('close');
         $('.js-run-inputs').clone().appendTo('#exporter-form');
+        // Clone doesn't copy select values, so manually copy.
+        $('#exporter-form').find('select.js-intervals').prop('selectedIndex', selectedIndex);
         _submitForm('generateReport');
         $('#exporter-form').find('.js-run-inputs').remove();
     },
     
     /** Opens the schedule details form. */
     _scheduleOkPressed = function() {
+        var selectedIndex = $('.js-schedule-inputs').find('select.js-intervals').prop('selectedIndex');
+        
         $('#schedule-dialog').dialog('close');
         $('.js-schedule-inputs').clone().appendTo('#exporter-form');
+        // Clone doesn't copy select values, so manually copy.
+        $('#exporter-form').find('select.js-intervals').prop('selectedIndex', selectedIndex);
         _submitForm('scheduleReport');
         $('#exporter-form').find('.js-schedule-inputs').remove();
     },
