@@ -134,8 +134,7 @@ public class ItronServiceWatcher extends ServiceStatusWatchdogImpl {
         if (ignore) {
             log.info("Ignored soap fault {}:{}", errorCode, errorMessage);
         } else {
-            ItronCommunicationException exception = new ItronCommunicationException(
-                    "Soap Fault: " + errorCode + ":" + errorMessage);
+            ItronCommunicationException exception = new ItronCommunicationException("Soap Fault: " + errorCode + ":" + errorMessage);
             log.error(exception);
             throw exception;
         }
