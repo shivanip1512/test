@@ -31,7 +31,6 @@ public class LoadProgramSEPCreateTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        setRefreshPage(false);
         // Create Load Group to be assigned
         timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         ldGrpName = "SepLdGroup " + timeStamp;
@@ -45,19 +44,14 @@ public class LoadProgramSEPCreateTests extends SeleniumTestSetup {
 
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
-        if (getRefreshPage()) {
             refreshPage(createPage);
             createPage.getType().selectItemByValue("LM_SEP_PROGRAM");
-        }
-        setRefreshPage(false);
-
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldPrgmSepCreate_RequiredFieldsOnly_Success() {
         String name = "AT SepProgram " + timeStamp;
         final String EXPECTED_MSG = name + " saved successfully.";
-        setRefreshPage(true);
 
         createPage.getName().setInputValue(name);
         CreateSepPrgmGearModal gearModal = createPage.showCreateSepPrgmGearModal();
@@ -81,7 +75,6 @@ public class LoadProgramSEPCreateTests extends SeleniumTestSetup {
     public void ldPrgmSepCreate_AllFields_Success() {
         String name = "AT SepProgram2 " + timeStamp;
         final String EXPECTED_MSG = name + " saved successfully.";
-        setRefreshPage(true);
 
         createPage.getName().setInputValue(name);
         CreateSepPrgmGearModal gearModal = createPage.showCreateSepPrgmGearModal();
@@ -110,7 +103,6 @@ public class LoadProgramSEPCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldPrgmSepCreate_GearType_ValuesCorrect() {
-        setRefreshPage(true);
         List<String> expectedGearTypes = new ArrayList<String>();
         expectedGearTypes.add("SEP Cycle");
         expectedGearTypes.add("SEP Temperature Offset");
