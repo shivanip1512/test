@@ -5538,7 +5538,19 @@ JavaScript :
     sha1 : 1098b8dfc26d37c5504d7cddf296203f85338470
     jira : YUK-13284
     updated : 2014-05-13
-    notes : 
+    notes : Used for creating Tree Views in our UI - Being replaced by fancytree
+    
+  - project : fancytree
+    version : 2.37.0
+    project URL : "https://github.com/mar10/fancytree"
+    license : MIT
+    license URLs : "https://github.com/mar10/fancytree/wiki/LicenseInfo"
+    npm URL : "https://www.npmjs.com/package/jquery.fancytree"
+    md5 : dfad8e02cf08797247fa32e1928189ec
+    sha1 : ec2f38be5ebd584a8611ba04465b70b7c3b6ba99
+    jira : YUK-22264
+    updated : 2020-10-20
+    notes : Used for creating Tree Views in our UI
 
   - project : fileupload
     version : 10.8.0
@@ -5674,15 +5686,15 @@ JavaScript :
     notes : "This library is used for the date, time, datetime and offset pickers used on UI."
 
   - project : open-layers
-    version : 6.2.1
+    version : 6.4.3
     project URL : "https://openlayers.org/"
     license : BSD 2-clause
     license URLs : "https://raw.githubusercontent.com/openlayers/openlayers/master/LICENSE.md"
-    npm URL : "https://www.npmjs.com/package/ol/v/6.2.1"
-    md5 : b8382fa532af01cbc11185f78baf5a2b
-    sha1 : 118318fae9b4f83e8bcec99d2d1e5dde54ba2624
-    jira : YUK-21139
-    updated : 2020-02-18
+    npm URL : "https://www.npmjs.com/package/ol/v/6.4.3"
+    md5 : 5cc60bd85cb1d155b81dc01934e7c149
+    sha1 : 5a0972ba4b9d13f8996188e075bdfa1376a541d0
+    jira : YUK-22996
+    updated : 2020-10-22
     notes : Used for mapping
 
   - project : placeholder
