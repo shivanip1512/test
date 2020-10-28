@@ -26,6 +26,7 @@ import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.security.annotation.CheckRole;
 
@@ -42,16 +43,16 @@ public class TrendApiController {
 
     @PostMapping
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.CREATE)
-    public ResponseEntity<Object> create(@Valid @RequestBody TrendModel trendModel) {
-        TrendModel createdTrend = trendService.create(trendModel);
+    public ResponseEntity<Object> create(@Valid @RequestBody TrendModel trendModel, YukonUserContext userContext) {
+        TrendModel createdTrend = trendService.create(trendModel, userContext.getYukonUser());
         return new ResponseEntity<>(createdTrend, HttpStatus.CREATED);
     }
 
     //Delete Trend
     @DeleteMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.OWNER)
-    public ResponseEntity<Object> delete(@PathVariable int id) {
-        int trendId = trendService.delete(id);
+    public ResponseEntity<Object> delete(@PathVariable int id, YukonUserContext userContext) {
+        int trendId = trendService.delete(id, userContext.getYukonUser());
         Map<String, Integer> trendIdMap = new HashMap<>();
         trendIdMap.put("id", trendId);
         return new ResponseEntity<>(trendIdMap, HttpStatus.OK);
@@ -59,8 +60,9 @@ public class TrendApiController {
 
     @PutMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.UPDATE)
-    public ResponseEntity<TrendModel> update(@Valid @RequestBody TrendModel trendModel, @PathVariable int id) {
-        TrendModel trend = trendService.update(id, trendModel);
+    public ResponseEntity<TrendModel> update(@Valid @RequestBody TrendModel trendModel, @PathVariable int id,
+            YukonUserContext userContext) {
+        TrendModel trend = trendService.update(id, trendModel, userContext.getYukonUser());
         return new ResponseEntity<>(trend, HttpStatus.OK);
     }
 
@@ -72,8 +74,9 @@ public class TrendApiController {
     
     @PostMapping("{id}/resetPeak")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.UPDATE)
-    public ResponseEntity<HashMap<String, Integer>> resetPeak(@PathVariable int id, @Valid @RequestBody ResetPeakModel resetPeakModel){
-        Integer trendId = trendService.resetPeak(id, resetPeakModel);
+    public ResponseEntity<HashMap<String, Integer>> resetPeak(@PathVariable int id,
+            @Valid @RequestBody ResetPeakModel resetPeakModel, YukonUserContext userContext) {
+        Integer trendId = trendService.resetPeak(id, resetPeakModel, userContext.getYukonUser());
         HashMap<String, Integer> trendIdMap = new HashMap<>();
         trendIdMap.put("trendId", trendId);
         return new ResponseEntity<>(trendIdMap, HttpStatus.OK);

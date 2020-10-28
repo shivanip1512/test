@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.port.PortBase;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.port.DirectPort;
 
 public interface PortService {
@@ -11,7 +12,7 @@ public interface PortService {
     /**
      * Create the Port.
      */
-    PortBase<? extends DirectPort> create(PortBase<? extends DirectPort> port);
+    PortBase<? extends DirectPort> create(PortBase<? extends DirectPort> port, LiteYukonUser liteYukonUser);
 
     /**
      * Retrieve Port for passed portId.
@@ -21,12 +22,12 @@ public interface PortService {
     /**
      * Update the Port.
      */
-    PortBase<? extends DirectPort> update(int portId, PortBase<? extends DirectPort> port);
+    PortBase<? extends DirectPort> update(int portId, PortBase<? extends DirectPort> port, LiteYukonUser liteYukonUser);
     
     /**
      * Delete the Port.
      */
-    int delete(int portId);
+    int delete(int portId, LiteYukonUser liteYukonUser);
 
     /**
      * Retrieve List of all Comm channels.

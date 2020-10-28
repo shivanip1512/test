@@ -30,13 +30,7 @@
     
     <div id="page-buttons">
         <c:if test="${not empty trends}">
-            <span class="form-control"><i:inline key=".trends.autoRefresh"/></span>
-            <div id="trend-updater" class="button-group button-group-toggle">
-                <c:set var="onClasses" value="${autoUpdate ? 'on yes' : 'yes'}"/>
-                <cti:button nameKey="on" classes="${onClasses}"/>
-                <c:set var="offClasses" value="${autoUpdate ? 'no' : 'on no'}"/>
-                <cti:button nameKey="off" classes="${offClasses}"/>
-            </div>
+            <%@ include file="../../common/trends/trendsAutoRefresh.jsp" %>
 
             <div class="js-page-additional-actions dn">
                 <cti:checkRolesAndProperties value="MANAGE_TRENDS" level="UPDATE">

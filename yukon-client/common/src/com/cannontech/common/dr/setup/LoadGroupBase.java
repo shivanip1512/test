@@ -3,6 +3,7 @@ package com.cannontech.common.dr.setup;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.lm.LMGroup;
@@ -27,7 +28,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value = LoadGroupRipple.class, name = "LM_GROUP_RIPPLE")
     })
 @JsonIgnoreProperties(value={"id"}, allowGetters= true, ignoreUnknown = true)
-public class LoadGroupBase<T extends LMGroup> implements LoadGroupSetupBase<T> {
+public class LoadGroupBase<T extends LMGroup> implements DBPersistentConverter<T> {
+
     private Integer id;
     private String name;
     private PaoType type;

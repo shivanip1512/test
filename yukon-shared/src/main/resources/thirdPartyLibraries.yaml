@@ -5650,15 +5650,15 @@ JavaScript :
                   Generated via http://modernizr.com/download/#-fontface-backgroundsize-borderimage-borderradius-boxshadow-flexbox-flexboxlegacy-hsla-multiplebgs-opacity-rgba-textshadow-cssanimations-csscolumns-generatedcontent-cssgradients-cssreflections-csstransforms-csstransforms3d-csstransitions-applicationcache-canvas-canvastext-draganddrop-hashchange-history-audio-video-indexeddb-input-inputtypes-localstorage-postmessage-sessionstorage-websockets-websqldatabase-webworkers-geolocation-inlinesvg-smil-svg-svgclippaths-touch-webgl-printshiv-mq-cssclasses-teststyles-testprop-testallprops-hasevent-prefixes-domprefixes-load"
 
   - project : moment
-    version : 2.24.0
+    version : 2.29.1
     project URL : "https://momentjs.com/"
     license : MIT
     license URLs : "https://github.com/moment/moment/blob/develop/LICENSE"
-    npm URL : "https://www.npmjs.com/package/moment/v/2.24.0"
-    md5 : af098b0bed8f8373664ae981deb8d73e
-    sha1 : b473731c1ddb874c9750c91ff4ed6183bcf05046
-    jira : YUK-21529
-    updated : 2020-04-09
+    npm URL : "https://www.npmjs.com/package/moment/v/2.29.1"
+    md5 : 4226c7caddd61093c8d6ffe14d95129f
+    sha1 : 5f5399568802b4a82f747c0905fb4b595b205321
+    jira : YUK-23002
+    updated : 2020-10-21
     notes : "This library is used to display dates on UI in user's timezone."
 
   - project : mousewheel
@@ -5934,6 +5934,20 @@ C++ :
     totalSize : 9562547
     updated : 2020-06-19  
     jira : YUK-21543
+    notes : 
+    
+  - project : Microsoft Guidelines Support Library
+    path : MICROSOFT_GSL
+    version : 3.1.0
+    project URL : "https://github.com/microsoft/GSL"
+    license : MIT
+    license URLs : "https://github.com/microsoft/GSL/blob/v3.1.0/LICENSE"
+    md5 : bd754642756bc03a614e88e8891214c2
+    sha1 : b2416a4802494f6128431e3fdb860e8521874e13 
+    fileCount : 10
+    totalSize : 176964
+    updated : 2020-10-19  
+    jira : YUK-22841
     notes : 
     
   - project : Microsoft SQL Server Client

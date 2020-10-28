@@ -43,7 +43,7 @@ template<>
 boost::optional<Rfn::RfnBroadcastReplyMessage> IM_EX_MSG MessageSerializer<Rfn::RfnBroadcastReplyMessage>::deserialize(const std::vector<unsigned char> &buf)
 try
 {
-    const Thrift::RfnExpressComBroadcastReply thriftMsg = DeserializeThriftBytes<Thrift::RfnExpressComBroadcastReply>(buf);
+    const auto thriftMsg = DeserializeThriftBytes<Thrift::RfnExpressComBroadcastReply>(buf);
 
     std::map<int64_t, Thrift::RfnExpressComBroadcastReplyType::type>::const_iterator itr;
 
@@ -104,6 +104,44 @@ catch( apache::thrift::TException )
     return {};
 }
 
+template<>
+boost::optional<Rfn::RfnSetChannelConfigRequestMessage> IM_EX_MSG MessageSerializer<Rfn::RfnSetChannelConfigRequestMessage>::deserialize(const std::vector<unsigned char>& buf)
+try
+{
+    const auto thriftMsg = DeserializeThriftBytes<Thrift::RfnSetChannelConfigRequest>(buf);
+
+    Rfn::RfnSetChannelConfigRequestMessage msg;
+
+    msg.rfnIdentifier.manufacturer = thriftMsg.rfnIdentifier.sensorManufacturer;
+    msg.rfnIdentifier.model        = thriftMsg.rfnIdentifier.sensorModel;
+    msg.rfnIdentifier.serialNumber = thriftMsg.rfnIdentifier.sensorSerialNumber;
+
+    msg.reportingInterval = thriftMsg.reportingInterval;
+    msg.recordingInterval = thriftMsg.recordingInterval;
+
+    if ( thriftMsg.__isset.header )
+    {
+        Rfn::NetworkManagerRequestHeader header;
+
+        header.clientGuid = thriftMsg.header.clientGuid;
+        header.sessionId  = thriftMsg.header.sessionId;
+        header.messageId  = thriftMsg.header.messageId;
+        header.groupId    = thriftMsg.header.groupId;
+        header.priority   = thriftMsg.header.priority;
+        header.expiration = thriftMsg.header.expiration;
+        //  we don't use thriftMsg.header.lifetime
+
+        msg.header = header;
+    }
+
+    return msg;
+}
+catch( apache::thrift::TException )
+{
+    //  log?
+    return boost::none;
+}
+
 namespace Thrift
 {
 
@@ -116,10 +154,26 @@ bool ChannelInfo::operator<( const ChannelInfo & rhs ) const
 }
 
 template<>
+std::vector<unsigned char> IM_EX_MSG MessageSerializer<Rfn::RfnSetChannelConfigReplyMessage>::serialize(const Rfn::RfnSetChannelConfigReplyMessage& m)
+try
+{
+    Thrift::RfnSetChannelConfigReply reply;
+
+    reply.__set_reply( Thrift::SetChannelConfigReplyType::type { m.replyCode } );
+
+    return SerializeThriftBytes( reply );
+}
+catch( apache::thrift::TException )
+{
+    //  log?
+    return {};
+}
+
+template<>
 boost::optional<Rfn::RfnSetChannelConfigReplyMessage> IM_EX_MSG MessageSerializer<Rfn::RfnSetChannelConfigReplyMessage>::deserialize( const std::vector<unsigned char> &buf )
 try
 {
-    const Thrift::RfnSetChannelConfigReply thriftMsg = DeserializeThriftBytes<Thrift::RfnSetChannelConfigReply>(buf);
+    const auto thriftMsg = DeserializeThriftBytes<Thrift::RfnSetChannelConfigReply>(buf);
 
     Rfn::RfnSetChannelConfigReplyMessage msg( thriftMsg.reply );
 
@@ -153,10 +207,76 @@ catch( apache::thrift::TException )
 }
 
 template<>
+boost::optional<Rfn::RfnGetChannelConfigRequestMessage> IM_EX_MSG MessageSerializer<Rfn::RfnGetChannelConfigRequestMessage>::deserialize(const std::vector<unsigned char>& buf)
+try
+{
+    const auto thriftMsg = DeserializeThriftBytes<Thrift::RfnGetChannelConfigRequest>(buf);
+
+    RfnIdentifier rfnIdentifier;
+
+    rfnIdentifier.manufacturer = thriftMsg.rfnIdentifier.sensorManufacturer;
+    rfnIdentifier.model        = thriftMsg.rfnIdentifier.sensorModel;
+    rfnIdentifier.serialNumber = thriftMsg.rfnIdentifier.sensorSerialNumber;
+
+    Rfn::RfnGetChannelConfigRequestMessage msg { rfnIdentifier };
+
+    return msg;
+}
+catch( apache::thrift::TException )
+{
+    //  log?
+    return boost::none;
+}
+
+
+template<>
+std::vector<unsigned char> IM_EX_MSG MessageSerializer<Rfn::RfnGetChannelConfigReplyMessage>::serialize(const Rfn::RfnGetChannelConfigReplyMessage& m)
+try
+{
+    Thrift::RfnIdentifier             identifier;
+    Thrift::RfnGetChannelConfigReply  reply;
+
+    identifier.__set_sensorManufacturer(m.rfnIdentifier.manufacturer);
+    identifier.__set_sensorModel(m.rfnIdentifier.model);
+    identifier.__set_sensorSerialNumber(m.rfnIdentifier.serialNumber);
+
+    reply.__set_rfnIdentifier(identifier);
+
+    reply.__set_timestamp( m.timestamp.seconds() );
+
+    std::set<Thrift::ChannelInfo> channelInfo;
+
+    for( const auto& entry : m.channelInfo )
+    {
+        Thrift::ChannelInfo   info;
+
+        info.UOM = entry.UOM;
+        info.uomModifier = entry.uomModifier;
+        info.channelNum = entry.channelNumber;
+        info.enabled = entry.enabled;
+
+        channelInfo.insert(info);
+    }
+
+    reply.__set_channelInfo( channelInfo );
+
+    reply.__set_recordingInterval( m.recordingInterval );
+    reply.__set_reportingInterval( m.reportingInterval );
+    reply.__set_reply( Thrift::GetChannelConfigReplyType::type { m.replyCode } );
+
+    return SerializeThriftBytes( reply );
+}
+catch( apache::thrift::TException )
+{
+    //  log?
+    return {};
+}
+
+template<>
 boost::optional<Rfn::RfnGetChannelConfigReplyMessage> IM_EX_MSG MessageSerializer<Rfn::RfnGetChannelConfigReplyMessage>::deserialize( const std::vector<unsigned char> &buf )
 try
 {
-    const Thrift::RfnGetChannelConfigReply thriftMsg = DeserializeThriftBytes<Thrift::RfnGetChannelConfigReply>(buf);
+    const auto thriftMsg = DeserializeThriftBytes<Thrift::RfnGetChannelConfigReply>(buf);
 
     Rfn::RfnGetChannelConfigReplyMessage msg;
 
@@ -215,7 +335,7 @@ template<>
 boost::optional<RfnDeviceCreationReplyMessage> IM_EX_MSG MessageSerializer<RfnDeviceCreationReplyMessage>::deserialize(const std::vector<unsigned char> &buf)
 try
 {
-    const Thrift::RfnDeviceCreationReply thriftMsg = DeserializeThriftBytes<Thrift::RfnDeviceCreationReply>(buf);
+    const auto thriftMsg = DeserializeThriftBytes<Thrift::RfnDeviceCreationReply>(buf);
 
     RfnDeviceCreationReplyMessage msg;
 
@@ -258,7 +378,7 @@ template<>
 boost::optional<Rfn::DataStreamingUpdateReplyMessage> IM_EX_MSG MessageSerializer<Rfn::DataStreamingUpdateReplyMessage>::deserialize(const std::vector<unsigned char> &buf)
 try
 {
-    const Thrift::RfnDataStreamingUpdateReply thriftMsg = DeserializeThriftBytes<Thrift::RfnDataStreamingUpdateReply>(buf);
+    const auto thriftMsg = DeserializeThriftBytes<Thrift::RfnDataStreamingUpdateReply>(buf);
 
     Rfn::DataStreamingUpdateReplyMessage msg;
 
