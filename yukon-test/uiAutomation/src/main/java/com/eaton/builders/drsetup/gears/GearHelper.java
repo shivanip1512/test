@@ -14,7 +14,11 @@ public class GearHelper {
         case EcobeeSetpoint:
             gear = EcobeeSetpointGearBuilder.gearBuilder().build();
             break;
-        }
+        
+    case MeterDisconnect:
+        gear = MeterDisconnectGearBuilder.gearBuilder().build();
+        break;
+    }
         return gear;
     }
 }
