@@ -51,7 +51,7 @@
     <cm:dropdownOption key="yukon.web.modules.operator.comprehensiveMap.pageName" href="${comprehensiveMapUrl}" icon="icon-map-pins"/>
     <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE">
         <cti:url var="manageFirmware" value="/stars/gateways/firmwareDetails"/>
-        <cm:dropdownOption icon="icon-drive-go" key="yukon.web.modules.operator.gateways.list.manageFirmware" href="${manageFirmware}"/>
+        <cm:dropdownOption icon="icon-drive-go" key=".manageFirmware" href="${manageFirmware}"/>
     </cti:checkRolesAndProperties>
 </div>
 

@@ -37,7 +37,6 @@
 
     <!-- Manage Firmware -->
     <entry key="yukon.web.modules.operator.gateways.manageFirmware.pageName">Firmware Updates</entry>
-    <entry key="yukon.web.modules.operator.gateways.manageFirmware.pageDescription">Firmware Updates</entry>
     <entry key="yukon.web.modules.operator.gateways.manageFirmware.updateServer.set">Set Update Servers</entry>
     <entry key="yukon.web.modules.operator.gateways.manageFirmware.firmwareUpdate">Update Firmware Version</entry>
     <entry key="yukon.web.modules.operator.gateways.manageFirmware.firmwareUpdate.confirmMultiple">This will update {0} gateway(s) using {1} server(s).</entry>

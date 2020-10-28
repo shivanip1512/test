@@ -12,7 +12,6 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -52,12 +51,10 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Ordering;
 
 @Controller
 @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
@@ -80,8 +77,8 @@ public class GatewayListController {
     @PostConstruct
     public void initialize() {
         Builder<SortBy, Comparator<CertificateUpdate>> builder = ImmutableMap.builder();
-        builder.put(SortBy.TIMESTAMP, getTimestampComparator());
-        builder.put(SortBy.CERTIFICATE, getCertificateFileNameComparator());
+        builder.put(SortBy.TIMESTAMP, GatewayControllerHelper.getTimestampComparator());
+        builder.put(SortBy.CERTIFICATE, GatewayControllerHelper.getCertificateFileNameComparator());
         sorters = builder.build();
     }
 
@@ -147,22 +144,7 @@ public class GatewayListController {
         List<RfnGatewayFirmwareUpdateSummary> firmwareUpdates = rfnGatewayFirmwareUpgradeService.getFirmwareUpdateSummaries();
         Direction dir = sorting.getDirection();
         FirmwareUpdatesSortBy sortBy = FirmwareUpdatesSortBy.valueOf(sorting.getSort());
-        Comparator<RfnGatewayFirmwareUpdateSummary> comparator = (o1, o2) -> {
-            return o1.getSendDate().compareTo(o2.getSendDate());
-        };
-        if (sortBy == FirmwareUpdatesSortBy.PENDING) {
-            comparator = (o1, o2) -> (o1.getGatewayUpdatesPending() - o2.getGatewayUpdatesPending());
-        }
-        if (sortBy == FirmwareUpdatesSortBy.FAILED) {
-            comparator = (o1, o2) -> (o1.getGatewayUpdatesFailed() - o2.getGatewayUpdatesFailed());
-        }
-        if (sortBy == FirmwareUpdatesSortBy.SUCCESSFUL) {
-            comparator = (o1, o2) -> (o1.getGatewayUpdatesSuccessful() - o2.getGatewayUpdatesSuccessful());
-        }
-        if (sorting.getDirection() == Direction.desc) {
-            comparator = Collections.reverseOrder(comparator);
-        }
-        Collections.sort(firmwareUpdates, comparator);
+        Collections.sort(firmwareUpdates, GatewayControllerHelper.getFirmwareComparator(firmwareUpdates, sorting, sortBy));
         model.addAttribute("firmwareUpdates", firmwareUpdates);
         helper.addText(model, userContext);
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
@@ -262,31 +244,6 @@ public class GatewayListController {
         }
         
         return json;
-    }
-
-    private static Comparator<CertificateUpdate> getTimestampComparator() {
-        Ordering<Instant> normalComparer = Ordering.natural();
-        Ordering<CertificateUpdate> dateOrdering =
-            normalComparer.onResultOf(new Function<CertificateUpdate, Instant>() {
-                @Override
-                public Instant apply(CertificateUpdate from) {
-                    return from.getTimestamp();
-                }
-            });
-        Ordering<CertificateUpdate> result = dateOrdering.compound(getCertificateFileNameComparator());
-        return result;
-    }
-
-    private static Comparator<CertificateUpdate> getCertificateFileNameComparator() {
-        Ordering<String> normalStringComparer = Ordering.natural();
-        Ordering<CertificateUpdate> certFileNameOrdering =
-            normalStringComparer.onResultOf(new Function<CertificateUpdate, String>() {
-                @Override
-                public String apply(CertificateUpdate from) {
-                    return from.getFileName();
-                }
-            });
-        return certFileNameOrdering;
     }
 
     public enum SortBy implements DisplayableEnum {
