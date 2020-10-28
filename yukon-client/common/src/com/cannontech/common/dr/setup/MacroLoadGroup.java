@@ -6,13 +6,12 @@ import java.util.Vector;
 
 import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(value = { "id" }, allowGetters = true)
-public class MacroLoadGroup implements DBPersistentConverter<LMGroup> {
+public class MacroLoadGroup implements DBPersistentConverter<MacroGroup> {
 
     private Integer id;
     private String name;
@@ -52,23 +51,21 @@ public class MacroLoadGroup implements DBPersistentConverter<LMGroup> {
     }
 
     @Override
-    public void buildModel(LMGroup loadGroup) {
-
-        MacroGroup macroGroup = (MacroGroup) loadGroup;
+    public void buildModel(MacroGroup macroGroup) {
         List<LMPaoDto> assignedLoadGroups = new ArrayList<>();
         for (GenericMacro genericMacro : macroGroup.getMacroGroupVector()) {
             LMPaoDto lmPaoDto = new LMPaoDto();
             lmPaoDto.setId(genericMacro.getChildID());
             assignedLoadGroups.add(lmPaoDto);
         }
-        setName(loadGroup.getPAOName());
-        setId(loadGroup.getPAObjectID());
-        setType(loadGroup.getPaoType());
+        setName(macroGroup.getPAOName());
+        setId(macroGroup.getPAObjectID());
+        setType(macroGroup.getPaoType());
         setAssignLoadGroups(assignedLoadGroups);
     }
 
     @Override
-    public void buildDBPersistent(LMGroup group) {
+    public void buildDBPersistent(MacroGroup group) {
         Integer childOrder = 1;
         Vector<GenericMacro> macroGroupVector = new Vector<>();
         for (LMPaoDto dto : getAssignedLoadGroups()) {
@@ -82,8 +79,8 @@ public class MacroLoadGroup implements DBPersistentConverter<LMGroup> {
 
             macroGroupVector.add(genericMacroMapping);
         }
-        ((MacroGroup) group).setMacroGroupVector(macroGroupVector);
-        ((MacroGroup) group).setPAOName(getName());
+        group.setMacroGroupVector(macroGroupVector);
+        group.setPAOName(getName());
     }
 
 }
