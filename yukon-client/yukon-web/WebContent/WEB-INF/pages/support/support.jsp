@@ -7,45 +7,6 @@
 
 <cti:standardPage module="support" page="support">
 
-<script type="text/javascript">
-function openFtpPopup(fileName){
-    $.ajax({
-        url: yukon.url("/support/infoOnBundle"),
-        data: {fileName: fileName}
-    }).done(function(json) {
-        var form = $("#ftpPopupForm");
-        $("#uploadFileName").text(json.fileName);
-        $("#uploadFileSize").text(json.fileSize);
-        $("#uploadFileDate").text(json.fileDate);
-        $("input[name=fileName]", "#ftpPopupForm").val(fileName);
-        $("#ftpUploadPopup").dialog({
-            buttons: {
-                upload: {
-                    text: "<cti:msg2 key='.supportBundle.startUpload.label' />",
-                    'class': "primary",
-                    click: function() {
-                        form.submit();
-                    }
-                },
-                cancel: {
-                    text: '<cti:msg2 key=".cancel"/>',
-                    click: function() {
-                        $(this).dialog("close");
-                    }
-                }
-            }
-        });
-    });
-}
-
-$(function() {
-    $("#ftpUploadBtn").click(function() {
-        var chosenBundle = $("input[name=fileName]:checked", "#previousBundlesForm").val();
-        openFtpPopup(chosenBundle);
-    });
-});
-</script>
-
 <div class="column-8-8-8 clearfix">
     <div class="column one">
         <tags:sectionContainer2 nameKey="pageList">
