@@ -24,6 +24,11 @@
 
 #include "std_helper.h"
 
+#include <boost/range/adaptor/filtered.hpp>
+#include <boost/range/adaptor/map.hpp>
+#include <boost/range/algorithm/transform.hpp>
+#include <boost/range/algorithm/set_algorithm.hpp>
+
 #include <gsl/gsl_util>
 
 #include <memory>
@@ -444,6 +449,7 @@ void CtiCalculateThread::historicalThread( void )
     {
         int frequencyInSeconds = 60 * 60;  //  60 minutes
         int initialDays = 0;  //  0 days
+        int backfillDays = 7;  //  7 days
 
         CtiTime nextCalcTime;
 
@@ -463,6 +469,13 @@ void CtiCalculateThread::historicalThread( void )
         {
             initialDays = *val;
             CTILOG_INFO(dout, keyInitialDays << ":  " << initialDays);
+        }
+
+        constexpr auto keyBackfillDays = "CALC_HISTORICAL_BACKFILL_DAYS";
+        if( const auto val = gConfigParms.findValueAsInt(keyBackfillDays) )
+        {
+            backfillDays = *val;
+            CTILOG_INFO(dout, keyBackfillDays << ":  " << backfillDays);
         }
 
         while( true )
@@ -497,7 +510,7 @@ void CtiCalculateThread::historicalThread( void )
                 return reloaded |= wasPausedOrInterrupted(_historicalThreadFunc, pauseCount, cs);
             };
 
-            auto pChg = processHistoricalPoints(CtiDate() - initialDays, wasReloaded);
+            auto pChg = processHistoricalPoints(CtiDate() - initialDays, CtiDate() - backfillDays, wasReloaded);
 
             if( ! reloaded )
             {
@@ -536,7 +549,7 @@ void CtiCalculateThread::historicalThread( void )
 }
 
 
-std::unique_ptr<CtiMultiMsg> CtiCalculateThread::processHistoricalPoints(const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded)
+std::unique_ptr<CtiMultiMsg> CtiCalculateThread::processHistoricalPoints(const CtiDate earliestCalcDate, const CtiDate earliestBackfill, const std::function<bool(Cti::CallSite)> wasReloaded)
 {
     const auto dbTimeMap = getCalcHistoricalLastUpdatedTime();
 
@@ -547,7 +560,7 @@ std::unique_ptr<CtiMultiMsg> CtiCalculateThread::processHistoricalPoints(const C
 
     auto pChg = std::make_unique<CtiMultiMsg>();
 
-    auto messages = calcHistoricalPoints(dbTimeMap, earliestCalcDate, wasReloaded);
+    auto messages = calcHistoricalPoints(dbTimeMap, earliestCalcDate, earliestBackfill, wasReloaded);
 
     for( auto& msg : messages )
     {
@@ -557,7 +570,7 @@ std::unique_ptr<CtiMultiMsg> CtiCalculateThread::processHistoricalPoints(const C
     return pChg;
 }
 
-auto CtiCalculateThread::calcHistoricalPoints(const PointTimeMap& dbTimeMap, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded)
+auto CtiCalculateThread::calcHistoricalPoints(const PointTimeMap& dbTimeMap, const CtiDate earliestCalcDate, const CtiDate earliestBackfill, const std::function<bool(Cti::CallSite)> wasReloaded)
     -> PointDataMsgs
 {
     PointDataMsgs messages;
@@ -569,10 +582,10 @@ auto CtiCalculateThread::calcHistoricalPoints(const PointTimeMap& dbTimeMap, con
     });
 
     static const auto pointProcessors = {
-        std::make_tuple(std::ref(_historicalPoints), std::mem_fn(&CtiCalculateThread::calcHistoricalPoint)),
-        std::make_tuple(std::ref(_backfilledPoints), std::mem_fn(&CtiCalculateThread::calcBackfilledPoint)) };
+        std::make_tuple(std::ref(_historicalPoints), std::mem_fn(&CtiCalculateThread::calcHistoricalPoint), earliestCalcDate),
+        std::make_tuple(std::ref(_backfilledPoints), std::mem_fn(&CtiCalculateThread::calcBackfilledPoint), earliestBackfill) };
     
-    for( const auto& [points, pointCalculator] : pointProcessors )
+    for( const auto& [points, pointCalculator, earliestDate] : pointProcessors )
     {
         for( const auto& [pointID, calcPoint] : points )
         {
@@ -590,11 +603,11 @@ auto CtiCalculateThread::calcHistoricalPoints(const PointTimeMap& dbTimeMap, con
 
             if( const auto dbTime = Cti::mapFind(dbTimeMap, pointID) )//Entry is in the database
             {
-                lastTime = std::max<CtiTime>(*dbTime, earliestCalcDate);
+                lastTime = std::max<CtiTime>(*dbTime, earliestDate);
             }
             else
             {
-                lastTime = earliestCalcDate;
+                lastTime = earliestDate;
                 unlistedPoints.emplace(pointID, lastTime);
             }
 
@@ -606,7 +619,7 @@ auto CtiCalculateThread::calcHistoricalPoints(const PointTimeMap& dbTimeMap, con
                 return messages;
             }
 
-            auto [newTime, pointMessages] = pointCalculator(this, *calcPoint, data, lastTime, earliestCalcDate, wasReloaded);
+            auto [newTime, pointMessages] = pointCalculator(this, *calcPoint, data, lastTime, earliestDate, wasReloaded);
 
             if( newTime.isValid() )
             {
@@ -696,10 +709,110 @@ std::unique_ptr<CtiPointDataMsg> CtiCalculateThread::calcFromValues(CtiCalc& cal
     return pointData;
 }
 
+
+std::optional<time_t> calculateInterval(std::set<CtiTime> times)
+{
+    if( times.size() < 2 )
+    {
+        return std::nullopt;
+    }
+
+    std::optional<time_t> interval;
+
+    for( auto previous = times.begin(), itr = ++times.begin(); itr != times.end(); ++itr, ++previous )
+    {
+        const auto difference = itr->seconds() - previous->seconds();
+
+        interval = interval
+            ? std::gcd(*interval, difference)
+            : difference;
+    }
+    
+    return interval;
+}
+
+
 auto CtiCalculateThread::calcBackfilledPoint(CtiCalc& calcPoint, const DynamicTableData& data, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded)
     -> HistoricalResults
 {
-    return HistoricalResults { CtiTime::not_a_time, {} };
+    const auto pointID = calcPoint.getPointId();
+    const auto componentCount = calcPoint.getComponentCount();
+
+    const auto extractTimes = [](const auto& range) {
+        return boost::copy_range<std::set<CtiTime>>(range | boost::adaptors::map_keys);
+    };
+    const auto hasAllComponents = [componentCount](const DynamicTableData::value_type& row) {
+        return row.second.size() == componentCount; 
+    };
+    const auto timesToString = [](const std::set<CtiTime>& times) {
+        return times.empty() 
+            ? "(none)" 
+            : (std::to_string(times.size()) + " elements, " + times.begin()->asString() + "-" + times.rend()->asString());
+    };
+
+    HistoricalResults results = { CtiTime::not_a_time, {} };
+
+    const auto readyData = data | boost::adaptors::filtered(hasAllComponents);
+
+    //  No ready data, no calculations to perform
+    if( readyData.empty() )
+    {
+        return results;
+    }
+
+    const auto readyTimes = extractTimes(data);
+    const auto readyInterval = calculateInterval(readyTimes);
+    //  Request data from prior to the last recorded time to determine the interval over that hour
+    const auto archiveCheck = lastTime - 3600;
+    //  The start time check is exclusive, so subtract a second so we include the start of the interval
+    const auto archivedTimes = extractTimes(getHistoricalTableSinglePointData(pointID, archiveCheck - 1));
+    const auto archivedInterval = calculateInterval(archivedTimes);
+
+    std::set<CtiTime> combinedTimes;
+    boost::range::set_union(archivedTimes, readyTimes, std::inserter(combinedTimes, combinedTimes.begin()));
+    auto interval = calculateInterval(combinedTimes);
+
+    CTILOG_INFO(dout, "Calculated backfill intervals for pointID " << pointID << Cti::FormattedList::of(
+        "Archived interval", archivedInterval,
+        "Ready interval",    readyInterval,
+        "Combined interval", interval,
+        "Archived times", timesToString(archivedTimes),
+        "Ready times",    timesToString(readyTimes)));
+
+    //  There are three cases:
+    //    - Startup - no readings in archivedTimes.
+    //        - In this case, we set the initial time to be the first in readyData.
+    //            We could set it to the first of any components, but they might be on different
+    //            intervals.
+    //        - We will not backfill prior to the first record we create, but we will only update
+    //            newTime while it is contiguous.
+    //    - Continuation - archivedTimes contains lastTime, and readyData.front().first is lastTime + interval.
+    //    - Gapped - archivedTimes contains lastTime, and readyData.front().first is not lastTime + interval.
+    //        - In these two cases, we set the initial time to lastTime.
+    PointDataMsgs messages;
+    //CtiTime contiguousTime =
+    //    archivedTimes.empty()
+    //        ? readyData.front().first 
+    //        : lastTime;
+
+    for( const auto& [dynamicTime, dynamicValues] : readyData )
+    {
+        auto pointData = calcFromValues(calcPoint, dynamicTime, dynamicValues);
+
+        //if( contiguousTime.isValid() )
+        //{
+            //if( ! interval || results.newTime + *interval != dynamicTime )
+            //{
+                //contiguous = false;
+            //}
+
+            results.newTime = dynamicTime;
+        //}
+
+        results.messages.emplace_back(std::move(pointData));
+    }
+
+    return results;
 }
 
 void CtiCalculateThread::baselineThread( void )
