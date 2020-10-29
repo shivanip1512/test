@@ -6,16 +6,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
-
 import org.javatuples.Pair;
 import org.json.JSONObject;
-//import org.junit.Test;
 import org.testng.annotations.AfterMethod;
-//import org.json.simple.JSONObject;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
 import com.eaton.builders.drsetup.gears.GearEnums;
 import com.eaton.builders.drsetup.gears.GearHelper;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupMeterDisconnectCreateBuilder;
@@ -28,18 +23,13 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
-import com.eaton.pages.demandresponse.LoadProgramCreatePage;
 import com.eaton.pages.demandresponse.LoadProgramDetailPage;
-import com.eaton.tests.demandresponse.LoadProgramDetailsTests;
 
 public class LoadProgramMeterDisconnectDetailTests extends SeleniumTestSetup {
 
 	private DriverExtensions driverExt;
 	private LoadProgramDetailPage detailPage;
 	private JSONObject response;
-	// private LoadProgramCreatePage createPage;
-	// private DriverExtensions driverExt;
-	private Random randomNum;
 	String ldPrgmName;
 	String timeStamp;
 
@@ -51,31 +41,38 @@ public class LoadProgramMeterDisconnectDetailTests extends SeleniumTestSetup {
 		timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 		ldPrgmName = "MeterLoadProgram" + timeStamp;
 
-		/*
-		 * List<JSONObject> gears = new ArrayList<JSONObject>();
-		 * gears.add(GearHelper.createGearFields(GearEnums.GearType.MeterDisconnect));
-		 * 
-		 * List<Integer> assignedGroupIds = new ArrayList<>(List.of(17736, 18186));
-		 * 
-		 * Pair<JSONObject,JSONObject> pair = new LoadProgramCreateBuilder
-		 * .Builder(ProgramEnums.ProgramType.METER_DISCONNECT_PROGRAM, gears,
-		 * assignedGroupIds) .withGears(gears) .withName(Optional.of("hdjhahdjha"))
-		 * .withOperationalState(Optional.of(ProgramEnums.OperationalState.Automatic))
-		 * .create();
-		 * 
-		 * response = pair.getValue1(); int id = response.getInt("programId");
-		 * 
-		 * navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + id);
-		 */
+		List<JSONObject> gears = new ArrayList<JSONObject>();
+		gears.add(GearHelper.createGearFields(GearEnums.GearType.MeterDisconnect));
+
+		Pair<JSONObject, JSONObject> pairLdGrp = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
+				.create();
+		JSONObject responseLdGrp = pairLdGrp.getValue1();
+		int ldGrpId = responseLdGrp.getInt("id");
+
+		List<Integer> assignedGroupIds = new ArrayList<>(List.of(ldGrpId));
+
+		Pair<JSONObject, JSONObject> pair = new LoadProgramCreateBuilder.Builder(
+				ProgramEnums.ProgramType.METER_DISCONNECT_PROGRAM, gears, assignedGroupIds).withGears(gears)
+						.withName(Optional.of("hdjhahdjha"))
+						.withOperationalState(Optional.of(ProgramEnums.OperationalState.Automatic)).create();
+
+		response = pair.getValue1();
+		int id = response.getInt("programId");
+
+		navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + id);
+
 		detailPage = new LoadProgramDetailPage(driverExt);
 
 	}
 
-/*	@AfterMethod
+	@AfterMethod
 	public void afterMethod() {
-		refreshPage(detailPage);
+        if(getRefreshPage()) {
+            refreshPage(detailPage);    
+        }
+        setRefreshPage(false);
 	}
-*/
+
 	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldGrpExpresscomDetail_Delete_Success() {
 		setRefreshPage(true);
@@ -86,7 +83,12 @@ public class LoadProgramMeterDisconnectDetailTests extends SeleniumTestSetup {
 		List<JSONObject> gears = new ArrayList<JSONObject>();
 		gears.add(GearHelper.createGearFields(GearEnums.GearType.MeterDisconnect));
 
-		List<Integer> assignedGroupIds = new ArrayList<>(List.of(17736, 18186));
+		Pair<JSONObject, JSONObject> pairLdGrp = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
+				.create();
+		JSONObject responseLdGrp = pairLdGrp.getValue1();
+		int ldGrpId = responseLdGrp.getInt("id");
+
+		List<Integer> assignedGroupIds = new ArrayList<>(List.of(ldGrpId));
 
 		Pair<JSONObject, JSONObject> pair = new LoadProgramCreateBuilder.Builder(
 				ProgramEnums.ProgramType.METER_DISCONNECT_PROGRAM, gears, assignedGroupIds).withGears(gears)
@@ -95,7 +97,7 @@ public class LoadProgramMeterDisconnectDetailTests extends SeleniumTestSetup {
 
 		JSONObject response = pair.getValue1();
 		int id = response.getInt("programId");
-		
+
 		JSONObject response1 = pair.getValue0();
 		String name = response1.getString("name");
 
@@ -122,7 +124,12 @@ public class LoadProgramMeterDisconnectDetailTests extends SeleniumTestSetup {
 		List<JSONObject> gears = new ArrayList<JSONObject>();
 		gears.add(GearHelper.createGearFields(GearEnums.GearType.MeterDisconnect));
 
-		List<Integer> assignedGroupIds = new ArrayList<>(List.of(17736, 18186));
+		Pair<JSONObject, JSONObject> pairLdGrp = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
+				.create();
+		JSONObject responseLdGrp = pairLdGrp.getValue1();
+		int ldGrpId = responseLdGrp.getInt("id");
+
+		List<Integer> assignedGroupIds = new ArrayList<>(List.of(ldGrpId));
 
 		Pair<JSONObject, JSONObject> pair = new LoadProgramCreateBuilder.Builder(
 				ProgramEnums.ProgramType.METER_DISCONNECT_PROGRAM, gears, assignedGroupIds).withGears(gears)
