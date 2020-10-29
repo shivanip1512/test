@@ -93,5 +93,6 @@ public final class APIs {
         public static final String DELETE_ATTRIBUTE_ASGMT = "/api/attributeAssignments/";
         public static final String UPDATE_ATTRIBUTE_ASGMT = "/api/attributeAssignments/";
         public static final String GET_ATTRIBUTE_ASGMT = "/api/attributeAssignments";
+        public static final String GET_ATTRIBUTE_ASGMTS = "/api/attributeAssignments/";
     }
 }

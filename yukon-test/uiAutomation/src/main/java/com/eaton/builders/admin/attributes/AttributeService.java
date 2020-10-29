@@ -78,4 +78,13 @@ public class AttributeService {
         
         return map;
     }
+    
+    public static Pair<JSONObject, JSONObject> createAsgmtForAttribute(Integer attributeId) {
+        
+        return new AttributeAsgmtCreateBuilder.Builder(Integer.valueOf(attributeId))
+                .withPaoType(Optional.empty())
+                .withPointType(Optional.empty())
+                .withMultiplier(Optional.empty())
+                .create();        
+    }
 }

@@ -1,7 +1,5 @@
 package com.eaton.api.tests.v1.attributes;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import org.assertj.core.api.SoftAssertions;
@@ -32,22 +30,18 @@ public class GetAllAttributesV1ApiTests {
         ExtractableResponse<?> response = ApiCallHelper.get(APIs.Attributes.GET_ATTRIBUTES);
 
         String body = response.asString();
-        JSONArray arr = new JSONArray(body);
-        List<String> nameList = new ArrayList<>();
-        List<Integer> idList = new ArrayList<>();
+        JSONArray attrAsgmt = new JSONArray(body);
+        String attributeAsgmt = null;
         
-        for (int i = 0; i < arr.length(); i++) {            
-            String attrName = arr.getJSONObject(i).getString("name");
-            Integer attrId = arr.getJSONObject(i).getInt("customAttributeId"); 
-            nameList.add(attrName);   
-            idList.add(attrId);
-        }       
+        for(int i = 0; i < attrAsgmt.length(); i++) {
+            if(attrAsgmt.get(i).toString().contains("\"customAttributeId\":" + id)) {
+                attributeAsgmt = attrAsgmt.get(i).toString();
+            }
+        }
 
         softly.assertThat(response.statusCode()).isEqualTo(200);
-        softly.assertThat(arr).isNotNull();
-        softly.assertThat(arr.length()).isGreaterThan(0);
-        softly.assertThat(nameList).contains(name);
-        softly.assertThat(idList).contains(id);
+        softly.assertThat(attributeAsgmt).contains("\"customAttributeId\":" + id);
+        softly.assertThat(attributeAsgmt).contains("\"name\":\"" + name);
         softly.assertAll();
     }
 }
