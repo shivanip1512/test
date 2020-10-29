@@ -177,24 +177,6 @@ $(function() {
                             <cti:button nameKey="supportBundle.downloadBtn" type="submit" disabled="${empty bundleList}" icon="icon-download"/>
                         </div>
                     </form>
-
-                    <div id="ftpUploadPopup" title="<cti:msg2 key=".supportBundle.send.fileHeading"/>" class="dn">
-                        <tags:nameValueContainer2>
-                            <tags:nameValue2 nameKey=".supportBundle.send.filenameLbl">
-                                <span id="uploadFileName"/>
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".supportBundle.send.fileDateCreatedLbl">
-                                <span id="uploadFileDate"/>
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".supportBundle.send.fileSizeLbl">
-                                <span id="uploadFileSize"/>
-                            </tags:nameValue2>
-                        </tags:nameValueContainer2>
-                        <form id="ftpPopupForm" action="/support/uploadBundle" method="POST">
-                            <cti:csrfToken/>
-                            <input type="hidden" name="fileName" />
-                        </form>
-                    </div>
                 </cti:tab>
             </cti:tabs>
         </tags:sectionContainer2>
