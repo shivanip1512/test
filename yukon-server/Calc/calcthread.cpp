@@ -603,7 +603,7 @@ auto CtiCalculateThread::calcHistoricalPoints(const PointTimeMap& dbTimeMap, con
 
             if( const auto dbTime = Cti::mapFind(dbTimeMap, pointID) )//Entry is in the database
             {
-                lastTime = std::max<CtiTime>(*dbTime, earliestDate);
+                lastTime = *dbTime;
             }
             else
             {
@@ -611,15 +611,15 @@ auto CtiCalculateThread::calcHistoricalPoints(const PointTimeMap& dbTimeMap, con
                 unlistedPoints.emplace(pointID, lastTime);
             }
 
-            const auto data = getHistoricalTableData(*calcPoint, lastTime);
+            auto results = pointCalculator(this, *calcPoint, lastTime, earliestDate, wasReloaded);
 
             //  Check for any outside interference that may have occurred during the DB load
-            if( wasReloaded(CALLSITE) )
+            if( ! results )
             {
                 return messages;
             }
 
-            auto [newTime, pointMessages] = pointCalculator(this, *calcPoint, data, lastTime, earliestDate, wasReloaded);
+            auto [newTime, pointMessages] = *results;
 
             if( newTime.isValid() )
             {
@@ -644,9 +644,17 @@ auto CtiCalculateThread::calcHistoricalPoints(const PointTimeMap& dbTimeMap, con
 }
 
 
-auto CtiCalculateThread::calcHistoricalPoint(CtiCalc& calcPoint, const DynamicTableData& data, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded)
-    -> HistoricalResults
+auto CtiCalculateThread::calcHistoricalPoint(CtiCalc& calcPoint, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded)
+    -> std::optional<HistoricalResults>
 {
+    const auto data = getHistoricalTableData(calcPoint, lastTime);
+
+    //  Check for any outside interference that may have occurred during the DB load
+    if( wasReloaded(CALLSITE) )
+    {
+        return std::nullopt;
+    }
+
     PointDataMsgs messages;
 
     const auto pointID = calcPoint.getPointId();
@@ -675,7 +683,6 @@ std::unique_ptr<CtiPointDataMsg> CtiCalculateThread::calcFromValues(CtiCalc& cal
     //This means all the necessary points in historical have been updated, we can do a calc
     setHistoricalPointStore(dynamicValues);//Takes the value/paoid pair and sets the values in the point store
 
-    CtiPointStoreElement* calcPointPtr = CtiPointStore::find(calcPoint.getPointId());
     CtiTime calcTime;
     int calcQuality;
     bool calcValid;
@@ -732,9 +739,19 @@ std::optional<time_t> calculateInterval(std::set<CtiTime> times)
 }
 
 
-auto CtiCalculateThread::calcBackfilledPoint(CtiCalc& calcPoint, const DynamicTableData& data, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded)
-    -> HistoricalResults
+auto CtiCalculateThread::calcBackfilledPoint(CtiCalc& calcPoint, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded)
+    -> std::optional<HistoricalResults>
 {
+    const auto backfillStart = std::max<CtiTime>(lastTime, earliestCalcDate);
+
+    const auto data = getHistoricalTableData(calcPoint, backfillStart);
+
+    //  Check for any outside interference that may have occurred during the DB load
+    if( wasReloaded(CALLSITE) )
+    {
+        return std::nullopt;
+    }
+
     const auto pointID = calcPoint.getPointId();
     const auto componentCount = calcPoint.getComponentCount();
 
@@ -762,54 +779,69 @@ auto CtiCalculateThread::calcBackfilledPoint(CtiCalc& calcPoint, const DynamicTa
 
     const auto readyTimes = extractTimes(data);
     const auto readyInterval = calculateInterval(readyTimes);
-    //  Request data from prior to the last recorded time to determine the interval over that hour
-    const auto archiveCheck = lastTime - 3600;
+    //  Attempt to retrieve data from the hour prior to the last recorded time to determine the interval
+    const auto archiveCheck = backfillStart - 3600;
     //  The start time check is exclusive, so subtract a second so we include the start of the interval
     const auto archivedTimes = extractTimes(getHistoricalTableSinglePointData(pointID, archiveCheck - 1));
     const auto archivedInterval = calculateInterval(archivedTimes);
+
+    //  Check for any outside interference that may have occurred during the DB load
+    if( wasReloaded(CALLSITE) )
+    {
+        return std::nullopt;
+    }
 
     std::set<CtiTime> combinedTimes;
     boost::range::set_union(archivedTimes, readyTimes, std::inserter(combinedTimes, combinedTimes.begin()));
     auto interval = calculateInterval(combinedTimes);
 
     CTILOG_INFO(dout, "Calculated backfill intervals for pointID " << pointID << Cti::FormattedList::of(
-        "Archived interval", archivedInterval,
-        "Ready interval",    readyInterval,
-        "Combined interval", interval,
+        "Last time",          lastTime,
+        "Earliest calc date", earliestCalcDate,
+        "Backfill start",     backfillStart,
+        "Archived interval",  archivedInterval,
+        "Ready interval",     readyInterval,
+        "Combined interval",  interval,
         "Archived times", timesToString(archivedTimes),
         "Ready times",    timesToString(readyTimes)));
 
-    //  There are three cases:
-    //    - Startup - no readings in archivedTimes.
-    //        - In this case, we set the initial time to be the first in readyData.
-    //            We could set it to the first of any components, but they might be on different
-    //            intervals.
-    //        - We will not backfill prior to the first record we create, but we will only update
-    //            newTime while it is contiguous.
-    //    - Continuation - archivedTimes contains lastTime, and readyData.front().first is lastTime + interval.
-    //    - Gapped - archivedTimes contains lastTime, and readyData.front().first is not lastTime + interval.
-    //        - In these two cases, we set the initial time to lastTime.
-    PointDataMsgs messages;
-    //CtiTime contiguousTime =
-    //    archivedTimes.empty()
-    //        ? readyData.front().first 
-    //        : lastTime;
+    enum class BackfillState
+    {
+        Startup,
+        Contiguous,
+        Discontinuous
+    }
+    backfillState = 
+        archivedTimes.count(backfillStart)
+            ? BackfillState::Contiguous
+            : BackfillState::Startup;
 
     for( const auto& [dynamicTime, dynamicValues] : readyData )
     {
-        auto pointData = calcFromValues(calcPoint, dynamicTime, dynamicValues);
-
-        //if( contiguousTime.isValid() )
-        //{
-            //if( ! interval || results.newTime + *interval != dynamicTime )
-            //{
-                //contiguous = false;
-            //}
-
+        if( backfillState == BackfillState::Startup )
+        {
             results.newTime = dynamicTime;
-        //}
+            backfillState = BackfillState::Contiguous;
+        }
+        else if( backfillState == BackfillState::Contiguous )
+        {
+            if( interval && dynamicTime == results.newTime + *interval )
+            {
+                results.newTime = dynamicTime;
+            }
+            else
+            {
+                backfillState = BackfillState::Discontinuous;
+            }
+        }
 
-        results.messages.emplace_back(std::move(pointData));
+        //  Did we already calculate this time?
+        if( ! archivedTimes.count(dynamicTime) )
+        {
+            auto pointData = calcFromValues(calcPoint, dynamicTime, dynamicValues);
+
+            results.messages.emplace_back(std::move(pointData));
+        }
     }
 
     return results;
