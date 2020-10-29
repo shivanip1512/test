@@ -49,7 +49,7 @@ paths:
     
   /devices/virtualDevices:
     $ref: 'api/virtualDevicesApi.yaml#/post-operation'
-  /devices/virtualDevices{id}:
+  /devices/virtualDevices/{id}:
     $ref: 'api/virtualDevicesApi.yaml#/get-update-delete-operation'
   /devices/virtualDevices/:
     $ref: 'api/virtualDevicesApi.yaml#/list-Virtual-devices-operation'
