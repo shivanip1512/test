@@ -86,14 +86,12 @@ Network Manager :
   - field: batterynodecount
     description: Battery Nodes
     details: Contains the count of nodes which are battery enabled
-    source: SELECT COUNT(*) AS "BatteryNodeCount" FROM Node n WHERE n.NodeType = 2 OR n.NodeType = 3
     iotType: Telemetry
     frequency : EverySixHours
 
   - field: connectedgatewaycount
     description: Connected Gateways
     details: Count the Gateway whose status id is connected
-    source: SELECT COUNT(*) FROM Gw_Curr_Conn_Status WHERE GwConnStatusCodeId = 1
     iotType: Both
     frequency : EverySixHours
 
