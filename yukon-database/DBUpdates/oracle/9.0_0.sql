@@ -111,6 +111,24 @@ ALTER TABLE MeterProgramStatus
 INSERT INTO DBUpdates VALUES ('YUK-22983', '9.0.0', SYSDATE);
 /* @end YUK-22983 */
 
+/* @start YUK-23093 */
+create table DeviceGuid  (
+   DeviceId             NUMERIC                         not null,
+   Guid                 CHAR(36)                        not null,
+   constraint PK_DeviceGuid primary key (DeviceId)
+);
+
+alter table DeviceGuid
+   add constraint AK_DeviceGuid_Guid unique (Guid);
+
+alter table DeviceGuid
+   add constraint FK_DeviceGuid_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+      on delete cascade;
+
+INSERT INTO DBUpdates VALUES ('YUK-23093', '9.0.0', SYSDATE);
+/* @end YUK-23093 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
