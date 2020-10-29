@@ -125,7 +125,6 @@ yukon.assets.gateway.list = (function () {
                     _updateFirmwareRow(row, update);
                     
                     // Append the new row and do some show/hide, in case there were no rows before this one.
-                    $('.js-no-firmware-updates').hide();
                     $('#firmware-table tbody').prepend(row);
                     $('#firmware-table').show();
                 } else {
