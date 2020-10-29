@@ -24,7 +24,6 @@ yukon.tools.dataExporter = (function () {
     /** Exports the format. */
     _runOkPressed = function() {
         var selectedIndex = $('.js-run-inputs').find('select.js-intervals').prop('selectedIndex');
-        alert(selectedIndex);
         
         $('#run-dialog').dialog('close');
         $('.js-run-inputs').clone().appendTo('#exporter-form');
