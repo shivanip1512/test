@@ -28,6 +28,7 @@ paths:
     $ref: 'api/trendsApi.yaml#/post-operation'
   '/trends/{id}':
     $ref: 'api/trendsApi.yaml#/get-update-delete-operation'
+  
   /dr/loadGroups:
     $ref: 'api/loadGroupsApi.yaml#/post-operation'
   '/dr/loadGroups/{id}':
@@ -46,7 +47,21 @@ paths:
     $ref: 'api/programConstraintsApi.yaml#/season-schedules'
   /dr/constraints/holidaySchedules:
     $ref: 'api/programConstraintsApi.yaml#/holiday-schedules'
+    
+  /devices/virtualDevices:
+    $ref: 'api/virtualDevicesApi.yaml#/post-operation'
+  /devices/virtualDevices/{id}:
+    $ref: 'api/virtualDevicesApi.yaml#/get-update-delete-operation'
+  /devices/virtualDevices/:
+    $ref: 'api/virtualDevicesApi.yaml#/list-Virtual-devices-operation'
 
+  /points:
+    $ref: 'api/pointsApi.yaml#/post-operation'
+  /points/{id}/copy:
+    $ref: 'api/pointsApi.yaml#/copy-operation'
+  /points/{id}:
+    $ref: 'api/pointsApi.yaml#/get-update-delete-operation'
+ 
 components:
   securitySchemes:
     bearerAuth:
@@ -60,4 +75,6 @@ tags:
   - name: Load Group
   - name: Macro Load Group
   - name: Program Constraints
-  
+  - name: Virtual Devices
+  - name: Points
+
