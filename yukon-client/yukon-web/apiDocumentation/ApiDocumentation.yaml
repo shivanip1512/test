@@ -50,9 +50,11 @@ paths:
 
   /points:
     $ref: 'api/pointsApi.yaml#/post-operation'
+  /points/{id}/copy:
+    $ref: 'api/pointsApi.yaml#/copy-operation'
   /points/{id}:
     $ref: 'api/pointsApi.yaml#/get-update-delete-operation'
-
+ 
 components:
   securitySchemes:
     bearerAuth:

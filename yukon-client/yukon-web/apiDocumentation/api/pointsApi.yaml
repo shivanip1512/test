@@ -60,51 +60,6 @@ post-operation:
                 Calc Status Point:
                   $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Status Point'
 
-copy:
-  post:
-    tags:
-      - Points
-    summary: Copy Points 
-    description: |-
-      API to copy any type of points. 
-      Below are the supported points.
-      - Analog Point
-      - Status Point 
-      - CalcAnalog Point
-      - CalcStatus Point
-      - Pulse Accumulator Point
-    parameters:
-      - name: id
-        in: path
-        schema:
-          type: integer
-        required: true
-        description: 'Unique identifier for the points.'
-     
-    responses:
-      '200':
-        description: OK
-        content:
-          application/json:
-            schema:
-                oneOf:
-                  - $ref: '../schemas/pointsSchema.yaml#/Analog'
-                  - $ref: '../schemas/pointsSchema.yaml#/PulseAccumulator'
-                  - $ref: '../schemas/pointsSchema.yaml#/CalcAnalog'
-                  - $ref: '../schemas/pointsSchema.yaml#/Status'
-                  - $ref: '../schemas/pointsSchema.yaml#/CalcStatus'
-            examples:
-              Analog Point:
-                $ref: '../schemas/pointsSchema.yaml#/components/examples/Analog Point' 
-              Status Point:
-                $ref: '../schemas/pointsSchema.yaml#/components/examples/Status Point'
-              Pulse Accumulator Point:
-                $ref: '../schemas/pointsSchema.yaml#/components/examples/Pulse Accumulator Point'
-              Calc Analog Point:
-                $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Analog Point'
-              Calc Status Point:
-                $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Status Point'
-      
 get-update-delete-operation:
   get:
     tags:
@@ -242,3 +197,60 @@ get-update-delete-operation:
             examples:
               Point id:
                 $ref: '../schemas/pointsSchema.yaml#/components/examples/id'
+
+copy-operation:
+  post:
+    tags:
+      - Points
+    summary: Copy Points 
+    description: |-
+      API to copy any type of points based on passed id. 
+      Below are the supported points.
+      - Analog Point
+      - Status Point 
+      - CalcAnalog Point
+      - CalcStatus Point
+      - Pulse Accumulator Point
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'Unique identifier for the points to be copied.'
+    
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/pointsSchema.yaml#/PointCopy'
+             
+          examples:
+            Point Copy:
+              $ref: '../schemas/pointsSchema.yaml#/components/examples/PointCopy' 
+           
+      required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+                oneOf:
+                  - $ref: '../schemas/pointsSchema.yaml#/Analog'
+                  - $ref: '../schemas/pointsSchema.yaml#/PulseAccumulator'
+                  - $ref: '../schemas/pointsSchema.yaml#/CalcAnalog'
+                  - $ref: '../schemas/pointsSchema.yaml#/Status'
+                  - $ref: '../schemas/pointsSchema.yaml#/CalcStatus'
+            examples:
+              Analog Point Copy:
+                $ref: '../schemas/pointsSchema.yaml#/components/examples/Analog Point' 
+              Status Point Copy:
+                $ref: '../schemas/pointsSchema.yaml#/components/examples/Status Point'
+              Pulse Accumulator Point Copy:
+                $ref: '../schemas/pointsSchema.yaml#/components/examples/Pulse Accumulator Point'
+              Calc Analog Point Copy:
+                $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Analog Point'
+              Calc Status Point Copy:
+                $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Status Point'
+

@@ -857,7 +857,27 @@ calculationBase:
       default: 1
       description: 'Controls how often the calculation is performed. 
                     This field is enabled only when On Timer or On Timer+Change is selected as the Update Type.'
-    
+
+PointCopy:
+  title: PointCopy
+  required:
+    - pointName
+    - pointOffset
+    - paoId
+  type: object
+  properties:
+    pointName:
+      type: string
+      maxLength: 60
+      description: 'Name of the point.'
+    pointOffset:
+      type: integer
+      minimum: 0
+      maximum: 99999999
+      description: 'The offset value is used to uniquely identify the type of data input. An explicit offset and point type maps to a specific attribute.'
+    paoId:
+      type: integer
+      description: 'The unique identifier of the object this point is attached to.'
      
 id:
   title: id
@@ -1230,7 +1250,13 @@ components:
           - componentType: FUNCTION
             operation: Baseline
             operand: -110
-            
+
+    PointCopy:
+      value:
+        pointName: 'Point copy'
+        pointOffset: 32536
+        paoId: 232
+
     id:
       value:
         id: 39223
