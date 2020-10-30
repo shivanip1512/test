@@ -238,6 +238,16 @@ public final class DeviceFactory {
         case LCR6601S:
             returnDevice = new Lcr6601S();
             break;
+            
+        case LCR6600C:
+            returnDevice = new Lcr6200C();
+            break;
+        case LCR6200C:
+            returnDevice = new Lcr6600C();
+            break;
+        case LCRDisconnectC:
+            returnDevice = new LcrDisconnectC();
+            break;
         
         //Carrier type devices
         case MCT213:

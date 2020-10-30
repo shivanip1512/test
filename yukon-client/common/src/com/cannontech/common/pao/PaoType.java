@@ -163,6 +163,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     LCR6600S(DeviceTypes.LCR6600S, "LCR-6600S", PaoCategory.DEVICE, PaoClass.ITRON),
     LCR6601S(DeviceTypes.LCR6601S, "LCR-6601S", PaoCategory.DEVICE, PaoClass.ITRON),
+
+    LCR6200C(DeviceTypes.LCR6200C, "LCR-6200C", PaoCategory.DEVICE, PaoClass.EATON_CLOUD),
+    LCR6600C(DeviceTypes.LCR6600C, "LCR-6600C", PaoCategory.DEVICE, PaoClass.EATON_CLOUD),
+    LCRDisconnectC(DeviceTypes.LCRDisconnectC, "LCR-DisconnectC", PaoCategory.DEVICE, PaoClass.EATON_CLOUD),
     
     RFN_GATEWAY(DeviceTypes.RFN_GATEWAY, "RF Gateway", PaoCategory.DEVICE, PaoClass.RFMESH),
     GWY800(DeviceTypes.GWY800, "GWY-800", PaoCategory.DEVICE, PaoClass.RFMESH),
