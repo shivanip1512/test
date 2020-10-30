@@ -8,6 +8,7 @@ import com.cannontech.capcontrol.creation.CapControlImporterCbcField;
 import com.cannontech.capcontrol.creation.CapControlImporterHierarchyField;
 import com.cannontech.capcontrol.creation.RegulatorImportField;
 import com.cannontech.capcontrol.creation.RegulatorPointMappingImportField;
+import com.cannontech.capcontrol.creation.CapControlIvvcZoneImportField;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.google.common.collect.Maps;
 
@@ -26,6 +27,9 @@ public enum ImportType implements DisplayableEnum {
     POINT_MAPPING(RegulatorPointMappingImportField.getRequiredFieldNames(),
                   RegulatorPointMappingImportField.getValueDependentFieldNames(),
                   RegulatorPointMappingImportField.getOptionalFieldNames() ),
+    IVVC_ZONE(CapControlIvvcZoneImportField.getRequiredFieldNames(),
+              CapControlIvvcZoneImportField.getValueDependentFieldNames(),
+              CapControlIvvcZoneImportField.getOptionalFieldNames())
     ;
     
     private List<String> requiredColumns;

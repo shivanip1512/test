@@ -1312,6 +1312,9 @@
                             <page name="wifiConnection" type="BASIC"/>
                         </pages>
                     </page>
+                    <page name="gateways.manageFirmware" type="BASIC">
+                        <link>/stars/gateways/firmwareDetails</link>
+                    </page>
                 </pages>
             </page>
             <page name="relays.list" type="BASIC" hideSearch="true">

@@ -1,7 +1,7 @@
 yukon.namespace('yukon.assets.gateway.list');
 
 /**
- * Module that handles the behavior on the gatway list page (localhost:8080/yukon/stars/gateways).
+ * Module that handles the behavior on the gateway list page (localhost:8080/yukon/stars/gateways).
  * @module yukon.assets.gateway.list
  * @requires JQUERY
  * @requires MOMENT
@@ -125,7 +125,6 @@ yukon.assets.gateway.list = (function () {
                     _updateFirmwareRow(row, update);
                     
                     // Append the new row and do some show/hide, in case there were no rows before this one.
-                    $('.js-no-firmware-updates').hide();
                     $('#firmware-table tbody').prepend(row);
                     $('#firmware-table').show();
                 } else {

@@ -12,6 +12,7 @@
 #include <iomanip>
 #include <chrono>
 #include <map>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -86,6 +87,16 @@ public:
     StreamBufferT& operator<< (const std::chrono::milliseconds val);
     StreamBufferT& operator<< (const std::chrono::seconds val);
     StreamBufferT& operator<< (const std::chrono::minutes val);
+
+    template<typename T>
+    StreamBufferT& operator<< (const std::optional<T>& opt)
+    {
+        if( opt )
+        {
+            return *this << *opt;
+        }
+        return *this << "(empty " << typeid(T).name() << ")";
+    }
 
     StreamBufferT& operator<< (const Cti::CallSite cs);
 

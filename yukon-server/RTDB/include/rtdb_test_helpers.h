@@ -464,17 +464,23 @@ struct test_Rfn510flDevice : Cti::Devices::Rfn510flDevice
 
 struct test_RfBatteryNodeDevice : Cti::Devices::RfBatteryNodeDevice
 {
-    test_RfBatteryNodeDevice(std::string& name)
+    test_RfBatteryNodeDevice(std::string name)
     {
         _name = name;
         setDeviceType(TYPE_RFG301);
     }
 
     boost::optional<Messaging::Rfn::RfnGetChannelConfigReplyMessage> channelConfigReplyMsg;
+    YukonError_t channelConfigResultCode;
 
     boost::optional<Messaging::Rfn::RfnGetChannelConfigReplyMessage> readConfigurationFromNM(const RfnIdentifier& rfnId) const override
     {
         return channelConfigReplyMsg;
+    }
+
+    YukonError_t sendConfigurationToNM(const Messaging::Rfn::RfnSetChannelConfigRequestMessage request) const override
+    {
+        return channelConfigResultCode;
     }
 };
 

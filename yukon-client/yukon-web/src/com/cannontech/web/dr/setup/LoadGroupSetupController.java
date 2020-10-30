@@ -195,8 +195,9 @@ public class LoadGroupSetupController {
             }
 
             if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
-                HashMap<String, Integer> groupIdMap = (HashMap<String, Integer>) response.getBody();
-                int groupId = groupIdMap.get("groupId");
+            	HashMap<String, Object> responseMap = (HashMap<String, Object>) response.getBody();
+                Map<String,Object> loadGroupMap = (Map<String, Object>) responseMap.get(loadGroup.getType().name());
+                int groupId = (int) loadGroupMap.get("id");
                 flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", loadGroup.getName()));
                 return "redirect:/dr/setup/loadGroup/" + groupId;
             }
