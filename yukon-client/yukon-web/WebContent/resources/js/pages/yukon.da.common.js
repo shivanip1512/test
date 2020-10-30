@@ -625,10 +625,6 @@ yukon.da.common = (function () {
             $('#alert-message-contents').html(message);
             $('#alert-message-container').show();
             setTimeout (_hideAlertMessage, 3000);
-        },
-        
-        clickBankMove: function (event, data) {
-            _bankMoveTreeClick(event, data);
         }
         
     };
