@@ -120,23 +120,6 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         return loadProgram;
     }
 
-    private void buildGearDBPersistent(LoadProgram loadProgram, LMProgramBase lmProgramBase) {
-        if (lmProgramBase instanceof LMProgramDirectBase) {
-            LMProgramDirectBase lmProgramDirectBase = (LMProgramDirectBase) lmProgramBase;
-            if (CollectionUtils.isNotEmpty(lmProgramDirectBase.getLmProgramDirectGearVector())) {
-                lmProgramDirectBase.getLmProgramDirectGearVector().clear();
-                LMProgramDirectGear.deleteAllDirectGearsForProgram(loadProgram.getProgramId());
-            }
-            List<ProgramGear> newGears = getNewGears(loadProgram.getGears());
-            newGears.forEach(gear -> {
-                LMProgramDirectGear directGear = gear.getControlMethod().createNewGear();
-                gear.buildDBPersistent(directGear);
-                lmProgramDirectBase.getLmProgramDirectGearVector().add(directGear);
-            });
-        }
-
-    }
-
     @Override
     public LoadProgram retrieve(int programId) {
         LiteYukonPAObject lmProgram = getProgramFromCache(programId);
@@ -227,7 +210,26 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     }
 
     /**
-     * Returns MemberControl DB Persistent object
+     * Build DB Persistent for gear
+     */
+    private void buildGearDBPersistent(LoadProgram loadProgram, LMProgramBase lmProgramBase) {
+        if (lmProgramBase instanceof LMProgramDirectBase) {
+            LMProgramDirectBase lmProgramDirectBase = (LMProgramDirectBase) lmProgramBase;
+            if (CollectionUtils.isNotEmpty(lmProgramDirectBase.getLmProgramDirectGearVector())) {
+                lmProgramDirectBase.getLmProgramDirectGearVector().clear();
+                LMProgramDirectGear.deleteAllDirectGearsForProgram(loadProgram.getProgramId());
+            }
+            List<ProgramGear> newGears = getNewGears(loadProgram.getGears());
+            newGears.forEach(gear -> {
+                LMProgramDirectGear directGear = gear.getControlMethod().createNewGear();
+                gear.buildDBPersistent(directGear);
+                lmProgramDirectBase.getLmProgramDirectGearVector().add(directGear);
+            });
+        }
+    }
+
+    /**
+     * Build DB Persistent for member Control 
      */
     private void buildLMMemberControlDBPersistent(LMProgramBase lmProgram, LoadProgram loadProgram) {
 
@@ -255,7 +257,6 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                 });
             }
         }
-
     }
 
     /**
