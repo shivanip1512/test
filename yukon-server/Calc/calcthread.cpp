@@ -825,7 +825,12 @@ auto CtiCalculateThread::calcBackfillingPoint(CtiCalc& calcPoint, const CtiTime 
         }
         else if( backfillState == BackfillState::Contiguous )
         {
-            if( interval && dynamicTime == results.newTime + *interval )
+            const auto previousIntervalTime =
+                results.newTime.isValid()
+                    ? results.newTime
+                    : backfillStart;
+
+            if( interval && (dynamicTime == previousIntervalTime + *interval) )
             {
                 results.newTime = dynamicTime;
             }
