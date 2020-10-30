@@ -68,6 +68,7 @@ Function Install-CloudService() {
 Function CleanupOldInstaller() {
     Remove-Item -Path "C:\Yukon\YukonInstall\" -Recurse
     Remove-Item -Path "C:\Yukon\YukonMisc\" -Recurse
+    Remove-Item -Path "C:\Yukon\apiDocumentation.zip" -Recurse  -ErrorAction SilentlyContinue
 }
 
 <# 
@@ -88,6 +89,20 @@ Function Expand-Installer() {
     Move-Item -Path "C:\*.zip" -Destination "C:\Yukon\YukonInstall\"
 }
 
+<# 
+.SYNOPSIS
+    Unzip the apiDocumentation and place it in C:\Yukon\Server\web\webapps\apiDocumentation
+.DESCRIPTION 
+    Unzips apiDocumentation files from C:\Yukon\ to C:\Yukon\Server\web\webapps\apiDocumentation
+.EXAMPLE
+    Update-ApiDocumentation
+#>
+Function Update-ApiDocumentation() {
+    Remove-Item -Path "C:\Yukon\Server\web\webapps\apiDocumentation" -Recurse  -ErrorAction SilentlyContinue
+    
+    Write-Host "UnZipping apiDocumentation.zip files in C:\Yukon\Server\web\webapps\apiDocumentation"
+    Expand-Archive -Path "C:\Yukon\apiDocumentation.zip" -DestinationPath "C:\Yukon\Server\web\webapps\apiDocumentation"  -ErrorAction SilentlyContinue
+}
 
 Function StopAllServices () {
     Write-Host "Stopping All Services"
