@@ -598,7 +598,7 @@ public final class DeviceDaoImpl implements DeviceDao {
     }
 
     @Override
-    public void createGuid(int deviceId, String guid) {
+    public void insertGuid(int deviceId, String guid) {
         try {
             SqlStatementBuilder createSql = new SqlStatementBuilder();
             SqlParameterSink params = createSql.insertInto("DeviceGuid");

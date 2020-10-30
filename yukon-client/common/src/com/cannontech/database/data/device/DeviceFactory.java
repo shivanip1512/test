@@ -245,7 +245,7 @@ public final class DeviceFactory {
         case LCR6200C:
             returnDevice = new Lcr6600C();
             break;
-        case LCRDisconnectC:
+        case LCR_DISCONNECT_C:
             returnDevice = new LcrDisconnectC();
             break;
         

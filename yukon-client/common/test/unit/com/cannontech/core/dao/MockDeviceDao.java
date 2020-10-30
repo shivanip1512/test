@@ -224,7 +224,7 @@ public class MockDeviceDao implements DeviceDao {
     }
 
     @Override
-    public void createGuid(int deviceId, String guid) {
+    public void insertGuid(int deviceId, String guid) {
         throw new MethodNotImplementedException();
     }
 }

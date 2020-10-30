@@ -222,7 +222,7 @@ public interface DeviceDao {
     void updateGuid(int deviceId, String guid);
     
     /**
-     * Creates guid.
+     * Inserts guid.
      */
-    void createGuid(int deviceId, String guid);
+    void insertGuid(int deviceId, String guid);
 }

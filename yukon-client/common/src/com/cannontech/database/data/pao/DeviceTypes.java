@@ -284,5 +284,5 @@ public interface DeviceTypes extends TypeBase
     
     public final static int LCR6200C = DEVICE_OFFSET + 216;
     public final static int LCR6600C = DEVICE_OFFSET + 217;
-    public final static int LCRDisconnectC = DEVICE_OFFSET + 218;
+    public final static int LCR_DISCONNECT_C = DEVICE_OFFSET + 218;
 }

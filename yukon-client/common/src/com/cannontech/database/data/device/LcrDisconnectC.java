@@ -5,6 +5,6 @@ import com.cannontech.common.pao.PaoType;
 public class LcrDisconnectC extends EatonCloudBase {
 
     public LcrDisconnectC() {
-        super(PaoType.LCRDisconnectC);
+        super(PaoType.LCR_DISCONNECT_C);
     }
 }

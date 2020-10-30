@@ -573,7 +573,7 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         }
 
         @Override
-        public void createGuid(int deviceId, String guid) {
+        public void insertGuid(int deviceId, String guid) {
             throw new UnsupportedOperationException("Method not implemented");
         }
     }

@@ -33,7 +33,7 @@ public class EatonCloudLcrBuilder implements HardwareTypeExtensionProvider {
     private static final ImmutableMap<HardwareType, PaoType> hardwareTypeToPaoType = ImmutableMap.<HardwareType, PaoType> builder()
             .put(HardwareType.LCR_6200C, PaoType.LCR6200C)
             .put(HardwareType.LCR_6600C, PaoType.LCR6600C)
-            .put(HardwareType.LCR_DisconnectC, PaoType.LCRDisconnectC)
+            .put(HardwareType.LCR_DISCONNECT_C, PaoType.LCR_DISCONNECT_C)
             .build();
     
     @Autowired private DeviceCreationService creationService;
@@ -50,7 +50,7 @@ public class EatonCloudLcrBuilder implements HardwareTypeExtensionProvider {
             SimpleDevice pao = creationService.createDeviceByDeviceType(
                 hardwareTypeToPaoType.get(hardware.getHardwareType()), hardware.getSerialNumber());
             inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), pao.getDeviceId());
-            deviceDao.createGuid(pao.getDeviceId(), hardware.getGuid());
+            deviceDao.insertGuid(pao.getDeviceId(), hardware.getGuid());
         } catch (ItronCommunicationException e) {
             log.error("Unable to create device.", e);
             MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(YukonUserContext.system);
