@@ -28,6 +28,7 @@ paths:
     $ref: 'api/trendsApi.yaml#/post-operation'
   '/trends/{id}':
     $ref: 'api/trendsApi.yaml#/get-update-delete-operation'
+  
   /dr/loadGroups:
     $ref: 'api/loadGroupsApi.yaml#/post-operation'
   '/dr/loadGroups/{id}':
@@ -47,6 +48,11 @@ paths:
   /dr/constraints/holidaySchedules:
     $ref: 'api/programConstraintsApi.yaml#/holiday-schedules'
 
+  /points:
+    $ref: 'api/pointsApi.yaml#/post-operation'
+  /points/{id}:
+    $ref: 'api/pointsApi.yaml#/get-update-delete-operation'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -60,4 +66,5 @@ tags:
   - name: Load Group
   - name: Macro Load Group
   - name: Program Constraints
+  - name: Points
   
