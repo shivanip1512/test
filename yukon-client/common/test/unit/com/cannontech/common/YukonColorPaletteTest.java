@@ -57,14 +57,14 @@ public class YukonColorPaletteTest {
     }
  
     @Test
-    public void test() throws InvalidPropertiesFormatException, IOException {
+    public void testMissingColor() throws InvalidPropertiesFormatException, IOException {
         String userDirectory = System.getProperty("user.dir");
 
         try {
             InputStream inputStream = new FileInputStream(userDirectory + "/i18n/en_US/com/cannontech/yukon/common/general.xml");
             Properties generalProperties = new Properties();
             generalProperties.loadFromXML(inputStream);
-            for (var attr : YukonColorPalette.values()) {
+            for (YukonColorPalette  attr : YukonColorPalette.values()) {
                 var colorEntry = generalProperties.get(attr.getFormatKey());
                 assertNotNull("No key for " + attr + " in general.xml file", colorEntry);
             }
