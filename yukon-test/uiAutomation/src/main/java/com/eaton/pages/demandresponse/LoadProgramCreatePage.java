@@ -133,7 +133,7 @@ public class LoadProgramCreatePage extends PageBase {
 	public CreateMeterDisconnectPrgmModal showCreateMeterDiconnectPrgmModal() {
 		getGearsCreateBtn().click();
 
-		return new CreateMeterDisconnectPrgmModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
+		return new CreateMeterDisconnectPrgmModal(this.driverExt, Optional.empty(), Optional.of("gear-create-popup-LM_METER_DISCONNECT_PROGRAM"));
 	}
 
 	public CreateSepPrgmGearModal showCreateSepPrgmGearModal() {
