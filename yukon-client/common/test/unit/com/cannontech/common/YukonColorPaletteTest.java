@@ -22,7 +22,6 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.google.common.collect.Sets;
 
 public class YukonColorPaletteTest {
