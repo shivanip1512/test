@@ -619,7 +619,7 @@ auto CtiCalculateThread::calcHistoricalPoints(const PointTimeMap& dbTimeMap, con
                 return messages;
             }
 
-            auto [newTime, pointMessages] = *results;
+            auto& [newTime, pointMessages] = *results;
 
             if( newTime.isValid() )
             {
