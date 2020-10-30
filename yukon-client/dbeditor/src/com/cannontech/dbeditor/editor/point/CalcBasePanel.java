@@ -571,6 +571,7 @@ public class CalcBasePanel extends DataInputPanel implements JCValueListener, Ac
         getUpdateTypeComboBox().addItem("On Timer+Change");
         getUpdateTypeComboBox().addItem("Constant");
         getUpdateTypeComboBox().addItem("Historical");
+        getUpdateTypeComboBox().addItem("Backfilling");
 
         // Load the Periodic Rate combo box with default possible values
         getPeriodicRateComboBox().addItem("1 second");

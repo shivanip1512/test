@@ -583,7 +583,7 @@ auto CtiCalculateThread::calcHistoricalPoints(const PointTimeMap& dbTimeMap, con
 
     static const auto pointProcessors = {
         std::make_tuple(std::ref(_historicalPoints), std::mem_fn(&CtiCalculateThread::calcHistoricalPoint), earliestCalcDate),
-        std::make_tuple(std::ref(_backfilledPoints), std::mem_fn(&CtiCalculateThread::calcBackfilledPoint), earliestBackfill) };
+        std::make_tuple(std::ref(_backfillingPoints), std::mem_fn(&CtiCalculateThread::calcBackfillingPoint), earliestBackfill) };
     
     for( const auto& [points, pointCalculator, earliestDate] : pointProcessors )
     {
@@ -739,7 +739,7 @@ std::optional<time_t> calculateInterval(std::set<CtiTime> times)
 }
 
 
-auto CtiCalculateThread::calcBackfilledPoint(CtiCalc& calcPoint, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded)
+auto CtiCalculateThread::calcBackfillingPoint(CtiCalc& calcPoint, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded)
     -> std::optional<HistoricalResults>
 {
     const auto backfillStart = std::max<CtiTime>(lastTime, earliestCalcDate);
@@ -1408,8 +1408,8 @@ bool CtiCalculateThread::appendPoint( long pointid, string &updatetype, int upda
             return _constantPoints.emplace(pointid, std::move(newPoint)).second;
         case CalcUpdateType::Historical:
             return _historicalPoints.emplace(pointid, std::move(newPoint)).second;
-        case CalcUpdateType::BackfilledHistorical:
-            return _backfilledPoints.emplace(pointid, std::move(newPoint)).second;
+        case CalcUpdateType::BackfillingHistorical:
+            return _backfillingPoints.emplace(pointid, std::move(newPoint)).second;
     }
 
     CTILOG_ERROR(dout, "Attempt to insert unknown CtiCalc point type \""<< updatetype<< "\", "
@@ -1441,9 +1441,9 @@ void CtiCalculateThread::appendPointComponent( long pointID, string &componentTy
     {
         updateType = CalcUpdateType::Historical;
     }
-    else if( targetCalcPoint = Cti::mapFindPtr(_backfilledPoints, pointID) )
+    else if( targetCalcPoint = Cti::mapFindPtr(_backfillingPoints, pointID) )
     {
-        updateType = CalcUpdateType::BackfilledHistorical;
+        updateType = CalcUpdateType::BackfillingHistorical;
     }
     else if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
     {
@@ -1492,7 +1492,7 @@ BOOL CtiCalculateThread::isACalcPointID(const long aPointID)
         || _onUpdatePoints.count(aPointID)
         || _constantPoints.count(aPointID)
         || _historicalPoints.count(aPointID)
-        || _backfilledPoints.count(aPointID);
+        || _backfillingPoints.count(aPointID);
 }
 
 void CtiCalculateThread::stealPointMaps(CtiCalculateThread& victim)
@@ -1501,7 +1501,7 @@ void CtiCalculateThread::stealPointMaps(CtiCalculateThread& victim)
     _onUpdatePoints = std::exchange(victim._onUpdatePoints, {});
     _constantPoints = std::exchange(victim._constantPoints, {});
     _historicalPoints = std::exchange(victim._historicalPoints, {});
-    _backfilledPoints = std::exchange(victim._backfilledPoints, {});
+    _backfillingPoints = std::exchange(victim._backfillingPoints, {});
 }
 
 void CtiCalculateThread::clearPointMaps()
@@ -1510,7 +1510,7 @@ void CtiCalculateThread::clearPointMaps()
     _onUpdatePoints.clear();
     _periodicPoints.clear();
     _historicalPoints.clear();
-    _backfilledPoints.clear();
+    _backfillingPoints.clear();
 }
 
 void CtiCalculateThread::removePointStoreObject( const long aPointID )
@@ -1520,7 +1520,7 @@ void CtiCalculateThread::removePointStoreObject( const long aPointID )
             &_onUpdatePoints,
             &_constantPoints,
             &_historicalPoints,
-            &_backfilledPoints };
+            &_backfillingPoints };
 
     for( auto map : maps )
     {
