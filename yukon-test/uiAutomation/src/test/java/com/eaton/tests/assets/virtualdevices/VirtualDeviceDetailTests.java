@@ -4,7 +4,6 @@ import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 
-import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.HashMap;
 import org.assertj.core.api.SoftAssertions;
@@ -256,11 +255,11 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         String actualCalcStsPtUrl = detailPage.getCreateBtn().getOptionLinkByText("Calc Status Point");
 
+        ExtractableResponse<?> response = ApiCallHelper.get(EXP_CALC_STS_POINT_URL);
+        
         // Validation for URL
         softly.assertThat(actualCalcStsPtUrl).isEqualTo(EXP_CALC_STS_POINT_URL);
-
         // Validation for response code
-        ExtractableResponse<?> response = ApiCallHelper.get(EXP_CALC_STS_POINT_URL);
         softly.assertThat(response.statusCode()).isEqualTo(200);
 
         softly.assertAll();
@@ -276,11 +275,11 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         String actualCalcStsPtUrl = detailPage.getCreateBtn().getOptionLinkByText("Demand Accumulator Point");
 
+        ExtractableResponse<?> response = ApiCallHelper.get(EXP_DMND_ACC_POINT_URL);
+        
         // Validation for URL
         softly.assertThat(actualCalcStsPtUrl).isEqualTo(EXP_DMND_ACC_POINT_URL);
-
-        // Validation for response code
-        ExtractableResponse<?> response = ApiCallHelper.get(EXP_DMND_ACC_POINT_URL);
+        // Validation for response code        
         softly.assertThat(response.statusCode()).isEqualTo(200);
 
         softly.assertAll();
@@ -296,11 +295,11 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         String actualCalcStsPtUrl = detailPage.getCreateBtn().getOptionLinkByText("Pulse Accumulator Point");
 
+        ExtractableResponse<?> response = ApiCallHelper.get(EXP_PLS_ACC_POINT_URL);
+        
         // Validation for URL
         softly.assertThat(actualCalcStsPtUrl).isEqualTo(EXP_PLS_ACC_POINT_URL);
-
         // Validation for response code
-        ExtractableResponse<?> response = ApiCallHelper.get(EXP_PLS_ACC_POINT_URL);
         softly.assertThat(response.statusCode()).isEqualTo(200);
 
         softly.assertAll();
@@ -316,18 +315,18 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         String actualCalcStsPtUrl = detailPage.getCreateBtn().getOptionLinkByText("Status Point");
 
+        ExtractableResponse<?> response = ApiCallHelper.get(EXP_STS_POINT_URL);
+        
         // Validation for URL
         softly.assertThat(actualCalcStsPtUrl).isEqualTo(EXP_STS_POINT_URL);
-
         // Validation for response code
-        ExtractableResponse<?> response = ApiCallHelper.get(EXP_STS_POINT_URL);
         softly.assertThat(response.statusCode()).isEqualTo(200);
 
         softly.assertAll();
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
-    public void virtualDeviceDetails_DevPtsPointNameUrl_Correct() throws IOException {
+    public void virtualDeviceDetails_DevPtsPointNameUrl_Correct() {
         setRefreshPage(false);
 
         SoftAssertions softly = new SoftAssertions();
@@ -336,11 +335,11 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         String pointUrl = detailPage.getPointsTableRow(1).getCellLinkByIndex(0);
 
+        ExtractableResponse<?> response = ApiCallHelper.get(pointUrl);
+        
         // Validation for URL
         softly.assertThat(EXP_POINT_URL).isEqualTo(pointUrl);
-
         // Validation for response code
-        ExtractableResponse<?> response = ApiCallHelper.get(pointUrl);
         softly.assertThat(response.statusCode()).isEqualTo(200);
 
         softly.assertAll();
