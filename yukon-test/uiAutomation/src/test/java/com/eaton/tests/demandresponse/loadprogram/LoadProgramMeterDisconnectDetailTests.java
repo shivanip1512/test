@@ -53,28 +53,29 @@ public class LoadProgramMeterDisconnectDetailTests extends SeleniumTestSetup {
 
 		Pair<JSONObject, JSONObject> pair = new LoadProgramCreateBuilder.Builder(
 				ProgramEnums.ProgramType.METER_DISCONNECT_PROGRAM, gears, assignedGroupIds).withGears(gears)
-						.withName(Optional.of("hdjhahdjha"))
-						.withOperationalState(Optional.of(ProgramEnums.OperationalState.Automatic)).create();
+						.withName(Optional.of(ldPrgmName))
+						.withOperationalState(Optional.of(ProgramEnums.OperationalState.Automatic))
+						.create();
 
 		response = pair.getValue1();
 		int id = response.getInt("programId");
 
 		navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + id);
 
-		detailPage = new LoadProgramDetailPage(driverExt);
+		detailPage = new LoadProgramDetailPage(driverExt, id);
 
 	}
 
 	@AfterMethod
 	public void afterMethod() {
-        if(getRefreshPage()) {
-            refreshPage(detailPage);    
-        }
-        setRefreshPage(false);
+		if (getRefreshPage()) {
+			refreshPage(detailPage);
+		}
+		setRefreshPage(false);
 	}
 
 	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpExpresscomDetail_Delete_Success() {
+	public void ldPrgmMeterDisconnectDetail_Delete_Success() {
 		setRefreshPage(true);
 
 		timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -116,7 +117,7 @@ public class LoadProgramMeterDisconnectDetailTests extends SeleniumTestSetup {
 	}
 
 	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldGrpExpresscomDetail_Copy_Success() {
+	public void ldPrgmMeterDisconnectDetail_Copy_Success() {
 		setRefreshPage(true);
 		timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 		ldPrgmName = "MeterLoadProgram" + timeStamp;
@@ -134,7 +135,8 @@ public class LoadProgramMeterDisconnectDetailTests extends SeleniumTestSetup {
 		Pair<JSONObject, JSONObject> pair = new LoadProgramCreateBuilder.Builder(
 				ProgramEnums.ProgramType.METER_DISCONNECT_PROGRAM, gears, assignedGroupIds).withGears(gears)
 						.withName(Optional.of(ldPrgmName))
-						.withOperationalState(Optional.of(ProgramEnums.OperationalState.Automatic)).create();
+						.withOperationalState(Optional.of(ProgramEnums.OperationalState.Automatic))
+						.create();
 
 		JSONObject response = pair.getValue1();
 		int id = response.getInt("programId");
