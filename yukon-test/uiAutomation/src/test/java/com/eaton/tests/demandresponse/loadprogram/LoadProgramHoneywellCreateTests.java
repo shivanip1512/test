@@ -65,7 +65,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
 		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
-				Optional.empty());
+				Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
 
 		modalInnerClass.getGearName().setInputValue("TestGear " + timeStamp);
 		modalInnerClass.getGearType().selectItemByValue("HoneywellSetpoint");
@@ -102,7 +102,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
 		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
-				Optional.empty());
+				Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
 
 		modalInnerClass.getGearName().setInputValue("TestGear " + timeStamp);
 		modalInnerClass.getGearType().selectItemByValue("HoneywellSetpoint");
@@ -147,7 +147,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
 		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
-				Optional.empty());
+				Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
 
 		modalInnerClass.getGearName().setInputValue("TestGear " + timeStamp);
 		modalInnerClass.getGearType().selectItemByValue("HoneywellSetpoint");
@@ -182,7 +182,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
 		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
-				Optional.empty());
+				Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
 
 		modalInnerClass.getGearName().setInputValue("TestGear " + timeStamp);
 		modalInnerClass.getGearType().selectItemByValue("HoneywellSetpoint");
@@ -208,7 +208,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
 		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
-				Optional.empty());
+				Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
 
 		List<String> actualDropDownValues = modalInnerClass.getGearType().getOptionValues();
 
@@ -227,7 +227,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
 		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
-				Optional.empty());
+				Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
 		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 		String gearName = "TestGear " + timeStamp;
 		modalInnerClass.getGearName().setInputValue(gearName);
@@ -249,7 +249,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
 		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
-				Optional.empty());
+				Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
 		modalInnerClass.getGearType().selectItemByValue("HoneywellSetpoint");
 		waitForLoadingSpinner();
 
@@ -268,7 +268,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
 		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
-				Optional.empty());
+				Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
 		modalInnerClass.getGearType().selectItemByValue("HoneywellCycle");
 		waitForLoadingSpinner();
 
@@ -287,7 +287,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
 		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
-				Optional.empty());
+				Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
 
 		modalInnerClass.getGearType().selectItemByValue("HoneywellCycle");
 		waitForLoadingSpinner();
@@ -306,7 +306,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
 		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
-				Optional.empty());
+				Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
 		modalInnerClass.getGearType().selectItemByValue("HoneywellSetpoint");
 		waitForLoadingSpinner();
 
@@ -325,7 +325,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
 		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
-				Optional.empty());
+				Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
 		modalInnerClass.getGearType().selectItemByValue("HoneywellSetpoint");
 		waitForLoadingSpinner();
 
@@ -343,7 +343,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
 		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
-				Optional.empty());
+				Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
 		modalInnerClass.getGearType().selectItemByValue("HoneywellCycle");
 		waitForLoadingSpinner();
 
@@ -362,7 +362,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
 		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
-				Optional.empty());
+				Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
 		modalInnerClass.getGearType().selectItemByValue("HoneywellCycle");
 		waitForLoadingSpinner();
 
@@ -380,7 +380,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
 		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
-				Optional.empty());
+				Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
 		modalInnerClass.getGearType().selectItemByValue("HoneywellCycle");
 		waitForLoadingSpinner();
 
@@ -399,7 +399,7 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
 		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
-				Optional.empty());
+				Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
 		modalInnerClass.getGearType().selectItemByValue("HoneywellCycle");
 		waitForLoadingSpinner();
 

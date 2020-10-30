@@ -16,8 +16,9 @@ import com.eaton.framework.SeleniumTestSetup;
 public class CreateHoneywellPrgmGearModal extends CreateGearsModal {
 
 	private DriverExtensions driverExt;
-	private static final String HONEYWELL_GEAR_MODAL_DESCRIBEDBY = "gear-create-popup-LM_HONEYWELL_PROGRAM";
-	private static final String modalTitle = null;
+	private String modalDescribedBy = null;
+	private String modalTitle = null;
+	CreateHoneywellPrgmGearModal modal;
 
 	public CreateHoneywellPrgmGearModal(DriverExtensions driverExt, Optional<String> modalName,
 			Optional<String> describedBy) {
@@ -50,13 +51,13 @@ public class CreateHoneywellPrgmGearModal extends CreateGearsModal {
 		private DropDownElement whenToChange;
 		private TrueFalseCheckboxElement rampInOut;
 		private DropDownElement groupCapacityReduction;
-		CreateHoneywellPrgmGearModal modal = new CreateHoneywellPrgmGearModal(driverExt, Optional.empty(),
-				Optional.of(HONEYWELL_GEAR_MODAL_DESCRIBEDBY));
 
 		// Common fields we are instantiating in constructor and fields specific to a
 		// particular gear type are instantiated at the getter method level
 		public CreateHoneywellPrgmGearModalInnerClass(DriverExtensions driverExt, Optional<String> modalName,
 				Optional<String> describedBy) {
+			modal = new CreateHoneywellPrgmGearModal(driverExt, modalName,
+					describedBy);
 			gearName = new TextEditElement(driverExt, "gearName", getModal());
 			gearType = new DropDownElement(driverExt, "controlMethod", getModal());
 			controlParameterSection = modal.getPageSection("Control Parameters").getSection();
@@ -99,8 +100,8 @@ public class CreateHoneywellPrgmGearModal extends CreateGearsModal {
 		// Overridden method to handle Stale element exception
 		public void clickOkAndWaitForModalCloseDisplayNone() {
 			getModal().findElement(By.cssSelector(".ui-dialog-buttonset .primary")).click();
-			if (HONEYWELL_GEAR_MODAL_DESCRIBEDBY != null) {
-				SeleniumTestSetup.waitUntilModalInvisibleByDescribedBy(HONEYWELL_GEAR_MODAL_DESCRIBEDBY);
+			if (modalDescribedBy != null) {
+				SeleniumTestSetup.waitUntilModalInvisibleByDescribedBy(modalDescribedBy);
 			} else if (modalTitle != null) {
 				SeleniumTestSetup.waitUntilModalClosedByTitle(modalTitle);
 			}
