@@ -179,7 +179,9 @@ public class BaseModal {
         return !list.isEmpty();
     }
     
-    public Section getPageSection(String sectionName) {
+	// this method is fetching sections from a modal, so should be used where we
+	// have sections on the modal
+	public Section getPageSection(String sectionName) {
 		return new Section(this.driverExt, sectionName);
 	}
 }

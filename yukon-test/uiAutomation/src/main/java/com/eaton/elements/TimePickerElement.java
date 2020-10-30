@@ -4,9 +4,11 @@ import java.util.Optional;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.testng.util.Strings;
 
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
 
 public class TimePickerElement {
 
@@ -20,9 +22,14 @@ public class TimePickerElement {
 
     public void setValue(String value) {
         WebElement picker = getPicker();
+        
+        SeleniumTestSetup.scrollToElement(picker);
 
+        picker.click();
         picker.clear();
-        picker.sendKeys(value);
+
+        Actions action = new Actions(driverExt.getDriver());
+        action.sendKeys(picker, value).build().perform();
     }
 
     public void clearValue() {

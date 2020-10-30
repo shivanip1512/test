@@ -16,13 +16,14 @@ import org.testng.annotations.Test;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupHoneywellCreateBuilder;
 import com.eaton.elements.Section;
 import com.eaton.elements.modals.gears.CreateHoneywellPrgmGearModal;
+import com.eaton.elements.modals.gears.CreateHoneywellPrgmGearModal.CreateHoneywellPrgmGearModalInnerClass;
 import com.eaton.elements.tabs.LoadGroupsTab;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.LoadProgramCreatePage;
 import com.eaton.pages.demandresponse.LoadProgramDetailPage;
+import com.eaton.pages.demandresponse.loadprogram.LoadProgramCreatePage;
 
 public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 
@@ -63,11 +64,13 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 		waitForLoadingSpinner();
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
+		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
+				Optional.empty());
 
-		modal.getGearName().setInputValue("TestGear " + timeStamp);
-		modal.getGearType().selectItemByValue("HoneywellSetpoint");
+		modalInnerClass.getGearName().setInputValue("TestGear " + timeStamp);
+		modalInnerClass.getGearType().selectItemByValue("HoneywellSetpoint");
 		waitForLoadingSpinner();
-		modal.clickOkAndWaitForModalCloseDisplayNone();
+		modalInnerClass.clickOkAndWaitForModalCloseDisplayNone();
 
 		LoadGroupsTab groupsTab = createPage.getLoadGroupTab();
 
@@ -98,11 +101,13 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 		waitForLoadingSpinner();
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
+		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
+				Optional.empty());
 
-		modal.getGearName().setInputValue("TestGear " + timeStamp);
-		modal.getGearType().selectItemByValue("HoneywellSetpoint");
+		modalInnerClass.getGearName().setInputValue("TestGear " + timeStamp);
+		modalInnerClass.getGearType().selectItemByValue("HoneywellSetpoint");
 		waitForLoadingSpinner();
-		modal.clickOkAndWaitForModalCloseDisplayNone();
+		modalInnerClass.clickOkAndWaitForModalCloseDisplayNone();
 
 		createPage.getTriggerOffset().setInputValue("78");
 		createPage.getRestoreOffset().setInputValue("1000");
@@ -141,11 +146,13 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 		waitForLoadingSpinner();
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
+		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
+				Optional.empty());
 
-		modal.getGearName().setInputValue("TestGear " + timeStamp);
-		modal.getGearType().selectItemByValue("HoneywellCycle");
+		modalInnerClass.getGearName().setInputValue("TestGear " + timeStamp);
+		modalInnerClass.getGearType().selectItemByValue("HoneywellSetpoint");
 		waitForLoadingSpinner();
-		modal.clickOkAndWaitForModalCloseDisplayNone();
+		modalInnerClass.clickOkAndWaitForModalCloseDisplayNone();
 
 		LoadGroupsTab groupsTab = createPage.getLoadGroupTab();
 
@@ -174,19 +181,14 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 		waitForLoadingSpinner();
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
-		modal.getGearName().setInputValue("Gear Honeywell " + timeStamp);
-		modal.getGearType().selectItemByValue("HoneywellCycle");
+		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
+				Optional.empty());
+
+		modalInnerClass.getGearName().setInputValue("TestGear " + timeStamp);
+		modalInnerClass.getGearType().selectItemByValue("HoneywellSetpoint");
 		waitForLoadingSpinner();
-
-		modal.clickOkAndWaitForModalCloseDisplayNone();
-
-		modal = createPage.showCreateHoneywellPrgmGearModal();
-		modal.getGearName().setInputValue("Gear Honeywell " + timeStamp);
-		modal.getGearType().selectItemByValue("HoneywellSetpoint");
-		waitForLoadingSpinner();
-
-		modal.clickOkAndWaitForModalCloseDisplayNone();
-
+		modalInnerClass.clickOkAndWaitForModalCloseDisplayNone();
+		
 		LoadGroupsTab groupsTab = createPage.getLoadGroupTab();
 		groupsTab.clickTabAndWait("Load Groups");
 		groupsTab.getLoadGroups().addSingleAvailable(ldGrpName);
@@ -205,14 +207,36 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 		waitForLoadingSpinner();
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
+		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
+				Optional.empty());
 
-		List<String> actualDropDownValues = modal.getGearType().getOptionValues();
+		List<String> actualDropDownValues = modalInnerClass.getGearType().getOptionValues();
 
 		List<String> expectedDropDownValues = new ArrayList<>(
 				List.of("Select", "Honeywell Cycle", "Honeywell Setpoint"));
 
 		assertThat(actualDropDownValues).containsExactlyElementsOf(expectedDropDownValues);
 
+	}
+	
+	@Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	public void ldPrgmHoneywellCreate_SetpointGearControlParamSection_TitleCorrect() {
+
+		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
+		waitForLoadingSpinner();
+
+		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
+		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
+				Optional.empty());
+		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+		String gearName = "TestGear " + timeStamp;
+		modalInnerClass.getGearName().setInputValue(gearName);
+		modalInnerClass.getGearType().selectItemByValue("HoneywellSetpoint");
+		waitForLoadingSpinner();
+
+		Section rampSection = modal.getPageSection("Control Parameters");
+
+		assertThat(rampSection.getSection()).isNotNull();
 	}
 
 	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -224,7 +248,9 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 		waitForLoadingSpinner();
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
-		modal.getGearType().selectItemByValue("HoneywellSetpoint");
+		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
+				Optional.empty());
+		modalInnerClass.getGearType().selectItemByValue("HoneywellSetpoint");
 		waitForLoadingSpinner();
 
 		List<String> actualLabels = modal.getPageSection(sectionName).getSectionLabels();
@@ -232,6 +258,23 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 				List.of("Mandatory:", "Mode:", "Setpoint Offset:", "How To Stop Control:"));
 
 		assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
+	}
+	
+	@Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	public void ldPrgmHoneywellCreate_CycleGearControlParamSection_TitleCorrect() {
+
+		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
+		waitForLoadingSpinner();
+
+		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
+		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
+				Optional.empty());
+		modalInnerClass.getGearType().selectItemByValue("HoneywellCycle");
+		waitForLoadingSpinner();
+
+		Section rampSection = modal.getPageSection("Control Parameters");
+
+		assertThat(rampSection.getSection()).isNotNull();
 	}
 
 	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -243,7 +286,10 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 		waitForLoadingSpinner();
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
-		modal.getGearType().selectItemByValue("HoneywellCycle");
+		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
+				Optional.empty());
+
+		modalInnerClass.getGearType().selectItemByValue("HoneywellCycle");
 		waitForLoadingSpinner();
 
 		List<String> actualLabels = modal.getPageSection(sectionName).getSectionLabels();
@@ -252,159 +298,80 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 		assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
 	}
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldPrgmHoneywellCreate_SetpointGearSetpointOffset_RequiredValidation() {
+	@Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	public void ldPrgmHoneywellCreate_SetpointGearOptionalAttributesSection_TitleCorrect() {
 
 		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
 		waitForLoadingSpinner();
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
-		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		String gearName = "TestGear " + timeStamp;
-		modal.getGearName().setInputValue(gearName);
-		modal.getGearType().selectItemByValue("HoneywellSetpoint");
+		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
+				Optional.empty());
+		modalInnerClass.getGearType().selectItemByValue("HoneywellSetpoint");
 		waitForLoadingSpinner();
 
-		modal.getSetpointOffset().clearInputValue();
-		modal.clickOkAndWaitForModalCloseDisplayNone();
+		Section optionalAttributesSection = modal.getPageSection("Optional Attributes");
 
-		createPage.getSaveBtn().click();
-		createPage.getGears().clickGearByName(gearName);
-		modal = new CreateHoneywellPrgmGearModal(this.driverExt, Optional.of(gearName), Optional.empty());
-		assertThat(modal.getSetpointOffset().getValidationError()).isEqualTo("Setpoint Offset is required.");
+		assertThat(optionalAttributesSection.getSection()).isNotNull();
 	}
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldPrgmHoneywellCreate_SetpointGearSetpointOffset_MaxRangeValidation() {
+	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	public void ldPrgmHoneywellCreate_SetpointGearOptionalAttributesSection_LabelsCorrect() {
+
+		String sectionName = "Optional Attributes";
 
 		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
 		waitForLoadingSpinner();
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
-		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		String gearName = "TestGear " + timeStamp;
-		modal.getGearName().setInputValue(gearName);
-		modal.getGearType().selectItemByValue("HoneywellSetpoint");
+		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
+				Optional.empty());
+		modalInnerClass.getGearType().selectItemByValue("HoneywellSetpoint");
 		waitForLoadingSpinner();
 
-		modal.getSetpointOffset().setInputValue("20");
-		modal.clickOkAndWaitForModalCloseDisplayNone();
-
-		createPage.getSaveBtn().click();
-		createPage.getGears().clickGearByName(gearName);
-		modal = new CreateHoneywellPrgmGearModal(this.driverExt, Optional.of(gearName), Optional.empty());
-		assertThat(modal.getSetpointOffset().getValidationError()).isEqualTo("Must be between -10 and 10.");
+		List<String> actualLabels = modal.getPageSection(sectionName).getSectionLabels();
+		List<String> expectedLabels = new ArrayList<>(
+				List.of("Group Capacity Reduction:", "When to Change:"));
+		assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
 	}
-
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldPrgmHoneywellCreate_SetpointGearSetpointOffset_MinRangeValidation() {
+	
+	@Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	public void ldPrgmHoneywellCreate_CycleGearOptionalAttributesSection_TitleCorrect() {
 
 		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
 		waitForLoadingSpinner();
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
-		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		String gearName = "TestGear " + timeStamp;
-		modal.getGearName().setInputValue(gearName);
-		modal.getGearType().selectItemByValue("HoneywellSetpoint");
+		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
+				Optional.empty());
+		modalInnerClass.getGearType().selectItemByValue("HoneywellCycle");
 		waitForLoadingSpinner();
 
-		modal.getSetpointOffset().setInputValue("-100");
-		modal.clickOkAndWaitForModalCloseDisplayNone();
+		Section rampSection = modal.getPageSection("Optional Attributes");
 
-		createPage.getSaveBtn().click();
-		createPage.getGears().clickGearByName(gearName);
-		modal = new CreateHoneywellPrgmGearModal(this.driverExt, Optional.of(gearName), Optional.empty());
-		assertThat(modal.getSetpointOffset().getValidationError()).isEqualTo("Must be between -10 and 10.");
+		assertThat(rampSection.getSection()).isNotNull();
 	}
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldPrgmHoneywellCreate_CycleGearControlPercent_RequiredValidation() {
+	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+	public void ldPrgmHoneywellCreate_CycleGearOptionalAttributesSection_LabelsCorrect() {
+
+		String sectionName = "Optional Attributes";
 
 		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
 		waitForLoadingSpinner();
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
-		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		String gearName = "TestGear " + timeStamp;
-		modal.getGearName().setInputValue(gearName);
-		modal.getGearType().selectItemByValue("HoneywellCycle");
+		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
+				Optional.empty());
+		modalInnerClass.getGearType().selectItemByValue("HoneywellCycle");
 		waitForLoadingSpinner();
 
-		modal.getControlPercent().clearInputValue();
-		modal.clickOkAndWaitForModalCloseDisplayNone();
-
-		createPage.getSaveBtn().click();
-		createPage.getGears().clickGearByName(gearName);
-		modal = new CreateHoneywellPrgmGearModal(this.driverExt, Optional.of(gearName), Optional.empty());
-		assertThat(modal.getControlPercent().getValidationError()).isEqualTo("Control Percent is required.");
+		List<String> actualLabels = modal.getPageSection(sectionName).getSectionLabels();
+		List<String> expectedLabels = new ArrayList<>(
+				List.of("Group Capacity Reduction:", "When to Change:"));
+		assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
 	}
-
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldPrgmHoneywellCreate_CycleGearControlPercent_MaxRangeValidation() {
-
-		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
-		waitForLoadingSpinner();
-
-		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
-		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		String gearName = "TestGear " + timeStamp;
-		modal.getGearName().setInputValue(gearName);
-		modal.getGearType().selectItemByValue("HoneywellCycle");
-		waitForLoadingSpinner();
-
-		modal.getControlPercent().setInputValue("200");
-		modal.clickOkAndWaitForModalCloseDisplayNone();
-
-		createPage.getSaveBtn().click();
-		createPage.getGears().clickGearByName(gearName);
-		modal = new CreateHoneywellPrgmGearModal(this.driverExt, Optional.of(gearName), Optional.empty());
-		assertThat(modal.getControlPercent().getValidationError()).isEqualTo("Must be between 0 and 100.");
-	}
-
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldPrgmHoneywellCreate_CycleGearControlPercent_MinRangeValidation() {
-
-		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
-		waitForLoadingSpinner();
-
-		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
-		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		String gearName = "TestGear " + timeStamp;
-		modal.getGearName().setInputValue(gearName);
-		modal.getGearType().selectItemByValue("HoneywellCycle");
-		waitForLoadingSpinner();
-
-		modal.getControlPercent().setInputValue("-100");
-		modal.clickOkAndWaitForModalCloseDisplayNone();
-
-		createPage.getSaveBtn().click();
-		createPage.getGears().clickGearByName(gearName);
-		modal = new CreateHoneywellPrgmGearModal(this.driverExt, Optional.of(gearName), Optional.empty());
-		assertThat(modal.getControlPercent().getValidationError()).isEqualTo("Must be between 0 and 100.");
-	}
-
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldPrgmHoneywellCreate_InvalidGearNameErrorMessage_Displayed() {
-
-		createPage.getType().selectItemByValue("LM_HONEYWELL_PROGRAM");
-		waitForLoadingSpinner();
-
-		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
-		String gearName = "/sda@3#";
-		modal.getGearName().setInputValue(gearName);
-		modal.getGearType().selectItemByValue("HoneywellCycle");
-		waitForLoadingSpinner();
-
-		modal.clickOkAndWaitForModalCloseDisplayNone();
-
-		createPage.getSaveBtn().click();
-		createPage.getGears().clickGearByName(gearName);
-		modal = new CreateHoneywellPrgmGearModal(this.driverExt, Optional.of(gearName), Optional.empty());
-		assertThat(modal.getGearName().getValidationError())
-				.isEqualTo("Name must not contain any of the following characters: / \\ , ' \" |.");
-	}
-
+	
 	@Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
 	public void ldPrgmHoneywellCreate_CycleGearRampInRampOutSection_TitleCorrect() {
 
@@ -412,10 +379,9 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 		waitForLoadingSpinner();
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
-		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		String gearName = "TestGear " + timeStamp;
-		modal.getGearName().setInputValue(gearName);
-		modal.getGearType().selectItemByValue("HoneywellCycle");
+		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
+				Optional.empty());
+		modalInnerClass.getGearType().selectItemByValue("HoneywellCycle");
 		waitForLoadingSpinner();
 
 		Section rampSection = modal.getPageSection("Ramp In / Ramp Out");
@@ -432,7 +398,9 @@ public class LoadProgramHoneywellCreateTests extends SeleniumTestSetup {
 		waitForLoadingSpinner();
 
 		CreateHoneywellPrgmGearModal modal = createPage.showCreateHoneywellPrgmGearModal();
-		modal.getGearType().selectItemByValue("HoneywellCycle");
+		CreateHoneywellPrgmGearModalInnerClass modalInnerClass = modal.new CreateHoneywellPrgmGearModalInnerClass(this.driverExt, Optional.empty(),
+				Optional.empty());
+		modalInnerClass.getGearType().selectItemByValue("HoneywellCycle");
 		waitForLoadingSpinner();
 
 		List<String> actualLabels = modal.getPageSection(sectionName).getSectionLabels();

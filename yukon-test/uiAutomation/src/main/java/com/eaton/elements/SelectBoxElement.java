@@ -25,7 +25,7 @@ public class SelectBoxElement {
         this.parentName = parentName;
     }
 
-    private WebElement getSelectBox() {
+    public WebElement getSelectBox() {
         if (parentElement != null) {
             return this.parentElement.findElement(By.cssSelector(".select-box"));
         } else {

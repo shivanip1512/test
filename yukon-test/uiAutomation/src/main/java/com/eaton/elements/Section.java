@@ -42,7 +42,8 @@ public class Section {
         List<String> names = new ArrayList<>();    
 
         for (WebElement element : nameElements) {
-            names.add(element.getText());
+        	if(!(element.getText()).trim().isEmpty())
+        		names.add(element.getText());
         }
         return names;
     }    
