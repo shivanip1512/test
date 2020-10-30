@@ -294,51 +294,61 @@ public class LoadProgram implements DBPersistentConverter<LMProgramBase> {
                 prog.getDirectProgram().setRestoreOffset(getRestoreOffset());
             }
             // notification object
-            if (CollectionUtils.isNotEmpty(prog.getLmProgramDirectNotifyGroupVector())) {
-                prog.getLmProgramDirectNotifyGroupVector().clear();
+            buildNotificationDBPersistent(prog);
+        }
+    }
+
+    /**
+     * Build DB Persistent for Notification
+     */
+    private void buildNotificationDBPersistent(LMProgramDirectBase prog) {
+        if (CollectionUtils.isNotEmpty(prog.getLmProgramDirectNotifyGroupVector())) {
+            prog.getLmProgramDirectNotifyGroupVector().clear();
+        }
+        if (getNotification() != null) {
+
+            if (getNotification().getAssignedNotificationGroups() != null) {
+                getNotification().getAssignedNotificationGroups().forEach(notificationGroup -> {
+
+                    LMDirectNotificationGroupList group = new LMDirectNotificationGroupList();
+                    notificationGroup.buildDBPersistent(group);
+                    group.setDeviceID(getProgramId());
+                    prog.getLmProgramDirectNotifyGroupVector().addElement(group);
+                });
             }
-            if (getNotification() != null) {
+            if (getNotification().getProgramStartInMinutes() != null) {
+                Integer programStart = getNotification().getProgramStartInMinutes();
+                prog.getDirectProgram().setNotifyActiveOffset(programStart * 60);
+            } else {
+                prog.getDirectProgram().setNotifyActiveOffset(-1);
+            }
 
-                if (getNotification().getAssignedNotificationGroups() != null) {
-                    getNotification().getAssignedNotificationGroups().forEach(notificationGroup -> {
+            if (getNotification().getProgramStopInMinutes() != null) {
+                Integer programStop = getNotification().getProgramStopInMinutes();
+                prog.getDirectProgram().setNotifyInactiveOffset(programStop * 60);
+            } else {
+                prog.getDirectProgram().setNotifyInactiveOffset(-1);
+            }
 
-                        LMDirectNotificationGroupList group = new LMDirectNotificationGroupList();
-                        notificationGroup.buildDBPersistent(group);
-                        group.setDeviceID(getProgramId());
-                        prog.getLmProgramDirectNotifyGroupVector().addElement(group);
-                    });
-                }
-                if (getNotification().getProgramStartInMinutes() != null) {
-                    Integer programStart = getNotification().getProgramStartInMinutes();
-                    prog.getDirectProgram().setNotifyActiveOffset(programStart * 60);
-                } else {
-                    prog.getDirectProgram().setNotifyActiveOffset(-1);
-                }
+            Boolean notifyOnAdjust = getNotification().getNotifyOnAdjust();
+            if (notifyOnAdjust != null && notifyOnAdjust) {
+                prog.getDirectProgram().setNotifyAdjust(LMProgramDirect.NOTIFY_ADJUST_ENABLED);
+            } else {
+                prog.getDirectProgram().setNotifyAdjust(LMProgramDirect.NOTIFY_ADJUST_DISABLED);
+            }
 
-                if (getNotification().getProgramStopInMinutes() != null) {
-                    Integer programStop = getNotification().getProgramStopInMinutes();
-                    prog.getDirectProgram().setNotifyInactiveOffset(programStop * 60);
-                } else {
-                    prog.getDirectProgram().setNotifyInactiveOffset(-1);
-                }
-
-                Boolean notifyOnAdjust = getNotification().getNotifyOnAdjust();
-                if (notifyOnAdjust != null && notifyOnAdjust) {
-                    prog.getDirectProgram().setNotifyAdjust(LMProgramDirect.NOTIFY_ADJUST_ENABLED);
-                } else {
-                    prog.getDirectProgram().setNotifyAdjust(LMProgramDirect.NOTIFY_ADJUST_DISABLED);
-                }
-
-                Boolean enableOnSchedule = getNotification().getEnableOnSchedule();
-                if (enableOnSchedule != null && enableOnSchedule) {
-                    prog.getDirectProgram().setEnableSchedule(LMProgramDirect.NOTIFY_SCHEDULE_ENABLED);
-                } else {
-                    prog.getDirectProgram().setEnableSchedule(LMProgramDirect.NOTIFY_SCHEDULE_DISABLED);
-                }
+            Boolean enableOnSchedule = getNotification().getEnableOnSchedule();
+            if (enableOnSchedule != null && enableOnSchedule) {
+                prog.getDirectProgram().setEnableSchedule(LMProgramDirect.NOTIFY_SCHEDULE_ENABLED);
+            } else {
+                prog.getDirectProgram().setEnableSchedule(LMProgramDirect.NOTIFY_SCHEDULE_DISABLED);
             }
         }
     }
 
+    /**
+     * Build LMProgram Control window
+     */
     private void buildLmProgramControlWindow(LMProgramBase lmProgram, ProgramControlWindowFields controlWindowFields,
             Integer windowNumber) {
 
