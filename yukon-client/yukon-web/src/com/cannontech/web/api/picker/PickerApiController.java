@@ -20,14 +20,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.picker.Picker;
 import com.cannontech.web.picker.service.PickerFactory;
-import com.cannontech.web.util.YukonUserContextResolver;
 import com.google.common.collect.Lists;
 
 @RestController
@@ -36,7 +33,6 @@ public class PickerApiController {
 
     @Autowired private PickerFactory pickerFactory;
     @Autowired private ObjectFormattingService objectFormattingService;
-    @Autowired private YukonUserContextResolver contextResolver;
     @Autowired private PickerIdSearchApiValidator pickerIdSearchValidator;
     @Autowired private PickerSearchApiValidator pickerSearchValidator;
 
@@ -51,10 +47,7 @@ public class PickerApiController {
 
     @PostMapping("/idSearch")
     public ResponseEntity<Object> idSearch(@Valid @RequestBody PickerIdSearchCriteria searchIdCriteria,
-            HttpServletRequest request) {
-
-        LiteYukonUser user = ApiRequestContext.getContext().getLiteYukonUser();
-        YukonUserContext userContext = contextResolver.resolveContext(user, request);
+            HttpServletRequest request, YukonUserContext userContext) {
 
         Picker<?> picker = pickerFactory.getPicker(searchIdCriteria.getType());
         SearchResults<?> searchResult = picker.search(Lists.newArrayList(searchIdCriteria.getInitialIds()),
@@ -67,10 +60,8 @@ public class PickerApiController {
     }
 
     @PostMapping("/search")
-    public ResponseEntity<Object> search(@Valid @RequestBody PickerSearchCriteria searchCriteria, HttpServletRequest request) {
-
-        LiteYukonUser user = ApiRequestContext.getContext().getLiteYukonUser();
-        YukonUserContext userContext = contextResolver.resolveContext(user, request);
+    public ResponseEntity<Object> search(@Valid @RequestBody PickerSearchCriteria searchCriteria, HttpServletRequest request,
+            YukonUserContext userContext) {
 
         Picker<?> picker = pickerFactory.getPicker(searchCriteria.getType());
         SearchResults<?> searchResult = picker.search(searchCriteria.getQueryString(), searchCriteria.getStartCount(),

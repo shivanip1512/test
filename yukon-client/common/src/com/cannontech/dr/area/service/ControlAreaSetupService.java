@@ -10,11 +10,6 @@ import com.cannontech.dr.setup.service.LMSetupService;
 public interface ControlAreaSetupService extends LMSetupService<ControlArea, LMCopy>{
 
     /**
-     * Retrieve List of Unassigned Programs.
-     */
-    List<LMDto> retrieveUnassignedPrograms();
-
-    /**
      * Retrieve Normal states for point Id.
      */
     List<LMDto> retrieveNormalState(int pointId);

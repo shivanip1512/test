@@ -10,6 +10,7 @@
 #include "RfnE2eDataRequestMsg.h"
 #include "RfnE2eDataConfirmMsg.h"
 #include "RfnE2eDataIndicationMsg.h"
+#include "RfnWaterNodeMessaging.h"
 #include "NetworkManagerRequest.h"
 #include "FieldSimulatorMsg.h"
 
@@ -111,18 +112,28 @@ E2eSimulator::E2eSimulator()
     consumerSession = conn->createSession();
     producerSession = conn->createSession();
 
-    requestConsumer    = createQueueConsumer(*consumerSession, Queues::OutboundQueue::NetworkManagerE2eDataRequest.name);
-    confirmProducer    = createQueueProducer(*producerSession, Queues::InboundQueue ::NetworkManagerE2eDataConfirm.name);
-    indicationProducer = createQueueProducer(*producerSession, Queues::InboundQueue ::NetworkManagerE2eDataIndication.name);
+    e2eRequestConsumer    = createQueueConsumer(*consumerSession, Queues::OutboundQueue::NetworkManagerE2eDataRequest.name);
+    e2eConfirmProducer    = createQueueProducer(*producerSession, Queues::InboundQueue ::NetworkManagerE2eDataConfirm.name);
+    e2eIndicationProducer = createQueueProducer(*producerSession, Queues::InboundQueue ::NetworkManagerE2eDataIndication.name);
 
-    requestListener = 
+    e2eRequestListener = 
             std::make_unique<MessageListener>(
                     [this](const cms::Message* msg) 
                     { 
                         handleE2eDtRequest(msg); 
                     });
 
-    requestConsumer->setMessageListener(requestListener.get());
+    e2eRequestConsumer->setMessageListener(e2eRequestListener.get());
+
+    batteryNodeGetRequestConsumer = createQueueConsumer(*consumerSession, Queues::OutboundQueue::GetBatteryNodeChannelConfigRequest.name);
+    batteryNodeSetRequestConsumer = createQueueConsumer(*consumerSession, Queues::OutboundQueue::SetBatteryNodeChannelConfigRequest.name);
+
+    batteryNodeGetRequestListener = std::make_unique<MessageListener>([this](const cms::Message* msg) {
+        handleBatteryNodeGetChannelConfigRequest(msg);
+    });
+    batteryNodeSetRequestListener = std::make_unique<MessageListener>([this](const cms::Message* msg){
+        handleBatteryNodeSetChannelConfigRequest(msg);
+    });
 
     Messaging::ActiveMQConnectionManager::registerReplyHandler(
         Queues::InboundQueue::FieldSimulatorStatusRequest,
@@ -141,11 +152,17 @@ E2eSimulator::E2eSimulator()
 
 void E2eSimulator::stop()
 {
-    requestConsumer.reset();
-    requestListener.reset();
+    e2eRequestConsumer.reset();
+    e2eRequestListener.reset();
 
-    indicationProducer.reset();
-    confirmProducer.reset();
+    e2eIndicationProducer.reset();
+    e2eConfirmProducer.reset();
+
+    batteryNodeGetRequestConsumer.reset();
+    batteryNodeGetRequestListener.reset();
+
+    batteryNodeSetRequestConsumer.reset();
+    batteryNodeSetRequestListener.reset();
 
     producerSession.reset();
     consumerSession.reset();
@@ -156,6 +173,91 @@ void E2eSimulator::stop()
 
 std::mt19937_64 gen { static_cast<unsigned long long>(std::time(nullptr)) };
 std::uniform_real_distribution<double> dist{ 0.0, 1.0 };
+
+void E2eSimulator::handleBatteryNodeGetChannelConfigRequest(const cms::Message* msg)
+{
+    using Messaging::Serialization::MessageSerializer;
+    using namespace Messaging::Rfn;
+
+    CTILOG_INFO(dout, "Received message on RF Battery Node Get Channel Configuration queue");
+
+    if( const auto b = dynamic_cast<const cms::BytesMessage*>(msg) )
+    {
+        const auto buf = std::unique_ptr<unsigned char>{ b->getBodyBytes() };
+
+        Bytes payload{ buf.get(), buf.get() + b->getBodyLength() };
+
+        CTILOG_INFO(dout, "Received BytesMessage, attempting to decode as RfnGetChannelConfigRequestMessage");
+
+        if( auto getMsg = MessageSerializer<RfnGetChannelConfigRequestMessage>::deserialize(payload) )
+        {
+            CTILOG_INFO(dout, "Got new RfnGetChannelConfigRequestMessage for " << getMsg->rfnIdentifier);
+
+            RfnGetChannelConfigReplyMessage replyMsg;
+
+            replyMsg.rfnIdentifier = getMsg->rfnIdentifier;
+            RfnGetChannelConfigReplyMessage::ChannelInfo channel {
+                "gal",  //  UOM
+                {},     //  Modifiers
+                77,     //  Channel number
+                true    //  Enabled
+            };
+            replyMsg.channelInfo.insert(channel);
+            replyMsg.recordingInterval = 1800;
+            replyMsg.replyCode = RfnGetChannelConfigReplyMessage::SUCCESS;
+            replyMsg.reportingInterval = 86400;
+
+            if( auto serializedReply = Messaging::Serialization::serialize(replyMsg);
+                ! serializedReply.empty() )
+            {
+                auto tempQueueProducer = createDestinationProducer(*producerSession, msg->getCMSReplyTo());
+
+                std::unique_ptr<cms::BytesMessage> bytesMsg{ producerSession->createBytesMessage() };
+
+                bytesMsg->writeBytes(serializedReply);
+
+                tempQueueProducer->send(bytesMsg.get());
+            }
+        }
+    }
+}
+
+void E2eSimulator::handleBatteryNodeSetChannelConfigRequest(const cms::Message* msg)
+{
+    using Messaging::Serialization::MessageSerializer;
+    using namespace Messaging::Rfn;
+
+    CTILOG_INFO(dout, "Received message on RF Battery Node Set Channel Configuration queue");
+
+    if( const auto b = dynamic_cast<const cms::BytesMessage*>(msg) )
+    {
+        const auto buf = std::unique_ptr<unsigned char>{ b->getBodyBytes() };
+
+        Bytes payload{ buf.get(), buf.get() + b->getBodyLength() };
+
+        CTILOG_INFO(dout, "Received BytesMessage, attempting to decode as RfnSetChannelConfigRequestMessage");
+
+        if( auto setMsg = MessageSerializer<RfnSetChannelConfigRequestMessage>::deserialize(payload) )
+        {
+            CTILOG_INFO(dout, "Got new RfnSetChannelConfigRequestMessage for " << setMsg->rfnIdentifier);
+
+            RfnSetChannelConfigReplyMessage replyMsg { 0 };  //  Success
+
+            if( auto serializedReply = Messaging::Serialization::serialize(replyMsg);
+                ! serializedReply.empty() )
+            {
+                auto tempQueueProducer = createDestinationProducer(*producerSession, msg->getCMSReplyTo());
+
+                std::unique_ptr<cms::BytesMessage> bytesMsg{ producerSession->createBytesMessage() };
+
+                bytesMsg->writeBytes(serializedReply);
+
+                tempQueueProducer->send(bytesMsg.get());
+            }
+        }
+    }
+}
+
 
 void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
 {
@@ -380,7 +482,7 @@ void E2eSimulator::sendE2eDataConfirm(const E2eDataRequestMsg& requestMsg)
 
     bytesMsg->writeBytes(confirmBytes);
 
-    confirmProducer->send(bytesMsg.get());
+    e2eConfirmProducer->send(bytesMsg.get());
 }
 
 
@@ -543,7 +645,7 @@ void E2eSimulator::sendE2eDataIndication(const E2eDataRequestMsg &requestMsg, co
 
     bytesMsg->writeBytes(indicationBytes);
 
-    indicationProducer->send(bytesMsg.get());
+    e2eIndicationProducer->send(bytesMsg.get());
 }
 
 auto E2eSimulator::handleStatusRequest(const ActiveMQConnectionManager::MessageDescriptor& md)

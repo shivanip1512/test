@@ -446,6 +446,7 @@
     </ClCompile>
     <ClCompile Include="test_dev_rfnResidentialVoltage.cpp" />
     <ClCompile Include="test_dev_rfn_LgyrFocus_al.cpp" />
+    <ClCompile Include="test_dev_rf_BatteryNode.cpp" />
     <ClCompile Include="test_dev_rf_da.cpp">
     </ClCompile>
     <ClCompile Include="test_dev_rfn410centron.cpp" />

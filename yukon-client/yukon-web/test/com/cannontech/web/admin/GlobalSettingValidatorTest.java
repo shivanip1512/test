@@ -125,6 +125,7 @@ public class GlobalSettingValidatorTest {
         globalSettings.put(GlobalSettingType.ITRON_HCM_DATA_COLLECTION_MINUTES, 15);
         globalSettings.put(GlobalSettingType.ITRON_HCM_RESPONSE_TIMEOUT_SECONDS, 120);
         globalSettings.put(GlobalSettingType.RUNTIME_CALCULATION_INTERVAL_HOURS, 2);
+        globalSettings.put(GlobalSettingType.PX_MIDDLEWARE_SITE_GUID, "fcbd4387-886b-4f89-98d0-7801ff7b75e3");
         command.setValues(globalSettings);
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
@@ -152,13 +153,15 @@ public class GlobalSettingValidatorTest {
         globalSettings.put(GlobalSettingType.HONEYWELL_SERVER_URL, "htt://127.0.0.1");
 //        globalSettings.put(GlobalSettingType.NEST_SERVER_URL, "htt://127.0.0.1");
         globalSettings.put(GlobalSettingType.ITRON_HCM_API_URL, "htt://127.0.0.1");
+        globalSettings.put(GlobalSettingType.PX_MIDDLEWARE_SITE_GUID, "fcbd4387-886b-4f89-98d0-7801ff7b75e30");
+        
         command.setValues(globalSettings);
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
 
         service.doValidation(command, errors);
         assertTrue("Incorrect global setting values for category "+GlobalSettingSubCategory.DR ,
-            errors.getErrorCount() == 3);
+            errors.getErrorCount() == 4);
         
         
         command = new GlobalSettingsEditorBean();
@@ -173,7 +176,7 @@ public class GlobalSettingValidatorTest {
 
         service.doValidation(command, errors);
         assertTrue("Incorrect global setting values for category "+GlobalSettingSubCategory.DR ,
-            errors.getErrorCount() == 3);
+            errors.getErrorCount() == 4);
 
         // InValid Runtime Calculation Value
         command = new GlobalSettingsEditorBean();

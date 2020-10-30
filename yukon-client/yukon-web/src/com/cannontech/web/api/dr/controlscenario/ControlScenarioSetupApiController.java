@@ -24,6 +24,7 @@ import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.dr.setup.service.LMSetupService;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
@@ -41,22 +42,23 @@ public class ControlScenarioSetupApiController {
 
     @PostMapping
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
-    public ResponseEntity<Object> create(@Valid @RequestBody ControlScenario controlScenario) {
-        ControlScenario createControlScenario = controlScenarioService.create(controlScenario);
+    public ResponseEntity<Object> create(@Valid @RequestBody ControlScenario controlScenario, YukonUserContext userContext) {
+        ControlScenario createControlScenario = controlScenarioService.create(controlScenario, userContext.getYukonUser());
         return new ResponseEntity<>(createControlScenario, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
-    public ResponseEntity<Object> update(@Valid @RequestBody ControlScenario controlScenario, @PathVariable int id) {
-        ControlScenario updateControlScenario = controlScenarioService.update(id, controlScenario);
+    public ResponseEntity<Object> update(@Valid @RequestBody ControlScenario controlScenario, @PathVariable int id,
+            YukonUserContext userContext) {
+        ControlScenario updateControlScenario = controlScenarioService.update(id, controlScenario, userContext.getYukonUser());
         return new ResponseEntity<>(updateControlScenario, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.OWNER)
-    public ResponseEntity<HashMap<String, Integer>> delete(@PathVariable int id) {
-        int paoId = controlScenarioService.delete(id);
+    public ResponseEntity<HashMap<String, Integer>> delete(@PathVariable int id, YukonUserContext userContext) {
+        int paoId = controlScenarioService.delete(id, userContext.getYukonUser());
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("id", paoId);
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
