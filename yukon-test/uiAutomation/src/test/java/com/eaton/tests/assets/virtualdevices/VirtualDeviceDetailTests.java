@@ -7,8 +7,6 @@ import org.testng.annotations.BeforeClass;
 import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.HashMap;
-import java.util.Optional;
-
 import org.assertj.core.api.SoftAssertions;
 import org.javatuples.Pair;
 import org.testng.annotations.Test;
@@ -35,6 +33,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     private Integer virtualDeviceId;
     private String virtualDeviceName;
     private String virtualDeviceStatus;
+    private Integer analogPtId;
     
     // ===================================================================================================
     // Below code Commented due to YUK-23130
@@ -42,6 +41,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     // private List<String> pointNames;
     // private List<String> pointTypes;
     // private List<String> pointOffsets;
+    // private List<String> pointStatus;
     
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {       
@@ -52,16 +52,19 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         
         HashMap<String, Pair<JSONObject, JSONObject>> pair  = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAllPoints();
 
+        //Virtual Device Response
         Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
+        JSONObject virDevResponse = virtualDevice.getValue1();    
     	
-    	JSONObject response = virtualDevice.getValue1();    
-    	
-    	virtualDeviceId = response.getInt("id");
-    	virtualDeviceName = response.getString("name");
-        enable = response.getBoolean("enable");
+    	virtualDeviceId = virDevResponse.getInt("id");
+    	virtualDeviceName = virDevResponse.getString("name");
+        enable = virDevResponse.getBoolean("enable");
         
         virtualDeviceStatus = (enable.equals(true)) ? "Enabled" : "Disabled";
         
+        //Points Response
+        analogPtId = pair.get("AnalogPoint").getValue1().getInt("pointId");
+       
         navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + virtualDeviceId);
         detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, virtualDeviceId);
         
@@ -69,6 +72,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         // Below code Commented due to YUK-23130
         // ===================================================================================================
         // pointNames = detailPage.getVirtualDevicePointsPanel().getTable().getDataRowsTextByCellIndex(1);
+        // pointStatus = detailPage.getVirtualDevicePointsPanel().getTable().getDataRowsTextByCellIndex(2);
         // pointTypes = detailPage.getVirtualDevicePointsPanel().getTable().getDataRowsTextByCellIndex(6);
         // pointOffsets = detailPage.getVirtualDevicePointsPanel().getTable().getDataRowsTextByCellIndex(7);
             
@@ -84,6 +88,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 	
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_PageTitle_Correct() {
+    	setRefreshPage(false);
     	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + virtualDeviceId);
     	
     	String expectedTitle = virtualDeviceName;
@@ -95,7 +100,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_InfoSection_Displayed() {
-    	setRefreshPage(true);
+    	setRefreshPage(false);
     	
     	String expectedPanelText = "Virtual Device Information";
 
@@ -106,7 +111,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_DevicePoints_Displayed() {
-    	setRefreshPage(true);
+    	setRefreshPage(false);
     	
     	String expectedPanelText = "Device Points";
 
@@ -117,7 +122,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})    
     public void  virtualDeviceDetails_InfoFieldLabels_Correct() {
-    	setRefreshPage(true);
+    	setRefreshPage(false);
     	
     	SoftAssertions softly = new SoftAssertions();
         
@@ -125,11 +130,11 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getLabelByRow(0)).isEqualTo("Name:");
         softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getLabelByRow(1)).isEqualTo("Status:");
         softly.assertAll();
-
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})    
     public void  virtualDeviceDetails_InfoFieldValues_Correct() {
+    	setRefreshPage(false);
     	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + virtualDeviceId);
     	
     	SoftAssertions softly = new SoftAssertions();
@@ -151,8 +156,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     	
     	String title = editModal.getModalTitle();
 
-        assertThat(EXP_MODAL_TITLE).isEqualTo(title);
-    	
+        assertThat(EXP_MODAL_TITLE).isEqualTo(title);	
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS}) 
@@ -172,30 +176,25 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     public void  virtualDeviceDetails_OtherActionsUrl_Correct() {
     	setRefreshPage(true);
 	  
-    	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + virtualDeviceId);
+    	SoftAssertions softly = new SoftAssertions();
     	
-    	final String otherActionsUrl = Urls.OTHER_ACTIONS + virtualDeviceId;
+    	final String OTHER_ACTIONS_URL = getBaseUrl() + "/" + Urls.OTHER_ACTIONS + virtualDeviceId;
     	
-    	detailPage.getActionBtn().clickAndSelectOptionByText("Other Actions");
+    	String actualOtherActionUrl = detailPage.getActionBtn().getOptionLinkByText("Other Actions");
     	
-    	boolean loaded = waitForUrlToLoad(otherActionsUrl, Optional.empty());
-	
-    	assertThat(loaded).isTrue();
+    	//Validation for URL
+    	softly.assertThat(actualOtherActionUrl).isEqualTo(OTHER_ACTIONS_URL);
     	
-    	//Validation for response code as 200
-        ExtractableResponse<?> response = ApiCallHelper.get(otherActionsUrl);
-        assertThat(response.statusCode()).isEqualTo(200);
+    	//Validation for response code
+        ExtractableResponse<?> response = ApiCallHelper.get(OTHER_ACTIONS_URL);
+        softly.assertThat(response.statusCode()).isEqualTo(200);
+        
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_Delete_OpensCorrectModal() {
-		Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceOnlyRequiredFields();
-		  
-		JSONObject response = pair.getValue1();
-		 
-		Integer id = response.getInt("id");
-		 
-		navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + id); 
+		setRefreshPage(true);
     	
         String expectedModalTitle = "Confirm Delete";
 
@@ -207,221 +206,151 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
-    public void  virtualDeviceDetails_CreateAnalogPointUrl_Correct() {
-    	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAnalogPoint();
+    public void  virtualDeviceDetails_CreateAnalogPointUrl_Correct() {     
+    	setRefreshPage(true);
     	
-    	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
-    	Pair<JSONObject, JSONObject> anlaogPoint = pair.get("AnalogPoint");        
+    	SoftAssertions softly = new SoftAssertions();
+ 
+    	final String EXP_ANLG_POINT_URL = getBaseUrl() + Urls.Tools.ANALOG_POINT + virtualDeviceId;
     	
-    	JSONObject virtualDeviceResponse = virtualDevice.getValue1();    
-    	JSONObject analogPointResponse = anlaogPoint.getValue1();
-    	
-    	Integer id = virtualDeviceResponse.getInt("id");
-    	Integer pointId =  analogPointResponse.getInt("pointId");
-    	
-    	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + id);
-        detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, id);
-        
-    	final String pointUrl = Urls.Tools.POINT + pointId;
-    	
-    	detailPage.getPointsTableRow(1).selectCellByLink();
+    	String actualAnalogPtUrl = detailPage.getCreateBtn().getOptionLinkByText("Analog Point");
 
-    	boolean loaded = waitForUrlToLoad(pointUrl, Optional.empty());
-	
-    	assertThat(loaded).isTrue();
+    	//Validation for URL
+    	softly.assertThat(actualAnalogPtUrl).isEqualTo(EXP_ANLG_POINT_URL);
     	
-    	//Validation for response code as 200
-        ExtractableResponse<?> response = ApiCallHelper.get(pointUrl);
-        assertThat(response.statusCode()).isEqualTo(200);
+    	//Validation for response code
+        ExtractableResponse<?> response = ApiCallHelper.get(EXP_ANLG_POINT_URL);
+        softly.assertThat(response.statusCode()).isEqualTo(200);
+        
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_CreateCalcAnalogPointUrl_Correct() {
-    	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithCalcAnalogPoint();
+    	setRefreshPage(true);
     	
-    	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
-    	Pair<JSONObject, JSONObject> calcAnalogPoint = pair.get("CalcAnalogPoint");        
+    	SoftAssertions softly = new SoftAssertions();
+ 
+    	final String EXP_CALC_ANLG_POINT_URL = getBaseUrl() + Urls.Tools.CALC_ANALOG_POINT + virtualDeviceId;
     	
-    	JSONObject virtDevResponse = virtualDevice.getValue1();    
-    	JSONObject calcAnlgPtResponse = calcAnalogPoint.getValue1();
-    	
-    	Integer id = virtDevResponse.getInt("id");
-    	Integer pointId =  calcAnlgPtResponse.getInt("pointId");
-    	
-    	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + id);
-        detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, id);
-        
-    	final String pointUrl = Urls.Tools.POINT + pointId;
-    	
-    	detailPage.getPointsTableRow(1).selectCellByLink();
+    	String actualCalcAnlgPtUrl = detailPage.getCreateBtn().getOptionLinkByText("Calc Analog Point");
 
-    	boolean loaded = waitForUrlToLoad(pointUrl, Optional.empty());
-	
-    	assertThat(loaded).isTrue();
+    	//Validation for URL
+    	softly.assertThat(actualCalcAnlgPtUrl).isEqualTo(EXP_CALC_ANLG_POINT_URL);
     	
-    	//Validation for response code as 200
-        ExtractableResponse<?> response = ApiCallHelper.get(pointUrl);
-        assertThat(response.statusCode()).isEqualTo(200);
+    	//Validation for response code
+        ExtractableResponse<?> response = ApiCallHelper.get(EXP_CALC_ANLG_POINT_URL);
+        softly.assertThat(response.statusCode()).isEqualTo(200);
+        
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_CreateCalcStatusPointUrl_Correct() {
-    	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithCalcStatusPoint();
+    	setRefreshPage(true);
     	
-    	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
-    	Pair<JSONObject, JSONObject> clacStatusPoint = pair.get("CalcStatusPoint");        
-    	
-    	JSONObject virtDevResponse = virtualDevice.getValue1();    
-    	JSONObject calcStsPtResponse = clacStatusPoint.getValue1();
-    	
-    	Integer id = virtDevResponse.getInt("id");
-    	Integer pointId =  calcStsPtResponse.getInt("pointId");
-    	
-    	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + id);
-        detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, id);
-        
-    	final String pointUrl = Urls.Tools.POINT + pointId;
-    	
-    	detailPage.getPointsTableRow(1).selectCellByLink();
+    	SoftAssertions softly = new SoftAssertions();
+ 
+    	final String EXP_CALC_STS_POINT_URL = getBaseUrl() + Urls.Tools.CALC_STATUS_POINT + virtualDeviceId;
 
-    	boolean loaded = waitForUrlToLoad(pointUrl, Optional.empty());
-	
-    	assertThat(loaded).isTrue();
+    	String actualCalcStsPtUrl = detailPage.getCreateBtn().getOptionLinkByText("Calc Status Point");
+
+    	//Validation for URL
+    	softly.assertThat(actualCalcStsPtUrl).isEqualTo(EXP_CALC_STS_POINT_URL);
     	
-    	//Validation for response code as 200
-        ExtractableResponse<?> response = ApiCallHelper.get(pointUrl);
-        assertThat(response.statusCode()).isEqualTo(200);
+    	//Validation for response code
+        ExtractableResponse<?> response = ApiCallHelper.get(EXP_CALC_STS_POINT_URL);
+        softly.assertThat(response.statusCode()).isEqualTo(200);
+        
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_CreateDemandAccPointUrl_Correct() {
-    	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithDemandAccumulatorPoint();
+    	setRefreshPage(true);
     	
-    	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
-    	Pair<JSONObject, JSONObject> demandAccPoint = pair.get("DemandAccumulatorPoint");        
+    	SoftAssertions softly = new SoftAssertions();
+ 
+    	final String EXP_DMND_ACC_POINT_URL = getBaseUrl() + Urls.Tools.DEMAND_ACCUMULATOR_POINT + virtualDeviceId;
     	
-    	JSONObject virtDevResponse = virtualDevice.getValue1();    
-    	JSONObject dmdAccPtResponse = demandAccPoint.getValue1();
-    	
-    	Integer id = virtDevResponse.getInt("id");
-    	Integer pointId =  dmdAccPtResponse.getInt("pointId");
-    	
-    	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + id);
-        detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, id);
-        
-    	final String pointUrl = Urls.Tools.POINT + pointId;
-    	
-    	detailPage.getPointsTableRow(1).selectCellByLink();
+    	String actualCalcStsPtUrl = detailPage.getCreateBtn().getOptionLinkByText("Demand Accumulator Point");
 
-    	boolean loaded = waitForUrlToLoad(pointUrl, Optional.empty());
-	
-    	assertThat(loaded).isTrue();
+    	//Validation for URL
+    	softly.assertThat(actualCalcStsPtUrl).isEqualTo(EXP_DMND_ACC_POINT_URL);
     	
-    	//Validation for response code as 200
-        ExtractableResponse<?> response = ApiCallHelper.get(pointUrl);
-        assertThat(response.statusCode()).isEqualTo(200);
+    	//Validation for response code
+        ExtractableResponse<?> response = ApiCallHelper.get(EXP_DMND_ACC_POINT_URL);
+        softly.assertThat(response.statusCode()).isEqualTo(200);
+        
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_CreatePulseAccPointUrl_Correct() {
-    	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithPulseAccumulatorPoint();
+    	setRefreshPage(true);
     	
-    	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
-    	Pair<JSONObject, JSONObject> pulseAccPoint = pair.get("PulseAccumulatorPoint");        
-    	
-    	JSONObject virtDevResponse = virtualDevice.getValue1();    
-    	JSONObject pulsAccPtResponse = pulseAccPoint.getValue1();
-    	
-    	Integer id = virtDevResponse.getInt("id");
-    	Integer pointId =  pulsAccPtResponse.getInt("pointId");
-    	
-    	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + id);
-        detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, id);
-        
-    	final String pointUrl = Urls.Tools.POINT + pointId;
-    	
-    	detailPage.getPointsTableRow(1).selectCellByLink();
+    	SoftAssertions softly = new SoftAssertions();
+ 
+    	final String EXP_PLS_ACC_POINT_URL = getBaseUrl() + Urls.Tools.PULSE_ACCUMULATOR_POINT + virtualDeviceId;
+    
+    	String actualCalcStsPtUrl = detailPage.getCreateBtn().getOptionLinkByText("Pulse Accumulator Point");
 
-    	boolean loaded = waitForUrlToLoad(pointUrl, Optional.empty());
-	
-    	assertThat(loaded).isTrue();
+    	//Validation for URL
+    	softly.assertThat(actualCalcStsPtUrl).isEqualTo(EXP_PLS_ACC_POINT_URL);
     	
-    	//Validation for response code as 200
-        ExtractableResponse<?> response = ApiCallHelper.get(pointUrl);
-        assertThat(response.statusCode()).isEqualTo(200);
+    	//Validation for response code
+        ExtractableResponse<?> response = ApiCallHelper.get(EXP_PLS_ACC_POINT_URL);
+        softly.assertThat(response.statusCode()).isEqualTo(200);
+        
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_CreateStatusPointUrl_Correct() {
     	setRefreshPage(true);
-    	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithStatusPoint();
-    	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
-    	Pair<JSONObject, JSONObject> statusPoint = pair.get("StatusPoint");        
     	
-    	JSONObject virtDevResponse = virtualDevice.getValue1();    
-    	JSONObject stsPtResponse = statusPoint.getValue1();
-    	
-    	Integer id = virtDevResponse.getInt("id");
-    	Integer pointId =  stsPtResponse.getInt("pointId");
-    	
-    	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + id);
-        detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, id);
-        
-    	final String pointUrl = Urls.Tools.POINT + pointId;
-    	
-    	detailPage.getPointsTableRow(1).selectCellByLink();
+    	SoftAssertions softly = new SoftAssertions();
+ 
+    	final String EXP_STS_POINT_URL = getBaseUrl() + Urls.Tools.STATUS_POINT + virtualDeviceId;
+    
+    	String actualCalcStsPtUrl = detailPage.getCreateBtn().getOptionLinkByText("Status Point");
 
-    	boolean loaded = waitForUrlToLoad(pointUrl, Optional.empty());
-	
-    	assertThat(loaded).isTrue();
+    	//Validation for URL
+    	softly.assertThat(actualCalcStsPtUrl).isEqualTo(EXP_STS_POINT_URL);
     	
-    	//Validation for response code as 200
-        ExtractableResponse<?> response = ApiCallHelper.get(pointUrl);
-        assertThat(response.statusCode()).isEqualTo(200);
+    	//Validation for response code
+        ExtractableResponse<?> response = ApiCallHelper.get(EXP_STS_POINT_URL);
+        softly.assertThat(response.statusCode()).isEqualTo(200);
+        
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_DevPtsPointNameUrl_Correct() throws IOException {
-    	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAnalogPoint();
-    	
-    	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
-    	Pair<JSONObject, JSONObject> analogPoint = pair.get("AnalogPoint");        
-    	
-    	JSONObject virtDevResponse = virtualDevice.getValue1();    
-    	JSONObject stsPtResponse = analogPoint.getValue1();
-    	
-    	Integer id = virtDevResponse.getInt("id");
-    	Integer pointId =  stsPtResponse.getInt("pointId");
-    	
-    	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + id);
-        detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, id);
+    	setRefreshPage(false);
         
-    	final String EXP_POINT_URL = getBaseUrl() + Urls.Tools.POINT + pointId;
+    	SoftAssertions softly = new SoftAssertions();
+    	
+    	final String EXP_POINT_URL = getBaseUrl() + Urls.Tools.POINT + analogPtId;
     	
     	String pointUrl = detailPage.getPointsTableRow(1).getCellLinkByIndex(0);
 
-    	assertThat(EXP_POINT_URL).isEqualTo(pointUrl);
+    	//Validation for URL
+    	softly.assertThat(EXP_POINT_URL).isEqualTo(pointUrl);
     	
-    	//Validation for response code as 200
+    	//Validation for response code
         ExtractableResponse<?> response = ApiCallHelper.get(pointUrl);
-        assertThat(response.statusCode()).isEqualTo(200);
+        softly.assertThat(response.statusCode()).isEqualTo(200);
+        
+        softly.assertAll();
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_DevPtsDateTime_OpensCorrectModal() {
+    	setRefreshPage(true);
+    	
     	final String EXP_MODAL_TITLE = "Recent Archived Readings";
     	
-    	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAnalogPoint();
-    	
-    	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");     
-    	
-    	JSONObject virtDevResponse = virtualDevice.getValue1();  
-    	
-    	Integer id = virtDevResponse.getInt("id");
-    	
-    	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + id);
-        detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, id);
-
         RecentArchievedRadingsModal rcntArchReadingsModal = detailPage.showAndWaitRecentArchievedReadingsModal("Recent Archived Readings", 5);
         
         String title = rcntArchReadingsModal.getModalTitle();
@@ -436,27 +365,15 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     	// ======================================================================================================================
     	// As YUK-23130 gets fixed, remove above exception and uncomment below test code
     	// ======================================================================================================================
+       
     	/*
     	setRefreshPage(true);
-    	
-    	
-    	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAllPoints();
-    	
-    	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
-    	
-    	JSONObject virtDevResponse = virtualDevice.getValue1();    
-    	
-    	virtualDeviceId = virtDevResponse.getInt("id");
-    	
-    	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + virtualDeviceId);
-        detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, virtualDeviceId);
-        
     	detailPage.getPointType().selectItemByText("Status");
     	detailPage.getFilter().click();
     	
     	List<String> pointTypeList = detailPage.getVirtualDevicePointsPanel().getTable().getDataRowsTextByCellIndex(6);
     	
-    	assertThat(pointTypeList).containsOnly("Status");   	
+    	assertThat(pointTypeList).containsOnly("Status"); 
     	*/
     }
     
@@ -469,20 +386,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     	// ======================================================================================================================
     	/*
     	setRefreshPage(true);
-    	
-    	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAllPoints();
-    	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
-    	Pair<JSONObject, JSONObject> statusPoint = pair.get("AnalogPoint");        
-    	
-    	JSONObject virtDevResponse = virtualDevice.getValue1();    
-    	JSONObject stsPtResponse = statusPoint.getValue1();
-    	
-    	virtualDeviceId = virtDevResponse.getInt("id");
-    	
-    	Integer pointId =  stsPtResponse.getInt("pointId");
-    	
-    	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + virtualDeviceId);
-        detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, virtualDeviceId);
         
     	detailPage.getPointType().selectItemByText("Analog");
     	detailPage.getFilter().click();
@@ -503,17 +406,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     	/*
     	setRefreshPage(true);
     	
-    	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAllPoints();
-    	
-    	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
-    	
-    	JSONObject virtDevResponse = virtualDevice.getValue1();    
-    	
-    	virtualDeviceId = virtDevResponse.getInt("id");
-    	
-    	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + virtualDeviceId);
-        detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, virtualDeviceId);
-        
     	detailPage.getPointType().selectItemByText("Calc Status");
     	detailPage.getFilter().click();
     	
@@ -532,16 +424,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     	// ======================================================================================================================
     	/*
     	setRefreshPage(true);
-    	
-    	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAllPoints();
-    	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");            
-    	
-    	JSONObject virtDevResponse = virtualDevice.getValue1();    
-    	
-    	virtualDeviceId = virtDevResponse.getInt("id");
-    	
-    	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + virtualDeviceId);
-        detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, virtualDeviceId);
         
     	detailPage.getPointType().selectItemByText("Demand Accumulator");
     	detailPage.getFilter().click();
@@ -562,17 +444,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     	/*
     	setRefreshPage(true);
     	
-    	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAllPoints();
-    	
-    	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
-    	
-    	JSONObject virtDevResponse = virtualDevice.getValue1();    
-    	
-    	virtualDeviceId = virtDevResponse.getInt("id");
-    	
-    	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + virtualDeviceId);
-        detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, virtualDeviceId);
-        
     	detailPage.getPointType().selectItemByText("Pulse Accumulator");
     	detailPage.getFilter().click();
     	
@@ -591,15 +462,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     	// ======================================================================================================================
     	/*
     	setRefreshPage(true);
-    	
-    	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAllPoints();
-    	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
-    	
-    	JSONObject virtDevResponse = virtualDevice.getValue1();    
-    	virtualDeviceId = virtDevResponse.getInt("id");
-    	
-    	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + virtualDeviceId);
-        detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, virtualDeviceId);
         
     	detailPage.getPointType().selectItemByText("Calc Analog");
     	detailPage.getFilter().click();
@@ -619,16 +481,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     	// ======================================================================================================================
     	/*
     	setRefreshPage(true);
-    	
-    	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAllPoints();
-    	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
-    	
-    	JSONObject virtDevResponse = virtualDevice.getValue1();    
-    	
-    	virtualDeviceId = virtDevResponse.getInt("id");
-    	
-    	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + virtualDeviceId);
-        detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, virtualDeviceId);
         
     	detailPage.getPointType().selectItemByText("Calc Analog");
     	detailPage.getFilter().click();
@@ -679,16 +531,9 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_DeleteModalMessage_Correct() {
-    	Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceOnlyRequiredFields();     
+    	setRefreshPage(true);
     	
-    	JSONObject response = pair.getValue1();    
-    	
-    	Integer id = response.getInt("id");
-    	String name = response.getString("name");
-    	
-    	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + id);
-    	
-    	final String EXP_DELETE_MODAL_MSG = "Are you sure you want to delete \"" + name + "\"?";
+    	final String EXP_DELETE_MODAL_MSG = "Are you sure you want to delete \"" + virtualDeviceName + "\"?";
    	 
     	ConfirmModal deleteModal = detailPage.showAndWaitDeleteVirtualDeviceModal();
     	
@@ -699,6 +544,8 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_DeleteWithPt_Success() {
+    	setRefreshPage(true);
+
     	HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAnalogPoint();
     	Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");    
     	
@@ -708,7 +555,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     	String name = virtDevResponse.getString("name");
     	
     	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + id);
-        detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, id);
         
         final String EXP_MSG = name + " deleted successfully.";
       	 
@@ -722,6 +568,8 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
     public void  virtualDeviceDetails_DeleteWithOutPt_Success() {
+    	setRefreshPage(true);
+    	
     	Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceOnlyRequiredFields();
     	
     	JSONObject virtDevResponse = pair.getValue1();   
@@ -730,7 +578,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     	String name = virtDevResponse.getString("name");
     	
     	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + id);
-        detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, id);
         
         final String EXP_MSG = name + " deleted successfully.";
       	 
@@ -743,25 +590,28 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
-    public void  virtualDevicesDetails_DevPtsColumnHeaders_Correct() {
+    public void  virtualDeviceDetails_DevPtsColumnHeaders_Correct() {
     	throw new SkipException("Development Defect: YUK-23130");
     	
     	// ======================================================================================================================
     	// As YUK-23130 gets fixed, remove above exception and uncomment below test code
     	// ======================================================================================================================
+    	// 
+    	
     	/*
-    	setRefreshPage(true);
+    	setRefreshPage(false);
     	
-    	Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceOnlyRequiredFields();
-    	
-    	JSONObject virtDevResponse = pair.getValue1();   
-    	
-    	virtualDeviceId = virtDevResponse.getInt("id");
-    	virtualDeviceName = virtDevResponse.getString("name");
-    	
-    	navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + virtualDeviceId);
-        detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, virtualDeviceId);
-        
+    	// ======================================================================================================================
+    	 * 
+    	 * TODO
+    	 * 
+    	 * Please review the list tests that were done in load group, we should be following what was done there. We should be 
+    	 * creating points with specific names to make sure that the sorting is working as we expect it to. The creation of these 
+    	 * should be done in the BeforeClass also so that they can be used for all sorting test methods and we do not create them 
+    	 * in each test.
+    	 * 
+    	// ======================================================================================================================
+    
         List<String> expectedLabels = new ArrayList<>(List.of("Point Name",	"Attribute", "", "Value/State",	"Date/Time", "Point Type", "Point Offset"));
 
         List<String> actualLabels = detailPage.getVirtualDevicePointsPanel().getTable().getListTableHeaders();
@@ -771,7 +621,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
-    public void  virtualDevicesDetails_DevPtsSortPointNamesAsc_Correctly() {
+    public void  virtualDeviceDetails_DevPtsSortPointNamesAsc_Correctly() {
     	throw new SkipException("Development Defect: YUK-23130");
     	
     	// ======================================================================================================================
@@ -780,8 +630,17 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     	/*
     	setRefreshPage(true);
         Collections.sort(pointNames, String.CASE_INSENSITIVE_ORDER);
-
+        
         detailPage.getPointsPointsTableHeader().selectColumnNameByLink(1);
+        // ====================================================================================================================== 
+         * 
+         * TODO 
+         * 
+         * This code will need to be updated to follow the code for sorting in the Attribute Assignment table. Just clicking the 
+         * column header is not enough to get the sorting to work correctly. Name sorting is a little easier than the sorting on 
+         * all the other columns Implies for below code too
+         * 
+		// ======================================================================================================================
 
         List<String> pointNamesList = detailPage.getTable().getDataRowsTextByCellIndex(1);
 
@@ -790,7 +649,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
-    public void  virtualDevicesDetails_DevPtsSortPointNamesDesc_Correctly() {
+    public void  virtualDeviceDetails_DevPtsSortPointNamesDesc_Correctly() {
     	throw new SkipException("Development Defect: YUK-23130");
     	
     	// ======================================================================================================================
@@ -829,7 +688,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
-    public void  virtualDevicesDetails_SortPointTypeDesc_Correctly() {
+    public void  virtualDeviceDetails_SortPointTypeDesc_Correctly() {
     	throw new SkipException("Development Defect: YUK-23130");
     	
     	// ======================================================================================================================
@@ -849,7 +708,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
-    public void  virtualDevicesDetails_SortPointOffsetAsc_Correctly() {
+    public void  virtualDeviceDetails_SortPointOffsetAsc_Correctly() {
     	throw new SkipException("Development Defect: YUK-23130");
     	
     	// ======================================================================================================================
@@ -868,7 +727,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
-    public void  virtualDevicesDetails_SortPointOffsetDesc_Correctly() {
+    public void  virtualDeviceDetails_SortPointOffsetDesc_Correctly() {
     	throw new SkipException("Development Defect: YUK-23130");
     	
     	// ======================================================================================================================
@@ -887,4 +746,42 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         */
     }
     
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
+    public void virtualDeviceDetails_SortStatusAsc_Correctly() {
+    	throw new SkipException("Development Defect: YUK-23130");
+    	
+    	// ======================================================================================================================
+    	// As YUK-23130 gets fixed, remove above exception and uncomment below test code
+    	// ======================================================================================================================
+    	/*
+    	setRefreshPage(true);
+        Collections.sort(pointOffsets, String.CASE_INSENSITIVE_ORDER);
+
+        detailPage.getPointsPointsTableHeader().selectColumnNameByLink(2);
+
+        List<String> pointOffsetList = detailPage.getTable().getDataRowsTextByCellIndex(7);
+
+        assertThat(pointOffsets).isEqualTo(pointStatus);
+        */
+    }
+    
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS})
+    public void virtualDeviceDetails_SortStatusDesc_Correctly() {
+    	throw new SkipException("Development Defect: YUK-23130");
+    	
+    	// ======================================================================================================================
+    	// As YUK-23130 gets fixed, remove above exception and uncomment below test code
+    	// ======================================================================================================================
+    	/*
+    	setRefreshPage(true);
+        Collections.sort(pointOffsets, String.CASE_INSENSITIVE_ORDER);
+        Collections.reverse(pointOffsets);
+
+        detailPage.getPointsPointsTableHeader().selectColumnNameByLink(2);
+
+        List<String> pointOffsetList = detailPage.getTable().getDataRowsTextByCellIndex(7);
+
+        assertThat(pointOffsets).isEqualTo(pointStatus);
+        */
+    }
 }

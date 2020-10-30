@@ -224,6 +224,14 @@ public final class Urls {
         public static final String DATA_STREAMING = "/tools/dataStreaming/configurations";
         
         public static final String POINT = "/tools/points/";
+        
+        public static final String ANALOG_POINT = "/tools/points/Analog/create?parentId=";
+        public static final String CALC_ANALOG_POINT = "/tools/points/CalcAnalog/create?parentId=";
+        public static final String CALC_STATUS_POINT = "/tools/points/CalcStatus/create?parentId=";
+        public static final String DEMAND_ACCUMULATOR_POINT = "/tools/points/DemandAccumulator/create?parentId=";
+        public static final String PULSE_ACCUMULATOR_POINT = "/tools/points/PulseAccumulator/create?parentId=";
+        public static final String STATUS_POINT = "/tools/points/Status/create?parentId=";
+        
     }
 
     public static final class Admin {

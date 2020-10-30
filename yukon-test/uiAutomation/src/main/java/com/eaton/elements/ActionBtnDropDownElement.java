@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 
 import com.eaton.framework.DriverExtensions;
@@ -58,5 +59,38 @@ public class ActionBtnDropDownElement {
         WebElement el = options.stream().filter(x -> x.getText().equals(text)).findFirst().orElseThrow();
 
         return !el.getAttribute("class").contains("disabled");
+    }
+    
+    /**
+     * This method is used to get the link/href attribute from Action Dropdown
+     * 
+     * @param text - The text listed in dropdown
+     * @return - returns href attribute of option in dropdown
+     */
+    public String getOptionLinkByText(String text) {
+    	click();
+    	
+        List<WebElement> dropdownOptions;
+        WebElement anchorElement = null;
+        
+        WebElement dropdownMenu = this.driverExt.findElement(By.cssSelector(".dropdown-menu[style*='display: block;']"), 
+        		 					Optional.of(3));
+
+        try {
+        	dropdownOptions = dropdownMenu.findElements(By.cssSelector(".dropdown-menu[style*='display: block;'] .dropdown-option"));
+        	 
+        	List<WebElement> options = dropdownMenu.findElements(By.cssSelector(".dropdown-option-label"));
+             
+            WebElement el = options.stream().filter(x -> x.getText().equals(text)).findFirst().orElseThrow();
+             
+            if (!el.equals(null)) {
+            	anchorElement = dropdownOptions.stream().filter(x -> x.getText().equals(text)).findFirst().orElseThrow();  
+                anchorElement = anchorElement.findElement(By.cssSelector("a"));
+             }                                  
+         } 
+         catch(StaleElementReferenceException ex) {
+         } 
+         
+         return anchorElement.getAttribute("href");
     }
 }
