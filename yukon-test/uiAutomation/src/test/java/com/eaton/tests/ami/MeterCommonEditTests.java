@@ -18,7 +18,7 @@ public class MeterCommonEditTests extends SeleniumTestSetup {
     private DriverExtensions driverExt;
     private RFN420cLMeterDetailsPage meterDetailsPageWontEdit;
     
-    private static final int WONT_EDIT_DEVICE_ID = 1293;
+    private static final int WONT_EDIT_DEVICE_ID = 1295;
     private static final int COULD_EDIT_DEVICE_ID = 1296;
 
     @BeforeClass(alwaysRun = true)

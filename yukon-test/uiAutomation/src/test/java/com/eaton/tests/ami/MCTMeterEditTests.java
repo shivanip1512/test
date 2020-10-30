@@ -26,8 +26,8 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
     private MCT420cLMeterDetailsPage meterDetailsPageWontEdit;
    
     private static final int WONT_EDIT_DEVICE_ID = 1292;
-    private static final int COULD_EDIT_DEVICE_ID = 1298;
-    private static final int WILL_EDIT_DEVICE_ID = 1299;
+    private static final int COULD_EDIT_DEVICE_ID = 1293;
+    private static final int WILL_EDIT_DEVICE_ID = 1294;
     
     private static final String UPDATED = " updated successfully.";
     private static final String METER = "Meter ";
@@ -207,9 +207,9 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
     	SoftAssertions softly = new SoftAssertions();
     	
     	EditMeterModal editModal = meterDetailsPageWontEdit.showMeterEditModal();
-    	softly.assertThat(editModal.getDeviceName().getInputValue()).isEqualTo("AT MCT-420cL Meter 04102020112259");
-    	softly.assertThat(editModal.getMeterNumber().getInputValue()).isEqualTo("566433");
-    	softly.assertThat(editModal.getPhysicalAddress().getInputValue()).isEqualTo("2699561");
+    	softly.assertThat(editModal.getDeviceName().getInputValue()).isEqualTo("AT Wont Edit MCT-420cL");
+    	softly.assertThat(editModal.getMeterNumber().getInputValue()).isEqualTo("1300000");
+    	softly.assertThat(editModal.getPhysicalAddress().getInputValue()).isEqualTo("120000");
     	softly.assertThat(editModal.getRoute().getSelectedValue()).isEqualTo("a_CCU-710A");
     	softly.assertThat(editModal.getStatus().getCheckedValue()).isEqualTo("Enabled");
     	softly.assertAll();
