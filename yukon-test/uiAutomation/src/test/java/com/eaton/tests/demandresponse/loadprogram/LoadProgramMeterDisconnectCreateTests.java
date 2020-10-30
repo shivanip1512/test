@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -22,133 +21,131 @@ import com.eaton.framework.Urls;
 
 import com.eaton.pages.demandresponse.LoadProgramCreatePage;
 import com.eaton.pages.demandresponse.LoadProgramDetailPage;
+import com.github.javafaker.Faker;
 
 public class LoadProgramMeterDisconnectCreateTests extends SeleniumTestSetup {
 
-	private LoadProgramCreatePage createPage;
-	private DriverExtensions driverExt;
-	private Random randomNum;
-	String ldGrpName;
-	String timeStamp;
+    private LoadProgramCreatePage createPage;
+    private DriverExtensions driverExt;
+    private Faker faker;
+    String ldGrpName;
+    String timeStamp;
 
-	@BeforeClass(alwaysRun = true)
-	public void beforeClass() {
-		driverExt = getDriverExt();
-		randomNum = getRandomNum();
-		setRefreshPage(false);
-		timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		ldGrpName = "MeterLoadGroup" + timeStamp;
+    @BeforeClass(alwaysRun = true)
+    public void beforeClass() {
+        driverExt = getDriverExt();
+        faker = SeleniumTestSetup.getFaker();
+        setRefreshPage(false);
+        timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        ldGrpName = "MeterLoadGroup" + timeStamp;
 
-		new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.of(ldGrpName)).create();
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
-		createPage = new LoadProgramCreatePage(driverExt);
-	}
+        new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.of(ldGrpName)).create();
+        navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+        createPage = new LoadProgramCreatePage(driverExt);
+    }
 
-	@AfterMethod(alwaysRun = true)
-	public void afterTest() {
-		refreshPage(createPage);
-	}
+    @AfterMethod(alwaysRun = true)
+    public void afterTest() {
+        refreshPage(createPage);
+    }
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldPrgmMeterDisconnect_RequiredFields_Success() {
-		timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		String ldPrgmName = "Meter Disconnect LoadProgram" + timeStamp;
-		String gearName = "Meter Disconnect Gear";
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmMeterDisconnectCreate_RequiredFields_Success() {
+        timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String ldPrgmName = "Meter Disconnect LoadProgram" + timeStamp;
+        String gearName = "Meter Disconnect Gear";
 
-		final String EXPECTED_MSG = ldPrgmName + " saved successfully.";
+        final String EXPECTED_MSG = ldPrgmName + " saved successfully.";
 
-        
-		createPage.getType().selectItemByValue("LM_METER_DISCONNECT_PROGRAM");
-		waitForLoadingSpinner();
-		createPage.getName().setInputValue(ldPrgmName);
-		
+        createPage.getType().selectItemByValue("LM_METER_DISCONNECT_PROGRAM");
+        waitForLoadingSpinner();
+        createPage.getName().setInputValue(ldPrgmName);
+
         LoadGroupsTab groupsTab = createPage.getLoadGroupTab();
 
         groupsTab.clickTabAndWait("Load Groups");
         groupsTab.getLoadGroups().addSingleAvailable(ldGrpName);
 
-		CreateMeterDisconnectPrgmModal createGearModal = createPage.showCreateMeterDiconnectPrgmModal();
-		createGearModal.getGearName().setInputValue(gearName);
-		createGearModal.getGearType().selectItemByValue("MeterDisconnect");
-		waitForLoadingSpinner();
-		createGearModal.clickOkAndWaitForSpinner();
+        CreateMeterDisconnectPrgmModal createGearModal = createPage.showCreateMeterDiconnectPrgmModal();
+        createGearModal.getGearName().setInputValue(gearName);
+        createGearModal.getGearType().selectItemByValue("MeterDisconnect");
+        waitForLoadingSpinner();
+        createGearModal.clickOkAndWaitForSpinner();
 
-		createPage.getSaveBtn().click();
+        createPage.getSaveBtn().click();
 
-		waitForPageToLoad("Load Program: " + ldPrgmName, Optional.empty());
+        waitForPageToLoad("Load Program: " + ldPrgmName, Optional.empty());
 
-		LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt);
+        LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt);
 
-		String userMsg = detailsPage.getUserMessage();
+        String userMsg = detailsPage.getUserMessage();
 
-		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
 
-	}
+    }
 
-	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldPrgmMeterDisconnect_AllFields_Success() {
-		timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		String ldPrgmName = "Meter Disconnect LoadProgram" + timeStamp;
-		String gearName = "Meter Disconnect Gear";
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmMeterDisconnectCreate_AllFields_Success() {
+        timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String ldPrgmName = "Meter Disconnect LoadProgram" + timeStamp;
+        String gearName = "Meter Disconnect Gear";
 
-		final String EXPECTED_MSG = ldPrgmName + " saved successfully.";
+        final String EXPECTED_MSG = ldPrgmName + " saved successfully.";
 
-        Integer triggerOffset = randomNum.nextInt(9999);
-        Integer restoreOffset = randomNum.nextInt(9999);
-        
-		createPage.getType().selectItemByValue("LM_METER_DISCONNECT_PROGRAM");
-		waitForLoadingSpinner();
-		createPage.getName().setInputValue(ldPrgmName);
+        Integer triggerOffset = faker.number().numberBetween(0, 99999);
+        Integer restoreOffset = faker.number().numberBetween(0, 99999);
 
-		createPage.getTriggerOffset().setInputValue(String.valueOf(triggerOffset));
-		createPage.getRestoreOffset().setInputValue(String.valueOf(restoreOffset));
+        createPage.getType().selectItemByValue("LM_METER_DISCONNECT_PROGRAM");
+        waitForLoadingSpinner();
+        createPage.getName().setInputValue(ldPrgmName);
 
-		createPage.getUseWindowOne().selectValue("Yes");
-		createPage.getStartTimeWindowOne().setValue("12:34");
-		createPage.getStopTimeWindowOne().setValue("20:45");
+        createPage.getTriggerOffset().setInputValue(String.valueOf(triggerOffset));
+        createPage.getRestoreOffset().setInputValue(String.valueOf(restoreOffset));
 
-		createPage.getUseWindowTwo().selectValue("Yes");
-		createPage.getStartTimeWindowTwo().setValue("09:12");
-		createPage.getStopTimeWindowTwo().setValue("22:34");
-		
+        createPage.getUseWindowOne().selectValue("Yes");
+        createPage.getStartTimeWindowOne().setValue("12:34");
+        createPage.getStopTimeWindowOne().setValue("20:45");
+
+        createPage.getUseWindowTwo().selectValue("Yes");
+        createPage.getStartTimeWindowTwo().setValue("09:12");
+        createPage.getStopTimeWindowTwo().setValue("22:34");
+
         LoadGroupsTab groupsTab = createPage.getLoadGroupTab();
 
         groupsTab.clickTabAndWait("Load Groups");
         groupsTab.getLoadGroups().addSingleAvailable(ldGrpName);
 
-		CreateMeterDisconnectPrgmModal createGearModal = createPage.showCreateMeterDiconnectPrgmModal();
-		createGearModal.getGearName().setInputValue(gearName);
-		createGearModal.getGearType().selectItemByValue("MeterDisconnect");
-		waitForLoadingSpinner();
-		createGearModal.clickOkAndWaitForSpinner();
+        CreateMeterDisconnectPrgmModal createGearModal = createPage.showCreateMeterDiconnectPrgmModal();
+        createGearModal.getGearName().setInputValue(gearName);
+        createGearModal.getGearType().selectItemByValue("MeterDisconnect");
+        waitForLoadingSpinner();
+        createGearModal.clickOkAndWaitForSpinner();
 
-		createPage.getSaveBtn().click();
+        createPage.getSaveBtn().click();
 
-		waitForPageToLoad("Load Program: " + ldPrgmName, Optional.empty());
+        waitForPageToLoad("Load Program: " + ldPrgmName, Optional.empty());
 
-		LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt);
+        LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt);
 
-		String userMsg = detailsPage.getUserMessage();
+        String userMsg = detailsPage.getUserMessage();
 
-		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
 
-	}
-	
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldPgmMeterDisconnect_GearType_ValuesCorrect() {
-		List<String> expectedGearsList = new ArrayList<>(
-		        List.of("Select", "Meter Disconnect"));
-		
-		createPage.getType().selectItemByValue("LM_METER_DISCONNECT_PROGRAM");
-		waitForLoadingSpinner();
-		
-		CreateMeterDisconnectPrgmModal createGearModal = createPage.showCreateMeterDiconnectPrgmModal();
-		waitForLoadingSpinner();
-		
-		List<String> actualGearsList = createGearModal.getGearType().getOptionValues();
-		
-		assertThat(actualGearsList).containsExactlyElementsOf(expectedGearsList);		
-	}
+    }
+
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPgmMeterDisconnectCreate_GearType_ValuesCorrect() {
+        List<String> expectedGearsList = new ArrayList<>(
+                List.of("Select", "Meter Disconnect"));
+
+        createPage.getType().selectItemByValue("LM_METER_DISCONNECT_PROGRAM");
+        waitForLoadingSpinner();
+
+        CreateMeterDisconnectPrgmModal createGearModal = createPage.showCreateMeterDiconnectPrgmModal();
+        waitForLoadingSpinner();
+
+        List<String> actualGearsList = createGearModal.getGearType().getOptionValues();
+
+        assertThat(actualGearsList).containsExactlyElementsOf(expectedGearsList);
+    }
 }
-
-

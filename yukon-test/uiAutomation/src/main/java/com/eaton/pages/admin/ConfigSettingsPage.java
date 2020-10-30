@@ -1,31 +1,24 @@
 package com.eaton.pages.admin;
 
+import java.util.Optional;
+
 import org.openqa.selenium.By;
 
 import com.eaton.elements.ActionBtnDropDownElement;
 import com.eaton.elements.IconLinkButton;
 import com.eaton.elements.Section;
+import com.eaton.elements.modals.TestEmailModal;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.pages.PageBase;
 
 public class ConfigSettingsPage extends PageBase {
     
-    private ActionBtnDropDownElement actions;
-    private Section systemSetupSection;
-    private Section applicationSection;
-    private Section integrationSection;
-    private Section otherSection;
-    private IconLinkButton attributesBtn;
-
-    public ConfigSettingsPage(DriverExtensions driverExt) {
+    public ConfigSettingsPage (DriverExtensions driverExt, String pageUrl) {
         super(driverExt);
-        
-        actions = new ActionBtnDropDownElement(driverExt);
-        systemSetupSection = new Section(driverExt, "System Setup");
-        applicationSection = new Section(driverExt, "Application");        
-        integrationSection = new Section(driverExt, "Integration");
-        otherSection = new Section(driverExt, "Other");
-        attributesBtn = new IconLinkButton(driverExt, "attributes", getSystemSetupSection().getSection());
+
+        requiresLogin = true;
+        this.pageUrl = pageUrl;
     }
     
     public Integer getSystemSetupBtnCount() {
@@ -45,26 +38,98 @@ public class ConfigSettingsPage extends PageBase {
     }
     
     public ActionBtnDropDownElement getActionBtn() {
-        return actions;
+        return new ActionBtnDropDownElement(driverExt);
     }
     
     public Section getSystemSetupSection() {
-        return systemSetupSection;
+        return new Section(driverExt, "System Setup");
     }
     
     public Section getApplicationSection() {
-        return applicationSection;
+        return new Section(driverExt, "Application"); 
     }
     
     public Section getIntegrationSection() {
-        return integrationSection;
+        return new Section(driverExt, "Integration");
     }
     
     public Section getOtherSection() {
-        return otherSection;
+        return new Section(driverExt, "Other");
     }
     
     public IconLinkButton getAttributesBtn() {
-        return attributesBtn;
+        return new IconLinkButton(driverExt, "attributes", getSystemSetupSection().getSection());
+    }
+    
+    public IconLinkButton getAuthenticationBtn() {
+        return new IconLinkButton(driverExt, "authentication", getSystemSetupSection().getSection());
+    }
+    
+    public IconLinkButton getDashboardAdminBtn() {
+        return new IconLinkButton(driverExt, "dashboard_admin", getSystemSetupSection().getSection());
+    }
+    
+    public IconLinkButton getDemandResponseBtn() {
+        return new IconLinkButton(driverExt, "dr", getSystemSetupSection().getSection());
+    }
+    
+    public IconLinkButton getEndpointBtn() {
+        return new IconLinkButton(driverExt, "ami", getSystemSetupSection().getSection());
+    }
+    
+    public IconLinkButton getThemesBtn() {
+        return new IconLinkButton(driverExt, "themes", getSystemSetupSection().getSection());
+    }
+    
+    public IconLinkButton getWebServerBtn() {
+        return new IconLinkButton(driverExt, "web_server", getSystemSetupSection().getSection());
+    }
+    
+    public IconLinkButton getYukonServicesBtn() {
+        return new IconLinkButton(driverExt, "yukon_services", getSystemSetupSection().getSection());
+    }
+    
+    public IconLinkButton getDashboardWidgetsBtn() {
+        return new IconLinkButton(driverExt, "dashboard_widget", getApplicationSection().getSection());
+    }
+    
+    public IconLinkButton getDataImportExportBtn() {
+        return new IconLinkButton(driverExt, "data_import_export", getApplicationSection().getSection());
+    }
+    
+    public IconLinkButton getTrendsBtn() {
+        return new IconLinkButton(driverExt, "graphing", getApplicationSection().getSection());
+    }
+    
+    public IconLinkButton getMultispeakBtn() {
+        return new IconLinkButton(driverExt, "multispeak", getIntegrationSection().getSection());
+    }
+    
+    public IconLinkButton getOpenAdrBtn() {
+        return new IconLinkButton(driverExt, "open_adr", getIntegrationSection().getSection());
+    }
+    
+    public IconLinkButton getVoiceBtn() {
+        return new IconLinkButton(driverExt, "voice", getIntegrationSection().getSection());
+    }
+    
+    public IconLinkButton getWeatherBtn() {
+        return new IconLinkButton(driverExt, "weather", getIntegrationSection().getSection());
+    }
+    
+    public IconLinkButton getMiscBtn() {
+        return new IconLinkButton(driverExt, "misc", getOtherSection().getSection());
+    }
+    
+    public IconLinkButton getSecurityBtn() {
+        return new IconLinkButton(driverExt, "security", getOtherSection().getSection());
+    }
+    
+    public TestEmailModal showTestEmailModal() {
+        getActionBtn().clickAndSelectOptionByText("Test Email");
+
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("adminSetup-testEmail-popup");
+
+        return new TestEmailModal(this.driverExt, Optional.empty(), Optional.of("adminSetup-testEmail-popup"));
     }
 }

@@ -13,32 +13,44 @@ public class IconLinkButton {
     private String linkCategoryName;
     private String parrentClass;
     private WebElement parentElement;
+    private WebElement button;
+    private WebElement btnDetails;
 
     public IconLinkButton(DriverExtensions driverExt, String linkCategoryName) {
         this.driverExt = driverExt;
         this.linkCategoryName = linkCategoryName.toUpperCase();
+        setButton();
     }
 
     public IconLinkButton(DriverExtensions driverExt, String linkCategoryName, String parrentClass) {
         this.driverExt = driverExt;
         this.linkCategoryName = linkCategoryName.toUpperCase();
         this.parrentClass = parrentClass;
+        setButton();
     }
 
     public IconLinkButton(DriverExtensions driverExt, String linkCategoryName, WebElement parentElement) {
         this.driverExt = driverExt;
         this.linkCategoryName = linkCategoryName.toUpperCase();
         this.parentElement = parentElement;
+        setButton();
     }
 
-    private WebElement getButton() {
+    private void setButton() {
         if (this.parrentClass != null) {
-            return this.driverExt.findElement(By.cssSelector("." + this.parrentClass + "button[data-href='edit?category=" + this.linkCategoryName + "']"), Optional.of(2));
+            button = this.driverExt.findElement(By.cssSelector("." + this.parrentClass + "button[data-href='edit?category=" + this.linkCategoryName + "']"), Optional.of(2));
+            btnDetails = this.driverExt.findElement(By.cssSelector("." + this.parrentClass + "button[data-href='edit?category=" + this.linkCategoryName + "'] + .box"), Optional.of(2));
         } else if (this.parentElement != null) {
-            return parentElement.findElement(By.cssSelector("button[data-href='edit?category=" + this.linkCategoryName + "']"));
+            button = parentElement.findElement(By.cssSelector("button[data-href='edit?category=" + this.linkCategoryName + "']"));
+            btnDetails = parentElement.findElement(By.cssSelector("button[data-href='edit?category=" + this.linkCategoryName + "'] + .box"));
         } else {
-            return this.driverExt.findElement(By.cssSelector("button[data-href='edit?category=" + this.linkCategoryName + "']"), Optional.of(2));
+            button = this.driverExt.findElement(By.cssSelector("button[data-href='edit?category=" + this.linkCategoryName + "']"), Optional.of(2));
+            btnDetails = this.driverExt.findElement(By.cssSelector("button[data-href='edit?category=" + this.linkCategoryName + "'] + .box"), Optional.of(2));
         }
+    }
+    
+    private WebElement getButton() {
+        return button;
     }
 
     public void click() {
@@ -46,12 +58,13 @@ public class IconLinkButton {
     }
     
     public String getTitle() {
-        WebElement el = getButton().findElement(By.cssSelector("+ .box .title"));
+        WebElement el = btnDetails.findElement(By.cssSelector(".title"));
         return el.getText();
     }
     
     public String getDetails() {
-        WebElement el = getButton().findElement(By.cssSelector("+ .box .detail"));
+        WebElement el = btnDetails.findElement(By.cssSelector(".detail"));
+        
         return el.getText();
     }
     
@@ -60,7 +73,7 @@ public class IconLinkButton {
     }
     
     public String getTitleLink() {
-        WebElement el = getButton().findElement(By.cssSelector("+ .box .title"));
+        WebElement el = btnDetails.findElement(By.cssSelector(".title"));
         return el.getAttribute("href");
     }
 }
