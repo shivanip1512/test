@@ -28,6 +28,8 @@ public class LoadProgramCreatePage extends PageBase {
 
 	private static final String DESCRIBEDBY = "gear-create-popup-LM_DIRECT_PROGRAM";
 	private static final String HONEYWELL_GEAR_MODAL_DESCRIBEDBY = "gear-create-popup-LM_HONEYWELL_PROGRAM";
+	private static final String ITRON_GEAR_MODAL_DESCRIBEDBY = "gear-create-popup-LM_ITRON_PROGRAM";
+	
 	private TextEditElement name;
 	private DropDownElement type;
 	private DropDownElement operationalState;
@@ -230,9 +232,10 @@ public class LoadProgramCreatePage extends PageBase {
 
 	public CreateItronPrgmGearModal showCreateItronPrgmGearModal() {
 		getGearsCreateBtn().click();
+
 		if (showCreateItronPrgmGearModal == null) {
-			this.showCreateItronPrgmGearModal = new CreateItronPrgmGearModal(this.driverExt, Optional.empty(),
-					Optional.of(DESCRIBEDBY));
+			this.showCreateItronPrgmGearModal = new CreateItronPrgmGearModal(this.driverExt, Optional.empty(), 
+					Optional.of(ITRON_GEAR_MODAL_DESCRIBEDBY));
 		}
 		return showCreateItronPrgmGearModal;
 	}
