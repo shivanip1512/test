@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMServiceHelper;
@@ -21,6 +20,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteLMConstraint;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.device.lm.LMProgramConstraint;
 import com.cannontech.dr.constraint.service.ProgramConstraintService;
 import com.cannontech.stars.util.ServletUtils;
@@ -59,7 +59,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
     }
 
     @Override
-    public ProgramConstraint create(ProgramConstraint programConstraint) {
+    public ProgramConstraint create(ProgramConstraint programConstraint, LiteYukonUser liteYukonUser) {
         Optional<LMDto> holidaySchedule = lmServiceHelper.getHolidaySchedule(programConstraint.getHolidaySchedule().getId());
         if (holidaySchedule.isEmpty()) {
             throw new NotFoundException("Holiday Schedule Id not found");
@@ -85,14 +85,13 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
             programConstraint.getSeasonSchedule().setName(seasonSchedule.get().getName());
         }
         
-        demandResponseEventLogService.programConstraintCreated(constraint.getConstraintName(),
-                                                               ApiRequestContext.getContext().getLiteYukonUser());
+        demandResponseEventLogService.programConstraintCreated(constraint.getConstraintName(), liteYukonUser);
 
         return programConstraint;
     }
 
     @Override
-    public int delete(int constraintId) {
+    public int delete(int constraintId, LiteYukonUser liteYukonUser) {
         Optional<LiteLMConstraint> liteLMConstraint = 
                 dbCache.getAllLMProgramConstraints().stream()
                 .filter(constraint -> constraint.getConstraintID() == constraintId)
@@ -105,14 +104,13 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
         LMProgramConstraint constraint = (LMProgramConstraint) LiteFactory.createDBPersistent(liteLMConstraint.get());
         dbPersistentDao.performDBChange(constraint, TransactionType.DELETE);
 
-        demandResponseEventLogService.programConstraintDeleted(constraint.getConstraintName(),
-                                                               ApiRequestContext.getContext().getLiteYukonUser());
+        demandResponseEventLogService.programConstraintDeleted(constraint.getConstraintName(), liteYukonUser);
 
         return constraint.getConstraintID();
     }
 
     @Override
-    public ProgramConstraint update(int constraintId, ProgramConstraint programConstraint) {
+    public ProgramConstraint update(int constraintId, ProgramConstraint programConstraint, LiteYukonUser liteYukonUser) {
         Optional<LiteLMConstraint> lmConstraint = 
                 dbCache.getAllLMProgramConstraints().stream()
                 .filter(liteLMConstraint -> liteLMConstraint.getConstraintID() == constraintId)
@@ -144,8 +142,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
             programConstraint.getSeasonSchedule().setName(seasonSchedule.get().getName());
         }
 
-        demandResponseEventLogService.programConstraintUpdated(lmprogramConstraint.getConstraintName(),
-                                                               ApiRequestContext.getContext().getLiteYukonUser());
+        demandResponseEventLogService.programConstraintUpdated(lmprogramConstraint.getConstraintName(), liteYukonUser);
 
         return programConstraint;
     }
@@ -165,7 +162,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
     }
 
     @Override
-    public int copy(int id, LMCopy lmCopy) {
+    public int copy(int id, LMCopy lmCopy, LiteYukonUser liteYukonUser) {
         throw new UnsupportedOperationException("Not supported copy operation");
     }
 

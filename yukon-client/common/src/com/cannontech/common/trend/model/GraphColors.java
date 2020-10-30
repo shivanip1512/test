@@ -5,6 +5,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import java.util.Arrays;
 import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.exception.TypeNotSupportedException;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -12,7 +13,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 /**
  * Provides colors for graphs.
  */
-public enum GraphColors {
+public enum GraphColors implements DisplayableEnum {
     BLACK(YukonColorPalette.BLACK),
     BLUE(YukonColorPalette.BLUE),
     GRAY(YukonColorPalette.GRAY),
@@ -79,6 +80,11 @@ public enum GraphColors {
         } catch (IllegalArgumentException e) {
             throw new TypeNotSupportedException(color + " Graph Color is not valid.");
         }
+    }
+
+    @Override
+    public String getFormatKey() {
+        return this.yukonColor.getFormatKey();
     }
 
 }

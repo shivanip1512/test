@@ -24,6 +24,7 @@ import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.dr.area.service.ControlAreaSetupService;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
@@ -41,31 +42,26 @@ public class ControlAreaSetupApiController {
 
     @PostMapping
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
-    public ResponseEntity<Object> create(@Valid @RequestBody ControlArea controlArea) {
-        ControlArea createControlArea= controlAreaService.create(controlArea);
+    public ResponseEntity<Object> create(@Valid @RequestBody ControlArea controlArea, YukonUserContext userContext) {
+        ControlArea createControlArea = controlAreaService.create(controlArea, userContext.getYukonUser());
         return new ResponseEntity<>(createControlArea, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
-    public ResponseEntity<Object> update(@Valid @RequestBody ControlArea controlArea, @PathVariable int id) {
-        ControlArea updateControlArea = controlAreaService.update(id, controlArea);
+    public ResponseEntity<Object> update(@Valid @RequestBody ControlArea controlArea, @PathVariable int id,
+            YukonUserContext userContext) {
+        ControlArea updateControlArea = controlAreaService.update(id, controlArea, userContext.getYukonUser());
         return new ResponseEntity<>(updateControlArea, HttpStatus.OK);
     }
 
     @DeleteMapping("/{controlAreaId}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.OWNER)
-    public ResponseEntity<Object> delete(@PathVariable int controlAreaId) {
-        int areaId = controlAreaService.delete(controlAreaId);
+    public ResponseEntity<Object> delete(@PathVariable int controlAreaId, YukonUserContext userContext) {
+        int areaId = controlAreaService.delete(controlAreaId, userContext.getYukonUser());
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("id", areaId);
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
-    }
-
-    @GetMapping("/unAssignedPrograms")
-    public ResponseEntity<List<LMDto>> getAvailablePrograms() {
-        List<LMDto> programs = controlAreaService.retrieveUnassignedPrograms();
-        return new ResponseEntity<>(programs, HttpStatus.OK);
     }
 
     @GetMapping("/normalState/{pointId}")
