@@ -4,10 +4,8 @@ import java.util.Optional;
 
 import com.eaton.elements.Button;
 import com.eaton.elements.DropDownElement;
-
 import com.eaton.elements.Section;
 import com.eaton.elements.SelectBoxElement;
-
 import com.eaton.elements.SwitchBtnYesNoElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TimePickerElement;
@@ -48,11 +46,9 @@ public class LoadProgramCreatePage extends PageBase {
 		return new TextEditElement(this.driverExt, "name");
 	}
 
-
 	public DropDownElement getType() {
 		return new DropDownElement(this.driverExt, "type");
 	}
-
 
 	public DropDownElement getOperationalState() {
 		return new DropDownElement(this.driverExt, "operationalState");
@@ -71,29 +67,29 @@ public class LoadProgramCreatePage extends PageBase {
 		return new TextEditElement(this.driverExt, "restoreOffset");
 	}
 
-    public SwitchBtnYesNoElement getUseWindowOne() {
+	// Control Window
+	public SwitchBtnYesNoElement getUseWindowOne() {
 		return new SwitchBtnYesNoElement(this.driverExt, "controlWindowOne");
 	}
 
 	public TimePickerElement getStartTimeWindowOne() {
-		return new TimePickerElement(this.driverExt, "startTimeWindowOne_inputField");
+		return startTimeWindowOne;
 	}
 
 	public TimePickerElement getStopTimeWindowOne() {
-		return new TimePickerElement(this.driverExt, "stopTimeWindowOne_inputField");
+		return stopTimeWindowOne;
+	}
+
+	public TimePickerElement getStartTimeWindowTwo() {
+		return startTimeWindowTwo;
+	}
+
+	public TimePickerElement getStopTimeWindowTwo() {
+		return stopTimeWindowTwo;
 	}
 
 	public SwitchBtnYesNoElement getUseWindowTwo() {
 		return new SwitchBtnYesNoElement(this.driverExt, "controlWindowTwo");
-	}
-
-	public TimePickerElement getStartTimeWindowTwo() {
-		return new TimePickerElement(this.driverExt, "startTimeWindowTwo_inputField");
-	}
-
-	public TimePickerElement getStopTimeWindowTwo() {
-		return new TimePickerElement(this.driverExt, "stopTimeWindowTwo_inputField");
-
 	}
 
 	public Button getSaveBtn() {
@@ -137,9 +133,8 @@ public class LoadProgramCreatePage extends PageBase {
 	public CreateMeterDisconnectPrgmModal showCreateMeterDiconnectPrgmModal() {
 		getGearsCreateBtn().click();
 
-
-        return new CreateMeterDisconnectPrgmModal(this.driverExt, Optional.empty(), Optional.of("gear-create-popup-LM_METER_DISCONNECT_PROGRAM"));
-    }
+		return new CreateMeterDisconnectPrgmModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
+	}
 
 	public CreateSepPrgmGearModal showCreateSepPrgmGearModal() {
 		getGearsCreateBtn().click();
