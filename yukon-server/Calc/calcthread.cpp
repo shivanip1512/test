@@ -577,7 +577,7 @@ auto CtiCalculateThread::calcHistoricalPoints(const PointTimeMap& dbTimeMap, con
 
     PointTimeMap unlistedPoints, updatedPoints;
 
-    gsl::finally([&]() {
+    const auto updateOnAnyReturn = gsl::finally([&]() {
         updateCalcHistoricalLastUpdatedTime(unlistedPoints, updatedPoints);  //  Write these back out to the database on any return
     });
 
@@ -764,7 +764,7 @@ auto CtiCalculateThread::calcBackfillingPoint(CtiCalc& calcPoint, const CtiTime 
     const auto timesToString = [](const std::set<CtiTime>& times) {
         return times.empty() 
             ? "(none)" 
-            : (std::to_string(times.size()) + " elements, " + times.begin()->asString() + "-" + times.rend()->asString());
+            : (std::to_string(times.size()) + " elements, " + times.begin()->asString() + "-" + times.rbegin()->asString());
     };
 
     HistoricalResults results = { CtiTime::not_a_time, {} };
@@ -1244,13 +1244,15 @@ void CtiCalculateThread::calcThread( void )
   */
 void CtiCalculateThread::startThreads()
 {
-    CTILOG_DEBUG( dout, "Starting threads: numberOfHistoricalPoints=" << _historicalPoints.size() <<
-        ", historical thread is " << (_historicalThreadFunc.isRunning() ? "" : "not ") << "currently running" );
+    CTILOG_DEBUG( dout, "Starting threads:"
+        << " historical=" << _historicalPoints.size()
+        << ", backfilling= " << _backfillingPoints.size()
+        << ", historical thread is " << (_historicalThreadFunc.isRunning() ? "" : "not ") << "currently running" );
 
     _periodicThreadFunc.start();
     _onUpdateThreadFunc.start();
 
-    if (!_historicalPoints.empty())
+    if (!_historicalPoints.empty() || !_backfillingPoints.empty())
     {
         _historicalThreadFunc.start();
     }
@@ -1268,8 +1270,10 @@ void CtiCalculateThread::startThreads()
   */
 void CtiCalculateThread::joinThreads()
 {
-    CTILOG_DEBUG( dout, "Stopping threads: numberOfHistoricalPoints=" << _historicalPoints.size() <<
-        ", historical thread is " << (_historicalThreadFunc.isRunning() ? "" : "not ") << "currently running" );
+    CTILOG_DEBUG( dout, "Stopping threads:"
+        << " historical=" << _historicalPoints.size()
+        << ", backfilling= " << _backfillingPoints.size()
+        << ", historical thread is " << (_historicalThreadFunc.isRunning() ? "" : "not ") << "currently running" );
 
     _periodicThreadFunc.tryJoinOrTerminateFor( Cti::Timing::Chrono::seconds( 30 ) );
     _onUpdateThreadFunc.tryJoinOrTerminateFor(Cti::Timing::Chrono::seconds(30));
@@ -1292,8 +1296,10 @@ void CtiCalculateThread::joinThreads()
   */
 void CtiCalculateThread::interruptThreads()
 {
-    CTILOG_DEBUG( dout, "Interrupting threads: numberOfHistoricalPoints=" << _historicalPoints.size() <<
-        ", historical thread is " << (_historicalThreadFunc.isRunning() ? "" : "not ") << "currently running" );
+    CTILOG_DEBUG( dout, "Interrupting threads:"
+        << " historical=" << _historicalPoints.size()
+        << ", backfilling= " << _backfillingPoints.size()
+        << ", historical thread is " << (_historicalThreadFunc.isRunning() ? "" : "not ") << "currently running" );
 
     _periodicThreadFunc.interrupt();
     _onUpdateThreadFunc.interrupt();
@@ -1324,8 +1330,10 @@ void CtiCalculateThread::pauseThreads()
 {
     try
     {
-        CTILOG_DEBUG( dout, "Pausing threads: numberOfHistoricalPoints=" << _historicalPoints.size() <<
-            ", historical thread is " << (_historicalThreadFunc.isRunning() ? "" : "not ") << "currently running" );
+        CTILOG_DEBUG( dout, "Pausing threads:"
+            << " historical=" << _historicalPoints.size()
+            << ", backfilling= " << _backfillingPoints.size()
+            << ", historical thread is " << (_historicalThreadFunc.isRunning() ? "" : "not ") << "currently running" );
 
         _onUpdateThreadFunc.pause();
         _periodicThreadFunc.pause();
@@ -1356,15 +1364,17 @@ void CtiCalculateThread::resumeThreads()
 {
     try
     {
-        CTILOG_DEBUG( dout, "Resuming threads: numberOfHistoricalPoints=" << _historicalPoints.size() <<
-            ", historical thread is " << (_historicalThreadFunc.isRunning() ? "" : "not ") << "currently running" );
+        CTILOG_DEBUG( dout, "Resuming threads:"
+            << " historical=" << _historicalPoints.size()
+            << ", backfilling= " << _backfillingPoints.size()
+            << ", historical thread is " << (_historicalThreadFunc.isRunning() ? "" : "not ") << "currently running" );
 
         _onUpdateThreadFunc.resume();
         _periodicThreadFunc.resume();
 
         if (_historicalThreadFunc.isRunning())
         {
-            if (_historicalPoints.empty())
+            if (_historicalPoints.empty() && _backfillingPoints.empty())
             {
                 _historicalThreadFunc.interrupt();
                 _historicalThreadFunc.tryJoinOrTerminateFor( Cti::Timing::Chrono::seconds( 30 ) );
@@ -1752,6 +1762,8 @@ void CtiCalculateThread::setHistoricalPointStore(const HistoricalPointValueMap& 
 
 void CtiCalculateThread::updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlistedPoints, PointTimeMap &updatedPoints)
 {
+    CTILOG_DEBUG(dout, unlistedPoints.size() << " inserts, " << updatedPoints.size() << " updates");
+
     //The plan is to update the updated points and add the unlisted points.
     try
     {
@@ -1764,7 +1776,7 @@ void CtiCalculateThread::updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlis
             writer << pointId << lastUpdate;
             if( ! Cti::Database::executeCommand( writer, CALLSITE ))
             {
-                CTILOG_ERROR(dout, "Failed to insert point ID " << pointId << "@" << lastUpdate << " in CalcHistoricalUpdatedTime");
+                CTILOG_ERROR(dout, "Failed to insert point ID " << pointId << "@" << lastUpdate << " in DYNAMICCALCHISTORICAL");
                 break;
             }
         }
@@ -1777,7 +1789,7 @@ void CtiCalculateThread::updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlis
             writer << lastUpdate << pointId;
             if( ! Cti::Database::executeCommand(writer, CALLSITE) )
             {
-                CTILOG_ERROR(dout, "Failed to update point ID " << pointId << "@" << lastUpdate << " in CalcHistoricalUpdatedTime");
+                CTILOG_ERROR(dout, "Failed to update point ID " << pointId << "@" << lastUpdate << " in DYNAMICCALCHISTORICAL");
                 break;
             }
         }
