@@ -230,7 +230,7 @@ public class MacroLoadGroupSetupController {
 
             if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 HashMap<String, Integer> paoIdMap = (HashMap<String, Integer>) response.getBody();
-                int groupId = paoIdMap.get("paoId");
+                int groupId = paoIdMap.get("id");
                 flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", macroLoadGroup.getName()));
                 return "redirect:/dr/setup/macroLoadGroup/" + groupId;
             }

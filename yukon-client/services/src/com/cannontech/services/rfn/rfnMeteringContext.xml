@@ -155,6 +155,102 @@
         <property name="loadProfile" value="KVA_LOAD_PROFILE"></property>
         <qualifier value="kVAh"/>
     </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="DELIVERED_KWH_RATE_A"/>
+        <property name="perInterval" value="DELIVERED_KWH_RATE_A_PER_INTERVAL"></property>
+        <property name="loadProfile"><null/></property>
+        <qualifier value="kWhRateA"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="DELIVERED_KWH_RATE_B"/>
+        <property name="perInterval" value="DELIVERED_KWH_RATE_B_PER_INTERVAL"></property>
+        <property name="loadProfile"><null/></property>
+        <qualifier value="kWhRateB"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="DELIVERED_KWH_RATE_C"/>
+        <property name="perInterval" value="DELIVERED_KWH_RATE_C_PER_INTERVAL"></property>
+        <property name="loadProfile"><null/></property>
+        <qualifier value="kWhRateC"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="DELIVERED_KWH_RATE_D"/>
+        <property name="perInterval" value="DELIVERED_KWH_RATE_D_PER_INTERVAL"></property>
+        <property name="loadProfile"><null/></property>
+        <qualifier value="kWhRateD"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="RECEIVED_KWH_RATE_A"/>
+        <property name="perInterval" value="RECEIVED_KWH_RATE_A_PER_INTERVAL"></property>
+        <property name="loadProfile"><null/></property>
+        <qualifier value="RecievedkWhRateA"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="RECEIVED_KWH_RATE_B"/>
+        <property name="perInterval" value="RECEIVED_KWH_RATE_B_PER_INTERVAL"></property>
+        <property name="loadProfile"><null/></property>
+        <qualifier value="RecievedkWhRateB"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="RECEIVED_KWH_RATE_C"/>
+        <property name="perInterval" value="RECEIVED_KWH_RATE_C_PER_INTERVAL"></property>
+        <property name="loadProfile"><null/></property>
+        <qualifier value="RecievedkWhRateC"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="RECEIVED_KWH_RATE_D"/>
+        <property name="perInterval" value="RECEIVED_KWH_RATE_D_PER_INTERVAL"></property>
+        <property name="loadProfile"><null/></property>
+        <qualifier value="RecievedkWhRateD"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="NET_KWH_RATE_A"/>
+        <property name="perInterval" value="NET_KWH_RATE_A_PER_INTERVAL"></property>
+        <property name="loadProfile"><null/></property>
+        <qualifier value="NetkWhRateA"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="NET_KWH_RATE_B"/>
+        <property name="perInterval" value="NET_KWH_RATE_B_PER_INTERVAL"></property>
+        <property name="loadProfile"><null/></property>
+        <qualifier value="NetkWhRateB"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="NET_KWH_RATE_C"/>
+        <property name="perInterval" value="NET_KWH_RATE_C_PER_INTERVAL"></property>
+        <property name="loadProfile"><null/></property>
+        <qualifier value="NetkWhRateC"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="NET_KWH_RATE_D"/>
+        <property name="perInterval" value="NET_KWH_RATE_D_PER_INTERVAL"></property>
+        <property name="loadProfile"><null/></property>
+        <qualifier value="NetkWhRateD"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="SUM_KWH_RATE_A"/>
+        <property name="perInterval" value="SUM_KWH_RATE_A_PER_INTERVAL"></property>
+        <property name="loadProfile"><null/></property>
+        <qualifier value="SumkWhRateA"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="SUM_KWH_RATE_B"/>
+        <property name="perInterval" value="SUM_KWH_RATE_B_PER_INTERVAL"></property>
+        <property name="loadProfile"><null/></property>
+        <qualifier value="SumkWhRateB"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="SUM_KWH_RATE_C"/>
+        <property name="perInterval" value="SUM_KWH_RATE_C_PER_INTERVAL"></property>
+        <property name="loadProfile"><null/></property>
+        <qualifier value="SumkWhRateC"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="SUM_KWH_RATE_D"/>
+        <property name="perInterval" value="SUM_KWH_RATE_D_PER_INTERVAL"></property>
+        <property name="loadProfile"><null/></property>
+        <qualifier value="SumkWhRateD"/>
+    </bean>
     <bean id= "missingGatewayFirstDataTimes" class="java.util.concurrent.ConcurrentHashMap"/>
        
     <bean class="com.cannontech.services.calculated.CalculatedPointDataProducer"/>

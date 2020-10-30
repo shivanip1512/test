@@ -11,10 +11,6 @@
 
 <c:if test="${not empty errorMsg}"><tags:alertBox>${errorMsg}</tags:alertBox></c:if>
 
-<div class="empty-list stacked">
-    <i:inline key=".firmwareUpdate.note"/>
-</div>
-
 <form:form id="firmware-upgrade-form" modelAttribute="gateways" action="${updateUrl}">
     <cti:csrfToken/>
     <div class="scroll-lg js-resize-with-dialog">

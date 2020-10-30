@@ -124,7 +124,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/dr/constraints/getSeasonSchedules",
+									"raw": "{{api-url}}/api/dr/constraints/seasonSchedules",
 									"host": [
 										"{{api-url}}"
 									],
@@ -132,7 +132,7 @@
 										"api",
 										"dr",
 										"constraints",
-										"getSeasonSchedules"
+										"seasonSchedules"
 									]
 								}
 							},
@@ -144,7 +144,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/dr/constraints/getHolidaySchedules",
+									"raw": "{{api-url}}/api/dr/constraints/holidaySchedules",
 									"host": [
 										"{{api-url}}"
 									],
@@ -152,7 +152,7 @@
 										"api",
 										"dr",
 										"constraints",
-										"getHolidaySchedules"
+										"holidaySchedules"
 									]
 								}
 							},
@@ -335,26 +335,6 @@
 				{
 					"name": "ControlScenario",
 					"item": [
-						{
-							"name": "GetAllPrograms",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{api-url}}/api/dr/loadPrograms/availablePrograms",
-									"host": [
-										"{{api-url}}"
-									],
-									"path": [
-										"api",
-										"dr",
-										"loadPrograms",
-										"availablePrograms"
-									]
-								}
-							},
-							"response": []
-						},
 						{
 							"name": "Delete",
 							"request": {

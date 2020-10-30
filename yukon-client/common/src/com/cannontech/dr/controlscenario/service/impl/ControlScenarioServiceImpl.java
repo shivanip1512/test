@@ -8,7 +8,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.dr.setup.ControlScenario;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMServiceHelper;
@@ -21,6 +20,7 @@ import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
 import com.cannontech.dr.setup.service.LMSetupService;
@@ -35,7 +35,7 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
 
     @Override
     @Transactional
-    public ControlScenario create(ControlScenario controlScenario) {
+    public ControlScenario create(ControlScenario controlScenario, LiteYukonUser liteYukonUser) {
         if (CollectionUtils.isNotEmpty(controlScenario.getAllPrograms())) {
             lmServiceHelper.validateProgramsAndGear(controlScenario);
         }
@@ -47,14 +47,13 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
             program.setGears(lmServiceHelper.getGearsforModel(program.getProgramId(), program.getGears()));
         });
 
-        logService.scenarioCreated(lmScenario.getPAOName(), getProgramNames(lmScenario.getAllThePrograms()),
-                ApiRequestContext.getContext().getLiteYukonUser());
+        logService.scenarioCreated(lmScenario.getPAOName(), getProgramNames(lmScenario.getAllThePrograms()), liteYukonUser);
         return controlScenario;
     }
 
     @Override
     @Transactional
-    public ControlScenario update(int controlScenarioId, ControlScenario controlScenario) {
+    public ControlScenario update(int controlScenarioId, ControlScenario controlScenario, LiteYukonUser liteYukonUser) {
         if (CollectionUtils.isNotEmpty(controlScenario.getAllPrograms())) {
             lmServiceHelper.validateProgramsAndGear(controlScenario);
         }
@@ -67,8 +66,7 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
             program.setGears(lmServiceHelper.getGearsforModel(program.getProgramId(), program.getGears()));
         });
 
-        logService.scenarioUpdated(lmScenario.getPAOName(), getProgramNames(lmScenario.getAllThePrograms()),
-                ApiRequestContext.getContext().getLiteYukonUser());
+        logService.scenarioUpdated(lmScenario.getPAOName(), getProgramNames(lmScenario.getAllThePrograms()), liteYukonUser);
         return controlScenario;
     }
 
@@ -98,7 +96,7 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
 
     @Override
     @Transactional
-    public int delete(int controlScenarioId) {
+    public int delete(int controlScenarioId, LiteYukonUser liteYukonUser) {
         LiteYukonPAObject controlScenario = dbCache.getAllLMScenarios().stream()
                                                                        .filter(scenario -> scenario.getLiteID() == controlScenarioId)
                                                                        .findFirst()
@@ -106,7 +104,7 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
 
         YukonPAObject lmScenario = (YukonPAObject) LiteFactory.createDBPersistent(controlScenario);
         dbPersistentDao.performDBChange(lmScenario, TransactionType.DELETE);
-        logService.scenarioDeleted(lmScenario.getPAOName(), ApiRequestContext.getContext().getLiteYukonUser());
+        logService.scenarioDeleted(lmScenario.getPAOName(), liteYukonUser);
         return lmScenario.getPAObjectID();
 
     }
@@ -124,7 +122,7 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
     }
 
     @Override
-    public int copy(int id, LMCopy lmCopy) {
+    public int copy(int id, LMCopy lmCopy, LiteYukonUser liteYukonUser) {
         throw new UnsupportedOperationException("Not supported copy operation");
     }
 

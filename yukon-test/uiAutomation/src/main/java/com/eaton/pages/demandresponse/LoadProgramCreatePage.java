@@ -4,8 +4,11 @@ import java.util.Optional;
 
 import com.eaton.elements.Button;
 import com.eaton.elements.DropDownElement;
+import com.eaton.elements.Section;
+import com.eaton.elements.SelectBoxElement;
+import com.eaton.elements.SwitchBtnYesNoElement;
 import com.eaton.elements.TextEditElement;
-import com.eaton.elements.TrueFalseCheckboxElement;
+import com.eaton.elements.TimePickerElement;
 import com.eaton.elements.modals.gears.CreateDirectPrgmGearModal;
 import com.eaton.elements.modals.gears.CreateEcobeePrgmGearModal;
 import com.eaton.elements.modals.gears.CreateHoneywellPrgmGearModal;
@@ -19,99 +22,133 @@ import com.eaton.pages.PageBase;
 
 public class LoadProgramCreatePage extends PageBase {
 
-    private static final String DESCRIBEDBY = "gear-create-popup-LM_DIRECT_PROGRAM";
+	private static final String DESCRIBEDBY = "gear-create-popup-LM_DIRECT_PROGRAM";
+	private static final String ITRON_GEAR_MODAL_DESCRIBEDBY = "gear-create-popup-LM_ITRON_PROGRAM";
+	
+	private TimePickerElement startTimeWindowOne;
+	private TimePickerElement stopTimeWindowOne;
+	private TimePickerElement startTimeWindowTwo;
+	private TimePickerElement stopTimeWindowTwo;
 
-    public LoadProgramCreatePage(DriverExtensions driverExt) {
-        super(driverExt);
-        
-        requiresLogin = true;
-        pageUrl = Urls.DemandResponse.LOAD_PROGRAM_CREATE;
-    }
+	public LoadProgramCreatePage(DriverExtensions driverExt) {
+		super(driverExt);
 
-    // General
-    public TextEditElement getName() {
-        return new TextEditElement(this.driverExt, "name");
-    }
+		requiresLogin = true;
+		pageUrl = Urls.DemandResponse.LOAD_PROGRAM_CREATE;
+		startTimeWindowOne = new TimePickerElement(this.driverExt, "startTimeWindowOne_inputField");
+		stopTimeWindowOne = new TimePickerElement(this.driverExt, "stopTimeWindowOne_inputField");
+		startTimeWindowTwo = new TimePickerElement(this.driverExt, "startTimeWindowTwo_inputField");
+		stopTimeWindowTwo = new TimePickerElement(this.driverExt, "startTimeWindowTwo_inputField");
+	}
 
-    public DropDownElement getType() {
-        return new DropDownElement(this.driverExt, "type");
-    }
+	// General
+	public TextEditElement getName() {
+		return new TextEditElement(this.driverExt, "name");
+	}
 
-    public DropDownElement getOperationalState() {
-        return new DropDownElement(this.driverExt, "operationalState");
-    }
+	public DropDownElement getType() {
+		return new DropDownElement(this.driverExt, "type");
+	}
 
-    public DropDownElement getConstraint() {
-        return new DropDownElement(this.driverExt, "constraint.constraintId");
-    }
+	public DropDownElement getOperationalState() {
+		return new DropDownElement(this.driverExt, "operationalState");
+	}
 
-    // Trigger Threshold Settings
-    public TextEditElement getTriggerOffset() {
-        return new TextEditElement(this.driverExt, "triggerOffset");
-    }
+	public DropDownElement getConstraint() {
+		return new DropDownElement(this.driverExt, "constraint.constraintId");
+	}
 
-    public TextEditElement getRestoreOffset() {
-        return new TextEditElement(this.driverExt, "restoreOffset");
-    }
+	// Trigger Threshold Settings
+	public TextEditElement getTriggerOffset() {
+		return new TextEditElement(this.driverExt, "triggerOffset");
+	}
 
-    // Control Window
-    public TrueFalseCheckboxElement getUseWindowOne() {
-        return new TrueFalseCheckboxElement(this.driverExt, "controlWindowOne");
-    }
+	public TextEditElement getRestoreOffset() {
+		return new TextEditElement(this.driverExt, "restoreOffset");
+	}
 
-    public TrueFalseCheckboxElement getUseWindowTwo() {
-        return new TrueFalseCheckboxElement(this.driverExt, "controlWindowTwo");
-    }
+	// Control Window
+	public SwitchBtnYesNoElement getUseWindowOne() {
+		return new SwitchBtnYesNoElement(this.driverExt, "controlWindowOne");
+	}
 
-    public Button getSaveBtn() {
-        return new Button(this.driverExt, "Save");
-    }
+	public TimePickerElement getStartTimeWindowOne() {
+		return startTimeWindowOne;
+	}
 
-    public Button getCancelBtn() {
-        return new Button(this.driverExt, "Cancel");
-    }
+	public TimePickerElement getStopTimeWindowOne() {
+		return stopTimeWindowOne;
+	}
 
-    public Button getGearsCreateBtn() {
-        return new Button(this.driverExt, "Create");
-    }
+	public TimePickerElement getStartTimeWindowTwo() {
+		return startTimeWindowTwo;
+	}
 
-    public CreateDirectPrgmGearModal showCreateDirectPrgmGearsModal() {
-        getGearsCreateBtn().click();
+	public TimePickerElement getStopTimeWindowTwo() {
+		return stopTimeWindowTwo;
+	}
 
-        return new CreateDirectPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
-    }
+	public SwitchBtnYesNoElement getUseWindowTwo() {
+		return new SwitchBtnYesNoElement(this.driverExt, "controlWindowTwo");
+	}
 
-    public CreateEcobeePrgmGearModal showCreateEcobeePrgmGearModal() {
-        getGearsCreateBtn().click();
+	public Button getSaveBtn() {
+		return new Button(this.driverExt, "Save");
+	}
 
-        return new CreateEcobeePrgmGearModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
-    }
+	public Button getCancelBtn() {
+		return new Button(this.driverExt, "Cancel");
+	}
 
-    public CreateHoneywellPrgmGearModal showCreateHoneywellPrgmGearModal() {
-        getGearsCreateBtn().click();
+	public Button getGearsCreateBtn() {
+		return new Button(this.driverExt, "Create");
+	}
 
-        return new CreateHoneywellPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
-    }
+	public CreateDirectPrgmGearModal showCreateDirectPrgmGearsModal() {
+		getGearsCreateBtn().click();
 
-    public CreateItronPrgmGearModal showCreateItronPrgmGearModal() {
-        getGearsCreateBtn().click();
+		return new CreateDirectPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
+	}
 
-        return new CreateItronPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
-    }
+	public CreateEcobeePrgmGearModal showCreateEcobeePrgmGearModal() {
+		getGearsCreateBtn().click();
 
-    public CreateMeterDisconnectPrgmModal showCreateMeterDiconnectPrgmModal() {
-        getGearsCreateBtn().click();
+		return new CreateEcobeePrgmGearModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
+	}
 
-        return new CreateMeterDisconnectPrgmModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
-    }
+	public CreateHoneywellPrgmGearModal showCreateHoneywellPrgmGearModal() {
+		getGearsCreateBtn().click();
 
-    public CreateSepPrgmGearModal showCreateSepPrgmGearModal() {
-        getGearsCreateBtn().click();
+		return new CreateHoneywellPrgmGearModal(this.driverExt, Optional.empty(),
+				Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
+	}
 
-        return new CreateSepPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
-    }
+	public CreateItronPrgmGearModal showCreateItronPrgmGearModal() {
+		getGearsCreateBtn().click();
+		
+		return new CreateItronPrgmGearModal(this.driverExt, Optional.empty(), 
+				Optional.of(ITRON_GEAR_MODAL_DESCRIBEDBY));
+	}
 
-    public LoadGroupsTab getLoadGroupTab() {
-        return new LoadGroupsTab(this.driverExt);
-    }
+	public CreateMeterDisconnectPrgmModal showCreateMeterDiconnectPrgmModal() {
+		getGearsCreateBtn().click();
+
+		return new CreateMeterDisconnectPrgmModal(this.driverExt, Optional.empty(), Optional.of("gear-create-popup-LM_METER_DISCONNECT_PROGRAM"));
+	}
+
+	public CreateSepPrgmGearModal showCreateSepPrgmGearModal() {
+		getGearsCreateBtn().click();
+
+		return new CreateSepPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
+	}
+
+	public SelectBoxElement getGears() {
+		Section section = new Section(this.driverExt, "Gears");
+
+		return new SelectBoxElement(this.driverExt, section.getSection());
+	}
+
+	public LoadGroupsTab getLoadGroupTab() {
+		return new LoadGroupsTab(this.driverExt);
+	}
 }
