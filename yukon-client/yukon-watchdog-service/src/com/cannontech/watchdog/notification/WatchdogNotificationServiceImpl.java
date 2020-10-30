@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.SmtpHelper;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.smartNotification.dao.SmartNotificationSubscriptionDao;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.WatchdogAssembler;
@@ -26,8 +25,6 @@ import com.cannontech.common.smartNotification.service.SmartNotificationEventCre
 import com.cannontech.common.util.WebserverUrlResolver;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.tools.email.SystemEmailSettingsType;
@@ -43,9 +40,7 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
     @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
     @Autowired private EmailService emailService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private SmartNotificationSubscriptionDao subscriptionDao;
     @Autowired private WebserverUrlResolver webserverUrlResolver;
-    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private SmtpHelper smtpHelper;
     
     private List<ServiceStatusWatchdog> serviceStatusWatchers;
@@ -126,14 +121,8 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
      * Update Email IDs of subscribers and Sender.
      */
     private void loadEmailIds() {
-        try {
-            sendToEmailIds = subscriptionDao.getSubscribedEmails(SmartNotificationEventType.YUKON_WATCHDOG);
-            sender = globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS);
-        } catch (Exception e) {
-            log.error("Error Retrieving data from Database. Populating old values from cache.");
-            sendToEmailIds = Arrays.asList(smtpHelper.getValue(SystemEmailSettingsType.SUBSCRIBER_EMAIL_IDS).split("\\s*,\\s*"));
-            sender = smtpHelper.getValue(SystemEmailSettingsType.MAIL_FROM_ADDRESS);
-        }
+            sendToEmailIds = Arrays.asList(smtpHelper.getValue(SystemEmailSettingsType.WATCHDOG_SUBSCRIBER_EMAILS.getKey()).split("\\s*,\\s*"));
+            sender = smtpHelper.getValue(SystemEmailSettingsType.MAIL_FROM_ADDRESS.getKey());
     }
 
     /*

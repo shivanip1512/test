@@ -1,11 +1,19 @@
 package com.cannontech.tools.email;
 
 public enum SystemEmailSettingsType {
-    SUBSCRIBER_EMAIL_IDS,
-    SMTP_HOST,
-    SMTP_PORT,
-    SMTP_ENCRYPTION_TYPE,
-    SMTP_USERNAME,
-    SMTP_PASSWORD,
-    MAIL_FROM_ADDRESS;
+    WATCHDOG_SUBSCRIBER_EMAILS("watchdog_subscriber_emails"),
+    SMTP_USERNAME("smtp_username"),
+    SMTP_PASSWORD("smtp_password"),
+    MAIL_FROM_ADDRESS("mail_from_address");
+
+    private String key;
+
+    SystemEmailSettingsType(String key) {
+        this.key = key;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
 }

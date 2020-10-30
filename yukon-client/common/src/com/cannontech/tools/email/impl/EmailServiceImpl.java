@@ -31,15 +31,12 @@ import com.cannontech.tools.email.SystemEmailSettingsType;
 public class EmailServiceImpl implements EmailService {
     private static final Logger log = YukonLogManager.getLogger(EmailServiceImpl.class);
     private static final String smtpAuthPropertyName = "mail.smtp.auth";
-    private static final String smtpHost = "mail.smtp.host";
-    private static final String smtpPort = "mail.smtp.port";
-    private SmtpHelper smtpHelper;
-
+    
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private SmtpHelper smtpHelper;
 
     @Override
     public void sendMessage(EmailMessage data) throws MessagingException {
-        smtpHelper = new SmtpHelper();
         Session session = getSession();
         MimeMessage message = new MimeMessage(session);
         message.setHeader("X-Mailer", "YukonEmail");
@@ -81,14 +78,14 @@ public class EmailServiceImpl implements EmailService {
      * SMTP server or send the message.
      */
     private void send(final MimeMessage message, Session session) throws MessagingException {
-        String host = smtpHelper.getValue(SystemEmailSettingsType.SMTP_HOST);
+        String host = smtpHelper.getValue(SmtpPropertyType.HOST.getKey(false));
         if (StringUtils.isEmpty(host)) {
             // The SMTP host name must be configured in configuration.properties file or in the GlobalSettings.
             throw new MessagingException(
                     "SMTP host name not defined in configuration.properties file or in the GlobalSettings table in the database.");
         }
-        String port = smtpHelper.getValue(SystemEmailSettingsType.SMTP_PORT);
-        SmtpEncryptionType encryptionType = SmtpEncryptionType.valueOf(smtpHelper.getValue(SystemEmailSettingsType.SMTP_ENCRYPTION_TYPE));
+        String port = smtpHelper.getValue(SmtpPropertyType.PORT.getKey(false));
+        SmtpEncryptionType encryptionType = SmtpEncryptionType.valueOf(smtpHelper.getValue(SmtpPropertyType.START_TLS_ENABLED.getKey(false)));
         SmtpAuthenticator authenticator = new SmtpAuthenticator();
         PasswordAuthentication authentication = authenticator.getPasswordAuthentication();
         Transport transport = null;
@@ -125,18 +122,11 @@ public class EmailServiceImpl implements EmailService {
      * @throws MessagingException if no SMTP host value is defined in GlobalSettings
      */
     private Session getSession() throws MessagingException {
+        if (smtpHelper == null) {
+            smtpHelper = new SmtpHelper();
+        }
         Properties properties = new Properties();
         Map<String, String> smtpSettings = smtpHelper.getSmtpConfigSettings();
-        // Populate Host, Port and EncryptionType from File/Cache.
-        smtpSettings.put(smtpHost, smtpHelper.getValue(SystemEmailSettingsType.SMTP_HOST));
-        smtpSettings.put(smtpPort, smtpHelper.getValue(SystemEmailSettingsType.SMTP_PORT));
-        SmtpEncryptionType encryptionType = SmtpEncryptionType
-                .valueOf(smtpHelper.getValue(SystemEmailSettingsType.SMTP_ENCRYPTION_TYPE));
-        if (encryptionType == SmtpEncryptionType.TLS) {
-            smtpSettings.put(SmtpPropertyType.START_TLS_ENABLED.getKey(false), "true");
-        } else {
-            smtpSettings.remove(SmtpPropertyType.START_TLS_ENABLED.getKey(false));
-        }
         if (smtpSettings != null) {
             smtpSettings.forEach((key, value) -> properties.put(key, value));
         }
@@ -156,8 +146,8 @@ public class EmailServiceImpl implements EmailService {
      * call when the Session for sending emails is retrieved.
      */
     private class SmtpAuthenticator extends Authenticator {
-        String username = smtpHelper.getValue(SystemEmailSettingsType.SMTP_USERNAME);
-        String password = smtpHelper.getValue(SystemEmailSettingsType.SMTP_USERNAME);
+        String username = smtpHelper.getValue(SystemEmailSettingsType.SMTP_USERNAME.getKey());
+        String password = smtpHelper.getValue(SystemEmailSettingsType.SMTP_PASSWORD.getKey());
         private PasswordAuthentication authentication = null;
         
         public SmtpAuthenticator() {

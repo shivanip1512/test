@@ -27,6 +27,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.smartNotification.dao.SmartNotificationSubscriptionDao;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.encryption.SystemPublisherMetadataCryptoUtils;
@@ -50,13 +51,8 @@ public class SmtpHelper {
 
     // Assuming there are no more than 100 other settings
     // See https://javaee.github.io/javamail/docs/api/com/sun/mail/smtp/package-summary.html
-    private Map<String, String> smtpConfigSettings = new ConcurrentHashMap<>();
-    private Map<SystemEmailSettingsType, String> systemEmailSettingsCache = new ConcurrentHashMap<>(5);
+    private Map<String, String> systemEmailSettingsCache = new ConcurrentHashMap<>();
     // local helper copies of common properties
-    private volatile String cachedHost;
-    private volatile String cachedPort;
-    private volatile String cachedTls;
-
     private static final String separator = ":";
     private static final String fileName = "/Server/Config/System/emailSettings.txt";
     private static final String SMTP_CONFIGURATION_KEY_ALIAS = "smtp";
@@ -83,45 +79,37 @@ public class SmtpHelper {
                 new DatabaseChangeEventListener() {
                     @Override
                     public void eventReceived(DatabaseChangeEvent event) {
-                        reloadSettings();
+                        reloadAllSettings();
                     }
                 });
-        // update the cache with latest settings from configuration files.
-        reloadSettings();
-        // update the cache with latest setting. Configuration properties takes higher priority over global settings.
-        reloadCommonProperties();
-
-        update(SystemEmailSettingsType.MAIL_FROM_ADDRESS, globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS));
-        update(SystemEmailSettingsType.SMTP_PASSWORD, globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD));
-        update(SystemEmailSettingsType.SMTP_USERNAME, globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME));
-        update(SystemEmailSettingsType.SUBSCRIBER_EMAIL_IDS,
-                StringUtils.join(subscriptionDao.getSubscribedEmails(SmartNotificationEventType.YUKON_WATCHDOG), ","));
-        update(SystemEmailSettingsType.SMTP_HOST, cachedHost);
-        update(SystemEmailSettingsType.SMTP_PORT, cachedPort);
-        update(SystemEmailSettingsType.SMTP_ENCRYPTION_TYPE, cachedTls);
+        // update the cache with latest settings from configuration file and global settings.
+        reloadAllSettings();
     }
 
     /**
-     * Updates the common smtp settings into the cache for email notifications to the cache either from file or global setting.
+     * Updates the smtp settings into the cache for email notifications.
      */
-    private void reloadCommonProperties() {
-        cachedHost = loadCommonProperty(SmtpPropertyType.HOST);
-        cachedPort = loadCommonProperty(SmtpPropertyType.PORT);
-        cachedTls = loadCommonProperty(SmtpPropertyType.START_TLS_ENABLED);
-    }
-
-    /**
-     * Updates the smtp settings into the cache for email notifications
-     * Specifically updates the common properties settings to the cache from File.
-     */
-    public void reloadSettings() {
-        smtpConfigSettings.clear();
+    public void reloadAllSettings() {
+        // Load smtp configuration from configuration.properties file.
         ConfigurationLoader configurationLoader = new ConfigurationLoader();
         Map<String, String> smtpConfig = configurationLoader.getConfigSettings().get(SMTP_CONFIGURATION_KEY_ALIAS);
         if (!CollectionUtils.isEmpty(smtpConfig)) {
-            smtpConfigSettings.putAll(smtpConfig);
+            systemEmailSettingsCache.putAll(smtpConfig);
         }
-        log.info("Reloaded cache for the smtp Settings.");
+        // Load smtp configurations, subscriber mail IDs from Database. For HOST, PORT and START_TLS_ENABLED,
+        // configuration.properties will take higher priority.
+        if (VersionTools.getDatabaseVersion() != null) {
+            loadCommonProperty(SmtpPropertyType.HOST);
+            loadCommonProperty(SmtpPropertyType.PORT);
+            loadCommonProperty(SmtpPropertyType.START_TLS_ENABLED);
+            update(SystemEmailSettingsType.MAIL_FROM_ADDRESS.getKey(),
+                    globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS));
+            update(SystemEmailSettingsType.SMTP_PASSWORD.getKey(), globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD));
+            update(SystemEmailSettingsType.SMTP_USERNAME.getKey(), globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME));
+            update(SystemEmailSettingsType.WATCHDOG_SUBSCRIBER_EMAILS.getKey(),
+                    StringUtils.join(subscriptionDao.getSubscribedEmails(SmartNotificationEventType.YUKON_WATCHDOG), ","));
+            log.info("Reloaded cache for the smtp Settings.");
+        }
     }
 
     /**
@@ -134,11 +122,11 @@ public class SmtpHelper {
      */
     public String loadCommonProperty(SmtpPropertyType propertyType) {
         String smtpPropertyValue = null;
-        Set<String> keys = smtpConfigSettings.keySet();
+        Set<String> keys = systemEmailSettingsCache.keySet();
         for (String key : keys) {
             if (Pattern.matches(propertyType.getRegEx(), key.toLowerCase())) {
                 // key already exists for smtp or smtps
-                smtpPropertyValue = smtpConfigSettings.get(key);
+                smtpPropertyValue = systemEmailSettingsCache.get(key);
                 log.info(propertyType.getPropertyName()
                         + " key found in configuration settings, overriding the global setting with value : "
                         + smtpPropertyValue);
@@ -148,24 +136,15 @@ public class SmtpHelper {
         // not in configSettings, load from global settings
         if (smtpPropertyValue == null) {
             smtpPropertyValue = globalSettingDao.getString(propertyType.getGlobalSettingType());
+            systemEmailSettingsCache.put(propertyType.getKey(false), smtpPropertyValue);
         }
         return smtpPropertyValue;
     }
 
     /**
-     * Retrieve configurations in key:value pair form configuration.properties. Re
-     */
-    public Map<String, String> getSmtpConfigSettings() {
-        if (CollectionUtils.isEmpty(smtpConfigSettings)) {
-            reloadSettings();
-        }
-        return smtpConfigSettings;
-    }
-
-    /**
      * Retrieve value for the specified key from cache.
      */
-    public String getValue(SystemEmailSettingsType key) {
+    public String getValue(String key) {
         if (CollectionUtils.isEmpty(systemEmailSettingsCache)) {
             readSettingsFromFile();
         }
@@ -175,7 +154,7 @@ public class SmtpHelper {
     /**
      * Update cache with specified key value pair.
      */
-    public void update(SystemEmailSettingsType key, String value) {
+    public void update(String key, String value) {
         systemEmailSettingsCache.put(key, value);
     }
 
@@ -198,13 +177,13 @@ public class SmtpHelper {
     private List<String> getEncryptedSettings()
             throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
         List<String> settings = new ArrayList<String>();
-        encryptSetting(settings, SystemEmailSettingsType.SMTP_HOST);
-        encryptSetting(settings, SystemEmailSettingsType.SMTP_PORT);
-        encryptSetting(settings, SystemEmailSettingsType.SMTP_ENCRYPTION_TYPE);
-        encryptSetting(settings, SystemEmailSettingsType.SMTP_USERNAME);
-        encryptSetting(settings, SystemEmailSettingsType.SMTP_PASSWORD);
-        encryptSetting(settings, SystemEmailSettingsType.MAIL_FROM_ADDRESS);
-        encryptSetting(settings, SystemEmailSettingsType.SUBSCRIBER_EMAIL_IDS);
+        encryptSetting(settings, SmtpPropertyType.HOST.getKey(false));
+        encryptSetting(settings, SmtpPropertyType.PORT.getKey(false));
+        encryptSetting(settings, SmtpPropertyType.START_TLS_ENABLED.getKey(false));
+        encryptSetting(settings, SystemEmailSettingsType.SMTP_USERNAME.getKey());
+        encryptSetting(settings, SystemEmailSettingsType.SMTP_PASSWORD.getKey());
+        encryptSetting(settings, SystemEmailSettingsType.MAIL_FROM_ADDRESS.getKey());
+        encryptSetting(settings, SystemEmailSettingsType.WATCHDOG_SUBSCRIBER_EMAILS.getKey());
         return settings;
     }
 
@@ -212,7 +191,7 @@ public class SmtpHelper {
      * Return an encrypted key value pair.
      * List entry formatted as: [encryptedKey:encryptedValue]
      */
-    private void encryptSetting(List<String> settings, SystemEmailSettingsType key)
+    private void encryptSetting(List<String> settings, String key)
             throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
         settings.add(SystemPublisherMetadataCryptoUtils.encrypt(key.toString())
                 .concat(separator)
@@ -228,8 +207,7 @@ public class SmtpHelper {
             lines.forEach(line -> {
                 try {
                     String tokens[] = line.split(separator);
-                    systemEmailSettingsCache.put(
-                            SystemEmailSettingsType.valueOf(SystemPublisherMetadataCryptoUtils.decrypt(tokens[0])),
+                    systemEmailSettingsCache.put(SystemPublisherMetadataCryptoUtils.decrypt(tokens[0]),
                             SystemPublisherMetadataCryptoUtils.decrypt(tokens[1]));
                 } catch (IllegalBlockSizeException | BadPaddingException | UnsupportedEncodingException e) {
                     log.error("Error decrypting data from emailSettings.txt file", e);
@@ -238,6 +216,12 @@ public class SmtpHelper {
         } catch (IOException exception) {
             log.error("Error reading emailSettings.txt file", exception);
         }
-        reloadSettings();
+    }
+
+    public Map<String, String> getSmtpConfigSettings() {
+        if (CollectionUtils.isEmpty(systemEmailSettingsCache)) {
+            readSettingsFromFile();
+        }
+        return systemEmailSettingsCache;
     }
 }
