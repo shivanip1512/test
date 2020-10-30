@@ -129,6 +129,14 @@ alter table DeviceGuid
 INSERT INTO DBUpdates VALUES ('YUK-23093', '9.0.0', SYSDATE);
 /* @end YUK-23093 */
 
+/* @start YUK-23092 */
+INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry WHERE EntryId < 10000), 1005, 0, 'LCR-6200C', 1342);
+INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry WHERE EntryId < 10000), 1005, 0, 'LCR-6600C', 1343);
+INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry WHERE EntryId < 10000), 1005, 0, 'LCR-DisconnectC', 1344);
+
+INSERT INTO DBUpdates VALUES ('YUK-23092', '9.0.0', SYSDATE);
+/* @end YUK-23092 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
