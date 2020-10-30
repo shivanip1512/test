@@ -91,8 +91,7 @@ yukon.da.common = (function () {
                 moveBankOpener.click(function (event) {
                     mod.showDialog(moveBankTitle,
                             yukon.url('/capcontrol/move/bankMove?bankid=' + encodeURIComponent(bankId)), 
-                            {"data-height": 650, "data-width": 650, "data-load-event": "yukon:da:bank:move"}, 
-                    '#contentPopup');
+                            {'data-height': 650, 'data-width': 650, 'data-load-event': 'yukon:da:bank:move'});
                 });
 
                 assignMovedBankOpener.click(function () {
@@ -131,15 +130,35 @@ yukon.da.common = (function () {
         });
     },
     
+    // Updates Feeder CapBank info on the Cap Bank Move popup
     _updateFeederBankInfo = function () {
         var params = {'feederId': $("#selectedFeeder").val()};
         $.ajax({
             url: yukon.url('/capcontrol/move/feederBankInfo'),
             method: 'post',
             data: params
-        }).done(function (data, textStatus, jqXHR) {
+        }).done(function (data) {
             $('#controlOrders').html(data);
         });
+    },
+    
+    _selectFeeder = function (fid) {
+        $("#selectedFeeder").val(fid);
+        $("#newFeederId").val(fid);
+        _updateFeederBankInfo();
+    },
+    
+    
+    _bankMoveTreeClick = function (event, data) {
+        var node = data.node;
+        if (node.getLevel() == 4) {
+            node.setSelected(true);
+            _selectFeeder(node.key);
+        } else {
+            node.toggleExpanded();
+            return false; // Prevent bubbling event
+            
+        }
     },
     
     mod = {
@@ -270,11 +289,20 @@ yukon.da.common = (function () {
                 yukon.da.comments.addComment();
             });
             
-            //User selected Bank Move cog option
-            $(document).on('yukon:da:bank:move', function (ev) {
+            // User selected Bank Move cog option
+            $(document).on('yukon:da:bank:move', function () {
                 yukon.ui.fancyTree.init();
+                //remove current feeder from tree
+                var tree = $("#feederId").fancytree("getTree"),
+                    selectedFeeder = $("#selectedFeeder").val(),
+                    currentFeederNode = tree.getNodeByKey(selectedFeeder);
+                if (currentFeederNode) {
+                    currentFeederNode.remove();
+                }
+                $('#feederId').fancytree('option', 'click', _bankMoveTreeClick);
                 _updateFeederBankInfo();
             });
+
         },
         
         /** 
@@ -482,20 +510,17 @@ yukon.da.common = (function () {
          * @param {string} title - Title.
          * @param {string} url - url.
          * @param {string} options - options.
-         * @param {Object} selector - Request parameters.
          */
-        showDialog: function (title, url, options, selector) {
+        showDialog: function (title, url, options) {
             
             var dialogArgs = {
-                "data-url": url,
-                "data-title": title,
-                "data-destroy-dialog-on-close": ""
-            },
-            selector = selector || '<div></div>';
+                'data-url': url,
+                'data-title': title,
+                'data-destroy-dialog-on-close': ''
+            };
             
             $.extend(dialogArgs, options);
-            yukon.ui.dialog($("<div/>").attr(dialogArgs));
-            //$(selector).load(url).dialog(dialogArgs);
+            yukon.ui.dialog($('<div/>').attr(dialogArgs));
         },
         
         /** 
@@ -522,7 +547,6 @@ yukon.da.common = (function () {
             mod.showDialog(title,
                 yukon.url('/capcontrol/comments/paoComments?paoId=' + id), 
                 {}, 
-                '#contentPopup'
             );
         },
 
@@ -601,6 +625,10 @@ yukon.da.common = (function () {
             $('#alert-message-contents').html(message);
             $('#alert-message-container').show();
             setTimeout (_hideAlertMessage, 3000);
+        },
+        
+        clickBankMove: function (event, data) {
+            _bankMoveTreeClick(event, data);
         }
         
     };

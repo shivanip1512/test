@@ -50,14 +50,49 @@ yukon.ui.fancyTree= (function () {
     _initializeTree = function () {
         $('.js-fancy-tree').each(function() {
             var dataUrl = $(this).data('url'),
+                initiallySelect = $(this).data('initiallySelect'),
+                scrollToHighlighted = $(this).data('scrollToHighlighted'),
+                multiSelect = $(this).data('multiSelect'),
                 treeParameters = yukon.fromJson($(this).find('#js-tree-parameters')),
                 jsonData = $(this).find('#js-json-data'),
                 source = dataUrl ? { url: dataUrl } : JSON.parse(yukon.fromJson(jsonData)),
                 options = $.extend({
                     source: source,
                     minExpandLevel: 2,
-                    icon: false,
-                    escapeTitles: true
+                    escapeTitles: true,
+                    click: function(event, data) {
+                        var node = data.node;
+                        if (data.targetType != 'checkbox' && data.targetType != 'expander') {
+                            if (!node.isFolder()) {
+                                node.toggleExpanded();
+                                node.toggleSelected();
+                            }
+                        }
+                    },
+                    init: function(event, data) {
+                        if (initiallySelect) {
+                            //show the initially selected item
+                            var node = data.tree.getNodeByKey(initiallySelect);
+                            node.setSelected(true);
+                            if (scrollToHighlighted) {
+                                node.setActive(true);
+                            }
+                        } else {
+                            //or open all of the first level children
+                            var root = data.tree.rootNode;
+                            if (root.children != null) {
+                                for (var i = 0; i < root.children.length; i++) {
+                                    root.children[i].setExpanded(true);
+                                } 
+                            }
+                        }
+                    },
+                    dblClick: function(event, data) {
+                        data.node.toggleExpand();
+                    },
+                    clickFolderMode: 2,
+                    selectMode: multiSelect ? 2 : 1,
+                    activeVisible: false
                 }, JSON.parse(treeParameters) || {});
             $(this).fancytree(options);
             $(this).find('.fancytree-container').addClass('fancytree-connectors');

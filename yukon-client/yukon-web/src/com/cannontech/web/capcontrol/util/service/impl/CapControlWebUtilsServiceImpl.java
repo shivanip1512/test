@@ -148,7 +148,6 @@ public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService 
             JsTreeNode areaNode = new JsTreeNode();
             areaNode.setAttribute("id", area.getCcId());
             areaNode.setAttribute("text", area.getCcName());
-            areaNode.setAttribute("expanded", true);
             addSubstations(area, areaNode);
             systemRoot.addChild(areaNode);
         }

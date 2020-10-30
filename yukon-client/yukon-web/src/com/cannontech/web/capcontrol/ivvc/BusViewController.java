@@ -140,7 +140,7 @@ public class BusViewController {
             JsTreeNode rootZone = new JsTreeNode();
             rootZone.setAttribute("id", hierarchy.getZone().getZoneId());
             rootZone.setAttribute("text", hierarchy.getZone().getName());
-            rootZone.setAttribute("expanded", true);
+            //rootZone.setAttribute("expanded", true);
             
             // recursively add child zones
             addChildren(hierarchy, rootZone);
