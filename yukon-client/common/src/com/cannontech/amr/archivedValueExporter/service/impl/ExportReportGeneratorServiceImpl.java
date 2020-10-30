@@ -642,7 +642,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         if (log.isDebugEnabled()) {
             log.debug("Transforming raw data to interval data. Attribute: {}. Range = {} - {}. Interval = {}", 
                       attribute, startDate, stopDate, interval);
-            log.debug("Paos: {}", paos);
+            log.trace("Paos: {}", paos);
         }
         
         // Bail out if the range is so small that there are no valid intervals.
@@ -658,22 +658,24 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         for (YukonPao pao : paos) {
             PaoIdentifier paoIdentifier = pao.getPaoIdentifier();
             List<Date> intervalDates = intervalParser.getIntervals();
+            
             // Get the point ID and type, from the point data if there is any, or by doing an attribute lookup
             PointTypeId pointTypeAndId = getPointTypeAndId(data, paoIdentifier, attribute);
             
             // Add all on-interval data to the new collection
             for (PointValueQualityHolder pointValue : data.get(paoIdentifier)) {
                 Date dataTimestamp = pointValue.getPointDataTimeStamp();
-                if (intervalDates.contains(dataTimestamp)) {
+                if (intervalParser.containsInterval(dataTimestamp)) {
                     //This data is on the interval, add it to the new collection
                     transformedData.put(paoIdentifier, pointValue);
-                    intervalDates.remove(dataTimestamp);
+                    intervalDates.remove(intervalParser.getIntervalDateForTimeLong(dataTimestamp.getTime()));
                     log.trace("Kept data with value {} for pao {}. Timestamp {} is a valid interval time.", 
                               pointValue.getValue(), pao, dataTimestamp);
+                } else {
+                    //This is off-interval data, ignore it
+                    log.trace("Discarded data with value {} for pao {}. Timestamp {} is not a valid interval time.",
+                              pointValue.getValue(), pao, dataTimestamp);
                 }
-                //else - This is off-interval data, ignore it
-                log.trace("Discarded data with value {} for pao {}. Timestamp {} is not a valid interval time.",
-                          pointValue.getValue(), pao, dataTimestamp);
             }
             
             // Check for any intervals where the pao had no data, and insert an "empty" point value with an "estimated"

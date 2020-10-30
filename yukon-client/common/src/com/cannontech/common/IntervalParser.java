@@ -140,6 +140,10 @@ public class IntervalParser {
         return intervals.containsKey(interval.getTime());
     }
 
+    public Date getIntervalDateForTimeLong(long intervalTime) {
+        return intervals.get(intervalTime);
+    }
+    
     /**
      * Returns all intervals
      */
