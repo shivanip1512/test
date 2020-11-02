@@ -134,7 +134,6 @@ public class GatewayListController {
                                                                              .map(gateway -> gateway.getPaoIdentifier().getPaoId())
                                                                              .collect(Collectors.toList()));
         model.addAttribute("notesList", notesList);
-        
         return "gateways/list.jsp";
     }
 
@@ -154,6 +153,29 @@ public class GatewayListController {
             model.addAttribute(column.name(), col);
         }
         return "gateways/firmwareUpdates.jsp";
+    }
+
+    @GetMapping("/gateways/certificateUpdates")
+    public String certificateUpdates(ModelMap model, YukonUserContext userContext,
+            @DefaultSort(dir = Direction.desc, sort = "TIMESTAMP") SortingParameters sorting) {
+        List<CertificateUpdate> certUpdates = certificateUpdateService.getAllCertificateUpdates();
+        Direction dir = sorting.getDirection();
+        SortBy sortBy = SortBy.valueOf(sorting.getSort());
+        Comparator<CertificateUpdate> comparator = sorters.get(sortBy);
+        if (dir == Direction.desc) {
+            Collections.sort(certUpdates, Collections.reverseOrder(comparator));
+        } else {
+            Collections.sort(certUpdates, comparator);
+        }
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        for (SortBy column : SortBy.values()) {
+            String text = accessor.getMessage(column);
+            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+            model.addAttribute(column.name(), col);
+        }
+        model.addAttribute("certUpdates", certUpdates);
+        helper.addText(model, userContext);
+        return "gateways/certificateUpdates.jsp";
     }
 
     @RequestMapping("/gateways/data")

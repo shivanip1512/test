@@ -1315,6 +1315,9 @@
                     <page name="gateways.manageFirmware" type="BASIC">
                         <link>/stars/gateways/firmwareDetails</link>
                     </page>
+                    <page name="gateways.certificateUpdates" type="BASIC">
+                        <link>/stars/gateways/certificateUpdates</link>
+                    </page>
                 </pages>
             </page>
             <page name="relays.list" type="BASIC" hideSearch="true">
