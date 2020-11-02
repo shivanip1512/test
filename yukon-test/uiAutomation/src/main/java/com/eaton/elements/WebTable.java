@@ -265,6 +265,12 @@ public class WebTable {
 
         return newList;
     }
+    
+    public void waitForFilter() {
+        WebElement table = this.getTable();
+        
+        driverExt.waitUntilStalenessOfElement(table.findElement(By.cssSelector("tbody tr"))); 
+    }
 
     /**
      * This method is being added to accommodate for the defect YUK-23130
