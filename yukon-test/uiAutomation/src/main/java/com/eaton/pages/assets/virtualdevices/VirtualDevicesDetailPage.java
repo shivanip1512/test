@@ -3,9 +3,6 @@ package com.eaton.pages.assets.virtualdevices;
 import java.util.Optional;
 
 import com.eaton.elements.ActionBtnDropDownElement;
-import com.eaton.elements.Button;
-import com.eaton.elements.CreateBtnDropDownElement;
-import com.eaton.elements.DropDownMultiSelectElement;
 import com.eaton.elements.WebTableColumnHeader;
 import com.eaton.elements.WebTableRow;
 import com.eaton.elements.modals.ConfirmModal;
@@ -19,58 +16,27 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.pages.PageBase;
 
 public class VirtualDevicesDetailPage extends PageBase {
-    int virtualDeviceID;
     private ActionBtnDropDownElement actionBtn;
-    private Button editButton;
-    private Button filterButton;
-    private DropDownMultiSelectElement pointTypeDropdown;
-    private VirtualDeviceInfoPanel deviceInfoPanel;
-    private VirtualDevicePointsPanel devicePointPanel;
-
+    
     public VirtualDevicesDetailPage(DriverExtensions driverExt, String pageUrl, int virtualDeviceID) {
         super(driverExt);
 
         requiresLogin = true;
-
-        this.virtualDeviceID = virtualDeviceID;
         this.pageUrl = pageUrl + virtualDeviceID;
-        ;
 
         this.actionBtn = new ActionBtnDropDownElement(this.driverExt);
-        this.editButton = new Button(this.driverExt, "Edit");
-        this.filterButton = new Button(this.driverExt, "Filter");
-        this.pointTypeDropdown = new DropDownMultiSelectElement(this.driverExt, "pointTypeSelector");
-
-        this.deviceInfoPanel = new VirtualDeviceInfoPanel(this.driverExt, "Virtual Device Information");
-        this.devicePointPanel = new VirtualDevicePointsPanel(this.driverExt, "Device Points");
     }
 
     public ActionBtnDropDownElement getActionBtn() {
         return actionBtn;
     }
 
-    public Button getEdit() {
-        return editButton;
-    }
-
     public VirtualDeviceInfoPanel getVirtualDeviceInfoPanel() {
-        return deviceInfoPanel;
+        return new VirtualDeviceInfoPanel(this.driverExt, "Virtual Device Information");
     }
 
     public VirtualDevicePointsPanel getVirtualDevicePointsPanel() {
-        return devicePointPanel;
-    }
-
-    public DropDownMultiSelectElement getPointType() {
-        return pointTypeDropdown;
-    }
-
-    public Button getFilter() {
-        return filterButton;
-    }
-
-    public CreateBtnDropDownElement getCreateBtn() {
-        return new CreateBtnDropDownElement(this.driverExt, getVirtualDevicePointsPanel().getPanel());
+        return new VirtualDevicePointsPanel(this.driverExt, "Device Points");
     }
 
     public WebTableRow getPointsTableRow(int index) {
@@ -90,8 +56,10 @@ public class VirtualDevicesDetailPage extends PageBase {
     }
 
     public EditVirtualDeviceModal showAndWaitEditVirtualDeviceModal() {
-        getEdit().click();
+        getVirtualDeviceInfoPanel().getEdit().click();
+        
         SeleniumTestSetup.waitUntilModalOpenByDescribedBy("js-edit-virtual-device-popup");
+        
         return new EditVirtualDeviceModal(this.driverExt, Optional.empty(), Optional.of("js-edit-virtual-device-popup"));
     }
 

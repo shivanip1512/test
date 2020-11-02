@@ -74,12 +74,12 @@ public class CreateBtnDropDownElement {
     public String getOptionLinkByText(String text) {
         clickAndWait();
 
-        WebElement element = this.driverExt.findElement(By.cssSelector(".dropdown-menu[style*='display: block;']"), Optional.of(3));
+        WebElement el = SeleniumTestSetup.getDriverExt().getDriverWait().until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".dropdown-menu[style*='display: block;']")));
 
-        List<WebElement> options = element.findElements(By.cssSelector(".dropdown-option"));
+        List<WebElement> options = el.findElements(By.cssSelector(".dropdown-option"));
 
-        WebElement el = options.stream().filter(x -> x.findElement(By.cssSelector(".dropdown-option-label")).getText().equals(text)).findFirst().orElseThrow();
+        WebElement element = options.stream().filter(x -> x.findElement(By.cssSelector(".dropdown-option-label")).getText().equals(text)).findFirst().orElseThrow();
         
-        return el.findElement(By.cssSelector("a")).getAttribute("href");
+        return element.findElement(By.cssSelector("a")).getAttribute("href");
     }
 }

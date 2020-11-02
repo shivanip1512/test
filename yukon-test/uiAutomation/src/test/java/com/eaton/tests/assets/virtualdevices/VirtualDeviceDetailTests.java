@@ -89,7 +89,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDeviceDetails_PageTitle_Correct() {
         setRefreshPage(false);
-        navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + virtualDeviceId);
 
         String expectedTitle = virtualDeviceName;
 
@@ -135,7 +134,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
     public void virtualDeviceDetails_InfoFieldValues_Correct() {
         setRefreshPage(false);
-        navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + virtualDeviceId);
 
         SoftAssertions softly = new SoftAssertions();
 
@@ -149,7 +147,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     public void virtualDeviceDetails_Edit_OpensCorrectModal() {
         setRefreshPage(true);
 
-        navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + virtualDeviceId);
         final String EXP_MODAL_TITLE = "Edit " + virtualDeviceName;
 
         EditVirtualDeviceModal editModal = detailPage.showAndWaitEditVirtualDeviceModal();
@@ -212,7 +209,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         final String EXP_ANLG_POINT_URL = getBaseUrl() + Urls.Tools.ANALOG_POINT + virtualDeviceId;
 
-        String actualAnalogPtUrl = detailPage.getCreateBtn().getOptionLinkByText("Analog Point");
+        String actualAnalogPtUrl = detailPage.getVirtualDevicePointsPanel().getCreateBtn().getOptionLinkByText("Analog Point");
 
         ExtractableResponse<?> response = ApiCallHelper.get(EXP_ANLG_POINT_URL);
         
@@ -231,7 +228,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         final String EXP_CALC_ANLG_POINT_URL = getBaseUrl() + Urls.Tools.CALC_ANALOG_POINT + virtualDeviceId;
 
-        String actualCalcAnlgPtUrl = detailPage.getCreateBtn().getOptionLinkByText("Calc Analog Point");
+        String actualCalcAnlgPtUrl = detailPage.getVirtualDevicePointsPanel().getCreateBtn().getOptionLinkByText("Calc Analog Point");
 
         ExtractableResponse<?> response = ApiCallHelper.get(EXP_CALC_ANLG_POINT_URL);
         
@@ -250,7 +247,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         final String EXP_CALC_STS_POINT_URL = getBaseUrl() + Urls.Tools.CALC_STATUS_POINT + virtualDeviceId;
 
-        String actualCalcStsPtUrl = detailPage.getCreateBtn().getOptionLinkByText("Calc Status Point");
+        String actualCalcStsPtUrl = detailPage.getVirtualDevicePointsPanel().getCreateBtn().getOptionLinkByText("Calc Status Point");
 
         ExtractableResponse<?> response = ApiCallHelper.get(EXP_CALC_STS_POINT_URL);
         
@@ -269,7 +266,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         final String EXP_DMND_ACC_POINT_URL = getBaseUrl() + Urls.Tools.DEMAND_ACCUMULATOR_POINT + virtualDeviceId;
 
-        String actualCalcStsPtUrl = detailPage.getCreateBtn().getOptionLinkByText("Demand Accumulator Point");
+        String actualCalcStsPtUrl = detailPage.getVirtualDevicePointsPanel().getCreateBtn().getOptionLinkByText("Demand Accumulator Point");
 
         ExtractableResponse<?> response = ApiCallHelper.get(EXP_DMND_ACC_POINT_URL);
         
@@ -288,7 +285,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         final String EXP_PLS_ACC_POINT_URL = getBaseUrl() + Urls.Tools.PULSE_ACCUMULATOR_POINT + virtualDeviceId;
 
-        String actualCalcStsPtUrl = detailPage.getCreateBtn().getOptionLinkByText("Pulse Accumulator Point");
+        String actualCalcStsPtUrl = detailPage.getVirtualDevicePointsPanel().getCreateBtn().getOptionLinkByText("Pulse Accumulator Point");
 
         ExtractableResponse<?> response = ApiCallHelper.get(EXP_PLS_ACC_POINT_URL);
         
@@ -307,7 +304,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         final String EXP_STS_POINT_URL = getBaseUrl() + Urls.Tools.STATUS_POINT + virtualDeviceId;
 
-        String actualCalcStsPtUrl = detailPage.getCreateBtn().getOptionLinkByText("Status Point");
+        String actualCalcStsPtUrl = detailPage.getVirtualDevicePointsPanel().getCreateBtn().getOptionLinkByText("Status Point");
 
         ExtractableResponse<?> response = ApiCallHelper.get(EXP_STS_POINT_URL);
         
@@ -507,7 +504,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
          * 
          * virtualDeviceId = virtDevResponse.getInt("id");
          * 
-         * navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + virtualDeviceId);
          * detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, virtualDeviceId);
          * 
          * detailPage.getPointType().selectItemByText("Calc Analog");
