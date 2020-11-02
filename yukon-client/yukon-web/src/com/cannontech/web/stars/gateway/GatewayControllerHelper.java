@@ -8,20 +8,28 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.rfn.message.gateway.AppMode;
 import com.cannontech.common.rfn.message.gateway.ConflictType;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
 import com.cannontech.common.rfn.message.gateway.DataSequence;
 import com.cannontech.common.rfn.message.gateway.Radio;
+import com.cannontech.common.rfn.model.CertificateUpdate;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
+import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateSummary;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
+import com.cannontech.web.stars.gateway.GatewayListController.FirmwareUpdatesSortBy;
+import com.google.common.base.Function;
+import com.google.common.collect.Ordering;
 
 public class GatewayControllerHelper {
     
@@ -143,5 +151,49 @@ public class GatewayControllerHelper {
             }
         });
     }
-    
+
+    public static Comparator<RfnGatewayFirmwareUpdateSummary> getFirmwareComparator(
+            List<RfnGatewayFirmwareUpdateSummary> firmwareUpdates, SortingParameters sorting, FirmwareUpdatesSortBy sortBy) {
+        Comparator<RfnGatewayFirmwareUpdateSummary> comparator = (o1, o2) -> {
+            return o1.getSendDate().compareTo(o2.getSendDate());
+        };
+        if (sortBy == FirmwareUpdatesSortBy.PENDING) {
+            comparator = (o1, o2) -> (o1.getGatewayUpdatesPending() - o2.getGatewayUpdatesPending());
+        }
+        if (sortBy == FirmwareUpdatesSortBy.FAILED) {
+            comparator = (o1, o2) -> (o1.getGatewayUpdatesFailed() - o2.getGatewayUpdatesFailed());
+        }
+        if (sortBy == FirmwareUpdatesSortBy.SUCCESSFUL) {
+            comparator = (o1, o2) -> (o1.getGatewayUpdatesSuccessful() - o2.getGatewayUpdatesSuccessful());
+        }
+        if (sorting.getDirection() == Direction.desc) {
+            comparator = Collections.reverseOrder(comparator);
+        }
+        return comparator;
+    }
+
+    public static Comparator<CertificateUpdate> getTimestampComparator() {
+        Ordering<Instant> normalComparer = Ordering.natural();
+        Ordering<CertificateUpdate> dateOrdering =
+            normalComparer.onResultOf(new Function<CertificateUpdate, Instant>() {
+                @Override
+                public Instant apply(CertificateUpdate from) {
+                    return from.getTimestamp();
+                }
+            });
+        Ordering<CertificateUpdate> result = dateOrdering.compound(getCertificateFileNameComparator());
+        return result;
+    }
+
+    public static Comparator<CertificateUpdate> getCertificateFileNameComparator() {
+        Ordering<String> normalStringComparer = Ordering.natural();
+        Ordering<CertificateUpdate> certFileNameOrdering =
+            normalStringComparer.onResultOf(new Function<CertificateUpdate, String>() {
+                @Override
+                public String apply(CertificateUpdate from) {
+                    return from.getFileName();
+                }
+            });
+        return certFileNameOrdering;
+    }
 }

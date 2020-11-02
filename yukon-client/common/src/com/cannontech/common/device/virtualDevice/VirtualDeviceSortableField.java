@@ -6,7 +6,7 @@ import com.cannontech.common.pao.PaoType;
 
 public enum VirtualDeviceSortableField {
     PAO_NAME("PAOName", (VirtualDeviceBaseModel m1, VirtualDeviceBaseModel m2) -> {
-        return m1.getName().compareTo(m2.getName());
+        return m1.getName().compareToIgnoreCase(m2.getName());
     }),
     DISABLE_FLAG("DisableFlag", (VirtualDeviceBaseModel m1, VirtualDeviceBaseModel m2) -> {
         return m2.getEnable().compareTo(m1.getEnable());
