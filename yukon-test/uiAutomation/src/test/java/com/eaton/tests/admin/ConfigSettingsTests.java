@@ -15,14 +15,12 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.admin.ConfigSettingsPage;
 import com.eaton.rest.api.common.ApiCallHelper;
-import com.github.javafaker.Faker;
 
 import io.restassured.response.ExtractableResponse;
 
 public class ConfigSettingsTests extends SeleniumTestSetup {
     
     private ConfigSettingsPage page;
-    private Faker faker;
     private String baseUrl;
     private String adminUrl;
 
@@ -30,7 +28,6 @@ public class ConfigSettingsTests extends SeleniumTestSetup {
     public void beforeClass() {
         DriverExtensions driverExt = getDriverExt();
         setRefreshPage(false);
-        faker = SeleniumTestSetup.getFaker();
         
         baseUrl = SeleniumTestSetup.getBaseUrl();
         adminUrl = "/admin/config/";
