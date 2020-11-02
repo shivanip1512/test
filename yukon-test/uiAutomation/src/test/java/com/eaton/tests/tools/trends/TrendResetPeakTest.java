@@ -86,7 +86,7 @@ public class TrendResetPeakTest extends SeleniumTestSetup {
 
         navigate(Urls.Tools.TREND_DETAILS + trendIdTypeNotPeak);
 
-        detailsPage.getActionBtn().click();
+        detailsPage.getActionBtn().clickAndWait();
 
         assertThat(detailsPage.getActionBtn().isActionEnabled("Reset Peak")).isFalse();
     }

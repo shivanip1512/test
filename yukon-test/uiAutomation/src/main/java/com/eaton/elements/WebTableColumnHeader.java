@@ -1,11 +1,12 @@
-package com.eaton.elements.editwebtable;
+package com.eaton.elements;
 
 import org.openqa.selenium.WebElement;
 
-public class EditWebTableColumnHeader {
-private WebElement webColumnHeader;
+public class WebTableColumnHeader {
     
-    public EditWebTableColumnHeader(WebElement webColumnHeader) {
+    private WebElement webColumnHeader;
+    
+    public WebTableColumnHeader(WebElement webColumnHeader) {
             this.webColumnHeader = webColumnHeader;
     }
 
