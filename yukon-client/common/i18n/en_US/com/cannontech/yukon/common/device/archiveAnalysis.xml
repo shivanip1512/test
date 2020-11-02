@@ -145,6 +145,14 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.time">Include Exact Time Only</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.readingsAt">readings at</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.daysOffset">Days Offset</entry>
+    
+    <!-- Used by export home and schedule export pages -->
+    <entry key="yukon.web.modules.tools.bulk.onInterval">Include Interval Times Only</entry>
+    <entry key="yukon.web.modules.tools.bulk.intervals.MINUTES_5">5 Minutes</entry>
+    <entry key="yukon.web.modules.tools.bulk.intervals.MINUTES_15">15 Minutes</entry>
+    <entry key="yukon.web.modules.tools.bulk.intervals.MINUTES_30">30 Minutes</entry>
+    <entry key="yukon.web.modules.tools.bulk.intervals.HOURS_1">1 Hour</entry>
+    <entry key="yukon.web.modules.tools.bulk.intervals.DAYS_1">Daily (Midnight)</entry>
 
     <!-- exporter.jsp -->
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.saveFormat.label">Save Format</entry>
