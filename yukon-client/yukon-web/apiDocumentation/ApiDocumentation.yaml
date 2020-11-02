@@ -49,11 +49,9 @@ paths:
     $ref: 'api/programConstraintsApi.yaml#/holiday-schedules'
     
   /devices/virtualDevices:
-    $ref: 'api/virtualDevicesApi.yaml#/post-operation'
+    $ref: 'api/virtualDevicesApi.yaml#/post-get-all-operation'
   /devices/virtualDevices/{id}:
     $ref: 'api/virtualDevicesApi.yaml#/get-update-delete-operation'
-  /devices/virtualDevices/:
-    $ref: 'api/virtualDevicesApi.yaml#/list-Virtual-devices-operation'
 
   /points:
     $ref: 'api/pointsApi.yaml#/post-operation'
