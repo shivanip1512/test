@@ -29,6 +29,7 @@ public class LoadProgramCreatePage extends PageBase {
 	private static final String DESCRIBEDBY = "gear-create-popup-LM_DIRECT_PROGRAM";
 	private static final String HONEYWELL_GEAR_MODAL_DESCRIBEDBY = "gear-create-popup-LM_HONEYWELL_PROGRAM";
 	private static final String ITRON_GEAR_MODAL_DESCRIBEDBY = "gear-create-popup-LM_ITRON_PROGRAM";
+	private static final String MeterDiconnect_GEAR_MODAL_DESCRIBEDBY = "gear-create-popup-LM_METER_DISCONNECT_PROGRAM";
 	
 	private TextEditElement name;
 	private DropDownElement type;
@@ -244,7 +245,7 @@ public class LoadProgramCreatePage extends PageBase {
 		getGearsCreateBtn().click();
 		if (showCreateMeterDiconnectPrgmModal == null) {
 			this.showCreateMeterDiconnectPrgmModal = new CreateMeterDisconnectPrgmModal(this.driverExt,
-					Optional.empty(), Optional.of(DESCRIBEDBY));
+					Optional.empty(), Optional.of(MeterDiconnect_GEAR_MODAL_DESCRIBEDBY));
 		}
 		return showCreateMeterDiconnectPrgmModal;
 	}

@@ -47,6 +47,11 @@ paths:
     $ref: 'api/programConstraintsApi.yaml#/season-schedules'
   /dr/constraints/holidaySchedules:
     $ref: 'api/programConstraintsApi.yaml#/holiday-schedules'
+    
+  /devices/virtualDevices:
+    $ref: 'api/virtualDevicesApi.yaml#/post-get-all-operation'
+  /devices/virtualDevices/{id}:
+    $ref: 'api/virtualDevicesApi.yaml#/get-update-delete-operation'
 
   /points:
     $ref: 'api/pointsApi.yaml#/post-operation'
@@ -68,5 +73,6 @@ tags:
   - name: Load Group
   - name: Macro Load Group
   - name: Program Constraints
+  - name: Virtual Devices
   - name: Points
-  
+
