@@ -26,7 +26,8 @@ public class LoadProgramSEPCreateTests extends SeleniumTestSetup {
     private LoadProgramCreatePage createPage;
     private DriverExtensions driverExt;
     private String ldGrpName;
-    String timeStamp;
+    private String timeStamp;
+    private static final String TYPE = "LM_SEP_PROGRAM";
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
@@ -39,17 +40,18 @@ public class LoadProgramSEPCreateTests extends SeleniumTestSetup {
 
         navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
         createPage = new LoadProgramCreatePage(driverExt);
-        createPage.getType().selectItemByValue("LM_SEP_PROGRAM");
+        createPage.getType().selectItemByValue(TYPE);
     }
 
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
-            refreshPage(createPage);
-            createPage.getType().selectItemByValue("LM_SEP_PROGRAM");
+        refreshPage(createPage);
+        createPage.getType().selectItemByValue(TYPE);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldPrgmSepCreate_RequiredFieldsOnly_Success() {
+        timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT SepProgram " + timeStamp;
         final String EXPECTED_MSG = name + " saved successfully.";
 
@@ -73,7 +75,8 @@ public class LoadProgramSEPCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldPrgmSepCreate_AllFields_Success() {
-        String name = "AT SepProgram2 " + timeStamp;
+        timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String name = "AT SepProgram " + timeStamp;
         final String EXPECTED_MSG = name + " saved successfully.";
 
         createPage.getName().setInputValue(name);
@@ -88,7 +91,7 @@ public class LoadProgramSEPCreateTests extends SeleniumTestSetup {
         createPage.getStartTimeWindowOne().setValue("12:57");
         createPage.getStopTimeWindowOne().setValue("23:59");
         createPage.getUseWindowTwo().selectValue("No");
-        
+
         LoadGroupsTab groupsTab = createPage.getLoadGroupTab();
         groupsTab.clickTabAndWait("Load Groups");
         groupsTab.getLoadGroups().addSingleAvailable(ldGrpName);
@@ -103,13 +106,44 @@ public class LoadProgramSEPCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
     public void ldPrgmSepCreate_GearType_ValuesCorrect() {
-        List<String> expectedGearTypes = new ArrayList<String>();
-        expectedGearTypes.add("SEP Cycle");
-        expectedGearTypes.add("SEP Temperature Offset");
-        expectedGearTypes.add("No Control");
+        List<String> expectedGearTypes = new ArrayList<>(List.of("Select", "SEP Cycle", "SEP Temperature Offset", "No Control"));
 
         CreateSepPrgmGearModal gearModal = createPage.showCreateSepPrgmGearModal();
         List<String> gearTypes = gearModal.getGearType().getOptionValues();
         assertThat(gearTypes).containsAll(expectedGearTypes);
+    }
+
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    public void ldPrgmSepCreate_WithMultipleGears_Success() {
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String name = "AT SepProgram " + timeStamp;
+
+        final String EXPECTED_MSG = name + " saved successfully.";
+
+        createPage.getName().setInputValue(name);
+        // Adding 2 gears
+        for (int i = 1; i <= 2; i++) {
+            CreateSepPrgmGearModal modal = createPage.showCreateSepPrgmGearModal();
+            waitForLoadingSpinner();
+            modal.getGearName().setInputValue("SEP Gear " + i);
+            modal.getGearType().selectItemByValue("SepCycle");
+            waitForLoadingSpinner();
+            modal.clickOkAndWaitForModalCloseDisplayNone();
+        }
+
+        LoadGroupsTab groupsTab = createPage.getLoadGroupTab();
+
+        groupsTab.clickTabAndWait("Load Groups");
+        groupsTab.getLoadGroups().addSingleAvailable(ldGrpName);
+
+        createPage.getSaveBtn().click();
+
+        waitForPageToLoad("Load Program: " + name, Optional.empty());
+
+        LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt);
+
+        String userMsg = detailsPage.getUserMessage();
+
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 }
