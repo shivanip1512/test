@@ -188,7 +188,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         softly.assertThat(actualOtherActionUrl).isEqualTo(OTHER_ACTIONS_URL);
         // Validation for response code
         softly.assertThat(response.statusCode()).isEqualTo(200);
-
         softly.assertAll();
     }
 
@@ -201,7 +200,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         ConfirmModal deleteConfirmModal = detailPage.showAndWaitDeleteVirtualDeviceModal();
 
         String actualModalTitle = deleteConfirmModal.getModalTitle();
-
+        
         assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
     }
 
@@ -221,7 +220,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         softly.assertThat(actualAnalogPtUrl).isEqualTo(EXP_ANLG_POINT_URL);
         // Assert for response code
         softly.assertThat(response.statusCode()).isEqualTo(200);
-
         softly.assertAll();
     }
 
@@ -241,7 +239,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         softly.assertThat(actualCalcAnlgPtUrl).isEqualTo(EXP_CALC_ANLG_POINT_URL);
         // Assert for response code
         softly.assertThat(response.statusCode()).isEqualTo(200);
-
         softly.assertAll();
     }
 
@@ -261,7 +258,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         softly.assertThat(actualCalcStsPtUrl).isEqualTo(EXP_CALC_STS_POINT_URL);
         // Validation for response code
         softly.assertThat(response.statusCode()).isEqualTo(200);
-
         softly.assertAll();
     }
 
@@ -281,7 +277,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         softly.assertThat(actualCalcStsPtUrl).isEqualTo(EXP_DMND_ACC_POINT_URL);
         // Validation for response code        
         softly.assertThat(response.statusCode()).isEqualTo(200);
-
         softly.assertAll();
     }
 
@@ -301,7 +296,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         softly.assertThat(actualCalcStsPtUrl).isEqualTo(EXP_PLS_ACC_POINT_URL);
         // Validation for response code
         softly.assertThat(response.statusCode()).isEqualTo(200);
-
         softly.assertAll();
     }
 
@@ -321,7 +315,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         softly.assertThat(actualCalcStsPtUrl).isEqualTo(EXP_STS_POINT_URL);
         // Validation for response code
         softly.assertThat(response.statusCode()).isEqualTo(200);
-
         softly.assertAll();
     }
 
@@ -341,7 +334,6 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         softly.assertThat(EXP_POINT_URL).isEqualTo(pointUrl);
         // Validation for response code
         softly.assertThat(response.statusCode()).isEqualTo(200);
-
         softly.assertAll();
     }
 
@@ -351,8 +343,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         final String EXP_MODAL_TITLE = "Recent Archived Readings";
 
-        RecentArchievedRadingsModal rcntArchReadingsModal = detailPage
-                .showAndWaitRecentArchievedReadingsModal("Recent Archived Readings", 5);
+        RecentArchievedRadingsModal rcntArchReadingsModal = detailPage.showAndWaitRecentArchievedReadingsModal("Recent Archived Readings", 5);
 
         String title = rcntArchReadingsModal.getModalTitle();
 
@@ -486,7 +477,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
          * detailPage.getPointType().selectItemByText("Calc Analog");
          * detailPage.getFilter().click();
          * 
-         * detailPage.getPointType().clearSelectedItem();
+         * detailPage.getPointType().removeItemByIndex(0);
          * detailPage.getFilter().click();
          * 
          * List<String> pointType = new ArrayList<>(List.of("Analog", "Calc Analog", "Calc Status", "Demand Accumulator",

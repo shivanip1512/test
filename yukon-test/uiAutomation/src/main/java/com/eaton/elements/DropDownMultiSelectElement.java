@@ -76,15 +76,13 @@ public class DropDownMultiSelectElement {
     
     
     /**
-     * Clears the text in Dropdown with input having class 'chosen-search-input'
+     * @param index - zero based, removes selected value based on index
      */
-    public void clearSelectedItem() {
+    public void removeItemByIndex(int index) {
     	WebElement dropDown = getElement();
         
-        dropDown.click();
+        List<WebElement> choices = dropDown.findElements(By.cssSelector(".chosen-choices .search-choice"));
         
-        WebElement search = dropDown.findElement(By.cssSelector(".chosen-search-input"));
-        
-        search.sendKeys("\u0008");
+        choices.get(index).findElement(By.cssSelector(".search-choice-close")).click();
     }
 }
