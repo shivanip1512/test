@@ -47,6 +47,9 @@ paths:
   /dr/constraints/holidaySchedules:
     $ref: 'api/programConstraintsApi.yaml#/holiday-schedules'
 
+  /device/getLatestReading:
+    $ref: 'api/deviceReadingsApi.yaml#/get-operation'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -60,4 +63,5 @@ tags:
   - name: Load Group
   - name: Macro Load Group
   - name: Program Constraints
+  - name: Device Readings
   
