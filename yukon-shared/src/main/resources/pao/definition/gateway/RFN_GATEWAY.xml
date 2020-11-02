@@ -8,6 +8,7 @@
         <tag name="DB_EDITOR_INCOMPATIBLE"/>
         <tag name="GATEWAY_DETAIL_DISPLAYABLE"/>
         <tag name="DEVICE_ICON_TYPE" option="transmitter"/>
+        <tag name="RFN_EVENTS"/>
     </tags>
     <pointInfos>
         <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
