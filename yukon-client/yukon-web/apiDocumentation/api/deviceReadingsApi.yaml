@@ -3,7 +3,7 @@ get-operation:
     tags:
      - Device Readings
     summary: 'Retrieve device readings/Point data.'
-    description: 'API to retrieve point data for device based on Identifier like METERNUMBER, PAONAME, PAOID, SERIALNUMBER and  attributes like BLINK_COUNT, COMM_STATUS, CONTROL_STATUS, OUTAGE_STATUS etc passed in request body.'
+    description: 'API to retrieve point data for device based on identifier like METERNUMBER, PAONAME, PAOID, SERIALNUMBER and  attributes like BLINK_COUNT, COMM_STATUS, CONTROL_STATUS, OUTAGE_STATUS etc passed in request body.'
     requestBody:
       content:
         application/json:

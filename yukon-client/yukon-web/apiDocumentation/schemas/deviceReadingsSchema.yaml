@@ -16,7 +16,7 @@ deviceReadingsSelectors:
             type: array
             items:
               type: string
-              description: 'Attibutes.'
+              description: 'Attributes supported by identifier type.'
               enum:
                 - BLINK_COUNT
                 - COMM_STATUS
@@ -35,11 +35,11 @@ identifier:
     value:
       type: string
       maxLength: 40
-      description: 'Value of identifier.'
+      description: 'Value of identifier like meternumber,paoid,paoname,serialnumber.'
     identifierType:
       type: string
       default: METERNUMBER
-      description: 'Identifier Type.'
+      description: 'Identifier Types for point data.'
       enum:
         - METERNUMBER
         - PAONAME
@@ -63,36 +63,37 @@ DeviceReadings:
                   identifier:
                     $ref: '#/identifier'
                   pointId:
-                    type: number
-                    description: 'Point Id.'
+                    type: integer
+                    description: 'Unique identifier for Point.'
                   attribute: 
                     type: string
-                    description: 'Attribute type'
+                    description: 'Attribute supported by device for point data'
                   type:
                     type: number
                     description: 'Point type'
                   value:
-                    type: number
+                    type: double
+                    format: double
                     description: 'Point Value.'
                   pointQuality:
                     type: string
                     description: 'Point Quality.'
                     enum:
-                      - Uninitialized,
-                      - NonUpdated,
-                      - Manual,
-                      - Normal,
-                      - Abnormal,
-                      - Unknown,
-                      - Invalid,
-                      - PartialInterval,
+                      - Uninitialized
+                      - NonUpdated
+                      - Manual
+                      - Normal
+                      - Abnormal
+                      - Unknown
+                      - Invalid
+                      - PartialInterval
                       - DeviceFiller
                       - Questionable
                       - Overflow
                       - Powerfail
                       - Unreasonable
                       - Constant
-                      - Estimated;
+                      - Estimated
                   time:
                     type: string
                     format: date-type
