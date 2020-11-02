@@ -191,7 +191,7 @@ public class ControlScenarioSetupController {
 
             if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 HashMap<String, Integer> paoIdMap = (HashMap<String, Integer>) response.getBody();
-                int controlScenarioId = paoIdMap.get("paoId");
+                int controlScenarioId = paoIdMap.get("id");
                 flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", controlScenario.getName()));
                 return "redirect:/dr/setup/controlScenario/" + controlScenarioId;
             }
@@ -283,7 +283,7 @@ public class ControlScenarioSetupController {
 
     private List<LiteGear> retrieveGears(Integer programId, YukonUserContext userContext, HttpServletRequest request) {
         List<LiteGear> liteGears = new ArrayList<>();
-        String url = helper.findWebServerUrl(request, userContext, ApiURL.drGetGearsForLoadProgram + programId);
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramUrl + "/" +  programId + "/gears");
         try {
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForList(userContext, request, url,
                 LiteGear.class, HttpMethod.GET, LiteGear.class);

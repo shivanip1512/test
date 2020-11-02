@@ -33,7 +33,7 @@ public abstract class ConfigCryptoUtils {
      * data in hex format.
      */
     protected static String encryptValue(String valuePlaintext, AESPasswordBasedCrypto encrypter) throws CryptoException {
-        valuePlaintext = StringUtils.deleteWhitespace(valuePlaintext);
+        valuePlaintext = StringUtils.stripToNull(valuePlaintext);
         String encryptedValue = encryptionDesignation + encrypter.encryptToHexStr(valuePlaintext);
         return encryptedValue;
     }

@@ -11,11 +11,6 @@ import com.cannontech.dr.setup.service.LMSetupService;
 public interface LoadGroupSetupService extends LMSetupService<LoadGroupBase, LMCopy> {
 
     /**
-     * Retrieve available load groups except Ecobee, Honeywell, Itron and Nest.
-     */
-    List<LMPaoDto> retrieveAvailableLoadGroup();
-
-    /**
      * Retrieve available control start states with rawState of 0 or 1 for the specified pointId.
      */
     List<ControlRawState> getPointGroupStartState(int pointId);

@@ -638,7 +638,7 @@ public class LoadProgramSetupController {
     @GetMapping("/programGear/{id}")
     public String programGear(ModelMap model, @PathVariable String id, YukonUserContext userContext,
             HttpServletRequest request) {
-        String url = helper.findWebServerUrl(request, userContext, ApiURL.drGearRetrieveUrl + id);
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.drGearRetrieveUrl + "/"+ id);
 
         ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext,
                                                                                       request,

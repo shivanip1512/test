@@ -5538,7 +5538,19 @@ JavaScript :
     sha1 : 1098b8dfc26d37c5504d7cddf296203f85338470
     jira : YUK-13284
     updated : 2014-05-13
-    notes : 
+    notes : Used for creating Tree Views in our UI - Being replaced by fancytree
+    
+  - project : fancytree
+    version : 2.37.0
+    project URL : "https://github.com/mar10/fancytree"
+    license : MIT
+    license URLs : "https://github.com/mar10/fancytree/wiki/LicenseInfo"
+    npm URL : "https://www.npmjs.com/package/jquery.fancytree"
+    md5 : dfad8e02cf08797247fa32e1928189ec
+    sha1 : ec2f38be5ebd584a8611ba04465b70b7c3b6ba99
+    jira : YUK-22264
+    updated : 2020-10-20
+    notes : Used for creating Tree Views in our UI
 
   - project : fileupload
     version : 10.8.0
@@ -5565,15 +5577,15 @@ JavaScript :
     notes : Minified, cannot determine version
 
   - project : form
-    version : 4.2.2
+    version : 4.3.0
     project URL : "http://malsup.com/jquery/form/"
     license : MIT,GPL
     license URLs : "https://github.com/malsup/form#copyright-and-license"
     npm URL : "n/a"
-    md5 : 39eb832aa48f3a60b905928c2d879e03
-    sha1 : bbc84d21ce03ee9995d1c5c3aa21b451025b13ee
-    jira : YUK-21525
-    updated : 2020-03-23
+    md5 : f0538b8cb5513dca91c96cf1f3504f86
+    sha1 : b90a4f6a12b7ae7e99fe0aaca2e0e97c757a307f
+    jira : YUK-23003
+    updated : 2020-10-20
     notes : The jQuery code in Yukon intensively uses ajaxSumbit method. We also use ajaxForm method. These methods are offered by this library.
 
   - project : google-code-prettify
@@ -5650,15 +5662,15 @@ JavaScript :
                   Generated via http://modernizr.com/download/#-fontface-backgroundsize-borderimage-borderradius-boxshadow-flexbox-flexboxlegacy-hsla-multiplebgs-opacity-rgba-textshadow-cssanimations-csscolumns-generatedcontent-cssgradients-cssreflections-csstransforms-csstransforms3d-csstransitions-applicationcache-canvas-canvastext-draganddrop-hashchange-history-audio-video-indexeddb-input-inputtypes-localstorage-postmessage-sessionstorage-websockets-websqldatabase-webworkers-geolocation-inlinesvg-smil-svg-svgclippaths-touch-webgl-printshiv-mq-cssclasses-teststyles-testprop-testallprops-hasevent-prefixes-domprefixes-load"
 
   - project : moment
-    version : 2.24.0
+    version : 2.29.1
     project URL : "https://momentjs.com/"
     license : MIT
     license URLs : "https://github.com/moment/moment/blob/develop/LICENSE"
-    npm URL : "https://www.npmjs.com/package/moment/v/2.24.0"
-    md5 : af098b0bed8f8373664ae981deb8d73e
-    sha1 : b473731c1ddb874c9750c91ff4ed6183bcf05046
-    jira : YUK-21529
-    updated : 2020-04-09
+    npm URL : "https://www.npmjs.com/package/moment/v/2.29.1"
+    md5 : 4226c7caddd61093c8d6ffe14d95129f
+    sha1 : 5f5399568802b4a82f747c0905fb4b595b205321
+    jira : YUK-23002
+    updated : 2020-10-21
     notes : "This library is used to display dates on UI in user's timezone."
 
   - project : mousewheel
@@ -5674,15 +5686,15 @@ JavaScript :
     notes : "This library is used for the date, time, datetime and offset pickers used on UI."
 
   - project : open-layers
-    version : 6.2.1
+    version : 6.4.3
     project URL : "https://openlayers.org/"
     license : BSD 2-clause
     license URLs : "https://raw.githubusercontent.com/openlayers/openlayers/master/LICENSE.md"
-    npm URL : "https://www.npmjs.com/package/ol/v/6.2.1"
-    md5 : b8382fa532af01cbc11185f78baf5a2b
-    sha1 : 118318fae9b4f83e8bcec99d2d1e5dde54ba2624
-    jira : YUK-21139
-    updated : 2020-02-18
+    npm URL : "https://www.npmjs.com/package/ol/v/6.4.3"
+    md5 : 5cc60bd85cb1d155b81dc01934e7c149
+    sha1 : 5a0972ba4b9d13f8996188e075bdfa1376a541d0
+    jira : YUK-22996
+    updated : 2020-10-22
     notes : Used for mapping
 
   - project : placeholder
@@ -5934,6 +5946,20 @@ C++ :
     totalSize : 9562547
     updated : 2020-06-19  
     jira : YUK-21543
+    notes : 
+    
+  - project : Microsoft Guidelines Support Library
+    path : MICROSOFT_GSL
+    version : 3.1.0
+    project URL : "https://github.com/microsoft/GSL"
+    license : MIT
+    license URLs : "https://github.com/microsoft/GSL/blob/v3.1.0/LICENSE"
+    md5 : bd754642756bc03a614e88e8891214c2
+    sha1 : b2416a4802494f6128431e3fdb860e8521874e13 
+    fileCount : 10
+    totalSize : 176964
+    updated : 2020-10-19  
+    jira : YUK-22841
     notes : 
     
   - project : Microsoft SQL Server Client
