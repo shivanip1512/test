@@ -166,7 +166,7 @@ public class GlobalSettingTypeValidators {
     public static TypeValidator<String> guidValidator = new TypeValidator<>( ) {
         @Override
         public void validate(String value, Errors errors, GlobalSettingType globalSettingType) {
-            if (!Validator.isValidGuid(value) && !Validator.isValidGuid(value)) {
+            if (!StringUtils.isBlank(value) && !Validator.isValidGuid(value)) {
                 errors.rejectValue("values[" + globalSettingType + "]", baseKey + "invalidGuid", null, "");
             }
         }
