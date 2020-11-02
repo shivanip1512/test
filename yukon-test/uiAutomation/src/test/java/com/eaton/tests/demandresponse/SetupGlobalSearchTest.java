@@ -31,7 +31,7 @@ public class SetupGlobalSearchTest extends SeleniumTestSetup {
     public void setupGlobalSearch_SearchSetupAndEnter_NavigatesToSearchPage() {
         globalSearchPage.getSearchBoxElement().setSearchValueAndEnter("Setup");
         
-        boolean pageLoaded = waitForUrlToLoad(Urls.SEARCH + Urls.SEARCH_PARAM + "Setup", Optional.empty());
+        boolean pageLoaded = waitForUrlToLoad(Urls.DemandResponse.SETUP, Optional.empty());
         
         assertThat(pageLoaded).isTrue();
     }
