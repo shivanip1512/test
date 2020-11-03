@@ -505,7 +505,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
          * 
          * virtualDeviceId = virtDevResponse.getInt("id");
          * 
-         * detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, virtualDeviceId);
+         * detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Features.VIRTUAl_DEVICE_DETAIL, virtualDeviceId);
          * 
          * detailPage.getPointType().selectItemByText("Calc Analog");
          * detailPage.getPointType().selectItemByText("Status");

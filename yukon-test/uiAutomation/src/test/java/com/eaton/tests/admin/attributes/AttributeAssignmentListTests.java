@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.javatuples.Pair;
+import org.json.JSONObject;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -30,6 +32,7 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
     private List<String> pointTypes;
     private List<String> offsets;
     private List<Integer> pointOffsets = new ArrayList<Integer>();
+    private String attrNameNoAssgmt;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
@@ -44,7 +47,9 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
             AttributeService.createAttributeWithAssignment(Optional.of(name));
         }
         
-        AttributeService.createAttribute(Optional.empty());
+        Pair<JSONObject, JSONObject> pair = AttributeService.createAttribute(Optional.empty());
+        JSONObject response = pair.getValue1();
+        attrNameNoAssgmt = response.getString("name");
 
         navigate(Urls.Admin.ATTRIBUTES_LIST);
 
@@ -65,7 +70,7 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
     }        
     
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.ADMIN, TestConstants.Features.ATTRIBUTES })
-    public void attributeList_AttrAsgmtSortNamesAsc_Correct() {
+    public void attrAsgmtListTests_SortNamesAsc_Correct() {
         setRefreshPage(true);
         Collections.sort(attrNames, String.CASE_INSENSITIVE_ORDER);
         
@@ -76,7 +81,7 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.ADMIN, TestConstants.Features.ATTRIBUTES })
-    public void attributeList_AttrAsgmtSortNamesDesc_Correct() {
+    public void attrAsgmtListTests_SortNamesDesc_Correct() {
         setRefreshPage(true);
         Collections.sort(attrNames, String.CASE_INSENSITIVE_ORDER);
         Collections.reverse(attrNames);
@@ -88,7 +93,7 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.ADMIN, TestConstants.Features.ATTRIBUTES })
-    public void attributeList_AttrAsgmtSortDeviceTypesAsc_Correct() {
+    public void attrAsgmtListTests_SortDeviceTypesAsc_Correct() {
         setRefreshPage(true);
         Collections.sort(deviceTypes, String.CASE_INSENSITIVE_ORDER);
 
@@ -99,7 +104,7 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.ADMIN, TestConstants.Features.ATTRIBUTES })
-    public void attributeList_AttrAsgmtSortDeviceTypesDesc_Correct() {
+    public void attrAsgmtListTests_SortDeviceTypesDesc_Correct() {
         setRefreshPage(true);
         Collections.sort(deviceTypes, String.CASE_INSENSITIVE_ORDER);
         Collections.reverse(deviceTypes);
@@ -112,7 +117,7 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.ADMIN, TestConstants.Features.ATTRIBUTES })
-    public void attributeList_AttrAsgmtSortPointTypesAsc_Correct() {
+    public void attrAsgmtListTests_PointTypesAsc_Correct() {
         setRefreshPage(true);
         Collections.sort(pointTypes, String.CASE_INSENSITIVE_ORDER);
 
@@ -123,7 +128,7 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.ADMIN, TestConstants.Features.ATTRIBUTES })
-    public void attributeList_AttrAsgmtSortPointTypesDesc_Correct() {
+    public void attrAsgmtListTests_SortPointTypesDesc_Correct() {
         setRefreshPage(true);
         Collections.sort(pointTypes, String.CASE_INSENSITIVE_ORDER);
         Collections.reverse(pointTypes);
@@ -136,7 +141,7 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.ADMIN, TestConstants.Features.ATTRIBUTES })
-    public void attributeList_AttrAsgmtSortPointOffsetAsc_Correct() {
+    public void attrAsgmtListTests_SortPointOffsetAsc_Correct() {
         setRefreshPage(true);
         Collections.sort(pointOffsets);  
 
@@ -149,7 +154,7 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.ADMIN, TestConstants.Features.ATTRIBUTES })
-    public void attributeList_AttrAsgmtSortPointOffsetDesc_Correct() {
+    public void attrAsgmtListTests_SortPointOffsetDesc_Correct() {
         setRefreshPage(true);
         Collections.sort(pointOffsets);
         Collections.reverse(pointOffsets);
@@ -163,11 +168,43 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.ADMIN, TestConstants.Features.ATTRIBUTES })
-    public void attributeList_AttrAsgmtFilterByAttributeNoAssgmt_NoResultsFound() {
+    public void attrAsgmtListTests_FilterByAttrNoAssgmt_NoResultsFound() {
         setRefreshPage(true);
         final String EXPECTED_MSG = "No results found.";
 
+        page.getFilterByAttr().selectItemByText(attrNameNoAssgmt);
+        page.getFilterBtn().click();
+        page.getAttrAsgmtTable().waitForFilter();
+        
+        String msg = page.getAttrAsgmtTable().getTableMessage();
+        assertThat(msg).isEqualTo(EXPECTED_MSG);
+    }
+    
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
+    public void attrAsgmtListTests_FilterByDeviceType_ResultsCorrect() {
+        setRefreshPage(true);
+        String deviceType = deviceTypes.get(1);
+        
+        page.getFilterByDeviceTypes().selectItemByText(deviceType);
+        page.getFilterBtn().click();
+        page.getAttrAsgmtTable().waitForFilter();
 
-        //assertThat(EXPECTED_MSG).isEqualTo(userMsg);
+        List<String> actualTypes = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(2);
+
+        assertThat(actualTypes).isNotEmpty().allMatch(e -> e.contains(deviceType));
+    }
+
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
+    public void attrAsgmtListTests_FilterByAttr_ResultsCorrect() {
+        setRefreshPage(true);
+        String attrName = attrNames.get(1);
+        
+        page.getFilterByAttr().selectItemByText(attrName);
+        page.getFilterBtn().click();
+        page.getAttrAsgmtTable().waitForFilter();
+        
+        List<String> actualNames = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(1);
+
+        assertThat(actualNames).isNotEmpty().allMatch(e -> e.contains(attrName));
     }
 }
