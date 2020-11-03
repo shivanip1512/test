@@ -169,8 +169,8 @@
                             href="javascript:void(0);" />
                     </cti:checkRolesAndProperties>
                     <c:if test="${viewableCapBank.twoWayCbc || viewableCapBank.logicalCBC}">
-                            <cti:msg2 var="cbcPointsTitle" key=".cbcPointsTitle" arguments="${viewableCapBank.cbcName}" javaScriptEscape="true"/>
-                            <cm:dropdownOption key=".cbc.info" icon="icon-magnifier" classes="js-cbc-info" href="javascript:void(0);" />
+                        <cti:msg2 var="cbcPointsTitle" key=".cbcPointsTitle" arguments="${viewableCapBank.cbcName}" javaScriptEscape="true"/>
+                        <cm:dropdownOption key=".cbc.info" icon="icon-magnifier" classes="js-cbc-info" href="javascript:void(0);" />
                     </c:if>
                     <li class="divider" />
                     <cm:dropdownOption classes="js-show-comments" key=".menu.viewComments" icon="icon-comment" data-pao-id="${bankId}" 
@@ -180,13 +180,15 @@
                     <cti:checkRolesAndProperties value="CAPBANK_COMMANDS_AND_ACTIONS" level="ALL_DEVICE_COMMANDS_WITH_YUKON_ACTIONS,
                         NONOPERATIONAL_COMMANDS_WITH_YUKON_ACTIONS,YUKON_ACTIONS_ONLY">
                         <li class="divider" />
-                        <c:if test="${not viewableCapBank.bankMoved}">
-                            <cm:dropdownOption key=".bankMove" icon="icon-bullet-go" classes="js-move-bank" href="javascript:void(0);" />
-                        </c:if>
-                        <c:if test="${viewableCapBank.bankMoved}">
-                            <cm:dropdownOption classes="js-return" key=".command.RETURN_CAP_TO_ORIGINAL_FEEDER" icon="icon-bullet-go-left" />
-                            <cm:dropdownOption classes="js-assign" key=".command.assignBankHere" icon="icon-bullet-go-down" />
-                        </c:if>
+                        <c:choose>
+                            <c:when test="${not viewableCapBank.bankMoved}">
+                                <cm:dropdownOption key=".bankMove" icon="icon-bullet-go" classes="js-move-bank" href="javascript:void(0);" />
+                            </c:when>
+                            <c:otherwise>
+                                <cm:dropdownOption classes="js-return" key=".command.RETURN_CAP_TO_ORIGINAL_FEEDER" icon="icon-bullet-go-left" />
+                                <cm:dropdownOption classes="js-assign" key=".command.assignBankHere" icon="icon-bullet-go-down" />
+                            </c:otherwise>
+                        </c:choose>
                     </cti:checkRolesAndProperties>
                 </cm:dropdown>
             </td>
