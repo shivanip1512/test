@@ -35,7 +35,7 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
         virtualDeviceId = pair.getValue1().getInt("id");
         virtualDeviceName = pair.getValue1().getString("name");
         navigate(Urls.Assets.VIRTUAL_DEVICES_EDIT + "/" + virtualDeviceId); 
-        detailPage = new VirtualDevicesDetailPage(driverExt, virtualDeviceId);
+        detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, virtualDeviceId);
     }
 
     @AfterMethod(alwaysRun = true)

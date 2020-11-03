@@ -383,17 +383,22 @@
 
 <entry key="yukon.common.color.BLACK">Black</entry>
 <entry key="yukon.common.color.BLUE">Blue</entry>
+<entry key="yukon.common.color.BLUE_LIGHT">Light Blue</entry>
+<entry key="yukon.common.color.BLUE_DARK">Dark Blue</entry>
 <entry key="yukon.common.color.GREEN">Green</entry>
+<entry key="yukon.common.color.GREEN_LIGHT">Light Green</entry>
 <entry key="yukon.common.color.GRAY">Gray</entry>
-<entry key="yukon.common.color.LIGHT_GRAY">Light Gray</entry>  
+<entry key="yukon.common.color.GRAY_LIGHT">Light Gray</entry>  
 <entry key="yukon.common.color.ORANGE">Orange</entry>
 <entry key="yukon.common.color.PURPLE">Purple</entry>
-<entry key="yukon.common.color.RED">Red</entry>
+<entry key="yukon.common.color.RED">Bright Red</entry>
+<entry key="yukon.common.color.RED_LIGHT">Light Red</entry>
 <entry key="yukon.common.color.SAGE">Sage</entry>
+<entry key="yukon.common.color.SILVER">Silver</entry>
 <entry key="yukon.common.color.SKY">Sky</entry>
 <entry key="yukon.common.color.TEAL">Teal</entry>
 <entry key="yukon.common.color.WHITE">White</entry>
-<entry key="yukon.common.color.WINE">Wine</entry>    <!-- TODO figure out what text to use -->
+<entry key="yukon.common.color.WINE">Red</entry>  <!-- The Wine color is what will be presented to users as their option of a "red" color, so calling this Red. -->
 <entry key="yukon.common.color.YELLOW">Yellow</entry>
 
 </properties>
