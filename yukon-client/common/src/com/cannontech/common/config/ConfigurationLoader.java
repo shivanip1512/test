@@ -87,7 +87,7 @@ public class ConfigurationLoader {
         }
     }
 
-    public Map<String, Map<String, String>> getConfigSettings() {
+    public static Map<String, Map<String, String>> getConfigSettings() {
         return configSettings;
     }
 }

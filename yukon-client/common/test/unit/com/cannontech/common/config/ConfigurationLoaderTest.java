@@ -12,7 +12,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class ConfigurationLoaderTest {
 
     ConfigurationLoader configurationLoader = new ConfigurationLoader();
-    SmtpHelper smtpHelper = new SmtpHelper();
 
     @Before
     public void setup() {

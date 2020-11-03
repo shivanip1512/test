@@ -84,6 +84,8 @@ public class SmtpHelper {
                 });
         // update the cache with latest settings from configuration file and global settings.
         reloadAllSettings();
+        //Write configurations to emailSettings.txt file.
+        writeToFile();
     }
 
     /**
@@ -91,8 +93,7 @@ public class SmtpHelper {
      */
     public void reloadAllSettings() {
         // Load smtp configuration from configuration.properties file.
-        ConfigurationLoader configurationLoader = new ConfigurationLoader();
-        Map<String, String> smtpConfig = configurationLoader.getConfigSettings().get(SMTP_CONFIGURATION_KEY_ALIAS);
+        Map<String, String> smtpConfig = ConfigurationLoader.getConfigSettings().get(SMTP_CONFIGURATION_KEY_ALIAS);
         if (!CollectionUtils.isEmpty(smtpConfig)) {
             systemEmailSettingsCache.putAll(smtpConfig);
         }
@@ -102,11 +103,13 @@ public class SmtpHelper {
             loadCommonProperty(SmtpPropertyType.HOST);
             loadCommonProperty(SmtpPropertyType.PORT);
             loadCommonProperty(SmtpPropertyType.START_TLS_ENABLED);
-            update(SystemEmailSettingsType.MAIL_FROM_ADDRESS.getKey(),
+            updateCachedValue(SystemEmailSettingsType.MAIL_FROM_ADDRESS.getKey(),
                     globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS));
-            update(SystemEmailSettingsType.SMTP_PASSWORD.getKey(), globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD));
-            update(SystemEmailSettingsType.SMTP_USERNAME.getKey(), globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME));
-            update(SystemEmailSettingsType.WATCHDOG_SUBSCRIBER_EMAILS.getKey(),
+            updateCachedValue(SystemEmailSettingsType.SMTP_PASSWORD.getKey(),
+                    globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD));
+            updateCachedValue(SystemEmailSettingsType.SMTP_USERNAME.getKey(),
+                    globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME));
+            updateCachedValue(SystemEmailSettingsType.WATCHDOG_SUBSCRIBER_EMAILS.getKey(),
                     StringUtils.join(subscriptionDao.getSubscribedEmails(SmartNotificationEventType.YUKON_WATCHDOG), ","));
             log.info("Reloaded cache for the smtp Settings.");
         }
@@ -136,7 +139,7 @@ public class SmtpHelper {
         // not in configSettings, load from global settings
         if (smtpPropertyValue == null) {
             smtpPropertyValue = globalSettingDao.getString(propertyType.getGlobalSettingType());
-            systemEmailSettingsCache.put(propertyType.getKey(false), smtpPropertyValue);
+            updateCachedValue(propertyType.getKey(false), smtpPropertyValue);
         }
         return smtpPropertyValue;
     }
@@ -144,7 +147,7 @@ public class SmtpHelper {
     /**
      * Retrieve value for the specified key from cache.
      */
-    public String getValue(String key) {
+    public String getCachedValue(String key) {
         if (CollectionUtils.isEmpty(systemEmailSettingsCache)) {
             readSettingsFromFile();
         }
@@ -154,7 +157,7 @@ public class SmtpHelper {
     /**
      * Update cache with specified key value pair.
      */
-    public void update(String key, String value) {
+    public void updateCachedValue(String key, String value) {
         systemEmailSettingsCache.put(key, value);
     }
 
@@ -195,7 +198,7 @@ public class SmtpHelper {
             throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
         settings.add(SystemPublisherMetadataCryptoUtils.encrypt(key.toString())
                 .concat(separator)
-                .concat(SystemPublisherMetadataCryptoUtils.encrypt(getValue(key))));
+                .concat(SystemPublisherMetadataCryptoUtils.encrypt(getCachedValue(key))));
     }
 
     /**
@@ -207,7 +210,7 @@ public class SmtpHelper {
             lines.forEach(line -> {
                 try {
                     String tokens[] = line.split(separator);
-                    systemEmailSettingsCache.put(SystemPublisherMetadataCryptoUtils.decrypt(tokens[0]),
+                    updateCachedValue(SystemPublisherMetadataCryptoUtils.decrypt(tokens[0]),
                             SystemPublisherMetadataCryptoUtils.decrypt(tokens[1]));
                 } catch (IllegalBlockSizeException | BadPaddingException | UnsupportedEncodingException e) {
                     log.error("Error decrypting data from emailSettings.txt file", e);

@@ -64,7 +64,7 @@ public class WatchdogService {
     private static void sendDatabaseConnectionEmail() {
         try {
             SmtpHelper smtpHelper = new SmtpHelper();
-            if (StringUtils.isEmpty(smtpHelper.getValue(SystemEmailSettingsType.WATCHDOG_SUBSCRIBER_EMAILS.getKey()))) {
+            if (StringUtils.isEmpty(smtpHelper.getCachedValue(SystemEmailSettingsType.WATCHDOG_SUBSCRIBER_EMAILS.getKey()))) {
                 getLogger().warn("No user subscribed for notification for watchdog.");
                 return;
             }
@@ -80,10 +80,10 @@ public class WatchdogService {
                     messageSource.getMessage("yukon.watchdog.notification.text", null, Locale.ENGLISH));
             msgBuilder.append("\n\n");
             msgBuilder.append(messageSource.getMessage("yukon.watchdog.notification.DATABASE", null, Locale.ENGLISH));
-            String commaSeparatedIds = smtpHelper.getValue(SystemEmailSettingsType.WATCHDOG_SUBSCRIBER_EMAILS.getKey());
+            String commaSeparatedIds = smtpHelper.getCachedValue(SystemEmailSettingsType.WATCHDOG_SUBSCRIBER_EMAILS.getKey());
             List<String> sendToEmailIds = Arrays.asList(commaSeparatedIds.split("\\s*,\\s*"));
             EmailMessage emailMessage = EmailMessage.newMessageBccOnly(subject, msgBuilder.toString(),
-                    smtpHelper.getValue(SystemEmailSettingsType.MAIL_FROM_ADDRESS.getKey()),
+                    smtpHelper.getCachedValue(SystemEmailSettingsType.MAIL_FROM_ADDRESS.getKey()),
                     sendToEmailIds);
             EmailService emailService = new EmailServiceImpl();
             emailService.sendMessage(emailMessage);

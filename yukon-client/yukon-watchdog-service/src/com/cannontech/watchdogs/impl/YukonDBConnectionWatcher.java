@@ -39,7 +39,7 @@ public class YukonDBConnectionWatcher extends ServiceStatusWatchdogImpl {
         if (serviceStatus == ServiceStatus.RUNNING) {
             try {
                 List<String> subscriberEmailIds = subscriptionDao.getSubscribedEmails(SmartNotificationEventType.YUKON_WATCHDOG);
-                SmtpHelper.update(SystemEmailSettingsType.WATCHDOG_SUBSCRIBER_EMAILS.getKey(),
+                SmtpHelper.updateCachedValue(SystemEmailSettingsType.WATCHDOG_SUBSCRIBER_EMAILS.getKey(),
                         StringUtils.join(subscriberEmailIds, ","));
                 SmtpHelper.writeToFile();
             } catch (RuntimeException e) {

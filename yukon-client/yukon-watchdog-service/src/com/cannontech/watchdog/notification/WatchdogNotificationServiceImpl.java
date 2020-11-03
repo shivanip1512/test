@@ -121,8 +121,9 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
      * Update Email IDs of subscribers and Sender.
      */
     private void loadEmailIds() {
-            sendToEmailIds = Arrays.asList(smtpHelper.getValue(SystemEmailSettingsType.WATCHDOG_SUBSCRIBER_EMAILS.getKey()).split("\\s*,\\s*"));
-            sender = smtpHelper.getValue(SystemEmailSettingsType.MAIL_FROM_ADDRESS.getKey());
+        sendToEmailIds = Arrays.asList(
+                smtpHelper.getCachedValue(SystemEmailSettingsType.WATCHDOG_SUBSCRIBER_EMAILS.getKey()).split("\\s*,\\s*"));
+        sender = smtpHelper.getCachedValue(SystemEmailSettingsType.MAIL_FROM_ADDRESS.getKey());
     }
 
     /*
