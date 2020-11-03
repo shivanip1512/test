@@ -22,7 +22,7 @@ public class GroupListTests extends SeleniumTestSetup {
         listPage = new CiGroupListPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void groupList_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Groups";
 

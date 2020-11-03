@@ -13,7 +13,7 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.ControlAreaListPage;
 
-@Test(groups = TestConstants.DemandResponse.DEMAND_RESPONSE)
+@Test(groups = TestConstants.Features.DEMAND_RESPONSE)
 public class ControlAreaListTests extends SeleniumTestSetup {
 
     private ControlAreaListPage listPage;
@@ -26,7 +26,7 @@ public class ControlAreaListTests extends SeleniumTestSetup {
         listPage = new ControlAreaListPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void controlAreaList_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Control Areas";
 
@@ -35,7 +35,7 @@ public class ControlAreaListTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void controlAreaList_ColumnHeaders_Correct() {
         softly = new SoftAssertions();
         final int EXPECTED_COUNT = 8;

@@ -24,7 +24,7 @@ public class ScenarioEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void scenarioEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Scenario: AT Scenario";
 
@@ -37,7 +37,7 @@ public class ScenarioEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void scenarioEdit_RequiredFieldsOnly_Success() {
         navigate(Urls.DemandResponse.SCENARIO_EDIT + "590" + Urls.EDIT);
 

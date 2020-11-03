@@ -14,7 +14,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.builders.tools.trends.TrendCreateService;
 import com.eaton.elements.WebTableRow;
-import com.eaton.elements.WebTableRow.Icon;
+import com.eaton.elements.WebTableRow.Icons;
 import com.eaton.elements.modals.SelectPointModal;
 import com.eaton.elements.modals.TrendMarkerModal;
 import com.eaton.elements.modals.TrendPointModal;
@@ -56,7 +56,7 @@ public class TrendEditTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void editTrend_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Trend: " + trendName;
         String actualPageTitle;
@@ -65,7 +65,7 @@ public class TrendEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }    
     
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.TRENDS })
     public void editTrend_AllFields_Success() {
         setRefreshPage(true);
         String editTrendName = "EditTrendTest " + timeStamp;
@@ -83,7 +83,7 @@ public class TrendEditTests extends SeleniumTestSetup {
         assertThat(editPage.getUserMessage()).isEqualTo(editTrendName + " saved successfully.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.TRENDS })
     public void editTrend_Name_RequiredValidation() {
         setRefreshPage(true);
         editPage.getName().clearInputValue();
@@ -92,7 +92,7 @@ public class TrendEditTests extends SeleniumTestSetup {
         assertThat(editPage.getName().getValidationError()).isEqualTo("Name is required.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.TRENDS })
     public void editTrend_Name_AlreadyExistsValidation() {
         setRefreshPage(true);
         Pair<JSONObject, JSONObject> responses = TrendCreateService.buildAndCreateTrendOnlyRequiredFields();
@@ -108,7 +108,7 @@ public class TrendEditTests extends SeleniumTestSetup {
         assertThat(editPage.getName().getValidationError()).isEqualTo("Name already exists");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.TRENDS })
     public void editTrend_RemovePoint_Success() {    
         setRefreshPage(true);
         Pair<JSONObject, JSONObject> responses = TrendCreateService.buildAndCreateTrendWithPoint(Optional.empty(), Optional.empty());
@@ -120,13 +120,13 @@ public class TrendEditTests extends SeleniumTestSetup {
         navigate(Urls.Tools.TREND_EDIT + newTrendId + Urls.EDIT);
         editPage.getSetupTab().click();
         WebTableRow row = editPage.getPointSetupTable().getDataRowByIndex(0);
-        row.clickIcon(Icon.REMOVE);
+        row.clickActionIcon(Icons.REMOVE);
         editPage.getSave().click();
         
         assertThat(editPage.getUserMessage()).isEqualTo(newTrendName + " saved successfully.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.TRENDS })
     public void editTrend_RemoveMarker_Success() {
         setRefreshPage(true);
         Pair<JSONObject, JSONObject> responses = TrendCreateService.buildAndCreateTrendWithMarker();
@@ -140,12 +140,12 @@ public class TrendEditTests extends SeleniumTestSetup {
         editPage.getAdditionalOptionsTab().click();
         
         WebTableRow row = editPage.getMarkerSetupTable().getDataRowByIndex(0);
-        row.clickIcon(Icon.REMOVE);
+        row.clickActionIcon(Icons.REMOVE);
         editPage.getSave().click();
         assertThat(editPage.getUserMessage()).isEqualTo(newTrendName + " saved successfully.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.TRENDS })
     public void editTrend_AddPoint_Success() {
         setRefreshPage(true);
         Pair<JSONObject, JSONObject> responses = TrendCreateService.buildAndCreateTrendOnlyRequiredFields();
@@ -166,7 +166,7 @@ public class TrendEditTests extends SeleniumTestSetup {
         assertThat(editPage.getUserMessage()).isEqualTo(newTrendName + " saved successfully.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.TRENDS })
     public void editTrend_AddMarker_Success() {
         setRefreshPage(true);
         Pair<JSONObject, JSONObject> responses = TrendCreateService.buildAndCreateTrendOnlyRequiredFields();
@@ -188,7 +188,7 @@ public class TrendEditTests extends SeleniumTestSetup {
         assertThat(editPage.getUserMessage()).isEqualTo(newTrendName + " saved successfully.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.TRENDS })
     public void editTrend_EditPoint_Success() {
         setRefreshPage(true);
         Pair<JSONObject, JSONObject> responses = TrendCreateService.buildAndCreateTrendWithPoint(Optional.empty(), Optional.empty());
@@ -209,7 +209,7 @@ public class TrendEditTests extends SeleniumTestSetup {
         assertThat(editPage.getUserMessage()).isEqualTo(newTrendName + " saved successfully.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.TRENDS })
     public void editTrend_EditMarker_Success() {
         setRefreshPage(true);
         Pair<JSONObject, JSONObject> pair = TrendCreateService.buildAndCreateTrendWithMarker();
@@ -235,7 +235,7 @@ public class TrendEditTests extends SeleniumTestSetup {
         assertThat(editPage.getUserMessage()).isEqualTo(newTrendName + " saved successfully.");
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TRENDS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TRENDS })
     public void editTrend_Cancel_NavigatesToCorrectUrl() {
         setRefreshPage(true);
 

@@ -310,7 +310,9 @@ public class ExporterReportGeneratorServiceImplTest {
         dataRange.setDataRangeType(DataRangeType.END_DATE);
         dataRange.setEndDate(dateTimeFormatter.parseLocalDate("07/16/2012"));
         CustomListWriter writer = new CustomListWriter(new ByteArrayOutputStream());
-        exporterReportGeneratorService.generateReport(meters, basicFixedFormatExport, dataRange, userContextOne, new Attribute[] {}, writer);
+        //TODO: pass in actual isOnInterval & interval parameters
+        exporterReportGeneratorService.generateReport(meters, basicFixedFormatExport, dataRange, userContextOne, 
+                                                      new Attribute[] {}, writer, false, null);
         List<String> previewReportRows = writer.getList();
 
         Assert.assertEquals("Device Name, Meter Number, Earliest Usage Value, Earliest Timestamp, Max Peak Demand Value, Plain Text", previewReportRows.get(0));
@@ -333,8 +335,9 @@ public class ExporterReportGeneratorServiceImplTest {
         dataRange.setLocalDateRange(localDateRange);
         
         CustomListWriter writer = new CustomListWriter(new ByteArrayOutputStream());
+        //TODO: pass in actual isOnInterval & interval parameters
         exporterReportGeneratorService.generateReport(meters, basicDyanamicFormatExport, dataRange, userContextOne,
-            new Attribute[] {}, writer);
+            new Attribute[] {}, writer, false, null);
         List<String> previewReportRows = writer.getList();
 
         Assert.assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", previewReportRows.get(0));
@@ -355,8 +358,9 @@ public class ExporterReportGeneratorServiceImplTest {
         dataRange.setLocalDateRange(localDateRange);
         
         CustomListWriter writer = new CustomListWriter(new ByteArrayOutputStream());
+      //TODO: pass in actual isOnInterval & interval parameters
         exporterReportGeneratorService.generateReport(meters, basicDyanamicFormatExport, dataRange, userContextOne,
-            new Attribute[] { USAGE, DEMAND }, writer);
+            new Attribute[] { USAGE, DEMAND }, writer, false, null);
         List<String> previewReportRows = writer.getList();
 
         Assert.assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", previewReportRows.get(0));
@@ -390,8 +394,9 @@ public class ExporterReportGeneratorServiceImplTest {
         dataRange.setChangeIdRange(changeIdRange);
         
         CustomListWriter writer = new CustomListWriter(new ByteArrayOutputStream());
+        //TODO: pass in actual isOnInterval & interval parameters
         exporterReportGeneratorService.generateReport(meters, basicDyanamicFormatExport, dataRange, userContextOne,
-            new Attribute[] { USAGE, DEMAND }, writer);
+            new Attribute[] { USAGE, DEMAND }, writer, false, null);
         List<String> previewReportRows = writer.getList();
 
         Assert.assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", previewReportRows.get(0));
@@ -420,8 +425,9 @@ public class ExporterReportGeneratorServiceImplTest {
         dataRange.setDaysPrevious(36500);  // This isn't the greatest way to test it, but it should at least do some rough testing for 100 years.
         
         CustomListWriter writer = new CustomListWriter(new ByteArrayOutputStream());
+        //TODO: pass in actual isOnInterval & interval parameters
         exporterReportGeneratorService.generateReport(meters, basicDyanamicFormatExport, dataRange, userContextOne,
-            new Attribute[] { USAGE, DEMAND }, writer);
+            new Attribute[] { USAGE, DEMAND }, writer, false, null);
         List<String> previewReportRows = writer.getList();
 
         Assert.assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", previewReportRows.get(0));

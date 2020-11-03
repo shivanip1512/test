@@ -27,7 +27,7 @@ public class MeterRfn430Sl4EditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
     }
 
-    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
+    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.AMI })
     public void meterRfn430Sl4Edit_RequiredFieldsOnly_Success() {
         navigate(Urls.Ami.METER_DETAIL + "585");
         

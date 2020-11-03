@@ -44,7 +44,7 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpEmetconEdit_Name_RequiredValidation() {
         final String EXPECTED_MSG = "Name is required.";
 
@@ -55,7 +55,7 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
         assertThat(actualMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpEmetconEdit_Name_UniqueValidation() {
         final String EXPECTED_MSG = "Name must be unique.";
         Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
@@ -70,7 +70,7 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
         assertThat(actualMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpEmetconEdit_Name_InvalidCharsValidation() {
         final String EXPECTED_MSG = "Name must not contain any of the following characters: / \\ , ' \" |.";
 
@@ -81,7 +81,7 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
         assertThat(actualMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpEmetconEdit_AllFields_Success() {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

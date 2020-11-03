@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Random;
 
 import org.assertj.core.api.SoftAssertions;
 import org.json.simple.JSONObject;
@@ -19,6 +18,7 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.rest.api.drsetup.*;
+import com.github.javafaker.Faker;
 import com.eaton.pages.assets.commchannels.CommChannelTerminalServerDetailPage;
 import com.eaton.rest.api.assets.AssetsCreateRequestAPI;
 import com.eaton.rest.api.assets.AssetsGetRequestAPI;
@@ -31,7 +31,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
     private Integer commChannelId;
     private String commChannelName;
     private JSONObject jo;
-    private Random randomNum;
+    private Faker faker;
     private Integer portNumber;
 
     @BeforeClass(alwaysRun = true)
@@ -46,10 +46,10 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
                 + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelTerminalServer.json";
 
         Object body = JsonFileHelper.parseJSONFile(payloadFile);
-        randomNum = getRandomNum();
+        faker = SeleniumTestSetup.getFaker();
         jo = (JSONObject) body;
         jo.put("name", commChannelName);
-        portNumber = randomNum.nextInt(65536);
+        portNumber = faker.number().numberBetween(1, 65536);
         jo.put("portNumber", portNumber);
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
         commChannelId = createResponse.path("id");
@@ -63,7 +63,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         refreshPage(channelDetailPage);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_Modal_TitleCorrect() {
         String expectedModalTitle = "Edit " + commChannelName;
         EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
@@ -72,7 +72,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_Name_RequiredValidation() {
         String exprectedMsg = "Name is required.";
         EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
@@ -85,7 +85,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(exprectedMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_Name_InvalidCharsValidation() {
         String exprectedMsg = "Name must not contain any of the following characters: / \\ , ' \" |.";
 
@@ -99,7 +99,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(exprectedMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_Name_AlreadyExitsValidation() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String exprectedMsg = "Name already exists";
@@ -108,12 +108,11 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
                 + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelTerminalServer.json";
 
         Object body = JsonFileHelper.parseJSONFile(payloadFile);
-        randomNum = getRandomNum();
         jo = (JSONObject) body;
         jo.put("name", name);
-        Integer portNum = randomNum.nextInt(65536);
+        Integer portNum = faker.number().numberBetween(1, 65536);
         jo.put("portNumber", portNum);
-        ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
+        AssetsCreateRequestAPI.createCommChannel(body);
 
         EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
 
@@ -125,7 +124,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(exprectedMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_Cancel_NavigatesToCorrectUrl() {
         String expectedTitle = commChannelName;
 
@@ -137,7 +136,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(expectedTitle);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_Tab_TitlesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
@@ -150,7 +149,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_InfoTab_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
@@ -170,7 +169,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_ConfigTab_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
@@ -193,7 +192,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_ConfigTab_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         String tabName = "Configuration";
@@ -214,7 +213,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_PreTxWait_MinValueValidation() {
         String expectedMsg = "Pre Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -230,7 +229,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_PreTxWait_MaxValueValidation() {
         String expectedMsg = "Pre Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -246,7 +245,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_RtsToTxWait_MinValueValidation() {
         String expectedMsg = "RTS To Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -262,7 +261,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_RtsToTxWait_MaxValueValidation() {
         String expectedMsg = "RTS To Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -278,7 +277,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_PostTxWait_MinValueValidation() {
         String expectedMsg = "Post Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -294,7 +293,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_PostTxWait_MaxValueValidation() {
         String expectedMsg = "Post Tx Wait must be between 0 and 10,000,000.";
         String tabName = "Configuration";
@@ -310,7 +309,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_ReceiveDataWait_MinValueValidation() {
         String expectedMsg = "Receive Data Wait must be between 0 and 1,000.";
         String tabName = "Configuration";
@@ -326,7 +325,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_ReceiveDataWait_MaxValueValidation() {
         String expectedMsg = "Receive Data Wait must be between 0 and 1,000.";
         String tabName = "Configuration";
@@ -342,7 +341,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_AdditionalTimeOut_MinValueValidation() {
         String expectedMsg = "Additional Time Out must be between 0 and 999.";
         String tabName = "Configuration";
@@ -358,7 +357,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_AdditionalTimeOut_MaxValueValidation() {
         String expectedMsg = "Additional Time Out must be between 0 and 999.";
         String tabName = "Configuration";
@@ -374,7 +373,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_InfoTab_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         String tabName = "Info";
@@ -390,7 +389,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_ConfigTabTimingSection_Displayed() {
         String tabName = "Configuration";
 
@@ -402,7 +401,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(timing.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_AllFields_Success() {
         SoftAssertions softly = new SoftAssertions();
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -414,10 +413,9 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
                 + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelTerminalServer.json";
 
         Object body = JsonFileHelper.parseJSONFile(payloadFile);
-        randomNum = getRandomNum();
         jo = (JSONObject) body;
         jo.put("name", name);
-        Integer portNum = randomNum.nextInt(65536);
+        Integer portNum = faker.number().numberBetween(1, 65536);
         jo.put("portNumber", portNum);
         ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
         Integer id = createResponse.path("id");
@@ -427,13 +425,13 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         String baudRate = "BAUD_4800";
         String configFieldsValues[] = { "55", "10", "20", "15", "500" };
         String tabName = "Configuration";
-        Integer port = randomNum.nextInt(65536);
+        Integer port = faker.number().numberBetween(1, 65536);
 
         EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();
         editModal.getIpAddress().setInputValue("10.0.0.1");
         editModal.getName().setInputValue(updateName);
         editModal.getBaudRate().selectItemByValue(baudRate);
-        editModal.getPortNumber().setInputValue(portNum.toString());
+        editModal.getPortNumber().setInputValue(port.toString());
 
         editModal.getTabs().clickTabAndWait(tabName);
         editModal.getProtocolWrap().selectByValue("IDLC");
@@ -462,7 +460,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_ConfigTabSharingSection_Displayed() {
         String tabName = "Configuration";
 
@@ -476,7 +474,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(shared.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_SocketNumber_RequiredValidation() {
         String expectedMsg = "Socket Number must be between 1 and 65,535.";
         String tabName = "Configuration";
@@ -492,7 +490,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_SocketNumber_MinValueValidation() {
         String expectedMsg = "Socket Number must be between 1 and 65,535.";
         String tabName = "Configuration";
@@ -508,7 +506,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_SocketNumber_MaxValueValidation() {
         String expectedMsg = "Socket Number must be between 1 and 65,535.";
         String tabName = "Configuration";
@@ -524,7 +522,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_IpAddress_RequiredValidation() {
         String expectedMsg = "IP Address is required.";
 
@@ -539,7 +537,7 @@ public class CommChannelTerminalServerEditTest extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(expectedMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void commChannelTerminalServerEdit_IpAddress_InvalidValidation() {
         String expectedMsg = "Invalid IP/Host Name.";
         EditTerminalServerCommChannelModal editModal = channelDetailPage.showTerminalServerCommChannelEditModal();

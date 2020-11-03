@@ -1,4 +1,4 @@
-package com.cannontech.web.common;
+package com.cannontech.common;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -114,7 +114,7 @@ public class IntervalParser {
                     intervals.values().stream().map(time -> format(new Instant(time.getTime()), context))
                             .collect(Collectors.joining(",")));
         } else {
-            log.info("selected:[{}-{}] intervals created:{}", format(startDate, context), format(stopDate, context),
+            log.info("selected:[{}-{}] intervals created: {}", format(startDate, context), format(stopDate, context),
                     intervals.size());
         }
     }
@@ -140,6 +140,10 @@ public class IntervalParser {
         return intervals.containsKey(interval.getTime());
     }
 
+    public Date getIntervalDateForTimeLong(long intervalTime) {
+        return intervals.get(intervalTime);
+    }
+    
     /**
      * Returns all intervals
      */
@@ -171,8 +175,7 @@ public class IntervalParser {
             localTime = localTime.plus(interval.getSeconds(), ChronoUnit.SECONDS);
         }
         ZonedDateTime zonedDateTime = localTime.atZone(zone);
-        Instant newDate = new Instant(zonedDateTime.toInstant().toEpochMilli());
-        return newDate;
+        return new Instant(zonedDateTime.toInstant().toEpochMilli());
     }
 
     /**

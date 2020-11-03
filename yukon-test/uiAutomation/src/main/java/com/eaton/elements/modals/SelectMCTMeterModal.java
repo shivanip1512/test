@@ -21,7 +21,7 @@ public class SelectMCTMeterModal extends BaseModal {
         getMctMeterTable().searchTable(meterName);        
 
         WebTable table = getMctMeterTable();
-        WebTableRow row = table.getDataRowByName(meterName);
+        WebTableRow row = table.getDataRowByLinkName(meterName);
 
         row.selectCellByLink();
     }
