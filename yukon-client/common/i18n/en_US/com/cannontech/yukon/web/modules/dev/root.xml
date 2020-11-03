@@ -425,7 +425,16 @@
     <entry key="yukon.web.modules.dev.itronKeyPair.save.failed">Provide Public and Private Key</entry>
     <entry key="yukon.web.modules.dev.itronKeyPair.pageName">Save Itron Key Pair</entry>
     <entry key="yukon.web.modules.dev.itronKeyPair.loadError">Error loading Itron key pair. Keys may not be set.</entry>
-    
+
+    <!-- PxMW Auth Token -->
+    <entry key="yukon.web.modules.dev.pxMWToken">PxMW Token</entry>
+    <entry key="yukon.web.modules.dev.pxMWToken.pxMWAuthToken">PxMW Authorization Token</entry>
+    <entry key="yukon.web.modules.dev.pxMWToken.username">PxMW Username</entry>
+    <entry key="yukon.web.modules.dev.pxMWToken.password">PxMW Password</entry>
+    <entry key="yukon.web.modules.dev.pxMWToken.applicationId">PxMW GUID</entry>
+    <entry key="yukon.web.modules.dev.pxMWToken.pageName">Px MiddleWare Token Test</entry>
+    <entry key="yukon.web.modules.dev.pxMWToken.loadError">Error loading Px MiddleWare Authorization Token</entry>
+
     <!-- Nest Test -->
     <entry key="yukon.web.modules.dev.nest.pageName">Nest Test</entry>
     <entry key="yukon.web.modules.dev.nest.viewNestVersion.pageName">Nest Version</entry>

@@ -359,6 +359,23 @@ public class DeveloperController {
         return "itronKeyPair.jsp";
     }
 
+    @GetMapping("/getPxMWToken")
+    public String getPxMWToken(ModelMap model, FlashScope flash) {
+        String authToken = "";
+        try {
+            authToken = "123456789";
+        } catch(Exception e) {
+            MessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.dev.itronKeyPair.loadError");
+            flash.setError(message);
+            log.warn("Error retrieving Px MiddleWare Authentication Token", e);
+//            keyPair = new ItronSecurityKeyPair("", "");
+        }
+        
+//        model.addAttribute("decryptFailed", keyPair.isPrivateKeyEncrypted());
+        model.addAttribute("authToken", authToken);
+        return "pxMW.jsp";
+    }
+
     @RequestMapping("/jmsApiDirectory")
     public String jmsApiDirectory(ModelMap model, @ModelAttribute("apiFilters") JmsApiFilters apiFilters) {
         model.addAttribute("apiFilters", apiFilters);
