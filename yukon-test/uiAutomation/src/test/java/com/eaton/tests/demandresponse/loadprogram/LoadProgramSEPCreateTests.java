@@ -40,13 +40,12 @@ public class LoadProgramSEPCreateTests extends SeleniumTestSetup {
 
         navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
         createPage = new LoadProgramCreatePage(driverExt);
-        createPage.getType().selectItemByValue(TYPE);
+        
     }
 
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
         refreshPage(createPage);
-        createPage.getType().selectItemByValue(TYPE);
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
@@ -55,6 +54,7 @@ public class LoadProgramSEPCreateTests extends SeleniumTestSetup {
         String name = "AT SepProgram " + timeStamp;
         final String EXPECTED_MSG = name + " saved successfully.";
 
+        createPage.getType().selectItemByValue(TYPE);
         createPage.getName().setInputValue(name);
         CreateSepPrgmGearModal gearModal = createPage.showCreateSepPrgmGearModal();
         gearModal.getGearName().setInputValue("sepGear");
@@ -79,6 +79,7 @@ public class LoadProgramSEPCreateTests extends SeleniumTestSetup {
         String name = "AT SepProgram " + timeStamp;
         final String EXPECTED_MSG = name + " saved successfully.";
 
+        createPage.getType().selectItemByValue(TYPE);
         createPage.getName().setInputValue(name);
         CreateSepPrgmGearModal gearModal = createPage.showCreateSepPrgmGearModal();
         gearModal.getGearName().setInputValue("sepGear");
@@ -108,6 +109,7 @@ public class LoadProgramSEPCreateTests extends SeleniumTestSetup {
     public void ldPrgmSepCreate_GearType_ValuesCorrect() {
         List<String> expectedGearTypes = new ArrayList<>(List.of("Select", "SEP Cycle", "SEP Temperature Offset", "No Control"));
 
+        createPage.getType().selectItemByValue(TYPE);
         CreateSepPrgmGearModal gearModal = createPage.showCreateSepPrgmGearModal();
         List<String> gearTypes = gearModal.getGearType().getOptionValues();
         assertThat(gearTypes).containsAll(expectedGearTypes);
@@ -120,6 +122,7 @@ public class LoadProgramSEPCreateTests extends SeleniumTestSetup {
 
         final String EXPECTED_MSG = name + " saved successfully.";
 
+        createPage.getType().selectItemByValue(TYPE);
         createPage.getName().setInputValue(name);
         // Adding 2 gears
         for (int i = 1; i <= 2; i++) {
