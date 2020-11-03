@@ -29,7 +29,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
      /** 
        * Point Name naming convention: 
-       * [Net|Sum] [Delivered|Received] [Coincident] [Cumulative] [Peak] [UOM] [(Quadrants # #)] [Frozen|Daily] [Rate #|Phase X|Channel #]
+       * [Net|Sum] [Delivered|Received] [Coincident] [Cumulative] [Peak] [UOM] [(Quadrants # #)] [Frozen|Daily] [Rate #|Phase X|Channel #] [per Interval|Load Profile]
        * Examples: 
        * Net kWh OR Net Delivered kWh 
        * Received kWh Rate A 
@@ -51,6 +51,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     CURRENT_WITHOUT_VOLTAGE_FLAG("Current Without Voltage", AttributeGroup.STATUS, false),   //440 types only
     DEMAND("Demand", AttributeGroup.DEMAND), // instantaneous
     DELIVERED_DEMAND("Delivered Demand", AttributeGroup.DEMAND),
+    DELIVERED_KWH_RATE_A("Delivered kWh Rate A", AttributeGroup.USAGE),
+    DELIVERED_KWH_RATE_B("Delivered kWh Rate B", AttributeGroup.USAGE),
+    DELIVERED_KWH_RATE_C("Delivered kWh Rate C", AttributeGroup.USAGE),
+    DELIVERED_KWH_RATE_D("Delivered kWh Rate D", AttributeGroup.USAGE),
     RECEIVED_DEMAND("Received Demand", AttributeGroup.DEMAND),
     DEMAND_PEAK_KVA_COIN("Demand at Peak kVa Coincidental", AttributeGroup.DEMAND),
     INSTANTANEOUS_KW("Instantaneous kW", AttributeGroup.DEMAND),
@@ -370,9 +374,25 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
     USAGE_PER_INTERVAL("Usage per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
     DELIVERED_KWH_PER_INTERVAL("Delivered kWh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    DELIVERED_KWH_RATE_A_PER_INTERVAL("Delivered kWh Rate A per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    DELIVERED_KWH_RATE_B_PER_INTERVAL("Delivered kWh Rate B per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    DELIVERED_KWH_RATE_C_PER_INTERVAL("Delivered kWh Rate C per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    DELIVERED_KWH_RATE_D_PER_INTERVAL("Delivered kWh Rate D per Interval", AttributeGroup.USAGE, false), //calculated, not readable
     RECEIVED_KWH_PER_INTERVAL("Received kWh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    RECEIVED_KWH_RATE_A_PER_INTERVAL("Recieved kWh Rate A per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    RECEIVED_KWH_RATE_B_PER_INTERVAL("Recieved kWh Rate B per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    RECEIVED_KWH_RATE_C_PER_INTERVAL("Recieved kWh Rate C per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    RECEIVED_KWH_RATE_D_PER_INTERVAL("Recieved kWh Rate D per Interval", AttributeGroup.USAGE, false), //calculated, not readable
     SUM_KWH_PER_INTERVAL("Sum kWh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    SUM_KWH_RATE_A_PER_INTERVAL("Sum kWh Rate A per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    SUM_KWH_RATE_B_PER_INTERVAL("Sum kWh Rate B per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    SUM_KWH_RATE_C_PER_INTERVAL("Sum kWh Rate C per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    SUM_KWH_RATE_D_PER_INTERVAL("Sum kWh Rate D per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
     NET_KWH_PER_INTERVAL("Net kWh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    NET_KWH_RATE_A_PER_INTERVAL("Net kWh Rate A per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    NET_KWH_RATE_B_PER_INTERVAL("Net kWh Rate B per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    NET_KWH_RATE_C_PER_INTERVAL("Net kWh Rate C per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    NET_KWH_RATE_D_PER_INTERVAL("Net kWh Rate D per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
     SUM_KVAH_PER_INTERVAL("Sum kVAh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
     DELIVERED_KVARH_PER_INTERVAL("Delivered kVArh per Interval", AttributeGroup.REACTIVE, false),   //calculated, not readable
     SUM_KVARH_PER_INTERVAL("Sum kVArh per Interval", AttributeGroup.REACTIVE, false),   //calculated, not readable

@@ -36,15 +36,15 @@ public class MeterWRL420cDCreateTests extends SeleniumTestSetup {
 
         amiDashboardPage = new AmiDashboardPage(driverExt);
     }
-    
+
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-    	if(getRefreshPage()) {
-    		refreshPage(amiDashboardPage);
-    	}
+        if (getRefreshPage()) {
+            refreshPage(amiDashboardPage);
+        }
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDCreate_AllFields_Success() {
 
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();

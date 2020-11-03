@@ -14,6 +14,7 @@ protected:
     YukonError_t executeGetConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests) override;
 
     virtual boost::optional<Messaging::Rfn::RfnGetChannelConfigReplyMessage> RfBatteryNodeDevice::readConfigurationFromNM(const RfnIdentifier& rfnId) const;
+    virtual YukonError_t sendConfigurationToNM(const Messaging::Rfn::RfnSetChannelConfigRequestMessage request) const;
 
 private:
 

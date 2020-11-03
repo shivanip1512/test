@@ -8,5 +8,6 @@ import com.cannontech.database.data.point.PointType;
 
 public interface PointValueQualityHolder extends PointValueHolder, Serializable {
     public PointQuality getPointQuality();
-    public PointType getPointType(); //WTF?
+    /**PointValueHolder.getType returns the raw int equivalent of this.*/
+    public PointType getPointType();
 }

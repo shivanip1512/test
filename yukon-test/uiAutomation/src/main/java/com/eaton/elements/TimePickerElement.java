@@ -7,6 +7,9 @@ import org.openqa.selenium.WebElement;
 import org.testng.util.Strings;
 
 import com.eaton.framework.DriverExtensions;
+import org.openqa.selenium.interactions.Actions;
+
+import com.eaton.framework.SeleniumTestSetup;
 
 public class TimePickerElement {
 
@@ -19,14 +22,11 @@ public class TimePickerElement {
     }
 
     public void setValue(String value) {
-        WebElement picker = getPicker();
-
-        picker.clear();
-        picker.sendKeys(value);
-    }
-
-    public void clearValue() {
-        getPicker().clear();
+      WebElement picker = getPicker(elementName);
+      SeleniumTestSetup.scrollToElement(picker);
+      picker.clear();
+      Actions action = new Actions(driverExt.getDriver());
+      action.sendKeys(picker, value).build().perform();
     }
 
     public WebElement getPicker() {
@@ -42,4 +42,13 @@ public class TimePickerElement {
     public String getValue() {
         return getPicker().getAttribute("value");
     }
+
+    public void clearValue() {
+        getPicker(elementName).clear();
+    }
+
+    public WebElement getPicker(String elementName) {
+        return this.driverExt.findElement(By.cssSelector("input[name='" + elementName + "']"), Optional.empty());
+    }
+
 }

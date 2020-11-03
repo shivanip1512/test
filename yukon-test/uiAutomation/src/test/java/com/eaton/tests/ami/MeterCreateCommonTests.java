@@ -25,26 +25,26 @@ public class MeterCreateCommonTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         setRefreshPage(false);
-        
+
         navigate(Urls.Ami.AMI_DASHBOARD);
 
         amiDashboardPage = new AmiDashboardPage(driverExt);
     }
-    
+
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-    	if(getRefreshPage()) {
-    		refreshPage(amiDashboardPage);
-    	}
-    	
+        if (getRefreshPage()) {
+            refreshPage(amiDashboardPage);
+        }
+
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void createMeter_DeviceName_RequiredValidation() {
-    	setRefreshPage(true);
-    	
+        setRefreshPage(true);
+
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
-        
+
         createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.RFN420CL.getMeterType());
 
         createModal.clickOkAndWaitForSpinner();
@@ -53,11 +53,11 @@ public class MeterCreateCommonTests extends SeleniumTestSetup {
 
         assertThat(errorMsg).isEqualTo("Device name is required.");
     }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void createMeter_DeviceName_InvalidCharValidation() {
-    	setRefreshPage(true);
-    	
+        setRefreshPage(true);
+
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
         String deviceName = "Meter / \\ , ' ";
@@ -71,22 +71,22 @@ public class MeterCreateCommonTests extends SeleniumTestSetup {
 
         assertThat(errorMsg).isEqualTo("Name must not contain any of the following characters: / \\ , ' \" |.");
     }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void createMeter_DeviceName_MaxLength60Chars() {
-    	setRefreshPage(true);
-    	
+        setRefreshPage(true);
+
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
         assertThat(createModal.getDeviceName().getMaxLength()).isEqualTo("60");
     }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void createMeter_DeviceName_AlreadyExistsValidation() {
-    	setRefreshPage(true);
+        setRefreshPage(true);
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
         String deviceName = "AT Detail WRL-420cL";
-        
+
         createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.RFN420CL.getMeterType());
         createModal.getDeviceName().setInputValue(deviceName);
 
@@ -96,10 +96,10 @@ public class MeterCreateCommonTests extends SeleniumTestSetup {
 
         assertThat(errorMsg).isEqualTo("Device name must be unique.");
     }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void createMeter_MeterNumber_RequiredValidation() {
-    	setRefreshPage(true);
+        setRefreshPage(true);
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
         createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.RFN420CL.getMeterType());
@@ -110,35 +110,35 @@ public class MeterCreateCommonTests extends SeleniumTestSetup {
 
         assertThat(errorMsg).isEqualTo("Meter number is required.");
     }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void createMeter_MeterNumber_MaxLength50Chars() {
-    	setRefreshPage(true);
-    	
+        setRefreshPage(true);
+
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
         assertThat(createModal.getMeterNumber().getMaxLength()).isEqualTo("50");
     }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void createMeter_Cancel_NavigatesToCorrectUrl() {
-    	setRefreshPage(true);
-    	
+        setRefreshPage(true);
+
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
         createModal.clickCancelAndWait();
-        
+
         AmiDashboardPage amiPage = new AmiDashboardPage(driverExt);
 
         String actualPageTitle = amiPage.getPageTitle();
-        
+
         assertThat(actualPageTitle).isEqualTo("Dashboard: Default AMI Dashboard");
     }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void createMeter_Type_LabelsCorrect() {
-    	setRefreshPage(true);
-    	SoftAssertions softly = new SoftAssertions();
-    	
+        setRefreshPage(true);
+        SoftAssertions softly = new SoftAssertions();
+
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
         List<String> dropDownItems = createModal.getType().getDropDownItems();
@@ -198,6 +198,5 @@ public class MeterCreateCommonTests extends SeleniumTestSetup {
         softly.assertThat(dropDownItems.get(53)).isEqualTo("WRL-420cD");
         softly.assertThat(dropDownItems.get(54)).isEqualTo("WRL-420cL");
         softly.assertAll();
-        
     }
 }

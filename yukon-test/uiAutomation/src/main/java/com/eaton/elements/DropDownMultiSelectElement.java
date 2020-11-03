@@ -31,6 +31,12 @@ public class DropDownMultiSelectElement {
         this.parentElement = parentElement;
     }
     
+    /**
+     * Select the text in Dropdown with input having class 'chosen-search-input'
+     * 
+     * @param searchText text to select in Dropdown
+     *                 
+     */
     public void selectItemByText(String searchText) {
         WebElement dropDown = getElement();
         
@@ -55,15 +61,28 @@ public class DropDownMultiSelectElement {
     
     private WebElement getElement() {
         if (this.parentName != null) {
-            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] .chosen-container"), Optional.of(3));
+            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] select[name='" + elementName + "'] + .chosen-container"), Optional.of(3));
         } else if (this.parentElement != null) {
-            return this.parentElement.findElement(By.cssSelector(".chosen-container"));
+            return this.parentElement.findElement(By.cssSelector("select[name='" + elementName + "'] + .chosen-container"));
         } else {
-            return this.driverExt.findElement(By.cssSelector(".chosen-container"), Optional.of(3));   
+            return this.driverExt.findElement(By.cssSelector("select[name='" + elementName + "'] + .chosen-container"), Optional.of(3));
         }        
     } 
 
+    
     public String getValidationError() {
         return this.driverExt.findElement(By.cssSelector("span[id='" + this.elementName + ".errors']"), Optional.of(3)).getText();
-     }
+    }
+    
+    
+    /**
+     * @param index - zero based, removes selected value based on index
+     */
+    public void removeItemByIndex(int index) {
+    	WebElement dropDown = getElement();
+        
+        List<WebElement> choices = dropDown.findElements(By.cssSelector(".chosen-choices .search-choice"));
+        
+        choices.get(index).findElement(By.cssSelector(".search-choice-close")).click();
+    }
 }

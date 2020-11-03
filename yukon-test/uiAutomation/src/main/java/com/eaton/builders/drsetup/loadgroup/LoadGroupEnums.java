@@ -277,7 +277,41 @@ public class LoadGroupEnums {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
-    }
+    }   
+    
+    public enum RippleGroupUi {
+        TST("TST"),
+        ONE_00("LG  1.00"),
+        ONE_01("LG  1.01"),
+        ONE_02("LG  1.02"),
+        TWO_00("LG  2.00"),
+        TWO_01("LG  2.01"),
+        TWO_02("LG  2.02"),
+        TWO_03("LG  2.03"),
+        TWO_04("LG  2.04"),
+        THREE_00("LG  3.00"),
+        THREE_01("LG  3.01"),
+        THREE_06("LG  3.06"),
+        THREE_07("LG  3.07"),
+        THREE_09("LG  3.09"),
+        THREE_01_AND_THREE_09("LG  3.01_3.09"),
+        FOUR_00("LG  4.00"),
+        FOUR_01("LG  4.01"),
+        FOUR_02("LG  4.02"),
+        SIX_00("LG  6.00"),
+        SIX_01("LG  6.01"),
+        SIX_06("LG  6.06");
+
+        private final String group;
+
+        RippleGroupUi(String group) {
+            this.group = group;
+        }
+
+        public String getGroup() {
+            return this.group;
+        }        
+    }       
 
     public enum RippleShedTime {
         CONTINUOUS_LATCH("0"),
@@ -356,7 +390,6 @@ public class LoadGroupEnums {
     }
     
     public enum DigiSepDeviceClassUIEnum {
-
         HVAC_COMPRESSOR_FURNACE("HVAC Compressor or Furnace"),
         BASEBOARD_HEAT("Strip Heaters/Baseboard Heaters"),
         WATER_HEATER("Water Heater"),

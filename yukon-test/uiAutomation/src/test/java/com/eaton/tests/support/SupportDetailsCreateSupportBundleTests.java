@@ -40,7 +40,7 @@ public class SupportDetailsCreateSupportBundleTests extends SeleniumTestSetup {
     // Support Bundle
     // ================================================================================
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ADMIN })
     public void createSupportBundle_RequiredFieldsOnly_Success() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_PENDING_STATUS = "Pending";
@@ -59,7 +59,7 @@ public class SupportDetailsCreateSupportBundleTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ADMIN })
     public void createSupportBundle_RangeTwoWeeks_Success() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_PENDING_STATUS = "Pending";
@@ -79,7 +79,7 @@ public class SupportDetailsCreateSupportBundleTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ADMIN })
     public void createSupportBundle_RangeMonth_Success() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_PENDING_STATUS = "Pending";
@@ -99,7 +99,7 @@ public class SupportDetailsCreateSupportBundleTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ADMIN })
     public void createSupportBundle_RangeEverything_Success() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_PENDING_STATUS = "Pending";
@@ -119,7 +119,7 @@ public class SupportDetailsCreateSupportBundleTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ADMIN })
     public void createSupportBundle_CommLog_Success() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_PENDING_STATUS = "Pending";
@@ -139,7 +139,7 @@ public class SupportDetailsCreateSupportBundleTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Admin.ADMIN })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.ADMIN })
     public void createSupportBundle_AllFields_Success() {
         SoftAssertions softly = new SoftAssertions();
         final String EXPECTED_PENDING_STATUS = "Pending";

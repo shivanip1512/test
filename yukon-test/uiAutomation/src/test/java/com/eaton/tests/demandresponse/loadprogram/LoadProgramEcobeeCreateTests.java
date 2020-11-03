@@ -41,7 +41,7 @@ public class LoadProgramEcobeeCreateTests extends SeleniumTestSetup {
         refreshPage(loadProgramCreatePage);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldPrgmEcobeeCreate_RequiredFieldsOnly_Success() {
         // generate dynamic name for Ecobee Program name
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -70,7 +70,7 @@ public class LoadProgramEcobeeCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldPrgmEcobeeCreate_AllFields_Success() {
         // generate dynamic name for Ecobee Program name
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -125,7 +125,7 @@ public class LoadProgramEcobeeCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldPrgmEcobeeCreate_GearType_ValuesCorrect() {
 
         loadProgramCreatePage.getType().selectItemByValue("LM_ECOBEE_PROGRAM");
@@ -138,7 +138,7 @@ public class LoadProgramEcobeeCreateTests extends SeleniumTestSetup {
         assertThat(actualDropDownValues).containsExactlyElementsOf(expectedDropDownValues);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void ldPrgmEcobeeCreate_WithMultipleGears_Success() {
         setRefreshPage(true);
         // generate dynamic name for Ecobee Program name
@@ -175,7 +175,7 @@ public class LoadProgramEcobeeCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldPgmEcobeeCreate_SetpointGearControlParamSection_LabelsCorrect() {
         String sectionName = "Control Parameters";
         loadProgramCreatePage.getType().selectItemByValue("LM_ECOBEE_PROGRAM");
@@ -188,7 +188,7 @@ public class LoadProgramEcobeeCreateTests extends SeleniumTestSetup {
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldPgmEcobeeCreate_CycleGearControlParamSection_LabelsCorrect() {
         String sectionName = "Control Parameters";
         loadProgramCreatePage.getType().selectItemByValue("LM_ECOBEE_PROGRAM");
@@ -201,7 +201,7 @@ public class LoadProgramEcobeeCreateTests extends SeleniumTestSetup {
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldPgmEcobeeCreate_CycleGearRampInRampOutSection_LabelsCorrect() {
         String sectionName = "Ramp In / Ramp Out";
         loadProgramCreatePage.getType().selectItemByValue("LM_ECOBEE_PROGRAM");

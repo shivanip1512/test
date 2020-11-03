@@ -38,21 +38,21 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
     // Demand Response Section
     // ================================================================================
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void siteMapDemandResponseDetails_DrSection_Displayed() {
         Section drSection = siteMapPage.getDRSection();
 
         assertThat(drSection).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void siteMapDemandResponseDetails_DRSection_CountCorrect() {
         final int EXPECTED_COUNT = 13;
 
         assertThat(siteMapPage.getDRSectionSimpleList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void siteMapDemandResponseDetails_ActiveControlAreas_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Active Control Areas";
@@ -64,7 +64,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void siteMapDemandResponseDetails_ActiveLoadGroups_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Active Load Groups";
@@ -76,7 +76,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void siteMapDemandResponseDetails_ActivePrograms_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Active Programs";
@@ -88,7 +88,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void siteMapDemandResponseDetails_DRBulkUpdate_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Bulk Update";
@@ -100,7 +100,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void siteMapDemandResponseDetails_CICurtailment_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "C&I Curtailment";
@@ -112,7 +112,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void siteMapDemandResponseDetails_ControlAreas_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Control Areas";
@@ -124,7 +124,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void siteMapDemandResponseDetails_DRDashboard_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "DR Dashboard";
@@ -136,7 +136,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-//    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+//    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
 //    public void siteMapDemandResponseDetails_EstimatedLoad_LinkCorrect() {
 //        softly = new SoftAssertions();
 //        final String EXPECTED_ANCHOR = "Estimated Load";
@@ -148,7 +148,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
 //        softly.assertAll();
 //    }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void siteMapDemandResponseDetails_LoadGroups_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Load Groups";
@@ -160,7 +160,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void siteMapDemandResponseDetails_LoadManagementReports_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Load Management Reports";
@@ -172,7 +172,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void siteMapDemandResponseDetails_OddsForControl_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Odds for Control";
@@ -184,7 +184,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void siteMapDemandResponseDetails_Programs_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Programs";
@@ -196,7 +196,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void siteMapDemandResponseDetails_Scenarios_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Scenarios";
@@ -208,7 +208,7 @@ public class SiteMapDemandResponseDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void siteMapDemandResponseDetails_Setup_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Setup";

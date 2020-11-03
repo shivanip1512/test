@@ -47,6 +47,7 @@
     <entry key="yukon.web.modules.adminSetup.config.error.invalidURL">Invalid URL</entry>
     <entry key="yukon.web.modules.adminSetup.config.error.invalidIPHostName">Invalid IP/Host Name</entry>
     <entry key="yukon.web.modules.adminSetup.config.error.invalidEmail">Invalid Email Address</entry>
+    <entry key="yukon.web.modules.adminSetup.config.error.invalidGuid">Invalid GUID Format</entry>
     
     <entry key="yukon.web.modules.adminSetup.config.themes.pageName">Themes</entry>
     <entry key="yukon.web.modules.adminSetup.config.themes.primaryColors">Primary Colors:</entry>

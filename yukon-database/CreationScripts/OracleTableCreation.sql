@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/30/2020 3:48:31 AM                         */
+/* Created on:     10/30/2020 11:08:24 AM                       */
 /*==============================================================*/
 
 
@@ -3267,6 +3267,18 @@ INSERT INTO DeviceGroupComposedGroup VALUES (3, 1, '/System/Meters/Disabled', 'Y
 INSERT INTO DeviceGroupComposedGroup VALUES (4, 2, '/System/Meters/All Meters/All RFN Meters/All RFW Meters', 'N');
 INSERT INTO DeviceGroupComposedGroup VALUES (5, 2, '/Meters/Billing', 'N');
 INSERT INTO DeviceGroupComposedGroup VALUES (6, 2, '/System/Meters/Disabled', 'Y');
+
+/*==============================================================*/
+/* Table: DeviceGuid                                            */
+/*==============================================================*/
+create table DeviceGuid  (
+   DeviceId             NUMBER                          not null,
+   Guid                 CHAR(36)                        not null,
+   constraint PK_DeviceGuid primary key (DeviceId)
+);
+
+alter table DeviceGuid
+   add constraint AK_DeviceGuid_Guid unique (Guid);
 
 /*==============================================================*/
 /* Table: DeviceMCT400Series                                    */
@@ -10170,6 +10182,10 @@ INSERT INTO YukonListEntry VALUES (2035, 1005, 0, 'Nest', 1338);
 INSERT INTO YukonListEntry VALUES (2036, 1005, 0, 'LCR-6601S', 1339);
 INSERT INTO YukonListEntry VALUES (2037, 1005, 0, 'LCR-6600S', 1340);
 
+INSERT INTO YukonListEntry VALUES (2038, 1005, 0, 'LCR-6200C', 1342);
+INSERT INTO YukonListEntry VALUES (2039, 1005, 0, 'LCR-6600C', 1343);
+INSERT INTO YukonListEntry VALUES (2040, 1005, 0, 'LCR-DisconnectC', 1344);
+
 insert into yukonlistentry values (10101, 1067, 0, 'CustomerAccount', 0);
 insert into yukonlistentry values (10102, 1067, 0, 'Inventory', 0);
 insert into yukonlistentry values (10103, 1067, 0, 'WorkOrder', 0);
@@ -12366,6 +12382,11 @@ alter table DeviceGroupComposed
 alter table DeviceGroupComposedGroup
    add constraint FK_DevGrpCompGrp_DevGrpComp foreign key (DeviceGroupComposedId)
       references DeviceGroupComposed (DeviceGroupComposedId)
+      on delete cascade;
+
+alter table DeviceGuid
+   add constraint FK_DeviceGuid_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
       on delete cascade;
 
 alter table DeviceMCT400Series

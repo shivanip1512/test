@@ -158,6 +158,13 @@ public class ControlAreaSetupController {
         try {
             String url;
             ResponseEntity<? extends Object> response;
+            List<ControlAreaTrigger> triggers = new ArrayList<>(2);
+            CollectionUtils.emptyIfNull(triggerIds)
+                           .forEach(id -> {
+                               triggers.add(controlAreaTriggerCache.asMap().get(id));
+            });
+            controlArea.setTriggers(triggers);
+
             if (controlArea.getControlAreaId() == null) {
                 url = helper.findWebServerUrl(request, userContext, ApiURL.drControlAreaUrl);
                 response = saveControlArea(userContext, request, url, controlArea, HttpMethod.POST);
@@ -165,12 +172,7 @@ public class ControlAreaSetupController {
                 url = helper.findWebServerUrl(request, userContext, ApiURL.drControlAreaUrl + "/" + controlArea.getControlAreaId());
                 response = saveControlArea(userContext, request, url, controlArea, HttpMethod.PUT);
             }
-            List<ControlAreaTrigger> triggers = new ArrayList<>(2);
-            CollectionUtils.emptyIfNull(triggerIds)
-                           .forEach(id -> {
-                               triggers.add(controlAreaTriggerCache.asMap().get(id));
-            });
-            controlArea.setTriggers(triggers);
+
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(controlArea, "controlArea");
                 result = helper.populateBindingError(result, error, response);

@@ -10,6 +10,7 @@
     <packages>
     	<package name="com.eaton.tests"/>
     	<package name="com.eaton.tests.admin"/>
+    	<package name="com.eaton.tests.admin.attributes"/>
     	<package name="com.eaton.tests.admin.energycompany"/>
     	<package name="com.eaton.tests.ami"/>
     	<package name="com.eaton.tests.assets"/>

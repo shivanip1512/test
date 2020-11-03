@@ -772,6 +772,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
             request->watchPoints( pointRequests );
+            dispatchConnection->refreshPointRegistration();
             state->setGroupRequest( request );
 
             //ActiveMQ message here for System Refresh
@@ -1147,6 +1148,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
             request->watchPoints( pointRequests );
+            dispatchConnection->refreshPointRegistration();
             state->setGroupRequest( request );
 
             //ActiveMQ message here for System Refresh
@@ -1294,6 +1296,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
             request->watchPoints( pointRequests );
+            dispatchConnection->refreshPointRegistration();
             state->setGroupRequest( request );
 
             //ActiveMQ message here for System Refresh
@@ -1425,6 +1428,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             // Make GroupRequest Here
             PointDataRequestPtr request(_requestFactory->createDispatchPointDataRequest(dispatchConnection));
             request->watchPoints(pointRequests);
+            dispatchConnection->refreshPointRegistration();
 
             //ActiveMQ message here for System Refresh
             sendCapControlOperationMessage( CapControlOperationMessage::createRefreshSystemMessage( subbus->getPaoId(), CtiTime() ) );
@@ -1739,6 +1743,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             }
 
             request->watchPoints(pointRequests);
+            dispatchConnection->refreshPointRegistration();
 
             state->setTimeStamp(now);
             state->setGroupRequest(request);
