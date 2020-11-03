@@ -9,6 +9,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.eaton.builders.assets.virtualdevices.VirtualDeviceCreateService;
 import com.eaton.elements.modals.virtualdevices.CreateVirtualDeviceModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
@@ -34,9 +35,9 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
         refreshPage(listPage);
-    }
+    }    
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesCreate_Labels_Correct() {
         SoftAssertions softly = new SoftAssertions();
         CreateVirtualDeviceModal createModal = listPage.showAndWaitCreateVirtualDeviceModal();
@@ -54,7 +55,7 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
 //    public void virtualDevicesCreate_Name_AlreadyExistsValidation() {
 //    }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesCreate_Name_InvalidCharValidation() {
         String name = "AT Virtual Devices " + "/ \\ , ' \" |";
 
@@ -68,13 +69,13 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesCreate_Name_MaxLength60Validation() {
         CreateVirtualDeviceModal createModal = listPage.showAndWaitCreateVirtualDeviceModal();
         assertThat(createModal.getName().getMaxLength()).isEqualTo("60");
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesCreate_Name_RequiredValidation() {
         final String EXPECTED_MSG = "Name is required.";
 
@@ -86,7 +87,7 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesCreate_AllFieldsEnabled_Success() {
     	String name = "AT Virtual Device" + faker.number().digits(10);
 
@@ -101,7 +102,7 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesCreate_AllFieldsDisabled_Success() {
     	String name = "AT Virtual Device" + faker.number().digits(10);
 
@@ -115,4 +116,22 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
 
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
+
+//    //TODO: Used to create lots of virtual devices for manual testing
+//    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
+//    public void virtualDevicesCreate_CreateMultiple_Success() {
+//        VirtualDeviceCreateService.buildAndCreateMultipleVirtualDeviceRequiredFields(1002);
+//    }
+    
+//  //TODO: Used to create virtual devices with lots of points for manual testing 
+//  @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
+//  public void virtualDevicesCreate_CreateVirDevWithMultiplePoints_Success() {
+//      VirtualDeviceCreateService.buildAndCreateVirtualDeviceRequiredFieldsWithMultiplePoints(170);
+//  }
+    
+//  //TODO: Used to create virtual devices with lots of points for manual testing 
+//  @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
+//  public void virtualDevicesCreate_CreateVirDevWithMultiplePointsLinkedToCustomAttribute_Success() {
+//      VirtualDeviceCreateService.createVirtualDeviceWithMultiplePointsAndCustomAttributes(170);
+//  }
 }

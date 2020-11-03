@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import org.assertj.core.api.SoftAssertions;
 import org.javatuples.Pair;
@@ -25,12 +24,13 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupExpresscomEditPage;
 import com.eaton.rest.api.drsetup.DrSetupGetRequest;
+import com.github.javafaker.Faker;
 
 import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
     private DriverExtensions driverExt;
-    private Random randomNum;
+    private Faker faker;
     private Integer id;
     private LoadGroupExpresscomEditPage editPage;
     Builder builder;
@@ -38,10 +38,10 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        randomNum = getRandomNum();
+        faker = SeleniumTestSetup.getFaker();
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpExpresscomEdit_RequiredFieldsOnly_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String editName = "AT Edit Expresscom Ld group " + timeStamp;
@@ -60,7 +60,7 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
         editPage.getCommunicationRoute().selectItemByValue("62");
 
         editPage.getUsage().setTrueFalseByLabel("Splinter", "SPLINTER", true);
-        editPage.getSplinter().setInputValue(String.valueOf(randomNum.nextInt(254)));
+        editPage.getSplinter().setInputValue(String.valueOf(faker.number().numberBetween(1, 254)));
 
         editPage.getSaveBtn().click();
 
@@ -72,7 +72,7 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpExpresscomEdit_SerialAddressToUser_Success() {
         builder = LoadGroupExpresscomCreateBuilder.buildDefaultExpresscomLoadGroup();
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -90,7 +90,7 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
         editPage.getName().setInputValue(editName);
         editPage.getGeographicalAddress().setTrueFalseByLabel("Serial", "SERIAL", false);
         editPage.getGeographicalAddress().setTrueFalseByLabel("User", "USER", true);
-        editPage.getUser().setInputValue(String.valueOf(randomNum.nextInt(65534)));
+        editPage.getUser().setInputValue(String.valueOf(faker.number().numberBetween(1, 65534)));
         editPage.getSaveBtn().click();
 
         waitForPageToLoad("Load Group: " + editName, Optional.empty());
@@ -101,7 +101,7 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpExpresscomEdit_AllFieldsWithoutSerialAddress_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String editName = "AT Edit Expresscom Ld group " + timeStamp;
@@ -120,9 +120,7 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
         editPage.getCommunicationRoute().selectItemByValue("62");
 
         editPage.getUsage().setTrueFalseByLabel("Splinter", "SPLINTER", true);
-        double randomDouble = randomNum.nextDouble();
-        int randomInt = randomNum.nextInt(9999);
-        double capacity = randomDouble + randomInt;
+        double capacity = faker.number().randomDouble(2, 1, 9999);
 
         editPage.getGeographicalAddress().setTrueFalseByLabel("GEO", "GEO", true);
         editPage.getGeographicalAddress().setTrueFalseByLabel("Substation", "SUBSTATION", true);
@@ -130,12 +128,12 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
         editPage.getGeographicalAddress().setTrueFalseByLabel("ZIP", "ZIP", true);
         editPage.getGeographicalAddress().setTrueFalseByLabel("User", "USER", true);
 
-        editPage.getSpid().setInputValue(String.valueOf(randomNum.nextInt(65534)));
-        editPage.getGeo().setInputValue(String.valueOf(randomNum.nextInt(65534)));
-        editPage.getSubstation().setInputValue(String.valueOf(randomNum.nextInt(65534)));
+        editPage.getSpid().setInputValue(String.valueOf(faker.number().numberBetween(1, 65534)));
+        editPage.getGeo().setInputValue(String.valueOf(faker.number().numberBetween(1, 65534)));
+        editPage.getSubstation().setInputValue(String.valueOf(faker.number().numberBetween(1, 65534)));
         editPage.getFeeder().setTrueFalseByLabel("10", "10", true);
-        editPage.getZip().setInputValue(String.valueOf(randomNum.nextInt(65534)));
-        editPage.getUser().setInputValue(String.valueOf(randomNum.nextInt(65534)));
+        editPage.getZip().setInputValue(String.valueOf(faker.number().numberBetween(1, 65534)));
+        editPage.getUser().setInputValue(String.valueOf(faker.number().numberBetween(1, 65534)));
 
         editPage.getUsage().setTrueFalseByLabel("Program", "PROGRAM", true);
         editPage.getUsage().setTrueFalseByLabel("Splinter", "SPLINTER", true);
@@ -144,8 +142,8 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
         confirmModal.clickOkAndWaitForSpinner();
 
         editPage.getLoads().setTrueFalseByLabel("Load 8", "Load_8", true);
-        editPage.getProgram().setInputValue(String.valueOf(randomNum.nextInt(254)));
-        editPage.getSplinter().setInputValue(String.valueOf(randomNum.nextInt(254)));
+        editPage.getProgram().setInputValue(String.valueOf(faker.number().numberBetween(1, 254)));
+        editPage.getSplinter().setInputValue(String.valueOf(faker.number().numberBetween(1, 254)));
 
         editPage.getControlPriority().selectItemByValue("MEDIUM");
         editPage.getkWCapacity().setInputValue(String.valueOf(capacity));
@@ -163,7 +161,7 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
         assertThat(EXPECTED_MSG).isEqualTo(userMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpExpresscomEdit_Field_ValuesCorrect() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         List<String> relayUsage = new ArrayList<>();

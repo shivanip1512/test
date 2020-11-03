@@ -34,7 +34,7 @@ public class VirtualDeviceRequest {
     public static ExtractableResponse<?> deleteVirtualDevice(String virtualDeviceId) {
 
         String pathParam = APIs.VirtualDevice.DELETE_VIRTUALDEVICE + virtualDeviceId;
-        ExtractableResponse<?> response = ApiCallHelper.delete(pathParam, virtualDeviceId);
+        ExtractableResponse<?> response = ApiCallHelper.delete(pathParam);
         assertThat(response.statusCode()).isEqualTo(200);
         return response;
     }

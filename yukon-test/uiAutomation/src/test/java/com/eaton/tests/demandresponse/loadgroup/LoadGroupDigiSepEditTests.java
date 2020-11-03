@@ -37,7 +37,7 @@ public class LoadGroupDigiSepEditTests extends SeleniumTestSetup {
         editPage = new LoadGroupDigiSepEditPage(driverExt,id);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpDigisepEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Load Group: " + name;
         String actualPageTitle;
@@ -48,7 +48,7 @@ public class LoadGroupDigiSepEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpDigisepEdit_AllFields_Success() {
         String nameBeforeEdit = "LdGrpDigiSep " + timeStamp;
         String nameAfterEdit = "EditLdGrpDigiSep " + timeStamp;

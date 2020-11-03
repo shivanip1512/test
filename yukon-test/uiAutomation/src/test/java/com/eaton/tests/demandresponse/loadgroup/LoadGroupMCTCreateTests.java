@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
@@ -21,18 +20,19 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupMCTCreatePage;
+import com.github.javafaker.Faker;
 
 public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
 
     private LoadGroupMCTCreatePage createPage;
     private DriverExtensions driverExt;
-    private Random randomNum;
+    private Faker faker;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
         setRefreshPage(false);
-        randomNum = getRandomNum();
+        faker = SeleniumTestSetup.getFaker();
         
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
         createPage = new LoadGroupMCTCreatePage(driverExt);
@@ -46,14 +46,12 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateMCT_RequiredFieldsWithBronzeAddress_Success() {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT MCT " + timeStamp;
-        double randomDouble = randomNum.nextDouble();
-        int randomInt = randomNum.nextInt(9999);
-        double capacity = randomDouble + randomInt;
+        double capacity = faker.number().randomDouble(2, 1, 9999);
 
         final String EXPECTED_MSG = name + " saved successfully.";
 
@@ -77,7 +75,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateMCT_CommunicationRoute_LabelsCorrect() {
         String sectionName = "General";
         String expectedLabel = "Communication Route:";
@@ -90,7 +88,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         assertThat(actualLabels.contains(expectedLabel)).isTrue();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateMCT_AddressingSection_LabelsCorrect() {
         String sectionName = "Addressing";
         List<String> expectedLabels = new ArrayList<>(List.of("Address Level:", "Address:", "Relay Usage:"));
@@ -103,7 +101,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         assertThat(actualLabels).containsAll(expectedLabels);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateMCT_AddressingSection_TitleCorrect() {
 
         createPage.getType().selectItemByValue("LM_GROUP_MCT");
@@ -113,7 +111,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         assertThat(address.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateMCT_Address_MinRangeValidation() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT MCT " + timeStamp;
@@ -129,7 +127,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getAddress().getValidationError()).isEqualTo(expectedErrorMsg);
     }
 
-    @Test(enabled = false, groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(enabled = false, groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateMCT_Address_MaxRangeValidation() {
         throw new SkipException("Development Defect: YUK-22593");
 //        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -146,7 +144,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
 //        assertThat(createPage.getAddress().getValidationError()).isEqualTo(expectedErrorMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateMCT_Address_RequiredValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_MCT");
         waitForLoadingSpinner();
@@ -156,7 +154,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getAddress().getValidationError()).isEqualTo("Address is required.");
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateMCT_MCTAddressLabel_DefaultValueCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_MCT");
         waitForLoadingSpinner();
@@ -166,7 +164,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getMctAddress().getLinkValue()).isEqualTo("(none selected)");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateMCT_MCTAddress_RequiredValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_MCT");
         waitForLoadingSpinner();
@@ -177,7 +175,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getMctAddressValidationMsg()).isEqualTo("MCT Address is required.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateMCT_MCTAddress_ValueSelectedCorrect() {
         setRefreshPage(true);
         createPage.getType().selectItemByValue("LM_GROUP_MCT");
@@ -192,7 +190,7 @@ public class LoadGroupMCTCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getMctAddress().getLinkValue()).contains("a_MCT-430A");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateMct_RequiredFieldsWithMctAddress_Success() {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

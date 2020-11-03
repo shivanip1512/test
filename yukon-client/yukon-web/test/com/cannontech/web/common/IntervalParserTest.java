@@ -14,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.IntervalParser;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.core.service.DateFormattingService;

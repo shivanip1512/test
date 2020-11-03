@@ -22,7 +22,7 @@ public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();   
     }
     
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
     public void energyCompanyOperatorUserEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Operator User: automation";
         
@@ -35,7 +35,7 @@ public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     } 
 
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Admin.ADMIN})
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
     public void energyCompanyOperatorUserEdit_Delete_Success() {
         final String EXPECTED_USER_MSG = "Successfully deleted the user.";
         

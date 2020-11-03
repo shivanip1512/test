@@ -24,7 +24,7 @@ import com.eaton.pages.demandresponse.DemandResponseSetupPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupRippleDetailsPage;
 
 public class LoadGroupRippleDetailTests extends SeleniumTestSetup {
-	private DriverExtensions driverExt;
+    private DriverExtensions driverExt;
     private LoadGroupRippleDetailsPage detailPage;
     private JSONObject response;
 
@@ -32,33 +32,38 @@ public class LoadGroupRippleDetailTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         setRefreshPage(false);
-        
+
         Pair<JSONObject, JSONObject> pair = LoadGroupRippleCreateBuilder.buildDefaultRippleLoadGroup()
-				.create();
-        
+                .withShedTime(Optional.of(LoadGroupEnums.RippleShedTime.FIFTEEN_MINUTES))
+                .withGroup(Optional.of(LoadGroupEnums.RippleGroup.SIX_00))
+                .withAreaCode(Optional.of(LoadGroupEnums.RippleAreaCode.BELTRAMI))
+                .create();
+
         response = pair.getValue1();
         int id = response.getInt("id");
-        
+
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
         detailPage = new LoadGroupRippleDetailsPage(driverExt, id);
     }
-    
+
     @AfterMethod
     public void afterMethod() {
-        if(getRefreshPage()) {
-            refreshPage(detailPage);    
+        if (getRefreshPage()) {
+            refreshPage(detailPage);
         }
         setRefreshPage(false);
     }
-    
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRippleDetail_Delete_Success() {
-    	setRefreshPage(true);
-        Pair<JSONObject, JSONObject> pair = LoadGroupRippleCreateBuilder.buildDefaultRippleLoadGroup().create();
+        setRefreshPage(true);
+        Pair<JSONObject, JSONObject> pair = LoadGroupRippleCreateBuilder.buildDefaultRippleLoadGroup()
+                .create();
         JSONObject response = pair.getValue1();
         int id = response.getInt("id");
         String name = response.getString("name");
         final String expected_msg = name + " deleted successfully.";
+        
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
 
         ConfirmModal confirmModal = detailPage.showDeleteLoadGroupModal();
@@ -66,22 +71,18 @@ public class LoadGroupRippleDetailTests extends SeleniumTestSetup {
 
         waitForPageToLoad("Setup", Optional.empty());
         DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_GROUP);
+        
         String userMsg = setupPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(expected_msg);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRippleDetail_Copy_Success() {
-    	setRefreshPage(true);
-        Pair<JSONObject, JSONObject> pair = LoadGroupRippleCreateBuilder.buildDefaultRippleLoadGroup().create();
-        JSONObject response = pair.getValue1();
-        int id = response.getInt("id");
+        setRefreshPage(true);
         String name = response.getString("name");
         final String copyName = "Copy of " + name;
         final String expected_msg = copyName + " copied successfully.";
-
-        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
 
         CopyLoadGroupModal modal = detailPage.showCopyLoadGroupModal();
         modal.getName().setInputValue(copyName);
@@ -93,56 +94,45 @@ public class LoadGroupRippleDetailTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(expected_msg);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRippleDetail_AddressingSection_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         List<String> labels = detailPage.getAddressingSection().getSectionLabels();
-        
+
         softly.assertThat(labels.size()).isEqualTo(3);
         softly.assertThat("Shed Time:").isEqualTo(labels.get(0));
         softly.assertThat("Group:").isEqualTo(labels.get(1));
         softly.assertThat("Area Code:").isEqualTo(labels.get(2));
-        
+
         softly.assertAll();
     }
-    
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRippleDetail_DoubleOrderSection_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         List<String> labels = detailPage.getDoubleOrdersSection().getSectionLabels();
-        
+
         softly.assertThat(labels.size()).isEqualTo(2);
         softly.assertThat("Control:").isEqualTo(labels.get(0));
         softly.assertThat("Restore:").isEqualTo(labels.get(1));
-        
+
         softly.assertAll();
     }
-    
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void ldGrpRippleDetail_AddressingSection_ValuesCorrect() {
-    	setRefreshPage(true);
-        SoftAssertions softly = new SoftAssertions();
-        Pair<JSONObject, JSONObject> pair = LoadGroupRippleCreateBuilder.buildDefaultRippleLoadGroup()
-										                .withShedTime(Optional.of(LoadGroupEnums.RippleShedTime.FIFTEEN_MINUTES))
-										                .withGroup(Optional.of(LoadGroupEnums.RippleGroup.SIX_00))
-										                .withAreaCode(Optional.of(LoadGroupEnums.RippleAreaCode.BELTRAMI))
-										                .create();
-        JSONObject response = pair.getValue1();
-        int id = response.getInt("id");
-        
-        LoadGroupRippleDetailsPage detailPage = new LoadGroupRippleDetailsPage(driverExt, id);
 
-        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldGrpRippleDetail_AddressingSection_ValuesCorrect() {
+        setRefreshPage(true);
+        SoftAssertions softly = new SoftAssertions();
+
+        List<String> values = detailPage.getAddressingSection().getSectionValues();;
         
-        List<String> values = detailPage.getAddressingSection().getSectionValues();
-        
+        String rippleGroup = response.getString("group");
+        String group = LoadGroupEnums.RippleGroupUi.valueOf(rippleGroup).getGroup();
+
         Integer shedTime = response.getInt("shedTime") / 60;
         softly.assertThat(values.get(0)).isEqualTo(shedTime.toString() + " " + "minutes");
-        softly.assertThat(values.get(1)).isEqualTo("LG  6.00");
-        String areaCodeRespense = response.get("areaCode").toString();
-        String areaCode = areaCodeRespense.substring(0, 1).toUpperCase() + areaCodeRespense.substring(1).toLowerCase();
-        softly.assertThat(values.get(2)).isEqualTo(areaCode);
-
+        softly.assertThat(values.get(1)).isEqualTo(group);
+        softly.assertThat((values.get(2)).toUpperCase()).isEqualTo(response.getString("areaCode"));
         softly.assertAll();
     }
 }

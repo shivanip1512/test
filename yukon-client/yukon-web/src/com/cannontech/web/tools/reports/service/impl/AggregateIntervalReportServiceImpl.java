@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.IntervalParser;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -28,7 +29,6 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.common.IntervalParser;
 import com.cannontech.web.tools.reports.service.AggregateIntervalReportService;
 import com.google.common.collect.ListMultimap;
 

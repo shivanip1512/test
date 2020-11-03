@@ -13,13 +13,13 @@ import io.restassured.response.ExtractableResponse;
 
 public class StatusPointCreateBuilder {
 
-	public static class Builder {
+    public static class Builder {
         private Faker faker = new Faker();
 
         private static final String POINTTYPE = "Status";
         private String pointName;
         private int pointOffset;
-        private int stateGroupId;
+        private Integer stateGroupId;
         private int paoId;
         private String archiveType;
 
@@ -35,7 +35,7 @@ public class StatusPointCreateBuilder {
 
             return this;
         }
-        
+
         public Builder withPointName(String pointName) {
             this.pointName = pointName;
             return this;
@@ -45,22 +45,22 @@ public class StatusPointCreateBuilder {
             this.pointOffset = pointOffset.orElse(faker.number().numberBetween(0, 99999999));
             return this;
         }
-        
-        public Builder withStateGroupId(Optional<Integer> stateGroupId) {
-        	this.stateGroupId = stateGroupId.orElse(faker.number().numberBetween(-29, 7));
-        	return this;
-        }
-        
-        public Builder withArchiveType(Optional<PointEnums.ArchiveType> archiveType) {
-        	PointEnums.ArchiveType randomArchiveType = archiveType.orElse(PointEnums.ArchiveType.getRandomArchiveType());
-        	this.archiveType = randomArchiveType.getArchiveType();
-        	return this;
+
+        public Builder withStateGroupId(Optional<PointEnums.StateGroupId> stateGroupId) {
+            PointEnums.StateGroupId stateGrpId = stateGroupId.orElse(PointEnums.StateGroupId.getRandomStateGroupId());
+            this.stateGroupId = stateGrpId.getStateGroupId();
+            return this;
         }
 
+        public Builder withArchiveType(Optional<PointEnums.ArchiveType> archiveType) {
+            PointEnums.ArchiveType randomArchiveType = archiveType.orElse(PointEnums.ArchiveType.getRandomArchiveType());
+            this.archiveType = randomArchiveType.getArchiveType();
+            return this;
+        }
 
         public JSONObject build() {
             JSONObject j = new JSONObject();
-            
+
             j.put("pointName", this.pointName);
             j.put("pointType", POINTTYPE);
             j.put("paoId", this.paoId);
@@ -70,7 +70,7 @@ public class StatusPointCreateBuilder {
 
             return j;
         }
-        
+
         public Pair<JSONObject, JSONObject> create() {
             JSONObject request = build();
             ExtractableResponse<?> createResponse = PointRequest.createPoint(request.toString());
