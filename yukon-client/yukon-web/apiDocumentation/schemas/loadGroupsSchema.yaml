@@ -614,6 +614,51 @@ LM_GROUP_EXPRESSCOMM:
             - MEDIUM
             - HIGH
             - HIGHEST        
+            
+LM_GROUP_EATON_CLOUD:
+  title: LM_GROUP_EATON_CLOUD
+  required:
+    - LM_GROUP_EATON_CLOUD
+  type: object
+  properties:
+    LM_GROUP_EATON_CLOUD:
+      required:
+        - type
+        - name
+        - kWCapacity
+        - relayUsage
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 60
+          description: 'Name for the load group.'
+        type:
+          type: string
+          description: 'Type of load group.'
+        kWCapacity:
+          type: number
+          description: 'Estimated kilowatt capacity of field devices that match the addressing of the load group. To disable this feature, enter a value of zero.'
+        disableGroup:
+          type: boolean
+          default: false
+          description: 'Flag to disable the load group.'
+        disableControl:
+          type: boolean
+          default: false
+          description: 'Flag to disable control of the load group.'
+        relayUsage:
+          type: string
+          description: 'RelayUsage.'
+          enum:
+            - Load_1
+            - Load_2
+            - Load_3
+            - Load_4
+            - Load_5
+            - Load_6
+            - Load_7
+            - Load_8
 
 id:
   title: id
@@ -782,6 +827,17 @@ components:
           relayUsage:
             - Load_1
           protocolPriority: DEFAULT 
+          
+    Eaton Cloud Group:
+      value:       
+        LM_GROUP_EATON_CLOUD:
+          name: Eaton Cloud LoadGroup Test
+          type: LM_GROUP_EATON_CLOUD
+          kWCapacity: '23'
+          disableGroup: false
+          disableControl: false
+          relayUsage:
+            - Load_1
 
     
     id:
