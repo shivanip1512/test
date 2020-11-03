@@ -47,13 +47,14 @@ paths:
     $ref: 'api/programConstraintsApi.yaml#/season-schedules'
   /dr/constraints/holidaySchedules:
     $ref: 'api/programConstraintsApi.yaml#/holiday-schedules'
-    
+
   /devices/virtualDevices:
-    $ref: 'api/virtualDevicesApi.yaml#/post-operation'
+    $ref: 'api/virtualDevicesApi.yaml#/post-get-all-operation'
   /devices/virtualDevices/{id}:
     $ref: 'api/virtualDevicesApi.yaml#/get-update-delete-operation'
-  /devices/virtualDevices/:
-    $ref: 'api/virtualDevicesApi.yaml#/list-Virtual-devices-operation'
+
+  /device/getLatestReading:
+    $ref: 'api/deviceReadingsApi.yaml#/get-operation'
 
   /points:
     $ref: 'api/pointsApi.yaml#/post-operation'
@@ -61,7 +62,16 @@ paths:
     $ref: 'api/pointsApi.yaml#/copy-operation'
   /points/{id}:
     $ref: 'api/pointsApi.yaml#/get-update-delete-operation'
- 
+   
+  /attributes:
+    $ref: 'api/attributesApi.yaml#/post-get-operation'
+  /attributes/{id}:
+    $ref: 'api/attributesApi.yaml#/get-update-delete-operation'
+  /attributeAssignments:
+    $ref: 'api/attributeAssignmentsApi.yaml#/post-get-operation'
+  /attributeAssignments/{id}:
+    $ref: 'api/attributeAssignmentsApi.yaml#/get-update-delete-operation'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -75,6 +85,8 @@ tags:
   - name: Load Group
   - name: Macro Load Group
   - name: Program Constraints
+  - name: Device Readings
   - name: Virtual Devices
   - name: Points
+  - name: Attributes
 
