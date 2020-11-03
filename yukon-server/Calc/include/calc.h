@@ -24,7 +24,7 @@ class CtiCalc
         static const std::string AllChange;
         static const std::string OneChange;
         static const std::string Historical;
-        static const std::string BackfilledHistorical;
+        static const std::string BackfillingHistorical;
         static const std::string PeriodicPlusUpdate;
         static const std::string Constant;
     };

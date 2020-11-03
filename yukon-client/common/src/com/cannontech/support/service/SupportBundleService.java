@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.joda.time.ReadableInstant;
 
-import com.cannontech.tools.sftp.SftpWriter.Status;
 
 public interface SupportBundleService {
     public void bundle(ReadableInstant start, ReadableInstant end, String custName,
@@ -21,5 +20,4 @@ public interface SupportBundleService {
 
     public Map<String, Boolean> getWritersDone();
 
-    public Status uploadViaSftp(File file);
 }

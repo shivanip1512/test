@@ -162,6 +162,16 @@ public class GlobalSettingTypeValidators {
         }
     };
     
+    public static TypeValidator<String> guidValidator = new TypeValidator<>( ) {
+        @Override
+        public void validate(String value, Errors errors, GlobalSettingType globalSettingType) {
+            Pattern guidPattern = Pattern.compile("^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$");
+            if (!StringUtils.isBlank(value) && !guidPattern.matcher(value).find()) {
+                errors.rejectValue("values[" + globalSettingType + "]", baseKey + "invalidGuid", null, "");
+            }
+        }
+    };
+    
     public interface TypeValidator<T> {
         public void validate(T value, Errors errors, GlobalSettingType globalSetting);
     }

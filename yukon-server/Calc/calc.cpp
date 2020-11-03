@@ -19,7 +19,7 @@ const std::string CtiCalc::UpdateTypeDbStrings::Periodic   = "On Timer";
 const std::string CtiCalc::UpdateTypeDbStrings::AllChange  = "On All Change";
 const std::string CtiCalc::UpdateTypeDbStrings::OneChange  = "On First Change";
 const std::string CtiCalc::UpdateTypeDbStrings::Historical = "Historical";
-const std::string CtiCalc::UpdateTypeDbStrings::BackfilledHistorical = "Backfilled Historical";
+const std::string CtiCalc::UpdateTypeDbStrings::BackfillingHistorical = "Backfilling";
 const std::string CtiCalc::UpdateTypeDbStrings::PeriodicPlusUpdate = "On Timer+Change";
 const std::string CtiCalc::UpdateTypeDbStrings::Constant   = "Constant";
 
@@ -63,10 +63,10 @@ CtiCalc::CtiCalc( long pointId, const string &updateType, int updateInterval, co
         _updateInterval = 0;
         _updateType = CalcUpdateType::Historical;
     }
-    else if( ciStringEqual(updateType, UpdateTypeDbStrings::BackfilledHistorical) )
+    else if( ciStringEqual(updateType, UpdateTypeDbStrings::BackfillingHistorical) )
     {
         _updateInterval = 0;
-        _updateType = CalcUpdateType::BackfilledHistorical;
+        _updateType = CalcUpdateType::BackfillingHistorical;
     }
     else if( ciStringEqual(updateType,UpdateTypeDbStrings::PeriodicPlusUpdate) )
     {
@@ -266,7 +266,7 @@ BOOL CtiCalc::ready( void )
                 }
                 break;
             case CalcUpdateType::Historical:
-            case CalcUpdateType::BackfilledHistorical:
+            case CalcUpdateType::BackfillingHistorical:
             case CalcUpdateType::Constant:
                 isReady = TRUE;
                 break;
