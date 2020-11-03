@@ -109,6 +109,7 @@ public class PointCalcBaseSettingsPanel extends DataInputPanel implements Action
                 ivjUpdateTypeComboBox.addItem("On Timer+Change");
                 ivjUpdateTypeComboBox.addItem("Constant");
                 ivjUpdateTypeComboBox.addItem("Historical");
+                ivjUpdateTypeComboBox.addItem("Backfilling");
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
             }

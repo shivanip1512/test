@@ -33,25 +33,25 @@ public class MCTMeterCreateTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
         setRefreshPage(false);
         faker = SeleniumTestSetup.getFaker();
-        
+
         navigate(Urls.Ami.AMI_DASHBOARD);
 
         amiDashboardPage = new AmiDashboardPage(driverExt);
     }
-    
+
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-    	if(getRefreshPage()) {
-    		refreshPage(amiDashboardPage);
-    	}
-    	
+        if (getRefreshPage()) {
+            refreshPage(amiDashboardPage);
+        }
+
     }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void createMCTMeter_Labels_Correct() {
-    	setRefreshPage(true);
-    	SoftAssertions softly = new SoftAssertions();
-    	
+        setRefreshPage(true);
+        SoftAssertions softly = new SoftAssertions();
+
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
         List<String> fieldLabels = createModal.getFieldLabels();
@@ -64,11 +64,11 @@ public class MCTMeterCreateTests extends SeleniumTestSetup {
         softly.assertAll();
 
     }
-    
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Ami.AMI })
+
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.AMI })
     public void createMCTMeter_AllFields_Success() {
-    	setRefreshPage(true);
-    	
+        setRefreshPage(true);
+
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
@@ -91,13 +91,13 @@ public class MCTMeterCreateTests extends SeleniumTestSetup {
 
         assertThat(userMsg).isEqualTo(METER + deviceName + CREATED);
     }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void createMCTMeter_PhysicalAddress_InvalidValidation() {
-    	setRefreshPage(true);
-    	
+        setRefreshPage(true);
+
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
-  
+
         String physicalAddress = "41 Charles St.";
 
         createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.MCT420CL.getMeterType());
@@ -110,19 +110,19 @@ public class MCTMeterCreateTests extends SeleniumTestSetup {
 
         assertThat(errorMsg).isEqualTo("Must be a valid integer value.");
     }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void createMCTMeter_PhysicalAddress_MaxValueValidation() {
-    	setRefreshPage(true);
-    	
+        setRefreshPage(true);
+
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
         int physicalAddress = 4194304;
 
         createModal.getType().selectItemByTextSearch(MeterEnums.MeterType.MCT420CL.getMeterType());
-        
+
         createModal.getPhysicalAddress().setInputValue(String.valueOf(physicalAddress));
-        
+
         createModal.clickOkAndWaitForSpinner();
 
         String errorMsg = createModal.getPhysicalAddress().getValidationError();
@@ -130,10 +130,10 @@ public class MCTMeterCreateTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo("Physical address must be within range(s): [0 - 4194303].");
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void createMCTMeter_PhysicalAddress_RequiredValidation() {
-    	setRefreshPage(true);
-    	
+        setRefreshPage(true);
+
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
         createModal.clickOkAndWaitForSpinner();
@@ -142,12 +142,12 @@ public class MCTMeterCreateTests extends SeleniumTestSetup {
 
         assertThat(errorMsg).isEqualTo("Physical address is required.");
     }
-    
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void createMCTMeter_Route_LabelsCorrect() {
-    	setRefreshPage(true);
-    	SoftAssertions softly = new SoftAssertions();
-    	
+        setRefreshPage(true);
+        SoftAssertions softly = new SoftAssertions();
+
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
         List<String> optionValues = createModal.getRoute().getOptionValues();
@@ -168,7 +168,7 @@ public class MCTMeterCreateTests extends SeleniumTestSetup {
         softly.assertThat(optionValues).contains("a_WCTP-TERMINAL");
         softly.assertThat(optionValues).contains("a_XML");
         softly.assertAll();
-        
+
     }
-    
+
 }

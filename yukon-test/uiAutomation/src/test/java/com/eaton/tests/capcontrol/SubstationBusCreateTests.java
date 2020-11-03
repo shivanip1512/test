@@ -38,7 +38,7 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void substationBusCreate_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Bus";
 
@@ -47,7 +47,7 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void substationBusCreate_RequiredFieldsOnly_Success() {
         setRefreshPage(false);
         final String EXPECTED_MSG = "Bus was saved successfully.";

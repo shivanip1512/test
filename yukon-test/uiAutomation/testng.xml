@@ -7,7 +7,7 @@
     </listeners>
     <test name="Selenium Tests">
 		<classes>
-			<class name="com.eaton.tests.admin.AdminMenuTests"></class>
+			<class name="com.eaton.tests.admin.attributes.AttributeEditTests"></class>
 		</classes>
     </test>
 </suite>

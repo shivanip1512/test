@@ -54,7 +54,7 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup{
     	refreshPage(createPage);    
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
 	public void ldPrgmItronCreate_RequiredFieldsOnly_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT LM Direct Program " + timeStamp;
@@ -88,7 +88,7 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup{
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
 	}
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
 	public void ldPrgmItronCreate_AllFields_Success() {
 		String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT LM Direct Program " + timeStamp;
@@ -134,7 +134,7 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup{
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
 	}
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
 	public void ldPrgmItronCreate_GearType_ValuesCorrect() {
     	createPage.getType().selectItemByValue(TYPE);
 		waitForLoadingSpinner();
@@ -149,7 +149,7 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup{
 		assertThat(actualDropDownValues).containsExactlyElementsOf(expectedDropDownValues);
 	}
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
 	public void ldPrgmItronCreate_WithMultipleGears_Success() {
     	String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT LM Direct Program " + timeStamp;
@@ -186,7 +186,7 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup{
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
 	}
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
 	public void ldPrgmItronCreate_ItronCycleGearControlParamSection_LabelsCorrect() {
     	String sectionName = "Control Parameters";
 		
@@ -203,7 +203,7 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup{
 		assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
 	}
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
 	public void ldPrgmItronCreate_ItronCycleGearRampInRampOutSection_LabelsCorrect() {
     	String sectionName = "Ramp In / Ramp Out";
 		
