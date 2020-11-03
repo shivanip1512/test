@@ -28,6 +28,7 @@ paths:
     $ref: 'api/trendsApi.yaml#/post-operation'
   '/trends/{id}':
     $ref: 'api/trendsApi.yaml#/get-update-delete-operation'
+  
   /dr/loadGroups:
     $ref: 'api/loadGroupsApi.yaml#/post-operation'
   '/dr/loadGroups/{id}':
@@ -42,12 +43,34 @@ paths:
     $ref: 'api/programConstraintsApi.yaml#/post-operation'
   '/dr/constraints/{id}':
     $ref: 'api/programConstraintsApi.yaml#/get-update-delete-operation'
-  /dr/constraints/getSeasonSchedules:
+  /dr/constraints/seasonSchedules:
     $ref: 'api/programConstraintsApi.yaml#/season-schedules'
-  /dr/constraints/getHolidaySchedules:
+  /dr/constraints/holidaySchedules:
     $ref: 'api/programConstraintsApi.yaml#/holiday-schedules'
-  /dr/constraints/getAllProgramConstraint:
-    $ref: 'api/programConstraintsApi.yaml#/program-constraints'
+
+  /devices/virtualDevices:
+    $ref: 'api/virtualDevicesApi.yaml#/post-get-all-operation'
+  /devices/virtualDevices/{id}:
+    $ref: 'api/virtualDevicesApi.yaml#/get-update-delete-operation'
+
+  /device/getLatestReading:
+    $ref: 'api/deviceReadingsApi.yaml#/get-operation'
+
+  /points:
+    $ref: 'api/pointsApi.yaml#/post-operation'
+  /points/{id}/copy:
+    $ref: 'api/pointsApi.yaml#/copy-operation'
+  /points/{id}:
+    $ref: 'api/pointsApi.yaml#/get-update-delete-operation'
+   
+  /attributes:
+    $ref: 'api/attributesApi.yaml#/post-get-operation'
+  /attributes/{id}:
+    $ref: 'api/attributesApi.yaml#/get-update-delete-operation'
+  /attributeAssignments:
+    $ref: 'api/attributeAssignmentsApi.yaml#/post-get-operation'
+  /attributeAssignments/{id}:
+    $ref: 'api/attributeAssignmentsApi.yaml#/get-update-delete-operation'
 
 components:
   securitySchemes:
@@ -62,4 +85,8 @@ tags:
   - name: Load Group
   - name: Macro Load Group
   - name: Program Constraints
-  
+  - name: Device Readings
+  - name: Virtual Devices
+  - name: Points
+  - name: Attributes
+

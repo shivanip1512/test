@@ -1,0 +1,133 @@
+VIRTUAL_SYSTEM:
+  title: VIRTUAL_SYSTEM
+  required:
+    - type
+    - name
+  type: object
+  properties:
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name of the virtual device.'
+    type:
+      type: string
+      description: 'Type of the virtual device.'
+      enum:
+        - VIRTUAL_SYSTEM
+    enable:
+      type: boolean
+      default: true
+      description: 'Flag to enable virtual device.'
+
+VIRTUAL_METER:
+  title: VIRTUAL_METER
+  required:
+    - type
+    - name
+    - meterNumber
+  type: object
+  properties:
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name of the virtual device.'
+    type:
+      type: string
+      description: 'Type of the virtual device.'
+      enum:
+        - VIRTUAL_METER
+    enable:
+      type: boolean
+      default: true
+      description: 'Flag to enable virtual device.'
+    meterNumber:
+      type: string
+      description: 'Name of the meter Number for virtual meter type.'
+
+id:
+  required:
+    - id
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier for the virtual devices.'
+      
+Virtual Devices List:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier for the virtual devices.'
+    pageNumber:
+      type: integer
+      default: 1
+      description: 'Number of Pages for the virtual devices.'
+    itemsPerPage: 
+      type: integer
+      default: 250
+      description: 'Total number of items per page for the virtual devices.'
+    totalItems:
+      type: integer
+      description: 'Total items or (number ) of the virtual devices present in the system.'
+    items:
+      type: array
+      items:
+        type: object
+        properties:
+          VIRTUAL_SYSTEM:
+            $ref: '#/VIRTUAL_SYSTEM'
+          VIRTUAL_METER:
+            $ref: '#/VIRTUAL_METER'
+        
+ 
+components:
+  examples:
+    Virtual System: 
+      value:
+        type: VIRTUAL_SYSTEM
+        name: virtual system
+        enable: true
+            
+    Virtual Meter:   
+      value:
+        type: VIRTUAL_METER
+        name: Virtual meter
+        enable: true
+        meterNumber: '123312321321'
+
+    id:
+      value:
+        id: 9223
+    
+    List of Virtual Devices:
+      value:
+        pageNumber: 1
+        itemsPerPage: 250
+        totalItems: 6
+        items:
+          - id: 2942
+            type: VIRTUAL_SYSTEM
+            name: Postman Virtual Device Test
+            enable: false
+          - id: 2013
+            type: VIRTUAL_SYSTEM
+            name: Postman Virtual DeviceTest
+            enable: false
+          - id: 2134
+            type: VIRTUAL_SYSTEM
+            name: Sim RTU 0_00
+            enable: true
+          - id: 2522
+            type: VIRTUAL_METER
+            name: VMMeterTest
+            enable: true
+            meterNumber: '123312321321'
+          - id: 2943
+            type: VIRTUAL_SYSTEM
+            name: Virtual Device Test
+            enable: true
+          - id: 2012
+            type: VIRTUAL_SYSTEM
+            name: virtualD
+            enable: true

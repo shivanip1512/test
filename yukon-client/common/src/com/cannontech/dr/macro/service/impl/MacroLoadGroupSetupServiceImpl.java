@@ -1,16 +1,11 @@
 package com.cannontech.dr.macro.service.impl;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Vector;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.MacroLoadGroup;
@@ -25,8 +20,8 @@ import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.YukonPAObject;
-import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.dr.setup.service.LMSetupService;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -35,7 +30,6 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private DemandResponseEventLogService logService;
-    private static final String macroType = "GROUP";
 
     @Override
     public MacroLoadGroup retrieve(int loadGroupId) {
@@ -44,48 +38,58 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
             throw new NotFoundException("Macro load group Id not found");
         }
 
-        LMGroup lmGroup = (LMGroup) dbPersistentDao.retrieveDBPersistent(liteLoadGroup.get());
-        if (lmGroup.getPaoType() != PaoType.MACRO_GROUP) {
+        MacroGroup macroGroup = (MacroGroup) dbPersistentDao.retrieveDBPersistent(liteLoadGroup.get());
+        if (macroGroup.getPaoType() != PaoType.MACRO_GROUP) {
             throw new MacroLoadGroupProcessingException("Not valid macro group ID");
         }
         MacroLoadGroup macroLoadGroup = new MacroLoadGroup();
-        buildMacroLoadGroupModel(lmGroup, macroLoadGroup);
+        macroLoadGroup.buildModel(macroGroup);
+        updateAssignedLoadGroups(macroLoadGroup);
         return macroLoadGroup;
     }
 
     @Override
     @Transactional
-    public MacroLoadGroup create(MacroLoadGroup macroLoadGroup) {
-        LMGroup lmGroup = getMacroLoadGroupDBPersistent(macroLoadGroup, macroLoadGroup.getId());
-        buildMacroLoadGroupDBPersistent(macroLoadGroup, lmGroup);
-        dbPersistentDao.performDBChange(lmGroup, TransactionType.INSERT);
-        buildMacroLoadGroupModel(lmGroup, macroLoadGroup);
-        logService.loadGroupCreated(macroLoadGroup.getName(), macroLoadGroup.getType(),
-                ApiRequestContext.getContext().getLiteYukonUser());
+    public MacroLoadGroup create(MacroLoadGroup macroLoadGroup, LiteYukonUser liteYukonUser) {
+        Set<Integer> invalidLoadgorups = isValidLoadGroup(macroLoadGroup);
+        if (!invalidLoadgorups.isEmpty()) {
+            throw new MacroLoadGroupProcessingException("Load group does not exists  " + invalidLoadgorups);
+        }
+        MacroGroup macroGroup = getMacroLoadGroupDBPersistent(macroLoadGroup, macroLoadGroup.getId());
+        macroLoadGroup.buildDBPersistent(macroGroup);
+        dbPersistentDao.performDBChange(macroGroup, TransactionType.INSERT);
+        macroLoadGroup.buildModel(macroGroup);
+        updateAssignedLoadGroups(macroLoadGroup);
+        logService.loadGroupCreated(macroLoadGroup.getName(), macroLoadGroup.getType(), liteYukonUser);
 
         return macroLoadGroup;
     }
 
     @Override
     @Transactional
-    public MacroLoadGroup update(int loadGroupId, MacroLoadGroup macroLoadGroup) {
+    public MacroLoadGroup update(int loadGroupId, MacroLoadGroup macroLoadGroup, LiteYukonUser liteYukonUser) {
+        Set<Integer> invalidLoadgorups = isValidLoadGroup(macroLoadGroup);
+        if (!invalidLoadgorups.isEmpty()) {
+            throw new MacroLoadGroupProcessingException("Load group does not exists  " + invalidLoadgorups);
+        }
         Optional<LiteYukonPAObject> liteLoadGroup = getGroupFromCache(loadGroupId);
 
         if (liteLoadGroup.isEmpty()) {
             throw new NotFoundException("Macro load group Id not found " + loadGroupId);
         }
-        LMGroup lmGroup = getMacroLoadGroupDBPersistent(macroLoadGroup, loadGroupId);
-        buildMacroLoadGroupDBPersistent(macroLoadGroup, lmGroup);
-        dbPersistentDao.performDBChange(lmGroup, TransactionType.UPDATE);
-        buildMacroLoadGroupModel(lmGroup, macroLoadGroup);
-        logService.loadGroupUpdated(macroLoadGroup.getName(), macroLoadGroup.getType(),
-                ApiRequestContext.getContext().getLiteYukonUser());
+        macroLoadGroup.setId(loadGroupId);
+        MacroGroup macroGroup = getMacroLoadGroupDBPersistent(macroLoadGroup, loadGroupId);
+        macroLoadGroup.buildDBPersistent(macroGroup);
+        dbPersistentDao.performDBChange(macroGroup, TransactionType.UPDATE);
+        macroLoadGroup.buildModel(macroGroup);
+        updateAssignedLoadGroups(macroLoadGroup);
+        logService.loadGroupUpdated(macroLoadGroup.getName(), macroLoadGroup.getType(), liteYukonUser);
         return macroLoadGroup;
     }
 
     @Override
     @Transactional
-    public int copy(int loadGroupId, LMCopy lmCopy) {
+    public int copy(int loadGroupId, LMCopy lmCopy, LiteYukonUser liteYukonUser) {
         Optional<LiteYukonPAObject> liteLoadGroup = getGroupFromCache(loadGroupId);
         if (liteLoadGroup.isEmpty()) {
             throw new NotFoundException("Macro load group Id not found");
@@ -98,14 +102,13 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
         loadGroup.setPAObjectID(null);
 
         dbPersistentDao.performDBChange(loadGroup, TransactionType.INSERT);
-        logService.loadGroupCreated(loadGroup.getPAOName(), loadGroup.getPaoType(),
-                ApiRequestContext.getContext().getLiteYukonUser());
+        logService.loadGroupCreated(loadGroup.getPAOName(), loadGroup.getPaoType(), liteYukonUser);
         return loadGroup.getPAObjectID();
     }
 
     @Override
     @Transactional
-    public int delete(int loadGroupId) {
+    public int delete(int loadGroupId, LiteYukonUser liteYukonUser) {
         Optional<LiteYukonPAObject> liteLoadGroup = dbCache.getAllLMGroups()
                                                            .stream()
                                                            .filter(group -> group.getLiteID() == loadGroupId)
@@ -120,8 +123,7 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
 
         YukonPAObject lmGroup = (YukonPAObject) LiteFactory.createDBPersistent(liteLoadGroup.get());
         dbPersistentDao.performDBChange(lmGroup, TransactionType.DELETE);
-        logService.loadGroupDeleted(liteLoadGroup.get().getPaoName(), liteLoadGroup.get().getPaoType(),
-                ApiRequestContext.getContext().getLiteYukonUser());
+        logService.loadGroupDeleted(liteLoadGroup.get().getPaoName(), liteLoadGroup.get().getPaoType(), liteYukonUser);
         return lmGroup.getPAObjectID();
     }
 
@@ -157,55 +159,24 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
         return paoSet;
     }
 
-    private void buildMacroLoadGroupDBPersistent(MacroLoadGroup macroLoadGroup, LMGroup group) {
-
-        Integer childOrder = 1;
-        Vector<GenericMacro> macroGroupVector = new Vector<>();
-        Set<Integer> invalidLoadgorups = isValidLoadGroup(macroLoadGroup);
-        if (!invalidLoadgorups.isEmpty()) {
-            throw new MacroLoadGroupProcessingException("Load group does not exists  " + invalidLoadgorups);
-        }
+    private void updateAssignedLoadGroups(MacroLoadGroup macroLoadGroup) {
         for (LMPaoDto lmPaoDto : macroLoadGroup.getAssignedLoadGroups()) {
             Optional<LiteYukonPAObject> liteLoadGroup = getGroupFromCache(lmPaoDto.getId());
-            GenericMacro genericMacroMapping = new GenericMacro();
-
-            genericMacroMapping.setOwnerID(group.getPAObjectID());
-            genericMacroMapping.setChildID(liteLoadGroup.get().getYukonID());
-            genericMacroMapping.setMacroType(macroType);
-            genericMacroMapping.setChildOrder(childOrder);
-            childOrder++;
-            macroGroupVector.add(genericMacroMapping);
+            lmPaoDto.setName(liteLoadGroup.get().getPaoName());
+            lmPaoDto.setType(liteLoadGroup.get().getPaoType());
         }
-        ((MacroGroup) group).setMacroGroupVector(macroGroupVector);
-        ((MacroGroup) group).setPAOName(macroLoadGroup.getName());
     }
 
-    private void buildMacroLoadGroupModel(LMGroup loadGroup, MacroLoadGroup macroLoadGroup) {
-        MacroGroup macroGroup = (MacroGroup) loadGroup;
-        List<LMPaoDto> assignedLoadGroups = new ArrayList<>();
-        for (GenericMacro genericMacro : macroGroup.getMacroGroupVector()) {
-            Optional<LiteYukonPAObject> liteLoadGroup = getGroupFromCache(genericMacro.getChildID());
-            LMPaoDto lmPaoDto = new LMPaoDto(liteLoadGroup.get().getYukonID(), liteLoadGroup.get().getPaoName(),
-                liteLoadGroup.get().getPaoType());
-            assignedLoadGroups.add(lmPaoDto);
-        }
-
-        macroLoadGroup.setName(loadGroup.getPAOName());
-        macroLoadGroup.setId(loadGroup.getPAObjectID());
-        macroLoadGroup.setType(loadGroup.getPaoType());
-        macroLoadGroup.setAssignLoadGroups(assignedLoadGroups);
-    }
-
-    private LMGroup getMacroLoadGroupDBPersistent(MacroLoadGroup macroLoadGroup, Integer macroloadGroupId) {
-        LMGroup lmGroup = (LMGroup) LMFactory.createLoadManagement(macroLoadGroup.getType());
+    private MacroGroup getMacroLoadGroupDBPersistent(MacroLoadGroup macroLoadGroup, Integer macroloadGroupId) {
+        MacroGroup macroGroup = (MacroGroup)LMFactory.createLoadManagement(macroLoadGroup.getType());
         if (macroloadGroupId != null) {
             Optional<LiteYukonPAObject> pao = getGroupFromCache(macroloadGroupId);
             if (!isMacroLoadGroup(pao.get())) {
                 throw new MacroLoadGroupProcessingException("Must be valid macro load group Id");
             }
-            lmGroup = (MacroGroup) dbPersistentDao.retrieveDBPersistent(pao.get());
+            macroGroup = (MacroGroup) dbPersistentDao.retrieveDBPersistent(pao.get());
         }
-        return lmGroup;
+        return macroGroup;
     }
 
     private Optional<LiteYukonPAObject> getGroupFromCache(int loadGroupId) {

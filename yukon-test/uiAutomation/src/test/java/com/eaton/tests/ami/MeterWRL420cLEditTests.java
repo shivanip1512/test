@@ -39,7 +39,7 @@ public class MeterWRL420cLEditTests extends SeleniumTestSetup {
         refreshPage(meterDetailsPage);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cLEdit_RequiredFieldsOnly_Success() {
 
         String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());

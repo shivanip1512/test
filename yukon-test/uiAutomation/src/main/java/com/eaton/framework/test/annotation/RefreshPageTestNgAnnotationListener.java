@@ -19,8 +19,9 @@ public class RefreshPageTestNgAnnotationListener implements IInvokedMethodListen
     /* (non-Javadoc)
      * @see org.testng.IInvokedMethodListener#beforeInvocation(org.testng.IInvokedMethod, org.testng.ITestResult)
      */
+    @Override
     public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
-     // TODO Auto-generated method stub
+     // Auto-generated method stub
     }
     
     private boolean annotationPresent(IInvokedMethod method, Class clazz) {
@@ -31,6 +32,7 @@ public class RefreshPageTestNgAnnotationListener implements IInvokedMethodListen
     /* (non-Javadoc)
      * @see org.testng.IInvokedMethodListener#afterInvocation(org.testng.IInvokedMethod, org.testng.ITestResult)
      */
+    @Override
     public void afterInvocation(IInvokedMethod method, ITestResult testResult) {        
         if(method.isTestMethod() && annotationPresent(method, CustomTestNgAnnotations.class) ) {            
             if(refreshPage) {
@@ -39,31 +41,37 @@ public class RefreshPageTestNgAnnotationListener implements IInvokedMethodListen
         }
     }
     
+    @Override
     public void onTestStart(ITestResult result) {
-        // TODO Auto-generated method stub
+        // Auto-generated method stub
         
     }
 
+    @Override
     public void onTestSuccess(ITestResult result) {
-        // TODO Auto-generated method stub
+        // Auto-generated method stub
         
     }
 
+    @Override
     public void onTestFailure(ITestResult result) {
-        // TODO Auto-generated method stub
+        // Auto-generated method stub
         
     }
 
+    @Override
     public void onTestSkipped(ITestResult result) {
-        // TODO Auto-generated method stub
+        // Auto-generated method stub
         
     }
 
+    @Override
     public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
-        // TODO Auto-generated method stub
+        // Auto-generated method stub
         
     }
-
+    
+    @Override
     public void onStart(ITestContext context) {
         for(ITestNGMethod m1 : context.getAllTestMethods()) {
             if(m1.getConstructorOrMethod().getMethod().isAnnotationPresent(CustomTestNgAnnotations.class)) {
@@ -75,8 +83,9 @@ public class RefreshPageTestNgAnnotationListener implements IInvokedMethodListen
         
     }
 
+    @Override
     public void onFinish(ITestContext context) {
-        // TODO Auto-generated method stub
+        // Auto-generated method stub
         
     }
 }

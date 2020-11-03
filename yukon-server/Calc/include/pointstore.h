@@ -33,7 +33,7 @@ enum class CalcUpdateType
     AllUpdate,
     AnyUpdate,
     Historical,
-    BackfilledHistorical,
+    BackfillingHistorical,
     PeriodicPlusUpdate,
     Constant
 };

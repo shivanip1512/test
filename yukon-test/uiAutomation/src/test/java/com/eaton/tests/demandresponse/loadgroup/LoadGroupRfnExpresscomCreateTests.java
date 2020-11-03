@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import org.assertj.core.api.SoftAssertions;
 import org.testng.annotations.AfterMethod;
@@ -20,18 +19,19 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupRfnExpresscomCreatePage;
+import com.github.javafaker.Faker;
 
 public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
 
     private LoadGroupRfnExpresscomCreatePage createPage;
     private DriverExtensions driverExt;
-    private Random randomNum;
+    private Faker faker;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
         new SoftAssertions();
-        randomNum = getRandomNum();
+        faker = SeleniumTestSetup.getFaker();
         
         navigate(Urls.DemandResponse.LOAD_GROUP_CREATE);
         createPage = new LoadGroupRfnExpresscomCreatePage(driverExt);
@@ -42,13 +42,11 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         refreshPage(createPage);    
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscomCreate_AllFields_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "RFN Expresscomm" + timeStamp;
-        double randomDouble = randomNum.nextDouble();
-        int randomInt = randomNum.nextInt(9999);
-        double capacity = randomDouble + randomInt;
+        double capacity = faker.number().randomDouble(2, 1, 9999);
 
         final String EXPECTED_MSG = name + " saved successfully.";
 
@@ -83,7 +81,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingGeo_ValidIntegerValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -94,7 +92,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getGeoAddress().getValidationError()).isEqualTo("Must be a valid integer value.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingGeo_MinValueValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -106,7 +104,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getGeoAddress().getValidationError()).isEqualTo("Must be between 1 and 65,534.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingGeo_MaxValueValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -118,7 +116,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getGeoAddress().getValidationError()).isEqualTo("Must be between 1 and 65,534.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingSubstation_ValidIntegerValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -129,7 +127,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getSubstationAddress().getValidationError()).isEqualTo("Must be a valid integer value.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingSubstation_MinValueValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -142,7 +140,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getSubstationAddress().getValidationError()).isEqualTo("Must be between 1 and 65,534.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingSubstation_MaxValueValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -154,7 +152,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getSubstationAddress().getValidationError()).isEqualTo("Must be between 1 and 65,534.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingZip_RequiredValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -165,7 +163,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getZipAddress().getValidationError()).isEqualTo("Zip is required.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingZip_MinValueValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -177,7 +175,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getZipAddress().getValidationError()).isEqualTo("Must be between 1 and 16,777,214.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingZip_MaxValueValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -189,7 +187,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getZipAddress().getValidationError()).isEqualTo("Must be between 1 and 16,777,214.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingUser_RequiredValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -200,7 +198,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getUserAddress().getValidationError()).isEqualTo("User is required.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingUser_MinValueValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -212,7 +210,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getUserAddress().getValidationError()).isEqualTo("Must be between 1 and 65,534.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingUser_MaxValueValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -224,7 +222,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getUserAddress().getValidationError()).isEqualTo("Must be between 1 and 65,534.");
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingSerial_RequiredValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -235,7 +233,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getSerialAddress().getValidationError()).isEqualTo("Serial Number is required.");
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressSection_TitleCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -244,7 +242,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(generalSection.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressSection_LabelsCorrect() {
         String sectionName = "Geographical Address";
         String expectedLabels = "Address Usage:";
@@ -256,7 +254,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(actualLabels).contains(expectedLabels);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingSection_TitleCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -265,7 +263,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(generalSection.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_GeographicalAddressingSection_LabelsCorrect() {
         String sectionName = "Geographical Addressing";
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
@@ -283,7 +281,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_LoadAddressSection_TitleCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -292,7 +290,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(generalSection.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_LoadAddressSection_LabelsCorrect() {
         String sectionName = "Load Address";
         String expectedLabels = "Usage:";
@@ -304,7 +302,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(actualLabels).contains(expectedLabels);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_LoadAddressingSection_LabelsCorrect() {
         String sectionName = "Load Addressing";
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
@@ -319,7 +317,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_LoadAddressingSection_TitleCorrect() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -329,7 +327,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(generalSection.getSection()).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_OptionalAttributesSection_LabelsCorrect() {
         String sectionName = "Optional Attributes";
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
@@ -342,7 +340,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_LoadAddressingProgram_MinRangeValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -353,7 +351,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getProgramLoadAddress().getValidationError()).isEqualTo("Must be between 1 and 254.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_LoadAddressingProgram_MaxRangeValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -364,7 +362,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getProgramLoadAddress().getValidationError()).isEqualTo("Must be between 1 and 254.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_LoadAddressingProgram_RequiredFieldValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -374,7 +372,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getProgramLoadAddress().getValidationError()).isEqualTo("Program is required.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_LoadAddressingSplinter_MinRangeValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -385,7 +383,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getSplinterLoadAddress().getValidationError()).isEqualTo("Must be between 1 and 254.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_LoadAddressingSplinter_MaxRangeValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();
@@ -396,7 +394,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
         assertThat(createPage.getSplinterLoadAddress().getValidationError()).isEqualTo("Must be between 1 and 254.");
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscom_LoadAddressingSplinter_RequiredFieldValidation() {
         createPage.getType().selectItemByValue("LM_GROUP_RFN_EXPRESSCOMM");
         waitForLoadingSpinner();

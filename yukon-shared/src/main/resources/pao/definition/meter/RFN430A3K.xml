@@ -76,6 +76,10 @@
         <pointInfo name="Net kWh (Rate C kWh)" attributes="NET_KWH_RATE_C"/>
         <pointInfo name="Net kWh (Rate D kWh)" attributes="NET_KWH_RATE_D"/>
         <pointInfo name="Net kWh per Interval" attributes="NET_KWH_PER_INTERVAL"/>
+        <pointInfo name="Net kWh Rate A per Interval" attributes="NET_KWH_RATE_A_PER_INTERVAL"/>
+        <pointInfo name="Net kWh Rate B per Interval" attributes="NET_KWH_RATE_B_PER_INTERVAL"/>
+        <pointInfo name="Net kWh Rate C per Interval" attributes="NET_KWH_RATE_C_PER_INTERVAL"/>
+        <pointInfo name="Net kWh Rate D per Interval" attributes="NET_KWH_RATE_D_PER_INTERVAL"/>
         <pointInfo name="Outage Count" init="true" attributes="RFN_OUTAGE_COUNT"/>
         <pointInfo name="Outage Restore Count" init="true" attributes="RFN_OUTAGE_RESTORE_COUNT"/>
         <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>

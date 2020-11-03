@@ -119,7 +119,7 @@ public class LoadProgramSetupControllerHelper {
     private void retrieveProgramConstraints(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
 
         List<LMDto> constraints = new ArrayList<>();
-        String url = helper.findWebServerUrl(request, userContext, ApiURL.drAllProgramConstraintUrl);
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.drProgramConstraintUrl);
         ResponseEntity<List<? extends Object>> response =
             apiRequestHelper.callAPIForList(userContext, request, url, LMDto.class, HttpMethod.GET, LMDto.class);
 

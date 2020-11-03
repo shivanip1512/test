@@ -27,7 +27,7 @@ public:
     using CtiCalcPointMap = std::map<long, std::unique_ptr<CtiCalc>>;
 
 private:
-    CtiCalcPointMap _periodicPoints, _onUpdatePoints, _constantPoints, _historicalPoints, _backfilledPoints;
+    CtiCalcPointMap _periodicPoints, _onUpdatePoints, _constantPoints, _historicalPoints, _backfillingPoints;
     std::queue<long> _auAffectedPoints;
     std::queue<std::unique_ptr<CtiMultiMsg>> _outbox;
     CtiCriticalSection _pointDataMutex;
@@ -80,10 +80,11 @@ private:
     void getCurtailedDates(DatesSet &curtailedDates, long pointID, CtiTime &startTime);
     bool processDay(long pointID, CtiTime curTime, const DynamicTableSinglePointData& data, const DynamicTableSinglePointData& percentData, int percent, HourlyValues &results);
 
-    std::unique_ptr<CtiMultiMsg> processHistoricalPoints(const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
-    PointDataMsgs calcHistoricalPoints(const PointTimeMap& dbTimeMap, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
-    HistoricalResults calcHistoricalPoint(CtiCalc* calcPoint, const DynamicTableData& data, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
-    HistoricalResults calcBackfilledPoint(CtiCalc* calcPoint, const DynamicTableData& data, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
+    std::unique_ptr<CtiMultiMsg> processHistoricalPoints(const CtiDate earliestCalcDate, const CtiDate earliestBackfill, const std::function<bool(Cti::CallSite)> wasReloaded);
+    PointDataMsgs calcHistoricalPoints(const PointTimeMap& dbTimeMap, const CtiDate earliestCalcDate, const CtiDate earliestBackfill, const std::function<bool(Cti::CallSite)> wasReloaded);
+    std::optional<HistoricalResults> calcHistoricalPoint(CtiCalc& calcPoint, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
+    std::optional<HistoricalResults> calcBackfillingPoint(CtiCalc& calcPoint, const CtiTime lastTime, const CtiDate earliestCalcDate, const std::function<bool(Cti::CallSite)> wasReloaded);
+    std::unique_ptr<CtiPointDataMsg> calcFromValues(CtiCalc& calcPoint, const CtiTime dynamicTime, const HistoricalPointValueMap& dynamicValues);
 
 public:
 
