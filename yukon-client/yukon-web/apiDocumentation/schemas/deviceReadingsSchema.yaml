@@ -70,7 +70,7 @@ DeviceReadings:
                     description: 'Attribute supported by device for point data'
                   type:
                     type: number
-                    description: 'Point type'
+      description: 'Type of the point.'
                   value:
                     type: double
                     format: double
