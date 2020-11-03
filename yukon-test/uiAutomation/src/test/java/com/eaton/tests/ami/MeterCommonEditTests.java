@@ -38,7 +38,7 @@ public class MeterCommonEditTests extends SeleniumTestSetup {
     	
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMeter_DeviceName_RequiredValidation() {
     	setRefreshPage(true);
     	
@@ -56,7 +56,7 @@ public class MeterCommonEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo("Device name is required.");
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMeter_DeviceName_InvalidCharValidation() {
     	setRefreshPage(true);
     	
@@ -76,7 +76,7 @@ public class MeterCommonEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo("Name must not contain any of the following characters: / \\ , ' \" |.");
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMeter_DeviceName_MaxLength60Chars() {
     	setRefreshPage(true);
     	
@@ -86,7 +86,7 @@ public class MeterCommonEditTests extends SeleniumTestSetup {
         assertThat(editModal.getDeviceName().getMaxLength()).isEqualTo("60");
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMeter_DeviceName_AlreadyExistsValidation() {
     	setRefreshPage(true);
     	
@@ -106,7 +106,7 @@ public class MeterCommonEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo("Device name must be unique.");
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMeter_MeterNumber_RequiredValidation() {
     	setRefreshPage(true);
     	
@@ -123,7 +123,7 @@ public class MeterCommonEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo("Meter number is required.");
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMeter_MeterNumber_MaxLength50Chars() {
     	setRefreshPage(true);
     	
@@ -131,7 +131,7 @@ public class MeterCommonEditTests extends SeleniumTestSetup {
         assertThat(editModal.getMeterNumber().getMaxLength()).isEqualTo("50");
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMeter_Cancel_NavigatesToCorrectUrl() {
     	setRefreshPage(true);
     	

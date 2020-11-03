@@ -50,7 +50,7 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
     	
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editRFNMeter_Labels_Correct() {
     	setRefreshPage(true);
     	SoftAssertions softly = new SoftAssertions();
@@ -68,7 +68,7 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
 
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editRFNMeter_RequiredOnlyFields_Success() {
     	setRefreshPage(true);
     	SoftAssertions softly = new SoftAssertions();
@@ -108,7 +108,7 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editRFNMeter_AllFields_Success() {
     	setRefreshPage(true);
     	SoftAssertions softly = new SoftAssertions();
@@ -150,7 +150,7 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editRFNMeter_SerialNumber_MaxLength30Chars() {
     	//The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length after a form submission
     	setRefreshPage(true);
@@ -171,7 +171,7 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo("Exceeds maximum length of 30.");
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editRFNMeter_Manufacturer_MaxLength60Chars() {
     	//The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length after a form submission
     	setRefreshPage(true);
@@ -192,7 +192,7 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo("Exceeds maximum length of 60.");
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editRFNMeter_Model_MaxLength60Chars() {
     	//The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length after a form submission
     	setRefreshPage(true);
@@ -213,7 +213,7 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo("Exceeds maximum length of 60.");
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editRFNMeter_Check_AllFields() {
     	setRefreshPage(true);
     	SoftAssertions softly = new SoftAssertions();

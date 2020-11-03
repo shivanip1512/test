@@ -53,7 +53,7 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
     	
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMCTMeter_Labels_Correct() {
     	setRefreshPage(true);
     	SoftAssertions softly = new SoftAssertions();
@@ -70,7 +70,7 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
 
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMCTMeter_AllFields_Success() {
     	setRefreshPage(true);
     	
@@ -113,7 +113,7 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMCTMeter_PhysicalAddress_InvalidValidation() {
     	
     	setRefreshPage(true);
@@ -134,7 +134,7 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo("Must be a valid integer value.");
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMCTMeter_PhysicalAddress_MaxValueValidation() {
     	//The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length after a form submission
     	setRefreshPage(true);
@@ -156,7 +156,7 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo("Physical address must be within range(s): [0 - 4194303].");
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMCTMeter_PhysicalAddress_RequiredValidation() {
     	//The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length after a form submission
     	setRefreshPage(true);
@@ -175,7 +175,7 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo("Physical address is required.");
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMCTMeter_Route_LabelsCorrect() {
     	setRefreshPage(true);
     	SoftAssertions softly = new SoftAssertions();
@@ -201,7 +201,7 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMCTMeter_Check_AllFields() {
     	setRefreshPage(true);
     	SoftAssertions softly = new SoftAssertions();
