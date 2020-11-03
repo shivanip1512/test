@@ -40,6 +40,12 @@
                 <tags:nameValue2 nameKey=".dataRange">
                     <tags:dataRange value="${dataRange}"/>
                 </tags:nameValue2>
+                <c:if test="${isOnInterval}">
+                    <tags:nameValue2 nameKey=".onInterval">
+                        <i:inline key=".intervals.${interval}"/>
+                        <input type="hidden" name="interval" value="${interval}"/>
+                    </tags:nameValue2>
+                </c:if>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
         

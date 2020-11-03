@@ -131,13 +131,23 @@
                     <form:input path="runDataRange.daysPrevious" size="4" maxlength="4"/>
                 </div>
 
-                 <div class="stacked js-dynamic">
+                <div class="stacked js-dynamic">
                     <hr>
                     <label class="form-control dib fl">
                         <form:checkbox path="runDataRange.timeSelected" cssClass="js-time-check"/>
                         <i:inline key=".time"/>&nbsp;<cti:msg2 key=".sinceLastChange" var="sinceLastChange"/>
                     </label>
                     <dt:time path="runDataRange.time" cssClass="js-time"/>
+                    <label class="form-control dib fl">
+                        <form:checkbox path="onInterval" cssClass="js-on-interval-check"/>
+                        <i:inline key=".onInterval"/>&nbsp;
+                        <form:select path="interval" cssClass="js-intervals">
+                            <c:forEach var="interval" items="${intervals}">
+                                <cti:msg2 var="intervalLabel" key=".intervals.${interval}"/>
+                                <form:option value="${interval}" label="${intervalLabel}"/>
+                            </c:forEach>
+                        </form:select>
+                    </label>
                 </div>
              </div>
          </form:form>
@@ -172,6 +182,16 @@
                         <i:inline key=".time"/>&nbsp;<cti:msg2 key=".sinceLastChange" var="sinceLastChange"/>
                     </label>
                     <dt:time path="scheduleDataRange.time" cssClass="js-time"/>
+                    <label class="form-control dib fl">
+                        <form:checkbox path="onInterval" cssClass="js-on-interval-check"/>
+                        <i:inline key=".onInterval"/>&nbsp;
+                        <form:select path="interval" cssClass="js-intervals">
+                            <c:forEach var="interval" items="${intervals}">
+                                <cti:msg2 var="intervalLabel" key=".intervals.${interval}"/>
+                                <form:option value="${interval}" label="${intervalLabel}"/>
+                            </c:forEach>
+                        </form:select>
+                    </label>
                 </div>
              </div>
          </form:form>
