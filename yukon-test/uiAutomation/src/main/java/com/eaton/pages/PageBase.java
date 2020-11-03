@@ -35,4 +35,8 @@ public class PageBase implements ISeleniumPage {
     public String getUserMessage() {
         return this.driverExt.findElement(By.cssSelector(".yukon-content .user-message"), Optional.of(2)).getText();
     }
+    
+    public String getLinkedPageTitle() {
+        return this.driverExt.findElement(By.cssSelector(".category .title"), Optional.empty()).getText();
+    }
 }

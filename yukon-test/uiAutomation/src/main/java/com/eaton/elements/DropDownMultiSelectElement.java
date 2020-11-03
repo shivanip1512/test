@@ -61,11 +61,11 @@ public class DropDownMultiSelectElement {
     
     private WebElement getElement() {
         if (this.parentName != null) {
-            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] .chosen-container"), Optional.of(3));
+            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] select[name='" + elementName + "'] + .chosen-container"), Optional.of(3));
         } else if (this.parentElement != null) {
-            return this.parentElement.findElement(By.cssSelector(".chosen-container"));
+            return this.parentElement.findElement(By.cssSelector("select[name='" + elementName + "'] + .chosen-container"));
         } else {
-            return this.driverExt.findElement(By.cssSelector(".chosen-container"), Optional.of(3));   
+            return this.driverExt.findElement(By.cssSelector("select[name='" + elementName + "'] + .chosen-container"), Optional.of(3));
         }        
     } 
 

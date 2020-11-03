@@ -79,4 +79,18 @@ public final class APIs {
         public static final String UPDATE_POINT = "/api/points/";
         public static final String GET_POINT = "/api/points/";
     }
+    
+    public static final class Attributes {
+        public static final String CREATE_ATTRIBUTE = "/api/attributes";
+        public static final String DELETE_ATTRIBUTE = "/api/attributes/";
+        public static final String UPDATE_ATTRIBUTE = "/api/attributes/";
+        public static final String GET_ATTRIBUTE = "/api/attributes/";
+    }
+    
+    public static final class AttributeAssignment {
+        public static final String CREATE_ATTRIBUTE_ASGMT = "/api/attributeAssignments";
+        public static final String DELETE_ATTRIBUTE_ASGMT = "/api/attributeAssignments/";
+        public static final String UPDATE_ATTRIBUTE_ASGMT = "/api/attributeAssignments/";
+        public static final String GET_ATTRIBUTE_ASGMT = "/api/attributeAssignments";
+    }
 }

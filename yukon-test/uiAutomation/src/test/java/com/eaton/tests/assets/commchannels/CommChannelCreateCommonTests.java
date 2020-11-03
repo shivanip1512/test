@@ -51,7 +51,7 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
         refreshPage(listPage);    
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void createCommChannel_Name_RequiredValidation() {
         CreateTcpCommChannelModal createModal = listPage.showAndWaitCreateTcpCommChannelModal();
 
@@ -64,7 +64,7 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void createCommChannel_Name_InvalidCharValidation() {
         CreateTcpCommChannelModal createModal = listPage.showAndWaitCreateTcpCommChannelModal();
 
@@ -81,7 +81,7 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void createCommChannel_Name_AlreadyExistsValidation() {
         CreateTcpCommChannelModal createModal = listPage.showAndWaitCreateTcpCommChannelModal();
 
@@ -96,7 +96,7 @@ public class CommChannelCreateCommonTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.COMM_CHANNELS })
     public void createCommChannel_Cancel_NavigatesToCorrectUrl() {
         String EXPECTED_TITLE = "Comm Channels";
         CreateTcpCommChannelModal createModal = listPage.showAndWaitCreateTcpCommChannelModal();

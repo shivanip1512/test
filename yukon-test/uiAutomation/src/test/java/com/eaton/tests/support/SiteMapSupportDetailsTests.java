@@ -25,7 +25,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
         siteMapPage = new SiteMapPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.SUPPORT })
     public void siteMapSupportDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Site Map";
 
@@ -34,21 +34,21 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.SUPPORT })
     public void siteMapSupportDetails_SupportSection_Displayed() {
         Section supportSection = siteMapPage.getSupportSection();
 
         assertThat(supportSection).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.SUPPORT })
     public void siteMapSupportDetails_SupportSection_CountCorrect() {
         final int EXPECTED_COUNT = 16;
 
         assertThat(siteMapPage.getSupportSectionSimpleList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.SUPPORT })
     public void siteMapSupportDetails_DataStreamingDeviceAttributes_LinkCorrect() {
         softly = new SoftAssertions();
     	final String EXPECTED_ANCHOR = "Data Streaming Device Attributes";
@@ -60,7 +60,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.SUPPORT })
     public void siteMapSupportDetails_DatabaseMigration_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Database Migration";
@@ -72,7 +72,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.SUPPORT })
     public void siteMapSupportDetails_DatabaseValidation_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Database Validation";
@@ -84,7 +84,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.SUPPORT })
     public void siteMapSupportDetails_DeviceDefinitions_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Device Definitions";
@@ -96,7 +96,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.SUPPORT })
     public void siteMapSupportDetails_ErrorCodes_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Error Codes";
@@ -108,7 +108,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.SUPPORT })
     public void siteMapSupportDetails_EventLog_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Event Log";
@@ -120,7 +120,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.SUPPORT })
     public void siteMapSupportDetails_FileExportHistory_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "File Export History";
@@ -132,7 +132,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.SUPPORT })
     public void siteMapSupportDetails_LocalizationHelper_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Localization Helper";
@@ -144,7 +144,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.SUPPORT })
     public void siteMapSupportDetails_LogExplorer_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Log Explorer";
@@ -156,7 +156,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.SUPPORT })
     public void siteMapSupportDetails_ManageIndexes_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Manage Indexes";
@@ -168,7 +168,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.SUPPORT })
     public void siteMapSupportDetails_RouteUsage_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Route Usage";
@@ -180,7 +180,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.SUPPORT })
     public void siteMapSupportDetails_Support_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Support";
@@ -192,7 +192,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.SUPPORT })
     public void siteMapSupportDetails_SystemHealth_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "System Health";
@@ -204,7 +204,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.SUPPORT })
     public void siteMapSupportDetails_SystemInfo_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "System Info";
@@ -216,7 +216,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.SUPPORT })
     public void siteMapSupportDetails_ThirdPartyLibraries_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Third Party Libraries";
@@ -228,7 +228,7 @@ public class SiteMapSupportDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Support.SUPPORT })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.SUPPORT })
     public void siteMapSupportDetails_ThreadDump_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Thread Dump";

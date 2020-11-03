@@ -5,7 +5,9 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 import org.assertj.core.api.SoftAssertions;
 import org.javatuples.Pair;
 import org.testng.annotations.Test;
@@ -49,8 +51,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         Boolean enable;
 
-        HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService
-                .buildAndCreateVirtualDeviceWithAllPoints();
+        Map<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAllPoints(Optional.empty());
 
         // Virtual Device Response
         Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");
@@ -86,7 +87,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_PageTitle_Correct() {
         setRefreshPage(false);
 
@@ -97,7 +98,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         assertThat(expectedTitle).isEqualTo(actualPageTitle);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_InfoSection_Displayed() {
         setRefreshPage(false);
 
@@ -108,7 +109,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         assertThat(actualPanelText).isEqualTo(expectedPanelText);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_DevicePoints_Displayed() {
         setRefreshPage(false);
 
@@ -119,7 +120,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         assertThat(actualPanelText).isEqualTo(expectedPanelText);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_InfoFieldLabels_Correct() {
         setRefreshPage(false);
 
@@ -131,7 +132,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_InfoFieldValues_Correct() {
         setRefreshPage(false);
 
@@ -143,7 +144,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_Edit_OpensCorrectModal() {
         setRefreshPage(true);
 
@@ -156,7 +157,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         assertThat(EXP_MODAL_TITLE).isEqualTo(title);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_Create_OpensCorrectModal() {
         setRefreshPage(true);
 
@@ -169,7 +170,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         assertThat(EXP_MODAL_TITLE).isEqualTo(title);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_OtherActionsUrl_Correct() {
         setRefreshPage(true);
 
@@ -188,7 +189,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_Delete_OpensCorrectModal() {
         setRefreshPage(true);
 
@@ -201,7 +202,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_CreateAnalogPointUrl_Correct() {
         setRefreshPage(true);
 
@@ -220,7 +221,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_CreateCalcAnalogPointUrl_Correct() {
         setRefreshPage(true);
 
@@ -239,7 +240,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_CreateCalcStatusPointUrl_Correct() {
         setRefreshPage(true);
 
@@ -258,7 +259,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_CreateDemandAccPointUrl_Correct() {
         setRefreshPage(true);
 
@@ -277,7 +278,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_CreatePulseAccPointUrl_Correct() {
         setRefreshPage(true);
 
@@ -296,7 +297,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_CreateStatusPointUrl_Correct() {
         setRefreshPage(true);
 
@@ -315,7 +316,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_DevPtsPointNameUrl_Correct() {
         setRefreshPage(false);
 
@@ -334,7 +335,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_DevPtsDateTime_OpensCorrectModal() {
         setRefreshPage(true);
 
@@ -347,7 +348,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         assertThat(EXP_MODAL_TITLE).isEqualTo(title);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_FilterPointTypeByStatus_Correct() {
         throw new SkipException("Development Defect: YUK-23130");
 
@@ -366,7 +367,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
          */
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_FilterPointTypeByAnalogPt_Correct() {
         throw new SkipException("Development Defect: YUK-23130");
 
@@ -385,7 +386,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
          */
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_FilterPointTypeByCalcStatusPt_Correct() {
         throw new SkipException("Development Defect: YUK-23130");
 
@@ -404,7 +405,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
          */
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_FilterPointTypeByDemandAccPt_Correct() {
         throw new SkipException("Development Defect: YUK-23130");
 
@@ -423,7 +424,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
          */
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_FilterPointTypeByPulseAccPt_Correct() {
         throw new SkipException("Development Defect: YUK-23130");
 
@@ -442,7 +443,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
          */
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_FilterPointTypeByCalcAnalogPt_Correct() {
         throw new SkipException("Development Defect: YUK-23130");
 
@@ -461,7 +462,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
          */
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_RemoveFilter_CorrectPointsDisplayed() {
         throw new SkipException("Development Defect: YUK-23130");
 
@@ -486,7 +487,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
          */
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_FilterMultiplePoints_Correct() {
         throw new SkipException("Development Defect: YUK-23130");
 
@@ -504,7 +505,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
          * 
          * virtualDeviceId = virtDevResponse.getInt("id");
          * 
-         * detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, virtualDeviceId);
+         * detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Features.VIRTUAl_DEVICE_DETAIL, virtualDeviceId);
          * 
          * detailPage.getPointType().selectItemByText("Calc Analog");
          * detailPage.getPointType().selectItemByText("Status");
@@ -519,7 +520,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
          */
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_DeleteModalMessage_Correct() {
         setRefreshPage(true);
 
@@ -532,12 +533,11 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         assertThat(EXP_DELETE_MODAL_MSG).isEqualTo(deleteMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_DeleteWithPt_Success() {
         setRefreshPage(true);
 
-        HashMap<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService
-                .buildAndCreateVirtualDeviceWithAnalogPoint();
+        Map<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAnalogPoint();
         Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");
 
         JSONObject virtDevResponse = virtualDevice.getValue1();
@@ -557,7 +557,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         assertThat(EXP_MSG).isEqualTo(actualMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_DeleteWithOutPt_Success() {
         setRefreshPage(true);
 
@@ -580,7 +580,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         assertThat(EXP_MSG).isEqualTo(actualMsg);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_DevPtsColumnHeaders_Correct() {
         throw new SkipException("Development Defect: YUK-23130");
 
@@ -614,7 +614,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
          */
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_DevPtsSortPointNamesAsc_Correctly() {
         throw new SkipException("Development Defect: YUK-23130");
 
@@ -644,7 +644,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
          */
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_DevPtsSortPointNamesDesc_Correctly() {
         throw new SkipException("Development Defect: YUK-23130");
 
@@ -664,7 +664,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
          */
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_SortPointTypeAsc_Correctly() {
         throw new SkipException("Development Defect: YUK-23130");
 
@@ -683,7 +683,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
          */
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_SortPointTypeDesc_Correctly() {
         throw new SkipException("Development Defect: YUK-23130");
 
@@ -703,7 +703,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
          */
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_SortPointOffsetAsc_Correctly() {
         throw new SkipException("Development Defect: YUK-23130");
 
@@ -722,7 +722,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
          */
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_SortPointOffsetDesc_Correctly() {
         throw new SkipException("Development Defect: YUK-23130");
 
@@ -742,7 +742,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
          */
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_SortStatusAsc_Correctly() {
         throw new SkipException("Development Defect: YUK-23130");
 
@@ -761,7 +761,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
          */
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Assets.VIRTUAL_DEVICES, TestConstants.Assets.ASSETS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_SortStatusDesc_Correctly() {
         throw new SkipException("Development Defect: YUK-23130");
 

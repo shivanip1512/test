@@ -54,7 +54,7 @@ public class SelectBoxElement {
         availableTable.searchTable(value, column);
         
         availableTable = getAvailabeTable();
-        WebTableRow row = availableTable.getDataRowByName(value);
+        WebTableRow row = availableTable.getDataRowByLinkName(value);
 
         row.selectCellByLink();
 
@@ -68,7 +68,7 @@ public class SelectBoxElement {
             WebElement column = getColumnByColumnName(available);
             availableTable.searchTable(value, column);
             
-            WebTableRow row = availableTable.getDataRowByName(value);
+            WebTableRow row = availableTable.getDataRowByLinkName(value);
 
             row.selectCellByLink();
 

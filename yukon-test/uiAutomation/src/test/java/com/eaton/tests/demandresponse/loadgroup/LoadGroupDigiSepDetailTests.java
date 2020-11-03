@@ -53,7 +53,7 @@ public class LoadGroupDigiSepDetailTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
     
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpDetail_Delete_Success() {
         setRefreshPage(true);
         Pair<JSONObject, JSONObject> pair = LoadGroupDigiSepCreateBuilder.buildLoadGroup()
@@ -62,6 +62,7 @@ public class LoadGroupDigiSepDetailTests extends SeleniumTestSetup {
         int id = response.getInt("id");
         String name = response.getString("name");
         final String expected_msg = name + " deleted successfully.";
+        
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
 
         ConfirmModal confirmModal = detailPage.showDeleteLoadGroupModal();
@@ -75,18 +76,12 @@ public class LoadGroupDigiSepDetailTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(expected_msg);
     }    
     
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpDetail_Copy_Success() {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        Pair<JSONObject, JSONObject> pair = LoadGroupDigiSepCreateBuilder.buildLoadGroup()
-                .create();
-        JSONObject response = pair.getValue1();
-        int id = response.getInt("id");
         final String copyName= "Copied DigiSep " + timeStamp;
         final String expected_msg = copyName + " copied successfully.";
-        
-        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
         
         CopyLoadGroupModal modal = detailPage.showCopyLoadGroupModal();
         modal.getName().setInputValue(copyName);
@@ -98,22 +93,22 @@ public class LoadGroupDigiSepDetailTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(expected_msg);
     }
     
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpDigiSepDetail_DeviceClassSection_Displayed() {
         assertThat(detailPage.getDeviceClassSection().getSection()).isNotNull();
     }
     
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpDigiSepDetail_EnrollmentSection_Displayed() {
         assertThat(detailPage.getEnrollmentSection().getSection()).isNotNull();
     }
     
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpDigiSepDetail_TimingsSection_Displayed() {
         assertThat(detailPage.getTimingSection().getSection()).isNotNull();
     }
     
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpDigiSepDetail_DeviceClassSection_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         List<String> labels = detailPage.getDeviceClassSection().getSectionLabels();
@@ -123,7 +118,7 @@ public class LoadGroupDigiSepDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpDigiSepDetail_DeviceClassSection_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         List<String> values = detailPage.getDeviceClassSection().getSectionValues();
@@ -137,7 +132,7 @@ public class LoadGroupDigiSepDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpDigiSepDetail_EnrollmentSection_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         List<String> labels = detailPage.getEnrollmentSection().getSectionLabels();
@@ -147,7 +142,7 @@ public class LoadGroupDigiSepDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpDigiSepDetail_EnrollmentSection_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         List<String> values = detailPage.getEnrollmentSection().getSectionValues();
@@ -157,7 +152,7 @@ public class LoadGroupDigiSepDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpDigiSepDetail_TimingSection_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         List<String> labels = detailPage.getTimingSection().getSectionLabels();
@@ -168,7 +163,7 @@ public class LoadGroupDigiSepDetailTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpDigiSepDetail_TimingSection_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         List<String> values = detailPage.getTimingSection().getSectionValues();
