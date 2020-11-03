@@ -47,6 +47,7 @@ Function Get-IPAddress() {
 Function Get-EmailId() {
     # Get Email Id of the committer using GIT log command
     $global:emailID = git log -1 --pretty=format:'%ae'
+    Write-Host "Email Id - $emailID"
 }
 
 <#
@@ -61,11 +62,13 @@ Function PrepareAndSend-Email() {
     $branchName = $Env:bamboo_repository_git_branch;
     $yukonURL = "http://" + $IPAddress + ":8080";
     $apiDucumentationUrl = "http://" + $IPAddress + ":8080/apiDocumentation";
+    
+    $PRLink = "https://bitbucket-prod.tcc.etn.com/projects/EASD_SW/repos/yukon/pull-requests/$Env:bamboo_repository_pr_key/overview"
     $messageObj = new-object Net.Mail.MailMessage;
     $messageObj.From = "pspl-swbuild@eaton.com";
     $messageObj.To.Add($emailID);
-    $messageObj.Subject = "Branch Deployment details for Branch - $branchName";
-    $messageObj.Body = "Branch Deployment for branch $branchName is successful. Your Changes for branch $branchName is deployed on below server details :-
+    $messageObj.Subject = "PR Deployed - $branchName";
+    $messageObj.Body = "Branch Deployment for branch $branchName is successful. Your changes for PR $PRLink is deployed on below server details :-
     
     Yukon Url = $yukonURL
 
