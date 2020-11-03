@@ -67,7 +67,7 @@ DeviceReadings:
                     description: 'Unique identifier for Point.'
                   attribute: 
                     type: string
-                    description: 'Attribute supported by device for point data'
+                    description: 'Attribute (type of point data) requested for specified device.'
                   type:
                     type: number
       description: 'Type of the point.'
