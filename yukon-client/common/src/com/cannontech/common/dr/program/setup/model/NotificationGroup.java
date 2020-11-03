@@ -3,7 +3,7 @@ package com.cannontech.common.dr.program.setup.model;
 import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.database.db.device.lm.LMDirectNotificationGroupList;
 
-public class NotificationGroup implements DBPersistentConverter<LMDirectNotificationGroupList>{
+public class NotificationGroup implements DBPersistentConverter<LMDirectNotificationGroupList> {
 
     private Integer notificationGrpID;
     private String notificationGrpName;

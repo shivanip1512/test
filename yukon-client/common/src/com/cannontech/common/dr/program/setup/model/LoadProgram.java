@@ -170,9 +170,17 @@ public class LoadProgram implements DBPersistentConverter<LMProgramBase> {
         // Set Control windows
         ProgramControlWindow programControlWindow = new ProgramControlWindow();
         program.getLmProgramControlWindowVector().forEach(window -> {
-            programControlWindow.buildModel(window);
-            setControlWindow(programControlWindow);
+            if (window.getWindowNumber() == 1) {
+                ProgramControlWindowFields controlWindowFields = new ProgramControlWindowFields();
+                controlWindowFields.buildModel(window);
+                programControlWindow.setControlWindowOne(controlWindowFields);
+            } else if (window.getWindowNumber() == 2) {
+                ProgramControlWindowFields controlWindowFields = new ProgramControlWindowFields();
+                controlWindowFields.buildModel(window);
+                programControlWindow.setControlWindowTwo(controlWindowFields);
+            }
         });
+        setControlWindow(programControlWindow);
 
         if (program instanceof LMProgramDirectBase) {
             LMProgramDirectBase lmProgramDirectBase = (LMProgramDirectBase) program;
@@ -252,19 +260,20 @@ public class LoadProgram implements DBPersistentConverter<LMProgramBase> {
         if (CollectionUtils.isNotEmpty(lmProgramBase.getLmProgramControlWindowVector())) {
             lmProgramBase.getLmProgramControlWindowVector().clear();
         }
-        if (getControlWindow() != null) {
 
-            ProgramControlWindowFields controlWindowOne = getControlWindow().getControlWindowOne();
-            ProgramControlWindowFields controlWindowTwo = getControlWindow().getControlWindowTwo();
-            lmProgramBase.setPAObjectID(getProgramId());
-            if (controlWindowOne != null) {
-                buildLmProgramControlWindow(lmProgramBase, controlWindowOne, 1);
+        // Control Window
+        if (getControlWindow() != null) {
+            if (getControlWindow().getControlWindowOne() != null
+                    && getControlWindow().getControlWindowOne().getAvailableStartTimeInMinutes() != null
+                    && getControlWindow().getControlWindowOne().getAvailableStopTimeInMinutes() != null) {
+                addControlWindowFields(lmProgramBase, 1, getControlWindow().getControlWindowOne());
             }
-            if (controlWindowTwo != null) {
-                buildLmProgramControlWindow(lmProgramBase, controlWindowTwo, 2);
+            if (getControlWindow().getControlWindowTwo() != null
+                    && getControlWindow().getControlWindowTwo().getAvailableStartTimeInMinutes() != null
+                    && getControlWindow().getControlWindowTwo().getAvailableStopTimeInMinutes() != null) {
+                addControlWindowFields(lmProgramBase, 2, getControlWindow().getControlWindowTwo());
             }
         }
-
         // Build Groups DB Persistent object
         if (CollectionUtils.isNotEmpty(lmProgramBase.getLmProgramStorageVector())) {
             lmProgramBase.getLmProgramStorageVector().clear();
@@ -296,6 +305,15 @@ public class LoadProgram implements DBPersistentConverter<LMProgramBase> {
             // notification object
             buildNotificationDBPersistent(prog);
         }
+    }
+
+    private void addControlWindowFields(LMProgramBase lmProgramBase, int controlWindowNumber,
+            ProgramControlWindowFields controlWindowField) {
+        LMProgramControlWindow controlWindow = new LMProgramControlWindow();
+        controlWindowField.buildDBPersistent(controlWindow);
+        controlWindow.setWindowNumber(controlWindowNumber);
+        controlWindow.setDeviceID(getProgramId());
+        lmProgramBase.getLmProgramControlWindowVector().add(controlWindow);
     }
 
     /**
@@ -344,31 +362,6 @@ public class LoadProgram implements DBPersistentConverter<LMProgramBase> {
                 prog.getDirectProgram().setEnableSchedule(LMProgramDirect.NOTIFY_SCHEDULE_DISABLED);
             }
         }
-    }
-
-    /**
-     * Build LMProgram Control window
-     */
-    private void buildLmProgramControlWindow(LMProgramBase lmProgram, ProgramControlWindowFields controlWindowFields,
-            Integer windowNumber) {
-
-        if (controlWindowFields != null && controlWindowFields.getAvailableStartTimeInMinutes() != null
-                && controlWindowFields.getAvailableStopTimeInMinutes() != null) {
-            LMProgramControlWindow window = new LMProgramControlWindow();
-            int startTimeInSeconds = controlWindowFields.getAvailableStartTimeInMinutes() * 60;
-            int stopTimeInSeconds = controlWindowFields.getAvailableStopTimeInMinutes() * 60;
-            if (stopTimeInSeconds < startTimeInSeconds) {
-                // make sure server knows that this is the next day
-                stopTimeInSeconds = stopTimeInSeconds + 86400;
-            }
-
-            window.setAvailableStartTime(startTimeInSeconds);
-            window.setAvailableStopTime(stopTimeInSeconds);
-            window.setDeviceID(getProgramId());
-            window.setWindowNumber(windowNumber);
-            lmProgram.getLmProgramControlWindowVector().add(window);
-        }
-
     }
 
 }
