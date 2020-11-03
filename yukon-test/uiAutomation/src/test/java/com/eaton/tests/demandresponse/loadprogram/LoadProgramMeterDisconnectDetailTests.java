@@ -27,137 +27,137 @@ import com.eaton.pages.demandresponse.LoadProgramDetailPage;
 
 public class LoadProgramMeterDisconnectDetailTests extends SeleniumTestSetup {
 
-	private DriverExtensions driverExt;
-	private LoadProgramDetailPage detailPage;
-	private JSONObject response;
-	String ldPrgmName;
-	String timeStamp;
+    private DriverExtensions driverExt;
+    private LoadProgramDetailPage detailPage;
+    private JSONObject response;
+    String ldPrgmName;
+    String timeStamp;
 
-	@BeforeClass(alwaysRun = true)
-	public void beforeClass() {
-		driverExt = getDriverExt();
-		setRefreshPage(false);
+    @BeforeClass(alwaysRun = true)
+    public void beforeClass() {
+        driverExt = getDriverExt();
+        setRefreshPage(false);
 
-		timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		ldPrgmName = "MeterDisLoadProgram" + timeStamp;
+        timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        ldPrgmName = "MeterDisLoadProgram" + timeStamp;
 
-		List<JSONObject> gears = new ArrayList<JSONObject>();
-		gears.add(GearHelper.createGearFields(GearEnums.GearType.MeterDisconnect));
+        List<JSONObject> gears = new ArrayList<JSONObject>();
+        gears.add(GearHelper.createGearFields(GearEnums.GearType.MeterDisconnect));
 
-		Pair<JSONObject, JSONObject> pairLdGrp = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
-				.create();
-		JSONObject responseLdGrp = pairLdGrp.getValue1();
-		int ldGrpId = responseLdGrp.getInt("id");
+        Pair<JSONObject, JSONObject> pairLdGrp = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
+                .create();
+        JSONObject responseLdGrp = pairLdGrp.getValue1();
+        int ldGrpId = responseLdGrp.getInt("id");
 
-		List<Integer> assignedGroupIds = new ArrayList<>(List.of(ldGrpId));
+        List<Integer> assignedGroupIds = new ArrayList<>(List.of(ldGrpId));
 
-		Pair<JSONObject, JSONObject> pair = new LoadProgramCreateBuilder.Builder(
-				ProgramEnums.ProgramType.METER_DISCONNECT_PROGRAM, gears, assignedGroupIds).withGears(gears)
-						.withName(Optional.of(ldPrgmName))
-						.withOperationalState(Optional.of(ProgramEnums.OperationalState.Automatic))
-						.create();
+        Pair<JSONObject, JSONObject> pair = new LoadProgramCreateBuilder.Builder(
+                ProgramEnums.ProgramType.METER_DISCONNECT_PROGRAM, gears, assignedGroupIds).withGears(gears)
+                        .withName(Optional.of(ldPrgmName))
+                        .withOperationalState(Optional.of(ProgramEnums.OperationalState.Automatic))
+                        .create();
 
-		response = pair.getValue1();
-		int id = response.getInt("programId");
+        response = pair.getValue1();
+        int id = response.getInt("programId");
 
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + id);
+        navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + id);
 
-		detailPage = new LoadProgramDetailPage(driverExt, id);
+        detailPage = new LoadProgramDetailPage(driverExt, id);
 
-	}
+    }
 
-	@AfterMethod
-	public void afterMethod() {
-		if (getRefreshPage()) {
-			refreshPage(detailPage);
-		}
-		setRefreshPage(false);
-	}
+    @AfterMethod
+    public void afterMethod() {
+        if (getRefreshPage()) {
+            refreshPage(detailPage);
+        }
+        setRefreshPage(false);
+    }
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldPrgmMeterDisconnectDetail_Delete_Success() {
-		setRefreshPage(true);
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmMeterDisconnectDetail_Delete_Success() {
+        setRefreshPage(true);
 
-		timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		ldPrgmName = "MeterDisLoadProgram" + timeStamp;
+        timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        ldPrgmName = "MeterDisLoadProgram" + timeStamp;
 
-		List<JSONObject> gears = new ArrayList<JSONObject>();
-		gears.add(GearHelper.createGearFields(GearEnums.GearType.MeterDisconnect));
+        List<JSONObject> gears = new ArrayList<JSONObject>();
+        gears.add(GearHelper.createGearFields(GearEnums.GearType.MeterDisconnect));
 
-		Pair<JSONObject, JSONObject> pairLdGrp = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
-				.create();
-		JSONObject responseLdGrp = pairLdGrp.getValue1();
-		int ldGrpId = responseLdGrp.getInt("id");
+        Pair<JSONObject, JSONObject> pairLdGrp = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
+                .create();
+        JSONObject responseLdGrp = pairLdGrp.getValue1();
+        int ldGrpId = responseLdGrp.getInt("id");
 
-		List<Integer> assignedGroupIds = new ArrayList<>(List.of(ldGrpId));
+        List<Integer> assignedGroupIds = new ArrayList<>(List.of(ldGrpId));
 
-		Pair<JSONObject, JSONObject> pair = new LoadProgramCreateBuilder.Builder(
-				ProgramEnums.ProgramType.METER_DISCONNECT_PROGRAM, gears, assignedGroupIds).withGears(gears)
-						.withName(Optional.of(ldPrgmName))
-						.withOperationalState(Optional.of(ProgramEnums.OperationalState.Automatic)).create();
+        Pair<JSONObject, JSONObject> pair = new LoadProgramCreateBuilder.Builder(
+                ProgramEnums.ProgramType.METER_DISCONNECT_PROGRAM, gears, assignedGroupIds).withGears(gears)
+                        .withName(Optional.of(ldPrgmName))
+                        .withOperationalState(Optional.of(ProgramEnums.OperationalState.Automatic)).create();
 
-		JSONObject response = pair.getValue1();
-		int id = response.getInt("programId");
+        JSONObject response = pair.getValue1();
+        int id = response.getInt("programId");
 
-		JSONObject response1 = pair.getValue0();
-		String name = response1.getString("name");
+        JSONObject response1 = pair.getValue0();
+        String name = response1.getString("name");
 
-		final String EXPECTED_MSG = name + " deleted successfully.";
+        final String EXPECTED_MSG = name + " deleted successfully.";
 
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + id);
+        navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + id);
 
-		ConfirmModal confirmModal = detailPage.showDeleteLoadProgramModal();
-		confirmModal.clickOkAndWaitForModalToClose();
+        ConfirmModal confirmModal = detailPage.showDeleteLoadProgramModal();
+        confirmModal.clickOkAndWaitForModalToClose();
 
-		waitForPageToLoad("Setup", Optional.empty());
-		DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_PROGRAM);
-		String userMsg = setupPage.getUserMessage();
+        waitForPageToLoad("Setup", Optional.empty());
+        DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_PROGRAM);
+        String userMsg = setupPage.getUserMessage();
 
-		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-	}
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+    }
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
-	public void ldPrgmMeterDisconnectDetail_Copy_Success() {
-		setRefreshPage(true);
-		timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		ldPrgmName = "MeterDisLoadProgram" + timeStamp;
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmMeterDisconnectDetail_Copy_Success() {
+        setRefreshPage(true);
+        timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        ldPrgmName = "MeterDisLoadProgram" + timeStamp;
 
-		List<JSONObject> gears = new ArrayList<JSONObject>();
-		gears.add(GearHelper.createGearFields(GearEnums.GearType.MeterDisconnect));
+        List<JSONObject> gears = new ArrayList<JSONObject>();
+        gears.add(GearHelper.createGearFields(GearEnums.GearType.MeterDisconnect));
 
-		Pair<JSONObject, JSONObject> pairLdGrp = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
-				.create();
-		JSONObject responseLdGrp = pairLdGrp.getValue1();
-		int ldGrpId = responseLdGrp.getInt("id");
+        Pair<JSONObject, JSONObject> pairLdGrp = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
+                .create();
+        JSONObject responseLdGrp = pairLdGrp.getValue1();
+        int ldGrpId = responseLdGrp.getInt("id");
 
-		List<Integer> assignedGroupIds = new ArrayList<>(List.of(ldGrpId));
+        List<Integer> assignedGroupIds = new ArrayList<>(List.of(ldGrpId));
 
-		Pair<JSONObject, JSONObject> pair = new LoadProgramCreateBuilder.Builder(
-				ProgramEnums.ProgramType.METER_DISCONNECT_PROGRAM, gears, assignedGroupIds).withGears(gears)
-						.withName(Optional.of(ldPrgmName))
-						.withOperationalState(Optional.of(ProgramEnums.OperationalState.Automatic))
-						.create();
+        Pair<JSONObject, JSONObject> pair = new LoadProgramCreateBuilder.Builder(
+                ProgramEnums.ProgramType.METER_DISCONNECT_PROGRAM, gears, assignedGroupIds).withGears(gears)
+                        .withName(Optional.of(ldPrgmName))
+                        .withOperationalState(Optional.of(ProgramEnums.OperationalState.Automatic))
+                        .create();
 
-		JSONObject response = pair.getValue1();
-		int id = response.getInt("programId");
+        JSONObject response = pair.getValue1();
+        int id = response.getInt("programId");
 
-		JSONObject response1 = pair.getValue0();
+        JSONObject response1 = pair.getValue0();
 
-		String name = response1.getString("name");
+        String name = response1.getString("name");
 
-		final String copyName = "Copy of " + name;
+        final String copyName = "Copy of " + name;
 
-		final String EXPECTED_MSG = copyName + " copied successfully.";
+        final String EXPECTED_MSG = copyName + " copied successfully.";
 
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + id);
+        navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + id);
 
-		CopyLoadProgramModal modal = detailPage.showCopyLoadProgramModal();
-		modal.getName().setInputValue(copyName);
-		modal.clickOkAndWaitForModalToClose();
+        CopyLoadProgramModal modal = detailPage.showCopyLoadProgramModal();
+        modal.getName().setInputValue(copyName);
+        modal.clickOkAndWaitForModalToClose();
 
-		waitForPageToLoad("Load Program: " + copyName, Optional.of(8));
-		String userMsg = detailPage.getUserMessage();
+        waitForPageToLoad("Load Program: " + copyName, Optional.of(8));
+        String userMsg = detailPage.getUserMessage();
 
-		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-	}
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+    }
 }

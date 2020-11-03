@@ -4,7 +4,7 @@ import org.json.JSONObject;
 
 public class GearHelper {
 
-    public final static JSONObject createGearFields(GearEnums.GearType gearType) {
+    public static final JSONObject createGearFields(GearEnums.GearType gearType) {
 
         JSONObject gear = null;
         switch (gearType) {
@@ -14,11 +14,13 @@ public class GearHelper {
         case EcobeeSetpoint:
             gear = EcobeeSetpointGearBuilder.gearBuilder().build();
             break;
-        
-    case MeterDisconnect:
-        gear = MeterDisconnectGearBuilder.gearBuilder().build();
-        break;
-    }
+
+        case MeterDisconnect:
+            gear = MeterDisconnectGearBuilder.gearBuilder().build();
+            break;
+        default:
+            break;
+        }
         return gear;
     }
 }
