@@ -39,7 +39,7 @@ public class LoadProgramMeterDisconnectDetailTests extends SeleniumTestSetup {
 		setRefreshPage(false);
 
 		timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		ldPrgmName = "MeterLoadProgram" + timeStamp;
+		ldPrgmName = "MeterDisLoadProgram" + timeStamp;
 
 		List<JSONObject> gears = new ArrayList<JSONObject>();
 		gears.add(GearHelper.createGearFields(GearEnums.GearType.MeterDisconnect));
@@ -79,7 +79,7 @@ public class LoadProgramMeterDisconnectDetailTests extends SeleniumTestSetup {
 		setRefreshPage(true);
 
 		timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		ldPrgmName = "MeterLoadProgram" + timeStamp;
+		ldPrgmName = "MeterDisLoadProgram" + timeStamp;
 
 		List<JSONObject> gears = new ArrayList<JSONObject>();
 		gears.add(GearHelper.createGearFields(GearEnums.GearType.MeterDisconnect));
@@ -120,7 +120,7 @@ public class LoadProgramMeterDisconnectDetailTests extends SeleniumTestSetup {
 	public void ldPrgmMeterDisconnectDetail_Copy_Success() {
 		setRefreshPage(true);
 		timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		ldPrgmName = "MeterLoadProgram" + timeStamp;
+		ldPrgmName = "MeterDisLoadProgram" + timeStamp;
 
 		List<JSONObject> gears = new ArrayList<JSONObject>();
 		gears.add(GearHelper.createGearFields(GearEnums.GearType.MeterDisconnect));
