@@ -35,7 +35,7 @@ identifier:
     value:
       type: string
       maxLength: 40
-      description: 'Value of identifier like meternumber,paoid,paoname,serialnumber.'
+      description: 'Value of specified identifierType.'
     identifierType:
       type: string
       default: METERNUMBER
