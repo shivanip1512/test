@@ -2,11 +2,12 @@ package com.eaton.tests.assets.commchannels;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Optional;
 
-import org.testng.SkipException;
 import org.testng.annotations.*;
 
+import com.eaton.elements.SearchBoxElement;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
@@ -36,24 +37,20 @@ public class CommChannelGlobalSearchTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.COMM_CHANNELS })
     public void commChannelGlobalSearch_SearchAndSelectCommChannelsResult_NavigatesToCommChannelListPage() {
-        throw new SkipException("QA task created: QA-6229");
+        globalSearchPage.getSearchBoxElement().setSearchValueAndClickResult("Comm Channels");
         
-//        globalSearchPage.getSearchBoxElement().setSearchValueAndClickResult("Comm Channels");
-//        
-//        boolean pageLoaded = waitForUrlToLoad(Urls.Features.COMM_CHANNELS_LIST, Optional.empty());
-//        
-//        assertThat(pageLoaded).isTrue();       
+        boolean pageLoaded = waitForUrlToLoad(Urls.Assets.COMM_CHANNELS_LIST, Optional.empty());
+        
+        assertThat(pageLoaded).isTrue();       
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.COMM_CHANNELS })
     public void commChannelGlobalSearch_SearchCommResults_ContainsCommChannel() {
-        throw new SkipException("QA task created: QA-6229");
+        SearchBoxElement searchBox = globalSearchPage.getSearchBoxElement();
         
-//        SearchBoxElement searchBox = globalSearchPage.getSearchBoxElement();
-//        
-//        searchBox.setSearchValue("Comm Chann");
-//        List<String> results = searchBox.getSearchResults();
-//        
-//        assertThat(results).contains("Comm Channels");
+        searchBox.setSearchValue("Comm Chann");
+        List<String> results = searchBox.getSearchResults();
+        
+        assertThat(results).contains("Comm Channels");
     }        
 }

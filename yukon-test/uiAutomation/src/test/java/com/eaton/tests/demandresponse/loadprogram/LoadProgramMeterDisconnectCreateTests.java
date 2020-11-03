@@ -50,7 +50,7 @@ public class LoadProgramMeterDisconnectCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-    public void ldPrgmMeterDisconnect_RequiredFields_Success() {
+    public void ldPrgmMeterDisconnectCreate_RequiredFields_Success() {
         timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String ldPrgmName = "Meter Disconnect LoadProgram" + timeStamp;
         String gearName = "Meter Disconnect Gear";
@@ -85,7 +85,7 @@ public class LoadProgramMeterDisconnectCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
-    public void ldPrgmMeterDisconnect_AllFields_Success() {
+    public void ldPrgmMeterDisconnectCreate_AllFields_Success() {
         timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String ldPrgmName = "Meter Disconnect LoadProgram" + timeStamp;
         String gearName = "Meter Disconnect Gear";
@@ -130,11 +130,10 @@ public class LoadProgramMeterDisconnectCreateTests extends SeleniumTestSetup {
         String userMsg = detailsPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
-    public void ldPgmMeterDisconnect_GearType_ValuesCorrect() {
+    public void ldPgmMeterDisconnectCreate_GearType_ValuesCorrect() {
         List<String> expectedGearsList = new ArrayList<>(List.of("Select", "Meter Disconnect"));
 
         createPage.getType().selectItemByValue("LM_METER_DISCONNECT_PROGRAM");

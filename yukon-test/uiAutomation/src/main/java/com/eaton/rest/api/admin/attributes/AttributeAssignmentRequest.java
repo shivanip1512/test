@@ -34,7 +34,7 @@ public class AttributeAssignmentRequest {
     public static ExtractableResponse<?> deleteAttributeAssignment(String attributeAsgmtId) {
 
         String pathParam = APIs.AttributeAssignment.DELETE_ATTRIBUTE_ASGMT + attributeAsgmtId;
-        ExtractableResponse<?> response = ApiCallHelper.delete(pathParam, attributeAsgmtId);
+        ExtractableResponse<?> response = ApiCallHelper.delete(pathParam);
         assertThat(response.statusCode()).isEqualTo(200);
         return response;
     }

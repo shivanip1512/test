@@ -9,7 +9,7 @@ public final class Urls {
     public static final String SITE_MAP = "/sitemap";
     public static final String EDIT = "/edit";
     public static final String SEARCH = "/search";
-    public static final String SEARCH_PARAM = "?q=";
+    public static final String SEARCH_PARAM = "?q=";    
     public static final String OTHER_ACTIONS = "bulk/collectionActions?collectionType=idList&idList.ids=";
     
     public static final class Ami {

@@ -193,6 +193,6 @@ public class AddAttributeAssignmentTests extends SeleniumTestSetup {
         modal.getpointOffSet().setInputValue(pointOffset.toString());
         modal.clickOkAndWaitForModalToClose();
         
-        assertThat(page.getAttrAsgmtErrorMsg()).isEqualTo("Attribute: " + name + " has been successfully assigned to the following device types: LCR-6200 RFN, LCR-6600 RFN, LCR-6700 RFN, MCT Broadcast, MCT-310IL, MCT-430A, RFN-410cL, RFN-420cD, RFN-420fL, RFN-430SL4, RFN-530S4x, VIRTUAL SYSTEM, WRL-420cD, WRL-420cL.");
+        assertThat(page.getAttrAsgmtErrorMsg()).isEqualTo("Attribute: " + name + " has been successfully assigned to the following device types: LCR-6200 RFN, LCR-6600 RFN, LCR-6700 RFN, MCT Broadcast, MCT-310IL, MCT-420cL, MCT-430A, RFN-410cL, RFN-420cD, RFN-420cL, RFN-420fL, RFN-430SL4, RFN-530S4x, VIRTUAL SYSTEM, WRL-420cD, WRL-420cL.");                
     }
 }

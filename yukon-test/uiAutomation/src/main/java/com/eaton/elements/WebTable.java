@@ -7,8 +7,10 @@ import java.util.Optional;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
 
 public class WebTable {
 
@@ -291,9 +293,8 @@ public class WebTable {
 
     public WebTableRow getDataRowByLinkName(String name) {
         List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody tr"));
-
-        WebElement element = rowList.stream().filter(x -> x.findElement(By.cssSelector("a")).getText().contains(name)).findFirst()
-                .orElseThrow();
+        
+        WebElement element = rowList.stream().filter(x -> x.findElement(By.cssSelector("a")).getText().contains(name)).findFirst().orElseThrow();
 
         return new WebTableRow(this.driverExt, element);
     }
@@ -301,8 +302,7 @@ public class WebTable {
     public WebTableRow getDataRowByName(String name) {
         List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody:nth-child(2) tr"));
 
-        WebElement element = rowList.stream()
-                .filter(x -> x.findElement(By.cssSelector("td:nth-child(1)")).getText().contains(name)).findFirst().orElseThrow();
+        WebElement element = rowList.stream().filter(x -> x.findElement(By.cssSelector("td:nth-child(1)")).getText().contains(name)).findFirst().orElseThrow();
 
         return new WebTableRow(this.driverExt, element);
     }

@@ -3,15 +3,9 @@ package com.eaton.builders.admin.attributes;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.javatuples.Pair;
 import org.json.JSONObject;
 
-import com.eaton.rest.api.admin.attributes.AttributesRequest;
-
-import io.restassured.response.ExtractableResponse;
-
-public class AttributesCreateBuilder {
-
+public class AttributeEditBuilder {
     public static class Builder {
 
         private String name;
@@ -29,15 +23,5 @@ public class AttributesCreateBuilder {
             return jo;
         }
 
-        public Pair<JSONObject, JSONObject> create() {
-            JSONObject request = build();
-
-            ExtractableResponse<?> createResponse = AttributesRequest.createAttribute(request.toString());
-
-            String res = createResponse.asString();
-            JSONObject response = new JSONObject(res);
-
-            return new Pair<>(request, response);
-        }
     }
 }
