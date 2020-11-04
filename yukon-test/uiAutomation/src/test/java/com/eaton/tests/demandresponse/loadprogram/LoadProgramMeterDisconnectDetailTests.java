@@ -11,8 +11,9 @@ import org.json.JSONObject;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import com.eaton.builders.drsetup.gears.GearEnums;
-import com.eaton.builders.drsetup.gears.GearHelper;
+
+import com.eaton.builders.drsetup.gears.EcobeeCycleGearBuilder;
+import com.eaton.builders.drsetup.gears.MeterDisconnectGearBuilder;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupMeterDisconnectCreateBuilder;
 import com.eaton.builders.drsetup.loadprogram.LoadProgramCreateBuilder;
 import com.eaton.builders.drsetup.loadprogram.ProgramEnums;
@@ -30,19 +31,14 @@ public class LoadProgramMeterDisconnectDetailTests extends SeleniumTestSetup {
     private DriverExtensions driverExt;
     private LoadProgramDetailPage detailPage;
     private JSONObject response;
-    String ldPrgmName;
-    String timeStamp;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
         setRefreshPage(false);
 
-        timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        ldPrgmName = "MeterDisLoadProgram" + timeStamp;
-
         List<JSONObject> gears = new ArrayList<JSONObject>();
-        gears.add(GearHelper.createGearFields(GearEnums.GearType.MeterDisconnect));
+        gears.add(MeterDisconnectGearBuilder.gearBuilder().build());
 
         Pair<JSONObject, JSONObject> pairLdGrp = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
                 .create();
@@ -53,7 +49,7 @@ public class LoadProgramMeterDisconnectDetailTests extends SeleniumTestSetup {
 
         Pair<JSONObject, JSONObject> pair = new LoadProgramCreateBuilder.Builder(
                 ProgramEnums.ProgramType.METER_DISCONNECT_PROGRAM, gears, assignedGroupIds).withGears(gears)
-                        .withName(Optional.of(ldPrgmName))
+                        .withName(Optional.empty())
                         .withOperationalState(Optional.of(ProgramEnums.OperationalState.Automatic))
                         .create();
 
@@ -78,11 +74,8 @@ public class LoadProgramMeterDisconnectDetailTests extends SeleniumTestSetup {
     public void ldPrgmMeterDisconnectDetail_Delete_Success() {
         setRefreshPage(true);
 
-        timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        ldPrgmName = "MeterDisLoadProgram" + timeStamp;
-
         List<JSONObject> gears = new ArrayList<JSONObject>();
-        gears.add(GearHelper.createGearFields(GearEnums.GearType.MeterDisconnect));
+        gears.add(MeterDisconnectGearBuilder.gearBuilder().build());
 
         Pair<JSONObject, JSONObject> pairLdGrp = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
                 .create();
@@ -93,7 +86,7 @@ public class LoadProgramMeterDisconnectDetailTests extends SeleniumTestSetup {
 
         Pair<JSONObject, JSONObject> pair = new LoadProgramCreateBuilder.Builder(
                 ProgramEnums.ProgramType.METER_DISCONNECT_PROGRAM, gears, assignedGroupIds).withGears(gears)
-                        .withName(Optional.of(ldPrgmName))
+                        .withName(Optional.empty())
                         .withOperationalState(Optional.of(ProgramEnums.OperationalState.Automatic)).create();
 
         JSONObject response = pair.getValue1();
@@ -119,14 +112,13 @@ public class LoadProgramMeterDisconnectDetailTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldPrgmMeterDisconnectDetail_Copy_Success() {
         setRefreshPage(true);
-        timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        ldPrgmName = "MeterDisLoadProgram" + timeStamp;
-
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());;
         List<JSONObject> gears = new ArrayList<JSONObject>();
-        gears.add(GearHelper.createGearFields(GearEnums.GearType.MeterDisconnect));
+        gears.add(MeterDisconnectGearBuilder.gearBuilder().build());
 
         Pair<JSONObject, JSONObject> pairLdGrp = new LoadGroupMeterDisconnectCreateBuilder.Builder(Optional.empty())
                 .create();
+        
         JSONObject responseLdGrp = pairLdGrp.getValue1();
         int ldGrpId = responseLdGrp.getInt("id");
 
@@ -134,18 +126,18 @@ public class LoadProgramMeterDisconnectDetailTests extends SeleniumTestSetup {
 
         Pair<JSONObject, JSONObject> pair = new LoadProgramCreateBuilder.Builder(
                 ProgramEnums.ProgramType.METER_DISCONNECT_PROGRAM, gears, assignedGroupIds).withGears(gears)
-                        .withName(Optional.of(ldPrgmName))
+                        .withName(Optional.empty())
                         .withOperationalState(Optional.of(ProgramEnums.OperationalState.Automatic))
                         .create();
 
         JSONObject response = pair.getValue1();
         int id = response.getInt("programId");
+        
+        JSONObject rsp = pair.getValue0();
+        
+        String name = rsp.getString("name");
 
-        JSONObject response1 = pair.getValue0();
-
-        String name = response1.getString("name");
-
-        final String copyName = "Copy of " + name;
+        final String copyName = "Copy Disconnect " + timeStamp;
 
         final String EXPECTED_MSG = copyName + " copied successfully.";
 
