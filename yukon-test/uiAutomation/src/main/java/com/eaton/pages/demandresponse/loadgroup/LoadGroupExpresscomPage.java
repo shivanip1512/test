@@ -22,7 +22,6 @@ public class LoadGroupExpresscomPage extends LoadGroupCreatePage {
     private TextEditElement user;
     private TextEditElement serial;
     private SwitchBtnMultiSelectElement usage;
-    private SwitchBtnMultiSelectElement loads;
     private TextEditElement program;
     private TextEditElement splinter;    
     private DropDownElement controlPriority;
@@ -43,7 +42,6 @@ public class LoadGroupExpresscomPage extends LoadGroupCreatePage {
         user = new TextEditElement(this.driverExt, "user");
         serial = new TextEditElement(this.driverExt, "serialNumber");
         usage = new SwitchBtnMultiSelectElement(this.driverExt, "loadaddressing");
-        loads = new SwitchBtnMultiSelectElement(this.driverExt, "");
         program = new TextEditElement(this.driverExt, "program");
         splinter = new TextEditElement(this.driverExt, "splinter");
         controlPriority = new DropDownElement(this.driverExt, "protocolPriority");

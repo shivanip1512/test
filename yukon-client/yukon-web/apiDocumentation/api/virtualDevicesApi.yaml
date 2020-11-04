@@ -1,4 +1,4 @@
-post-operation:
+post-get-all-operation:
   post:
     tags:
       - Virtual Devices
@@ -38,6 +38,28 @@ post-operation:
                   $ref: '../schemas/virtualDevicesSchema.yaml#/components/examples/Virtual System' 
                 Virtual Meter:
                   $ref: '../schemas/virtualDevicesSchema.yaml#/components/examples/Virtual Meter'
+
+  get:
+    tags:
+      - Virtual Devices
+    summary: Retrieve all the Virtual Devices 
+    description: |-
+      API to retrieve all type of Virtual Devices. 
+      Below are the supported Virtual Devices.
+      - Virtual System
+      - Virtual Meter
+    
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/virtualDevicesSchema.yaml#/Virtual Devices List'
+             
+            examples:
+              Virtual Devices List:
+                $ref: '../schemas/virtualDevicesSchema.yaml#/components/examples/List of Virtual Devices'
 
 get-update-delete-operation:
   get:
@@ -143,34 +165,3 @@ get-update-delete-operation:
             examples:
               Virtual Devices id:
                 $ref: '../schemas/virtualDevicesSchema.yaml#/components/examples/id'
-                
-list-Virtual-devices-operation:
-  get:
-    tags:
-      - Virtual Devices
-    summary: Retrieve all the Virtual Devices 
-    description: |-
-      API to retrieve all type of Virtual Devices. 
-      Below are the supported Virtual Devices.
-      - Virtual System
-      - Virtual Meter
-    parameters:
-      - name: id
-        in: path
-        schema:
-          type: integer
-        required: true
-        description: 'Unique identifier for the virtual devices.'
-       
-    responses:
-      '200':
-        description: OK
-        content:
-          application/json:
-            schema:
-              $ref: '../schemas/virtualDevicesSchema.yaml#/Virtual Devices List'
-             
-            examples:
-              Virtual Devices List:
-                $ref: '../schemas/virtualDevicesSchema.yaml#/components/examples/List of Virtual Devices' 
-             

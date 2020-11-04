@@ -49,6 +49,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
+import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -118,6 +119,8 @@ public class DataExporterHomeController {
         model.addAttribute("dynamicAttribute", ArchivedValuesExportFormatType.DYNAMIC_ATTRIBUTE);
         model.addAttribute("preview", preview);
         model.addAttribute("searchExportType", FileExportType.ARCHIVED_DATA_EXPORT);
+        //TODO: change to exclude midnight interval, since "Include Interval Times Only" already handles it?
+        model.addAttribute("intervals", TimeIntervals.getDataReportAggregateIntervals()); 
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
@@ -222,7 +225,7 @@ public class DataExporterHomeController {
                                  YukonUserContext userContext)
     throws IOException, ServletRequestBindingException, DeviceCollectionCreationException {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
-        archivedValuesExporter.setDeviceCollection(deviceCollection); // TODO It would be awesome if we could just bind this, but we don't have a way just yet.
+        archivedValuesExporter.setDeviceCollection(deviceCollection);
 
         bindingResult.pushNestedPath("runDataRange");
         dataRangeValidator.validate(archivedValuesExporter.getRunDataRange(), bindingResult);
@@ -244,12 +247,14 @@ public class DataExporterHomeController {
         
         response.setDateHeader("Expires", 0); // prevents caching at the proxy server
         response.setContentType("text/x-comma-separated-values");
-        response.addHeader("Content-Disposition", "attachment;filename=\"" + fileName.toString() + "\"");
+        response.addHeader("Content-Disposition", "attachment;filename=\"" + fileName + "\"");
         
         OutputStream outputStream = response.getOutputStream();
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+        
         exportReportGeneratorService.generateReport(deviceList, format, dataRange, userContext,
-            archivedValuesExporter.getAttributesArray(), writer);
+            archivedValuesExporter.getAttributesArray(), writer, archivedValuesExporter.isOnInterval(), 
+            archivedValuesExporter.getInterval());
         
         return null;
     }
@@ -277,6 +282,7 @@ public class DataExporterHomeController {
 
         binder.registerCustomEditor(Attribute.class, attributeTypeEditor.getPropertyEditor());
         binder.registerCustomEditor(DataRangeType.class, new EnumPropertyEditor<>(DataRangeType.class));
+        binder.registerCustomEditor(TimeIntervals.class, new EnumPropertyEditor<>(TimeIntervals.class));
         
         PropertyEditor localDatePropertyEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext);
         PropertyEditor localTimeEditor = datePropertyEditorFactory.getLocalTimePropertyEditor(DateFormatEnum.TIME24H, userContext);

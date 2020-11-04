@@ -45,7 +45,7 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup {
         refreshPage(editPage);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscomEdit_RequiredFieldsOnly_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited Rfn Expresscom Ldgrp " + timeStamp;
@@ -80,7 +80,7 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(expected_msg);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscomEdit_Field_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup()

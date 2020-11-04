@@ -48,39 +48,34 @@ public class LoadGroupHoneywellDetailTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpHoneywellDetail_Delete_Success() {
-        Pair<JSONObject, JSONObject> pair = LoadGroupHoneywellCreateBuilder.buildLoadGroup().create();
+        Pair<JSONObject, JSONObject> pair = LoadGroupHoneywellCreateBuilder.buildLoadGroup()
+                .create();
         JSONObject response = pair.getValue1();
         int id = response.getInt("id");
         String name = response.getString("name");
         final String expected_msg = name + " deleted successfully.";
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
 
-        detailPage = new LoadGroupDetailPage(driverExt, id);
         ConfirmModal confirmModal = detailPage.showDeleteLoadGroupModal();
         confirmModal.clickOkAndWaitForModalToClose();
 
         waitForPageToLoad("Setup", Optional.empty());
         DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_GROUP);
+        
         String userMsg = setupPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(expected_msg);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpHoneywellDetail_Copy_Success() {
     	setRefreshPage(true);
-    	Pair<JSONObject, JSONObject> pair = LoadGroupHoneywellCreateBuilder.buildLoadGroup().create();
-        JSONObject response = pair.getValue1();
-        int id = response.getInt("id");
         String name = response.getString("name");
         final String copyName = "Copy of " + name;
         final String expected_msg = copyName + " copied successfully.";
 
-        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
-
-        detailPage = new LoadGroupDetailPage(driverExt, id);
         CopyLoadGroupModal modal = detailPage.showCopyLoadGroupModal();
         modal.getName().setInputValue(copyName);
         modal.clickOkAndWaitForModalToClose();

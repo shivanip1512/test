@@ -48,12 +48,10 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.PoolManager;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.support.service.SupportBundleService;
 import com.cannontech.support.service.SupportBundleWriter;
-import com.cannontech.tools.sftp.SftpWriter.Status;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -296,29 +294,6 @@ public class SupportController {
         json.put("fileSize", fileSize);
         json.put("fileDate", dateFormattingService.format(bundle.lastModified(), DateFormatEnum.DATE, userContext));
         return json;
-    }
-
-    @RequestMapping(value="uploadBundle")
-    public String uploadBundle(String fileName, FlashScope flash, YukonUserContext userContext) {
-        rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
-
-        File bundleToSend = getBundleFileForFileName(fileName);
-
-        if (bundleToSend == null) {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + ".ftpUpload.failed.NO_FILE", ""));
-            return "redirect:/support";
-        }
-
-        Status ftpStatus = supportBundleService.uploadViaSftp(bundleToSend);
-        if (ftpStatus == Status.SUCCESS) {
-            flash.setConfirm(new YukonMessageSourceResolvable(baseKey +
-                ".ftpUpload.succeeded", bundleToSend.getName()));
-        } else {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + ".ftpUpload.failed." +
-                ftpStatus, bundleToSend.getName()));
-        }
-
-        return "redirect:/support";
     }
 
     @RequestMapping(value="downloadBundle")

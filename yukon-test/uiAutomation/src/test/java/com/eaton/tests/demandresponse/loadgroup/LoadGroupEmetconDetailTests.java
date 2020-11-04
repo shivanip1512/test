@@ -23,7 +23,7 @@ import com.eaton.pages.demandresponse.DemandResponseSetupPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupEmetconDetailPage;
 
 public class LoadGroupEmetconDetailTests extends SeleniumTestSetup {
-	private DriverExtensions driverExt;
+    private DriverExtensions driverExt;
     private LoadGroupEmetconDetailPage detailPage;
     private JSONObject response;
 
@@ -31,28 +31,28 @@ public class LoadGroupEmetconDetailTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         setRefreshPage(false);
-        
+
         Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
                 .create();
-        
+
         response = pair.getValue1();
         int id = response.getInt("id");
-        
+
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
         detailPage = new LoadGroupEmetconDetailPage(driverExt, id);
     }
-    
+
     @AfterMethod
     public void afterMethod() {
-        if(getRefreshPage()) {
-            refreshPage(detailPage);    
+        if (getRefreshPage()) {
+            refreshPage(detailPage);
         }
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpEmetconDetail_Delete_Success() {
-    	setRefreshPage(true);
+        setRefreshPage(true);
         Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
                 .create();
         JSONObject response = pair.getValue1();
@@ -66,23 +66,18 @@ public class LoadGroupEmetconDetailTests extends SeleniumTestSetup {
 
         waitForPageToLoad("Setup", Optional.empty());
         DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_GROUP);
+        
         String userMsg = setupPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(expected_msg);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrEmetconDetail_Copy_Success() {
-    	setRefreshPage(true);
-        Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
-                .create();
-        JSONObject response = pair.getValue1();
-        int id = response.getInt("id");
+        setRefreshPage(true);
         String name = response.getString("name");
         final String copyName = "Copy of " + name;
         final String expected_msg = copyName + " copied successfully.";
-
-        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
 
         CopyLoadGroupModal modal = detailPage.showCopyLoadGroupModal();
         modal.getName().setInputValue(copyName);
@@ -94,51 +89,38 @@ public class LoadGroupEmetconDetailTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(expected_msg);
     }
 
-
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpEmetconDetail_AddressingSection_Displayed() {
         assertThat(detailPage.getAddressingSection()).isNotNull();
     }
-    
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpEmetconDetail_GeneralSection_LabelsCorrect() {
-    	Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
-                .create();
-        JSONObject response = pair.getValue1();
-        int id = response.getInt("id");
         SoftAssertions softly = new SoftAssertions();
         List<String> labels = detailPage.getGeneralSection().getSectionLabels();
-        
-        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
-        
+
         softly.assertThat(3).isEqualTo(labels.size());
         softly.assertThat("Name:").isEqualTo(labels.get(0));
         softly.assertThat("Type:").isEqualTo(labels.get(1));
         softly.assertThat("Communication Route:").isEqualTo(labels.get(2));
         softly.assertAll();
     }
-    
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpEmetconDetail_GeneralSection_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
-        Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
-                .create();
-        JSONObject response = pair.getValue1();
-        int id = response.getInt("id");
         List<String> values = detailPage.getGeneralSection().getSectionValues();
-        
-        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
-        
+
         softly.assertThat(3).isEqualTo(values.size());
         softly.assertThat(response.get("routeName")).isEqualTo(values.get(2));
         softly.assertAll();
     }
-    
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpEmetconDetail_AddressingSection_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         List<String> labels = detailPage.getAddressingSection().getSectionLabels();
-        
+
         softly.assertThat(4).isEqualTo(labels.size());
         softly.assertThat("Gold Address:").isEqualTo(labels.get(0));
         softly.assertThat("Silver Address:").isEqualTo(labels.get(1));
@@ -146,12 +128,12 @@ public class LoadGroupEmetconDetailTests extends SeleniumTestSetup {
         softly.assertThat("Relay To Use:").isEqualTo(labels.get(3));
         softly.assertAll();
     }
-    
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpEmetconDetail_AddressingSection_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         List<String> values = detailPage.getAddressingSection().getSectionValues();
-        
+
         softly.assertThat(4).isEqualTo(values.size());
         softly.assertThat(response.get("goldAddress").toString()).isEqualTo(values.get(0));
         softly.assertThat(response.get("silverAddress").toString()).isEqualTo(values.get(1));
