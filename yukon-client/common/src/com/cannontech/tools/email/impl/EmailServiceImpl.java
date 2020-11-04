@@ -19,7 +19,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.SmtpEncryptionType;
 import com.cannontech.common.config.SmtpHelper;
 import com.cannontech.common.config.SmtpPropertyType;
 import com.cannontech.system.GlobalSettingType;
@@ -85,11 +84,11 @@ public class EmailServiceImpl implements EmailService {
                     "SMTP host name not defined in configuration.properties file or in the GlobalSettings table in the database.");
         }
         String port = smtpHelper.getCachedValue(SmtpPropertyType.PORT.getKey(false));
-        SmtpEncryptionType encryptionType = SmtpEncryptionType.valueOf(smtpHelper.getCachedValue(SmtpPropertyType.START_TLS_ENABLED.getKey(false)));
+        String protocol = smtpHelper.getCachedValue(SystemEmailSettingsType.SMTP_PROTOCOL.getKey());
         SmtpAuthenticator authenticator = new SmtpAuthenticator();
         PasswordAuthentication authentication = authenticator.getPasswordAuthentication();
         Transport transport = null;
-        transport = session.getTransport(encryptionType.getProtocol());
+        transport = session.getTransport(protocol);
         try {
             if (authentication != null) {
                 String username = authentication.getUserName();

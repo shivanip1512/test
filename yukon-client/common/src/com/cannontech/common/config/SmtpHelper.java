@@ -27,7 +27,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.smartNotification.dao.SmartNotificationSubscriptionDao;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.encryption.SystemPublisherMetadataCryptoUtils;
@@ -84,8 +83,6 @@ public class SmtpHelper {
                 });
         // update the cache with latest settings from configuration file and global settings.
         reloadAllSettings();
-        //Write configurations to emailSettings.txt file.
-        writeToFile();
     }
 
     /**
@@ -99,20 +96,27 @@ public class SmtpHelper {
         }
         // Load smtp configurations, subscriber mail IDs from Database. For HOST, PORT and START_TLS_ENABLED,
         // configuration.properties will take higher priority.
-        if (VersionTools.getDatabaseVersion() != null) {
-            loadCommonProperty(SmtpPropertyType.HOST);
-            loadCommonProperty(SmtpPropertyType.PORT);
-            loadCommonProperty(SmtpPropertyType.START_TLS_ENABLED);
-            updateCachedValue(SystemEmailSettingsType.MAIL_FROM_ADDRESS.getKey(),
-                    globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS));
-            updateCachedValue(SystemEmailSettingsType.SMTP_PASSWORD.getKey(),
-                    globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD));
-            updateCachedValue(SystemEmailSettingsType.SMTP_USERNAME.getKey(),
-                    globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME));
-            updateCachedValue(SystemEmailSettingsType.WATCHDOG_SUBSCRIBER_EMAILS.getKey(),
-                    StringUtils.join(subscriptionDao.getSubscribedEmails(SmartNotificationEventType.YUKON_WATCHDOG), ","));
-            log.info("Reloaded cache for the smtp Settings.");
+        loadCommonProperty(SmtpPropertyType.HOST);
+        loadCommonProperty(SmtpPropertyType.PORT);
+        SmtpEncryptionType encryptionType = globalSettingDao.getEnum(GlobalSettingType.SMTP_ENCRYPTION_TYPE,
+                SmtpEncryptionType.class);
+        if (encryptionType == SmtpEncryptionType.TLS) {
+            updateCachedValue(SmtpPropertyType.START_TLS_ENABLED.getKey(false), "true");
+        } else {
+            systemEmailSettingsCache.remove(SmtpPropertyType.START_TLS_ENABLED.getKey(false));
         }
+        updateCachedValue(SystemEmailSettingsType.SMTP_PROTOCOL.getKey(), encryptionType.getProtocol());
+        updateCachedValue(SystemEmailSettingsType.MAIL_FROM_ADDRESS.getKey(),
+                globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS));
+        updateCachedValue(SystemEmailSettingsType.SMTP_PASSWORD.getKey(),
+                globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD));
+        updateCachedValue(SystemEmailSettingsType.SMTP_USERNAME.getKey(),
+                globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME));
+        updateCachedValue(SystemEmailSettingsType.WATCHDOG_SUBSCRIBER_EMAILS.getKey(),
+                StringUtils.join(subscriptionDao.getSubscribedEmails(SmartNotificationEventType.YUKON_WATCHDOG), ","));
+        log.info("Reloaded cache for the smtp Settings.");
+        // Write configurations to emailSettings.txt file.
+        writeToFile();
     }
 
     /**
@@ -182,7 +186,10 @@ public class SmtpHelper {
         List<String> settings = new ArrayList<String>();
         encryptSetting(settings, SmtpPropertyType.HOST.getKey(false));
         encryptSetting(settings, SmtpPropertyType.PORT.getKey(false));
-        encryptSetting(settings, SmtpPropertyType.START_TLS_ENABLED.getKey(false));
+        if (systemEmailSettingsCache.containsKey(SmtpPropertyType.START_TLS_ENABLED.getKey(false))) {
+            encryptSetting(settings, SmtpPropertyType.START_TLS_ENABLED.getKey(false));
+        }
+        encryptSetting(settings, SystemEmailSettingsType.SMTP_PROTOCOL.getKey());
         encryptSetting(settings, SystemEmailSettingsType.SMTP_USERNAME.getKey());
         encryptSetting(settings, SystemEmailSettingsType.SMTP_PASSWORD.getKey());
         encryptSetting(settings, SystemEmailSettingsType.MAIL_FROM_ADDRESS.getKey());
@@ -221,6 +228,10 @@ public class SmtpHelper {
         }
     }
 
+    /**
+     * 
+     * Returns SMTP configurations. 
+     */
     public Map<String, String> getSmtpConfigSettings() {
         if (CollectionUtils.isEmpty(systemEmailSettingsCache)) {
             readSettingsFromFile();
