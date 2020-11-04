@@ -1,5 +1,8 @@
 package com.cannontech.dr.pxmw.service.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.logging.log4j.core.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -12,7 +15,9 @@ import org.springframework.web.client.RestTemplate;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.dr.pxmw.service.PxMWCommunicationService;
+import com.cannontech.dr.pxmw.service.model.PxMWDeviceProfile;
 import com.cannontech.dr.pxwhite.model.PxWhiteCredentials;
+import com.cannontech.dr.pxwhite.model.PxWhiteDeviceChannels;
 import com.cannontech.dr.pxwhite.model.PxWhiteRenewToken;
 import com.cannontech.dr.pxwhite.model.PxWhiteTokenResponse;
 import com.cannontech.dr.pxwhite.model.TokenDetails;
@@ -30,6 +35,7 @@ public class PxMWCommunicationServiceImpl implements PxMWCommunicationService {
     private static final String urlSuffixGetSecurityToken = "/v1/security/token";
     private static final String urlSuffixRefreshSecurityToken = "/v1/security/token/refresh";
     private static final String urlSuffixGetTokenDetails = "/v1/security/tokendetails";
+    private static final String urlSuffixDeviceProfile = "/v1/deviceProfile/{deviceId}";
 
     // Template for making requests and receiving responses
     private final RestTemplate restTemplate;
@@ -70,6 +76,19 @@ public class PxMWCommunicationServiceImpl implements PxMWCommunicationService {
         String url = urlBase + urlSuffixGetTokenDetails;
         HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders(token);
         ResponseEntity<TokenDetails> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, TokenDetails.class);
+        return response.getBody();
+    }
+
+    public PxMWDeviceProfile getDeviceProfile(String token, String deviceId) {
+        log.debug("Getting device profile. DeviceId: " + deviceId);
+
+        Map<String, String> urlParams = new HashMap<>();
+        urlParams.put("deviceId", deviceId);
+        String url = urlBase + urlSuffixDeviceProfile;
+
+        HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders(token);
+        ResponseEntity<PxMWDeviceProfile> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, PxMWDeviceProfile.class, urlParams);
+
         return response.getBody();
     }
 
