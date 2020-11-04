@@ -14,16 +14,14 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.eaton.builders.drsetup.gears.EcobeeSetpointGearBuilder;
-import com.eaton.builders.drsetup.loadgroup.LoadGroupDigiSepCreateBuilder;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupEcobeeCreateBuilder;
 import com.eaton.builders.drsetup.loadprogram.LoadProgramCreateBuilder;
 import com.eaton.builders.drsetup.loadprogram.ProgramEnums.ProgramType;
-import com.eaton.elements.tabs.TabElement;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.LoadProgramDetailPage;
+import com.eaton.pages.demandresponse.loadprogram.LoadProgramDetailPage;
 
 public class LoadProgramDetailsTests extends SeleniumTestSetup {
 
@@ -34,7 +32,6 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
     private int ldGrpId;
     private int ldPgmId;
     String timeStamp;
-    //private JSONObject response;
     private JSONObject ldPgm;
 
     @BeforeClass(alwaysRun = true)
@@ -70,7 +67,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         detailPage = new LoadProgramDetailPage(driverExt, ldPgmId);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldPrgmDetail_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Load Program: " + ldPgmName;
 
@@ -79,7 +76,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldPrgmDetail_GeneralSection_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         List<String> labels = detailPage.getGeneralSection().getSectionLabels();
@@ -92,7 +89,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldPrgmDetail_GeneralSection_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         List<String> values = detailPage.getGeneralSection().getSectionValues();
@@ -105,7 +102,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldPrgmDetail_TriggerThresholdSettingsSection_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         List<String> labels = detailPage.getTrgThresholdSection().getSectionLabels();
@@ -116,7 +113,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldPrgmDetail_TriggerThresholdSettingsSection_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         List<String> values = detailPage.getTrgThresholdSection().getSectionValues();
@@ -127,7 +124,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldPrgmDetail_ControlWindowSection_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         List<String> labels = detailPage.getControlWindowSection().getSectionLabels();
@@ -142,7 +139,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldPrgmDetail_ControlWindowSection_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
         List<String> values = detailPage.getControlWindowSection().getSectionValues();
@@ -157,74 +154,25 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
     
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldPrgmDetail_GearsSection_LablelsCorrect() {
         List<String> expectedLabels= new ArrayList<>(List.of("Name", "Type"));
         List<String> actualLabels = detailPage.getGearsSection().getSectionHeaders();
-        //System.out.println(detailPage.getGearsSection().getSectionHeaders());
         assertThat(actualLabels).isEqualTo(expectedLabels);
     }
     
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldPrgmDetail_GearsSection_ValuesCorrect() {
         List<String> expectedLabels= new ArrayList<>(List.of("Name", "Type"));
         List<String> actualLabels = detailPage.getGearsSection().getSectionHeaders();
-        //System.out.println(detailPage.getGearsSection().getSectionHeaders());
         assertThat(actualLabels).isEqualTo(expectedLabels);
     }
     
-    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldPrgmDetail_Tab_TitlesCorrect() {
         List<String> expectedTabTitles= new ArrayList<>(List.of("Load Groups", "Member Control", "Notification"));
         List<String> actualTabTitles = detailPage.getAllTabs().getTitles();
         
         assertThat(actualTabTitles).isEqualTo(expectedTabTitles);
     }
-
-/*    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void loadPrgoramDetails_Copy_Success() {
-
-        navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "604");
-
-        LoadProgramDetailPage detailPage = new LoadProgramDetailPage(driverExt, 604);
-
-        CopyLoadProgramModal modal = detailPage.showCopyLoadProgramModal();
-
-        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
-        String name = "AT Copied Program " + timeStamp;
-        final String EXPECTED_MSG = name + " copied successfully.";
-
-        modal.getName().setInputValue(name);
-
-        modal.clickOkAndWaitForModalToClose();
-
-        waitForPageToLoad("Load Program: " + name, Optional.of(8));
-
-        LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt, 604);
-
-        String userMsg = detailsPage.getUserMessage();
-
-        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }
-
-    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
-    public void loadPrgoramDetails_Delete_Success() {
-        final String EXPECTED_MSG = "AT Delete Direct Program deleted successfully.";
-
-        navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "605");
-
-        LoadProgramDetailPage detailPage = new LoadProgramDetailPage(driverExt, 605);
-
-        ConfirmModal modal = detailPage.showDeleteLoadProgramModal();
-
-        modal.clickOkAndWaitForModalToClose();
-
-        waitForPageToLoad("Setup", Optional.empty());
-
-        DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_PROGRAM);
-
-        String userMsg = setupPage.getUserMessage();
-
-        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }*/
 }
