@@ -21,6 +21,8 @@ LM_GROUP_DIGI_SEP:
           description: 'Name for the load group.'
         type:
           type: string
+          enum: 
+            - LM_GROUP_DIGI_SEP
           description: 'Type of load group.'
         kWCapacity:
           type: number
@@ -89,6 +91,8 @@ LM_GROUP_EMETCON:
           description: 'Name for the load group.'
         type:
           type: string
+          enum:
+            - LM_GROUP_EMETCON
           description: 'Type of load group.'
         kWCapacity:
           type: number
@@ -148,6 +152,8 @@ LM_GROUP_ECOBEE:
           description: 'Name for the load group.'
         type:
           type: string
+          enum:
+            - LM_GROUP_ECOBEE
           description: 'Type of load group.'
         kWCapacity:
           type: number
@@ -180,6 +186,8 @@ LM_GROUP_METER_DISCONNECT:
           description: 'Name for the load group.'
         type:
           type: string
+          enum:
+            - LM_GROUP_METER_DISCONNECT
           description: 'Type of load group.'
         kWCapacity:
           type: number
@@ -219,6 +227,8 @@ LM_GROUP_VERSACOM:
           description: 'Name for the load group.'
         type:
           type: string
+          enum:
+            - LM_GROUP_VERSACOM
           description: 'Type of load group.'
         kWCapacity:
           type: number
@@ -296,6 +306,8 @@ LM_GROUP_ITRON:
           description: 'Name for the load group.'
         type:
           type: string
+          enum:
+            - LM_GROUP_ITRON
           description: 'Type of load group.'
         kWCapacity:
           type: number
@@ -333,6 +345,8 @@ LM_GROUP_HONEYWELL:
           description: 'Name for the load group.'
         type:
           type: string
+          enum:
+            - LM_GROUP_HONEYWELL
           description: 'Type of load group.'
         kWCapacity:
           type: number
@@ -365,6 +379,8 @@ LM_GROUP_NEST:
           description: 'Name for the load group.'
         type:
           type: string
+          enum:
+            - LM_GROUP_NEST
           description: 'Type of load group.'
         kWCapacity:
           type: number
@@ -401,6 +417,8 @@ LM_GROUP_MCT:
           description: 'Name for the load group.'
         type:
           type: string
+          enum:
+            - LM_GROUP_MCT
           description: 'Type of load group.'
         kWCapacity:
           type: number
@@ -463,6 +481,8 @@ LM_GROUP_RIPPLE:
           description: 'Name for the load group.'
         type:
           type: string
+          enum:
+            - LM_GROUP_RIPPLE
           description: 'Type of load group.'
         kWCapacity:
           type: number
@@ -521,6 +541,8 @@ LM_GROUP_EXPRESSCOMM:
           description: 'Name for the load group.'
         type:
           type: string
+          enum:
+            - LM_GROUP_EXPRESSCOM
           description: 'Type of load group.'
         kWCapacity:
           type: number
@@ -635,6 +657,8 @@ LM_GROUP_EATON_CLOUD:
           description: 'Name for the load group.'
         type:
           type: string
+          enum:
+            - LM_GROUP_EATON_CLOUD
           description: 'Type of load group.'
         kWCapacity:
           type: number
