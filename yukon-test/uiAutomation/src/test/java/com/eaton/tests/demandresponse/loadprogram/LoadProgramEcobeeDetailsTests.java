@@ -60,12 +60,15 @@ public class LoadProgramEcobeeDetailsTests extends SeleniumTestSetup {
         detailPage = new LoadProgramDetailPage(driverExt, id);
     }
 
-    @AfterMethod(alwaysRun = true)
+    @AfterMethod
     public void afterMethod() {
-        refreshPage(detailPage);
+        if (getRefreshPage()) {
+            refreshPage(detailPage);
+        }
+        setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldPrgmEcobeeDetail_Delete_Success() {
     	 setRefreshPage(false);
     	 final String expected_msg = ldPrgmName + " deleted successfully.";
@@ -79,22 +82,23 @@ public class LoadProgramEcobeeDetailsTests extends SeleniumTestSetup {
 	     assertThat(userMsg).isEqualTo(expected_msg);
     }
     
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldPrgmEcobeeDetail_Copy_Success() {
     	 setRefreshPage(true);
     	 timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
          String ldPrgmName = "EcobeeLoadProgram" + timeStamp;
          String copyName = "Copy of EcobeeLoadProgram" + timeStamp;
          final String expected_msg = copyName + " copied successfully.";
+         
          List<JSONObject> gears = new ArrayList<JSONObject>();
          gears.add(GearHelper.createGearFields(GearEnums.GearType.EcobeeCycle));
 
          Pair<JSONObject, JSONObject> pairLdGrp = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty())
  												.withKwCapacity(Optional.empty()).create();
- 		JSONObject responseLdGrp = pairLdGrp.getValue1();
- 		int ldGrpId = responseLdGrp.getInt("id");
+ 		 JSONObject responseLdGrp = pairLdGrp.getValue1();
+ 		 int ldGrpId = responseLdGrp.getInt("id");
 
- 		List<Integer> assignedGroupIds = new ArrayList<>(List.of(ldGrpId));
+ 		 List<Integer> assignedGroupIds = new ArrayList<>(List.of(ldGrpId));
          Pair<JSONObject, JSONObject> pair = new LoadProgramCreateBuilder.Builder(ProgramEnums.ProgramType.ECOBEE_PROGRAM, gears, assignedGroupIds).withGears(gears)
                          .withName(Optional.of(ldPrgmName))
                          .withOperationalState(Optional.of(ProgramEnums.OperationalState.Automatic))
@@ -104,13 +108,13 @@ public class LoadProgramEcobeeDetailsTests extends SeleniumTestSetup {
 
          navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + id);
          
-    	CopyLoadProgramModal modal = detailPage.showCopyLoadProgramModal();
-        modal.getName().setInputValue(copyName);
-        modal.clickOkAndWaitForModalToClose();
+    	 CopyLoadProgramModal modal = detailPage.showCopyLoadProgramModal();
+         modal.getName().setInputValue(copyName);
+         modal.clickOkAndWaitForModalToClose();
         
-        waitForPageToLoad("Load Program: " + copyName, Optional.of(8));
-        String userMsg = detailPage.getUserMessage();
+         waitForPageToLoad("Load Program: " + copyName, Optional.of(8));
+         String userMsg = detailPage.getUserMessage();
         
-        assertThat(userMsg).isEqualTo(expected_msg);
+         assertThat(userMsg).isEqualTo(expected_msg);
     }       
 }
