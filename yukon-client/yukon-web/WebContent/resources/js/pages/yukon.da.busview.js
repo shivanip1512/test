@@ -135,6 +135,17 @@ yukon.da.busview = (function () {
         setTimeout(_updateRecentEventsTable, yg.rp.updater_delay);
 
     };
+    
+    var _zoneHierarchyTreeClick = function (event, data) {
+        var node = data.node;
+        node.setSelected(true);
+        $.ajax({
+            url : yukon.url('/capcontrol/ivvc/zone/selectedZoneDetail?zoneId=' + node.data.id),
+        }).done(function (zoneDetail) {
+            $('.js-selected-zone-details').html(zoneDetail);
+            yukon.ui.block($('#selectedZoneEvents'), 200);
+        });
+    };
 
    var mod = {
 
@@ -146,6 +157,11 @@ yukon.da.busview = (function () {
             
             _range_hours = yukon.fromJson('#range-hours');
             
+            $('#zoneHierarchyTree').fancytree('option', 'activate', _zoneHierarchyTreeClick);
+            //var rootNode = $.ui.fancytree.getTree("#zoneHierarchyTree").getRootNode();
+            //rootNode.setSelected(true);
+            //rootNode.setActive(true);
+            
             /** User changed the events time range. Cancel updating timeout and restart. */
             $('#ivvc-events-range').on('change', function () {
                 var url = yukon.url('/user/updateDisplayEventRangePreference.json'),
@@ -156,6 +172,14 @@ yukon.da.busview = (function () {
                 clearTimeout(_events_token);
                 _updateRecentEvents();
                 _updateRecentEventsTable();
+            });
+            
+            $(document).on('click', '.js-command-button', function (event) {
+                var button = $(this),
+                    paoId = button.data('paoId'),
+                    cmdId = button.data('commandId');
+                
+                doItemCommand(paoId, cmdId, event);
             });
 
             _updateRecentEvents();
