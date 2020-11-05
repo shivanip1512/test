@@ -2,6 +2,7 @@ package com.cannontech.common;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -68,7 +69,7 @@ public class YukonColorPaletteTest {
                 assertNotNull("No key for " + attr + " in general.xml file", colorEntry);
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            fail("Caught exception in testMissingColor: " + e.getMessage());
         }
     }
 }

@@ -30,8 +30,8 @@ public class LoadProgramCreateBuilder {
         private int controlWindowOneAvailableStopTimeInMinutes;
         private int controlWindowTwoAvailableStartTimeInMinutes;
         private int controlWindowTwoAvailableStopTimeInMinutes;
-        private List<JSONObject> gears = new ArrayList<JSONObject>();
-        private List<Integer> assignedGroupIds = new ArrayList<Integer>();
+        private List<JSONObject> gears = new ArrayList<>();
+        private List<Integer> assignedGroupIds = new ArrayList<>();
         private int groupOrder = 1;
 
         public Builder(ProgramEnums.ProgramType type, List<JSONObject> gears, List<Integer> assignedGroupIds) {
@@ -49,9 +49,9 @@ public class LoadProgramCreateBuilder {
         }
 
         public Builder withOperationalState(Optional<ProgramEnums.OperationalState> operationalState) {
-            ProgramEnums.OperationalState OperationalState = operationalState
+            ProgramEnums.OperationalState opState = operationalState
                     .orElse(ProgramEnums.OperationalState.getRandomOperationalState());
-            this.operationalState = OperationalState.getOperationalState();
+            this.operationalState = opState.getOperationalState();
             return this;
         }
 

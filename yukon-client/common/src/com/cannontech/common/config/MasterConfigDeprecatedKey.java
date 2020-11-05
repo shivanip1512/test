@@ -56,7 +56,10 @@ public enum MasterConfigDeprecatedKey {
     MAP_DEVICES_SATELLITE_URL, // see YUK-22040
     MAP_DEVICES_HYBRID_URL, // see YUK-22040
     MAP_DEVICES_ELEVATION_URL, // see YUK-22040
-    
+    SUPPORT_BUNDLE_FTP_UPLOAD_USER, // see YUK-22993
+    DEFAULT_FTP_USER, // see YUK-22993
+    DEFAULT_FTP_HOST, // see YUK-22993
+    DEFAULT_FTP_PASSWORD, // see YUK-22993
     
 
     LOG_FILE_RETENTION(GlobalSettingType.LOG_RETENTION_DAYS, UnaryOperator.identity()),
