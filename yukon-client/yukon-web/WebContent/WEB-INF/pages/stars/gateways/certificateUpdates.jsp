@@ -24,64 +24,80 @@
     </div>
 
     <div id="gateway-cert-details-popup" class="dn"></div>
-    
-<%--     <c:set var="clazz" value="${empty certUpdates ? 'dn' : ''}"/>
-    <c:if test="${empty certUpdates}">
-        <div class="js-no-cert-updates empty-list">
-            <i:inline key=".cert.updates.none"/>
-        </div>
-    </c:if> --%>
-    <div data-url="<cti:url value="/stars/gateways/certificateUpdates"/>" data-static class="stacked-lg"> 
-    <table id="cert-table" class="compact-results-table">
-        <thead>
-            <tr>
-                <tags:sort column="${TIMESTAMP}"/>
-                <tags:sort column="${CERTIFICATE}"/>
-                <th><i:inline key=".cert.update.gateways"/></th>
-                <th><i:inline key="yukon.common.status"/></th>
-                <th class="tar"><i:inline key="yukon.common.pending"/></th>
-                <th class="tar"><i:inline key="yukon.common.failed"/></th>
-                <th class="tar"><i:inline key="yukon.common.successful"/></th>
-            </tr>
-        </thead>
-        <tfoot></tfoot>
-        <tbody>
-            <c:forEach var="update" items="${certUpdates}">
-                <tr data-yui="${update.yukonUpdateId}">
-                    <td class="js-cert-update-timestamp">
-                        <a href="javascript:void(0);"><cti:formatDate value="${update.timestamp}" type="DATEHM_12"/></a>
-                    </td>
-                    <td class="js-cert-update-file">${fn:escapeXml(update.fileName)}</td>
-                    <c:set var="all" value="${update.gateways}"/>
-                    <td class="js-cert-update-gateways">
-                        ${fn:escapeXml(all[0].name)}<c:if test="${fn:length(all) > 1}">,&nbsp;${fn:escapeXml(all[1].name)}</c:if>
-                        <c:if test="${fn:length(all) > 2}">
-                            <i:inline key=".cert.update.more" arguments="${fn:length(all) - 2}"/>
-                        </c:if>
-                    </td>
-                    <td class="js-cert-update-status">
-                        <c:choose>
-                            <c:when test="${fn:length(update.pending) == 0}">
-                                <span class="success"><i:inline key="yukon.common.complete"/></span>
-                            </c:when>
-                            <c:otherwise>
-                                <div class="progress dib vat">
-                                    <div class="progress-bar progress-bar-success" style="width: ${update.successPercent};"></div>
-                                    <div class="progress-bar progress-bar-danger" style="width: ${update.failedPercent};"></div>
-                                </div>
-                                <span class="js-percent">${update.totalPercent}</span>
-                            </c:otherwise>
-                        </c:choose>
-                    </td>
-                    <td class="js-cert-update-pending subtle">${fn:length(update.pending)}</td>
-                    <td class="js-cert-update-failed error">${fn:length(update.failed)}</td>
-                    <td class="js-cert-update-successful success">${fn:length(update.successful)}</td>
+
+    <div data-url="<cti:url value="/stars/gateways/certificateUpdates"/>" data-static> 
+        <table id="cert-table" class="compact-results-table">
+            <thead>
+                <tr>
+                    <tags:sort column="${TIMESTAMP}"/>
+                    <tags:sort column="${CERTIFICATE}"/>
+                    <th><i:inline key=".cert.update.gateways"/></th>
+                    <th><i:inline key="yukon.common.status"/></th>
+                    <tags:sort column="${PENDING}"/>
+                    <tags:sort column="${FAILED}"/>
+                    <tags:sort column="${SUCCESSFUL}"/>
                 </tr>
-            </c:forEach>
-        </tbody>
-    </table>
-    <c:if test="${empty certUpdates}">
-        <span class="empty-list compact-results-table"><i:inline key=".cert.updates.none"/></span>
-    </c:if>
+            </thead>
+            <tbody>
+                <c:forEach var="update" items="${certUpdates}">
+                    <tr data-yui="${update.yukonUpdateId}">
+                        <td class="js-cert-update-timestamp">
+                            <a href="javascript:void(0);"><cti:formatDate value="${update.timestamp}" type="DATEHM_12"/></a>
+                        </td>
+                        <td class="js-cert-update-file">${fn:escapeXml(update.fileName)}</td>
+                        <c:set var="all" value="${update.gateways}"/>
+                        <td class="js-cert-update-gateways">
+                            ${fn:escapeXml(all[0].name)}<c:if test="${fn:length(all) > 1}">,&nbsp;${fn:escapeXml(all[1].name)}</c:if>
+                            <c:if test="${fn:length(all) > 2}">
+                                <i:inline key=".cert.update.more" arguments="${fn:length(all) - 2}"/>
+                            </c:if>
+                        </td>
+                        <td class="js-cert-update-status">
+                            <c:choose>
+                                <c:when test="${fn:length(update.pending) == 0}">
+                                    <span class="success"><i:inline key="yukon.common.complete"/></span>
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="progress dib vat">
+                                        <div class="progress-bar progress-bar-success" style="width: ${update.successPercent};"></div>
+                                        <div class="progress-bar progress-bar-danger" style="width: ${update.failedPercent};"></div>
+                                    </div>
+                                    <span class="js-percent">${update.totalPercent}</span>
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td class="js-cert-update-pending subtle">${fn:length(update.pending)}</td>
+                        <td class="js-cert-update-failed error">${fn:length(update.failed)}</td>
+                        <td class="js-cert-update-successful success">${fn:length(update.successful)}</td>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
+        <c:if test="${empty certUpdates}">
+            <span class="empty-list compact-results-table"><i:inline key=".cert.updates.none"/></span>
+        </c:if>
     </div>
+    <div id="gateway-templates" class="dn">
+        <table>
+            <tr class="js-new-cert-update" data-yui="">
+                <td class="js-cert-update-timestamp">
+                    <a href="javascript:void(0);"></a>
+                </td>
+                <td class="js-cert-update-file"></td>
+                <td class="js-cert-update-gateways"></td>
+                <td class="js-cert-update-status">
+                    <div class="progress dib vat">
+                        <div class="progress-bar progress-bar-success"></div>
+                        <div class="progress-bar progress-bar-danger"></div>
+                    </div>
+                    <span class="js-percent"></span>
+                </td>
+                <td class="js-cert-update-pending subtle"></td>
+                <td class="js-cert-update-failed error"></td>
+                <td class="js-cert-update-successful success"></td>
+            </tr>
+        </table>
+        <cti:toJson object="${text}" id="gateway-text"/>
+    </div>
+    <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.list.js"/>
 </cti:standardPage>
