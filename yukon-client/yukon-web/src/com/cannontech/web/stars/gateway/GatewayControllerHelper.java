@@ -150,7 +150,8 @@ public class GatewayControllerHelper {
         });
     }
 
-    public static Comparator<RfnGatewayFirmwareUpdateSummary> getFirmwareComparator(SortingParameters sorting, FirmwareUpdatesSortBy sortBy) {
+    public static Comparator<RfnGatewayFirmwareUpdateSummary> getFirmwareComparator(SortingParameters sorting,
+            FirmwareUpdatesSortBy sortBy) {
         Comparator<RfnGatewayFirmwareUpdateSummary> comparator = (o1, o2) -> {
             return o1.getSendDate().compareTo(o2.getSendDate());
         };
@@ -169,7 +170,8 @@ public class GatewayControllerHelper {
         return comparator;
     }
 
-    public static Comparator<CertificateUpdate> getCertificateComparator(SortingParameters sorting, CertificateUpdatesSortBy sortBy) {
+    public static Comparator<CertificateUpdate> getCertificateComparator(SortingParameters sorting,
+            CertificateUpdatesSortBy sortBy) {
         Comparator<CertificateUpdate> comparator = (o1, o2) -> {
             return o1.getTimestamp().compareTo(o2.getTimestamp());
         };
