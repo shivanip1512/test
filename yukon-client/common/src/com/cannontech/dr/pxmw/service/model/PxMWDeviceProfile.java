@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PxMWDeviceProfile {
-    private final String deviceId;
+    private final String deviceGuid;
     private final String createdTime;
     private final String createdByUser;
     private final String modifiedTime;
@@ -20,14 +20,14 @@ public class PxMWDeviceProfile {
     private final HashMap<String, String> channels;
 
     @JsonCreator
-    public PxMWDeviceProfile(@JsonProperty("id") String deviceId, 
+    public PxMWDeviceProfile(@JsonProperty("id") String deviceGuid, 
                              @JsonProperty("created") String createdTime, 
                              @JsonProperty("created_by")String createdByUser, 
                              @JsonProperty("modified")String modifiedTime, 
                              @JsonProperty("modified_by")String modifiedByUser,
                              HashMap<String, String> device, 
                              HashMap<String, String> channels) {
-        this.deviceId = deviceId;
+        this.deviceGuid = deviceGuid;
         this.createdTime = createdTime;
         this.createdByUser = createdByUser;
         this.modifiedTime = modifiedTime;
@@ -37,8 +37,8 @@ public class PxMWDeviceProfile {
     }
 
     @JsonProperty("id")
-    public String getDeviceId() {
-        return deviceId;
+    public String getDeviceGuid() {
+        return deviceGuid;
     }
 
     @JsonProperty("created")
