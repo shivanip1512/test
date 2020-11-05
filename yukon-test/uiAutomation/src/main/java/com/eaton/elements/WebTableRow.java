@@ -34,6 +34,15 @@ public class WebTableRow{
         return cells.get(index).findElement(By.cssSelector("a")).getAttribute("href");
     }
     
+    public String getCellTextByNthChild(int index) {
+        return this.row.findElement(By.cssSelector("td:nth-child(" + index + ")")).getText();
+    }
+    
+    public String getCellLinkTextByIndex(int index) {
+        List<WebElement> cells = this.row.findElements(By.cssSelector("td"));
+        return cells.get(index).findElement(By.cssSelector("a")).getText();
+    }
+    
     public void clickActionIcon(Icons icon) {
         this.row.findElement(By.cssSelector("." + icon.getIcon())).click();
     }

@@ -16,4 +16,8 @@ public class ConfirmModal extends BaseModal {
     public String getConfirmMsg() {
         return getModal().findElement(By.cssSelector("#yukon_dialog_confirm .confirm-message")).getText();
     }
+    
+    public String getWarningMsg() {
+        return getModal().findElement(By.cssSelector("#yukon_dialog_confirm .user-message")).getText();
+    }
 }

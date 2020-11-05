@@ -125,5 +125,5 @@ public class TabElement {
         WebElement tabContainer = getTabContainer();
 
         return tabContainer.findElement(By.cssSelector(".ui-tabs-panel[aria-labelledby='" + label + "']"));
-    }
+    }    
 }
