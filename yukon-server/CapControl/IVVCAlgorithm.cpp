@@ -1497,8 +1497,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     // This means we tried to look up a capbank and failed, probably due to a store reload.
 
                     CTILOG_ERROR( dout, "IVVC Algorithm: Data validation issue -- aborting analysis." );
-
-                    state->setState(IVVCState::IVVC_WAIT);
                 }
                 else    // result == ValidityCheckResults::Invalid
                 {
@@ -1512,7 +1510,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     state->setCommsRetryCount(state->getCommsRetryCount() + 1);
                     if (state->getCommsRetryCount() >= _IVVC_COMMS_RETRY_COUNT)
                     {
-                        state->setState(IVVCState::IVVC_WAIT);
                         state->setCommsRetryCount(0);
 
                         if ( ! state->isCommsLost() )
@@ -1529,6 +1526,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     }
                 }
 
+                state->setState(IVVCState::IVVC_WAIT);
                 updateCommsState( subbus->getCommsStatePointId(), state->isCommsLost() );
                 CTILOG_INFO(dout, request->createStatusReport());
                 break;
@@ -1539,7 +1537,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                 state->setState(IVVCState::IVVC_WAIT);
                 state->setCommsRetryCount(0);
-
                 state->setCommsLost(false);
 
                 long stationId, areaId, spAreaId;
@@ -1587,8 +1584,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     if ( ! state->isCommsLost() )
                     {
                         state->setCommsLost(true);
-
-                        state->setState(IVVCState::IVVC_WAIT);
                         state->setCommsRetryCount(0);
 
                         handleCommsLost( state, subbus );
@@ -1600,6 +1595,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     }
                 }
 
+                state->setState(IVVCState::IVVC_WAIT);
                 updateCommsState( subbus->getCommsStatePointId(), state->isCommsLost() );
                 CTILOG_INFO(dout, request->createStatusReport());
                 break;
