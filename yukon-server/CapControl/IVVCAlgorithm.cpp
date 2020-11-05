@@ -4945,11 +4945,11 @@ bool IVVCAlgorithm::isAnyRegulatorInBadPowerFlow( IVVCStatePtr state, CtiCCSubst
     if ( const auto reason = handleReverseFlow( subbus );
             ! reason.empty() )
     {
+        CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName() << " - Improper Power Flow.\n" << reason );
+
         if ( state->powerFlow.valid )   // transition from good to bad
         {
             state->powerFlow.valid = false;
-
-            CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName() << " - Improper Power Flow.\n" << reason );
 
             sendDisableRemoteControl( subbus );
 
