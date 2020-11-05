@@ -57,4 +57,15 @@ public class Section {
         }
         return names;
     } 
+    
+    public List<String> getSectionHeaders() {
+
+        List<WebElement> nameElements = getSection().findElements(By.cssSelector("table thead tr th"));
+        List<String> names = new ArrayList<>();    
+
+        for (WebElement element : nameElements) {
+            names.add(element.getText());
+        }
+        return names;
+    }
 }
