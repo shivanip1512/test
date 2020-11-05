@@ -201,6 +201,5 @@ Network Manager :
   - field: rfversion
     description: RF Network Version
     details: Contains the latest RF network version
-    source: SELECT TOP 1 gwreleaserev FROM Gateway ORDER BY gwreleaserev DESC
     iotType: Property
     frequency : OnStartupOnly
