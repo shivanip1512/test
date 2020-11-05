@@ -1,7 +1,9 @@
 package com.eaton.builders.drsetup.loadprogram;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.javatuples.Pair;
@@ -33,18 +35,20 @@ public class LoadProgramCreateService {
                         .create();
     }
     
-    public static Pair<JSONObject, JSONObject> createEcobeeProgramAllFieldsWithSetPointGear() {
-        Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty())
+    public static Map<String, Pair<JSONObject, JSONObject>> createEcobeeProgramAllFieldsWithSetPointGear() {
+        HashMap<String, Pair<JSONObject, JSONObject>> hmap = new HashMap<>();
+        
+        Pair<JSONObject, JSONObject> loadGrpPair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty())
                 .create();
-        
-        JSONObject ldGrp = pair.getValue1();
+
+        JSONObject ldGrp = loadGrpPair.getValue1();
         Integer ldGrpId = ldGrp.getInt("id");
-        
+
         JSONObject gear = EcobeeSetpointGearBuilder.gearBuilder()
                 .withName("TestGear")
                 .build();
 
-        return LoadProgramCreateBuilder.buildLoadProgram(ProgramType.ECOBEE_PROGRAM, new ArrayList<>(List.of(gear)), new ArrayList<>(List.of(ldGrpId)))
+        Pair<JSONObject, JSONObject> programPair = LoadProgramCreateBuilder.buildLoadProgram(ProgramType.ECOBEE_PROGRAM, new ArrayList<>(List.of(gear)), new ArrayList<>(List.of(ldGrpId)))
                 .withName(Optional.empty())
                 .withOperationalState(Optional.of(OperationalState.Manual_Only))
                 .withControlWindowOneAvailableStartTimeInMinutes(Optional.of(60))
@@ -52,5 +56,10 @@ public class LoadProgramCreateService {
                 .withcontrolWindowTwoAvailableStartTimeInMinutes(Optional.of(60))
                 .withcontrolWindowTwoAvailableStopTimeInMinutes(Optional.of(60))
                 .create();
+        
+        hmap.put("LoadGroup", loadGrpPair);
+        hmap.put("LoadProgram", programPair);
+
+        return hmap;
     }
 }

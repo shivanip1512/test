@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.assertj.core.api.SoftAssertions;
 import org.javatuples.Pair;
@@ -13,6 +14,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.eaton.builders.drsetup.loadprogram.LoadProgramCreateService;
+import com.eaton.elements.WebTableRow;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
@@ -30,21 +32,32 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
     private String ldPgmName;
     private double triggerOffset;
     private double restoreOffset;
+    private String gearName;
+    private String groupName;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
         setRefreshPage(false);
         
-        Pair<JSONObject, JSONObject> pair = LoadProgramCreateService.createEcobeeProgramAllFieldsWithSetPointGear();
+        Map<String, Pair<JSONObject, JSONObject>> pair = LoadProgramCreateService.createEcobeeProgramAllFieldsWithSetPointGear();
         
-        JSONObject request = pair.getValue0();
-        JSONObject response = pair.getValue1();
+        Pair<JSONObject, JSONObject> programPair = pair.get("LoadProgram");
+        Pair<JSONObject, JSONObject> loadGroupPair = pair.get("LoadGroup");
+        
+        JSONObject request = programPair.getValue0();
+        JSONObject response = programPair.getValue1();
         Integer ldPgmId = response.getInt("programId");
+        
+        JSONObject groupResponse = loadGroupPair.getValue1();
+        groupName = groupResponse.getString("name");
         
         ldPgmName = request.getString("name");
         triggerOffset = request.getDouble("triggerOffset");
         restoreOffset = request.getDouble("restoreOffset");
+        org.json.JSONArray gears = request.getJSONArray("gears");
+        JSONObject gear = (JSONObject) gears.get(0);
+        gearName = gear.getString("gearName");
 
         navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + ldPgmId);
         detailPage = new LoadProgramDetailPage(driverExt, ldPgmId);
@@ -156,16 +169,23 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
     public void ldPrgmDetail_GearsSection_LablelsCorrect() {
         setRefreshPage(false);
         List<String> expectedLabels= new ArrayList<>(List.of("Name", "Type"));
-        List<String> actualLabels = detailPage.getGearsSection().getSectionHeaders();
+        List<String> actualLabels = detailPage.getGearsSectionTable().getListTableHeaders();
         assertThat(actualLabels).isEqualTo(expectedLabels);
     }
     
     @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldPrgmDetail_GearsSection_ValuesCorrect() {
         setRefreshPage(false);
-        List<String> expectedLabels= new ArrayList<>(List.of("Name", "Type"));
-        List<String> actualLabels = detailPage.getGearsSection().getSectionHeaders();
-        assertThat(actualLabels).isEqualTo(expectedLabels);
+        SoftAssertions softly = new SoftAssertions();
+
+        WebTableRow row = detailPage.getGearsSectionTable().getDataRowByIndex(0);
+        
+        String name = row.getCellLinkTextByIndex(0);
+        String type = row.getCellTextByNthChild(2);
+        
+        softly.assertThat(name).isEqualTo(gearName);
+        softly.assertThat(type).isEqualTo("ecobee Setpoint");
+        softly.assertAll();
     }
     
     @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
@@ -176,6 +196,32 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         
         assertThat(actualTabTitles).isEqualTo(expectedTabTitles);
     }
+    
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
+    public void ldPrgmDetail_LoadGroup_HeadersCorrect() {
+        setRefreshPage(false);
+        
+        List<String> expectedTabTitles= new ArrayList<>(List.of("Name", "Type"));
+        List<String> actualHeaders = detailPage.getLoadGroupTable().getListTableHeaders();
+        
+        assertThat(actualHeaders).isEqualTo(expectedTabTitles);
+    }
+    
+    @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
+    public void ldPrgmDetail_LoadGroup_ValuesCorrect() {
+        setRefreshPage(false);
+        SoftAssertions softly = new SoftAssertions();
+        
+        WebTableRow row = detailPage.getLoadGroupTable().getDataRowByIndex(0);
+        
+        String name = row.getCellLinkTextByIndex(0);
+        String type = row.getCellTextByNthChild(2);
+        
+        softly.assertThat(name).isEqualTo(groupName);
+        softly.assertThat(type).isEqualTo("ecobee Group");
+        softly.assertAll();
+    }
+    
     
     @Test(groups = {TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldPrgmDetail_Create_UrlCorrect() {

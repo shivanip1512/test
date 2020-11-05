@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.eaton.elements.ActionBtnDropDownElement;
 import com.eaton.elements.Section;
+import com.eaton.elements.WebTable;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.CopyLoadProgramModal;
 import com.eaton.elements.tabs.LoadGroupsTab;
@@ -62,6 +63,10 @@ public class LoadProgramDetailPage extends PageBase {
         return new Section(this.driverExt, "Gears");
     }
     
+    public WebTable getGearsSectionTable() {
+        return new WebTable(this.driverExt, "compact-results-table", getGearsSection().getSection());
+    }
+    
     public Section getControlWindowSection() {
         return new Section(this.driverExt, "Control Window");
     }
@@ -72,6 +77,10 @@ public class LoadProgramDetailPage extends PageBase {
     
     public LoadGroupsTab getLoadGroupTab() {
         return new LoadGroupsTab(this.driverExt);
+    }
+    
+    public WebTable getLoadGroupTable() {
+        return new WebTable(this.driverExt, "compact-results-table", getLoadGroupTab().getTabPanelByName("Load Groups"));
     }
     
     public NotificationTab getNotificationTab() {
