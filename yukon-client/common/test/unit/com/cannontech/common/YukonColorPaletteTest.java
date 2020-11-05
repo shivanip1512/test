@@ -61,6 +61,10 @@ public class YukonColorPaletteTest {
         String userDirectory = System.getProperty("user.dir");
 
         try {
+            if (!userDirectory.contains("common")) {
+                String clientDir = userDirectory.substring(0, userDirectory.lastIndexOf("\\") + 1);
+                userDirectory = clientDir + "common";
+            }
             InputStream inputStream = new FileInputStream(userDirectory + "/i18n/en_US/com/cannontech/yukon/common/general.xml");
             Properties generalProperties = new Properties();
             generalProperties.loadFromXML(inputStream);
