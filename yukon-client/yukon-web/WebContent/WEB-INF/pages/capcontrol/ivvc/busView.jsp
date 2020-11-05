@@ -204,7 +204,7 @@
                 
             </cti:tab>
             <cti:msg2 var="zoneHierarchy" key=".zoneHierarchy.title" />
-            <cti:tab title="${zoneHierarchy}" headerClasses="js-zone-hierarchy">
+            <cti:tab title="${zoneHierarchy}">
                 <div class="column-10-14">
                     <div class="column one">
                         <tags:boxContainer2 nameKey="zones" hideEnabled="false">

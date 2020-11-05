@@ -25,32 +25,33 @@ yukon.da.busview = (function () {
 
         $(".js-events-timeline").each(function () {
             
-            var _id = $(this).data('zoneId');
-            $.ajax({
-                url : yukon.url('/capcontrol/zones/' + _id + '/events'),
-                data : {
-                    'range' : range
-                }
-            }).done(function (events) {
-
-                var timeline = $('.js-events-timeline[data-zone-id="' + _id + '"]');
-                var toAdd = [];
-                var options = {};
-                options.end = new Date().getTime();
-                var now = new Date();
-                var hoursAgo = _range_hours[range];
-                var begin = new Date(now.getTime() - (1000 * 60 * 60 * hoursAgo));
-                options.begin = begin.getTime();
-                options.showLabels = true;
-
-                // Reverse order to add oldest first.
-                events.reverse().forEach(function (event) {
-                    toAdd.push(event);
+            var _id = $(this).data('zoneId'),
+                timeline = $(this);
+            if (timeline.is(':visible')) {
+                $.ajax({
+                    url : yukon.url('/capcontrol/zones/' + _id + '/events'),
+                    data : {
+                        'range' : range
+                    }
+                }).done(function (events) {
+                    var toAdd = [],
+                        options = {},
+                        now = new Date(),
+                        hoursAgo = _range_hours[range],
+                        begin = new Date(now.getTime() - (1000 * 60 * 60 * hoursAgo));
+                    options.end = new Date().getTime();
+                    options.begin = begin.getTime();
+                    options.showLabels = true;
+    
+                    // Reverse order to add oldest first.
+                    events.reverse().forEach(function (event) {
+                        toAdd.push(event);
+                    });
+                    options.events = toAdd;
+                    timeline.timeline(options);
+                    timeline.timeline('draw');
                 });
-                options.events = toAdd;
-                timeline.timeline(options);
-                timeline.timeline('draw');
-            });
+            }
 
         });
         _events_token = setTimeout(_updateRecentEvents, yg.rp.updater_delay);
