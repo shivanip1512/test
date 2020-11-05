@@ -17,7 +17,6 @@ import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.dr.pxmw.service.PxMWCommunicationService;
 import com.cannontech.dr.pxmw.service.model.PxMWDeviceProfile;
 import com.cannontech.dr.pxwhite.model.PxWhiteCredentials;
-import com.cannontech.dr.pxwhite.model.PxWhiteDeviceChannels;
 import com.cannontech.dr.pxwhite.model.PxWhiteRenewToken;
 import com.cannontech.dr.pxwhite.model.PxWhiteTokenResponse;
 import com.cannontech.dr.pxwhite.model.TokenDetails;
@@ -27,10 +26,11 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 
 public class PxMWCommunicationServiceImpl implements PxMWCommunicationService {
+    @Autowired GlobalSettingDao settingDao;
     private static final Logger log = YukonLogManager.getLogger(PxMWCommunicationServiceImpl.class);
 
     // Base PX Middleware API url
-    private static final String urlBase = GlobalSettingType.PX_MIDDLEWARE_URL.toString();
+    private final String urlBase = settingDao.getString(GlobalSettingType.PX_MIDDLEWARE_URL);
 
     // PX Middleware API endpoints
     private static final String urlSuffixGetSecurityToken = "/v1/security/token";
@@ -101,5 +101,10 @@ public class PxMWCommunicationServiceImpl implements PxMWCommunicationService {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + token);
         return new HttpEntity<>(requestObject, headers);
+    }
+
+    public String getUrlBase(GlobalSettingDao settingDao) {
+        String url = settingDao.getString(GlobalSettingType.PX_MIDDLEWARE_URL);
+        return url;
     }
 }
