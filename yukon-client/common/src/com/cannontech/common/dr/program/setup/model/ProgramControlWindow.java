@@ -24,5 +24,4 @@ public class ProgramControlWindow {
     public void setControlWindowTwo(ProgramControlWindowFields controlWindowTwo) {
         this.controlWindowTwo = controlWindowTwo;
     }
-
 }

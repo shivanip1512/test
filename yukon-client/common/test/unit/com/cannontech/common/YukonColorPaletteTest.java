@@ -2,6 +2,7 @@ package com.cannontech.common;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -60,6 +61,10 @@ public class YukonColorPaletteTest {
         String userDirectory = System.getProperty("user.dir");
 
         try {
+            if (!userDirectory.contains("common")) {
+                String clientDir = userDirectory.substring(0, userDirectory.lastIndexOf("\\") + 1);
+                userDirectory = clientDir + "common";
+            }
             InputStream inputStream = new FileInputStream(userDirectory + "/i18n/en_US/com/cannontech/yukon/common/general.xml");
             Properties generalProperties = new Properties();
             generalProperties.loadFromXML(inputStream);
@@ -68,7 +73,7 @@ public class YukonColorPaletteTest {
                 assertNotNull("No key for " + attr + " in general.xml file", colorEntry);
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            fail("Caught exception in testMissingColor: " + e.getMessage());
         }
     }
 }

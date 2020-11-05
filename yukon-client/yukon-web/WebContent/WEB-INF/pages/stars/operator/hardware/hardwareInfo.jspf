@@ -114,6 +114,10 @@ $(function() { updateServiceCompanyInfo();});
                 <tags:inputNameValue nameKey=".installCode" path="installCode" disabled="false" maxlength="23" size="25"/>
             </c:if>
             
+            <c:if test="${showGuid}">
+              <tags:inputNameValue nameKey=".guid" path="guid"/>
+            </c:if>
+           
             <c:if test="${showMacAddress}">
                 <c:choose>
                    <c:when test="${macAddressEditable}">
