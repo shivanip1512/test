@@ -13,8 +13,7 @@ import org.json.JSONObject;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.eaton.builders.drsetup.gears.GearEnums;
-import com.eaton.builders.drsetup.gears.GearHelper;
+import com.eaton.builders.drsetup.gears.EcobeeCycleGearBuilder;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupEcobeeCreateBuilder;
 import com.eaton.builders.drsetup.loadprogram.LoadProgramCreateBuilder;
 import com.eaton.builders.drsetup.loadprogram.ProgramEnums;
@@ -40,7 +39,7 @@ public class LoadProgramEcobeeDetailsTests extends SeleniumTestSetup {
         timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         ldPrgmName = "EcobeeLoadProgram" + timeStamp;
         List<JSONObject> gears = new ArrayList<JSONObject>();
-        gears.add(GearHelper.createGearFields(GearEnums.GearType.EcobeeCycle));
+        gears.add(EcobeeCycleGearBuilder.gearBuilder().build());
 
         Pair<JSONObject, JSONObject> pairLdGrp = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty())
 												.withKwCapacity(Optional.empty()).create();
@@ -70,8 +69,29 @@ public class LoadProgramEcobeeDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldPrgmEcobeeDetail_Delete_Success() {
-    	 setRefreshPage(false);
-    	 final String expected_msg = ldPrgmName + " deleted successfully.";
+    	 setRefreshPage(true);
+    	 timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+         String ldPrgmName = "EcobeeLoadProgram" + timeStamp;
+         final String expected_msg = ldPrgmName + " deleted successfully.";
+         
+         List<JSONObject> gears = new ArrayList<JSONObject>();
+         gears.add(EcobeeCycleGearBuilder.gearBuilder().build());
+
+         Pair<JSONObject, JSONObject> pairLdGrp = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty())
+ 												.withKwCapacity(Optional.empty()).create();
+ 		 JSONObject responseLdGrp = pairLdGrp.getValue1();
+ 		 int ldGrpId = responseLdGrp.getInt("id");
+
+ 		 List<Integer> assignedGroupIds = new ArrayList<>(List.of(ldGrpId));
+         Pair<JSONObject, JSONObject> pair = new LoadProgramCreateBuilder.Builder(ProgramEnums.ProgramType.ECOBEE_PROGRAM, gears, assignedGroupIds).withGears(gears)
+                         .withName(Optional.of(ldPrgmName))
+                         .withOperationalState(Optional.of(ProgramEnums.OperationalState.Automatic))
+                         .create();
+         JSONObject response = pair.getValue1();
+         int id = response.getInt("programId");
+
+         navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + id);
+    	 
     	 ConfirmModal  confirmModal = detailPage.showDeleteLoadProgramModal(); 
 	     confirmModal.clickOkAndWaitForModalToClose();
 	     
@@ -87,11 +107,11 @@ public class LoadProgramEcobeeDetailsTests extends SeleniumTestSetup {
     	 setRefreshPage(true);
     	 timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
          String ldPrgmName = "EcobeeLoadProgram" + timeStamp;
-         String copyName = "Copy of EcobeeLoadProgram" + timeStamp;
+         String copyName = "Copy Ecobee" + timeStamp;
          final String expected_msg = copyName + " copied successfully.";
          
          List<JSONObject> gears = new ArrayList<JSONObject>();
-         gears.add(GearHelper.createGearFields(GearEnums.GearType.EcobeeCycle));
+         gears.add(EcobeeCycleGearBuilder.gearBuilder().build());
 
          Pair<JSONObject, JSONObject> pairLdGrp = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty())
  												.withKwCapacity(Optional.empty()).create();
@@ -112,7 +132,7 @@ public class LoadProgramEcobeeDetailsTests extends SeleniumTestSetup {
          modal.getName().setInputValue(copyName);
          modal.clickOkAndWaitForModalToClose();
         
-         waitForPageToLoad("Load Program: " + copyName, Optional.of(8));
+         waitForPageToLoad("Load Program: " + copyName, Optional.empty());
          String userMsg = detailPage.getUserMessage();
         
          assertThat(userMsg).isEqualTo(expected_msg);
