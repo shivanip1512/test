@@ -2,14 +2,17 @@ package com.cannontech.watchdogs.impl;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.SmtpHelper;
 import com.cannontech.common.smartNotification.dao.SmartNotificationSubscriptionDao;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
+import com.cannontech.tools.email.SystemEmailSettingsType;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarningType;
 import com.cannontech.watchdog.model.WatchdogWarnings;
@@ -26,6 +29,7 @@ public class YukonDBConnectionWatcher extends ServiceStatusWatchdogImpl {
     Logger log = YukonLogManager.getLogger(YukonDBConnectionWatcher.class);
 
     @Autowired private SmartNotificationSubscriptionDao subscriptionDao;
+    @Autowired private SmtpHelper SmtpHelper;
 
     @Override
     public List<WatchdogWarnings> watch() {
@@ -35,7 +39,9 @@ public class YukonDBConnectionWatcher extends ServiceStatusWatchdogImpl {
         if (serviceStatus == ServiceStatus.RUNNING) {
             try {
                 List<String> subscriberEmailIds = subscriptionDao.getSubscribedEmails(SmartNotificationEventType.YUKON_WATCHDOG);
-                // In YUK-22935, we will keep these IDs in file system.
+                SmtpHelper.updateCachedValue(SystemEmailSettingsType.WATCHDOG_SUBSCRIBER_EMAILS.getKey(),
+                        StringUtils.join(subscriberEmailIds, ","));
+                SmtpHelper.writeToFile();
             } catch (RuntimeException e) {
                 serviceStatus = ServiceStatus.STOPPED;
             }

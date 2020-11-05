@@ -24,7 +24,7 @@ attributeAssignments:
       description: 'Unique identifier for the attribute.'
     paoType:
       type: string
-      description: 'Pao Type.'
+      description: 'The type of object. Common examples include: RFN420FD, RFN430A3R, RFN530S4ERXR, RFWMETER, RFW201, GWY801, CBC_8024, MCT420CD, LCR6700_RFN.'
     pointType:
       type: string
       description: 'Point type.'

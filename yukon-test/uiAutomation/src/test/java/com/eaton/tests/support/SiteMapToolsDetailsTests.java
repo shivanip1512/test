@@ -25,7 +25,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
         siteMapPage = new SiteMapPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TOOLS })
     public void siteMapToolsDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Site Map";
 
@@ -34,21 +34,21 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TOOLS })
     public void siteMapToolsDetails_ToolsSection_Displayed() {
         Section toolsSection = siteMapPage.getToolsSection();
 
         assertThat(toolsSection).isNotNull();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TOOLS })
     public void siteMapToolsDetails_ToolsSection_CountCorrect() {
         final int EXPECTED_COUNT = 14;
 
         assertThat(siteMapPage.getToolsSectionSimpleList().getSimpleListItems().size()).isEqualTo(EXPECTED_COUNT);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TOOLS })
     public void siteMapToolsDetails_CollectionActions_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Collection Actions";
@@ -60,7 +60,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TOOLS })
     public void siteMapToolsDetails_Commander_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Commander";
@@ -72,7 +72,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TOOLS })
     public void siteMapToolsDetails_CreateSchedule_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Create Schedule";
@@ -84,7 +84,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TOOLS })
     public void siteMapToolsDetails_DataExport_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Data Export";
@@ -96,7 +96,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TOOLS })
     public void siteMapToolsDetails_DataStreaming_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Data Streaming";
@@ -108,7 +108,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TOOLS })
     public void siteMapToolsDetails_DataViewer_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Data Viewer";
@@ -120,7 +120,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TOOLS })
     public void siteMapToolsDetails_DeviceConfiguration_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Device Configuration";
@@ -132,7 +132,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TOOLS })
     public void siteMapToolsDetails_DeviceConfigurationSummary_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Device Configuration Summary";
@@ -144,7 +144,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TOOLS })
     public void siteMapToolsDetails_DeviceGroupUpload_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Device Group Upload";
@@ -156,7 +156,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TOOLS })
     public void siteMapToolsDetails_DeviceGroups_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Device Groups";
@@ -168,7 +168,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TOOLS })
     public void siteMapToolsDetails_Notes_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Notes";
@@ -180,7 +180,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TOOLS })
     public void siteMapToolsDetails_RecentResults_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Recent Results";
@@ -192,7 +192,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TOOLS })
     public void siteMapToolsDetails_Schedules_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Schedules";
@@ -204,7 +204,7 @@ public class SiteMapToolsDetailsTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Tools.TOOLS })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.TOOLS })
     public void siteMapToolsDetails_Scripts_LinkCorrect() {
         softly = new SoftAssertions();
         final String EXPECTED_ANCHOR = "Scripts";

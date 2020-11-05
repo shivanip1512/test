@@ -46,9 +46,10 @@ public class CalcStatusPointCreateBuilder {
             return this;
         }
         
-        public Builder withStateGroupId(Optional<Integer> stateGroupId) {
-        	this.stateGroupId = stateGroupId.orElse(faker.number().numberBetween(-29, 7));
-        	return this;
+        public Builder withStateGroupId(Optional<PointEnums.StateGroupId> stateGroupId) {
+            PointEnums.StateGroupId stateGrpId = stateGroupId.orElse(PointEnums.StateGroupId.getRandomStateGroupId());
+            this.stateGroupId = stateGrpId.getStateGroupId();
+            return this;
         }
         
         public Builder withArchiveType(Optional<PointEnums.ArchiveType> archiveType) {

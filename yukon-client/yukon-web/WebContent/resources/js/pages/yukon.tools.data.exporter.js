@@ -23,16 +23,24 @@ yukon.tools.dataExporter = (function () {
     
     /** Exports the format. */
     _runOkPressed = function() {
+        var selectedIndex = $('.js-run-inputs').find('select.js-intervals').prop('selectedIndex');
+        
         $('#run-dialog').dialog('close');
         $('.js-run-inputs').clone().appendTo('#exporter-form');
+        // Clone doesn't copy select values, so manually copy.
+        $('#exporter-form').find('select.js-intervals').prop('selectedIndex', selectedIndex);
         _submitForm('generateReport');
         $('#exporter-form').find('.js-run-inputs').remove();
     },
     
     /** Opens the schedule details form. */
     _scheduleOkPressed = function() {
+        var selectedIndex = $('.js-schedule-inputs').find('select.js-intervals').prop('selectedIndex');
+        
         $('#schedule-dialog').dialog('close');
         $('.js-schedule-inputs').clone().appendTo('#exporter-form');
+        // Clone doesn't copy select values, so manually copy.
+        $('#exporter-form').find('select.js-intervals').prop('selectedIndex', selectedIndex);
         _submitForm('scheduleReport');
         $('#exporter-form').find('.js-schedule-inputs').remove();
     },
@@ -156,12 +164,28 @@ yukon.tools.dataExporter = (function () {
                 _submitForm('selectDevices');
             });
             
-            $('.js-time-check').each( function () {
+            $('.js-time-check').each(function() {
                 $(this).closest('.js-dynamic,.js-fixed').find('.js-time').prop('disabled', ! $(this).is(':checked'));
             });
             
-            $('.js-time-check').click(function () {
+            $('.js-time-check').click(function() {
                 $(this).closest('.js-dynamic,.js-fixed').find('.js-time').prop('disabled', ! $(this).is(':checked'));
+                if ($(this).is(':checked')) {
+                    $(this).closest('.js-dynamic,.js-fixed').find('.js-on-interval-check').prop('checked', false);
+                    $(this).closest('.js-dynamic,.js-fixed').find('.js-intervals').prop('disabled', true);
+                }
+            });
+            
+            $('.js-on-interval-check').each(function() {
+                $(this).closest('.js-dynamic,.js-fixed').find('.js-intervals').prop('disabled', ! $(this).is(':checked'));
+            });
+            
+            $('.js-on-interval-check').click(function() {
+                $(this).closest('.js-dynamic,.js-fixed').find('.js-intervals').prop('disabled', ! $(this).is(':checked'));
+                if ($(this).is(':checked')) {
+                    $(this).closest('.js-dynamic,.js-fixed').find('.js-time-check').prop('checked', false);
+                    $(this).closest('.js-dynamic,.js-fixed').find('.js-time').prop('disabled', true);
+                }
             });
             
             $('#format-id').change(function(event) {

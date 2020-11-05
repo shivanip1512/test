@@ -44,7 +44,7 @@ public class VirtualDevicesDetailPage extends PageBase {
     }
 
     public WebTableColumnHeader getPointsPointsTableHeader() {
-        return (WebTableColumnHeader) getVirtualDevicePointsPanel().getTable().getColumnHeaders();
+        return (WebTableColumnHeader) getVirtualDevicePointsPanel().getTable().getListTableHeaders();
     }
 
     public CreateVirtualDeviceModal showAndWaitCreateVirtualDeviceModal() {
@@ -72,7 +72,7 @@ public class VirtualDevicesDetailPage extends PageBase {
     }
 
     public RecentArchievedRadingsModal showAndWaitRecentArchievedReadingsModal(String modalTitle, int index) {
-        getPointsTableRow(1).getCell(index).click();
+        getPointsTableRow(1).getCellByIndex(index).click();
 
         SeleniumTestSetup.waitUntilModalOpenByTitle(modalTitle);
 

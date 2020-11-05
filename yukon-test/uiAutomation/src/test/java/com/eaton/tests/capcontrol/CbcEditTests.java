@@ -41,7 +41,7 @@ public class CbcEditTests extends SeleniumTestSetup {
         setRefreshPage(false);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void cbcEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit CBC: AT CBC";
 
@@ -50,7 +50,7 @@ public class CbcEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void cbcEdit_RequiredFieldsOnly_Success() {
         setRefreshPage(true);
         final String EXPECTED_MSG = "CBC was successfully saved.";
@@ -73,7 +73,7 @@ public class CbcEditTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.VoltVar.VOLT_VAR })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void cbcEdit_Delete_Success() {
         setRefreshPage(true);
         final String EXPECTED_MSG = "Deleted CBC";

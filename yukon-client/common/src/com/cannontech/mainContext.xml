@@ -50,7 +50,7 @@
             </bean>
         </constructor-arg>
     </bean>
-    
+
     <bean id="databaseVendorResolver" class="com.cannontech.database.vendor.MetaDataDatabaseVendorResolver"/>
     <bean id="vendorSpecificSqlBuilderFactory" class="com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory"/>
 

@@ -1,7 +1,6 @@
 package com.eaton.tests.ami;
 
 import static org.assertj.core.api.Assertions.*;
-import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
@@ -35,22 +34,22 @@ public class MeterRfn530S4xCreateTests extends SeleniumTestSetup {
         navigate(Urls.Ami.AMI_DASHBOARD);
         amiDashboardPage = new AmiDashboardPage(driverExt);
     }
-    
+
     @AfterMethod(alwaysRun = true)
     public void afterTest() {
-    	if(getRefreshPage()) {
-    		refreshPage(amiDashboardPage);
-    	}
+        if (getRefreshPage()) {
+            refreshPage(amiDashboardPage);
+        }
     }
 
-    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
+    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.AMI })
     public void meterRfn530S4xCreate_AllFields_Success() {
 
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
         int meterNumber = faker.number().numberBetween(1, 999999);
         int serialNumber = faker.number().numberBetween(1, 99999999);
-        String manufacturer = randomString(12);
+        String manufacturer = faker.company().industry();
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 
         String name = "AT RFN-430SL4 Meter " + timeStamp;
@@ -70,15 +69,5 @@ public class MeterRfn530S4xCreateTests extends SeleniumTestSetup {
         String userMsg = detailPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(METER + name + CREATED);
-    }
-
-    private String randomString(int length) {
-        final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-        SecureRandom rnd = new SecureRandom();
-
-        StringBuilder sb = new StringBuilder(length);
-        for (int i = 0; i < length; i++)
-            sb.append(AB.charAt(rnd.nextInt(AB.length())));
-        return sb.toString();
     }
 }

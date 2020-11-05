@@ -36,7 +36,7 @@ public class PointRequest {
     public static ExtractableResponse<?> deletePoint(String pointId) {
 
         String pathParam = APIs.Point.DELETE_POINT + pointId;
-        ExtractableResponse<?> response = ApiCallHelper.delete(pathParam, pointId);
+        ExtractableResponse<?> response = ApiCallHelper.delete(pathParam);
         assertThat(response.statusCode()).isEqualTo(200);
         return response;
     }

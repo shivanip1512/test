@@ -2,7 +2,6 @@ package com.eaton.tests.demandresponse.loadgroup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,12 +23,9 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupPointDetailsPage;
-import com.eaton.rest.api.drsetup.DrSetupGetRequest;
-
-import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupPointDetailTests extends SeleniumTestSetup {
-	private DriverExtensions driverExt;
+    private DriverExtensions driverExt;
     private LoadGroupPointDetailsPage detailPage;
     private JSONObject response;
 
@@ -37,32 +33,29 @@ public class LoadGroupPointDetailTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         setRefreshPage(false);
-        
+
         Pair<JSONObject, JSONObject> pair = LoadGroupPointCreateBuilder.buildDefaultPointLoadGroup()
-				.create();
-        
+                .create();
+
         response = pair.getValue1();
         int id = response.getInt("id");
-        
+
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
         detailPage = new LoadGroupPointDetailsPage(driverExt, id);
     }
-    
+
     @AfterMethod
     public void afterMethod() {
-        if(getRefreshPage()) {
-            refreshPage(detailPage);    
+        if (getRefreshPage()) {
+            refreshPage(detailPage);
         }
         setRefreshPage(false);
     }
-	 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpPointDetail_Delete_Success() {
-    	setRefreshPage(true);
-        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String createName = "AT Create Point Ld group " + timeStamp;
+        setRefreshPage(true);
         Pair<JSONObject, JSONObject> pair = new LoadGroupPointCreateBuilder.Builder(Optional.empty())
-                .withName(createName)
                 .withPointUsageId(Optional.of(PointId.CAPACITOR_BANK_STATE))
                 .withDeviceUsageId(Optional.empty())
                 .withPointStartControlRawState(Optional.of(LoadGroupEnums.PointStartControlRawState.FALSE))
@@ -82,22 +75,18 @@ public class LoadGroupPointDetailTests extends SeleniumTestSetup {
 
         waitForPageToLoad("Setup", Optional.empty());
         DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_GROUP);
+        
         String userMsg = setupPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(expected_msg);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpPointDetail_Copy_Success() {
-    	setRefreshPage(true);
-    	Pair<JSONObject, JSONObject> pair = LoadGroupPointCreateBuilder.buildDefaultPointLoadGroup().create();
-        JSONObject response = pair.getValue1();
-        int id = response.getInt("id");
+        setRefreshPage(true);
         String name = response.getString("name");
         final String copyName = "Copy of " + name;
         final String expected_msg = copyName + " copied successfully.";
-
-        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
 
         CopyLoadGroupModal modal = detailPage.showCopyLoadGroupModal();
         modal.getName().setInputValue(copyName);
@@ -109,38 +98,30 @@ public class LoadGroupPointDetailTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(expected_msg);
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpPointDetail_PointGroup_LabelsCorrect() {
         SoftAssertions softly = new SoftAssertions();
         List<String> labels = detailPage.getPointGroupSection().getSectionLabels();
-        
+
         softly.assertThat(labels.size()).isEqualTo(2);
-                
         softly.assertThat("Control Device Point:").isEqualTo(labels.get(0));
         softly.assertThat("Control Start State:").isEqualTo(labels.get(1));
-        
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpPointDetail_PointGroup_ValuesCorrect() {
         SoftAssertions softly = new SoftAssertions();
-        Pair<JSONObject, JSONObject> pair = LoadGroupPointCreateBuilder.buildDefaultPointLoadGroup()
-				.create();
-        response = pair.getValue1();
-        int id = response.getInt("id");
-        
-        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
-        
+
         List<String> values = detailPage.getPointGroupSection().getSectionValues();
-        ExtractableResponse<?> getResponse = DrSetupGetRequest.getLoadGroup(id);
+        
+        JSONObject deviceUsage = response.getJSONObject("deviceUsage");
+        JSONObject pointUsage = response.getJSONObject("pointUsage");
+        JSONObject startControlRawState = response.getJSONObject("startControlRawState");
 
         softly.assertThat(values.size()).isEqualTo(2);
-        softly.assertThat(values.get(0)).isEqualTo(getResponse.path("LM_GROUP_POINT.deviceUsage.name").toString() + ": "
-                + getResponse.path("LM_GROUP_POINT.pointUsage.name").toString());
-        softly.assertThat(values.get(1))
-                .isEqualTo("  " + getResponse.path("LM_GROUP_POINT.startControlRawState.stateText").toString());
-
+        softly.assertThat(values.get(0)).isEqualTo(deviceUsage.getString("name") + ": " + pointUsage.getString("name"));
+        softly.assertThat((values.get(1)).trim()).isEqualTo(startControlRawState.getString("stateText"));
         softly.assertAll();
     }
 }

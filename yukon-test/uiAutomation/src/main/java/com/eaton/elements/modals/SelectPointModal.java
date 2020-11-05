@@ -11,6 +11,11 @@ import com.eaton.framework.DriverExtensions;
 
 public class SelectPointModal extends BaseModal {
     
+    /**
+     * @param driverExt
+     * @param modalTitle
+     * @param describedBy
+     */
     public SelectPointModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
         super(driverExt, modalTitle, describedBy);       
     }
@@ -34,7 +39,7 @@ public class SelectPointModal extends BaseModal {
         }                
         
         WebTable table = getPointTable();
-        WebTableRow row = table.getDataRowByName(pointName);
+        WebTableRow row = table.getDataRowByLinkName(pointName);
 
         row.selectCellByLink();
     }    

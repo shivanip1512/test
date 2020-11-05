@@ -35,7 +35,7 @@ public class TrendRequest {
     public static ExtractableResponse<?> deleteTrend(String trendId) {
 
         String pathParam = APIs.Trend.DELETE_TREND + trendId;
-        ExtractableResponse<?> response = ApiCallHelper.delete(pathParam, trendId);
+        ExtractableResponse<?> response = ApiCallHelper.delete(pathParam);
         assertThat(response.statusCode()).isEqualTo(200);
         return response;
     }

@@ -23,7 +23,7 @@ public class DemandResponseSetupTests extends SeleniumTestSetup {
         page = new DemandResponseSetupPage(driverExt);
     }
 
-    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void demandResponseSetup_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Setup";
         

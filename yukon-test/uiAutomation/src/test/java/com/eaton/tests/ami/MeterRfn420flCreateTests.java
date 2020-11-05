@@ -1,7 +1,6 @@
 package com.eaton.tests.ami;
 
 import static org.assertj.core.api.Assertions.*;
-import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
@@ -20,37 +19,36 @@ import com.github.javafaker.Faker;
 
 public class MeterRfn420flCreateTests extends SeleniumTestSetup {
 
-    private AmiDashboardPage amiDashboardPage;
+    private AmiDashboardPage page;
     private DriverExtensions driverExt;
     private Faker faker;
     private static final String CREATED = " created successfully.";
     private static final String METER = "Meter ";
 
-    @BeforeClass(alwaysRun=true)
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
         setRefreshPage(false);
         faker = SeleniumTestSetup.getFaker();
-        
+
         navigate(Urls.Ami.AMI_DASHBOARD);
-
-        amiDashboardPage = new AmiDashboardPage(driverExt);
+        page = new AmiDashboardPage(driverExt);
     }
-    
-    @AfterMethod(alwaysRun=true)
+
+    @AfterMethod(alwaysRun = true)
     public void afterTest() {
-    	if(getRefreshPage()) {
-    		refreshPage(amiDashboardPage);
-    	}
+        if (getRefreshPage()) {
+            refreshPage(page);
+        }
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.AMI })
     public void meterRfn420flCreate_AllFields_Success() {
-        CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
+        CreateMeterModal createModal = page.showAndWaitCreateMeterModal();
 
         int meterNumber = faker.number().numberBetween(1, 999999);
         int serialNumber = faker.number().numberBetween(1, 99999999);
-        String manufacturer = randomString(12);
+        String manufacturer = faker.company().industry();
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 
         String name = "AT RFN-420fL Meter " + timeStamp;
@@ -70,15 +68,5 @@ public class MeterRfn420flCreateTests extends SeleniumTestSetup {
         String userMsg = detailPage.getUserMessage();
 
         assertThat(METER + name + CREATED).isEqualTo(userMsg);
-    }
-
-    private String randomString(int length) {
-        final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-        SecureRandom rnd = new SecureRandom();
-
-        StringBuilder sb = new StringBuilder(length);
-        for (int i = 0; i < length; i++)
-            sb.append(AB.charAt(rnd.nextInt(AB.length())));
-        return sb.toString();
     }
 }
