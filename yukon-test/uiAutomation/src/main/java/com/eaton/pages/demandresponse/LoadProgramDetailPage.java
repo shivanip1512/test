@@ -45,6 +45,8 @@ public class LoadProgramDetailPage extends PageBase {
     public CopyLoadProgramModal showCopyLoadProgramModal() {
         getActionBtn().clickAndSelectOptionByText("Copy");   
         
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy("copy-loadProgram-popup");
+        
         return new CopyLoadProgramModal(this.driverExt, Optional.empty(), Optional.of("copy-loadProgram-popup")); 
     }
     
