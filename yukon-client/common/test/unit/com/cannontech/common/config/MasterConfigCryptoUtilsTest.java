@@ -19,9 +19,6 @@ public class MasterConfigCryptoUtilsTest {
         sensitiveData.add(MasterConfigString.DB_SQLSERVER_HOST);
         sensitiveData.add(MasterConfigString.DB_JAVA_URL);
         sensitiveData.add(MasterConfigString.MAP_DEVICES_KEY);
-        sensitiveData.add(MasterConfigString.SUPPORT_BUNDLE_FTP_UPLOAD_USER);
-        sensitiveData.add(MasterConfigString.SUPPORT_BUNDLE_FTP_UPLOAD_PASSWORD);
-        sensitiveData.add(MasterConfigString.SUPPORT_BUNDLE_FTP_UPLOAD_HOST);
     }
 
     @Test
