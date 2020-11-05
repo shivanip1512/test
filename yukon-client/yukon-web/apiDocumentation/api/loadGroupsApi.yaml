@@ -17,6 +17,7 @@ post-operation:
       - Point Group
       - MCT
       - Ripple
+      - Eaton Cloud
     requestBody:
       content:
         application/json:
@@ -33,7 +34,8 @@ post-operation:
               - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_MCT'
               - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_RIPPLE'
               - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EXPRESSCOMM'
-             
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EATON_CLOUD'
+
           examples:
             Digi SEP Group:
               $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Digi SEP Group' 
@@ -57,7 +59,9 @@ post-operation:
               $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Ripple Group' 
             Expresscomm Group:
               $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Expresscomm Group'
-   
+            Eaton Cloud Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Eaton Cloud Group'
+              
       required: true
     responses:
         '200':
@@ -77,6 +81,7 @@ post-operation:
                   - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_MCT'
                   - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_RIPPLE'
                   - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EXPRESSCOMM'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EATON_CLOUD'
               examples:
                 Digi SEP Group:
                   $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Digi SEP Group' 
@@ -100,6 +105,8 @@ post-operation:
                   $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Ripple Group' 
                 Expresscomm Group:
                   $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Expresscomm Group'
+                Eaton Cloud Group:
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Eaton Cloud Group'
 get-update-delete-operation:
   get:
     tags:
@@ -119,6 +126,7 @@ get-update-delete-operation:
       - Point Group
       - MCT
       - Ripple
+      - Eaton Cloud
     parameters:
       - name: id
         in: path
@@ -145,6 +153,7 @@ get-update-delete-operation:
                 - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_MCT'
                 - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_RIPPLE'
                 - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EXPRESSCOMM'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EATON_CLOUD'
             examples:
               Digi SEP Group:
                 $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Digi SEP Group' 
@@ -168,6 +177,8 @@ get-update-delete-operation:
                 $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Ripple Group' 
               Expresscomm Group:
                 $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Expresscomm Group'
+              Eaton Cloud Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Eaton Cloud Group'
   put:
     tags:
       - Load Group
@@ -186,6 +197,7 @@ get-update-delete-operation:
       - Point Group
       - MCT
       - Ripple
+      - Eaton Cloud
     parameters:
       - name: id
         in: path
@@ -210,6 +222,7 @@ get-update-delete-operation:
               - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_MCT'
               - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_RIPPLE'
               - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EXPRESSCOMM'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EATON_CLOUD'
           examples:
             Digi SEP Group:
               $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Digi SEP Group' 
@@ -233,6 +246,8 @@ get-update-delete-operation:
               $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Ripple Group' 
             Expresscomm Group:
               $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Expresscomm Group'
+            Eaton Cloud Group:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Eaton Cloud Group'
       required: true
     responses:
       '200':
@@ -252,6 +267,7 @@ get-update-delete-operation:
               - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_MCT'
               - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_RIPPLE'
               - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EXPRESSCOMM'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EATON_CLOUD'
             examples:
               Digi SEP Group:
                 $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Digi SEP Group' 
@@ -275,6 +291,8 @@ get-update-delete-operation:
                 $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Ripple Group' 
               Expresscomm Group:
                 $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Expresscomm Group'
+              Eaton Cloud Group:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Eaton Cloud Group'
              
   delete:
     tags:
@@ -294,6 +312,7 @@ get-update-delete-operation:
       - Point Group
       - MCT
       - Ripple
+      - Eaton Cloud
     parameters:
       - name: id
         in: path
@@ -310,5 +329,5 @@ get-update-delete-operation:
             schema:
               $ref: '../schemas/loadGroupsSchema.yaml#/id'
             examples:
-              CommChannel Id:
+              Load Group Id:
                 $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/id'
