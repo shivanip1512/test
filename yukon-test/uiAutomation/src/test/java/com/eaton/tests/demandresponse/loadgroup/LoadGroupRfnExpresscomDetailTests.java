@@ -59,12 +59,10 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
-    public void ldGrpRfnExpresscom_pageTitleCorrect() {
+    public void ldGrpRfnExpresscom_Page_TitleCorrect() {
         final String expected_title = "Load Group: " + name;
 
-        LoadGroupDetailPage editPage = new LoadGroupDetailPage(driverExt, id);
-
-        String actualPageTitle = editPage.getPageTitle();
+        String actualPageTitle = detailPage.getPageTitle();
 
         assertThat(actualPageTitle).isEqualTo(expected_title);
     }
@@ -72,6 +70,13 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscom_Copy_Success() {
         setRefreshPage(true);
+        Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup()
+                .create();
+        JSONObject ldGrpResp = pair.getValue1();
+        int ldGrpId = ldGrpResp.getInt("id");
+
+        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + ldGrpId);
+        
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         final String copyName = "Copy RFN Exp " + timeStamp;
         final String expected_msg = copyName + " copied successfully.";
