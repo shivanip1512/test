@@ -150,13 +150,6 @@ Network Manager :
   - field: gwsmissingtsync
     description: Gateways Missing TSyncs (24 Hour)
     details: Gateway missing synchronous time for last 24 hours.
-    source: >-
-        SELECT COUNT(*) FROM (
-        SELECT gw.GwId, COUNT(gwle.LogEntryId) AS "Syncs" FROM Gateway gw 
-        JOIN Gw_Log_Entry gwle ON gw.GwId=gwle.GwId 
-        AND gwle.GatewayTimeStamp > CONVERT(BIGINT,(DATEDIFF(s, '1970-01-01', GETUTCDATE()) - 86400)) * 1000
-        AND gwle.GwLogCodeId=2202 GROUP BY gw.GwId) AS gwsync 
-        WHERE Syncs=0
     iotType: Both
     frequency : EverySixHours
 
