@@ -2,6 +2,7 @@ package com.eaton.tests.demandresponse.loadgroup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +32,7 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
     private LoadGroupExpresscomDetailsPage detailPage;
     private JSONObject response;
     private int id;
+    private String name;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
@@ -42,6 +44,7 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
 
         response = pair.getValue1();
         id = response.getInt("id");
+        name = response.getString("name");
 
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
         detailPage = new LoadGroupExpresscomDetailsPage(driverExt, id);
@@ -57,7 +60,6 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscom_pageTitleCorrect() {
-        String name = response.getString("name");
         final String expected_title = "Load Group: " + name;
 
         LoadGroupDetailPage editPage = new LoadGroupDetailPage(driverExt, id);
@@ -70,8 +72,8 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscom_Copy_Success() {
         setRefreshPage(true);
-        String name = response.getString("name");
-        final String copyName = "Copy of " + name;
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        final String copyName = "Copy RFN Exp " + timeStamp;
         final String expected_msg = copyName + " copied successfully.";
 
         CopyLoadGroupModal modal = detailPage.showCopyLoadGroupModal();
@@ -89,12 +91,12 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
         setRefreshPage(true);
         Pair<JSONObject, JSONObject> pair = LoadGroupRfnExpresscomCreateBuilder.buildDefaultRfnExpresscomLoadGroup()
                 .create();
-        JSONObject response = pair.getValue1();
-        int id = response.getInt("id");
-        String name = response.getString("name");
-        final String expected_msg = name + " deleted successfully.";
+        JSONObject ldGrpResp = pair.getValue1();
+        int ldGrpId = ldGrpResp.getInt("id");
+        String ldGrpName = ldGrpResp.getString("name");
+        final String expected_msg = ldGrpName + " deleted successfully.";
 
-        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
+        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + ldGrpId);
 
         ConfirmModal confirmModal = detailPage.showDeleteLoadGroupModal();
         confirmModal.clickOkAndWaitForModalToClose();
