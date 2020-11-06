@@ -24,7 +24,6 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
-import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupExpresscomDetailsPage;
 
 public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
@@ -60,6 +59,8 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscom_Page_TitleCorrect() {
+        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + id);
+        
         final String expected_title = "Load Group: " + name;
 
         String actualPageTitle = detailPage.getPageTitle();
