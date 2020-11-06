@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.eaton.framework.DriverExtensions;
-import com.eaton.framework.SeleniumTestSetup;
 
 public class WebTable {
 
@@ -268,10 +268,23 @@ public class WebTable {
         return newList;
     }
     
+    /**
+     *  Waits for the table to be filtered to a single row
+     */
     public void waitForFilter() {
-        WebElement table = this.getTable();
+        Integer count = 0;
+
+        long startTime = System.currentTimeMillis();      
         
-        driverExt.waitUntilStalenessOfElement(table.findElement(By.cssSelector("tbody tr"))); 
+        while (count != 1 && ((System.currentTimeMillis() - startTime) < 2000)) {
+            try {
+                WebElement table = this.getTable();
+                
+                count = table.findElements(By.cssSelector("tbody tr")).size(); 
+                
+            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
+            }
+        }        
     }
 
     /**

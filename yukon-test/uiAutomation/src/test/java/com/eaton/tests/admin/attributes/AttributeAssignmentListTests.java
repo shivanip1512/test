@@ -191,7 +191,7 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
 
         List<String> actualTypes = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(2);
 
-        assertThat(actualTypes).isNotEmpty().allMatch(e -> e.contains(deviceType));
+        assertThat(actualTypes).contains(deviceType);
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
@@ -205,6 +205,6 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
         
         List<String> actualNames = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(1);
 
-        assertThat(actualNames).isNotEmpty().allMatch(e -> e.contains(attrName));
+        assertThat(actualNames).contains(attrName);
     }
 }

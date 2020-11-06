@@ -109,6 +109,7 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscomDetail_GeographicalAddress_LabelsCorrect() {
+        setRefreshPage(false);
         SoftAssertions softly = new SoftAssertions();
         List<String> labels = detailPage.getGeographicalAddressSection().getSectionLabels();
         
@@ -119,6 +120,7 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscomDetail_GeographicalAddressing_LabelsCorrect() {
+        setRefreshPage(false);
         SoftAssertions softly = new SoftAssertions();
         List<String> labels = detailPage.getGeographicalAddressingSection().getSectionLabels();
         
@@ -133,6 +135,7 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscomDetail_LoadAddress_LabelsCorrect() {
+        setRefreshPage(false);
         SoftAssertions softly = new SoftAssertions();        
         List<String> labels = detailPage.getLoadAddressSection().getSectionLabels();
         
@@ -143,6 +146,7 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscomDetail_LoadAddressing_LabelsCorrect() {
+        setRefreshPage(false);
         SoftAssertions softly = new SoftAssertions();
         List<String> labels = detailPage.getLoadAddressingSection().getSectionLabels();
         
@@ -156,6 +160,7 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscomDetail_OptionalAttributes_LabelsCorrect() {
+        setRefreshPage(false);
         SoftAssertions softly = new SoftAssertions();
         List<String> labels = detailPage.getOptionalAttributesSection().getSectionLabels();
         
@@ -166,6 +171,7 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscomDetail_GeographicalAddress_ValuesCorrect() {
+        setRefreshPage(false);
         SoftAssertions softly = new SoftAssertions();
         List<String> values = detailPage.getGeographicalAddressSection().getSectionValues();
         List<String> addressUsageList = new ArrayList<String>(Arrays.asList(values.get(0).split(",")));
@@ -181,6 +187,7 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscomDetail_GeographicalAddressing_ValuesCorrect() {
+        setRefreshPage(false);
         SoftAssertions softly = new SoftAssertions();
         List<String> values = detailPage.getGeographicalAddressingSection().getSectionValues();
         
@@ -194,6 +201,7 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscomDetail_LoadAddress_ValuesCorrect() {
+        setRefreshPage(false);
         SoftAssertions softly = new SoftAssertions();
         List<String> values = detailPage.getLoadAddressSection().getSectionValues();
         List<String> loadAddressList = new ArrayList<String>(Arrays.asList(values.get(0).split(",")));
@@ -208,6 +216,7 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscomDetail_LoadAddressing_ValuesCorrect() {
+        setRefreshPage(false);
         SoftAssertions softly = new SoftAssertions();
         List<String> values = detailPage.getLoadAddressingSection().getSectionValues();
         List<String> relayUsageList = new ArrayList<String>(Arrays.asList(values.get(1).split(",")));
@@ -224,6 +233,7 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscomDetail_OptionalAttributes_ValuesCorrect() {
+        setRefreshPage(false);
         SoftAssertions softly = new SoftAssertions();
         List<String> values = detailPage.getOptionalAttributesSection().getSectionValues();
         
