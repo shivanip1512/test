@@ -43,7 +43,7 @@ public class PxMWDeviceProfile {
                              @JsonProperty("created_by") String createdByUser, 
                              @JsonProperty("modified") String modifiedTime, 
                              @JsonProperty("modified_by") String modifiedByUser,
-                             Device device, 
+                             @JsonProperty("device") Device device, 
                              List <Channel> channels) {
         this.deviceGuid = deviceGuid;
         this.createdTime = createdTime;
@@ -79,6 +79,7 @@ public class PxMWDeviceProfile {
         return modifiedByUser;
     }
 
+    @JsonProperty("device")
     public Device getDevice() {
         return device;
     }

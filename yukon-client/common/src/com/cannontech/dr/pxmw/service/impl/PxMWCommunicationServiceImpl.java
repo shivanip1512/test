@@ -30,7 +30,7 @@ public class PxMWCommunicationServiceImpl implements PxMWCommunicationService {
     private static final Logger log = YukonLogManager.getLogger(PxMWCommunicationServiceImpl.class);
 
     // Base PX Middleware API url
-    private final String urlBase = settingDao.getString(GlobalSettingType.PX_MIDDLEWARE_URL);
+    private final String urlBase = getUrlBase(settingDao);
 
     // PX Middleware API endpoints
     private static final String urlSuffixGetSecurityToken = "/v1/security/token";
