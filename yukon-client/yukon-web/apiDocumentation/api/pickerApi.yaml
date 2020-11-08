@@ -1,0 +1,88 @@
+search-by-id:
+  post:
+    tags:
+      - UI Component
+    summary: Search Picker By Id
+    description: |-
+      API to search Picker by id. 
+    
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/pickerSchema.yaml#/PickerIdSearch'
+            
+          examples:
+            Search Picker by Id:
+              $ref: '../schemas/pickerSchema.yaml#/components/examples/Search Picker by Id' 
+           
+      required: true
+    responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/pickerSchema.yaml#/PickerResponse'
+                 
+              examples:
+                Search Picker by Id:
+                  $ref: '../schemas/pickerSchema.yaml#/components/examples/Search Picker by Id Response' 
+
+search-by-query:
+  post:
+    tags:
+      - UI Component
+    summary: Search Picker By Query
+    description: |-
+      API to search picker by query. 
+    
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/pickerSchema.yaml#/PickerSearch'
+            
+          examples:
+            Search Picker by Query:
+              $ref: '../schemas/pickerSchema.yaml#/components/examples/Search Picker by Query' 
+           
+      required: true
+    responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/pickerSchema.yaml#/PickerResponse'
+                 
+              examples:
+                Search Picker by Query:
+                  $ref: '../schemas/pickerSchema.yaml#/components/examples/Search Picker by Query Response'
+
+search-by-type:
+  get:
+    tags:
+      - UI Component
+    summary: Search Picker By Type 
+    description: |-
+      API to search picker by type. 
+    parameters:
+      - name: type
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'Type of picker.'
+        
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/pickerSchema.yaml#/PickerType'
+            
+            examples:
+              Search Picker By Type:
+                $ref: '../schemas/pickerSchema.yaml#/components/examples/Search Picker By Type' 
