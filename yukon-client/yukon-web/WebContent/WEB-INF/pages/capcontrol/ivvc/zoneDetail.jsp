@@ -25,19 +25,14 @@
     <div class="column-10-14">
         <div class="column one">
             <tags:sectionContainer2 nameKey="details">
-            
-                <table class="compact-results-table has-alerts has-actions">
-                    <thead></thead>
-                    <tfoot></tfoot>
-                    <tbody>
-                    <tr>
-                        <td><cti:icon icon="icon-blank"/></td>
-                        <td><span class="strong-label-small"><i:inline key=".details.table.zone"/></span></td>
-                        <td><i:inline key="yukon.web.modules.capcontrol.ivvc.zone.${zoneDto.zoneType}"/></td>
-                    </tr>
-                    <%@ include file="zoneRegulators.jsp" %>
-                    </tbody>
-                </table>
+                <tags:nameValueContainer2>
+                    <tags:nameValue2 nameKey=".details.table.zone" nameClass="mw100">
+                        <i:inline key="yukon.web.modules.capcontrol.ivvc.zone.${zoneDto.zoneType}"/>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".details.table.regulator" nameClass="mw100">
+                        <%@ include file="zoneRegulators.jsp" %>
+                    </tags:nameValue2>
+                </tags:nameValueContainer2>
                 <div class="action-area">
                         <cti:button classes="js-zone-editor" nameKey="edit" icon="icon-pencil"/>
                     </div>

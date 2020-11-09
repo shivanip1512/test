@@ -159,9 +159,6 @@ yukon.da.busview = (function () {
             _range_hours = yukon.fromJson('#range-hours');
             
             $('#zoneHierarchyTree').fancytree('option', 'activate', _zoneHierarchyTreeClick);
-            //var rootNode = $.ui.fancytree.getTree("#zoneHierarchyTree").getRootNode();
-            //rootNode.setSelected(true);
-            //rootNode.setActive(true);
             
             /** User changed the events time range. Cancel updating timeout and restart. */
             $('#ivvc-events-range').on('change', function () {

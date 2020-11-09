@@ -209,7 +209,8 @@
                     <div class="column one">
                         <tags:boxContainer2 nameKey="zones" hideEnabled="false">
                             <cti:url var="treeUrl" value="/capcontrol/ivvc/bus/${subBusId}/zoneHierarchy"/>
-                            <fancyTree:inlineTree id="zoneHierarchyTree" dataUrl="${treeUrl}" includeControlBar="true" treeParameters='{"minExpandLevel": "1", "icon": false}'/>
+                            <fancyTree:inlineTree id="zoneHierarchyTree" dataUrl="${treeUrl}" includeControlBar="true" 
+                                treeParameters='{"minExpandLevel": "1", "icon": false}' highlightNodePath="${zones.zone.zoneId}" scrollToHighlighted="true"/>
                             <c:if test="${hasEditingRole}">
                                 <div class="action-area">         
                                     <cti:button nameKey="create" onclick="yukon.da.zone.wizard.showZoneCreationWizard('${zoneCreatorUrl}', '${zoneCreationWizardTitle}');" icon="icon-add"/>
