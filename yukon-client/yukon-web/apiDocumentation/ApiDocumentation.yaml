@@ -48,6 +48,11 @@ paths:
   /dr/constraints/holidaySchedules:
     $ref: 'api/programConstraintsApi.yaml#/holiday-schedules'
 
+  /dr/controlScenarios:
+    $ref: 'api/controlScenarioApi.yaml#/post-operation'
+  /dr/controlScenarios/{id}:
+    $ref: 'api/controlScenarioApi.yaml#/get-update-delete-operation'
+
   /devices/virtualDevices:
     $ref: 'api/virtualDevicesApi.yaml#/post-get-all-operation'
   /devices/virtualDevices/{id}:
@@ -85,6 +90,7 @@ tags:
   - name: Load Group
   - name: Macro Load Group
   - name: Program Constraints
+  - name: Control Scenario
   - name: Device Readings
   - name: Virtual Devices
   - name: Points
