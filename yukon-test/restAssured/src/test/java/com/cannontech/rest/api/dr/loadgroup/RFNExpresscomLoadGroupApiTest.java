@@ -10,14 +10,14 @@ import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
 import com.cannontech.rest.api.loadgroup.request.MockAddressUsage;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
-import com.cannontech.rest.api.loadgroup.request.MockLoadGroupExpresscom;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupRFNExpresscom;
 import com.cannontech.rest.api.utilities.Log;
 import io.restassured.response.ExtractableResponse;
 import com.cannontech.rest.api.utilities.ValidationHelper;
 
 public class RFNExpresscomLoadGroupApiTest {
-    MockLoadGroupExpresscom loadGroup = null;
-    private static final String contextGroupId = "LM_GROUP_EXPRESSCOMM.id";
+    MockLoadGroupRFNExpresscom loadGroup = null;
+    private static final String contextGroupId = "LM_GROUP_RFN_EXPRESSCOMM.id";
 
     /**
      * This test case validates creation of RFNExpresscomm load group with default values
@@ -26,7 +26,7 @@ public class RFNExpresscomLoadGroupApiTest {
     @Test
     public void loadGroupRFNExpresscom_01_Create(ITestContext context) {
         Log.startTestCase("loadGroupRFNExpresscom_01_Create");
-        loadGroup = (MockLoadGroupExpresscom) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RFN_EXPRESSCOMM);
+        loadGroup = (MockLoadGroupRFNExpresscom) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RFN_EXPRESSCOMM);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("loadGroups", loadGroup);
         Integer groupId = createResponse.jsonPath().getInt(contextGroupId);
@@ -50,7 +50,7 @@ public class RFNExpresscomLoadGroupApiTest {
         ExtractableResponse<?> response = ApiCallHelper.get("loadGroups", "/" + groupId);
         assertTrue(response.statusCode() == 200, "Status code should be 200");
 
-        MockLoadGroupExpresscom loadGroupRFNExpresscomResponse = response.as(MockLoadGroupExpresscom.class);
+        MockLoadGroupRFNExpresscom loadGroupRFNExpresscomResponse = response.as(MockLoadGroupRFNExpresscom.class);
         context.setAttribute("rfnExpresscomm_GrpName", loadGroupRFNExpresscomResponse.getName());
 
         assertTrue(loadGroup.getName().equals(loadGroupRFNExpresscomResponse.getName()),
@@ -67,7 +67,7 @@ public class RFNExpresscomLoadGroupApiTest {
     @Test(dependsOnMethods = { "loadGroupRFNExpresscom_01_Create" })
     public void loadGroupRFNExpresscom_03_Update(ITestContext context) {
         Log.startTestCase("loadGroupRFNExpresscom_03_Update");
-        loadGroup = (MockLoadGroupExpresscom) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RFN_EXPRESSCOMM);
+        loadGroup = (MockLoadGroupRFNExpresscom) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RFN_EXPRESSCOMM);
 
         String groupId = context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
         String name = "RFNExpresscommGroup_Update";
@@ -82,8 +82,8 @@ public class RFNExpresscomLoadGroupApiTest {
 
         ExtractableResponse<?> getUpdatedLoadGroupRFNExpresscomResponse = ApiCallHelper.get("loadGroups", "/" + groupId);
         assertTrue(response.statusCode() == 200, "Status code should be 200");
-        MockLoadGroupExpresscom updatedLoadGroupRFNExpresscomResponse = getUpdatedLoadGroupRFNExpresscomResponse
-                .as(MockLoadGroupExpresscom.class);
+        MockLoadGroupRFNExpresscom updatedLoadGroupRFNExpresscomResponse = getUpdatedLoadGroupRFNExpresscomResponse
+                .as(MockLoadGroupRFNExpresscom.class);
 
         assertTrue(loadGroup.getName().equals(updatedLoadGroupRFNExpresscomResponse.getName()), "Name Should be : " +
                 loadGroup.getName());
@@ -152,7 +152,7 @@ public class RFNExpresscomLoadGroupApiTest {
     @Test
     public void loadGroupRFNExpresscom_06_PhysicalAddressLessThanMinVal() {
         Log.startTestCase("loadGroupRFNExpresscom_06_PhysicalAddressLessThanMinVal");
-        loadGroup = (MockLoadGroupExpresscom) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RFN_EXPRESSCOMM);
+        loadGroup = (MockLoadGroupRFNExpresscom) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RFN_EXPRESSCOMM);
         loadGroup.setSplinter(Integer.valueOf(0));
         loadGroup.setGeo(Integer.valueOf(0));
         loadGroup.setZip(Integer.valueOf(0));
@@ -181,7 +181,7 @@ public class RFNExpresscomLoadGroupApiTest {
     @Test
     public void loadGroupRFNExpresscom_07_PhysicalAddressGreaterThanMaxValue() {
         Log.startTestCase("loadGroupRFNExpresscom_07_PhysicalAddressGreaterThanMaxValue");
-        loadGroup = (MockLoadGroupExpresscom) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RFN_EXPRESSCOMM);
+        loadGroup = (MockLoadGroupRFNExpresscom) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RFN_EXPRESSCOMM);
         loadGroup.setSplinter(Integer.valueOf(255));
         loadGroup.setGeo(Integer.valueOf(65535));
         loadGroup.setZip(Integer.valueOf(16777215));
@@ -210,7 +210,7 @@ public class RFNExpresscomLoadGroupApiTest {
     @Test
     public void loadGroupRFNExpresscom_08_WithoutRequiredAddressUsage() {
         Log.startTestCase("loadGroupRFNExpresscom_08_WithoutRequiredAddressUsage");
-        loadGroup = (MockLoadGroupExpresscom) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RFN_EXPRESSCOMM);
+        loadGroup = (MockLoadGroupRFNExpresscom) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RFN_EXPRESSCOMM);
         loadGroup.setAddressUsage(null);
         List<MockAddressUsage> rfnAddressUsage = new ArrayList<>();
         rfnAddressUsage.add(MockAddressUsage.SERIAL);
@@ -229,7 +229,7 @@ public class RFNExpresscomLoadGroupApiTest {
     @Test
     public void loadGroupRFNExpresscom_09_WithoutSerialNumber() {
         Log.startTestCase("loadGroupRFNExpresscom_09_WithoutSerialNumber");
-        loadGroup = (MockLoadGroupExpresscom) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RFN_EXPRESSCOMM);
+        loadGroup = (MockLoadGroupRFNExpresscom) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RFN_EXPRESSCOMM);
         loadGroup.setAddressUsage(null);
         List<MockAddressUsage> rfnAddressUsage = new ArrayList<>();
         rfnAddressUsage.add(MockAddressUsage.SPLINTER);
@@ -250,7 +250,7 @@ public class RFNExpresscomLoadGroupApiTest {
     @Test
     public void loadGroupRFNExpresscom_10_SerialNotAllowedWithOtherUsageTypes() {
         Log.startTestCase("loadGroupRFNExpresscom_10_SerialNotAllowedWithOtherUsageTypes");
-        loadGroup = (MockLoadGroupExpresscom) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RFN_EXPRESSCOMM);
+        loadGroup = (MockLoadGroupRFNExpresscom) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RFN_EXPRESSCOMM);
         loadGroup.setAddressUsage(null);
         List<MockAddressUsage> rfnAddressUsage = new ArrayList<>();
         rfnAddressUsage.add(MockAddressUsage.GEO);
