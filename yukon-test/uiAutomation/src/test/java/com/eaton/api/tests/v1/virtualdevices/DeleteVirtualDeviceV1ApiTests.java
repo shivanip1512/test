@@ -1,4 +1,4 @@
-package com.eaton.api.tests.virtualdevices;
+package com.eaton.api.tests.v1.virtualdevices;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,12 +15,12 @@ import com.github.javafaker.Faker;
 
 import io.restassured.response.ExtractableResponse;
 
-public class VirtualDeviceDeleteApiTests {
+public class DeleteVirtualDeviceV1ApiTests {
     
     private Faker faker = new Faker();
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VIRTUAL_DEVICES })
-    public void virtualDevice_Delete_Success() {
+    public void deleteVirtualDeviceApi_200Success() {
         Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceOnlyRequiredFields();
         
         JSONObject createresponse = pair.getValue1();
@@ -32,7 +32,7 @@ public class VirtualDeviceDeleteApiTests {
     }
     
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
-    public void virtualDevice_Delete_NotFoundId_400BadRequest() {
+    public void deleteVirtualDevice_NotFoundId_400BadRequest() {
         String invalidId = faker.number().digits(9);
         
         ExtractableResponse<?> response = ApiCallHelper.delete(APIs.VirtualDevice.DELETE_VIRTUALDEVICE + invalidId);

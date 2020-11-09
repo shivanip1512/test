@@ -1,4 +1,4 @@
-package com.eaton.api.tests.virtualdevices;
+package com.eaton.api.tests.v1.virtualdevices;
 
 import org.assertj.core.api.SoftAssertions;
 import org.javatuples.Pair;
@@ -13,10 +13,10 @@ import com.eaton.rest.api.common.ApiCallHelper;
 
 import io.restassured.response.ExtractableResponse;
 
-public class VirtualDeviceListApiTests {
+public class GetAllVirtualDeviceV1ApiTests {
     
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VIRTUAL_DEVICES })
-    public void virtualDevice_ListVirtualDevices_Success() {
+    public void getAllVirtualDeviceApi_200Success() {
         SoftAssertions softly = new SoftAssertions();
         Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceOnlyRequiredFields();
         
