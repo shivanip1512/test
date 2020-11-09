@@ -1810,6 +1810,7 @@
           <page name="smartNotificationsSimulator" type="BASIC"/>
           <page name="cacheManagement" type="BASIC"/>
           <page name="itronSimulator" type="BASIC"/>
+          <page name="pxWhiteSimulator" type="BASIC"/>
           <page name="jmsApis" type="BASIC"/>
           <page name="nest" type="BASIC">
           <link>/dev/nest/home</link>
