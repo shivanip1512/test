@@ -70,6 +70,7 @@ public final class APIs {
         public static final String DELETE_VIRTUALDEVICE = "/api/device/virtualDevices/";
         public static final String UPDATE_VIRTUALDEVICE = "/api/device/virtualDevices/";
         public static final String GET_VIRTUALDEVICE = "/api/device/virtualDevices/";
+        public static final String GET_VIRTUALDEVICES = "/api/device/virtualDevices";
     }
     
     public static final class Point {
