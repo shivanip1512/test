@@ -1,6 +1,7 @@
 package com.cannontech.watchdog;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -70,12 +71,19 @@ public class WatchdogService {
             }
             // Setup message source for reading i18n messages.
             ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-            String userDir = System.getProperty("user.dir");
-            String resourceDir = userDir.substring(0, userDir.lastIndexOf("\\") + 1).concat(resourcePath);
-            messageSource.setBasename(new File(resourceDir).toURI().toString());
+            String baseName = StringUtils.EMPTY;
+            URL url = WatchdogService.class.getResource("/com/cannontech/yukon/watchdog/root.xml");
+            if (url != null) {
+                String resourceUrl = url.toURI().toString();
+                baseName = resourceUrl.replace(".xml", "");
+            } else {
+                String userDir = System.getProperty("user.dir");
+                String resourceDir = userDir.substring(0, userDir.lastIndexOf("\\") + 1).concat(resourcePath);
+                baseName = new File(resourceDir).toURI().toString();
+            }
+            messageSource.setBasename(baseName);
 
             String subject = messageSource.getMessage("yukon.watchdog.notification.subject", null, Locale.ENGLISH);
-
             StringBuilder msgBuilder = new StringBuilder(
                     messageSource.getMessage("yukon.watchdog.notification.text", null, Locale.ENGLISH));
             msgBuilder.append("\n\n");
