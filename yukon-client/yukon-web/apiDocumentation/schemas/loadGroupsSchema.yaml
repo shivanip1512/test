@@ -684,6 +684,75 @@ LM_GROUP_EATON_CLOUD:
             - Load_7
             - Load_8
 
+LM_GROUP_POINT:
+  title: LM_GROUP_POINT
+  required:
+    - LM_GROUP_POINT
+  type: object
+  properties:
+    LM_GROUP_POINT:
+      required:
+        - type
+        - name
+        - kWCapacity
+        - deviceUsage
+        - pointUsage
+        - startControlRawState
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 60
+          description: 'Name for the load group.'
+        type:
+          type: string
+          description: 'Type of load group.'
+        kWCapacity:
+          type: number
+          description: 'Estimated kilowatt capacity of field devices that match the addressing of the load group. To disable this feature, enter a value of zero.'
+        disableGroup:
+          type: boolean
+          default: false
+          description: 'Flag to disable the load group.'
+        disableControl:
+          type: boolean
+          default: false
+          description: 'Flag to disable control of the load group.'
+        deviceUsage:
+          required:
+            - id
+          type: object
+          properties:
+            id:
+              type: integer
+              description: 'Unique device id on which the control point is attached.'
+            name:
+              type: string
+              description: 'Name of the device.'
+        pointUsage:
+          required:
+            - id
+          type: object
+          properties:
+            id:
+              type: integer
+              description: 'Unique point id on the device that performs the control.'
+            name:
+              type: string
+              description: 'Name of the point.'
+        startControlRawState:
+          required:
+            - rawState
+          type: object
+          properties:
+            rawState:
+              type: integer
+              description: 'Control start state id of available control Point.'
+            stateText:
+              type: string
+              description: 'State Text. If value of rawState is 0 then state text value is False.
+                            If value of rawState is 1 then state text value is True.'
+                            
 id:
   title: id
   required:
@@ -862,9 +931,25 @@ components:
           disableControl: false
           relayUsage:
             - Load_1
-
+    Point Group:
+      value:
+        LM_GROUP_POINT:
+          name: Point Test load grp
+          type: LM_GROUP_POINT
+          kWCapacity: 0
+          disableGroup: false
+          disableControl: false
+          deviceUsage:
+            id: 1982
+            name: CBC 8000 RFN1200
+          pointUsage:
+            id: 42893
+            name: CVR Mode
+          startControlRawState:
+            rawState: 1
+            stateText: 'True'
     
     id:
       value:
-        groupId: 39223
+        id: 39223
   
