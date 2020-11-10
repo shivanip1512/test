@@ -317,7 +317,7 @@ get-update-delete-operation:
       - Load Group
     summary: Delete Load Group
     description: |-
-       API to delete any type of load group based on passed id.
+      API to delete any type of load group based on passed id.
       Below are the supported load group.
       - DigiSep 
       - Eaton Cloud
