@@ -94,8 +94,29 @@
         <c:if test="${empty firmwareUpdates}">
             <span class="empty-list compact-results-table"><i:inline key=".firmwareUpdates.none"/></span>
         </c:if>
-        <cti:toJson object="${text}" id="gateway-text"/>
     </div>
 
+    <div id="gateway-templates" class="dn">
+        <table>
+            <tr class="js-new-firmware-update" data-update-id="">
+                <td class="js-firmware-update-timestamp">
+                    <a href="javascript:void(0);"></a>
+                </td>
+                <td class="js-firmware-gateways"></td>
+                <td class="js-firmware-update-servers"></td>
+                <td class="js-firmware-update-status">
+                    <div class="progress dib vat">
+                        <div class="progress-bar progress-bar-success"></div>
+                        <div class="progress-bar progress-bar-danger"></div>
+                    </div>
+                    <span class="js-percent"></span>
+                </td>
+                <td class="js-firmware-update-pending subtle"></td>
+                <td class="js-firmware-update-failed error"></td>
+                <td class="js-firmware-update-successful success"></td>
+            </tr>
+        </table>
+        <cti:toJson object="${text}" id="gateway-text"/>
+    </div>
     <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.list.js"/>
 </cti:standardPage>
