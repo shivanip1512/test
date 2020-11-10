@@ -5,11 +5,11 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 
-public class SimulatedPxWhiteSettings {
+public class SimulatedPxMWSettings {
     
     Map<RetrievalUrl, HttpStatus> selectedStatuses = new EnumMap<RetrievalUrl, HttpStatus>(RetrievalUrl.class);
     
-    public SimulatedPxWhiteSettings() {
+    public SimulatedPxMWSettings() {
         for (RetrievalUrl url : RetrievalUrl.values()) {
             getSelectedStatuses().put(url, url.getStatuses().get(0));
         }

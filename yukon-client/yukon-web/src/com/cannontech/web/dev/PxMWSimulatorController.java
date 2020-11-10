@@ -18,12 +18,12 @@ public class PxMWSimulatorController {
 	@GetMapping("/home")
 	public String home(ModelMap model) {
 	    model.addAttribute("endpoints", RetrievalUrl.values());
-	    model.addAttribute("settings", new SimulatedPxWhiteSettings());
+	    model.addAttribute("settings", new SimulatedPxMWSettings());
 		return "pxMW/home.jsp";
 	}
 	
    @PostMapping("/updateSettings")
-    public String updateSettings(@ModelAttribute("settings") SimulatedPxWhiteSettings settings) {
+    public String updateSettings(@ModelAttribute("settings") SimulatedPxMWSettings settings) {
        
        return "redirect:home";
     }
