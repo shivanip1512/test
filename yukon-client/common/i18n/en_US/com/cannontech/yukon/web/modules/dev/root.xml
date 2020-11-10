@@ -365,9 +365,9 @@
     <entry key="yukon.web.modules.dev.itronSimulator.pageName">Itron Simulator</entry>
     <entry key="yukon.web.modules.dev.itronSimulator.crumbTitle">Itron Simulator</entry>
     
-    <!-- PxWhite Simulator -->
-    <entry key="yukon.web.modules.dev.pxWhiteSimulator.pageName">PxWhite Simulator</entry>
-    <entry key="yukon.web.modules.dev.pxWhiteSimulator.crumbTitle">PxWhite Simulator</entry>
+    <!-- PxMW Simulator -->
+    <entry key="yukon.web.modules.dev.pxMWSimulator.pageName">PxMW Simulator</entry>
+    <entry key="yukon.web.modules.dev.pxMWSimulator.crumbTitle">PxMW Simulator</entry>
     
     <!-- JMS API -->
     <entry key="yukon.web.modules.dev.jmsApis.pageName">JMS APIs</entry>

@@ -11,19 +11,15 @@ import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.web.security.annotation.CheckCparm;
 
 @Controller
-@RequestMapping("/pxWhite/*")
+@RequestMapping("/pxMW/*")
 @CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
-public class PxWhiteSimulatorController {
+public class PxMWSimulatorController {
 
 	@GetMapping("/home")
 	public String home(ModelMap model) {
 	    model.addAttribute("endpoints", RetrievalUrl.values());
-	    SimulatedPxWhiteSettings settings = new SimulatedPxWhiteSettings();
-	    for (RetrievalUrl url : RetrievalUrl.values()) {
-	        settings.getSelectedStatuses().put(url, url.getStatuses().get(0));
-	    }
-	    model.addAttribute("settings", settings);
-		return "pxWhite/home.jsp";
+	    model.addAttribute("settings", new SimulatedPxWhiteSettings());
+		return "pxMW/home.jsp";
 	}
 	
    @PostMapping("/updateSettings")
@@ -31,6 +27,12 @@ public class PxWhiteSimulatorController {
        
        return "redirect:home";
     }
+   
+   @PostMapping("/testEndpoint")
+   public String testEndpoint(RetrievalUrl endpoint) {
+      
+      return "redirect:home";
+   }
 
 }
 

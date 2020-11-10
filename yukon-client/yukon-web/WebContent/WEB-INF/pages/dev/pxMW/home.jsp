@@ -3,16 +3,17 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="dev" page="pxWhiteSimulator">
+<cti:standardPage module="dev" page="pxMWSimulator">
 	    
-    <cti:url var="updateSettingsUrl" value="updateSettings" />
-	<form:form id="pxWhiteForm" action="${updateSettingsUrl}" modelAttribute="settings" method="post">
+    <cti:url var="updateSettingsUrl" value="updateSettings"/>
+	<form:form id="pxMWForm" action="${updateSettingsUrl}" modelAttribute="settings" method="post">
         <cti:csrfToken/>
         <table class="compact-results-table">
             <thead>
                 <tr>
                     <th>Endpoint</th>
                     <th>Status</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -20,15 +21,15 @@
                     <tr>
                         <td><a href="${endpoint.doc}" target="_blank">${endpoint.suffix}</a></td>
                         <td>
-                            <tags:selectWithItems path="selectedStatuses[${endpoint}]" items="${endpoint.statuses}"/>
+                            <tags:selectWithItems path="selectedStatuses[${endpoint}]" items="${endpoint.statuses}" inputClass="js-selected-status"/>
+                        </td>
+                        <td>
+                            <cti:button label="Test" classes="js-test-endpoint" data-endpoint="${endpoint}"/>
                         </td>
                     </tr>
                 </c:forEach>
             </tbody>
         </table>
-        
-        <div class="page-action-area">
-            <cti:button label="Update Settings" type="submit"/>
-        </div>
 	</form:form>
+    <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.pxMWSimulator.js" />
 </cti:standardPage>
