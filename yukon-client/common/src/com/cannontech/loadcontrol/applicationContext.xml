@@ -165,4 +165,6 @@
 
     <bean class="com.cannontech.dr.meterDisconnect.dao.impl.DrMeterDisconnectStatusDaoImpl"/>
     <bean class="com.cannontech.dr.meterDisconnect.service.impl.DrMeterDisconnectStatusServiceImpl"/>
+    
+    <bean class="com.cannontech.dr.pxmw.service.impl.PxMWCommunicationServiceImpl"/>
 </beans>
