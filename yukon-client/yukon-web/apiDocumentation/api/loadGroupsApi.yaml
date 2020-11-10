@@ -7,19 +7,18 @@ post-operation:
       API to create any type of load group.
       Below are the supported load group.
       - DigiSep 
+      - Eaton Cloud
       - Ecobee
       - Emetcon
       - Expresscom
       - Honeywell
       - Itron
-      - Meter Disconnect
-      - Versacomm
-      - Point Group
       - MCT
+      - Meter Disconnect
+      - Point 
       - Ripple
-      - Eaton Cloud
-      - Point
-      
+      - Versacomm
+ 
     requestBody:
       content:
         application/json:
@@ -87,7 +86,7 @@ post-operation:
                   - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_RIPPLE'
                   - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EXPRESSCOMM'
                   - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EATON_CLOUD'
-                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_POINT'
+                  - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_POINT_Response'
               examples:
                 Digi SEP Group:
                   $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Digi SEP Group' 
@@ -114,28 +113,27 @@ post-operation:
                 Eaton Cloud Group:
                   $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Eaton Cloud Group'
                 Point Group:
-                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Point Group'
+                  $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Point Group Response'
 get-update-delete-operation:
   get:
     tags:
       - Load Group
     summary: Retrieve Load Group
     description: |-
-      API to retrieve any type of load group based on passed id.
+      API to create any type of load group.
       Below are the supported load group.
       - DigiSep 
+      - Eaton Cloud
       - Ecobee
       - Emetcon
       - Expresscom
       - Honeywell
       - Itron
-      - Meter Disconnect
-      - Versacomm
-      - Point Group
       - MCT
+      - Meter Disconnect
+      - Point 
       - Ripple
-      - Eaton Cloud
-      - Point
+      - Versacomm
       
     parameters:
       - name: id
@@ -164,7 +162,7 @@ get-update-delete-operation:
                 - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_RIPPLE'
                 - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EXPRESSCOMM'
                 - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EATON_CLOUD'
-                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_POINT'
+                - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_POINT_Response'
             examples:
               Digi SEP Group:
                 $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Digi SEP Group' 
@@ -191,27 +189,27 @@ get-update-delete-operation:
               Eaton Cloud Group:
                 $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Eaton Cloud Group'
               Point Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Point Group'
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Point Group Response'
   put:
     tags:
       - Load Group
     summary: Update Load Group
     description: |-
-      API to update any type of load group based on passed id.
+      API to create any type of load group.
       Below are the supported load group.
       - DigiSep 
+      - Eaton Cloud
       - Ecobee
       - Emetcon
       - Expresscom
       - Honeywell
       - Itron
-      - Meter Disconnect
-      - Versacomm
-      - Point Group
       - MCT
+      - Meter Disconnect
+      - Point 
       - Ripple
-      - Eaton Cloud
-      - Point
+      - Versacomm
+      
     parameters:
       - name: id
         in: path
@@ -285,7 +283,7 @@ get-update-delete-operation:
               - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_RIPPLE'
               - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EXPRESSCOMM'
               - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_EATON_CLOUD'
-              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_POINT'
+              - $ref: '../schemas/loadGroupsSchema.yaml#/LM_GROUP_POINT_Response'
             examples:
               Digi SEP Group:
                 $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Digi SEP Group' 
@@ -312,28 +310,28 @@ get-update-delete-operation:
               Eaton Cloud Group:
                 $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Eaton Cloud Group'
               Point Group:
-                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Point Group'
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/Point Group Response'
              
   delete:
     tags:
       - Load Group
     summary: Delete Load Group
     description: |-
-      API to delete any type of load group based on passed id.
+      API to create any type of load group.
       Below are the supported load group.
       - DigiSep 
+      - Eaton Cloud
       - Ecobee
-      - Emetcon  
+      - Emetcon
       - Expresscom
       - Honeywell
       - Itron
-      - Meter Disconnect
-      - Versacomm
-      - Point Group
       - MCT
+      - Meter Disconnect
+      - Point 
       - Ripple
-      - Eaton Cloud
-      - Point
+      - Versacomm
+      
     parameters:
       - name: id
         in: path

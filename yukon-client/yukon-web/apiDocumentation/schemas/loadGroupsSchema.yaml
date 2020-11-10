@@ -725,7 +725,66 @@ LM_GROUP_POINT:
           properties:
             id:
               type: integer
-              description: 'Unique device id on which the control point is attached.'
+              description: 'Unique device id. Device on which the control point is attached.'
+        pointUsage:
+          required:
+            - id
+          type: object
+          properties:
+            id:
+              type: integer
+              description: 'Unique point id. Point on the device that performs the control.'
+        startControlRawState:
+          required:
+            - rawState
+          type: object
+          properties:
+            rawState:
+              type: integer
+              description: 'Control start state of available control Point.'
+
+LM_GROUP_POINT_Response:
+  title: LM_GROUP_POINT
+  required:
+    - LM_GROUP_POINT
+  type: object
+  properties:
+    LM_GROUP_POINT:
+      required:
+        - type
+        - name
+        - kWCapacity
+        - deviceUsage
+        - pointUsage
+        - startControlRawState
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 60
+          description: 'Name for the load group.'
+        type:
+          type: string
+          description: 'Type of load group.'
+        kWCapacity:
+          type: number
+          description: 'Estimated kilowatt capacity of field devices that match the addressing of the load group. To disable this feature, enter a value of zero.'
+        disableGroup:
+          type: boolean
+          default: false
+          description: 'Flag to disable the load group.'
+        disableControl:
+          type: boolean
+          default: false
+          description: 'Flag to disable control of the load group.'
+        deviceUsage:
+          required:
+            - id
+          type: object
+          properties:
+            id:
+              type: integer
+              description: 'Unique device id. Device on which the control point is attached.'
             name:
               type: string
               description: 'Name of the device.'
@@ -736,7 +795,7 @@ LM_GROUP_POINT:
           properties:
             id:
               type: integer
-              description: 'Unique point id on the device that performs the control.'
+              description: 'Unique point id. Point on the device that performs the control.'
             name:
               type: string
               description: 'Name of the point.'
@@ -747,12 +806,11 @@ LM_GROUP_POINT:
           properties:
             rawState:
               type: integer
-              description: 'Control start state id of available control Point.'
+              description: 'Control start state of available control Point.'
             stateText:
               type: string
-              description: 'State Text. If value of rawState is 0 then state text value is False.
+              description: 'State the point needs to be in to start control. If value of rawState is 0 then state text value is False.
                             If value of rawState is 1 then state text value is True.'
-                            
 id:
   title: id
   required:
@@ -931,9 +989,26 @@ components:
           disableControl: false
           relayUsage:
             - Load_1
-    Point Group:
+    
+    Point Group :
       value:
         LM_GROUP_POINT:
+          name: Point Test load grp
+          type: LM_GROUP_POINT
+          kWCapacity: 0
+          disableGroup: false
+          disableControl: false
+          deviceUsage:
+            id: 1982
+          pointUsage:
+            id: 42893
+          startControlRawState:
+            rawState: 1
+
+    Point Group Response:
+      value:
+        LM_GROUP_POINT:
+          id: 1233
           name: Point Test load grp
           type: LM_GROUP_POINT
           kWCapacity: 0

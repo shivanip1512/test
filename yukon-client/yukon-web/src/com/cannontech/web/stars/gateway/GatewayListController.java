@@ -1,14 +1,11 @@
 package com.cannontech.web.stars.gateway;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -51,8 +48,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
@@ -72,15 +67,6 @@ public class GatewayListController {
     @Autowired private RfnGatewayFirmwareUpgradeService rfnGatewayFirmwareUpgradeService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private PaoNotesService paoNotesService;
-    private Map<SortBy, Comparator<CertificateUpdate>> sorters;
-
-    @PostConstruct
-    public void initialize() {
-        Builder<SortBy, Comparator<CertificateUpdate>> builder = ImmutableMap.builder();
-        builder.put(SortBy.TIMESTAMP, GatewayControllerHelper.getTimestampComparator());
-        builder.put(SortBy.CERTIFICATE, GatewayControllerHelper.getCertificateFileNameComparator());
-        sorters = builder.build();
-    }
 
     @RequestMapping(value = { "/gateways", "/gateways/" }, method = RequestMethod.GET)
     public String gateways(ModelMap model, YukonUserContext userContext, FlashScope flash,
@@ -109,32 +95,11 @@ public class GatewayListController {
                                                                                     gatewaysString);
             flash.setWarning(message);
         }
-        
-        
-        List<CertificateUpdate> certUpdates = certificateUpdateService.getAllCertificateUpdates();
-        Direction dir = sorting.getDirection();
-        SortBy sortBy = SortBy.valueOf(sorting.getSort());
-        Comparator<CertificateUpdate> comparator = sorters.get(sortBy);
-        if (dir == Direction.desc) {
-            Collections.sort(certUpdates, Collections.reverseOrder(comparator));
-        } else {
-            Collections.sort(certUpdates, comparator);
-        }
-
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        for (SortBy column : SortBy.values()) {
-            String text = accessor.getMessage(column);
-            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
-            model.addAttribute(column.name(), col);
-        }
-        model.addAttribute("certUpdates", certUpdates);
         helper.addText(model, userContext);
-
         List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(gateways.stream()
                                                                              .map(gateway -> gateway.getPaoIdentifier().getPaoId())
                                                                              .collect(Collectors.toList()));
         model.addAttribute("notesList", notesList);
-        
         return "gateways/list.jsp";
     }
 
@@ -144,7 +109,7 @@ public class GatewayListController {
         List<RfnGatewayFirmwareUpdateSummary> firmwareUpdates = rfnGatewayFirmwareUpgradeService.getFirmwareUpdateSummaries();
         Direction dir = sorting.getDirection();
         FirmwareUpdatesSortBy sortBy = FirmwareUpdatesSortBy.valueOf(sorting.getSort());
-        Collections.sort(firmwareUpdates, GatewayControllerHelper.getFirmwareComparator(firmwareUpdates, sorting, sortBy));
+        Collections.sort(firmwareUpdates, GatewayControllerHelper.getFirmwareComparator(sorting, sortBy));
         model.addAttribute("firmwareUpdates", firmwareUpdates);
         helper.addText(model, userContext);
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
@@ -154,6 +119,24 @@ public class GatewayListController {
             model.addAttribute(column.name(), col);
         }
         return "gateways/firmwareUpdates.jsp";
+    }
+
+    @GetMapping("/gateways/certificateUpdates")
+    public String certificateUpdates(ModelMap model, YukonUserContext userContext,
+            @DefaultSort(dir = Direction.desc, sort = "TIMESTAMP") SortingParameters sorting) {
+        List<CertificateUpdate> certUpdates = certificateUpdateService.getAllCertificateUpdates();
+        Direction dir = sorting.getDirection();
+        CertificateUpdatesSortBy sortBy = CertificateUpdatesSortBy.valueOf(sorting.getSort());
+        Collections.sort(certUpdates, GatewayControllerHelper.getCertificateComparator(sorting, sortBy));
+        model.addAttribute("certUpdates", certUpdates);
+        helper.addText(model, userContext);
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        for (CertificateUpdatesSortBy column : CertificateUpdatesSortBy.values()) {
+            String text = accessor.getMessage(column);
+            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+            model.addAttribute(column.name(), col);
+        }
+        return "gateways/certificateUpdates.jsp";
     }
 
     @RequestMapping("/gateways/data")
@@ -246,11 +229,16 @@ public class GatewayListController {
         return json;
     }
 
-    public enum SortBy implements DisplayableEnum {
-        TIMESTAMP, CERTIFICATE;
+    public enum CertificateUpdatesSortBy implements DisplayableEnum {
+        TIMESTAMP,
+        CERTIFICATE,
+        FAILED,
+        SUCCESSFUL,
+        PENDING;
+
         @Override
         public String getFormatKey() {
-            return "yukon.web.modules.operator.gateways.certUpdate.tableheader." + name();
+            return "yukon.web.modules.operator.gateways.certificateUpdates." + name();
         }
     }
 
