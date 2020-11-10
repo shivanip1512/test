@@ -72,11 +72,15 @@ public class WatchdogService {
             // Setup message source for reading i18n messages.
             ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
             String baseName = StringUtils.EMPTY;
+            // Running as Window Service: root.xml file is packed in i18n-en_US.jar and available in client/bin directory only. So
+            // retrieve it from class path.
             URL url = WatchdogService.class.getResource("/com/cannontech/yukon/watchdog/root.xml");
             if (url != null) {
                 String resourceUrl = url.toURI().toString();
                 baseName = resourceUrl.replace(".xml", "");
             } else {
+                // In development environment(from Eclipse): root.xml file is not available in class path. So retrieve it by user
+                // directory.
                 String userDir = System.getProperty("user.dir");
                 String resourceDir = userDir.substring(0, userDir.lastIndexOf("\\") + 1).concat(resourcePath);
                 baseName = new File(resourceDir).toURI().toString();
