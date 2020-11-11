@@ -7,22 +7,26 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonIgnoreProperties(value = { "routeName" }, allowGetters = true, ignoreUnknown = true)
 @JsonInclude(Include.NON_NULL)
-public class LoadGroupExpresscom extends LoadGroupRFNExpresscom {
+public class LoadGroupExpresscom extends LoadGroupRFNExpresscom implements LoadGroupRoute {
     private Integer routeId;
     private String routeName;
 
+    @Override
     public Integer getRouteId() {
         return routeId;
     }
 
+    @Override
     public void setRouteId(Integer routeId) {
         this.routeId = routeId;
     }
 
+    @Override
     public String getRouteName() {
         return routeName;
     }
 
+    @Override
     public void setRouteName(String routeName) {
         this.routeName = routeName;
     }
@@ -42,4 +46,5 @@ public class LoadGroupExpresscom extends LoadGroupRFNExpresscom {
         // Set Expresscom
         lmGroupExpressCom.getLMGroupExpressComm().setRouteID(getRouteId());
     }
+
 }

@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class MockLoadGroupExpresscom extends MockLoadGroupRFNExpresscom {
+public class MockLoadGroupExpresscom extends MockLoadGroupRFNExpresscom implements MockLoadGroupRoute {
     private Integer routeId;
     private String routeName;
 }
