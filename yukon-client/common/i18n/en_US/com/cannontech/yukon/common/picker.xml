@@ -227,4 +227,6 @@
 <entry key="yukon.web.picker.trendPicker.name">Name</entry>
 <entry key="yukon.web.picker.trendPicker.graphDefinitionId">Trend Id</entry>
 
+<!-- RF Gateway Picker -->
+<entry key="yukon.web.picker.rfGatewayPicker.dialogTitle">Gateways</entry>
 </properties>
