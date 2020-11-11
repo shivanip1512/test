@@ -19,6 +19,7 @@ public enum YukonColorPalette implements DatabaseRepresentationSource, Displayab
     GRAY(ColorId.GRAY_ID, true),
     GRAY_LIGHT( ColorId.GRAY_LIGHT_ID),
     ORANGE(ColorId.ORANGE_ID, true),
+    PINK(ColorId.PINK_ID),
     PURPLE(ColorId.PURPLE_ID, true),
     RED(ColorId.RED_ID),
     RED_LIGHT(ColorId.RED_LIGHT_ID),
@@ -63,6 +64,7 @@ public enum YukonColorPalette implements DatabaseRepresentationSource, Displayab
         static final int GREEN_LIGHT_ID = 16;
         static final int BLUE_DARK_ID = 17;
         static final int SILVER_ID = 18;
+        static final int PINK_ID = 19;
     };
     
     private YukonColorPalette(int colorId) {
