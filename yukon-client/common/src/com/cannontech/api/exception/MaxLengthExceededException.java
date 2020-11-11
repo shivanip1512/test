@@ -8,8 +8,8 @@ public class MaxLengthExceededException extends RestApiException {
         super(errorDetails);
     }
 
-    public MaxLengthExceededException(ApiErrorDetails errorDetails, String details) {
-        super(errorDetails, details);
+    public MaxLengthExceededException(ApiErrorDetails errorDetails, String defaultMessage) {
+        super(errorDetails, defaultMessage);
     }
 
 }

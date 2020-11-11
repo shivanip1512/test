@@ -374,7 +374,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Build and return ApiErrors for Global Error Response with field errors.
      */
-    private ApiErrors buildValidationResponse(BindingResult bindingResult, WebRequest request, String uniqueKey) {
+    private ApiErrors buildValidationErrorResponse(BindingResult bindingResult, WebRequest request, String uniqueKey) {
         ApiErrors apiErrors = buildGlobalErrors(ApiErrorDetails.VALIDATION_FAILED, uniqueKey, request);
         List<com.cannontech.web.api.error.model.ApiFieldError> errors = new ArrayList<com.cannontech.web.api.error.model.ApiFieldError>();
         bindingResult.getFieldErrors().stream().forEach(
