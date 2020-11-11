@@ -1111,6 +1111,8 @@ License: http://creativecommons.org/licenses/by/3.0/
 .icon-wifi-meter { background-position: -321px -416px; }
 .icon-dashboard { background-position: -339px -416px; }
 .icon-dashboard-manage { background-position: -357px -416px; }
+.icon-virtual-meter { background-position: -375px -416px; }
+.icon-virtual-reality { background-position: -392px -416px; }
 
 /* 32 pixel icons */
 .icon-32-blank  { background-position: 32px 32px; }
@@ -1318,6 +1320,7 @@ License: http://creativecommons.org/licenses/by/3.0/
 .icon-32-zoom-in { background-position:-448px -160px; }
 .icon-32-zoom-out { background-position:-448px -192px; }
 .icon-32-openadr { background-position:-448px -224px; }
+.icon-32-multispeak { background-position:-448px -256px; }
 .icon-32-multispeak { background-position:-448px -256px; }
 
 /* non-sprite icons */
