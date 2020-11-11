@@ -193,7 +193,7 @@ public class SeleniumTestSetup {
         if (getCurrentUrl().equals(getBaseUrl() + page.getPageUrl())) {
             //driver.navigate().refresh();
             JavascriptExecutor je = (JavascriptExecutor) driver;
-            je.executeScript("document.location.reload()");
+            je.executeScript("document.location.reload(true);");
         } else {
             navigate(page.getPageUrl());
         }

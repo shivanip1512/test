@@ -1315,6 +1315,9 @@
                     <page name="gateways.manageFirmware" type="BASIC">
                         <link>/stars/gateways/firmwareDetails</link>
                     </page>
+                    <page name="gateways.certificateUpdates" type="BASIC">
+                        <link>/stars/gateways/certificateUpdates</link>
+                    </page>
                 </pages>
             </page>
             <page name="relays.list" type="BASIC" hideSearch="true">
@@ -1807,6 +1810,7 @@
           <page name="smartNotificationsSimulator" type="BASIC"/>
           <page name="cacheManagement" type="BASIC"/>
           <page name="itronSimulator" type="BASIC"/>
+          <page name="pxMWSimulator" type="BASIC"/>
           <page name="jmsApis" type="BASIC"/>
           <page name="nest" type="BASIC">
           <link>/dev/nest/home</link>
