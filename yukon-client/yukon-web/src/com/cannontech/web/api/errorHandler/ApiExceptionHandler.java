@@ -37,6 +37,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.cannontech.api.error.model.ApiErrorDetails;
+import com.cannontech.api.exception.RestApiException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.exception.LMObjectDeletionFailureException;
@@ -56,6 +58,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.spring.filtering.exceptions.InvalidFilteringParametersException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.api.error.model.ApiErrors;
 import com.cannontech.web.api.errorHandler.model.ApiError;
 import com.cannontech.web.api.errorHandler.model.ApiFieldError;
 import com.cannontech.web.api.errorHandler.model.ApiGlobalError;
@@ -360,4 +363,45 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         }
     }
 
+    /**
+     * Build and return ApiErrors for Global Error Response for the specified exception.
+     */
+    private ApiErrors buildGlobalErrorResponse(Exception ex, WebRequest request, String uniqueKey) {
+        ApiErrorDetails errorDetails = ((RestApiException) ex).getErrorDetails();
+        return buildGlobalErrors(errorDetails, uniqueKey, request);
+    }
+
+    /**
+     * Build and return ApiErrors for Global Error Response with field errors.
+     */
+    private ApiErrors buildValidationResponse(BindingResult bindingResult, WebRequest request, String uniqueKey) {
+        ApiErrors apiErrors = buildGlobalErrors(ApiErrorDetails.VALIDATION_FAILED, uniqueKey, request);
+        List<com.cannontech.web.api.error.model.ApiFieldError> errors = new ArrayList<com.cannontech.web.api.error.model.ApiFieldError>();
+        bindingResult.getFieldErrors().stream().forEach(
+                fieldError -> {
+                    com.cannontech.web.api.error.model.ApiFieldError error = new com.cannontech.web.api.error.model.ApiFieldError();
+                    ApiErrorDetails childError = ApiErrorDetails.getError(fieldError.getCode());
+                    error.setTitle(childError.getTitle());
+                    error.setType(childError.getType());
+                    error.setCode(childError.getCode());
+                    error.setDetail(childError.getDefaultMessage());
+                    error.setField(fieldError.getField());
+                    error.setParameters(fieldError.getArguments());
+                    error.setRejectedValue(String.valueOf(fieldError.getRejectedValue()));
+                    errors.add(error);
+                });
+        apiErrors.setErrors(errors);
+        return apiErrors;
+    }
+
+    private ApiErrors buildGlobalErrors(ApiErrorDetails errorDetails, String uniqueKey, WebRequest request) {
+        ApiErrors apiErrors = new ApiErrors();
+        apiErrors.setCode(errorDetails.getCode());
+        apiErrors.setDetail(errorDetails.getDefaultMessage());
+        apiErrors.setLogRef(uniqueKey);
+        apiErrors.setRequestUri(ServletUtil.getFullURL(((ServletWebRequest) request).getRequest()));
+        apiErrors.setTitle(errorDetails.getTitle());
+        apiErrors.setType(errorDetails.getType());
+        return apiErrors;
+    }
 }
