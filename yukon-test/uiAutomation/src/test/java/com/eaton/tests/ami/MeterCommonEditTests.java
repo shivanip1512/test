@@ -19,7 +19,6 @@ public class MeterCommonEditTests extends SeleniumTestSetup {
     private RFN420cLMeterDetailsPage meterDetailsPageWontEdit;
     
     private static final int WONT_EDIT_DEVICE_ID = 1295;
-    private static final int COULD_EDIT_DEVICE_ID = 1296;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
@@ -42,10 +41,7 @@ public class MeterCommonEditTests extends SeleniumTestSetup {
     public void editMeter_DeviceName_RequiredValidation() {
     	setRefreshPage(true);
     	
-    	navigate(Urls.Ami.METER_DETAIL + COULD_EDIT_DEVICE_ID);
-    	RFN420cLMeterDetailsPage meterDetailsPageCouldEdit = new RFN420cLMeterDetailsPage(driverExt, COULD_EDIT_DEVICE_ID);
-
-    	EditMeterModal editModal = meterDetailsPageCouldEdit.showMeterEditModal();
+    	EditMeterModal editModal = meterDetailsPageWontEdit.showMeterEditModal();
         
     	editModal.getDeviceName().setInputValue("");
 
@@ -60,10 +56,7 @@ public class MeterCommonEditTests extends SeleniumTestSetup {
     public void editMeter_DeviceName_InvalidCharValidation() {
     	setRefreshPage(true);
     	
-    	navigate(Urls.Ami.METER_DETAIL + COULD_EDIT_DEVICE_ID);
-    	RFN420cLMeterDetailsPage meterDetailsPageCouldEdit = new RFN420cLMeterDetailsPage(driverExt, COULD_EDIT_DEVICE_ID);
-    	
-    	EditMeterModal editModal = meterDetailsPageCouldEdit.showMeterEditModal();
+    	EditMeterModal editModal = meterDetailsPageWontEdit.showMeterEditModal();
 
         String deviceName = "Meter / \\ , ' ";
 
@@ -79,8 +72,7 @@ public class MeterCommonEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMeter_DeviceName_MaxLength60Chars() {
     	setRefreshPage(true);
-    	
-    	
+
     	EditMeterModal editModal = meterDetailsPageWontEdit.showMeterEditModal();
     	
         assertThat(editModal.getDeviceName().getMaxLength()).isEqualTo("60");
@@ -89,11 +81,8 @@ public class MeterCommonEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMeter_DeviceName_AlreadyExistsValidation() {
     	setRefreshPage(true);
-    	
-    	navigate(Urls.Ami.METER_DETAIL + COULD_EDIT_DEVICE_ID);
-    	RFN420cLMeterDetailsPage meterDetailsPageCouldEdit = new RFN420cLMeterDetailsPage(driverExt, COULD_EDIT_DEVICE_ID);
-    	
-    	EditMeterModal editModal = meterDetailsPageCouldEdit.showMeterEditModal();
+
+    	EditMeterModal editModal = meterDetailsPageWontEdit.showMeterEditModal();
 
         String deviceName = "AT Detail WRL-420cL";
         
@@ -109,11 +98,8 @@ public class MeterCommonEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMeter_MeterNumber_RequiredValidation() {
     	setRefreshPage(true);
-    	
-    	navigate(Urls.Ami.METER_DETAIL + COULD_EDIT_DEVICE_ID);
-    	RFN420cLMeterDetailsPage meterDetailsPageCouldEdit = new RFN420cLMeterDetailsPage(driverExt, COULD_EDIT_DEVICE_ID);
-    	
-    	EditMeterModal editModal = meterDetailsPageCouldEdit.showMeterEditModal();
+    		
+    	EditMeterModal editModal = meterDetailsPageWontEdit.showMeterEditModal();
     	editModal.getMeterNumber().setInputValue("");
     	
     	editModal.clickOkAndWaitForSpinner();

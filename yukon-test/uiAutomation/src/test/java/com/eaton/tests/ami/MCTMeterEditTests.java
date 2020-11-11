@@ -26,8 +26,7 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
     private MCT420cLMeterDetailsPage meterDetailsPageWontEdit;
    
     private static final int WONT_EDIT_DEVICE_ID = 1292;
-    private static final int COULD_EDIT_DEVICE_ID = 1293;
-    private static final int WILL_EDIT_DEVICE_ID = 1294;
+
     
     private static final String UPDATED = " updated successfully.";
     private static final String METER = "Meter ";
@@ -76,8 +75,10 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
     	
     	SoftAssertions softly = new SoftAssertions();
     	
-    	navigate(Urls.Ami.METER_DETAIL + WILL_EDIT_DEVICE_ID);
-    	MCT420cLMeterDetailsPage meterDetailsPageWillEdit = new MCT420cLMeterDetailsPage(driverExt, WILL_EDIT_DEVICE_ID);
+        final int editDeviceId = 1294;
+    	
+    	navigate(Urls.Ami.METER_DETAIL + editDeviceId);
+    	MCT420cLMeterDetailsPage meterDetailsPageWillEdit = new MCT420cLMeterDetailsPage(driverExt, editDeviceId);
     	
     	EditMeterModal editModal = meterDetailsPageWillEdit.showMeterEditModal();
 
@@ -97,9 +98,9 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
 
         editModal.clickOkAndWaitForModalToClose();
 
-        waitForUrlToLoad(Urls.Ami.METER_DETAIL + WILL_EDIT_DEVICE_ID, Optional.of(10));
+        waitForUrlToLoad(Urls.Ami.METER_DETAIL + editDeviceId, Optional.of(10));
 
-        meterDetailsPageWillEdit = new MCT420cLMeterDetailsPage(driverExt, WILL_EDIT_DEVICE_ID);
+        meterDetailsPageWillEdit = new MCT420cLMeterDetailsPage(driverExt, editDeviceId);
 
         String userMsg = meterDetailsPageWillEdit.getUserMessage();
 
@@ -117,11 +118,8 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
     public void editMCTMeter_PhysicalAddress_InvalidValidation() {
     	
     	setRefreshPage(true);
-    	
-    	navigate(Urls.Ami.METER_DETAIL + COULD_EDIT_DEVICE_ID);
-    	MCT420cLMeterDetailsPage meterDetailsPageCouldEdit = new MCT420cLMeterDetailsPage(driverExt, COULD_EDIT_DEVICE_ID);
-    	
-    	EditMeterModal editModal = meterDetailsPageCouldEdit.showMeterEditModal();
+    	    	
+    	EditMeterModal editModal = meterDetailsPageWontEdit.showMeterEditModal();
     	  
         String physicalAddress = "41 Charles St.";
 
@@ -139,10 +137,7 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
     	//The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length after a form submission
     	setRefreshPage(true);
 
-    	navigate(Urls.Ami.METER_DETAIL + COULD_EDIT_DEVICE_ID);
-    	MCT420cLMeterDetailsPage meterDetailsPageCouldEdit = new MCT420cLMeterDetailsPage(driverExt, COULD_EDIT_DEVICE_ID);
-    	
-    	EditMeterModal editModal = meterDetailsPageCouldEdit.showMeterEditModal();
+    	EditMeterModal editModal = meterDetailsPageWontEdit.showMeterEditModal();
 
         int physicalAddress = 4194304;
 
@@ -161,8 +156,7 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
     	//The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length after a form submission
     	setRefreshPage(true);
     	
-    	navigate(Urls.Ami.METER_DETAIL + COULD_EDIT_DEVICE_ID);
-    	MCT420cLMeterDetailsPage meterDetailsPageCouldEdit = new MCT420cLMeterDetailsPage(driverExt, COULD_EDIT_DEVICE_ID);
+    	MCT420cLMeterDetailsPage meterDetailsPageCouldEdit = new MCT420cLMeterDetailsPage(driverExt, WONT_EDIT_DEVICE_ID);
 
     	EditMeterModal editModal = meterDetailsPageCouldEdit.showMeterEditModal();
     	

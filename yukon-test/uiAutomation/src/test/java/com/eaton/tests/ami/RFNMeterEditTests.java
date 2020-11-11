@@ -25,8 +25,6 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
     private Faker faker;
     private RFN420cLMeterDetailsPage meterDetailsPageWontEdit;
     private static final int WONT_EDIT_DEVICE_ID = 1295;
-    private static final int COULD_EDIT_DEVICE_ID = 1296;
-    private static final int WILL_EDIT_DEVICE_ID = 1297;
     
     private static final String UPDATED = " updated successfully.";
     private static final String METER = "Meter ";
@@ -73,8 +71,9 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
     	setRefreshPage(true);
     	SoftAssertions softly = new SoftAssertions();
     	
-    	navigate(Urls.Ami.METER_DETAIL + WILL_EDIT_DEVICE_ID);
-    	RFN420cLMeterDetailsPage meterDetailsPageWillEdit = new RFN420cLMeterDetailsPage(driverExt, WILL_EDIT_DEVICE_ID);
+    	final int editDeviceId = 1297;
+    	navigate(Urls.Ami.METER_DETAIL + editDeviceId);
+    	RFN420cLMeterDetailsPage meterDetailsPageWillEdit = new RFN420cLMeterDetailsPage(driverExt, editDeviceId);
     	
     	EditMeterModal editModal = meterDetailsPageWillEdit.showMeterEditModal();
 
@@ -91,9 +90,9 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
 
         editModal.clickOkAndWaitForModalToClose();
 
-        waitForUrlToLoad(Urls.Ami.METER_DETAIL + WILL_EDIT_DEVICE_ID, Optional.of(10));
+        waitForUrlToLoad(Urls.Ami.METER_DETAIL + editDeviceId, Optional.of(10));
 
-        meterDetailsPageWillEdit = new RFN420cLMeterDetailsPage(driverExt, WILL_EDIT_DEVICE_ID);
+        meterDetailsPageWillEdit = new RFN420cLMeterDetailsPage(driverExt, editDeviceId);
 
         String userMsg = meterDetailsPageWillEdit.getUserMessage();
 
@@ -113,8 +112,10 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
     	setRefreshPage(true);
     	SoftAssertions softly = new SoftAssertions();
     	
-    	navigate(Urls.Ami.METER_DETAIL + WILL_EDIT_DEVICE_ID);
-    	RFN420cLMeterDetailsPage meterDetailsPageWillEdit = new RFN420cLMeterDetailsPage(driverExt, WILL_EDIT_DEVICE_ID);
+    	final int editDeviceId = 1297;
+    	
+    	navigate(Urls.Ami.METER_DETAIL + editDeviceId);
+    	RFN420cLMeterDetailsPage meterDetailsPageWillEdit = new RFN420cLMeterDetailsPage(driverExt, editDeviceId);
     	
     	EditMeterModal editModal = meterDetailsPageWillEdit.showMeterEditModal();
 
@@ -133,9 +134,9 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
         
         editModal.clickOkAndWaitForModalToClose();
 
-        waitForUrlToLoad(Urls.Ami.METER_DETAIL + WILL_EDIT_DEVICE_ID, Optional.of(10));
+        waitForUrlToLoad(Urls.Ami.METER_DETAIL + editDeviceId, Optional.of(10));
 
-        meterDetailsPageWillEdit = new RFN420cLMeterDetailsPage(driverExt, WILL_EDIT_DEVICE_ID);
+        meterDetailsPageWillEdit = new RFN420cLMeterDetailsPage(driverExt, editDeviceId);
 
         String userMsg = meterDetailsPageWillEdit.getUserMessage();
 
@@ -155,10 +156,7 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
     	//The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length after a form submission
     	setRefreshPage(true);
     	
-    	navigate(Urls.Ami.METER_DETAIL + COULD_EDIT_DEVICE_ID);
-    	RFN420cLMeterDetailsPage meterDetailsPageCouldEdit = new RFN420cLMeterDetailsPage(driverExt, COULD_EDIT_DEVICE_ID);
-    	
-    	EditMeterModal editModal = meterDetailsPageCouldEdit.showMeterEditModal();
+    	EditMeterModal editModal = meterDetailsPageWontEdit.showMeterEditModal();
 
         String serialNumber = "3619944661838896601546506928503";
         
@@ -175,11 +173,8 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
     public void editRFNMeter_Manufacturer_MaxLength60Chars() {
     	//The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length after a form submission
     	setRefreshPage(true);
-    	
-    	navigate(Urls.Ami.METER_DETAIL + COULD_EDIT_DEVICE_ID);
-    	RFN420cLMeterDetailsPage meterDetailsPageCouldEdit = new RFN420cLMeterDetailsPage(driverExt, COULD_EDIT_DEVICE_ID);
 
-    	EditMeterModal editModal = meterDetailsPageCouldEdit.showMeterEditModal();
+    	EditMeterModal editModal = meterDetailsPageWontEdit.showMeterEditModal();
 
         String manufacturer = "Itron OpenWay Electricity Smart Meter with Two-way Communications";
         
@@ -196,11 +191,8 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
     public void editRFNMeter_Model_MaxLength60Chars() {
     	//The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length after a form submission
     	setRefreshPage(true);
-    	
-    	navigate(Urls.Ami.METER_DETAIL + COULD_EDIT_DEVICE_ID);
-    	RFN420cLMeterDetailsPage meterDetailsPageCouldEdit = new RFN420cLMeterDetailsPage(driverExt, COULD_EDIT_DEVICE_ID);
 
-    	EditMeterModal editModal = meterDetailsPageCouldEdit.showMeterEditModal();
+    	EditMeterModal editModal = meterDetailsPageWontEdit.showMeterEditModal();
 
         String model = "Single-Phase Residential Electricity Meter CENTRON (C2SX) Meter";
         
