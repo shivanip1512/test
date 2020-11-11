@@ -58,7 +58,7 @@ public class GatewayCertificateController {
         return "gateways/certificateUpdatePopup.jsp";
     }
 
-    @GetMapping(value = "/gateways/cert-update/data")
+    @GetMapping("/gateways/cert-update/data")
     public @ResponseBody Map<Integer, Object> data() {
         Map<Integer, Object> json = new HashMap<>();
         List<CertificateUpdate> updates = certificateUpdateService.getAllCertificateUpdates();
