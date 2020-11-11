@@ -22,6 +22,7 @@ import com.eaton.elements.modals.SelectPointModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.tools.trends.TrendCreatePage;
 import com.eaton.pages.tools.trends.TrendsListPage;
@@ -63,7 +64,8 @@ public class TrendCreateTests extends SeleniumTestSetup {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT All Fields " + timeStamp;
 
-        String point = "Analog Point for Create Trend";
+        String point = TestDbDataType.TrendPointData.CREATE_TREND_ANALOG_POINT_ID.getName();
+        String pointId = TestDbDataType.TrendPointData.CREATE_TREND_ANALOG_POINT_ID.getId();
         String label = "AT Marker";
 
         final String EXPECTED_MSG = name + " saved successfully.";
@@ -74,7 +76,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
         createPage.getTabElement().clickTabAndWait("Setup");
         TrendPointModal addPointModal = createPage.showAndWaitAddPointModal();
         SelectPointModal selectPointModal = addPointModal.showAndWaitSelectPointModal();
-        selectPointModal.selectPoint(point, Optional.of("5231"));
+        selectPointModal.selectPoint(point, Optional.of(pointId));
         selectPointModal.clickOkAndWaitForModalToClose();
         addPointModal.clickOkAndWaitForModalToClose();
 

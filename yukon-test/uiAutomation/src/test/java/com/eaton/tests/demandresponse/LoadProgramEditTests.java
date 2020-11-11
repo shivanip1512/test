@@ -11,6 +11,7 @@ import org.testng.annotations.Test;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.LoadProgramDetailPage;
 import com.eaton.pages.demandresponse.LoadProgramEditPage;
@@ -30,9 +31,11 @@ public class LoadProgramEditTests extends SeleniumTestSetup {
         final String PROGRAM_NAME = "AT Load Program";
         final String EXPECTED_TITLE = "Edit Load Program: " + PROGRAM_NAME;
         
-        navigate(Urls.DemandResponse.LOAD_PROGRAM_EDIT + "665" + Urls.EDIT);
+        String ldPrgrmId = TestDbDataType.DemandResponseData.LOADPROGRAM_ID.getId();
         
-        LoadProgramEditPage editPage = new LoadProgramEditPage(driverExt, 665);
+        navigate(Urls.DemandResponse.LOAD_PROGRAM_EDIT + ldPrgrmId + Urls.EDIT);
+        
+        LoadProgramEditPage editPage = new LoadProgramEditPage(driverExt, Integer.parseInt(ldPrgrmId));
 
         String actualPageTitle = editPage.getPageTitle();
 
@@ -40,10 +43,12 @@ public class LoadProgramEditTests extends SeleniumTestSetup {
     }
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
-    public void loadProgramEdit_RequiredFieldsOnly_Success() {        
-        navigate(Urls.DemandResponse.LOAD_PROGRAM_EDIT + "599" + Urls.EDIT);
+    public void loadProgramEdit_RequiredFieldsOnly_Success() {       
+        String ldPrgrmEditId = TestDbDataType.DemandResponseData.LOADPROGRAM_EDIT_ID.getId();
         
-        LoadGroupEditPage editPage = new LoadGroupEditPage(driverExt, 599);
+        navigate(Urls.DemandResponse.LOAD_PROGRAM_EDIT + ldPrgrmEditId + Urls.EDIT);
+        
+        LoadGroupEditPage editPage = new LoadGroupEditPage(driverExt, Integer.parseInt(ldPrgrmEditId));
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited Direct Program " + timeStamp;
@@ -55,7 +60,7 @@ public class LoadProgramEditTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Load Program: " + name, Optional.empty());
         
-        LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt, 599);
+        LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt, Integer.parseInt(ldPrgrmEditId));
         
         String userMsg = detailsPage.getUserMessage();
         

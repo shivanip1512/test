@@ -12,6 +12,7 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.MeterEnums;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.ami.AmiDashboardPage;
 import com.eaton.pages.ami.WRL420cDMeterDetailsPage;
@@ -24,15 +25,16 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
     private WRL420cDMeterDetailsPage meterDetailsPage;
-    private final int DEVICEID = 1234;
+    private String deviceId;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        deviceId = TestDbDataType.MeterData.WRL_420CD_DETAIL_ID.getId();
 
         setRefreshPage(false);
-        navigate(Urls.Ami.METER_DETAIL + DEVICEID);
-        meterDetailsPage = new WRL420cDMeterDetailsPage(driverExt, DEVICEID);        
+        navigate(Urls.Ami.METER_DETAIL + deviceId);
+        meterDetailsPage = new WRL420cDMeterDetailsPage(driverExt, Integer.parseInt(deviceId));        
     }
 
     @AfterMethod(alwaysRun = true)
@@ -322,12 +324,13 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDDetail_Delete_Success() {
         setRefreshPage(true);
-        final int DEVICEID = 1263;
+        
+        String deviceId = TestDbDataType.MeterData.WRL_420CD_DELETE_ID.getId();
         final String EXPECTED_MSG = "Meter AT Delete " + MeterEnums.MeterType.WRL420CD.getMeterType() + " deleted successfully.";
 
-        navigate(Urls.Ami.METER_DETAIL + DEVICEID);
+        navigate(Urls.Ami.METER_DETAIL + deviceId);
 
-        WRL420cDMeterDetailsPage meterDetailsPage = new WRL420cDMeterDetailsPage(driverExt, DEVICEID);
+        WRL420cDMeterDetailsPage meterDetailsPage = new WRL420cDMeterDetailsPage(driverExt, Integer.parseInt(deviceId));
 
         ConfirmModal modal = meterDetailsPage.showAndWaitConfirmDeleteModal();
 

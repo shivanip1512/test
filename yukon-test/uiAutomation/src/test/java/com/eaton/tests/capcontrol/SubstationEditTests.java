@@ -13,6 +13,7 @@ import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.SubstationDetailPage;
 import com.eaton.pages.capcontrol.SubstationEditPage;
@@ -27,8 +28,11 @@ public class SubstationEditTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         setRefreshPage(false);
-        navigate(Urls.CapControl.SUBSTATION_EDIT + "666" + Urls.EDIT);
-        editPage = new SubstationEditPage(driverExt, 666);
+        
+        String subId = TestDbDataType.VoltVarData.SUBSTATION_ID.getId();
+        
+        navigate(Urls.CapControl.SUBSTATION_EDIT + subId + Urls.EDIT);
+        editPage = new SubstationEditPage(driverExt, Integer.parseInt(subId));
     }
 
     @AfterMethod(alwaysRun = true)
@@ -52,8 +56,10 @@ public class SubstationEditTests extends SeleniumTestSetup {
     public void substationEdit_RequiredFieldsOnly_Success() {
         setRefreshPage(true);
         final String EXPECTED_MSG = "Substation was saved successfully.";
+        
+        String subEditId = TestDbDataType.VoltVarData.SUBSTATION_EDIT_ID.getId();
 
-        navigate(Urls.CapControl.SUBSTATION_EDIT + "451" + Urls.EDIT);
+        navigate(Urls.CapControl.SUBSTATION_EDIT + subEditId + Urls.EDIT);
 
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
 
@@ -64,7 +70,7 @@ public class SubstationEditTests extends SeleniumTestSetup {
 
         waitForPageToLoad("Substation: " + name, Optional.empty());
 
-        SubstationDetailPage detailsPage = new SubstationDetailPage(driverExt, 451);
+        SubstationDetailPage detailsPage = new SubstationDetailPage(driverExt, Integer.parseInt(subEditId));
 
         String userMsg = detailsPage.getUserMessage();
 
@@ -75,8 +81,10 @@ public class SubstationEditTests extends SeleniumTestSetup {
     public void substationEdit_Delete_Success() {
         setRefreshPage(true);
         final String EXPECTED_MSG = "Substation AT Delete Substation deleted successfully.";
+        
+        String subEditId = TestDbDataType.VoltVarData.SUBSTATION_DELETE_ID.getId();
 
-        navigate(Urls.CapControl.SUBSTATION_EDIT + "573" + Urls.EDIT);
+        navigate(Urls.CapControl.SUBSTATION_EDIT + subEditId + Urls.EDIT);
 
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
 

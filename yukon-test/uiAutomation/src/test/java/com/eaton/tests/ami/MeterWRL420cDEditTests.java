@@ -14,6 +14,7 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.MeterEnums;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.ami.WRL420cDMeterDetailsPage;
 
@@ -21,7 +22,7 @@ public class MeterWRL420cDEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
     private WRL420cDMeterDetailsPage meterDetailsPage;
-    private static final int DEVICEID = 1262;
+    private String deviceId;
     private static final String METER = "Meter ";
     private static final String UPDATED = " updated successfully.";
     private static final String DATE_FORMAT = "ddMMyyyyHHmmss";
@@ -29,8 +30,9 @@ public class MeterWRL420cDEditTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        navigate(Urls.Ami.METER_DETAIL + DEVICEID);
-        meterDetailsPage = new WRL420cDMeterDetailsPage(driverExt, DEVICEID);
+        deviceId = TestDbDataType.MeterData.WRL_420CD_EDIT_ID.getId();
+        navigate(Urls.Ami.METER_DETAIL + deviceId);
+        meterDetailsPage = new WRL420cDMeterDetailsPage(driverExt, Integer.parseInt(deviceId));
     }
     
     @AfterMethod(alwaysRun = true)
@@ -40,7 +42,6 @@ public class MeterWRL420cDEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDEdit_RequiredFieldsOnly_Success() {
-    	
         String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited " + MeterEnums.MeterType.WRL420CD.getMeterType() + " " + timeStamp;
 
@@ -49,9 +50,9 @@ public class MeterWRL420cDEditTests extends SeleniumTestSetup {
         editModal.getdeviceName().setInputValue(name);
         editModal.clickOkAndWaitForModalToClose();
 
-        waitForUrlToLoad(Urls.Ami.METER_DETAIL + DEVICEID, Optional.of(10));
+        waitForUrlToLoad(Urls.Ami.METER_DETAIL + Integer.parseInt(deviceId), Optional.of(10));
 
-        WRL420cDMeterDetailsPage detailPage = new WRL420cDMeterDetailsPage(driverExt, DEVICEID);
+        WRL420cDMeterDetailsPage detailPage = new WRL420cDMeterDetailsPage(driverExt, Integer.parseInt(deviceId));
 
         String userMsg = detailPage.getUserMessage();
 

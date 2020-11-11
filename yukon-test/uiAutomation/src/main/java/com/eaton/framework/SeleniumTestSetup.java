@@ -43,6 +43,8 @@ public class SeleniumTestSetup {
     private static boolean loggedIn = false;
 
     private static String screenShotPath;
+    
+    private static String database;
 
     private static Faker faker;
     
@@ -74,6 +76,7 @@ public class SeleniumTestSetup {
             setDriverExt(new DriverExtensions(SeleniumTestSetup.driver));
             setFaker(new Faker());
             setScreenShotPath(configFileReader.getScreenShotPath());
+            setDatabase(configFileReader.getDatabaseParameter());
         } catch (Exception ex) {
             logger.fine(EXCEPTION_MSG + ex);
         }
@@ -142,6 +145,14 @@ public class SeleniumTestSetup {
 
     public static String getScreenShotPath() {
         return SeleniumTestSetup.screenShotPath;
+    }
+    
+    private static void setDatabase(String database) {
+        SeleniumTestSetup.database = database;
+    }
+    
+    public static String getDatabase() {
+        return SeleniumTestSetup.database;
     }
 
     public static String getCurrentUrl() {

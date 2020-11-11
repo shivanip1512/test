@@ -13,6 +13,7 @@ import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.SubstationBusDetailPage;
 import com.eaton.pages.capcontrol.SubstationBusEditPage;
@@ -28,9 +29,11 @@ public class SubstationBusEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
         setRefreshPage(false);
         
-        navigate(Urls.CapControl.SUBSTATION_BUS_EDIT + "667" + Urls.EDIT);
+        String subBusId = TestDbDataType.VoltVarData.SUBBUS_ID.getId();
+        
+        navigate(Urls.CapControl.SUBSTATION_BUS_EDIT + subBusId + Urls.EDIT);
 
-        editPage = new SubstationBusEditPage(driverExt, 667);
+        editPage = new SubstationBusEditPage(driverExt, Integer.parseInt(subBusId));
     }
     
     @AfterMethod(alwaysRun = true)
@@ -54,8 +57,10 @@ public class SubstationBusEditTests extends SeleniumTestSetup {
     public void substationBusEdit_RequiredFieldsOnly_Success() {
         setRefreshPage(true);
         final String EXPECTED_MSG = "Bus was saved successfully.";
+        
+        String subBusEditId = TestDbDataType.VoltVarData.SUBBUS_EDIT_ID.getId();
 
-        navigate(Urls.CapControl.SUBSTATION_BUS_EDIT + "430" + Urls.EDIT);
+        navigate(Urls.CapControl.SUBSTATION_BUS_EDIT + subBusEditId + Urls.EDIT);
 
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
 
@@ -66,7 +71,7 @@ public class SubstationBusEditTests extends SeleniumTestSetup {
 
         waitForPageToLoad("Bus: " + name, Optional.empty());
 
-        SubstationBusDetailPage detailsPage = new SubstationBusDetailPage(driverExt, 430);
+        SubstationBusDetailPage detailsPage = new SubstationBusDetailPage(driverExt, Integer.parseInt(subBusEditId));
 
         String userMsg = detailsPage.getUserMessage();
 
@@ -77,8 +82,10 @@ public class SubstationBusEditTests extends SeleniumTestSetup {
     public void substationBusEdit_Delete_Success() {
         setRefreshPage(true);
         final String EXPECTED_MSG = "Bus AT Delete Bus deleted successfully.";
+        
+        String subBusDeleteId = TestDbDataType.VoltVarData.SUBBUS_DELETE_ID.getId();
 
-        navigate(Urls.CapControl.SUBSTATION_BUS_EDIT + "574" + Urls.EDIT);
+        navigate(Urls.CapControl.SUBSTATION_BUS_EDIT + subBusDeleteId + Urls.EDIT);
 
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
 

@@ -13,6 +13,7 @@ import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.CbcDetailPage;
 import com.eaton.pages.capcontrol.CbcEditPage;
@@ -28,7 +29,9 @@ public class CbcEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
         setRefreshPage(false);
         
-        navigate(Urls.CapControl.CBC_EDIT + "670" + Urls.EDIT);
+        String cbcEditId = TestDbDataType.VoltVarData.CBC_ID.getId();
+        
+        navigate(Urls.CapControl.CBC_EDIT + cbcEditId + Urls.EDIT);
 
         editPage = new CbcEditPage(driverExt, 670);
     }
@@ -54,8 +57,9 @@ public class CbcEditTests extends SeleniumTestSetup {
     public void cbcEdit_RequiredFieldsOnly_Success() {
         setRefreshPage(true);
         final String EXPECTED_MSG = "CBC was successfully saved.";
+        String cbcEditId = TestDbDataType.VoltVarData.CBC_EDIT_ID.getId();
 
-        navigate(Urls.CapControl.CBC_EDIT + "563" + Urls.EDIT);
+        navigate(Urls.CapControl.CBC_EDIT + cbcEditId + Urls.EDIT);
 
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
 
@@ -66,7 +70,7 @@ public class CbcEditTests extends SeleniumTestSetup {
 
         waitForPageToLoad("CBC: " + name, Optional.empty());
 
-        CbcDetailPage detailPage = new CbcDetailPage(driverExt, 563);
+        CbcDetailPage detailPage = new CbcDetailPage(driverExt, Integer.parseInt(cbcEditId));
 
         String userMsg = detailPage.getUserMessage();
 
@@ -77,8 +81,9 @@ public class CbcEditTests extends SeleniumTestSetup {
     public void cbcEdit_Delete_Success() {
         setRefreshPage(true);
         final String EXPECTED_MSG = "Deleted CBC";
+        String cbcDeleteId = TestDbDataType.VoltVarData.CBC_DELETE_ID.getId();
 
-        navigate(Urls.CapControl.CBC_EDIT + "577" + Urls.EDIT);
+        navigate(Urls.CapControl.CBC_EDIT + cbcDeleteId + Urls.EDIT);
 
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
 

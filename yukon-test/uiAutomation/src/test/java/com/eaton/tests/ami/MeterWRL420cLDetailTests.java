@@ -11,6 +11,7 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.MeterEnums;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.ami.AmiDashboardPage;
 import com.eaton.pages.ami.WRL420cLMeterDetailsPage;
@@ -23,14 +24,16 @@ public class MeterWRL420cLDetailTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
     private WRL420cLMeterDetailsPage meterDetailsPage;
-    private final int DEVICEID = 1202;
+    private String deviceId;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
         setRefreshPage(false);
-        navigate(Urls.Ami.METER_DETAIL + DEVICEID);
-        meterDetailsPage = new WRL420cLMeterDetailsPage(driverExt, DEVICEID);
+        
+        deviceId = TestDbDataType.MeterData.WRL_420CL_DETAIL_ID.getId();
+        navigate(Urls.Ami.METER_DETAIL + deviceId);
+        meterDetailsPage = new WRL420cLMeterDetailsPage(driverExt, Integer.parseInt(deviceId));
     }
 
     @BeforeMethod(alwaysRun = true)
@@ -147,8 +150,8 @@ public class MeterWRL420cLDetailTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cLDetail_WiFiConnection_ValuesCorrect() {
-
         SoftAssertions softly = new SoftAssertions();
+        
         softly.assertThat(meterDetailsPage.getWiFiConnectionPanel().getTable().getValueCount()).isEqualTo(2);
         softly.assertThat(meterDetailsPage.getWiFiConnectionPanel().getTable().getValueByRow(0)).isEqualTo("Connected  08/26/2020 13:13:44");
         softly.assertThat(meterDetailsPage.getWiFiConnectionPanel().getTable().getValueByRow(1)).isEqualTo("-33 dBm 08/26/2020 13:13:15");
@@ -298,12 +301,12 @@ public class MeterWRL420cLDetailTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cLDetail_Delete_Success() {
         setRefreshPage(true);
-        final int DEVICEID = 1233;
+        String deviceId = TestDbDataType.MeterData.WRL_420CL_DELETE_ID.getId();
         final String EXPECTED_MSG = "Meter AT Delete " + MeterEnums.MeterType.WRL420CL.getMeterType() + " deleted successfully.";
 
-        navigate(Urls.Ami.METER_DETAIL + DEVICEID);
+        navigate(Urls.Ami.METER_DETAIL + deviceId);
 
-        WRL420cLMeterDetailsPage meterDetailsPage = new WRL420cLMeterDetailsPage(driverExt, DEVICEID);
+        WRL420cLMeterDetailsPage meterDetailsPage = new WRL420cLMeterDetailsPage(driverExt, Integer.parseInt(deviceId));
 
         ConfirmModal modal = meterDetailsPage.showAndWaitConfirmDeleteModal();
 

@@ -11,6 +11,7 @@ import org.testng.annotations.Test;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.ControlAreaDetailPage;
 import com.eaton.pages.demandresponse.ControlAreaEditPage;
@@ -27,10 +28,12 @@ public class ControlAreaEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void controlAreaEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Control Area: AT Control Area";
+        
+        String controlAreaId = TestDbDataType.DemandResponseData.CONTROLAREA_ID.getId();
 
-        navigate(Urls.DemandResponse.CONTROL_AREA_EDIT + "662" + Urls.EDIT);
+        navigate(Urls.DemandResponse.CONTROL_AREA_EDIT + controlAreaId + Urls.EDIT);
 
-        ControlAreaEditPage editPage = new ControlAreaEditPage(driverExt, 662);
+        ControlAreaEditPage editPage = new ControlAreaEditPage(driverExt, Integer.parseInt(controlAreaId));
         String actualPageTitle = editPage.getPageTitle();
 
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
@@ -39,8 +42,10 @@ public class ControlAreaEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void controlAreaEdit_RequiredFieldsOnly_Success() {
         navigate(Urls.DemandResponse.CONTROL_AREA_EDIT + "514" + Urls.EDIT);
+        
+        String controlAreaEditId = TestDbDataType.DemandResponseData.CONTROLAREA_EDIT_ID.getId();
 
-        ControlAreaEditPage editPage = new ControlAreaEditPage(driverExt, 514);
+        ControlAreaEditPage editPage = new ControlAreaEditPage(driverExt, Integer.parseInt(controlAreaEditId));
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited Control Area " + timeStamp;
@@ -53,7 +58,7 @@ public class ControlAreaEditTests extends SeleniumTestSetup {
 
         waitForPageToLoad("Control Area: " + name, Optional.empty());
 
-        ControlAreaDetailPage detailsPage = new ControlAreaDetailPage(driverExt, 514);
+        ControlAreaDetailPage detailsPage = new ControlAreaDetailPage(driverExt, Integer.parseInt(controlAreaEditId));
 
         String userMsg = detailsPage.getUserMessage();
 

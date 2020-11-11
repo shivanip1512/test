@@ -13,6 +13,7 @@ import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.RegulatorDetailPage;
 import com.eaton.pages.capcontrol.RegulatorEditPage;
@@ -26,9 +27,11 @@ public class RegulatorEditTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        String regulatorId = TestDbDataType.VoltVarData.REGULATOR_ID.getId();
+        
         setRefreshPage(false);
-        navigate(Urls.CapControl.REGULATOR_EDIT + "671" + Urls.EDIT);
-        editPage = new RegulatorEditPage(driverExt, 671);
+        navigate(Urls.CapControl.REGULATOR_EDIT + regulatorId + Urls.EDIT);
+        editPage = new RegulatorEditPage(driverExt, Integer.parseInt(regulatorId));
     }
     
     @AfterMethod(alwaysRun = true)
@@ -51,8 +54,9 @@ public class RegulatorEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void regulatorEdit_RequiredFieldsOnly_Success() {
         setRefreshPage(true);
+        String regulatorEditId = TestDbDataType.VoltVarData.REGULATOR_EDIT_ID.getId();
         
-        navigate(Urls.CapControl.REGULATOR_EDIT + "490" + Urls.EDIT);
+        navigate(Urls.CapControl.REGULATOR_EDIT + regulatorEditId+ Urls.EDIT);
 
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
 
@@ -63,7 +67,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
 
         waitForPageToLoad("Regulator: " + name, Optional.empty());
 
-        RegulatorDetailPage detailsPage = new RegulatorDetailPage(driverExt, 490);
+        RegulatorDetailPage detailsPage = new RegulatorDetailPage(driverExt, Integer.parseInt(regulatorEditId));
 
         // The saved successfully message is missing why?
 //        String userMsg = detailsPage.getUserMessageSuccess();
@@ -77,8 +81,10 @@ public class RegulatorEditTests extends SeleniumTestSetup {
     @Test(enabled = false, groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void regulatorEdit_Delete_Success() {
         setRefreshPage(true);
+        
+        String regulatorDeleteId = TestDbDataType.VoltVarData.REGULATOR_DELETE_ID.getId();
 
-        navigate(Urls.CapControl.REGULATOR_EDIT + "578" + Urls.EDIT);
+        navigate(Urls.CapControl.REGULATOR_EDIT + regulatorDeleteId + Urls.EDIT);
 
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
 
