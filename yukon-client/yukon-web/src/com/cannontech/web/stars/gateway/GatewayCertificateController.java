@@ -76,7 +76,7 @@ public class GatewayCertificateController {
     }
 
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
-    @PostMapping(value = "/gateways/cert-update")
+    @PostMapping("/gateways/cert-update")
     public String certUpdate(HttpServletResponse resp, ModelMap model, YukonUserContext userContext,
             @RequestParam("file") MultipartFile file, @RequestParam("gateways") Integer[] gateways) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
