@@ -70,7 +70,7 @@ DeviceReadings:
                     description: 'Attribute (type of point data) requested for specified device.'
                   type:
                     type: number
-      description: 'Type of the point.'
+                    description: 'Type of the point.'
                   value:
                     type: double
                     format: double
