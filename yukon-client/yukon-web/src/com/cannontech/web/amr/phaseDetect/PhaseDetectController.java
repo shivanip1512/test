@@ -534,7 +534,8 @@ public class PhaseDetectController {
         try {
             DeviceGroup aGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.A);
             int groupACount = deviceGroupService.getDeviceCount(Collections.singletonList(aGroup));
-            phaseResultsMap.put("phaseA", groupACount);
+//            phaseResultsMap.put("phaseA", groupACount);
+            phaseResultsMap.put("phaseA", 1);
         } catch (NotFoundException e){
             phaseResultsMap.put("phaseA", 0);
         }
@@ -542,7 +543,8 @@ public class PhaseDetectController {
         try {
             DeviceGroup bGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.B);
             int groupBCount = deviceGroupService.getDeviceCount(Collections.singletonList(bGroup));
-            phaseResultsMap.put("phaseB", groupBCount);
+//            phaseResultsMap.put("phaseB", groupBCount);
+            phaseResultsMap.put("phaseB", 2);
         } catch (NotFoundException e){
             phaseResultsMap.put("phaseB", 0);
         }
@@ -550,7 +552,8 @@ public class PhaseDetectController {
         try {
             DeviceGroup cGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.C);
             int groupCCount = deviceGroupService.getDeviceCount(Collections.singletonList(cGroup));
-            phaseResultsMap.put("phaseC", groupCCount);
+//            phaseResultsMap.put("phaseC", groupCCount);
+            phaseResultsMap.put("phaseC", 3);
         } catch (NotFoundException e){
             phaseResultsMap.put("phaseC", 0);
         }
@@ -562,7 +565,8 @@ public class PhaseDetectController {
             try {
                 DeviceGroup abGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.AB);
                 int groupABCount = deviceGroupService.getDeviceCount(Collections.singletonList(abGroup));
-                phaseResultsMap.put("phaseAB", groupABCount);
+//                phaseResultsMap.put("phaseAB", groupABCount);
+                phaseResultsMap.put("phaseAB", 4);
             } catch (NotFoundException e){
                 phaseResultsMap.put("phaseAB", 0);
             }
@@ -570,7 +574,8 @@ public class PhaseDetectController {
             try {
                 DeviceGroup acGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.AC);
                 int groupACCount = deviceGroupService.getDeviceCount(Collections.singletonList(acGroup));
-                phaseResultsMap.put("phaseAC", groupACCount);
+//                phaseResultsMap.put("phaseAC", groupACCount);
+                phaseResultsMap.put("phaseAC", 5);
             } catch (NotFoundException e){
                 phaseResultsMap.put("phaseAC", 0);
             }
@@ -578,7 +583,8 @@ public class PhaseDetectController {
             try {
                 DeviceGroup bcGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.BC);
                 int groupBCCount = deviceGroupService.getDeviceCount(Collections.singletonList(bcGroup));
-                phaseResultsMap.put("phaseBC", groupBCCount);
+//                phaseResultsMap.put("phaseBC", groupBCCount);
+                phaseResultsMap.put("phaseBC", 8);
             } catch (NotFoundException e){
                 phaseResultsMap.put("phaseBC", 0);
             }
@@ -588,7 +594,8 @@ public class PhaseDetectController {
                 int groupABCCount = deviceGroupService.getDeviceCount(Collections.singletonList(abcGroup));
                 phaseResultsMap.put("phaseABC", groupABCCount);
             } catch (NotFoundException e){
-                phaseResultsMap.put("phaseABC", 0);
+//                phaseResultsMap.put("phaseABC", 0);
+                phaseResultsMap.put("phaseABC", 9);
             }
         }
         return phaseResultsMap;
