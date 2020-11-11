@@ -31,9 +31,9 @@ public class SetupGlobalSearchTest extends SeleniumTestSetup {
     public void setupGlobalSearch_SearchSetupAndEnter_NavigatesToSearchPage() {
         globalSearchPage.getSearchBoxElement().setSearchValueAndEnter("Setup");
         
-        boolean pageLoaded = waitForUrlToLoad(Urls.DemandResponse.SETUP, Optional.empty());
+        boolean pageLoaded = waitForUrlToLoad(Urls.SEARCH + Urls.SEARCH_PARAM + "Setup", Optional.empty());
         
-        assertThat(pageLoaded).isTrue();
+        assertThat(pageLoaded).as("Expected URL: " + Urls.SEARCH + Urls.SEARCH_PARAM + "Setup | Actual Url: " + SeleniumTestSetup.getCurrentUrl()).isTrue();
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE, TestConstants.Features.SETUP })
@@ -42,7 +42,7 @@ public class SetupGlobalSearchTest extends SeleniumTestSetup {
         
         boolean pageLoaded = waitForUrlToLoad(Urls.DemandResponse.SETUP, Optional.empty());
         
-        assertThat(pageLoaded).isTrue();       
+        assertThat(pageLoaded).as("Expected URL: " + Urls.DemandResponse.SETUP + " | Actual Url: " + SeleniumTestSetup.getCurrentUrl()).isTrue();      
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE, TestConstants.Features.SETUP })

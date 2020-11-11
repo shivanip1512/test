@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 
@@ -27,9 +26,8 @@ import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateSummary;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
+import com.cannontech.web.stars.gateway.GatewayListController.CertificateUpdatesSortBy;
 import com.cannontech.web.stars.gateway.GatewayListController.FirmwareUpdatesSortBy;
-import com.google.common.base.Function;
-import com.google.common.collect.Ordering;
 
 public class GatewayControllerHelper {
     
@@ -152,8 +150,8 @@ public class GatewayControllerHelper {
         });
     }
 
-    public static Comparator<RfnGatewayFirmwareUpdateSummary> getFirmwareComparator(
-            List<RfnGatewayFirmwareUpdateSummary> firmwareUpdates, SortingParameters sorting, FirmwareUpdatesSortBy sortBy) {
+    public static Comparator<RfnGatewayFirmwareUpdateSummary> getFirmwareComparator(SortingParameters sorting,
+            FirmwareUpdatesSortBy sortBy) {
         Comparator<RfnGatewayFirmwareUpdateSummary> comparator = (o1, o2) -> {
             return o1.getSendDate().compareTo(o2.getSendDate());
         };
@@ -172,28 +170,26 @@ public class GatewayControllerHelper {
         return comparator;
     }
 
-    public static Comparator<CertificateUpdate> getTimestampComparator() {
-        Ordering<Instant> normalComparer = Ordering.natural();
-        Ordering<CertificateUpdate> dateOrdering =
-            normalComparer.onResultOf(new Function<CertificateUpdate, Instant>() {
-                @Override
-                public Instant apply(CertificateUpdate from) {
-                    return from.getTimestamp();
-                }
-            });
-        Ordering<CertificateUpdate> result = dateOrdering.compound(getCertificateFileNameComparator());
-        return result;
-    }
-
-    public static Comparator<CertificateUpdate> getCertificateFileNameComparator() {
-        Ordering<String> normalStringComparer = Ordering.natural();
-        Ordering<CertificateUpdate> certFileNameOrdering =
-            normalStringComparer.onResultOf(new Function<CertificateUpdate, String>() {
-                @Override
-                public String apply(CertificateUpdate from) {
-                    return from.getFileName();
-                }
-            });
-        return certFileNameOrdering;
+    public static Comparator<CertificateUpdate> getCertificateComparator(SortingParameters sorting,
+            CertificateUpdatesSortBy sortBy) {
+        Comparator<CertificateUpdate> comparator = (o1, o2) -> {
+            return o1.getTimestamp().compareTo(o2.getTimestamp());
+        };
+        if (sortBy == CertificateUpdatesSortBy.CERTIFICATE) {
+            comparator = (o1, o2) -> (o1.getFileName().compareToIgnoreCase(o2.getFileName()));
+        }
+        if (sortBy == CertificateUpdatesSortBy.PENDING) {
+            comparator = (o1, o2) -> (o1.getPending().size() - o2.getPending().size());
+        }
+        if (sortBy == CertificateUpdatesSortBy.FAILED) {
+            comparator = (o1, o2) -> (o1.getFailed().size() - o2.getFailed().size());
+        }
+        if (sortBy == CertificateUpdatesSortBy.SUCCESSFUL) {
+            comparator = (o1, o2) -> (o1.getSuccessful().size() - o2.getSuccessful().size());
+        }
+        if (sorting.getDirection() == Direction.desc) {
+            comparator = Collections.reverseOrder(comparator);
+        }
+        return comparator;
     }
 }

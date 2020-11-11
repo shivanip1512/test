@@ -159,5 +159,11 @@ public class DriverExtensions {
         
         driverWait.until(ExpectedConditions.stalenessOf(element));
     } 
+    
+    public void waitUntilVisibilityOfElements(List<WebElement> elements) {
+        driverWait.withTimeout(Duration.ofSeconds(3));
+        
+        driverWait.until(ExpectedConditions.visibilityOfAllElements(elements));
+    } 
 }
 

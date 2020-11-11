@@ -5838,16 +5838,16 @@ C++ :
 
   - project : Apache Portable Runtime
     path : APR
-    version : 1.6.3
+    version : 1.7.0
     project URL : "https://apr.apache.org/"
     license : Apache 2.0
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.html"
-    md5 : 921c593c57595a7f21a54d38cae23ee4
-    sha1 : 4add89b6cffc9b7fd6470d6faf384e962b2fc924
-    fileCount : 109
-    totalSize : 1361688
-    updated : 2018-06-29  
-    jira : YUK-18343
+    md5 : 261d17c5b4702ffa8446d70cb3678e24
+    sha1 : e0494cd9292a91e92ad4472fddfff29b7896b05b
+    fileCount : 60
+    totalSize : 1418186
+    updated : 2020-11-04  
+    jira : YUK-23065
     notes : 
 
   - project : Apache Portable Runtime
