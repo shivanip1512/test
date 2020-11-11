@@ -3,15 +3,12 @@ package com.cannontech.dr.loadgroup.service.impl;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMModelFactory;
@@ -113,7 +110,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
             loadGroupPoint.setDeviceUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getDeviceIDUsage(), deviceUsageName));
             loadGroupPoint.setPointUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getPointIDUsage(), pointUsageName));
             loadGroupPoint.setStartControlRawState(
-                    new ControlRawState(lmGroupPoint.getLMGroupPoint().getStartControlRawState(), rawStateName));
+                    new LMDto(lmGroupPoint.getLMGroupPoint().getStartControlRawState(), rawStateName));
 
         }
         return loadGroupBase;
@@ -205,19 +202,11 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
                 throw new LMObjectDeletionFailureException(message);
             }
         } catch (SQLException e) {
-            String message = "Unable to delete load group with name : " + Groupname + e;
+            String message = "Unable to delete load gro"
+                    + "up with name : " + Groupname + e;
             log.error(message);
             throw new LMObjectDeletionFailureException(message);
         }
-    }
-
-    @Override
-    public List<ControlRawState> getPointGroupStartState(int pointId) {
-        List<LiteState> stateList = stateGroupDao.getStateList(pointId);
-        return stateList.stream()
-                        .filter(state -> isValidPointGroupRawState(state))
-                        .map(state -> new ControlRawState(state.getStateRawState(), state.getStateText()))
-                        .collect(Collectors.toList());
     }
 
     /**

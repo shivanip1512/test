@@ -207,22 +207,6 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
     }
 
     @Override
-    public List<LMDto> retrieveNormalState(int pointId) {
-        // look for the litePoint here
-        LitePoint litePoint = pointdao.getLitePoint(pointId);
-        if (litePoint == null) {
-            throw new NotFoundException("Invalid point Id" + pointId);
-        }
-        List<LMDto> lmDtoList = new ArrayList<>();
-        LiteStateGroup stateGroup = stateGroupDao.getStateGroup(litePoint.getStateGroupID());
-        for (LiteState state : stateGroup.getStatesList()) {
-            lmDtoList.add(new LMDto(state.getLiteID(), state.getStateText()));
-        }
-
-        return lmDtoList;
-    }
-
-    @Override
     public int copy(int id, LMCopy lmCopy, LiteYukonUser liteYukonUser) {
         throw new UnsupportedOperationException("Not supported copy operation");
     }

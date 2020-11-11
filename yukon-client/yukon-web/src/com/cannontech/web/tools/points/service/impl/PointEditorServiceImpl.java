@@ -19,6 +19,7 @@ import com.cannontech.common.device.dao.DevicePointDao;
 import com.cannontech.common.device.dao.DevicePointDao.SortBy;
 import com.cannontech.common.device.model.DevicePointDetail;
 import com.cannontech.common.device.model.DevicePointsFilter;
+import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.events.loggers.PointEventLogService;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceOption;
@@ -43,6 +44,7 @@ import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -82,6 +84,7 @@ public class PointEditorServiceImpl implements PointEditorService {
     @Autowired protected DeviceDao deviceDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DevicePointDao devicePointDao;
+    @Autowired private PointDao pointdao;
 
     protected static final Logger log = YukonLogManager.getLogger(PointEditorServiceImpl.class);
 
@@ -689,6 +692,22 @@ public class PointEditorServiceImpl implements PointEditorService {
         }
 
         return existingEntries;
+    }
+
+    
+    @Override
+    public List<LMDto> retrieveNormalState(int pointId) {
+        // look for the litePoint here
+        LitePoint litePoint = pointdao.getLitePoint(pointId);
+        if (litePoint == null) {
+            throw new NotFoundException("Invalid point Id" + pointId);
+        }
+        List<LMDto> lmDtoList = new ArrayList<>();
+        LiteStateGroup stateGroup = stateGroupDao.getStateGroup(litePoint.getStateGroupID());
+        for (LiteState state : stateGroup.getStatesList()) {
+            lmDtoList.add(new LMDto(state.getLiteID(), state.getStateText()));
+        }
+        return lmDtoList;
     }
 
 }

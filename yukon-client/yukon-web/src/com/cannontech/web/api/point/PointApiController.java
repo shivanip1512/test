@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cannontech.common.device.dao.DevicePointDao;
 import com.cannontech.common.device.dao.DevicePointDao.SortBy;
 import com.cannontech.common.device.model.DevicePointsFilter;
+import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
@@ -142,6 +143,12 @@ public class PointApiController <T extends PointBaseModel<?>> {
     @InitBinder("type")
     public void initBinder(WebDataBinder dataBinder) {
         dataBinder.registerCustomEditor(PointType.class, new PointTypeEditor());
+    }
+
+    @GetMapping("points/{pointId}/states")
+    public ResponseEntity<Object> getNormalState(@PathVariable int pointId) {
+        List<LMDto> normalStates = pointEditorService.retrieveNormalState(pointId);
+        return new ResponseEntity<>(normalStates, HttpStatus.OK);
     }
 
     /**

@@ -32,9 +32,9 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDelete;
+import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMModelFactory;
 import com.cannontech.common.dr.setup.LmSetupFilterType;
 import com.cannontech.common.dr.setup.LoadGroupBase;
@@ -45,6 +45,7 @@ import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.dr.loadgroup.service.LoadGroupSetupService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
@@ -79,6 +80,7 @@ public class LoadGroupSetupController {
     @Autowired private LoadGroupSetupControllerHelper controllerHelper;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private ServerDatabaseCache cache;
+    @Autowired private LoadGroupSetupService loadGroupSetupService;
 
     @GetMapping("/create")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
@@ -383,23 +385,25 @@ public class LoadGroupSetupController {
     }
 
     @GetMapping("/getPointGroupStartState/{pointId}")
-    public @ResponseBody Map<String, List<ControlRawState>> getPointGroupStartState(@PathVariable int pointId,
+    public @ResponseBody Map<String, List<LMDto>> getPointGroupStartState(@PathVariable int pointId,
             YukonUserContext userContext, HttpServletRequest request) {
-        List<ControlRawState> startStates = retrieveStartState(pointId, userContext, request);
+        List<LMDto> startStates = retrieveStartState(pointId, userContext, request);
         return Collections.singletonMap("startStates", startStates);
     }
 
-    private List<ControlRawState> retrieveStartState(int pointId, YukonUserContext userContext, HttpServletRequest request) {
+    @SuppressWarnings("unchecked")
+    private List<LMDto> retrieveStartState(int pointId, YukonUserContext userContext, HttpServletRequest request) {
         // Give API call to get all control state
-        List<ControlRawState> startStates = new ArrayList<>();
-        String url = helper.findWebServerUrl(request, userContext, ApiURL.drPointGroupStartStateUrl + pointId);
+        List<LMDto> startStates = new ArrayList<>();
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.pointUrl + pointId + "/states");
         ResponseEntity<? extends Object> response =
-                apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.GET, List.class);
-
+                apiRequestHelper.callAPIForList(userContext, request, url, LMDto.class, HttpMethod.GET, LMDto.class);
         if (response.getStatusCode() == HttpStatus.OK) {
-            startStates = (List<ControlRawState>) response.getBody();
+            startStates = (List<LMDto>) response.getBody();
         }
-        return startStates;
+        return startStates.stream()
+                          .filter(state -> (state.getId() == 0 || state.getId() == 1))
+                          .collect(Collectors.toList());
     }
 
     /**
