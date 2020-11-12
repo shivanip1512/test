@@ -27,7 +27,7 @@ public class EnergyCompanyOperatorUserCreateTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
         
         setRefreshPage(false);
-        ecId = TestDbDataType.EnergyCompanyData.EC_ID.getId();
+        ecId = TestDbDataType.EnergyCompanyData.EC_ID.getId().toString();
         navigate(Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_CREATE + ecId);
         createPage = new EnergyCompanyOperatorUserCreatePage(driverExt, Integer.parseInt(ecId));
     }

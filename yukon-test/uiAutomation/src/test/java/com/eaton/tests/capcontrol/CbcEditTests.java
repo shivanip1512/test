@@ -29,7 +29,7 @@ public class CbcEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
         setRefreshPage(false);
         
-        String cbcEditId = TestDbDataType.VoltVarData.CBC_ID.getId();
+        String cbcEditId = TestDbDataType.VoltVarData.CBC_ID.getId().toString();
         
         navigate(Urls.CapControl.CBC_EDIT + cbcEditId + Urls.EDIT);
 
@@ -57,7 +57,7 @@ public class CbcEditTests extends SeleniumTestSetup {
     public void cbcEdit_RequiredFieldsOnly_Success() {
         setRefreshPage(true);
         final String EXPECTED_MSG = "CBC was successfully saved.";
-        String cbcEditId = TestDbDataType.VoltVarData.CBC_EDIT_ID.getId();
+        String cbcEditId = TestDbDataType.VoltVarData.CBC_EDIT_ID.getId().toString();
 
         navigate(Urls.CapControl.CBC_EDIT + cbcEditId + Urls.EDIT);
 
@@ -81,7 +81,7 @@ public class CbcEditTests extends SeleniumTestSetup {
     public void cbcEdit_Delete_Success() {
         setRefreshPage(true);
         final String EXPECTED_MSG = "Deleted CBC";
-        String cbcDeleteId = TestDbDataType.VoltVarData.CBC_DELETE_ID.getId();
+        String cbcDeleteId = TestDbDataType.VoltVarData.CBC_DELETE_ID.getId().toString();
 
         navigate(Urls.CapControl.CBC_EDIT + cbcDeleteId + Urls.EDIT);
 

@@ -30,7 +30,7 @@ public class MeterWRL420cDEditTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        deviceId = TestDbDataType.MeterData.WRL_420CD_EDIT_ID.getId();
+        deviceId = TestDbDataType.MeterData.WRL_420CD_EDIT_ID.getId().toString();
         navigate(Urls.Ami.METER_DETAIL + deviceId);
         meterDetailsPage = new WRL420cDMeterDetailsPage(driverExt, Integer.parseInt(deviceId));
     }

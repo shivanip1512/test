@@ -30,7 +30,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        deviceId = TestDbDataType.MeterData.WRL_420CD_DETAIL_ID.getId();
+        deviceId = TestDbDataType.MeterData.WRL_420CD_DETAIL_ID.getId().toString();
 
         setRefreshPage(false);
         navigate(Urls.Ami.METER_DETAIL + deviceId);
@@ -325,7 +325,7 @@ public class MeterWRL420cDDetailTests extends SeleniumTestSetup {
     public void meterWRL420cDDetail_Delete_Success() {
         setRefreshPage(true);
         
-        String deviceId = TestDbDataType.MeterData.WRL_420CD_DELETE_ID.getId();
+        String deviceId = TestDbDataType.MeterData.WRL_420CD_DELETE_ID.getId().toString();
         final String EXPECTED_MSG = "Meter AT Delete " + MeterEnums.MeterType.WRL420CD.getMeterType() + " deleted successfully.";
 
         navigate(Urls.Ami.METER_DETAIL + deviceId);

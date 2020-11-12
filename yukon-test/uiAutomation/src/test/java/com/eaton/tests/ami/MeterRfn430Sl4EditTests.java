@@ -30,7 +30,7 @@ public class MeterRfn430Sl4EditTests extends SeleniumTestSetup {
 
     @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.AMI })
     public void meterRfn430Sl4Edit_RequiredFieldsOnly_Success() {
-        String rfn430Sl4EditId = TestDbDataType.MeterData.RFN_430SL4_EDIT_ID.getId();
+        String rfn430Sl4EditId = TestDbDataType.MeterData.RFN_430SL4_EDIT_ID.getId().toString();
         
         navigate(Urls.Ami.METER_DETAIL + rfn430Sl4EditId);
         

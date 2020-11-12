@@ -27,7 +27,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        String regulatorId = TestDbDataType.VoltVarData.REGULATOR_ID.getId();
+        String regulatorId = TestDbDataType.VoltVarData.REGULATOR_ID.getId().toString();
         
         setRefreshPage(false);
         navigate(Urls.CapControl.REGULATOR_EDIT + regulatorId + Urls.EDIT);
@@ -54,7 +54,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void regulatorEdit_RequiredFieldsOnly_Success() {
         setRefreshPage(true);
-        String regulatorEditId = TestDbDataType.VoltVarData.REGULATOR_EDIT_ID.getId();
+        String regulatorEditId = TestDbDataType.VoltVarData.REGULATOR_EDIT_ID.getId().toString();
         
         navigate(Urls.CapControl.REGULATOR_EDIT + regulatorEditId+ Urls.EDIT);
 
@@ -82,7 +82,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
     public void regulatorEdit_Delete_Success() {
         setRefreshPage(true);
         
-        String regulatorDeleteId = TestDbDataType.VoltVarData.REGULATOR_DELETE_ID.getId();
+        String regulatorDeleteId = TestDbDataType.VoltVarData.REGULATOR_DELETE_ID.getId().toString();
 
         navigate(Urls.CapControl.REGULATOR_EDIT + regulatorDeleteId + Urls.EDIT);
 

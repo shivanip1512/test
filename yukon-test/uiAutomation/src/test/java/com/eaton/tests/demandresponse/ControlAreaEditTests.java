@@ -29,7 +29,7 @@ public class ControlAreaEditTests extends SeleniumTestSetup {
     public void controlAreaEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Control Area: AT Control Area";
         
-        String controlAreaId = TestDbDataType.DemandResponseData.CONTROLAREA_ID.getId();
+        String controlAreaId = TestDbDataType.DemandResponseData.CONTROLAREA_ID.getId().toString();
 
         navigate(Urls.DemandResponse.CONTROL_AREA_EDIT + controlAreaId + Urls.EDIT);
 
@@ -43,7 +43,7 @@ public class ControlAreaEditTests extends SeleniumTestSetup {
     public void controlAreaEdit_RequiredFieldsOnly_Success() {
         navigate(Urls.DemandResponse.CONTROL_AREA_EDIT + "514" + Urls.EDIT);
         
-        String controlAreaEditId = TestDbDataType.DemandResponseData.CONTROLAREA_EDIT_ID.getId();
+        String controlAreaEditId = TestDbDataType.DemandResponseData.CONTROLAREA_EDIT_ID.getId().toString();
 
         ControlAreaEditPage editPage = new ControlAreaEditPage(driverExt, Integer.parseInt(controlAreaEditId));
 

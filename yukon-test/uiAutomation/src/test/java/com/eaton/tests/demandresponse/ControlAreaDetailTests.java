@@ -29,7 +29,7 @@ public class ControlAreaDetailTests extends SeleniumTestSetup {
     public void controlAreaDetail_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Control Area: AT Control Area";
         
-        String controlAreaId = TestDbDataType.DemandResponseData.CONTROLAREA_ID.getId();
+        String controlAreaId = TestDbDataType.DemandResponseData.CONTROLAREA_ID.getId().toString();
 
         navigate(Urls.DemandResponse.CONTROL_AREA_DETAILS + controlAreaId);
 
@@ -44,7 +44,7 @@ public class ControlAreaDetailTests extends SeleniumTestSetup {
     public void controlAreaDetail_Delete_Success() {
         final String EXPECTED_MSG = "AT Delete Control Area deleted successfully.";
         
-        String controlAreaDeleteId = TestDbDataType.DemandResponseData.CONTROLAREA_DELETE_ID.getId();
+        String controlAreaDeleteId = TestDbDataType.DemandResponseData.CONTROLAREA_DELETE_ID.getId().toString();
 
         navigate(Urls.DemandResponse.CONTROL_AREA_DETAILS + controlAreaDeleteId);
 

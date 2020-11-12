@@ -28,7 +28,7 @@ public class CapBankEditTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         setRefreshPage(false);
-        String capBankId = TestDbDataType.VoltVarData.CAPBANK_ID.getId();
+        String capBankId = TestDbDataType.VoltVarData.CAPBANK_ID.getId().toString();
         
         navigate(Urls.CapControl.CAP_BANK_EDIT + capBankId + Urls.EDIT);
 
@@ -55,7 +55,7 @@ public class CapBankEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void capBankEdit_RequiredFieldsOnly_Success() {
         setRefreshPage(true);
-        String capBankEditId = TestDbDataType.VoltVarData.CAPBANK_EDIT_ID.getId();
+        String capBankEditId = TestDbDataType.VoltVarData.CAPBANK_EDIT_ID.getId().toString();
         
         final String EXPECTED_MSG = "CapBank was saved successfully.";
 
@@ -80,7 +80,7 @@ public class CapBankEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void capBankEdit_Delete_Success() {
         setRefreshPage(true);
-        String capBankDeleteId = TestDbDataType.VoltVarData.CAPBANK_DELETE_ID.getId();
+        String capBankDeleteId = TestDbDataType.VoltVarData.CAPBANK_DELETE_ID.getId().toString();
         
         final String EXPECTED_MSG = "CapBank AT Delete CapBank deleted successfully.";
 

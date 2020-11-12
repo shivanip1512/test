@@ -29,7 +29,7 @@ public class SubstationEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
         setRefreshPage(false);
         
-        String subId = TestDbDataType.VoltVarData.SUBSTATION_ID.getId();
+        String subId = TestDbDataType.VoltVarData.SUBSTATION_ID.getId().toString();
         
         navigate(Urls.CapControl.SUBSTATION_EDIT + subId + Urls.EDIT);
         editPage = new SubstationEditPage(driverExt, Integer.parseInt(subId));
@@ -57,7 +57,7 @@ public class SubstationEditTests extends SeleniumTestSetup {
         setRefreshPage(true);
         final String EXPECTED_MSG = "Substation was saved successfully.";
         
-        String subEditId = TestDbDataType.VoltVarData.SUBSTATION_EDIT_ID.getId();
+        String subEditId = TestDbDataType.VoltVarData.SUBSTATION_EDIT_ID.getId().toString();
 
         navigate(Urls.CapControl.SUBSTATION_EDIT + subEditId + Urls.EDIT);
 
@@ -82,7 +82,7 @@ public class SubstationEditTests extends SeleniumTestSetup {
         setRefreshPage(true);
         final String EXPECTED_MSG = "Substation AT Delete Substation deleted successfully.";
         
-        String subEditId = TestDbDataType.VoltVarData.SUBSTATION_DELETE_ID.getId();
+        String subEditId = TestDbDataType.VoltVarData.SUBSTATION_DELETE_ID.getId().toString();
 
         navigate(Urls.CapControl.SUBSTATION_EDIT + subEditId + Urls.EDIT);
 

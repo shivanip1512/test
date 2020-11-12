@@ -29,7 +29,7 @@ public class AreaEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
         setRefreshPage(false);
         
-        String areaId = TestDbDataType.VoltVarData.AREA_ID.getId();
+        String areaId = TestDbDataType.VoltVarData.AREA_ID.getId().toString();
         
         navigate(Urls.CapControl.AREA_EDIT + areaId + Urls.EDIT);
 
@@ -56,7 +56,7 @@ public class AreaEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void areaEdit_RequiredFieldsOnly_Success() {
         setRefreshPage(true);
-        String editAreaId = TestDbDataType.VoltVarData.AREA_EDIT_ID.getId();
+        String editAreaId = TestDbDataType.VoltVarData.AREA_EDIT_ID.getId().toString();
         final String EXPECTED_MSG = "Area was saved successfully.";
 
         navigate(Urls.CapControl.AREA_EDIT + editAreaId + Urls.EDIT);
@@ -80,7 +80,7 @@ public class AreaEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void areaEdit_Delete_Success() {
         setRefreshPage(true);
-        String deleteAreaId = TestDbDataType.VoltVarData.AREA_DELETE_ID.getId();
+        String deleteAreaId = TestDbDataType.VoltVarData.AREA_DELETE_ID.getId().toString();
         
         final String EXPECTED_MSG = "Area AT Delete Area Deleted successfully.";
 

@@ -31,7 +31,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
     public void loadPrgoramDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Load Program: AT Load Program";
         
-        String ldPrgrmId = TestDbDataType.DemandResponseData.LOADPROGRAM_ID.getId();
+        String ldPrgrmId = TestDbDataType.DemandResponseData.LOADPROGRAM_ID.getId().toString();
 
         navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + ldPrgrmId);
 
@@ -44,7 +44,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void loadPrgoramDetails_Copy_Success() {
-        String ldPrgrmCopyId = TestDbDataType.DemandResponseData.LOADPROGRAM_COPY_ID.getId();
+        String ldPrgrmCopyId = TestDbDataType.DemandResponseData.LOADPROGRAM_COPY_ID.getId().toString();
 
         navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + ldPrgrmCopyId);
 
@@ -73,7 +73,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
     public void loadPrgoramDetails_Delete_Success() {
         final String EXPECTED_MSG = "AT Delete Direct Program deleted successfully.";
         
-        String ldPrgrmDeleteId = TestDbDataType.DemandResponseData.LOADPROGRAM_DELETE_ID.getId();
+        String ldPrgrmDeleteId = TestDbDataType.DemandResponseData.LOADPROGRAM_DELETE_ID.getId().toString();
 
         navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + ldPrgrmDeleteId);
 

@@ -12,13 +12,13 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums;
-import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.PointId;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupPointCreateBuilder;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupPointCreateBuilder.Builder;
 import com.eaton.elements.modals.SelectPointModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.LoadGroupPointEditPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
@@ -47,7 +47,7 @@ public class LoadGroupPointEditTests extends SeleniumTestSetup {
         String editName = "AT Edit Point Ld group " + timeStamp;
         Pair<JSONObject, JSONObject> pair = new LoadGroupPointCreateBuilder.Builder(Optional.empty())
                 .withName(createName)
-                .withPointUsageId(Optional.of(PointId.CAPACITOR_BANK_STATE))
+                .withPointUsageId(Optional.of(TestDbDataType.PointData.CAPACITOR_BANK_STATE))
                 .withDeviceUsageId(Optional.empty())
                 .withPointStartControlRawState(Optional.of(LoadGroupEnums.PointStartControlRawState.FALSE))
                 .withKwCapacity(Optional.of(67.0))

@@ -27,7 +27,7 @@ public class EnergyCompanyGeneralInfoEditTests extends SeleniumTestSetup {
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
     public void energyCompanyGeneralInfoEdit_Page_TitleCorrect() {
-        String ecId = TestDbDataType.EnergyCompanyData.EC_ID.getId();
+        String ecId = TestDbDataType.EnergyCompanyData.EC_ID.getId().toString();
         final String EXPECTED_TITLE = "Edit General Info: QA_Test";
         
         navigate(Urls.Admin.ENERGY_COMPANY_GENERAL_INFO + ecId);
@@ -48,7 +48,7 @@ public class EnergyCompanyGeneralInfoEditTests extends SeleniumTestSetup {
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
     public void energyCompanyGeneralInfoEdit_Delete_Success() {
         final String NAME = "AT Delete EC";
-        String deleteEnergyCoId = TestDbDataType.EnergyCompanyData.DELETE_EC_ID.getId();
+        String deleteEnergyCoId = TestDbDataType.EnergyCompanyData.DELETE_EC_ID.getId().toString();
         final String EXPECTED_MSG = "The energy company " + NAME + " was deleted successfully.";
         
         navigate(Urls.Admin.ENERGY_COMPANY_GENERAL_INFO + deleteEnergyCoId);

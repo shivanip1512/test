@@ -26,7 +26,7 @@ public class EnergyCompanyWarehouseCreateTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         setRefreshPage(false);
-        ecId = TestDbDataType.EnergyCompanyData.EC_ID.getId();
+        ecId = TestDbDataType.EnergyCompanyData.EC_ID.getId().toString();
         navigate(Urls.Admin.ENERGY_COMPANY_WAREHOUSE_CREATE + ecId);
         createPage = new EnergyCompanyWarehouseCreatePage(driverExt, Integer.parseInt(ecId));
     }

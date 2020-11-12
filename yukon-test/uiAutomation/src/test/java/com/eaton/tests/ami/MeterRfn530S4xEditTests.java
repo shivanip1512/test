@@ -30,7 +30,7 @@ public class MeterRfn530S4xEditTests extends SeleniumTestSetup {
 
     @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.AMI })
     public void meterRfn530S4xEdit_RequiredFieldsOnly_Success() {
-        String rFN530S4xEditId = TestDbDataType.MeterData.RFN_530S4X_EDIT_ID.getId();
+        String rFN530S4xEditId = TestDbDataType.MeterData.RFN_530S4X_EDIT_ID.getId().toString();
         
         navigate(Urls.Ami.METER_DETAIL + rFN530S4xEditId);
         String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());

@@ -29,7 +29,7 @@ public class ScenarioDetailsTests extends SeleniumTestSetup {
     public void scenarioDetails_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Scenario: AT Scenario";
         
-        String scenarioId = TestDbDataType.DemandResponseData.SCENARIO_ID.getId();
+        String scenarioId = TestDbDataType.DemandResponseData.SCENARIO_ID.getId().toString();
 
         navigate(Urls.DemandResponse.SCENARIO_DETAILS + scenarioId);
 
@@ -44,7 +44,7 @@ public class ScenarioDetailsTests extends SeleniumTestSetup {
     public void scenarioDetails_Delete_Success() {
         final String EXPECTED_MSG = "AT Delete Scenario deleted successfully.";
         
-        String scenarioDeleteId = TestDbDataType.DemandResponseData.SCENARIO_DELETE_ID.getId();
+        String scenarioDeleteId = TestDbDataType.DemandResponseData.SCENARIO_DELETE_ID.getId().toString();
 
         navigate(Urls.DemandResponse.SCENARIO_DETAILS + scenarioDeleteId);
 

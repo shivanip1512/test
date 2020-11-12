@@ -27,7 +27,7 @@ public class MeterRfn430Sl4DetailTests extends SeleniumTestSetup {
 
     @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.AMI })
     public void meterRfn430Sl4Detail_Delete_Success() {
-        String rfn430Sl4DeleteId = TestDbDataType.MeterData.RFN_430SL4_DELETE_ID.getId();
+        String rfn430Sl4DeleteId = TestDbDataType.MeterData.RFN_430SL4_DELETE_ID.getId().toString();
         
         final String EXPECTED_MSG = "Meter AT Delete RFN-430SL4 deleted successfully.";
 

@@ -16,6 +16,7 @@ import com.eaton.elements.Section;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupRippleCreatePage;
@@ -60,8 +61,8 @@ public class LoadGroupRippleCreateTests extends SeleniumTestSetup {
 
         waitForLoadingSpinner();
         
-        //36 = a_CCU-721
-        createPage.getCommunicationRoute().selectItemByValue("36");
+        String commRoute = TestDbDataType.CommunicationRouteData.ACCU721.getId().toString();
+        createPage.getCommunicationRoute().selectItemByValue(commRoute);
 
         //900 = 15 minutes
         createPage.getShedTime().selectItemByValue("900");

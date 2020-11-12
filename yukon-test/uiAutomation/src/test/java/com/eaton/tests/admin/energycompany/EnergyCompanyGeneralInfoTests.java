@@ -22,7 +22,7 @@ public class EnergyCompanyGeneralInfoTests extends SeleniumTestSetup {
 
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
     public void energyCompanyGeneralInfo_Page_TitleCorrect() {
-        String energyCompanyId = TestDbDataType.EnergyCompanyData.EC_ID.getId();
+        String energyCompanyId = TestDbDataType.EnergyCompanyData.EC_ID.getId().toString();
         
         final String EXPECTED_TITLE = "QA_Test";
         

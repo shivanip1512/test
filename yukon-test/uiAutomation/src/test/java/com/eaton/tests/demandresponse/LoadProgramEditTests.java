@@ -31,7 +31,7 @@ public class LoadProgramEditTests extends SeleniumTestSetup {
         final String PROGRAM_NAME = "AT Load Program";
         final String EXPECTED_TITLE = "Edit Load Program: " + PROGRAM_NAME;
         
-        String ldPrgrmId = TestDbDataType.DemandResponseData.LOADPROGRAM_ID.getId();
+        String ldPrgrmId = TestDbDataType.DemandResponseData.LOADPROGRAM_ID.getId().toString();
         
         navigate(Urls.DemandResponse.LOAD_PROGRAM_EDIT + ldPrgrmId + Urls.EDIT);
         
@@ -44,7 +44,7 @@ public class LoadProgramEditTests extends SeleniumTestSetup {
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void loadProgramEdit_RequiredFieldsOnly_Success() {       
-        String ldPrgrmEditId = TestDbDataType.DemandResponseData.LOADPROGRAM_EDIT_ID.getId();
+        String ldPrgrmEditId = TestDbDataType.DemandResponseData.LOADPROGRAM_EDIT_ID.getId().toString();
         
         navigate(Urls.DemandResponse.LOAD_PROGRAM_EDIT + ldPrgrmEditId + Urls.EDIT);
         

@@ -160,7 +160,7 @@ public class TrendEditTests extends SeleniumTestSetup {
         TrendPointModal modal = editPage.showAndWaitAddPointModal();
         SelectPointModal pointModal = modal.showAndWaitSelectPointModal();
         String pointName = TestDbDataType.TrendPointData.CREATE_TREND_ANALOG_POINT_ID.getName();
-        String pointId = TestDbDataType.TrendPointData.CREATE_TREND_ANALOG_POINT_ID.getId();
+        String pointId = TestDbDataType.TrendPointData.CREATE_TREND_ANALOG_POINT_ID.getId().toString();
         
         pointModal.selectPoint(pointName, Optional.of(pointId));
         pointModal.clickOkAndWaitForModalCloseDisplayNone();

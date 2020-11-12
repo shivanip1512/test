@@ -23,13 +23,13 @@ public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
         driverExt = getDriverExt();   
-        ecId = TestDbDataType.EnergyCompanyData.EC_ID.getId();
+        ecId = TestDbDataType.EnergyCompanyData.EC_ID.getId().toString();
     }
     
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
     public void energyCompanyOperatorUserEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Operator User: automation";
-        String ecOperatorId = TestDbDataType.EnergyCompanyData.EC_OPERATOR_ID.getId();;
+        String ecOperatorId = TestDbDataType.EnergyCompanyData.EC_OPERATOR_ID.getId().toString();
         
         navigate(Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_EDIT + ecId + Urls.Admin.ENERGY_COMPANY_OPERATOR_LOGIN_ID + ecOperatorId);
         
@@ -43,7 +43,7 @@ public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
     public void energyCompanyOperatorUserEdit_Delete_Success() {
         final String EXPECTED_USER_MSG = "Successfully deleted the user.";
-        String ecDeleteOprId = TestDbDataType.EnergyCompanyData.EC_DELETE_OPR_ID.getId();
+        String ecDeleteOprId = TestDbDataType.EnergyCompanyData.EC_DELETE_OPR_ID.getId().toString();
         
         navigate(Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_EDIT + ecId + Urls.Admin.ENERGY_COMPANY_OPERATOR_LOGIN_ID + ecDeleteOprId);
 

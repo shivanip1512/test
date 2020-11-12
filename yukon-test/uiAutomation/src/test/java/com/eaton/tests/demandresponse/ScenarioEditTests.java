@@ -29,7 +29,7 @@ public class ScenarioEditTests extends SeleniumTestSetup {
     public void scenarioEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Scenario: AT Scenario";
         
-        String scenarioId = TestDbDataType.DemandResponseData.SCENARIO_ID.getId();
+        String scenarioId = TestDbDataType.DemandResponseData.SCENARIO_ID.getId().toString();
 
         navigate(Urls.DemandResponse.SCENARIO_EDIT + scenarioId + Urls.EDIT);
 
@@ -44,7 +44,7 @@ public class ScenarioEditTests extends SeleniumTestSetup {
     public void scenarioEdit_RequiredFieldsOnly_Success() {
         navigate(Urls.DemandResponse.SCENARIO_EDIT + "590" + Urls.EDIT);
         
-        String scenarioEditId = TestDbDataType.DemandResponseData.SCENARIO_EDIT_ID.getId();
+        String scenarioEditId = TestDbDataType.DemandResponseData.SCENARIO_EDIT_ID.getId().toString();
 
         ScenarioEditPage editPage = new ScenarioEditPage(driverExt, Integer.parseInt(scenarioEditId));
 

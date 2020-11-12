@@ -8,6 +8,9 @@
     </listeners>
   <test name="All Tests">
     <packages>
+    	<package name="com.eaton.api.tests.v1.attributes"/>
+    	<package name="com.eaton.api.tests.v1.attributes.assignments"/>
+    	<package name="com.eaton.api.tests.v1.virtualdevices"/>
     	<package name="com.eaton.tests"/>
     	<package name="com.eaton.tests.admin"/>
     	<package name="com.eaton.tests.admin.attributes"/>
@@ -15,16 +18,17 @@
     	<package name="com.eaton.tests.ami"/>
     	<package name="com.eaton.tests.assets"/>
     	<package name="com.eaton.tests.assets.commchannels"/>
+    	<package name="com.eaton.tests.assets.virtualdevices"/>
     	<package name="com.eaton.tests.capcontrol"/>
     	<package name="com.eaton.tests.capcontrol.pointimport"/>
     	<package name="com.eaton.tests.capcontrol.regulatorsetup"/>
     	<package name="com.eaton.tests.demandresponse"/>
     	<package name="com.eaton.tests.demandresponse.cicurtailment"/>
     	<package name="com.eaton.tests.demandresponse.loadgroup"/>
+    	<package name="com.eaton.tests.demandresponse.loadprogram"/>
     	<package name="com.eaton.tests.support"/>
     	<package name="com.eaton.tests.tools"/>
-    	<package name="com.eaton.tests.tools.trends"/>
-    	<package name="com.eaton.tests.assets.virtualdevices"/>
+    	<package name="com.eaton.tests.tools.trends"/>    	
     </packages>
   </test>
 </suite>

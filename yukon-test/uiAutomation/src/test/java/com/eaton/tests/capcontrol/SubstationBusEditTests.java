@@ -29,7 +29,7 @@ public class SubstationBusEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
         setRefreshPage(false);
         
-        String subBusId = TestDbDataType.VoltVarData.SUBBUS_ID.getId();
+        String subBusId = TestDbDataType.VoltVarData.SUBBUS_ID.getId().toString();
         
         navigate(Urls.CapControl.SUBSTATION_BUS_EDIT + subBusId + Urls.EDIT);
 
@@ -58,7 +58,7 @@ public class SubstationBusEditTests extends SeleniumTestSetup {
         setRefreshPage(true);
         final String EXPECTED_MSG = "Bus was saved successfully.";
         
-        String subBusEditId = TestDbDataType.VoltVarData.SUBBUS_EDIT_ID.getId();
+        String subBusEditId = TestDbDataType.VoltVarData.SUBBUS_EDIT_ID.getId().toString();
 
         navigate(Urls.CapControl.SUBSTATION_BUS_EDIT + subBusEditId + Urls.EDIT);
 
@@ -83,7 +83,7 @@ public class SubstationBusEditTests extends SeleniumTestSetup {
         setRefreshPage(true);
         final String EXPECTED_MSG = "Bus AT Delete Bus deleted successfully.";
         
-        String subBusDeleteId = TestDbDataType.VoltVarData.SUBBUS_DELETE_ID.getId();
+        String subBusDeleteId = TestDbDataType.VoltVarData.SUBBUS_DELETE_ID.getId().toString();
 
         navigate(Urls.CapControl.SUBSTATION_BUS_EDIT + subBusDeleteId + Urls.EDIT);
 

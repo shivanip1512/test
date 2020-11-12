@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.javatuples.Pair;
 import org.json.JSONObject;
 
+import com.eaton.framework.TestDbDataType;
 import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
 import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 import com.github.javafaker.Faker;
@@ -49,7 +50,8 @@ public class LoadGroupEmetconCreateBuilder extends LoadGroupEnums {
         }
 
         public Builder withCommunicationRoute(Optional<Integer> routeId) {
-            this.routeId = routeId.orElse(28);
+            Integer id = TestDbDataType.CommunicationRouteData.ACCU710A.getId();
+            this.routeId = routeId.orElse(id);
             return this;
         }
 

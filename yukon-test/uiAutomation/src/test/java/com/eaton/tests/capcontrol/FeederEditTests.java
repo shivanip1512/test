@@ -29,7 +29,7 @@ public class FeederEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
         setRefreshPage(false);
         
-        String feederId = TestDbDataType.VoltVarData.FEEDER_ID.getId();
+        String feederId = TestDbDataType.VoltVarData.FEEDER_ID.getId().toString();
         
         navigate(Urls.CapControl.FEEDER_EDIT + feederId + Urls.EDIT);
         editPage = new FeederEditPage(driverExt, Integer.parseInt(feederId));
@@ -56,7 +56,7 @@ public class FeederEditTests extends SeleniumTestSetup {
     public void feederEdit_RequiredFieldsOnly_Success() {
         setRefreshPage(true);
         final String EXPECTED_MSG = "Feeder was saved successfully.";
-        String feederEditId = TestDbDataType.VoltVarData.FEEDER_EDIT_ID.getId();
+        String feederEditId = TestDbDataType.VoltVarData.FEEDER_EDIT_ID.getId().toString();
 
         navigate(Urls.CapControl.FEEDER_EDIT + feederEditId + Urls.EDIT);
 
@@ -80,7 +80,7 @@ public class FeederEditTests extends SeleniumTestSetup {
     public void feederEdit_Delete_Success() {
         setRefreshPage(true);
         final String EXPECTED_MSG = "Feeder AT Delete Feeder deleted successfully.";
-        String feederDeleteId = TestDbDataType.VoltVarData.FEEDER_DELETE_ID.getId();
+        String feederDeleteId = TestDbDataType.VoltVarData.FEEDER_DELETE_ID.getId().toString();
 
         navigate(Urls.CapControl.FEEDER_EDIT + feederDeleteId + Urls.EDIT);
 

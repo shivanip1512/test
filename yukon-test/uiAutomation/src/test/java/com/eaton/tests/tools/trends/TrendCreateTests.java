@@ -65,7 +65,7 @@ public class TrendCreateTests extends SeleniumTestSetup {
         String name = "AT All Fields " + timeStamp;
 
         String point = TestDbDataType.TrendPointData.CREATE_TREND_ANALOG_POINT_ID.getName();
-        String pointId = TestDbDataType.TrendPointData.CREATE_TREND_ANALOG_POINT_ID.getId();
+        String pointId = TestDbDataType.TrendPointData.CREATE_TREND_ANALOG_POINT_ID.getId().toString();
         String label = "AT Marker";
 
         final String EXPECTED_MSG = name + " saved successfully.";
