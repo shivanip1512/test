@@ -210,6 +210,15 @@ INIT_ATTRIBUTE( PowerFactorCoincidental,                            "POWER_FACTO
 INIT_ATTRIBUTE( PowerFactorAvgQ124,                                 "AVERAGE_POWER_FACTOR_Q124" );
 INIT_ATTRIBUTE( PowerFactorAvgQ234,                                 "AVERAGE_POWER_FACTOR_Q234" );
 INIT_ATTRIBUTE( PowerFactorAvg,                                     "AVERAGE_POWER_FACTOR" );
+INIT_ATTRIBUTE( PowerFactorPrev,                                    "PREVIOUS_AVERAGE_POWER_FACTOR" );
+INIT_ATTRIBUTE( PowerFactorAvgRateA,                                "AVERAGE_POWER_FACTOR_RATE_A" );
+INIT_ATTRIBUTE( PowerFactorPrevRateA,                               "PREVIOUS_AVERAGE_POWER_FACTOR_RATE_A" );
+INIT_ATTRIBUTE( PowerFactorAvgRateB,                                "AVERAGE_POWER_FACTOR_RATE_B" );
+INIT_ATTRIBUTE( PowerFactorPrevRateB,                               "PREVIOUS_AVERAGE_POWER_FACTOR_RATE_B" );
+INIT_ATTRIBUTE( PowerFactorAvgRateC,                                "AVERAGE_POWER_FACTOR_RATE_C" );
+INIT_ATTRIBUTE( PowerFactorPrevRateC,                               "PREVIOUS_AVERAGE_POWER_FACTOR_RATE_C" );
+INIT_ATTRIBUTE( PowerFactorAvgRateD,                                "AVERAGE_POWER_FACTOR_RATE_D" );
+INIT_ATTRIBUTE( PowerFactorPrevRateD,                               "PREVIOUS_AVERAGE_POWER_FACTOR_RATE_D" );
 INIT_ATTRIBUTE( PowerFactorAnglePhaseA,                             "POWER_FACTOR_ANGLE_PHASE_A" );
 INIT_ATTRIBUTE( PowerFactorAnglePhaseB,                             "POWER_FACTOR_ANGLE_PHASE_B" );
 INIT_ATTRIBUTE( PowerFactorAnglePhaseC,                             "POWER_FACTOR_ANGLE_PHASE_C" );

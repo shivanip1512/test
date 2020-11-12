@@ -201,6 +201,15 @@ public:
     static const Attribute  PowerFactorAvgQ124;
     static const Attribute  PowerFactorAvgQ234;
     static const Attribute  PowerFactorAvg;
+    static const Attribute  PowerFactorPrev;
+    static const Attribute  PowerFactorAvgRateA;
+    static const Attribute  PowerFactorPrevRateA;
+    static const Attribute  PowerFactorAvgRateB;
+    static const Attribute  PowerFactorPrevRateB;
+    static const Attribute  PowerFactorAvgRateC;
+    static const Attribute  PowerFactorPrevRateC;
+    static const Attribute  PowerFactorAvgRateD;
+    static const Attribute  PowerFactorPrevRateD;
     static const Attribute  PowerFactorAnglePhaseA;
     static const Attribute  PowerFactorAnglePhaseB;
     static const Attribute  PowerFactorAnglePhaseC;
