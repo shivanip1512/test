@@ -706,6 +706,8 @@ LM_GROUP_POINT:
           description: 'Name for the load group.'
         type:
           type: string
+          enum: 
+            - LM_GROUP_POINT
           description: 'Type of load group.'
         kWCapacity:
           type: number
@@ -736,10 +738,10 @@ LM_GROUP_POINT:
               description: 'Unique point id. Point on the device that performs the control.'
         startControlRawState:
           required:
-            - rawState
+            - id
           type: object
           properties:
-            rawState:
+            id:
               type: integer
               description: 'Control start state of available control Point.'
 
@@ -765,6 +767,8 @@ LM_GROUP_POINT_Response:
           description: 'Name for the load group.'
         type:
           type: string
+          enum: 
+            - LM_GROUP_POINT
           description: 'Type of load group.'
         kWCapacity:
           type: number
@@ -801,10 +805,10 @@ LM_GROUP_POINT_Response:
               description: 'Name of the point.'
         startControlRawState:
           required:
-            - rawState
+            - id
           type: object
           properties:
-            rawState:
+            id:
               type: integer
               description: 'Control start state of available control Point.'
             stateText:
@@ -1003,7 +1007,7 @@ components:
           pointUsage:
             id: 42893
           startControlRawState:
-            rawState: 1
+            id: 1
 
     Point Group Response:
       value:
@@ -1021,7 +1025,7 @@ components:
             id: 42893
             name: CVR Mode
           startControlRawState:
-            rawState: 1
+            id: 1
             stateText: 'True'
     
     id:
