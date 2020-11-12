@@ -84,7 +84,6 @@ public class PointEditorServiceImpl implements PointEditorService {
     @Autowired protected DeviceDao deviceDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DevicePointDao devicePointDao;
-    @Autowired private PointDao pointdao;
 
     protected static final Logger log = YukonLogManager.getLogger(PointEditorServiceImpl.class);
 
