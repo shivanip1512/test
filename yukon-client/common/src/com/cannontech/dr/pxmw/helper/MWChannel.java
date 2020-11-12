@@ -22,7 +22,7 @@ public enum MWChannel {
     private String shortName;
     private BuiltInAttribute builtInAttribute;
 
-    private static Map<Integer, MWChannel> channelLookup;
+    private static Map<Integer, MWChannel> channelLookup = Maps.uniqueIndex(Arrays.asList(values()), MWChannel::getChannelID);
 
     private MWChannel(Integer channelID, String shortName, BuiltInAttribute builtInAttribute) {
         this.channelID = channelID;
@@ -31,7 +31,6 @@ public enum MWChannel {
     }
 
     public static Map<Integer, MWChannel> getChannelLookup() {
-        channelLookup = Maps.uniqueIndex(Arrays.asList(values()), MWChannel::getChannelID);
         return channelLookup;
     }
 
