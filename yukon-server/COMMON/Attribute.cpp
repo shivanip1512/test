@@ -209,8 +209,8 @@ INIT_ATTRIBUTE( PowerFactor,                                        "POWER_FACTO
 INIT_ATTRIBUTE( PowerFactorCoincidental,                            "POWER_FACTOR_COIN" );
 INIT_ATTRIBUTE( PowerFactorAvgQ124,                                 "AVERAGE_POWER_FACTOR_Q124" );
 INIT_ATTRIBUTE( PowerFactorAvgQ234,                                 "AVERAGE_POWER_FACTOR_Q234" );
-INIT_ATTRIBUTE( PowerFactorQ1234,                                   "AVERAGE_POWER_FACTOR" );
-INIT_ATTRIBUTE( PowerFactorAvg,                                     "AVERAGE_POWER_FACTOR_AVG" );
+INIT_ATTRIBUTE( PowerFactorAvg,                                     "AVERAGE_POWER_FACTOR" );
+INIT_ATTRIBUTE( PowerFactorAvgQ1234,                                "AVERAGE_POWER_FACTOR_AVG" );
 INIT_ATTRIBUTE( PowerFactorPrev,                                    "PREVIOUS_AVERAGE_POWER_FACTOR" );
 INIT_ATTRIBUTE( PowerFactorAvgRateA,                                "AVERAGE_POWER_FACTOR_RATE_A" );
 INIT_ATTRIBUTE( PowerFactorPrevRateA,                               "PREVIOUS_AVERAGE_POWER_FACTOR_RATE_A" );
