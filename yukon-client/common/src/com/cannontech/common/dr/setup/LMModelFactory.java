@@ -45,8 +45,10 @@ public class LMModelFactory {
             loadGroup = new LoadGroupNest();
             break;
         case LM_GROUP_EXPRESSCOMM:
-        case LM_GROUP_RFN_EXPRESSCOMM:
             loadGroup = new LoadGroupExpresscom();
+            break;
+        case LM_GROUP_RFN_EXPRESSCOMM:
+            loadGroup = new LoadGroupRFNExpresscom();
             break;
         case LM_GROUP_VERSACOM:
             loadGroup = new LoadGroupVersacom();
