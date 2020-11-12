@@ -10,7 +10,7 @@ post-operation:
           schema:
             $ref: '../schemas/controlScenarioSchema.yaml#/ControlScenario'
           examples:
-            Program Constraints:
+            Control Scenario:
               $ref: '../schemas/controlScenarioSchema.yaml#/components/examples/ControlScenario'
       required: true
     responses:
@@ -28,7 +28,7 @@ get-update-delete-operation:
     tags:
      - Control Scenario
     summary: 'Retrieve Control Scenario'
-    description: 'API to retrieve control ccenario based on passed control ccenario id.'
+    description: 'API to retrieve control scenario based on passed control ccenario id.'
     parameters:
       - name: id
         description: 'Unique identifier of the control ccenario.'
@@ -44,7 +44,7 @@ get-update-delete-operation:
             schema:
               $ref: '../schemas/controlScenarioSchema.yaml#/ControlScenario'
             examples:
-              Program Constraints:
+              Control Scenario:
                 $ref: '../schemas/controlScenarioSchema.yaml#/components/examples/ControlScenario'
   put:
     tags:

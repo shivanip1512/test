@@ -2,7 +2,6 @@ ControlScenario:
   title: Control Scenario
   required:
     - name
-    - allPrograms
   type: object
   properties:
     name:
