@@ -73,7 +73,7 @@ paths:
     $ref: 'api/attributeAssignmentsApi.yaml#/get-update-delete-operation'
     
   /picker/build/{type}:
-    $ref: 'api/pickerApi.yaml#/search-by-type'
+    $ref: 'api/pickerApi.yaml#/buildPicker-by-type'
   /picker/idSearch:
     $ref: 'api/pickerApi.yaml#/search-by-id'
   /picker/search:
@@ -96,5 +96,4 @@ tags:
   - name: Virtual Devices
   - name: Points
   - name: Attributes
-  - name: UI Component
-
+  - name: Picker

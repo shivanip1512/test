@@ -1,20 +1,20 @@
 search-by-id:
   post:
     tags:
-      - UI Component
-    summary: Search Picker By Id
+      - Picker
+    summary: Search By Id
     description: |-
-      API to search Picker by id. 
+      API to search devices based on type and point id  passed in requestBody. 
     
     requestBody:
       content:
         application/json:
           schema:
-            $ref: '../schemas/pickerSchema.yaml#/PickerIdSearch'
+            $ref: '../schemas/pickerSchema.yaml#/POINT_PICKER_SearchById'
             
           examples:
             Search Picker by Id:
-              $ref: '../schemas/pickerSchema.yaml#/components/examples/Search Picker by Id' 
+              $ref: '../schemas/pickerSchema.yaml#/components/examples/Point Picker by Id' 
            
       required: true
     responses:
@@ -23,29 +23,30 @@ search-by-id:
           content:
             application/json:
               schema:
-                $ref: '../schemas/pickerSchema.yaml#/PickerResponse'
+                $ref: '../schemas/pickerSchema.yaml#/POINT_PICKER_Response'
                  
               examples:
                 Search Picker by Id:
-                  $ref: '../schemas/pickerSchema.yaml#/components/examples/Search Picker by Id Response' 
+                  $ref: '../schemas/pickerSchema.yaml#/components/examples/Point Picker by Id Response' 
+
 
 search-by-query:
   post:
     tags:
-      - UI Component
-    summary: Search Picker By Query
+      - Picker
+    summary: Search By Query
     description: |-
-      API to search picker by query. 
+      API to search devices based on type passed in requestBody. 
     
     requestBody:
       content:
         application/json:
           schema:
-            $ref: '../schemas/pickerSchema.yaml#/PickerSearch'
+            $ref: '../schemas/pickerSchema.yaml#/POINT_PICKER_Search'
             
           examples:
             Search Picker by Query:
-              $ref: '../schemas/pickerSchema.yaml#/components/examples/Search Picker by Query' 
+              $ref: '../schemas/pickerSchema.yaml#/components/examples/Point Picker by Query' 
            
       required: true
     responses:
@@ -54,19 +55,19 @@ search-by-query:
           content:
             application/json:
               schema:
-                $ref: '../schemas/pickerSchema.yaml#/PickerResponse'
+                $ref: '../schemas/pickerSchema.yaml#/POINT_PICKER_Response'
                  
               examples:
                 Search Picker by Query:
-                  $ref: '../schemas/pickerSchema.yaml#/components/examples/Search Picker by Query Response'
+                  $ref: '../schemas/pickerSchema.yaml#/components/examples/Point Picker by Query Response'
 
-search-by-type:
+buildPicker-by-type:
   get:
     tags:
-      - UI Component
-    summary: Search Picker By Type 
+      - Picker
+    summary: Build Picker By Type 
     description: |-
-      API to search picker by type. 
+      API to build picker based on type passed in Url. 
     parameters:
       - name: type
         in: path
@@ -81,8 +82,8 @@ search-by-type:
         content:
           application/json:
             schema:
-              $ref: '../schemas/pickerSchema.yaml#/PickerType'
+              $ref: '../schemas/pickerSchema.yaml#/POINT_PICKER_SearchByType'
             
             examples:
               Search Picker By Type:
-                $ref: '../schemas/pickerSchema.yaml#/components/examples/Search Picker By Type' 
+                $ref: '../schemas/pickerSchema.yaml#/components/examples/Point Picker By Type' 

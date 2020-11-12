@@ -237,7 +237,7 @@ public class MeterController {
         PaoType type = device.getDeviceType();
 
         // Redirecting water meters to WaterMeterController
-        if (type.isWaterMeter() || type.isGasMeter()) {
+        if (type.isWaterMeter() || type.isGasMeter() || type.isVirtual()) {
             return "redirect:" + paoDetailUrlHelper.getUrlForPaoDetailPage(device);
         }
 
@@ -488,6 +488,9 @@ public class MeterController {
         Set<PaoType> rfMeterTypes = PaoType.getRfMeterTypes();
         model.addAttribute("rfMeterTypes", rfMeterTypes);
         
+        Set<PaoType> virtualMeterTypes = PaoType.getVirtualTypes();
+        model.addAttribute("virtualMeterType", virtualMeterTypes);
+        
         Set<PaoType> mctMeterTypes = PaoType.getMctTypes();
         model.addAttribute("mctMeterTypes", mctMeterTypes);
         
@@ -538,6 +541,8 @@ public class MeterController {
             RfnIdentifier rfnId = new RfnIdentifier(meter.getSerialNumber(), meter.getManufacturer(), meter.getModel());
             device = deviceCreationService.createRfnDeviceByDeviceType(meter.getType(), meter.getName(), rfnId,
                 true);
+        } else if (meter.getType().isVirtual()) {
+            device = deviceCreationService.createDeviceByDeviceType(meter.getType(), meter.getName());
         } else {
             device = deviceCreationService.createIEDDeviceByDeviceType(meter.getType(), meter.getName(),
                 meter.getPortId(), true);

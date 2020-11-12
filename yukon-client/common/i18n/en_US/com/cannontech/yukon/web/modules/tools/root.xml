@@ -354,6 +354,7 @@
     <entry key="yukon.web.modules.search.amr.meterDetail.electric.summary"><![CDATA[Meter Number: <strong class="subtle">{1}</strong>, Address/Serial Number: <strong class="subtle">{2}</strong>]]></entry>
     <entry key="yukon.web.modules.search.amr.meterDetail.water.summary"><![CDATA[Meter Number: <strong class="subtle">{1}, Address/Serial Number: <strong class="subtle">{2}</strong>]]></entry>
     <entry key="yukon.web.modules.search.amr.meterDetail.gas.summary"><![CDATA[Meter Number: <strong class="subtle">{1}, Address/Serial Number: <strong class="subtle">{2}</strong>]]></entry>
+    <entry key="yukon.web.modules.search.amr.meterDetail.virtual.summary"><![CDATA[Meter Number: <strong class="subtle">{1}</strong>]]></entry>
 
     <!-- Arguments available for the control area page 0: control area name -->
     <entry key="yukon.web.modules.search.dr.controlAreaDetail.summary">{0}</entry>
