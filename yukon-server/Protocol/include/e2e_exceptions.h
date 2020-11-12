@@ -25,6 +25,7 @@ namespace Cti::Protocols::E2e {
     };
     struct ResetReceived    : E2eException { ResetReceived()               : E2eException("Reset packet received") {} };
     struct PayloadTooLarge  : E2eException { PayloadTooLarge()             : E2eException("Payload too large")     {} };
+    struct DuplicatePacket  : E2eException { DuplicatePacket(int id)       : E2eException("Duplicate packet, id: " + std::to_string(id)) {} };
     struct RequestInactive  : E2eException { RequestInactive(int id)       : E2eException("Response received for inactive id " + std::to_string(id)) {} };
     struct InvalidBlockSize : E2eException { InvalidBlockSize(uint8_t szx) : E2eException("Invalid block size: " + std::to_string(szx)) {} };
 }
