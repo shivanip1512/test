@@ -23,7 +23,7 @@
                     <tags:selectWithItems path="type" items="${types}" inputClass="js-type"/>
                 </cti:displayForPageEditModes>
                 <cti:displayForPageEditModes modes="VIEW,EDIT">
-                    <i:inline key="${virtualDevice.type.formatKey}"/>
+                    <tags:paoType yukonPao="${virtualDevice}"/>
                     <tags:hidden path="type"/>
                 </cti:displayForPageEditModes>
             </tags:nameValue2>
