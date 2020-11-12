@@ -19,6 +19,7 @@ import com.cannontech.common.device.dao.DevicePointDao;
 import com.cannontech.common.device.dao.DevicePointDao.SortBy;
 import com.cannontech.common.device.model.DevicePointDetail;
 import com.cannontech.common.device.model.DevicePointsFilter;
+import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.events.loggers.PointEventLogService;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceOption;
@@ -43,6 +44,7 @@ import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -689,6 +691,16 @@ public class PointEditorServiceImpl implements PointEditorService {
         }
 
         return existingEntries;
+    }
+
+    @Override
+    public List<LMDto> retrieveStates(int pointId) {
+        List<LMDto> lmDtoList = new ArrayList<>();
+        List<LiteState> states = stateGroupDao.getStateList(pointId);
+        for (LiteState state : states) {
+            lmDtoList.add(new LMDto(state.getLiteID(), state.getStateText()));
+        }
+        return lmDtoList;
     }
 
 }
