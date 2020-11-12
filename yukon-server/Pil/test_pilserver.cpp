@@ -24,6 +24,7 @@ struct Test_PilServer : Cti::Pil::PilServer
     {}
 
     using PilServer::handleRfnDeviceResult;
+    using PilServer::handleInMessageResult;
     using PilServer::analyzeWhiteRabbits;
     using RequestQueue = PilServer::RequestQueue;
 
@@ -139,6 +140,48 @@ BOOST_AUTO_TEST_CASE(test_handleRfnDeviceResult)
     }
 
     BOOST_CHECK_EQUAL(1, devSingle->getGroupMessageCount(11235, handle));
+}
+
+
+BOOST_AUTO_TEST_CASE(test_handleInMessageResult_getconfig_install_all)
+{
+    Test_PilServer pilServer;
+
+    constexpr auto DeviceId = 502;
+    constexpr auto UserMessageId = 11235;
+    const Cti::ConnectionHandle handle { 55441 };
+
+    auto dev = pilServer.dev_mgr.getDeviceByID(DeviceId);
+
+    BOOST_REQUIRE(dev);
+
+    CtiRequestMsg reqMsg(DeviceId, "getconfig install all", UserMessageId);
+    reqMsg.setConnectionHandle(handle);
+    reqMsg.setSOE(97);  //  prevents us from attempting DB access by calling SystemLogIdGen()
+
+    pilServer.executeRequest(&reqMsg);
+
+    BOOST_REQUIRE_EQUAL(2, pilServer.retList.size());
+/*
+    INMESS result;
+
+    result.TargetID = 502;
+    result.Return.GrpMsgID = 11235;
+    result.Return.Connection = handle;
+
+    pilServer.handleInMessageResult(result);
+
+    {
+        auto retMsg = dynamic_cast<CtiReturnMsg*>(pilServer.retList.front().get());
+
+        BOOST_REQUIRE(retMsg);
+
+        BOOST_CHECK_EQUAL(retMsg->ResultString(), "This was a triumph. I'm making a note here: HUGE SUCCESS.");
+        BOOST_CHECK(retMsg->ExpectMore());
+    }
+
+    BOOST_CHECK_EQUAL(1, devSingle->getGroupMessageCount(11235, handle));
+*/
 }
 
 

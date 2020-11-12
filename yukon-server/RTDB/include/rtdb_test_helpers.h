@@ -12,6 +12,8 @@
 #include "pt_status.h"
 #include "dev_single.h"
 #include "dev_ccu.h"
+#include "dev_mct410.h"
+#include "dev_mct420.h"
 #include "dev_rfnMeter.h"
 #include "dev_rfnCommercial.h"
 #include "dev_rfn_LgyrFocus_al.h"
@@ -435,6 +437,24 @@ struct DevicePointHelper
     }
 };
 
+struct test_Mct410flDevice : Cti::Devices::Mct410Device
+{
+    test_Mct410flDevice(std::string& name)
+    {
+        _name = name;
+        setDeviceType(TYPEMCT410FL);
+    }
+};
+
+struct test_Mct420flDevice : Cti::Devices::Mct420Device
+{
+    test_Mct420flDevice(std::string& name)
+    {
+        _name = name;
+        setDeviceType(TYPEMCT420FL);
+    }
+};
+
 struct test_Rfn410flDevice : Cti::Devices::Rfn410flDevice
 {
     test_Rfn410flDevice(std::string& name)
@@ -492,10 +512,12 @@ struct test_DeviceManager : CtiDeviceManager
 
     test_DeviceManager()
     {
-        devSingle->setID(42, test_tag);
-
         //  set the IDs for all the devices
-        for( auto& device : devices )
+        for( auto& device : rfnDevices )
+        {
+            device.second->setID(device.first, test_tag);
+        }
+        for( auto& device : otherDevices )
         {
             device.second->setID(device.first, test_tag);
         }
@@ -503,12 +525,12 @@ struct test_DeviceManager : CtiDeviceManager
 
     ptr_type getDeviceByID(long id) override
     {
-        if( id == 42 )
+        if( auto device = mapFind(otherDevices, id) )
         {
-            return devSingle;
+            return *device;
         }
 
-        return mapFindOrDefault(devices, id, Cti::Devices::RfnDeviceSPtr());
+        return mapFindOrDefault(rfnDevices, id, Cti::Devices::RfnDeviceSPtr());
     }
 
     ptr_type RemoteGetEqualbyName(const std::string &RemoteName) override
@@ -517,39 +539,46 @@ struct test_DeviceManager : CtiDeviceManager
         {
             return devSingle;
         }
-        //  TODO - return RFN test devices by name, rather than hardcoding?
+        //  TODO - return other devices by name, rather than hardcoding?
         return ptr_type();
     }
 
-    std::map<int, Cti::Devices::RfnDeviceSPtr> devices {
+    std::map<int, Cti::Devices::RfnDeviceSPtr> rfnDevices {
         { 123, boost::make_shared<test_Rfn410flDevice>("JIMMY JOHNS GARGANTUAN (123)"s) },
         {  49, boost::make_shared<test_Rfn410flDevice>("JIMMY JOHNS VITO (49)"s) },
         { 499, boost::make_shared<test_Rfn430sl1Device>("JIMMY JOHNS TURKEY TOM (499)"s) },
         { 500, boost::make_shared<test_Rfn510flDevice>("JIMMY JOHNS ITALIAN NIGHT CLUB (500)"s) },
-        { 501, boost::make_shared<test_RfBatteryNodeDevice>("JIMMY JOHNS ULTIMATE PORKER (501)"s) } };
+        { 501, boost::make_shared<test_RfBatteryNodeDevice>("JIMMY JOHNS ULTIMATE PORKER (501)"s) },
+    };
+
+    std::map<int, ptr_type> otherDevices {
+        {  42, devSingle },
+        { 502, boost::make_shared<test_Mct410flDevice>("MCT-410fL (502)"s) },
+        { 503, boost::make_shared<test_Mct420flDevice>("MCT-420fL (503)"s) },
+    };
 
     Cti::Devices::RfnDeviceSPtr getDeviceByRfnIdentifier(const Cti::RfnIdentifier& rfnId) override
     {
         //  TODO - lookup map instead of hardcoding?
         if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "GARGANTUAN" } )
         {
-            return devices[123];
+            return rfnDevices[123];
         }
         if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "VITO" } )
         {
-            return devices[49];
+            return rfnDevices[49];
         }
         if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "TURKEY TOM" } )
         {
-            return devices[499];
+            return rfnDevices[499];
         }
         if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "ITALIAN NIGHT CLUB" } )
         {
-            return devices[500];
+            return rfnDevices[500];
         }
         if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "ULTIMATE PORKER" } )
         {
-            return devices[501];
+            return rfnDevices[501];
         }
 
         return nullptr;
