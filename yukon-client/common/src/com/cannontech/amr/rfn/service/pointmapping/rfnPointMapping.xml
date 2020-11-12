@@ -5599,7 +5599,7 @@
                 <modifier>Avg</modifier>
             </modifiers>
         </point>
-        <point name="Previous Average Power Factor" icdExcludedTypes="RFN530S4X,RFN530S4EAX,RFN530S4EAXR">
+        <point name="Average Power Factor Frozen" icdExcludedTypes="RFN530S4X,RFN530S4EAX,RFN530S4EAXR">
             <uom>PF</uom>
             <parseSiPrefix/>
             <modifiers match="equal">
@@ -5623,7 +5623,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Previous Average Power Factor Rate A" icdExcludedTypes="RFN530S4X,RFN530S4EAX,RFN530S4EAXR,RFN530S4ERX">
+        <point name="Average Power Factor Frozen Rate A" icdExcludedTypes="RFN530S4X,RFN530S4EAX,RFN530S4EAXR,RFN530S4ERX">
             <uom>PF</uom>
             <parseSiPrefix/>
             <modifiers match="equal">
@@ -5648,7 +5648,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Previous Average Power Factor Rate B" icdExcludedTypes="RFN530S4X,RFN530S4EAX,RFN530S4EAXR,RFN530S4ERX">
+        <point name="Average Power Factor Frozen Rate B" icdExcludedTypes="RFN530S4X,RFN530S4EAX,RFN530S4EAXR,RFN530S4ERX">
             <uom>PF</uom>
             <parseSiPrefix/>
             <modifiers match="equal">
@@ -5673,7 +5673,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Previous Average Power Factor Rate C" icdExcludedTypes="RFN530S4X,RFN530S4EAX,RFN530S4EAXR,RFN530S4ERX">
+        <point name="Average Power Factor Frozen Rate C" icdExcludedTypes="RFN530S4X,RFN530S4EAX,RFN530S4EAXR,RFN530S4ERX">
             <uom>PF</uom>
             <parseSiPrefix/>
             <modifiers match="equal">
@@ -5698,7 +5698,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Previous Average Power Factor Rate D" icdExcludedTypes="RFN530S4X,RFN530S4EAX,RFN530S4EAXR,RFN530S4ERX">
+        <point name="Average Power Factor Frozen Rate D" icdExcludedTypes="RFN530S4X,RFN530S4EAX,RFN530S4EAXR,RFN530S4ERX">
             <uom>PF</uom>
             <parseSiPrefix/>
             <modifiers match="equal">
@@ -5822,16 +5822,6 @@
                 <modifier>Quadrant 3</modifier>
                 <modifier>Quadrant 4</modifier>
                 <modifier>Net Flow</modifier>
-            </modifiers>
-        </point>
-        <point name="Average Power Factor" icd="false">
-            <uom>PF</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
     </pointGroup>

@@ -25,7 +25,6 @@
         <category type="rfnTempAlarm"/>
     </configuration>
     <pointInfos>
-        <!--  <pointInfo name="Average Power Factor" attributes="AVERAGE_POWER_FACTOR"/> YUK-18239 -->
         <pointInfo name="Avg Voltage Phase A" attributes="AVERAGE_VOLTAGE_PHASE_A"/>
         <pointInfo name="Avg Voltage Phase B" attributes="AVERAGE_VOLTAGE_PHASE_B"/>
         <pointInfo name="Avg Voltage Phase C" attributes="AVERAGE_VOLTAGE_PHASE_C"/>
