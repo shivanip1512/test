@@ -30,7 +30,7 @@ yukon.ui.fancyTree= (function () {
         $('.found', tree).removeClass('found');
         
         if (match.length > 0) {
-            tree.fancytree('getTree').visit(function (node) {
+            $.ui.fancytree.getTree(tree).visit(function (node) {
                 if (node.data.text.toLowerCase().match(match)) {
                     node.makeVisible();   //show this guy
                     if (node.span) {
@@ -64,7 +64,6 @@ yukon.ui.fancyTree= (function () {
                         var node = data.node;
                         if (data.targetType != 'checkbox' && data.targetType != 'expander') {
                             if (!node.isFolder()) {
-                                node.toggleExpanded();
                                 node.toggleSelected();
                             }
                         }
@@ -111,13 +110,13 @@ yukon.ui.fancyTree= (function () {
             /** Expand All. */
             $(document).on('click', '.fancytree-open-all', function () {
                 var treeId = $(this).data('treeId');
-                $('#' + treeId).fancytree('getTree').expandAll();
+                $.ui.fancytree.getTree('#' + treeId).expandAll();
             });
             
             /** Collapse All. */
             $(document).on('click', '.fancytree-close-all', function () {
                 var treeId = $(this).data('treeId');
-                $('#' + treeId).fancytree('getTree').expandAll(false);
+                $.ui.fancytree.getTree('#' + treeId).expandAll(false);
             });
             
             $(document).on('keyup', 'input.fancytree-search', function (ev) {
