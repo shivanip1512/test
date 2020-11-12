@@ -182,7 +182,7 @@ public class LoadGroupSetupControllerHelper {
             model.addAttribute("isCreateMode", mode == PageEditMode.CREATE);
             model.addAttribute("isEditMode", mode == PageEditMode.EDIT);
             if (loadGroupPoint.getPointUsage() != null && loadGroupPoint.getPointUsage().getId() != null ) {
-                model.addAttribute("startState", loadGroupPoint.getStartControlRawState().getId());
+                model.addAttribute("startState", loadGroupPoint.getStartControlRawState().getName());
                 setControlStartState(loadGroupPoint, model, request, userContext);
             }
             if (model.containsAttribute(bindingResultKey) && mode != PageEditMode.VIEW) {

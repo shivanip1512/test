@@ -184,8 +184,8 @@ public interface PointEditorService {
                                        SortBy sortBy, PagingParameters paging);
 
     /**
-     * Retrieve Normal states for point Id.
+     * Retrieve states for point Id.
      */
-    List<LMDto> retrieveNormalState(int pointId);
+    List<LMDto> retrieveStates(int pointId);
 
 }

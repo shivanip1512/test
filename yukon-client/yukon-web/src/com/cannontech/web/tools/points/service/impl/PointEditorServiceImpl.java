@@ -694,17 +694,11 @@ public class PointEditorServiceImpl implements PointEditorService {
         return existingEntries;
     }
 
-    
     @Override
-    public List<LMDto> retrieveNormalState(int pointId) {
-        // look for the litePoint here
-        LitePoint litePoint = pointdao.getLitePoint(pointId);
-        if (litePoint == null) {
-            throw new NotFoundException("Invalid point Id" + pointId);
-        }
+    public List<LMDto> retrieveStates(int pointId) {
         List<LMDto> lmDtoList = new ArrayList<>();
-        LiteStateGroup stateGroup = stateGroupDao.getStateGroup(litePoint.getStateGroupID());
-        for (LiteState state : stateGroup.getStatesList()) {
+        List<LiteState> states = stateGroupDao.getStateList(pointId);
+        for (LiteState state : states) {
             lmDtoList.add(new LMDto(state.getLiteID(), state.getStateText()));
         }
         return lmDtoList;

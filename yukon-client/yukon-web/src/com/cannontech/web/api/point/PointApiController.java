@@ -146,8 +146,8 @@ public class PointApiController <T extends PointBaseModel<?>> {
     }
 
     @GetMapping("points/{pointId}/states")
-    public ResponseEntity<Object> getNormalState(@PathVariable int pointId) {
-        List<LMDto> normalStates = pointEditorService.retrieveNormalState(pointId);
+    public ResponseEntity<Object> getStates(@PathVariable int pointId) {
+        List<LMDto> normalStates = pointEditorService.retrieveStates(pointId);
         return new ResponseEntity<>(normalStates, HttpStatus.OK);
     }
 

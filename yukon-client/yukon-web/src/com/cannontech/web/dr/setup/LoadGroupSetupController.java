@@ -45,7 +45,6 @@ import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.dr.loadgroup.service.LoadGroupSetupService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
@@ -80,7 +79,6 @@ public class LoadGroupSetupController {
     @Autowired private LoadGroupSetupControllerHelper controllerHelper;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private ServerDatabaseCache cache;
-    @Autowired private LoadGroupSetupService loadGroupSetupService;
 
     @GetMapping("/create")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)

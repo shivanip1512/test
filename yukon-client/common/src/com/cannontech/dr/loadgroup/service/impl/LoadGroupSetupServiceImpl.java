@@ -202,8 +202,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
                 throw new LMObjectDeletionFailureException(message);
             }
         } catch (SQLException e) {
-            String message = "Unable to delete load gro"
-                    + "up with name : " + Groupname + e;
+            String message = "Unable to delete load group with name : " + Groupname + e;
             log.error(message);
             throw new LMObjectDeletionFailureException(message);
         }
