@@ -34,8 +34,8 @@
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
                 <div class="action-area">
-                        <cti:button classes="js-zone-editor" nameKey="edit" icon="icon-pencil"/>
-                    </div>
+                    <cti:button classes="js-zone-editor" nameKey="edit" icon="icon-pencil"/>
+                </div>
             </tags:sectionContainer2>
         </div>
     
@@ -115,7 +115,7 @@
     <cti:url var="editorUrl" value="/capcontrol/ivvc/wizard/zoneEditor">
         <cti:param name="zoneId" value="${zoneId}"/>
     </cti:url>
-    <div id="zone-editor-info" data-editor-url="${editorUrl}" data-editor-title="${editorTitle}"/></div>
+    <div id="zone-editor-info" data-editor-url="${editorUrl}" data-editor-title="${editorTitle}"/>
     
     <cti:includeScript link="/resources/js/common/yukon.table.dynamic.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.da.zone.js" />
