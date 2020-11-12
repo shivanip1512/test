@@ -19,9 +19,9 @@ import org.springframework.validation.BindingResult;
 import com.cannontech.common.dr.setup.AddressLevel;
 import com.cannontech.common.dr.setup.AddressUsage;
 import com.cannontech.common.dr.setup.ControlPriority;
-import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.EmetconAddressUsage;
 import com.cannontech.common.dr.setup.EmetconRelayUsage;
+import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.dr.setup.LoadGroupDigiSep;
 import com.cannontech.common.dr.setup.LoadGroupEmetcon;
@@ -182,7 +182,7 @@ public class LoadGroupSetupControllerHelper {
             model.addAttribute("isCreateMode", mode == PageEditMode.CREATE);
             model.addAttribute("isEditMode", mode == PageEditMode.EDIT);
             if (loadGroupPoint.getPointUsage() != null && loadGroupPoint.getPointUsage().getId() != null ) {
-                model.addAttribute("startState", loadGroupPoint.getStartControlRawState().getStateText());
+                model.addAttribute("startState", loadGroupPoint.getStartControlRawState().getName());
                 setControlStartState(loadGroupPoint, model, request, userContext);
             }
             if (model.containsAttribute(bindingResultKey) && mode != PageEditMode.VIEW) {
@@ -265,14 +265,21 @@ public class LoadGroupSetupControllerHelper {
     private void setControlStartState(LoadGroupPoint loadGroupPoint, ModelMap model, HttpServletRequest request,
             YukonUserContext userContext) {
         // Give API call to get all control state
-        List<ControlRawState> startStates = new ArrayList<>();
-        String url = helper.findWebServerUrl(request, userContext, ApiURL.drPointGroupStartStateUrl + loadGroupPoint.getPointUsage().getId());
+        List<LMDto> startStates = new ArrayList<>();
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.pointUrl + loadGroupPoint.getPointUsage().getId() + "/states");
         ResponseEntity<? extends Object> response =
-                apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.GET, List.class);
+                apiRequestHelper.callAPIForList(userContext, request, url, LMDto.class, HttpMethod.GET, LMDto.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            startStates = (List<ControlRawState>) response.getBody();
+            startStates = (List<LMDto>) response.getBody();
         }
+
+        /**
+         * Raw state is either 0 or 1 in Control start state of Point Load Group
+         */
+        startStates.stream()
+                   .filter(state -> (state.getId() == 0 || state.getId() == 1))
+                   .collect(Collectors.toList());
         model.addAttribute("startStates", startStates);
     }
 

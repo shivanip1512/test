@@ -13,7 +13,6 @@ import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.loadgroup.request.MockAddressLevel;
 import com.cannontech.rest.api.loadgroup.request.MockAddressUsage;
 import com.cannontech.rest.api.loadgroup.request.MockControlPriority;
-import com.cannontech.rest.api.loadgroup.request.MockControlRawState;
 import com.cannontech.rest.api.loadgroup.request.MockEmetconAddressUsage;
 import com.cannontech.rest.api.loadgroup.request.MockEmetconRelayUsage;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
@@ -230,7 +229,7 @@ public class LoadGroupHelper {
             
             MockLMDto deviceUsage = MockLMDto.builder().id(Integer.valueOf(deviceIdStr)).build();
             MockLMDto pointUsage = MockLMDto.builder().id(Integer.valueOf(pointIdStr)).build();
-            MockControlRawState startControlRawState = MockControlRawState.builder().rawState(0).build();
+            MockLMDto startControlRawState = MockLMDto.builder().id(0).build();
             loadGroup = MockLoadGroupPoint.builder()
                     .name(getLoadGroupName(paoType))
                     .type(paoType)

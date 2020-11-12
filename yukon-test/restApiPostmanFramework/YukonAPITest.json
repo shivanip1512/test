@@ -901,7 +901,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"LM_GROUP_POINT\": {\r\n        \r\n        \"name\": \"pointGrp_3\",\r\n        \"type\": \"LM_GROUP_POINT\",\r\n        \"kWCapacity\": 0.0,\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false,\r\n        \"deviceUsage\": {\r\n            \"id\": 2\r\n        },\r\n        \"pointUsage\": {\r\n            \"id\": 1234\r\n        },\r\n        \"startControlRawState\": {\r\n            \"rawState\": 0\r\n        }\r\n    }\r\n}"
+											"raw": "{\r\n    \"LM_GROUP_POINT\": {\r\n        \"name\": \"Point Load Group\",\r\n        \"type\": \"LM_GROUP_POINT\",\r\n        \"kWCapacity\": 0.8,\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false,\r\n        \"deviceUsage\": {\r\n            \"id\": 11735,\r\n            \"name\": \"CBC 1\"\r\n        },\r\n        \"pointUsage\": {\r\n            \"id\": 113706,\r\n            \"name\": \"Manual Control Mode\"\r\n        },\r\n        \"startControlRawState\": {\r\n            \"id\": 1,\r\n            \"name\": \"True\"\r\n        }\r\n    }\r\n}"
 										},
 										"url": {
 											"raw": "{{api-url}}/api/dr/loadGroups",
@@ -1314,7 +1314,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"LM_GROUP_POINT\": {\r\n        \r\n        \"name\": \"pointGrp_3\",\r\n        \"type\": \"LM_GROUP_POINT\",\r\n        \"kWCapacity\": 0.0,\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false,\r\n        \"deviceUsage\": {\r\n            \"id\": 2\r\n        },\r\n        \"pointUsage\": {\r\n            \"id\": 1234\r\n        },\r\n        \"startControlRawState\": {\r\n            \"rawState\": 0\r\n        }\r\n    }\r\n}"
+											"raw": "{\r\n    \"LM_GROUP_POINT\": {\r\n        \"name\": \"Ppoint LG test\",\r\n        \"type\": \"LM_GROUP_POINT\",\r\n        \"kWCapacity\": 0.8,\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false,\r\n        \"deviceUsage\": {\r\n            \"id\": 11735,\r\n            \"name\": \"CBC 1\"\r\n        },\r\n        \"pointUsage\": {\r\n            \"id\": 113706,\r\n            \"name\": \"Manual Control Mode\"\r\n        },\r\n        \"startControlRawState\": {\r\n            \"id\": 1,\r\n            \"name\": \"True\"\r\n        }\r\n    }\r\n}"
 										},
 										"url": {
 											"raw": "{{api-url}}/api/dr/loadGroups/{Id}",

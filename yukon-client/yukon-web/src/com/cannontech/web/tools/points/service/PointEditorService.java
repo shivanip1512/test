@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.cannontech.common.device.dao.DevicePointDao.SortBy;
 import com.cannontech.common.device.model.DevicePointsFilter;
+import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.model.Direction;
@@ -182,5 +183,9 @@ public interface PointEditorService {
     PaoPointModel getDevicePointDetail(int paoId, DevicePointsFilter devicePointsFilter, Direction direction,
                                        SortBy sortBy, PagingParameters paging);
 
+    /**
+     * Retrieve states for point Id.
+     */
+    List<LMDto> retrieveStates(int pointId);
 
 }
