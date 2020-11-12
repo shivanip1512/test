@@ -349,6 +349,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> wifiTypes;
     private final static ImmutableSet<PaoType> loadGroupSupportedFromWeb;
     private final static ImmutableSet<PaoType> batteryAnalysisTypes;
+    private final static ImmutableSet<PaoType> virtualTypes;
 
     public final static int INVALID = -1;
     
@@ -380,6 +381,9 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LM_ITRON_PROGRAM,
             LM_METER_DISCONNECT_PROGRAM
             );
+
+        virtualTypes = ImmutableSet.of(
+                VIRTUAL_METER);
         
         directProgramTypes = ImmutableSet.of(
             LM_DIRECT_PROGRAM,
@@ -901,7 +905,11 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     public boolean isPlc() {
         return paoClass == PaoClass.CARRIER;
     }
-    
+
+    public boolean isVirtual() {
+        return paoClass == PaoClass.VIRTUAL;
+    }
+
     public boolean isTwoWayRfnLcr() {
         return twoWayLcrTypes.contains(this) 
                 && isRfn();
@@ -1087,6 +1095,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public static ImmutableSet<PaoType> getRtuTypes() {
         return rtuTypes;
+    }
+
+    public static ImmutableSet<PaoType> getVirtualTypes() {
+        return virtualTypes;
     }
 
     public static ImmutableSet<PaoType> getIonTypes() {
