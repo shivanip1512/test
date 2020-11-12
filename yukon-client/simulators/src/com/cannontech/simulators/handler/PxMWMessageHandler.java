@@ -24,7 +24,7 @@ import com.cannontech.simulators.pxmw.model.PxMWDataV1;
 /**
  * This class gets a message PxMWSimulatorRequest from WS, which contains a method information to be called using reflection on the data object specified for that version.
  * 
- * If attempting to simulate that data for a new version add an entry
+ * If attempting to simulate the data for a new version add an entry
  * PxMWVersion.V2, new PxMWv2Data() to map the new version to a new object.
  */
 public class PxMWMessageHandler extends SimulatorMessageHandler {
