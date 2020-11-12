@@ -26,7 +26,7 @@ public class VirtualDeviceRequest {
     public static ExtractableResponse<?> updateVirtualDevice(String virtualDeviceId, Object body) {
 
         String pathParam = APIs.VirtualDevice.UPDATE_VIRTUALDEVICE + virtualDeviceId;
-        ExtractableResponse<?> response = ApiCallHelper.put(pathParam, body);
+        ExtractableResponse<?> response = ApiCallHelper.patch(pathParam, body);
         assertThat(response.statusCode()).isEqualTo(200);
         return response;
     }
