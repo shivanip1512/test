@@ -200,6 +200,7 @@ public:
     static const Attribute  PowerFactorCoincidental;
     static const Attribute  PowerFactorAvgQ124;
     static const Attribute  PowerFactorAvgQ234;
+    static const Attribute  PowerFactorQ1234;
     static const Attribute  PowerFactorAvg;
     static const Attribute  PowerFactorPrev;
     static const Attribute  PowerFactorAvgRateA;
