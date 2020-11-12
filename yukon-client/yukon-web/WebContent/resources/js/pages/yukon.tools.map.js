@@ -267,6 +267,7 @@ yukon.tools.map = (function() {
             yukon.mapping.setScaleForDevice(_deviceFocusCurrentIcon);
         }
         yukon.mapping.hideNeighborsLegend();
+        yukon.mapping.removeDescendantLayers();
     },
     
     //remove neighbors and route information from all icons and set back to initial scale
