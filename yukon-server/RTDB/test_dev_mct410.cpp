@@ -3038,6 +3038,29 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
         BOOST_CHECK(writeMsgPriority > readMsgPriority);
     }
+    BOOST_AUTO_TEST_CASE(test_putconfig_install_freezeday_verify)
+    {
+        test_Mct410IconDevice mct410;
+
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeDay, "32");
+
+        Cti::Test::test_DeviceConfig& config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+        config.insertValue("demandFreezeDay", "0");
+
+        CtiCommandParser parse("putconfig install freezeday verify");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_CHECK(vgList.empty());
+        BOOST_CHECK(outList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        auto retMsg = dynamic_cast<const CtiReturnMsg*>(retList.front());
+
+        BOOST_CHECK_EQUAL(retMsg->Status(), ClientErrors::ConfigNotCurrent);
+        BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config freezeday is NOT current.");
+    }
     BOOST_AUTO_TEST_CASE(test_putconfig_install_disconnect_demand_threshold)
     {
         test_Mct410IconDevice mct410;
