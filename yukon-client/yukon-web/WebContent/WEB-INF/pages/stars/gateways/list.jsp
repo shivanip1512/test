@@ -42,12 +42,12 @@
                 <i:inline key=".create.gateway.label"/>
             </cm:dropdownOption>
         </cti:checkRolesAndProperties>
+        <cti:url var="comprehensiveMapUrl" value="/stars/comprehensiveMap/home"/>
+        <cm:dropdownOption key="yukon.web.modules.operator.comprehensiveMap.pageName" href="${comprehensiveMapUrl}" icon="icon-map-pins"/>
         <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
             <cti:url var="manageCertificate" value="/stars/gateways/certificateUpdates"/>
             <cm:dropdownOption icon="icon-drive-go" key=".manageCertificates" href="${manageCertificate}"/>
         </cti:checkRolesAndProperties>
-        <cti:url var="comprehensiveMapUrl" value="/stars/comprehensiveMap/home"/>
-        <cm:dropdownOption key="yukon.web.modules.operator.comprehensiveMap.pageName" href="${comprehensiveMapUrl}" icon="icon-map-pins"/>
         <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE">
             <cti:url var="manageFirmware" value="/stars/gateways/firmwareDetails"/>
             <cm:dropdownOption icon="icon-drive-go" key=".manageFirmware" href="${manageFirmware}"/>

@@ -52,9 +52,7 @@
     
     <div style="height:800px">
     
-        <tags:alertBox classes="dn js-no-location-message" type="warning" includeCloseButton="true">
-            <i:inline key="yukon.web.modules.operator.comprehensiveMap.missingLocations"/>
-        </tags:alertBox>
+        <%@ include file="/WEB-INF/pages/tools/map/mapWarnings.jsp" %>
     
         <div id="map-container" style="height:100%;width:100%;background:white;">
     

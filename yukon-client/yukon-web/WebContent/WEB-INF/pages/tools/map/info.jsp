@@ -22,6 +22,7 @@
                     <cm:dropdownOption key=".mapDevice" classes="js-device-map" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
                 </c:if>
                 <c:if test="${pao.paoIdentifier.paoType.isRfn()}">
+                    <cm:dropdownOption key=".viewDescendants" classes="js-device-descendants" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
                     <cm:dropdownOption key=".viewNeighbors" classes="js-device-neighbors" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
                     <c:if test="${!pao.paoIdentifier.paoType.isRfGateway()}">
                         <cm:dropdownOption key=".viewPrimaryRoute" classes="js-device-route" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>

@@ -677,6 +677,22 @@ yukon.tools.map = (function() {
                 $('#confirm-delete').dialog('destroy');
             });
             
+            /** Gets the descendants for the device from the network tree **/
+            $(document).on('click', '.js-device-descendants', function() {
+                var deviceId = $(this).data('deviceId'),
+                    focusDevice = yukon.mapping.findFocusDevice(deviceId, true);
+                _removeDeviceFocusLayers();
+                _deviceFocusCurrentIcon = focusDevice;
+                //if focus device was removed, add it back
+                var deviceFound = yukon.mapping.findFocusDevice(deviceId, false);
+                if (deviceFound == null) {
+                    var source = yukon.mapping.getIconLayerSource();
+                    source.addFeature(focusDevice);
+                    _deviceFocusIcons.push(focusDevice);
+                }
+                yukon.mapping.displayDescendants(deviceId, false);
+            });
+            
             /** Gets the neighbor data from Network Manager **/
             $(document).on('click', '.js-device-neighbors', function() {
                 var deviceId = $(this).data('deviceId'),
