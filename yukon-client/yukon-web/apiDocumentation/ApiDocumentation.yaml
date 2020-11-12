@@ -71,6 +71,13 @@ paths:
     $ref: 'api/attributeAssignmentsApi.yaml#/post-get-operation'
   /attributeAssignments/{id}:
     $ref: 'api/attributeAssignmentsApi.yaml#/get-update-delete-operation'
+    
+  /picker/build/{type}:
+    $ref: 'api/pickerApi.yaml#/buildPicker-by-type'
+  /picker/idSearch:
+    $ref: 'api/pickerApi.yaml#/search-by-id'
+  /picker/search:
+    $ref: 'api/pickerApi.yaml#/search-by-query'
 
 components:
   securitySchemes:
@@ -89,4 +96,5 @@ tags:
   - name: Virtual Devices
   - name: Points
   - name: Attributes
+  - name: Picker
 

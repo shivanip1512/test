@@ -5,6 +5,6 @@
     <tags>
         <tag name="DEVICE_ICON_TYPE" option="virtual-meter"/>
         <tag name="SUPPORTS_ATTRIBUTE_ASSIGNMENT"/>
-        <tag name="VIRTUAL_DEVICE_DISPLAYABLE"/>
+        <tag name="VIRTUAL_METER_DISPLAYABLE"/>
     </tags>
 </pao>

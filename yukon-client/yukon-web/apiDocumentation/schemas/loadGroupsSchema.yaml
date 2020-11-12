@@ -635,8 +635,131 @@ LM_GROUP_EXPRESSCOMM:
             - DEFAULT
             - MEDIUM
             - HIGH
-            - HIGHEST        
-            
+            - HIGHEST
+
+LM_GROUP_RFN_EXPRESSCOMM:
+  title: LM_GROUP_RFN_EXPRESSCOMM
+  required:
+    - LM_GROUP_RFN_EXPRESSCOMM
+  type: object
+  properties:
+    LM_GROUP_RFN_EXPRESSCOMM:
+      required:
+        - type
+        - name
+        - kWCapacity
+        - protocolPriority
+        - relayUsage
+        - addressUsage
+        - serviceProvider
+        - geo
+        - substation
+        - feeder
+        - zip
+        - user
+        - program
+        - splinter
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 60
+          description: 'Name for the load group.'
+        type:
+          type: string
+          enum:
+            - LM_GROUP_RFN_EXPRESSCOM
+          description: 'Type of load group.'
+        kWCapacity:
+          type: number
+          description: 'Estimated kilowatt capacity of field devices that match the addressing of the load group. To disable this feature, enter a value of zero.'
+        disableGroup:
+          type: boolean
+          default: false
+          description: 'Flag to disable the load group.'
+        disableControl:
+          type: boolean
+          default: false
+          description: 'Flag to disable control of the load group.'
+        serialNumber:
+          type: string
+          minimum: 0
+          maximum: 999999999
+          description: 'To control a device using its individual serial number. serialNumber is mandatory to pass if SERIAL is selected in addressUsage.'
+        serviceProvider:
+          type: integer
+          minimum: 1
+          maximum: 65534
+          description: 'The service provider ID (SPID) is sent with all group address messages and is used to identify the service provider (owner utility) in the case of any communications cross talk or some shared communications network. serviceProvider is mandatory to pass if SERVICE is selected in addressUsage.'
+        geo:
+          type: integer
+          minimum: 1
+          maximum: 65534
+          description: 'The geographical address identifies a desired geographical area (determined by the utility). geo is mandatory to pass if GEO is selected in addressUsage.'
+        substation:
+          type: integer
+          minimum: 1
+          maximum: 65534
+          description: 'The substation address is intended to identify the utility substation on which the target equipment is located. substation is mandatory to pass if SUBSTATION is selected in addressUsage.'
+        feeder:
+          type: string
+          maximum: 16
+          description: 'The feeder address is intended to identify the utility feeder by which the load is fed. This is normally combined with the substation, but can be used alone. Each bit in this address represents a feeder. This allows a set number of feeders to be targeted with a single message. feeder is mandatory to pass if FEEDER is selected in addressUsage.'
+        zip:
+          type: integer
+          minimum: 1
+          maximum: 16777214
+          description: 'The zip address is intended to be the postal zip code. This address can also be used for any other addressing options. zip is mandatory to pass if ZIP is selected in addressUsage.'
+        user:
+          type: integer
+          minimum: 1
+          maximum: 65534
+          description: 'The user defined address is intended to be user definable and can be used for any other addressing options. user is mandatory to pass if USER is selected in addressUsage.'
+        program:
+          type: integer
+          minimum: 1
+          maximum: 254
+          description: 'The program address is used to target program loads. Field devices that control multiple loads contain a separate program address for each load. program is mandatory to pass if PROGRAM is selected in addressUsage.'
+        splinter:
+          type: integer
+          minimum: 1
+          maximum: 254
+          description: ' The splinter address is used to target a subset of a program load address. Field devices that control multiple loads contain a separate splinter address for each load. splinter is mandatory to pass if SPLINTER is selected in addressUsage.'
+        addressUsage:
+          type: string
+          description: 'Address Usage.'
+          enum:
+            - SERVICE
+            - GEO
+            - SUBSTATION
+            - FEEDER
+            - ZIP
+            - USER
+            - LOAD
+            - PROGRAM
+            - SPLINTER
+            - SERIAL
+        relayUsage:
+          type: string
+          description: 'RelayUsage. relayUsage is mandatory to pass if LOAD is selected in addressUsage.'
+          enum:
+            - Load_1
+            - Load_2
+            - Load_3
+            - Load_4
+            - Load_5
+            - Load_6
+            - Load_7
+            - Load_8
+        protocolPriority:
+          type: string
+          description: 'Control Priority.'
+          enum:
+            - DEFAULT
+            - MEDIUM
+            - HIGH
+            - HIGHEST
+
 LM_GROUP_EATON_CLOUD:
   title: LM_GROUP_EATON_CLOUD
   required:
@@ -851,7 +974,37 @@ components:
           relayUsage:
             - Load_1
           protocolPriority: DEFAULT 
-          
+    
+    RFN Expresscomm Group:
+      value:  
+        LM_GROUP_RFN_EXPRESSCOMM:
+          name: RfnExpressCom Test
+          type: LM_GROUP_RFN_EXPRESSCOMM
+          kWCapacity: 0
+          disableGroup: false
+          disableControl: false
+          serviceProvider: 1
+          geo: 2
+          substation: 3
+          feeder: '1000000000100100'
+          zip: 5
+          user: 6
+          program: 12
+          splinter: 23
+          serialNumber: 1245
+          addressUsage:
+            - GEO
+            - SUBSTATION
+            - FEEDER
+            - ZIP
+            - USER
+            - LOAD
+            - PROGRAM
+            - SPLINTER
+          relayUsage:
+            - Load_1
+          protocolPriority: DEFAULT
+    
     Eaton Cloud Group:
       value:       
         LM_GROUP_EATON_CLOUD:
