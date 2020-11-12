@@ -219,6 +219,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     AVERAGE_POWER_FACTOR_Q124("Average Power Factor (Quadrants 1 2 4)", AttributeGroup.REACTIVE),
     AVERAGE_POWER_FACTOR_Q234("Average Power Factor (Quadrants 2 3 4)", AttributeGroup.REACTIVE),
     AVERAGE_POWER_FACTOR("Average Power Factor", AttributeGroup.REACTIVE),
+    AVERAGE_POWER_FACTOR_AVG("Average Power Factor", AttributeGroup.REACTIVE),
     PREVIOUS_AVERAGE_POWER_FACTOR("Previous Average Power Factor", AttributeGroup.REACTIVE),
     AVERAGE_POWER_FACTOR_RATE_A("Average Power Factor Rate A", AttributeGroup.REACTIVE),
     PREVIOUS_AVERAGE_POWER_FACTOR_RATE_A("Previous Average Power Factor Rate A", AttributeGroup.REACTIVE),

@@ -103,6 +103,8 @@
                 
                 { "metricId" : 210, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVA" },
                 
+                { "metricId" : 233, "attributeMagnitude" : 3, "attribute" : "AVERAGE_POWER_FACTOR_AVG" },
+                
                 { "metricId" : 240, "attributeMagnitude" : 3, "attribute" : "PEAK_DEMAND_DAILY" },
 
                 { "metricId" : 257, "attribute" : "TEMPERATURE_DEVICE" },

@@ -24,7 +24,7 @@
         <category type="rfnTempAlarm"/>
     </configuration>
     <pointInfos>
-        <pointInfo name="Average Power Factor" attributes="AVERAGE_POWER_FACTOR"/>
+        <pointInfo name="Average Power Factor" attributes="AVERAGE_POWER_FACTOR_AVG"/>
         <pointInfo name="Previous Average Power Factor" attributes="PREVIOUS_AVERAGE_POWER_FACTOR"/>
         <pointInfo name="Average Power Factor Rate A" attributes="AVERAGE_POWER_FACTOR_RATE_A"/>
         <pointInfo name="Previous Average Power Factor Rate A" attributes="PREVIOUS_AVERAGE_POWER_FACTOR_RATE_A"/>
