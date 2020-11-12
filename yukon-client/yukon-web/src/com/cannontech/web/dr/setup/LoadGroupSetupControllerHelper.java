@@ -28,6 +28,7 @@ import com.cannontech.common.dr.setup.LoadGroupEmetcon;
 import com.cannontech.common.dr.setup.LoadGroupExpresscom;
 import com.cannontech.common.dr.setup.LoadGroupMCT;
 import com.cannontech.common.dr.setup.LoadGroupPoint;
+import com.cannontech.common.dr.setup.LoadGroupRFNExpresscom;
 import com.cannontech.common.dr.setup.LoadGroupRipple;
 import com.cannontech.common.dr.setup.LoadGroupVersacom;
 import com.cannontech.common.dr.setup.Loads;
@@ -75,55 +76,20 @@ public class LoadGroupSetupControllerHelper {
         
         switch (type) {
         case LM_GROUP_EXPRESSCOMM:
-        case LM_GROUP_RFN_EXPRESSCOMM:
             if (isViewMode) {
                 LoadGroupExpresscom loadGroup = (LoadGroupExpresscom) model.get("loadGroup");
-
-                List<AddressUsage> addressUsage = loadGroup.getAddressUsage();
-                List<AddressUsage> loadAddressUsage =
-                    addressUsage.stream().filter(e -> e.isLoadAddressUsage()).collect(Collectors.toList());
-                List<AddressUsage> geoAddressUsage =
-                    new ArrayList<>(CollectionUtils.subtract(addressUsage, loadAddressUsage));
-                model.addAttribute("loadAddressUsage", loadAddressUsage);
-                model.addAttribute("geoAddressUsage", geoAddressUsage);
-
-                if (loadGroup.getAddressUsage().contains(AddressUsage.GEO)) {
-                    model.addAttribute("displayGeo", true);
-                }
-                if (loadGroup.getAddressUsage().contains(AddressUsage.SUBSTATION)) {
-                    model.addAttribute("displaySubstation", true);
-                }
-                if (loadGroup.getAddressUsage().contains(AddressUsage.FEEDER)) {
-                    model.addAttribute("displayFeeder", true);
-                    loadGroup.setFeeder(getFormattedAddress(loadGroup.getFeeder()));
-                }
-                if (loadGroup.getAddressUsage().contains(AddressUsage.ZIP)) {
-                    model.addAttribute("displayZip", true);
-                }
-                if (loadGroup.getAddressUsage().contains(AddressUsage.USER)) {
-                    model.addAttribute("displayUser", true);
-                }
-                if (loadGroup.getAddressUsage().contains(AddressUsage.SERIAL)) {
-                    model.addAttribute("displaySerial", true);
-                }
-                if (loadGroup.getAddressUsage().contains(AddressUsage.PROGRAM)) {
-                    model.addAttribute("displayProgram", true);
-                }
-                if (loadGroup.getAddressUsage().contains(AddressUsage.SPLINTER)) {
-                    model.addAttribute("displaySplinter", true);
-                }
-                if (loadGroup.getAddressUsage().contains(AddressUsage.LOAD)) {
-                    model.addAttribute("loadSelected", true);
-                }
+                setExpresscomAttributes(loadGroup, model);
             } else {
-                if (type == PaoType.LM_GROUP_EXPRESSCOMM) {
-                    setCommunicationRoute(model, request, userContext);
-                }
-                model.addAttribute("protocolPriority", ControlPriority.values());
-                model.addAttribute("addressUsageList", AddressUsage.getGeoAddressUsage());
-                model.addAttribute("feederList", getBitAddressLevel());
-                model.addAttribute("loadAddressUsageList", AddressUsage.getLoadAddressUsage());
-                model.addAttribute("loadsList", Lists.newArrayList(Loads.values()));
+                setCommunicationRoute(model, request, userContext);
+                addExpresscomModelAttributes(model);
+            }
+            break;
+        case LM_GROUP_RFN_EXPRESSCOMM:
+            if (isViewMode) {
+                LoadGroupRFNExpresscom loadGroup = (LoadGroupRFNExpresscom) model.get("loadGroup");
+                setExpresscomAttributes(loadGroup, model);
+            } else {
+                addExpresscomModelAttributes(model);
             }
             break;
         case LM_GROUP_ITRON:
@@ -231,6 +197,52 @@ public class LoadGroupSetupControllerHelper {
         }
     }
 
+    private void addExpresscomModelAttributes(ModelMap model) {
+        model.addAttribute("protocolPriority", ControlPriority.values());
+        model.addAttribute("addressUsageList", AddressUsage.getGeoAddressUsage());
+        model.addAttribute("feederList", getBitAddressLevel());
+        model.addAttribute("loadAddressUsageList", AddressUsage.getLoadAddressUsage());
+        model.addAttribute("loadsList", Lists.newArrayList(Loads.values()));
+    }
+
+    private void setExpresscomAttributes(LoadGroupRFNExpresscom loadGroup, ModelMap model) {
+            List<AddressUsage> addressUsage = loadGroup.getAddressUsage();
+            List<AddressUsage> loadAddressUsage = addressUsage.stream().filter(e -> e.isLoadAddressUsage())
+                    .collect(Collectors.toList());
+            List<AddressUsage> geoAddressUsage = new ArrayList<>(CollectionUtils.subtract(addressUsage, loadAddressUsage));
+            model.addAttribute("loadAddressUsage", loadAddressUsage);
+            model.addAttribute("geoAddressUsage", geoAddressUsage);
+
+            if (loadGroup.getAddressUsage().contains(AddressUsage.GEO)) {
+                model.addAttribute("displayGeo", true);
+            }
+            if (loadGroup.getAddressUsage().contains(AddressUsage.SUBSTATION)) {
+                model.addAttribute("displaySubstation", true);
+            }
+            if (loadGroup.getAddressUsage().contains(AddressUsage.FEEDER)) {
+                model.addAttribute("displayFeeder", true);
+                loadGroup.setFeeder(getFormattedAddress(loadGroup.getFeeder()));
+            }
+            if (loadGroup.getAddressUsage().contains(AddressUsage.ZIP)) {
+                model.addAttribute("displayZip", true);
+            }
+            if (loadGroup.getAddressUsage().contains(AddressUsage.USER)) {
+                model.addAttribute("displayUser", true);
+            }
+            if (loadGroup.getAddressUsage().contains(AddressUsage.SERIAL)) {
+                model.addAttribute("displaySerial", true);
+            }
+            if (loadGroup.getAddressUsage().contains(AddressUsage.PROGRAM)) {
+                model.addAttribute("displayProgram", true);
+            }
+            if (loadGroup.getAddressUsage().contains(AddressUsage.SPLINTER)) {
+                model.addAttribute("displaySplinter", true);
+            }
+            if (loadGroup.getAddressUsage().contains(AddressUsage.LOAD)) {
+                model.addAttribute("loadSelected", true);
+            }
+    }
+
     /**
      * Sets the communication route
      */
@@ -271,10 +283,14 @@ public class LoadGroupSetupControllerHelper {
     public void setDefaultValues(LoadGroupBase group, LiteYukonUser liteYukonUser) {
         switch (group.getType()) {
         case LM_GROUP_EXPRESSCOMM:
-        case LM_GROUP_RFN_EXPRESSCOMM:
             LoadGroupExpresscom expresscomGroup = ((LoadGroupExpresscom) group);
             expresscomGroup.setServiceProvider(1);
             expresscomGroup.setProtocolPriority(ControlPriority.DEFAULT);
+            break;
+        case LM_GROUP_RFN_EXPRESSCOMM:
+            LoadGroupRFNExpresscom rfnExpresscomGroup = ((LoadGroupRFNExpresscom) group);
+            rfnExpresscomGroup.setServiceProvider(1);
+            rfnExpresscomGroup.setProtocolPriority(ControlPriority.DEFAULT);
             break;
         case LM_GROUP_VERSACOM:
             ((LoadGroupVersacom) group).setSectionAddress(0);

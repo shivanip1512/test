@@ -27,6 +27,7 @@ import com.cannontech.rest.api.loadgroup.request.MockLoadGroupItron;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupMCT;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupNest;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupPoint;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupRFNExpresscom;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupRipple;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupVersacom;
 import com.cannontech.rest.api.loadgroup.request.MockLoads;
@@ -135,7 +136,7 @@ public class LoadGroupHelper {
             rfnRelayUsage.add(MockLoads.Load_1);
             rfnRelayUsage.add(MockLoads.Load_2);
 
-            loadGroup = MockLoadGroupExpresscom.builder()
+            loadGroup = MockLoadGroupRFNExpresscom.builder()
                     .name(getLoadGroupName(paoType))
                     .type(MockPaoType.LM_GROUP_RFN_EXPRESSCOMM)
                     .disableControl(false)

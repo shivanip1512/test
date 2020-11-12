@@ -951,6 +951,36 @@
 										}
 									},
 									"response": []
+								},
+								{
+									"name": "RFNExpresscom",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"LM_GROUP_RFN_EXPRESSCOMM\": {\r\n    \"name\": \"RfnExpresscomTest123\",\r\n    \"type\": \"LM_GROUP_RFN_EXPRESSCOMM\",\r\n    \"kWCapacity\": 0.0,\r\n    \"disableGroup\": false,\r\n    \"disableControl\": false,\r\n    \"serialNumber\": \"\",\r\n    \"serviceProvider\": 1,\r\n    \"substation\": 4,\r\n    \"feeder\": \"\",\r\n    \"addressUsage\": [\r\n      \"SUBSTATION\",\r\n      \"LOAD\"\r\n    ],\r\n    \"relayUsage\": [\r\n      \"Load_8\"\r\n    ],\r\n    \"protocolPriority\": \"DEFAULT\"\r\n  }\r\n}"
+										},
+										"url": {
+											"raw": "{{api-url}}/api/dr/loadGroups",
+											"host": [
+												"{{api-url}}"
+											],
+											"path": [
+												"api",
+												"dr",
+												"loadGroups"
+											]
+										}
+									},
+									"response": []
 								}
 							],
 							"description": "Create request for all load groups.",
@@ -1332,6 +1362,37 @@
 												"dr",
 												"loadGroups",
 												"{Id}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "RFNExpresscom",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"LM_GROUP_RFN_EXPRESSCOMM\": {\r\n    \"name\": \"RfnExpresscomTest123\",\r\n    \"type\": \"LM_GROUP_RFN_EXPRESSCOMM\",\r\n    \"kWCapacity\": 0.0,\r\n    \"disableGroup\": false,\r\n    \"disableControl\": false,\r\n    \"serialNumber\": \"\",\r\n    \"serviceProvider\": 1,\r\n    \"substation\": 4,\r\n    \"feeder\": \"\",\r\n    \"addressUsage\": [\r\n      \"SUBSTATION\",\r\n      \"LOAD\"\r\n    ],\r\n    \"relayUsage\": [\r\n      \"Load_8\"\r\n    ],\r\n    \"protocolPriority\": \"DEFAULT\"\r\n  }\r\n}"
+										},
+										"url": {
+											"raw": "{{api-url}}/api/dr/loadGroups/{groupId}",
+											"host": [
+												"{{api-url}}"
+											],
+											"path": [
+												"api",
+												"dr",
+												"loadGroups",
+												"{groupId}"
 											]
 										}
 									},
