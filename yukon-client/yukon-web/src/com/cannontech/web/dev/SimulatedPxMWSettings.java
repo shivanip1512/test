@@ -5,21 +5,23 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 
+import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
+
 public class SimulatedPxMWSettings {
     
-    Map<RetrievalUrl, HttpStatus> selectedStatuses = new EnumMap<RetrievalUrl, HttpStatus>(RetrievalUrl.class);
-    
+    Map<PxMWRetrievalUrl, HttpStatus> selectedStatuses = new EnumMap<PxMWRetrievalUrl, HttpStatus>(PxMWRetrievalUrl.class);
+
     public SimulatedPxMWSettings() {
-        for (RetrievalUrl url : RetrievalUrl.values()) {
-            getSelectedStatuses().put(url, url.getStatuses().get(0));
+        for (PxMWRetrievalUrl url : PxMWRetrievalUrl.values()) {
+            selectedStatuses.put(url, HttpStatus.OK);
         }
     }
 
-    public Map<RetrievalUrl, HttpStatus> getSelectedStatuses() {
+    public Map<PxMWRetrievalUrl, HttpStatus> getSelectedStatuses() {
         return selectedStatuses;
     }
 
-    public void setSelectedStatuses(Map<RetrievalUrl, HttpStatus> selectedStatuses) {
+    public void setSelectedStatuses(Map<PxMWRetrievalUrl, HttpStatus> selectedStatuses) {
         this.selectedStatuses = selectedStatuses;
     }
 
