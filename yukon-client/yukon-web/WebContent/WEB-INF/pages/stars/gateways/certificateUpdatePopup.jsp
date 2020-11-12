@@ -18,7 +18,7 @@
             <tags:nameValue2 nameKey="yukon.web.modules.operator.gateways.cert.update.gateways">
                 <input type="hidden" id="gatewayIdList"/>
                 <tags:pickerDialog id="gatewaysPicker" 
-                                   type="rfGatewayPicker"
+                                   type="rfGatewayLegacyPicker"
                                    linkType="selection"
                                    destinationFieldName="gatewayIdList"
                                    selectionProperty="paoName"
