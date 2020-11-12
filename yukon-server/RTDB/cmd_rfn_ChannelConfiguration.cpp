@@ -173,7 +173,11 @@ const MetricInfo metricInfos[] = {
         { 352,  None,      "kVA (Quadrants 1 3)" },
         { 353,  None,      "kVA (Quadrants 2 4)" },
         { 354,  None,      "Sum VA" },
-        { 355,  None,      "Net VA" }};
+        { 355,  None,      "Net VA" },
+        { 1233, TouRates,  "Average Power Factor Rate A" },
+        { 2233, TouRates,  "Average Power Factor Rate B" },
+        { 3233, TouRates,  "Average Power Factor Rate C" },
+        { 4233, TouRates,  "Average Power Factor Rate D" }};
 
 struct MetricItem
 {
