@@ -1514,6 +1514,15 @@ create table Command  (
    constraint PK_COMMAND primary key (CommandID)
 );
 
+/*==============================================================*/
+/* Table: LMGroupEatonCloudMapping                              */
+/*==============================================================*/
+create table LMGroupEatonCloudMapping (
+   YukonGroupId         NUMBER                          not null,
+   RelayUsage           VARCHAR2(15)                    not null,
+   constraint PK_LMGroupEatonCloudMapping primary key (YukonGroupId)
+);
+
 /* N-A */
 insert into command values(-0, 'Not Available Yet', 'Not Available Yet', 'DEVICE');
 
@@ -14155,4 +14164,9 @@ alter table Zone
 alter table Zone
    add constraint FK_Zone_Zone foreign key (ParentId)
       references Zone (ZoneId);
+
+alter table LMGroupEatonCloud
+   add constraint FK_LMGroupEatonCloud_LMGroup foreign key (YukonGroupId)
+      references LMGroup (DeviceID)
+      on delete cascade;
 

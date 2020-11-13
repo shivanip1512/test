@@ -25,7 +25,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value = LoadGroupDisconnect.class, name = "LM_GROUP_METER_DISCONNECT"),
     @JsonSubTypes.Type(value = LoadGroupMCT.class, name = "LM_GROUP_MCT"),
     @JsonSubTypes.Type(value = LoadGroupPoint.class, name = "LM_GROUP_POINT"),
-    @JsonSubTypes.Type(value = LoadGroupRipple.class, name = "LM_GROUP_RIPPLE")
+    @JsonSubTypes.Type(value = LoadGroupRipple.class, name = "LM_GROUP_RIPPLE"),
+    @JsonSubTypes.Type(value = LoadGroupEatonCloud.class, name = "LM_GROUP_EATON_CLOUD"),
     })
 @JsonIgnoreProperties(value={"id"}, allowGetters= true, ignoreUnknown = true)
 public class LoadGroupBase<T extends LMGroup> implements DBPersistentConverter<T> {
