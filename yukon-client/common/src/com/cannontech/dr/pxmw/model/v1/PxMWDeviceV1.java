@@ -50,17 +50,17 @@ public class PxMWDeviceV1 implements Serializable {
         return role;
     }
 
-    @JsonProperty("model_lname")
+    @JsonProperty("model")
     public String getModel() {
         return model;
     }
 
     @JsonProperty("model_sname")
-    public String getModeSname() {
+    public String getModelSname() {
         return modelSname;
     }
 
-    @JsonProperty("modelLname")
+    @JsonProperty("model_lname")
     public String getModelLname() {
         return modelLname;
     }

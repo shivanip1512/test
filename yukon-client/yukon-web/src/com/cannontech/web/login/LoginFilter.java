@@ -83,7 +83,7 @@ public class LoginFilter implements Filter {
                          "/dev/mockecobee/**",
                          "/dev/nestApi/**",
                          "/dev/itron/**",
-                         "/dev/PxMW/**",
+                         "/dev/pxMiddleware/**",
                          "/**/api/**");
 
     private final static ImmutableList<String> excludedRedirectedPaths =

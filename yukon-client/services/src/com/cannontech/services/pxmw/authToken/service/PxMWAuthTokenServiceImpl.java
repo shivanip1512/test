@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
-import com.cannontech.dr.pxmw.service.PxMWCommunicationServiceV1;
+import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
 import com.cannontech.dr.pxwhite.service.impl.PxWhiteCommunicationException;
 import com.cannontech.services.pxmw.authToken.message.PxMWAuthTokenRequest;
 import com.cannontech.services.pxmw.authToken.message.PxMWAuthTokenResponse;

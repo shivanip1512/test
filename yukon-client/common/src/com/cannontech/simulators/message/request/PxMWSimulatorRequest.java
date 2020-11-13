@@ -35,6 +35,6 @@ public class PxMWSimulatorRequest implements SimulatorRequest{
 
     @Override
     public SimulatorType getRequestType() {
-        return SimulatorType.PxMW;
+        return SimulatorType.PX_MIDDLEWARE;
     }
 }

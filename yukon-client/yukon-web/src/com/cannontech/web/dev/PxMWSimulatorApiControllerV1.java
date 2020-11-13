@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
-import com.cannontech.dr.pxmw.service.impl.PxMWCommunicationServiceImplV1;
+import com.cannontech.dr.pxmw.service.impl.v1.PxMWCommunicationServiceImplV1;
 import com.cannontech.simulators.message.request.PxMWSimulatorRequest;
 import com.cannontech.simulators.message.response.PxMWSimulatorResponse;
 import com.cannontech.web.security.annotation.CheckCparm;
 
 @RestController
-@RequestMapping("/PxMW/api/v1")
+@RequestMapping("/pxMiddleware/api/v1")
 @CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 /**
  * This controller is used to simulate API responses. The message is sent to Simulator service which will generate a fake data,

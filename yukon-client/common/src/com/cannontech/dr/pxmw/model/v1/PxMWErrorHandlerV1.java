@@ -33,7 +33,7 @@ public class PxMWErrorHandlerV1 implements ResponseErrorHandler {
                     exception);
         } catch (Exception e) {
             exception = new PxMWCommunicationExceptionV1(status);
-            log.error("Status: " + status + " Error Response Body: " + body, e);
+            log.error("Status: {} Error Response Body: {}", status, body, e);
         }
         throw exception;
     }

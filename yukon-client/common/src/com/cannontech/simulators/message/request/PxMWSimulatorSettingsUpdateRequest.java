@@ -14,7 +14,7 @@ public class PxMWSimulatorSettingsUpdateRequest implements SimulatorRequest{
     
     @Override
     public SimulatorType getRequestType() {
-        return SimulatorType.PxMW;
+        return SimulatorType.PX_MIDDLEWARE;
     }
 
     public Map<PxMWRetrievalUrl, Integer> getStatuses() {

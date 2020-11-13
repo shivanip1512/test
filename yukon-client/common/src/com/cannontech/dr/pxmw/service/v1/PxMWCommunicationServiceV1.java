@@ -1,4 +1,4 @@
-package com.cannontech.dr.pxmw.service;
+package com.cannontech.dr.pxmw.service.v1;
 
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;

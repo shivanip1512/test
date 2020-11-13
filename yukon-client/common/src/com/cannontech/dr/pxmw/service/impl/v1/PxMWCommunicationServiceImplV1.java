@@ -1,4 +1,4 @@
-package com.cannontech.dr.pxmw.service.impl;
+package com.cannontech.dr.pxmw.service.impl.v1;
 
 import java.net.URI;
 import java.util.Map;
@@ -22,7 +22,7 @@ import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWErrorHandlerV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
-import com.cannontech.dr.pxmw.service.PxMWCommunicationServiceV1;
+import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
 import com.cannontech.dr.pxwhite.model.PxWhiteCredentials;
 import com.cannontech.dr.pxwhite.model.PxWhiteRenewToken;
 import com.cannontech.dr.pxwhite.model.PxWhiteTokenResponse;
@@ -44,7 +44,7 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
     // Template for making requests and receiving responses
     private final RestTemplate restTemplate;
 
-    public PxMWCommunicationServiceImplV1() {
+    public PxMWCommunicationServiceImplV1() {        
         restTemplate = new RestTemplate();
         restTemplate.setErrorHandler(new PxMWErrorHandlerV1());
     }

@@ -27,6 +27,6 @@ public enum SimulatorType {
     DEVICE_ARCHIVE,
     NEST,
     POINT_DATA_CACHE_CORRELATION,
-    PxMW
+    PX_MIDDLEWARE
     ;
 }

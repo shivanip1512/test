@@ -31,7 +31,7 @@ public class PxMWMessageHandler extends SimulatorMessageHandler {
     private static final Logger log = YukonLogManager.getLogger(PxMWMessageHandler.class);
 
     public PxMWMessageHandler() {
-        super(SimulatorType.PxMW);
+        super(SimulatorType.PX_MIDDLEWARE);
     }
 
     private Map<PxMWVersion, PxMWDataGenerator> data = Map.of(PxMWVersion.V1, new PxMWDataV1());
