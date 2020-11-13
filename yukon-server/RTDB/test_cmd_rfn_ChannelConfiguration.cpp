@@ -293,7 +293,7 @@ const std::vector<std::string> allDescriptions {
         "Q received, peak demand coincident, Rate A (1070)",
         "Average Power Factor (Quadrants 1 2 4), Rate A (1081)",
         "Average Power Factor (Quadrants 2 3 4), Rate A (1082)",
-        "Average Power Factor, Rate A (1083)",
+        "Average Power Factor (Quadrants 1 2 3 4), Rate A (1083)",
         "Voltage Phase A, Rate A (1100)",
         "Voltage Phase B, Rate A (1101)",
         "Voltage Phase C, Rate A (1102)",
@@ -393,7 +393,7 @@ const std::vector<std::string> allDescriptions {
         "Q received, peak demand coincident, Rate B (2070)",
         "Average Power Factor (Quadrants 1 2 4), Rate B (2081)",
         "Average Power Factor (Quadrants 2 3 4), Rate B (2082)",
-        "Average Power Factor, Rate B (2083)",
+        "Average Power Factor (Quadrants 1 2 3 4), Rate B (2083)",
         "Voltage Phase A, Rate B (2100)",
         "Voltage Phase B, Rate B (2101)",
         "Voltage Phase C, Rate B (2102)",
@@ -491,7 +491,7 @@ const std::vector<std::string> allDescriptions {
         "Q received, peak demand coincident, Rate C (3070)",
         "Average Power Factor (Quadrants 1 2 4), Rate C (3081)",
         "Average Power Factor (Quadrants 2 3 4), Rate C (3082)",
-        "Average Power Factor, Rate C (3083)",
+        "Average Power Factor (Quadrants 1 2 3 4), Rate C (3083)",
         "Voltage Phase A, Rate C (3100)",
         "Voltage Phase B, Rate C (3101)",
         "Voltage Phase C, Rate C (3102)",
@@ -589,7 +589,7 @@ const std::vector<std::string> allDescriptions {
         "Q received, peak demand coincident, Rate D (4070)",
         "Average Power Factor (Quadrants 1 2 4), Rate D (4081)",
         "Average Power Factor (Quadrants 2 3 4), Rate D (4082)",
-        "Average Power Factor, Rate D (4083)",
+        "Average Power Factor (Quadrants 1 2 3 4), Rate D (4083)",
         "Voltage Phase A, Rate D (4100)",
         "Voltage Phase B, Rate D (4101)",
         "Voltage Phase C, Rate D (4102)",
@@ -630,8 +630,8 @@ const std::vector<std::string> allDescriptions {
         "PF Phase A, Rate D (4162)",
         "PF Phase B, Rate D (4163)",
         "PF Phase C, Rate D (4164)",
+        "Average Power Factor Rate D (4233)",
         "Time in Seconds, Rate D (4256)",
-        "Average Power Factor Rate D (4233)"
  };
 
 /**
