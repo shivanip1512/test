@@ -16,14 +16,10 @@ post-operation:
       - MCT
       - Meter Disconnect
       - Point 
-      - Ripple
-<<<<<<< HEAD
-      - Versacomm
- 
-=======
       - RFN Expresscom
-      - Eaton Cloud
->>>>>>> master
+      - Ripple
+      - Versacomm
+
     requestBody:
       content:
         application/json:
@@ -143,14 +139,10 @@ get-update-delete-operation:
       - MCT
       - Meter Disconnect
       - Point 
-      - Ripple
-<<<<<<< HEAD
-      - Versacomm
-      
-=======
       - RFN Expresscom
-      - Eaton Cloud
->>>>>>> master
+      - Ripple
+      - Versacomm
+
     parameters:
       - name: id
         in: path
@@ -226,14 +218,10 @@ get-update-delete-operation:
       - MCT
       - Meter Disconnect
       - Point 
-      - Ripple
-<<<<<<< HEAD
-      - Versacomm
-      
-=======
       - RFN Expresscom
-      - Eaton Cloud
->>>>>>> master
+      - Ripple
+      - Versacomm
+
     parameters:
       - name: id
         in: path
@@ -359,14 +347,10 @@ get-update-delete-operation:
       - MCT
       - Meter Disconnect
       - Point 
-      - Ripple
-<<<<<<< HEAD
-      - Versacomm
-      
-=======
       - RFN Expresscom
-      - Eaton Cloud
->>>>>>> master
+      - Ripple
+      - Versacomm
+
     parameters:
       - name: id
         in: path
