@@ -1209,8 +1209,8 @@ public final class JmsApiDirectory {
     
     public static final JmsApi<PxMWAuthTokenRequest, ?, PxMWAuthTokenResponse> PX_MW_AUTH_TOKEN = 
             JmsApi.builder(PxMWAuthTokenRequest.class, PxMWAuthTokenResponse.class)
-                  .name("PX MW Auth Token")
-                  .description("Generates a PX MW Auth Token")
+                  .name("PX Middleware Auth Token")
+                  .description("Generates a PX Middleware Auth Token")
                   .communicationPattern(REQUEST_RESPONSE)
                   .queue(new JmsQueue("yukon.pxmw.auth.token.PxMWAuthTokenRequest"))
                   .responseQueue(JmsQueue.TEMP_QUEUE)
