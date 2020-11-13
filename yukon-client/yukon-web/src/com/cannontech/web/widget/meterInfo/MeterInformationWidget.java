@@ -29,6 +29,7 @@ import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.device.virtualDevice.VirtualMeter;
 import com.cannontech.common.events.loggers.MeteringEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
@@ -58,6 +59,7 @@ import com.cannontech.web.widget.meterInfo.model.IEDMeterModel;
 import com.cannontech.web.widget.meterInfo.model.MeterModel;
 import com.cannontech.web.widget.meterInfo.model.PlcMeterModel;
 import com.cannontech.web.widget.meterInfo.model.RfMeterModel;
+import com.cannontech.web.widget.meterInfo.model.VirtualMeterModel;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 
@@ -175,7 +177,6 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
         } else {
             model.addAttribute("meter", MeterModel.of(meter));
         }
-              
         return "meterInformationWidget/edit.jsp";
     }
     

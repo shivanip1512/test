@@ -350,7 +350,7 @@ public class ControlAreaSetupController {
     private List<LMDto> retrieveNormalState(int pointId, YukonUserContext userContext, HttpServletRequest request) {
         List<LMDto> normalStates = new ArrayList<>();
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drNormalStateUrl + pointId);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.pointUrl + pointId + "/states");
             ResponseEntity<? extends Object> response =
                 apiRequestHelper.callAPIForList(userContext, request, url, LMDto.class, HttpMethod.GET, LMDto.class);
             if (response.getStatusCode() == HttpStatus.OK) {

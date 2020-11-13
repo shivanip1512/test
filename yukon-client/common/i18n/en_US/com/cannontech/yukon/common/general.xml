@@ -195,6 +195,7 @@
 <entry key="yukon.common.max">Max</entry>
 <entry key="yukon.common.meterGroups.MCT">MCT</entry>
 <entry key="yukon.common.meterGroups.RF_MESH">RF Mesh</entry>
+<entry key="yukon.common.meterGroups.VIRTUAL">VIRTUAL</entry>
 <entry key="yukon.common.meterGroups.ELECTRONIC">Electronic Meters</entry>
 <entry key="yukon.common.meterNumber">Meter Number</entry>
 <entry key="yukon.common.min">Min</entry>

@@ -7,10 +7,15 @@
 
 <cti:standardPage module="operator" page="gateways.certificateUpdates">
     <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
-        <div id="gateway-cert-popup" class="dn" data-dialog 
+        <div id="gateway-cert-popup"
+             class="dn"
+             data-dialog
              data-title="<cti:msg2 key=".cert.update.label"/>"
              data-event="yukon:assets:gateway:cert:update"
+             data-help-text="<cti:msg key="yukon.web.modules.operator.gateways.cert.update.note"/>"
              data-url="<cti:url value="/stars/gateways/cert-update/options"/>"
+             data-width="450"
+             data-height="250"
              data-ok-text="<cti:msg2 key="components.button.start.label"/>">
         </div>
     </cti:checkRolesAndProperties>
