@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE(test_handleRfnDeviceResult)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_handleInMessageResult_getconfig_install_all)
+BOOST_AUTO_TEST_CASE(test_handleInMessageResult_getconfig_install_all_mct410)
 {
     Test_PilServer pilServer;
 
@@ -151,9 +151,24 @@ BOOST_AUTO_TEST_CASE(test_handleInMessageResult_getconfig_install_all)
     constexpr auto UserMessageId = 11235;
     const Cti::ConnectionHandle handle { 55441 };
 
-    auto dev = pilServer.dev_mgr.getDeviceByID(DeviceId);
+    auto devBase = pilServer.dev_mgr.getDeviceByID(DeviceId);
+    auto dev = dynamic_cast<CtiDeviceSingle*>(devBase.get());
 
     BOOST_REQUIRE(dev);
+    
+    auto config = boost::make_shared<Cti::Test::test_DeviceConfig>();
+    Cti::Test::Override_ConfigManager overrideConfigManager(config);
+
+    Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;
+
+    config->insertValue("disconnectMode", "DEMAND_THRESHOLD");
+    config->insertValue("disconnectDemandThreshold", "2.71");
+    config->insertValue("disconnectLoadLimitConnectDelay", "4");
+    config->insertValue("disconnectMinutes", "7");
+    config->insertValue("connectMinutes", "17");
+    config->insertValue("reconnectParam", "ARM");
+    config->insertValue("demandFreezeDay", "12");
+    config->insertValue("timeZoneOffset", "CHICAGO");
 
     CtiRequestMsg reqMsg(DeviceId, "getconfig install all", UserMessageId);
     reqMsg.setConnectionHandle(handle);
@@ -161,27 +176,142 @@ BOOST_AUTO_TEST_CASE(test_handleInMessageResult_getconfig_install_all)
 
     pilServer.executeRequest(&reqMsg);
 
-    BOOST_REQUIRE_EQUAL(2, pilServer.retList.size());
-/*
-    INMESS result;
+    BOOST_REQUIRE_EQUAL(3, pilServer.retList.size());
+    BOOST_CHECK(pilServer.vgList.empty());
+    BOOST_REQUIRE_EQUAL(3, pilServer.outList.size());
 
-    result.TargetID = 502;
-    result.Return.GrpMsgID = 11235;
-    result.Return.Connection = handle;
-
-    pilServer.handleInMessageResult(result);
+    BOOST_CHECK_EQUAL(dev->getGroupMessageCount(UserMessageId, handle), 3);
 
     {
-        auto retMsg = dynamic_cast<CtiReturnMsg*>(pilServer.retList.front().get());
+        auto retList_itr = pilServer.retList.cbegin();
+        {
+            auto retMsg = dynamic_cast<CtiReturnMsg*>((*retList_itr++).get());
 
-        BOOST_REQUIRE(retMsg);
+            BOOST_REQUIRE(retMsg);
 
-        BOOST_CHECK_EQUAL(retMsg->ResultString(), "This was a triumph. I'm making a note here: HUGE SUCCESS.");
-        BOOST_CHECK(retMsg->ExpectMore());
+            BOOST_CHECK_EQUAL(retMsg->ResultString(), "Emetcon DLC command sent on route ");
+            BOOST_CHECK_EQUAL(retMsg->Status(), 0);
+            BOOST_CHECK(retMsg->ExpectMore());
+        }
+        {
+            auto retMsg = dynamic_cast<CtiReturnMsg*>((*retList_itr++).get());
+
+            BOOST_REQUIRE(retMsg);
+
+            BOOST_CHECK_EQUAL(retMsg->ResultString(), "Emetcon DLC command sent on route ");
+            BOOST_CHECK_EQUAL(retMsg->Status(), 0);
+            BOOST_CHECK(retMsg->ExpectMore());
+        }
+        {
+            auto retMsg = dynamic_cast<CtiReturnMsg*>((*retList_itr++).get());
+
+            BOOST_REQUIRE(retMsg);
+
+            BOOST_CHECK_EQUAL(retMsg->ResultString(), "Emetcon DLC command sent on route ");
+            BOOST_CHECK_EQUAL(retMsg->Status(), 0);
+            BOOST_CHECK(retMsg->ExpectMore());
+        }
+        pilServer.retList.clear();
     }
 
-    BOOST_CHECK_EQUAL(1, devSingle->getGroupMessageCount(11235, handle));
-*/
+    auto outList_itr = pilServer.outList.cbegin();
+
+    {
+        auto outmess = (*outList_itr++).get();
+
+        BOOST_REQUIRE(outmess);
+
+        BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0xfe);
+        BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 3);
+        BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 13);
+        BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0xfe);
+        BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
+
+        INMESS im;
+        OutEchoToIN(*outmess, im);
+
+        const auto data = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        boost::copy(data, stdext::make_checked_array_iterator(im.Buffer.DSt.Message, DSTRUCT::MessageLength_Max));
+        im.Buffer.DSt.Length = data.size();
+
+        pilServer.handleInMessageResult(im);
+
+        BOOST_CHECK_EQUAL(dev->getGroupMessageCount(UserMessageId, handle), 2);
+    }
+    {
+        auto outmess = (*outList_itr++).get();
+
+        BOOST_REQUIRE(outmess);
+
+        BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x4f);
+        BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+        BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 1);
+        BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x4f);
+        BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+
+        INMESS im;
+        OutEchoToIN(*outmess, im);
+
+        im.Buffer.DSt.Message[0] = 0;
+        im.Buffer.DSt.Length = 1;
+
+        pilServer.handleInMessageResult(im);
+
+        BOOST_CHECK_EQUAL(dev->getGroupMessageCount(UserMessageId, handle), 2);
+    }
+    {
+        auto outmess = (*outList_itr++).get();
+
+        BOOST_REQUIRE(outmess);
+
+        BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x3f);
+        BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+        BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 1);
+        BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x3f);
+        BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+
+        INMESS im;
+        OutEchoToIN(*outmess, im);
+
+        im.Buffer.DSt.Message[0] = 0;
+        im.Buffer.DSt.Length = 1;
+
+        pilServer.handleInMessageResult(im);
+
+        BOOST_CHECK_EQUAL(dev->getGroupMessageCount(UserMessageId, handle), 1);
+    }
+
+    BOOST_REQUIRE_EQUAL(pilServer.retList.size(), 3);
+
+    {
+        auto retList_itr = pilServer.retList.cbegin();
+
+        {
+            auto retMsg = dynamic_cast<CtiReturnMsg*>((*retList_itr++).get());
+
+            BOOST_REQUIRE(retMsg);
+
+            BOOST_CHECK_EQUAL(retMsg->ResultString(), "MCT-410fL (502) / "
+                "\nConfig data received: 00 00 00 00 00 00 00 00 00 00 00 00 00");
+            BOOST_CHECK_EQUAL(retMsg->ExpectMore(), false);
+        }
+        {
+            auto retMsg = dynamic_cast<CtiReturnMsg*>((*retList_itr++).get());
+
+            BOOST_REQUIRE(retMsg);
+
+            BOOST_CHECK_EQUAL(retMsg->ResultString(), "MCT-410fL (502) / Scheduled day of freeze: (disabled)\n");
+            BOOST_CHECK_EQUAL(retMsg->ExpectMore(), false);
+        }
+        {
+            auto retMsg = dynamic_cast<CtiReturnMsg*>((*retList_itr++).get());
+
+            BOOST_REQUIRE(retMsg);
+
+            BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 00");
+            BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+        }
+    }
 }
 
 

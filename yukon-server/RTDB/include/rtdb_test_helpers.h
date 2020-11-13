@@ -437,12 +437,41 @@ struct DevicePointHelper
     }
 };
 
+struct test_CtiDeviceCCU : CtiDeviceCCU
+{
+    test_CtiDeviceCCU()
+    {
+        _paObjectID = 12345;
+    }
+
+    void setInhibited()
+    {
+        _disableFlag = true;
+    }
+};
+
+struct test_CtiRouteCCU : CtiRouteCCU
+{
+    boost::shared_ptr<test_CtiDeviceCCU> ccu;
+
+    test_CtiRouteCCU() : ccu(boost::make_shared<test_CtiDeviceCCU>())
+    {
+        _tblPAO.setID(1234, test_tag);
+        setDevicePointer(ccu);
+    }
+};
+
 struct test_Mct410flDevice : Cti::Devices::Mct410Device
 {
     test_Mct410flDevice(std::string& name)
     {
         _name = name;
         setDeviceType(TYPEMCT410FL);
+    }
+
+    CtiRouteSPtr getRoute(long id) const override
+    {
+        return boost::make_shared<test_CtiRouteCCU>();
     }
 };
 
@@ -452,6 +481,11 @@ struct test_Mct420flDevice : Cti::Devices::Mct420Device
     {
         _name = name;
         setDeviceType(TYPEMCT420FL);
+    }
+
+    CtiRouteSPtr getRoute(long id) const override
+    {
+        return boost::make_shared<test_CtiRouteCCU>();
     }
 };
 
@@ -585,30 +619,6 @@ struct test_DeviceManager : CtiDeviceManager
     }
 };
 
-struct test_CtiDeviceCCU : CtiDeviceCCU
-{
-    test_CtiDeviceCCU()
-    {
-        _paObjectID = 12345;
-    }
-
-    void setInhibited()
-    {
-        _disableFlag = true;
-    }
-};
-
-struct test_CtiRouteCCU : CtiRouteCCU
-{
-    boost::shared_ptr<test_CtiDeviceCCU> ccu;
-
-    test_CtiRouteCCU() : ccu(boost::make_shared<test_CtiDeviceCCU>())
-    {
-        _tblPAO.setID(1234, test_tag);
-        setDevicePointer(ccu);
-    }
-};
-
 struct test_RouteManager : CtiRouteManager
 {
     CtiRouteSPtr rte;
@@ -626,11 +636,11 @@ struct test_RouteManager : CtiRouteManager
     {
     }
 
-    virtual ptr_type getRouteByName(std::string RouteName)
+    ptr_type getRouteByName(std::string RouteName) override
     {
         return (RouteName == "sixty-six")
             ? rte
-            : ptr_type();
+            : nullptr;
     }
 };
 
