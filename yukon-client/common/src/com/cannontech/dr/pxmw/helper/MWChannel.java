@@ -18,14 +18,14 @@ public enum MWChannel {
     LUV_RESTORE(12940, "LUV Restore", BuiltInAttribute.SUM_KW),
     LUV_TRIGGER(12941, "LUV Trigger", BuiltInAttribute.SUM_KW);
 
-    private Integer channelID;
+    private Integer channelId;
     private String shortName;
     private BuiltInAttribute builtInAttribute;
 
-    private static Map<Integer, MWChannel> channelLookup = Maps.uniqueIndex(Arrays.asList(values()), MWChannel::getChannelID);
+    private static Map<Integer, MWChannel> channelLookup = Maps.uniqueIndex(Arrays.asList(values()), MWChannel::getChannelId);
 
-    private MWChannel(Integer channelID, String shortName, BuiltInAttribute builtInAttribute) {
-        this.channelID = channelID;
+    private MWChannel(Integer channelId, String shortName, BuiltInAttribute builtInAttribute) {
+        this.channelId = channelId;
         this.shortName = shortName;
         this.builtInAttribute = builtInAttribute;
     }
@@ -34,8 +34,8 @@ public enum MWChannel {
         return channelLookup;
     }
 
-    public Integer getChannelID() {
-        return channelID;
+    public Integer getChannelId() {
+        return channelId;
     }
 
     public String getShortName() {
