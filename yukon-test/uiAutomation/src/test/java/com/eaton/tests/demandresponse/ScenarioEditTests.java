@@ -42,7 +42,8 @@ public class ScenarioEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void scenarioEdit_RequiredFieldsOnly_Success() {
-        navigate(Urls.DemandResponse.SCENARIO_EDIT + "590" + Urls.EDIT);
+        String id = TestDbDataType.DemandResponseData.SCENARIO_EDIT_ID.getId().toString();
+        navigate(Urls.DemandResponse.SCENARIO_EDIT + id + Urls.EDIT);
         
         String scenarioEditId = TestDbDataType.DemandResponseData.SCENARIO_EDIT_ID.getId().toString();
 

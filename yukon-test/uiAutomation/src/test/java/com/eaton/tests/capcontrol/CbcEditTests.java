@@ -29,11 +29,11 @@ public class CbcEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
         setRefreshPage(false);
         
-        String cbcEditId = TestDbDataType.VoltVarData.CBC_ID.getId().toString();
+        Integer cbcEditId = TestDbDataType.VoltVarData.CBC_ID.getId();
         
         navigate(Urls.CapControl.CBC_EDIT + cbcEditId + Urls.EDIT);
 
-        editPage = new CbcEditPage(driverExt, 670);
+        editPage = new CbcEditPage(driverExt, cbcEditId);
     }
     
     @AfterMethod(alwaysRun = true)

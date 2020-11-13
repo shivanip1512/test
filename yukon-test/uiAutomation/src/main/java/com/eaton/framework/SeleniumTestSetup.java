@@ -231,6 +231,20 @@ public class SeleniumTestSetup {
             count = driverExt.findElements(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).size();
         } while(count.equals(0) && ((System.currentTimeMillis() - startTime) < 2000));
     }
+    
+    public static void waitUntilModalOpenDisplayBlock(String describedBy) {
+        long startTime = System.currentTimeMillis();
+
+        while ((System.currentTimeMillis() - startTime) < 2000) {
+
+            String style = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0))
+                    .getAttribute("style");
+
+            if (style.contains("display: block")) {
+                break;
+            }
+        }
+    }
 
     public static void waitUntilModalClosedByDescribedBy(String describedBy) {
         long startTime = System.currentTimeMillis();        

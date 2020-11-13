@@ -47,7 +47,6 @@ public class ApiCallHelper {
     }
 
     private static RequestSpecification getHeader() {
-        return given().accept("application/json").contentType("application/json").header("Authorization",
-                "Bearer " + AUTH_TOKEN).log().all();
+        return given().accept("application/json").contentType("application/json").header("Authorization", "Bearer " + AUTH_TOKEN).log().all();
     }
 }

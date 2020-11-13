@@ -41,7 +41,9 @@ public class ControlAreaEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void controlAreaEdit_RequiredFieldsOnly_Success() {
-        navigate(Urls.DemandResponse.CONTROL_AREA_EDIT + "514" + Urls.EDIT);
+        String editAreaId = TestDbDataType.DemandResponseData.CONTROLAREA_EDIT_ID.getId().toString();
+        
+        navigate(Urls.DemandResponse.CONTROL_AREA_EDIT + editAreaId + Urls.EDIT);
         
         String controlAreaEditId = TestDbDataType.DemandResponseData.CONTROLAREA_EDIT_ID.getId().toString();
 
