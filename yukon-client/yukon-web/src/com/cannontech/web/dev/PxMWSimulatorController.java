@@ -29,7 +29,7 @@ import com.cannontech.web.security.annotation.CheckCparm;
 import com.google.gson.GsonBuilder;
 
 @Controller
-@RequestMapping("/pxMW/*")
+@RequestMapping("/pxMiddleware/*")
 @CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 public class PxMWSimulatorController {
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
