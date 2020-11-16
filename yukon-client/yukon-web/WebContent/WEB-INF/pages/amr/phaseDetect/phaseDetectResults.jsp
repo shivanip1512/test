@@ -491,13 +491,13 @@
                 </tags:boxContainer2>
             </div>
             
+            <input type="hidden" class="js-cache-key" value="${cacheKey}"/>
             <div class="column two nogutter">
                 <!-- Pie Chart -->
-                <cti:url var="chartUrl" value="/amr/phaseDetect/chart">
-                    <cti:param name="key" value="${cacheKey}"/>
-                </cti:url>
-                <flot:ajaxChart url="${chartUrl}"/>
+                <div id="js-pie-chart-container"></div>
             </div>
         </div>
     </tags:sectionContainer2>
+    <cti:includeScript link="HIGH_STOCK"/>
+     <cti:includeScript link="/resources/js/pages/yukon.ami.phaseDetectResults.js" />
 </cti:standardPage>
