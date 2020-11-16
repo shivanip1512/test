@@ -23,7 +23,7 @@ public class LoadGroupEatonCloudValidator extends LoadGroupSetupValidator<LoadGr
 
     @Override
     protected void doValidation(LoadGroupEatonCloud loadGroup, Errors errors) {
-        if (loadGroup.getRelayUsage() == null || CollectionUtils.isEmpty(loadGroup.getRelayUsage())) {
+        if (CollectionUtils.isEmpty(loadGroup.getRelayUsage())) {
             errors.rejectValue("relayUsage", key + "eatonCloudLoadRequired");
         }
     }
