@@ -49,7 +49,7 @@ enum
 };
 
     constexpr auto E2EDT_RMP_INITIAL_TIMEOUT = 2h;  //  Node should request its first block within 2 hours of us sending the E2E request
-    constexpr auto E2EDT_RMP_ADDITIONAL_BLOCK_TIMEOUT = 90min;  //  Node should request each subsequent block within 1 hour of the last block request
+    constexpr auto E2EDT_RMP_ADDITIONAL_BLOCK_TIMEOUT = 60min;  //  Node should request each subsequent block within 1 hour of the last block request
 
     constexpr auto E2EDT_DEFAULT_BLOCK_SIZE = RfnRequestManager::BlockSize::ofSize<1024>();
 }
@@ -1073,7 +1073,7 @@ void RfnRequestManager::sendMeterProgrammingBlock(
     msg.rfnIdentifier = rfnIdentifier;
     msg.payload = dataMessage;
     msg.priority = E2EDT_ACK_PRIORITY;
-    msg.expiration = CtiTime::now() + E2EDT_RMP_ADDITIONAL_BLOCK_TIMEOUT.count();
+    msg.expiration = CtiTime::now().addMinutes(E2EDT_RMP_ADDITIONAL_BLOCK_TIMEOUT.count());
 
     //  ignore the confirm and timeout callbacks - let the existing Meter Programming timeout handle the expiration
     E2eMessenger::sendE2eDt(msg, asid,
