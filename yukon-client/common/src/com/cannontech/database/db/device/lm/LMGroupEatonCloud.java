@@ -2,15 +2,15 @@ package com.cannontech.database.db.device.lm;
 
 import java.sql.SQLException;
 
-public class LMGroupEatonCloudMapping extends com.cannontech.database.db.DBPersistent {
+public class LMGroupEatonCloud extends com.cannontech.database.db.DBPersistent {
     private static final long serialVersionUID = 1L;
     private String relayUsage;
     private Integer yukonGroupId;
-    public static final String TABLE_NAME = "LMGroupEatonCloudMapping";
+    public static final String TABLE_NAME = "LMGroupEatonCloud";
     public static final String CONSTRAINT_COLUMNS[] = { "YukonGroupId" };
     public static final String SETTER_COLUMNS[] = { "YukonGroupId", "RelayUsage"};
 
-    public LMGroupEatonCloudMapping() {
+    public LMGroupEatonCloud() {
         super();
     }
 

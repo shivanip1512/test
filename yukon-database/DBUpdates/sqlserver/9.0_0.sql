@@ -130,23 +130,6 @@ INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry WH
 INSERT INTO DBUpdates VALUES ('YUK-23092', '9.0.0', GETDATE());
 /* @end YUK-23092 */
 
-/* @start YUK-23233 */
-create table LMGroupEatonCloudMapping (
-   YukonGroupId         numeric              not null,
-   RelayUsage           varchar(15)          not null,
-   constraint PK_LMGroupEatonCloudMapping primary key (YukonGroupId)
-)
-go
-
-alter table LMGroupEatonCloudMapping
-   add constraint FK_LMGroupEatonCloudMapping_LMGroup foreign key (YukonGroupId)
-      references LMGroup (DeviceID)
-         on delete cascade
-go
-
-INSERT INTO DBUpdates VALUES ('YUK-23233', '9.0.0', GETDATE());
-/* @end YUK-23233 */
-
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

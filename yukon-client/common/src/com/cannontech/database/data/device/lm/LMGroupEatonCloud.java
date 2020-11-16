@@ -1,11 +1,10 @@
 package com.cannontech.database.data.device.lm;
 
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.database.db.device.lm.LMGroupEatonCloudMapping;
 
 public class LMGroupEatonCloud extends LMGroup {
     private final static long serialVersionUID = 1L;
-    private LMGroupEatonCloudMapping mapping = new LMGroupEatonCloudMapping();
+    private com.cannontech.database.db.device.lm.LMGroupEatonCloud mapping = new com.cannontech.database.db.device.lm.LMGroupEatonCloud();
 
     public LMGroupEatonCloud() {
         super(PaoType.LM_GROUP_EATON_CLOUD);
