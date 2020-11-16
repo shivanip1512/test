@@ -18,6 +18,7 @@ public enum ManagedService {
     // CLOUD_DATA_LISTENER should always be before SYSTEM_DATA_PUBLISHER as listener should be ready before any data is published in SYSTEM_DATA_PUBLISHER.
     CLOUD_DATA_LISTENER("Cloud Data Listener", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/systemDataPublisher/context/cloudDataListenerContext.xml"),
     SYSTEM_DATA_PUBLISHER("System Data Publisher", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/systemDataPublisher/context/systemDataPublisherContext.xml"),
+    PX_MW_AUTH_TOKEN("PX Middleware Auth Token", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/pxmw/authToken/pxmwAuthTokenContext.xml"),
     ;
     private final String name;
     private final ServiceType type;
