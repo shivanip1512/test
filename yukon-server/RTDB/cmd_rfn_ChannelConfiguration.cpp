@@ -92,7 +92,7 @@ const MetricInfo metricInfos[] = {
         {  80,  TouRates,  "Power Factor"                          },
         {  81,  TouRates,  "Average Power Factor (Quadrants 1 2 4)"},
         {  82,  TouRates,  "Average Power Factor (Quadrants 2 3 4)"},
-        {  83,  TouRates,  "Average Power Factor"                  },
+        {  83,  TouRates,  "Average Power Factor (Quadrants 1 2 3 4)"},
 
         { 100,  TouRates,  "Voltage Phase A"                       },
         { 101,  TouRates,  "Voltage Phase B"                       },
@@ -150,6 +150,8 @@ const MetricInfo metricInfos[] = {
         { 202,  TouRates,  "VA"                                    },
 
         { 210,  TouRates,  "Sum Peak kVA"                          },
+
+        { 233,  TouRates,  "Average Power Factor"                  },
 
         { 240,  TouRates,  "Peak Demand Daily"                     },
 
