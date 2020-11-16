@@ -17,6 +17,7 @@
 
 using namespace Cti::Protocols;
 using Cti::Test::isSentOnRouteMsg;
+using Cti::Test::makeInmessReply;
 using std::string;
 using std::list;
 using std::vector;
@@ -560,7 +561,8 @@ BOOST_AUTO_TEST_SUITE_END()
 
 struct mctExecute_helper : executeRequest_helper
 {
-    const Cti::ConnectionHandle testConnHandle{ 999 };
+    const Cti::ConnectionHandle connHandle{ 999 };
+//    const int UserMessageId = 11235;
     CtiRequestMsg request;
     OUTMESS *om;
 
@@ -572,7 +574,8 @@ struct mctExecute_helper : executeRequest_helper
         overrideConfigManager(fixtureConfig)
     {
         om = new OUTMESS;
-        request.setConnectionHandle(testConnHandle);
+        request.setConnectionHandle(connHandle);
+//        request.setUserMessageId(UserMessageId);
     }
     ~mctExecute_helper()
     {
@@ -582,7 +585,7 @@ struct mctExecute_helper : executeRequest_helper
 
 struct mctExecute_noConfig_helper : executeRequest_helper
 {
-    const Cti::ConnectionHandle testConnHandle{ 999 };
+    const Cti::ConnectionHandle connHandle{ 999 };
     CtiRequestMsg request;
     OUTMESS *om;
 
@@ -592,7 +595,7 @@ struct mctExecute_noConfig_helper : executeRequest_helper
         overrideConfigManager(Cti::Config::DeviceConfigSPtr())
     {
         om = new OUTMESS;
-        request.setConnectionHandle(testConnHandle);
+        request.setConnectionHandle(connHandle);
     }
     ~mctExecute_noConfig_helper()
     {
@@ -3364,6 +3367,149 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_REQUIRE_EQUAL( outList.size(), 3 );
 
         BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_getconfig_install_all_mct410_expectMore)
+    {
+        test_Mct410IconDevice mct410;
+        mct410.setDisconnectAddress(1234567);
+
+        constexpr int UserMessageId = 11235;
+
+        request.setCommandString("getconfig install all");
+        request.setUserMessageId(UserMessageId);
+
+        CtiCommandParser parse(request.CommandString());
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(3, retList.size());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(3, outList.size());
+
+        BOOST_CHECK_EQUAL(mct410.getGroupMessageCount(UserMessageId, connHandle), 3);
+
+        {
+            auto retList_itr = retList.cbegin();
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Emetcon DLC command sent on route ");
+                BOOST_CHECK_EQUAL(retMsg->Status(), 0);
+                BOOST_CHECK(retMsg->ExpectMore());
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Emetcon DLC command sent on route ");
+                BOOST_CHECK_EQUAL(retMsg->Status(), 0);
+                BOOST_CHECK(retMsg->ExpectMore());
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Emetcon DLC command sent on route ");
+                BOOST_CHECK_EQUAL(retMsg->Status(), 0);
+                BOOST_CHECK(retMsg->ExpectMore());
+            }
+            delete_container(retList);
+            retList.clear();
+        }
+
+        auto outList_itr = outList.cbegin();
+
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0xfe);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 13);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0xfe);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct410.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct410.getGroupMessageCount(UserMessageId, connHandle), 2);
+        }
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x4f);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x4f);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct410.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct410.getGroupMessageCount(UserMessageId, connHandle), 1);
+        }
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x3f);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x3f);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct410.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct410.getGroupMessageCount(UserMessageId, connHandle), 0);
+        }
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 3);
+
+        {
+            auto retList_itr = retList.cbegin();
+
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Test MCT-410iL / "
+                    "\nConfig data received: 00 00 00 00 00 00 00 00 00 00 00 00 00");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Test MCT-410iL / Scheduled day of freeze: (disabled)\n");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 00");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), false);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+        }
     }
 
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_resume)

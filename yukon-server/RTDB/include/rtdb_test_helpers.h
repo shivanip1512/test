@@ -709,6 +709,21 @@ bool isSentOnRouteMsg(const CtiMessage* msg)
     return false;
 }
 
+INMESS makeInmessReply(const OUTMESS& outmess)
+{
+    INMESS im;
+
+    OutEchoToIN(outmess, im);
+
+    im.Buffer.DSt.Length = outmess.Buffer.BSt.Length;
+
+    auto out_itr = stdext::make_checked_array_iterator(im.Buffer.DSt.Message, DSTRUCT::MessageLength_Max);
+
+    std::fill_n(out_itr, im.Buffer.DSt.Length, 0);
+
+    return im;
+}
+
 struct PaoInfoValidator
 {
     CtiTableDynamicPaoInfo::PaoInfoKeys key;

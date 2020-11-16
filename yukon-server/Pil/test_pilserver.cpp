@@ -257,7 +257,7 @@ BOOST_AUTO_TEST_CASE(test_handleInMessageResult_getconfig_install_all_mct410)
 
         pilServer.handleInMessageResult(im);
 
-        BOOST_CHECK_EQUAL(dev->getGroupMessageCount(UserMessageId, handle), 2);
+        BOOST_CHECK_EQUAL(dev->getGroupMessageCount(UserMessageId, handle), 1);
     }
     {
         auto outmess = (*outList_itr++).get();
@@ -278,10 +278,10 @@ BOOST_AUTO_TEST_CASE(test_handleInMessageResult_getconfig_install_all_mct410)
 
         pilServer.handleInMessageResult(im);
 
-        BOOST_CHECK_EQUAL(dev->getGroupMessageCount(UserMessageId, handle), 1);
+        BOOST_CHECK_EQUAL(dev->getGroupMessageCount(UserMessageId, handle), 0);
     }
 
-    BOOST_REQUIRE_EQUAL(pilServer.retList.size(), 3);
+    BOOST_REQUIRE_EQUAL(pilServer.retList.size(), 4);
 
     {
         auto retList_itr = pilServer.retList.cbegin();
@@ -293,7 +293,8 @@ BOOST_AUTO_TEST_CASE(test_handleInMessageResult_getconfig_install_all_mct410)
 
             BOOST_CHECK_EQUAL(retMsg->ResultString(), "MCT-410fL (502) / "
                 "\nConfig data received: 00 00 00 00 00 00 00 00 00 00 00 00 00");
-            BOOST_CHECK_EQUAL(retMsg->ExpectMore(), false);
+            BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+            BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
         }
         {
             auto retMsg = dynamic_cast<CtiReturnMsg*>((*retList_itr++).get());
@@ -301,7 +302,8 @@ BOOST_AUTO_TEST_CASE(test_handleInMessageResult_getconfig_install_all_mct410)
             BOOST_REQUIRE(retMsg);
 
             BOOST_CHECK_EQUAL(retMsg->ResultString(), "MCT-410fL (502) / Scheduled day of freeze: (disabled)\n");
-            BOOST_CHECK_EQUAL(retMsg->ExpectMore(), false);
+            BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+            BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
         }
         {
             auto retMsg = dynamic_cast<CtiReturnMsg*>((*retList_itr++).get());
@@ -310,6 +312,15 @@ BOOST_AUTO_TEST_CASE(test_handleInMessageResult_getconfig_install_all_mct410)
 
             BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 00");
             BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+            BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+        }
+        {
+            auto reqMsg = dynamic_cast<CtiRequestMsg*>((*retList_itr++).get());
+
+            BOOST_REQUIRE(reqMsg);
+
+            BOOST_CHECK_EQUAL(reqMsg->CommandString(), "putconfig install all verify");
+            BOOST_CHECK_EQUAL(reqMsg->UserMessageId(), UserMessageId);
         }
     }
 }
