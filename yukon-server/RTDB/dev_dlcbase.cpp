@@ -411,8 +411,6 @@ void DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNo
             ReturnMsg->setResultString(getName() + " / " + description);
         }
 
-        retMsgHandler(InMessage.Return.CommandStr, InMessage.ErrorCode, ReturnMsg, vgList, retList);
-
         if( ptr.get() )
         {
             ptr->invokeRequestHandler(*this, InMessage, vgList, retList, outList);
@@ -423,6 +421,8 @@ void DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNo
 
             decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
         }
+
+        retMsgHandler(InMessage.Return.CommandStr, InMessage.ErrorCode, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection));
     }
     catch( DlcCommand::CommandException &e )
     {

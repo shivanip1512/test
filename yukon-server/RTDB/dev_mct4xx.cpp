@@ -2866,7 +2866,9 @@ YukonError_t Mct4xxDevice::decodeGetConfigTOU(const INMESS &InMessage, const Cti
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
+    decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
+
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection));
 
     return status;
 }

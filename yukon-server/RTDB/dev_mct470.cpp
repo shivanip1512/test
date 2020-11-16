@@ -5399,7 +5399,7 @@ YukonError_t Mct470Device::decodeGetConfigModel(const INMESS &InMessage, const C
     ReturnMsg->setResultString( sspec + options );
 
     decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
-    retMsgHandler(InMessage.Return.CommandStr, ClientErrors::None, ReturnMsg.release(), vgList, retList);
+    retMsgHandler(InMessage.Return.CommandStr, ClientErrors::None, ReturnMsg.release(), vgList, retList, getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection));
 
     return ClientErrors::None;
 }

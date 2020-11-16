@@ -696,8 +696,7 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
                     {
                         if( auto returnMsg = dynamic_cast<CtiReturnMsg*>(msg) )
                         {
-                            if( returnMsg->getConnectionHandle() == InMessage.Return.Connection
-                                && returnMsg->UserMessageId() == InMessage.Return.UserID )
+                            if( returnMsg->UserMessageId() == InMessage.Return.UserID )
                             {
                                 returnMsg->setExpectMore(true);
                             }
