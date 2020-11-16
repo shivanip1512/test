@@ -8,6 +8,7 @@ import com.cannontech.amr.meter.model.IedMeter;
 import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.model.RfnMeter;
+import com.cannontech.common.device.virtualDevice.VirtualMeter;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.database.YukonResultSet;
@@ -49,6 +50,8 @@ public class MeterRowMapper implements YukonRowMapper<YukonMeter>, SqlProvider {
             String routeName = rs.getString("route");
             int routeId = rs.getInt("routeId");
             return new PlcMeter(paoIdentifier, meterNumber, paoName, disabled, routeName, routeId, address);
+        } else if (paoIdentifier.getPaoType().isVirtual()) {
+            return new VirtualMeter(paoIdentifier, meterNumber, paoName, disabled);
         } else if (paoIdentifier.getPaoType().isIed()) {
             IedMeter iedMeter = new IedMeter(paoIdentifier, meterNumber, paoName, disabled);
             iedMeter.setPortId(rs.getInt("portId"));

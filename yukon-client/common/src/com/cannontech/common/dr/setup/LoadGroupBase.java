@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value = LoadGroupPoint.class, name = "LM_GROUP_POINT"),
     @JsonSubTypes.Type(value = LoadGroupRipple.class, name = "LM_GROUP_RIPPLE"),
     @JsonSubTypes.Type(value = LoadGroupEatonCloud.class, name = "LM_GROUP_EATON_CLOUD"),
+    @JsonSubTypes.Type(value = LoadGroupRFNExpresscom.class, name = "LM_GROUP_RFN_EXPRESSCOMM")
     })
 @JsonIgnoreProperties(value={"id"}, allowGetters= true, ignoreUnknown = true)
 public class LoadGroupBase<T extends LMGroup> implements DBPersistentConverter<T> {

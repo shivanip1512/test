@@ -57,6 +57,10 @@
     <entry key="yukon.web.modules.operator.gateways.certificateUpdates.FAILED">Failed</entry>
     <entry key="yukon.web.modules.operator.gateways.certificateUpdates.SUCCESSFUL">Successful</entry>
     <entry key="yukon.web.modules.operator.gateways.certificateUpdates.CERTIFICATE">Certificate</entry>
+    
+    <!-- Certificate Updates Popup-->
+    <entry key="yukon.web.modules.operator.gateways.cert.update.noGatewaySelected">Please select a Gateway.</entry>
+    <entry key="yukon.web.modules.operator.gateways.cert.update.gateways">Gateways</entry>
 
     <!-- Firmware Updates popup -->
     <entry key="yukon.web.modules.operator.gateways.firmware.update.label">Firmware Version Updates</entry>
@@ -112,7 +116,6 @@
     <entry key="yukon.web.modules.operator.gateways.cert">Certificate</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.note"><![CDATA[The certificate update tool is only applicable for legacy Gateway 1.5.<br>For all other gateways, certificates are updated using the firmware upgrade tool.]]></entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.more"> and {0} more...</entry>
-    <entry key="yukon.web.modules.operator.gateways.cert.update.gateways">Gateways</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.label">Certificate Update</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.file">Certificate File</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.file.ioerror">Error reading certificate file.</entry>

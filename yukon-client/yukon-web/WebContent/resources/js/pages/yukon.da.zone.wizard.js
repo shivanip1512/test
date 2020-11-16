@@ -187,7 +187,7 @@ yukon.da.zone.wizard = (function () {
             if (_initialized)
                 return;
         
-            $('.js-zone-editor').click(function () {
+            $(document).on('click', '.js-zone-editor', function () {
                 var info = $('#zone-editor-info'),
                     url = info.data('editorUrl'),
                     title = info.data('editorTitle');

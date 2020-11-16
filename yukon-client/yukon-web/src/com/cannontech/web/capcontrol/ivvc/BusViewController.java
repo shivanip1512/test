@@ -140,7 +140,8 @@ public class BusViewController {
             JsTreeNode rootZone = new JsTreeNode();
             rootZone.setAttribute("id", hierarchy.getZone().getZoneId());
             rootZone.setAttribute("text", hierarchy.getZone().getName());
-            
+            rootZone.setAttribute("expanded", true);
+
             // recursively add child zones
             addChildren(hierarchy, rootZone);
             
@@ -215,7 +216,7 @@ public class BusViewController {
     private void setupZoneList(ModelMap model, int subBusId) {
         
         ZoneHierarchy hierarchy = zoneService.getZoneHierarchyBySubBusId(subBusId);
-        model.addAttribute("zones",hierarchy);
+        model.addAttribute("zones", hierarchy);
         
         Map<String, Phase> phaseMap = Maps.newHashMapWithExpectedSize(3);
         for (Phase phase : Phase.getRealPhases()) {

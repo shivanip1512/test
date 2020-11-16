@@ -35,7 +35,12 @@ yukon.assets.virtualDevice = (function () {
                     data: form.serialize()
                 }).done(function (data) {
                     if (data.id) {
-                        window.location.href = yukon.url('/stars/virtualDevice/' + data.id);
+                        var parentPathName = window.parent.location.pathname;
+                        if(parentPathName.indexOf('/meter/') != -1){
+                            window.location.href = yukon.url('/meter/home?deviceId=' + data.id);
+                         } else {
+                            window.location.href = yukon.url('/stars/virtualDevice/' + data.id);
+                        }
                     }
                 }).fail(function (xhr, status, error){
                     dialog.html(xhr.responseText);
