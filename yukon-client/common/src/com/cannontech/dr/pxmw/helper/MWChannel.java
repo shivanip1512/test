@@ -8,7 +8,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.google.common.collect.Maps;
 
-// I have not been able to find the attributes that are supposed to be mapped to these in documentation
+//TODO YUK-23284 Replace/update attributes mapped to PxMWChannel 
 public enum MWChannel {
     S_RELAY_STATUS(12343, "sRelayStatus", BuiltInAttribute.SUM_KW),
     LOAD_STATE(12939, "LoadState", BuiltInAttribute.SUM_KW),
