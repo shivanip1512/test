@@ -22,7 +22,11 @@
                 <cti:displayForPageEditModes modes="CREATE">
                     <tags:selectWithItems path="type" items="${types}" inputClass="js-type"/>
                 </cti:displayForPageEditModes>
-                <cti:displayForPageEditModes modes="VIEW,EDIT">
+                <cti:displayForPageEditModes modes="VIEW">
+                    <tags:paoType yukonPao="${virtualDevice}"/>
+                    <tags:hidden path="type"/>
+                </cti:displayForPageEditModes>
+                <cti:displayForPageEditModes modes="EDIT">
                     <i:inline key="${virtualDevice.type.formatKey}"/>
                     <tags:hidden path="type"/>
                 </cti:displayForPageEditModes>
