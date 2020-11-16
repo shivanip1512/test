@@ -180,6 +180,7 @@
     <entry key="yukon.common.pao.LM_GROUP_SA205">SA-205 Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_SADIGITAL">SA-Digital Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_VERSACOM">Versacom Group</entry>
+    <entry key="yukon.common.pao.LM_GROUP_EATON_CLOUD">Eaton Cloud Group</entry>
     <entry key="yukon.common.pao.MACRO_GROUP">Macro Group</entry>
     <entry key="yukon.common.pao.LM_CURTAIL_PROGRAM">LM Curtail Program</entry>
     <entry key="yukon.common.pao.LM_DIRECT_PROGRAM">LM Direct Program</entry>
