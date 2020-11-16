@@ -68,6 +68,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.db.security.EncryptionKey;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
+import com.cannontech.dr.pxmw.security.test.PxMWAuthTokenSecurityTest;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
 import com.cannontech.encryption.EncryptedRouteDao;
@@ -117,6 +118,7 @@ public class DeveloperController {
     @Autowired private YukonListDao listDao;
     @Autowired private EncryptedRouteDao encryptedRouteDao;
     @Autowired private ItronSecurityService itronSecurityService;
+//    @Autowired private PxMWAuthTokenSecurityTest pxMWAuthTokenSecurityTest;
 
     private final Map<String, Integer> databaseFields;
     private final Map<String, String> categoryFields;
@@ -363,17 +365,15 @@ public class DeveloperController {
     public String getPxMWToken(ModelMap model, FlashScope flash) {
         String authToken = "";
         try {
-            authToken = "123456789";
+            authToken = "123456";
+//            authToken = pxMWAuthTokenSecurityTest.getAuthenticationToken();
         } catch(Exception e) {
-            MessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.dev.itronKeyPair.loadError");
+            MessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.dev.pxMWToken.loadError");
             flash.setError(message);
             log.warn("Error retrieving Px MiddleWare Authentication Token", e);
-//            keyPair = new ItronSecurityKeyPair("", "");
         }
-        
-//        model.addAttribute("decryptFailed", keyPair.isPrivateKeyEncrypted());
         model.addAttribute("authToken", authToken);
-        return "pxMW.jsp";
+        return "pxMWToken.jsp";
     }
 
     @RequestMapping("/jmsApiDirectory")
