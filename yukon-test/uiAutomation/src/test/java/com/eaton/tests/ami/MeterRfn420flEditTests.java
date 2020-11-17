@@ -37,14 +37,12 @@ public class MeterRfn420flEditTests extends SeleniumTestSetup {
 
         EditMeterModal editModal = meterDetailsPage.showMeterEditModal();
 
-        editModal.getdeviceName().setInputValue(name);
+        editModal.getDeviceName().setInputValue(name);
         editModal.clickOkAndWaitForModalToClose();
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL + 492, Optional.of(10));
 
-        MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, 492);
-
-        String userMsg = detailPage.getUserMessage();
+        String userMsg = meterDetailsPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(METER + name + UPDATED);
     }
