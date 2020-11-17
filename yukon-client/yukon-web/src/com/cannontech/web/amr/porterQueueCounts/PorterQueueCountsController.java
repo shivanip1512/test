@@ -86,9 +86,9 @@ public class PorterQueueCountsController {
                 }
             }
             seriesProperties.put("name", pointIdToPaoMap.get(pointId).getPaoName());
-            YukonColorPalette color = GraphColors.getNextDefaultColor(colorInt++).getYukonColor();
-            seriesProperties.put("color", color.getHexValue());
-            seriesProperties.put("lineColor", color.getHexValue());
+            String colorHexValue = GraphColors.getNextDefaultColor(colorInt++).getHexValue();
+            seriesProperties.put("color", colorHexValue);
+            seriesProperties.put("lineColor", colorHexValue);
             seriesList.add(seriesProperties);
         }
         Map<String, Object> json = new HashMap<>();
