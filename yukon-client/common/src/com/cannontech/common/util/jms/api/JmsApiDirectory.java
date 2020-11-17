@@ -127,6 +127,8 @@ import com.cannontech.message.porter.message.MeterProgramValidationResponse;
 import com.cannontech.services.configurationSettingMessage.model.ConfigurationSettings;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenResponse;
+import com.cannontech.services.pxmw.authToken.message.PxMWAuthTokenRequest;
+import com.cannontech.services.pxmw.authToken.message.PxMWAuthTokenResponse;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfigurations;
 import com.cannontech.simulators.message.request.FieldSimulatorStatusRequest;
@@ -1204,6 +1206,20 @@ public final class JmsApiDirectory {
                   .sender(YUKON_SIMULATORS)
                   .receiver(YUKON_FIELD_SIMULATOR)
                   .build();
+    
+    public static final JmsApi<PxMWAuthTokenRequest, ?, PxMWAuthTokenResponse> PX_MW_AUTH_TOKEN = 
+            JmsApi.builder(PxMWAuthTokenRequest.class, PxMWAuthTokenResponse.class)
+                  .name("PX Middleware Auth Token")
+                  .description("Generates a PX Middleware Auth Token")
+                  .communicationPattern(REQUEST_RESPONSE)
+                  .queue(new JmsQueue("yukon.pxmw.auth.token.PxMWAuthTokenRequest"))
+                  .responseQueue(JmsQueue.TEMP_QUEUE)
+                  .requestMessage(PxMWAuthTokenRequest.class)
+                  .responseMessage(PxMWAuthTokenResponse.class)
+                  .sender(YUKON_WEBSERVER)
+                  .sender(YUKON_SERVICE_MANAGER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
 
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
@@ -1237,6 +1253,7 @@ public final class JmsApiDirectory {
                 LM_ADDRESS_NOTIFICATION,
                 LOCATION,
                 PORTER_DYNAMIC_PAOINFO,
+                PX_MW_AUTH_TOKEN,
                 RFN_DEVICE_CREATION_ALERT,
                 SYSTEM_DATA);
         

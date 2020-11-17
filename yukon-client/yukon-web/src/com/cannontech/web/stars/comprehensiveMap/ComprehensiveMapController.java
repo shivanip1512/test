@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.comprehensiveMap;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -329,9 +330,13 @@ public class ComprehensiveMapController {
     
     @GetMapping("allPrimaryRoutes")
     public @ResponseBody Map<String, Object> primaryRoutes(Integer[] gatewayIds) {
+        return getNetworkTree(Arrays.asList(gatewayIds));
+    }
+    
+    private Map<String, Object> getNetworkTree(List<Integer> gatewayIds) {
         Map<String, Object> json = new HashMap<>();  
         try {
-            List<Node<Pair<Integer, FeatureCollection>>> tree = networkTreeService.getNetworkTree(Arrays.asList(gatewayIds));
+            List<Node<Pair<Integer, FeatureCollection>>> tree = networkTreeService.getNetworkTree(gatewayIds);
             json.put("tree", tree);
             networkTreeUpdateTime = networkTreeService.getNetworkTreeUpdateTime();
             json.put("routeLastUpdatedDateTime", networkTreeUpdateTime == null ? null : networkTreeUpdateTime.getMillis());
@@ -339,7 +344,14 @@ public class ComprehensiveMapController {
         } catch (NmNetworkException | NmCommunicationException e) {
             json.put("errorMsg", e.getMessage());
         }
+        
         return json;
+    }
+    
+    @GetMapping("networkTree")
+    public @ResponseBody Map<String, Object> primaryRoutes(Integer deviceId) {
+        Set<Integer> gatewayIds = rfnDeviceDao.getGatewayIdsForDevices(new HashSet<>(Arrays.asList(deviceId)));
+        return getNetworkTree(new ArrayList<>(gatewayIds));
     }
     
     @GetMapping("getRouteDetails")

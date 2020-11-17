@@ -5,9 +5,7 @@
 
 <cti:standardPage module="operator" page="mapNetwork">
 
-    <tags:alertBox classes="dn js-no-location-message" type="warning" includeCloseButton="true">
-        <i:inline key="yukon.web.modules.operator.comprehensiveMap.missingLocations"/>
-    </tags:alertBox>
+    <%@ include file="/WEB-INF/pages/tools/map/mapWarnings.jsp" %>
     
     <input type="hidden" class="js-device-id" value="${deviceId}"/>
     <cti:msg2 var="coordinatesDeleted" key=".location.delete.successful"/>
