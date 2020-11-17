@@ -29,7 +29,7 @@ public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
     @Test(groups = {TestConstants.Priority.CRITICAL, TestConstants.Features.ADMIN})
     public void energyCompanyOperatorUserEdit_Page_TitleCorrect() {
         final String EXPECTED_TITLE = "Edit Operator User: automation";
-        String ecOperatorId = TestDbDataType.EnergyCompanyData.EC_OPERATOR_ID.getId().toString();
+        String ecOperatorId = TestDbDataType.EnergyCompanyData.EC_AUTOMATION_OPR_ID.getId().toString();
         
         navigate(Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_EDIT + ecId + Urls.Admin.ENERGY_COMPANY_OPERATOR_LOGIN_ID + ecOperatorId);
         

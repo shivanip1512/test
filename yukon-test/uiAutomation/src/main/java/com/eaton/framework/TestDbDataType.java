@@ -9,7 +9,7 @@ public class TestDbDataType {
     public enum EnergyCompanyData {
         EC_ID("QA_Test", 124, 64),
         DELETE_EC_ID("AT Delete EC", 216, 822),
-        EC_OPERATOR_ID("automation", 212, 32),
+        EC_AUTOMATION_OPR_ID("automation", 32, 212),
         EC_DELETE_OPR_ID("ATDeleteUser", 35, 302);
         
         private final String name;
