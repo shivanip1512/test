@@ -42,9 +42,7 @@ public class MeterRfn530S4xEditTests extends SeleniumTestSetup {
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL + 587, Optional.of(10));
 
-        MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, 587);
-
-        String userMsg = detailPage.getUserMessage();
+        String userMsg = meterDetailsPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(METER + name + UPDATED);
     }

@@ -44,6 +44,6 @@ public class EditMeterModal extends BaseModal {
     }
     
     public SwitchBtnYesNoElement getStatus() {
-        return new SwitchBtnYesNoElement(this.driverExt, "disabled", getModal(), true);
+        return new SwitchBtnYesNoElement(this.driverExt, "disabled", getModal());
     }
 }

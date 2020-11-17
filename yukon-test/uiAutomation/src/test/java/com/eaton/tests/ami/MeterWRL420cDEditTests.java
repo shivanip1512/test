@@ -40,7 +40,6 @@ public class MeterWRL420cDEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cDEdit_RequiredFieldsOnly_Success() {
-    	
         String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited " + MeterEnums.MeterType.WRL420CD.getMeterType() + " " + timeStamp;
 
@@ -51,9 +50,7 @@ public class MeterWRL420cDEditTests extends SeleniumTestSetup {
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL + DEVICEID, Optional.of(10));
 
-        WRL420cDMeterDetailsPage detailPage = new WRL420cDMeterDetailsPage(driverExt, DEVICEID);
-
-        String userMsg = detailPage.getUserMessage();
+        String userMsg = meterDetailsPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(METER + name + UPDATED);
     }

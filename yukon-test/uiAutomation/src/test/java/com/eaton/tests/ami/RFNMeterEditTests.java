@@ -23,9 +23,9 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
     private Faker faker;
-    private RFN420cLMeterDetailsPage meterDetailsPageWontEdit;
-    private static final int WONT_EDIT_DEVICE_ID = 1295;
-    
+    private RFN420cLMeterDetailsPage detailsPage;
+    private static final int DEVICE_ID = 1295;
+
     private static final String UPDATED = " updated successfully.";
     private static final String METER = "Meter ";
 
@@ -34,27 +34,25 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
         setRefreshPage(false);
         faker = SeleniumTestSetup.getFaker();
-        
-        navigate(Urls.Ami.METER_DETAIL + WONT_EDIT_DEVICE_ID);
-        meterDetailsPageWontEdit = new RFN420cLMeterDetailsPage(driverExt, WONT_EDIT_DEVICE_ID);
-        
+
+        navigate(Urls.Ami.METER_DETAIL + DEVICE_ID);
+        detailsPage = new RFN420cLMeterDetailsPage(driverExt, DEVICE_ID);
     }
-    
+
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-    	if(getRefreshPage()) {
-    		refreshPage(meterDetailsPageWontEdit);
-    	}
-    	
+        if (getRefreshPage()) {
+            refreshPage(detailsPage);
+        }
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editRFNMeter_Labels_Correct() {
-    	setRefreshPage(true);
-    	SoftAssertions softly = new SoftAssertions();
-    	
-    	EditMeterModal editModal = meterDetailsPageWontEdit.showMeterEditModal();
-        
+        setRefreshPage(true);
+        SoftAssertions softly = new SoftAssertions();
+
+        EditMeterModal editModal = detailsPage.showMeterEditModal();
+
         List<String> fieldLabels = editModal.getFieldLabels();
         softly.assertThat(fieldLabels.get(0)).isEqualTo("Device Name:");
         softly.assertThat(fieldLabels.get(1)).isEqualTo("Meter Number:");
@@ -63,24 +61,22 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
         softly.assertThat(fieldLabels.get(4)).isEqualTo("Model:");
         softly.assertThat(fieldLabels.get(5)).isEqualTo("Status:");
         softly.assertAll();
-
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editRFNMeter_RequiredOnlyFields_Success() {
-    	setRefreshPage(true);
-    	SoftAssertions softly = new SoftAssertions();
-    	
-    	final int editDeviceId = 1297;
-    	navigate(Urls.Ami.METER_DETAIL + editDeviceId);
-    	RFN420cLMeterDetailsPage meterDetailsPageWillEdit = new RFN420cLMeterDetailsPage(driverExt, editDeviceId);
-    	
-    	EditMeterModal editModal = meterDetailsPageWillEdit.showMeterEditModal();
+        setRefreshPage(true);
+        SoftAssertions softly = new SoftAssertions();
+
+        final int editDeviceId = 1297;
+        navigate(Urls.Ami.METER_DETAIL + editDeviceId);
+
+        EditMeterModal editModal = detailsPage.showMeterEditModal();
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String deviceName = "AT " + MeterEnums.MeterType.RFN420CL.getMeterType() + " Meter " + timeStamp;
         int meterNumber = faker.number().numberBetween(1, 999999);
-        
+
         editModal.getDeviceName().setInputValue(deviceName);
         editModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
         editModal.getSerialNumber().setInputValue("");
@@ -92,74 +88,70 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL + editDeviceId, Optional.of(10));
 
-        meterDetailsPageWillEdit = new RFN420cLMeterDetailsPage(driverExt, editDeviceId);
-
-        String userMsg = meterDetailsPageWillEdit.getUserMessage();
+        String userMsg = detailsPage.getUserMessage();
 
         softly.assertThat(userMsg).isEqualTo(METER + deviceName + UPDATED);
-        softly.assertThat(meterDetailsPageWillEdit.getMeterInfoPanel().getTable().getValueByRow(0)).isEqualTo(deviceName);
-        softly.assertThat(meterDetailsPageWillEdit.getMeterInfoPanel().getTable().getValueByRow(1)).isEqualTo(String.valueOf(meterNumber));
-        softly.assertThat(meterDetailsPageWillEdit.getMeterInfoPanel().getTable().getValueByRow(2)).isEqualTo(MeterEnums.MeterType.RFN420CL.getMeterType());
-        softly.assertThat(meterDetailsPageWillEdit.getMeterInfoPanel().getTable().getValueByRow(3)).isEqualTo("");
-        softly.assertThat(meterDetailsPageWillEdit.getMeterInfoPanel().getTable().getValueByRow(4)).isEqualTo("");
-        softly.assertThat(meterDetailsPageWillEdit.getMeterInfoPanel().getTable().getValueByRow(5)).isEqualTo("");
-        softly.assertThat(meterDetailsPageWillEdit.getMeterInfoPanel().getTable().getValueByRow(6)).isEqualTo(status);
+        softly.assertThat(detailsPage.getMeterInfoPanel().getTable().getValueByRow(0)).isEqualTo(deviceName);
+        softly.assertThat(detailsPage.getMeterInfoPanel().getTable().getValueByRow(1)).isEqualTo(String.valueOf(meterNumber));
+        softly.assertThat(detailsPage.getMeterInfoPanel().getTable().getValueByRow(2)).isEqualTo(MeterEnums.MeterType.RFN420CL.getMeterType());
+        softly.assertThat(detailsPage.getMeterInfoPanel().getTable().getValueByRow(3)).isEqualTo("");
+        softly.assertThat(detailsPage.getMeterInfoPanel().getTable().getValueByRow(4)).isEqualTo("");
+        softly.assertThat(detailsPage.getMeterInfoPanel().getTable().getValueByRow(5)).isEqualTo("");
+        softly.assertThat(detailsPage.getMeterInfoPanel().getTable().getValueByRow(6)).isEqualTo(status);
         softly.assertAll();
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editRFNMeter_AllFields_Success() {
-    	setRefreshPage(true);
-    	SoftAssertions softly = new SoftAssertions();
-    	
-    	final int editDeviceId = 1297;
-    	
-    	navigate(Urls.Ami.METER_DETAIL + editDeviceId);
-    	RFN420cLMeterDetailsPage meterDetailsPageWillEdit = new RFN420cLMeterDetailsPage(driverExt, editDeviceId);
-    	
-    	EditMeterModal editModal = meterDetailsPageWillEdit.showMeterEditModal();
+        setRefreshPage(true);
+        SoftAssertions softly = new SoftAssertions();
+
+        final int editDeviceId = 1297;
+
+        navigate(Urls.Ami.METER_DETAIL + editDeviceId);
+
+        EditMeterModal editModal = detailsPage.showMeterEditModal();
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String deviceName = "AT " + MeterEnums.MeterType.RFN420CL.getMeterType() + " Meter " + timeStamp;
         int meterNumber = faker.number().numberBetween(1, 999999);
         int serialNumber = faker.number().numberBetween(1, 9999999);
         String status = "Disabled";
-        
+
         editModal.getDeviceName().setInputValue(deviceName);
         editModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
         editModal.getSerialNumber().setInputValue(String.valueOf(serialNumber));
         editModal.getManufacturer().setInputValue(MeterEnums.MeterType.RFN420CL.getManufacturer().getManufacturer());
         editModal.getModel().setInputValue(MeterEnums.MeterType.RFN420CL.getModel());
         editModal.getStatus().selectValue(status);
-        
+
         editModal.clickOkAndWaitForModalToClose();
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL + editDeviceId, Optional.of(10));
 
-        meterDetailsPageWillEdit = new RFN420cLMeterDetailsPage(driverExt, editDeviceId);
-
-        String userMsg = meterDetailsPageWillEdit.getUserMessage();
+        String userMsg = detailsPage.getUserMessage();
 
         softly.assertThat(userMsg).isEqualTo(METER + deviceName + UPDATED);
-        softly.assertThat(meterDetailsPageWillEdit.getMeterInfoPanel().getTable().getValueByRow(0)).isEqualTo(deviceName);
-        softly.assertThat(meterDetailsPageWillEdit.getMeterInfoPanel().getTable().getValueByRow(1)).isEqualTo(String.valueOf(meterNumber));
-        softly.assertThat(meterDetailsPageWillEdit.getMeterInfoPanel().getTable().getValueByRow(2)).isEqualTo(MeterEnums.MeterType.RFN420CL.getMeterType());
-        softly.assertThat(meterDetailsPageWillEdit.getMeterInfoPanel().getTable().getValueByRow(3)).isEqualTo(String.valueOf(serialNumber));
-        softly.assertThat(meterDetailsPageWillEdit.getMeterInfoPanel().getTable().getValueByRow(4)).isEqualTo(MeterEnums.MeterType.RFN420CL.getManufacturer().getManufacturer());
-        softly.assertThat(meterDetailsPageWillEdit.getMeterInfoPanel().getTable().getValueByRow(5)).isEqualTo(MeterEnums.MeterType.RFN420CL.getModel());
-        softly.assertThat(meterDetailsPageWillEdit.getMeterInfoPanel().getTable().getValueByRow(6)).isEqualTo(status);
+        softly.assertThat(detailsPage.getMeterInfoPanel().getTable().getValueByRow(0)).isEqualTo(deviceName);
+        softly.assertThat(detailsPage.getMeterInfoPanel().getTable().getValueByRow(1)).isEqualTo(String.valueOf(meterNumber));
+        softly.assertThat(detailsPage.getMeterInfoPanel().getTable().getValueByRow(2)).isEqualTo(MeterEnums.MeterType.RFN420CL.getMeterType());
+        softly.assertThat(detailsPage.getMeterInfoPanel().getTable().getValueByRow(3)).isEqualTo(String.valueOf(serialNumber));
+        softly.assertThat(detailsPage.getMeterInfoPanel().getTable().getValueByRow(4)).isEqualTo(MeterEnums.MeterType.RFN420CL.getManufacturer().getManufacturer());
+        softly.assertThat(detailsPage.getMeterInfoPanel().getTable().getValueByRow(5)).isEqualTo(MeterEnums.MeterType.RFN420CL.getModel());
+        softly.assertThat(detailsPage.getMeterInfoPanel().getTable().getValueByRow(6)).isEqualTo(status);
         softly.assertAll();
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editRFNMeter_SerialNumber_MaxLength30Chars() {
-    	//The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length after a form submission
-    	setRefreshPage(true);
-    	
-    	EditMeterModal editModal = meterDetailsPageWontEdit.showMeterEditModal();
+        // The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length
+        // after a form submission
+        setRefreshPage(true);
 
-        String serialNumber = "3619944661838896601546506928503";
-        
+        EditMeterModal editModal = detailsPage.showMeterEditModal();
+
+        String serialNumber = faker.number().digits(31);
+                
         editModal.getSerialNumber().setInputValue(serialNumber);
 
         editModal.clickOkAndWaitForSpinner();
@@ -168,16 +160,17 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
 
         assertThat(errorMsg).isEqualTo("Exceeds maximum length of 30.");
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editRFNMeter_Manufacturer_MaxLength60Chars() {
-    	//The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length after a form submission
-    	setRefreshPage(true);
+        // The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length
+        // after a form submission
+        setRefreshPage(true);
 
-    	EditMeterModal editModal = meterDetailsPageWontEdit.showMeterEditModal();
+        EditMeterModal editModal = detailsPage.showMeterEditModal();
 
-        String manufacturer = "Itron OpenWay Electricity Smart Meter with Two-way Communications";
-        
+        String manufacturer = faker.lorem().characters(61);
+
         editModal.getManufacturer().setInputValue(manufacturer);
 
         editModal.clickOkAndWaitForSpinner();
@@ -186,16 +179,17 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
 
         assertThat(errorMsg).isEqualTo("Exceeds maximum length of 60.");
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editRFNMeter_Model_MaxLength60Chars() {
-    	//The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length after a form submission
-    	setRefreshPage(true);
+        // The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length
+        // after a form submission
+        setRefreshPage(true);
 
-    	EditMeterModal editModal = meterDetailsPageWontEdit.showMeterEditModal();
+        EditMeterModal editModal = detailsPage.showMeterEditModal();
 
-        String model = "Single-Phase Residential Electricity Meter CENTRON (C2SX) Meter";
-        
+        String model = faker.lorem().characters(61);
+
         editModal.getModel().setInputValue(model);
 
         editModal.clickOkAndWaitForSpinner();
@@ -204,20 +198,19 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
 
         assertThat(errorMsg).isEqualTo("Exceeds maximum length of 60.");
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editRFNMeter_Check_AllFields() {
-    	setRefreshPage(true);
-    	SoftAssertions softly = new SoftAssertions();
-    	
-    	EditMeterModal editModal = meterDetailsPageWontEdit.showMeterEditModal();
-    	softly.assertThat(editModal.getDeviceName().getInputValue()).isEqualTo("AT Wont Edit RFN-420cL");
-    	softly.assertThat(editModal.getMeterNumber().getInputValue()).isEqualTo("53000003");
-    	softly.assertThat(editModal.getSerialNumber().getInputValue()).isEqualTo("530000030");
-    	softly.assertThat(editModal.getManufacturer().getInputValue()).isEqualTo("ITRN");
-    	softly.assertThat(editModal.getModel().getInputValue()).isEqualTo("C2SX");
-    	softly.assertThat(editModal.getStatus().getCheckedValue()).isEqualTo("Enabled");
-    	softly.assertAll();
+        setRefreshPage(true);
+        SoftAssertions softly = new SoftAssertions();
+
+        EditMeterModal editModal = detailsPage.showMeterEditModal();
+        softly.assertThat(editModal.getDeviceName().getInputValue()).isEqualTo("AT Wont Edit RFN-420cL");
+        softly.assertThat(editModal.getMeterNumber().getInputValue()).isEqualTo("53000003");
+        softly.assertThat(editModal.getSerialNumber().getInputValue()).isEqualTo("530000030");
+        softly.assertThat(editModal.getManufacturer().getInputValue()).isEqualTo("ITRN");
+        softly.assertThat(editModal.getModel().getInputValue()).isEqualTo("C2SX");
+        softly.assertThat(editModal.getStatus().getCheckedValue()).isEqualTo("Enabled");
+        softly.assertAll();
     }
-    
 }

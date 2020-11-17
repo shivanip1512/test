@@ -23,42 +23,37 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
     private Faker faker;
-    private MCT420cLMeterDetailsPage meterDetailsPageWontEdit;
-   
-    private static final int WONT_EDIT_DEVICE_ID = 1292;
+    private MCT420cLMeterDetailsPage editPage;
 
-    
+    private static final int DEVICE_ID = 1292;
+
     private static final String UPDATED = " updated successfully.";
     private static final String METER = "Meter ";
-    
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
         setRefreshPage(false);
         faker = SeleniumTestSetup.getFaker();
-        
-        navigate(Urls.Ami.METER_DETAIL + WONT_EDIT_DEVICE_ID);
 
-        meterDetailsPageWontEdit = new MCT420cLMeterDetailsPage(driverExt, WONT_EDIT_DEVICE_ID);
-        
+        navigate(Urls.Ami.METER_DETAIL + DEVICE_ID);
+        editPage = new MCT420cLMeterDetailsPage(driverExt, DEVICE_ID);
     }
-    
+
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-    	if(getRefreshPage()) {
-    		refreshPage(meterDetailsPageWontEdit);
-    	}
-    	
+        if (getRefreshPage()) {
+            refreshPage(editPage);
+        }
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMCTMeter_Labels_Correct() {
-    	setRefreshPage(true);
-    	SoftAssertions softly = new SoftAssertions();
-    	
-    	EditMeterModal editModal = meterDetailsPageWontEdit.showMeterEditModal();
-        
+        setRefreshPage(true);
+        SoftAssertions softly = new SoftAssertions();
+
+        EditMeterModal editModal = editPage.showMeterEditModal();
+
         List<String> fieldLabels = editModal.getFieldLabels();
         softly.assertThat(fieldLabels.get(0)).isEqualTo("Device Name:");
         softly.assertThat(fieldLabels.get(1)).isEqualTo("Meter Number:");
@@ -68,60 +63,56 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
         softly.assertAll();
 
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMCTMeter_AllFields_Success() {
-    	setRefreshPage(true);
-    	
-    	SoftAssertions softly = new SoftAssertions();
-    	
+        setRefreshPage(true);
+
+        SoftAssertions softly = new SoftAssertions();
+
         final int editDeviceId = 1294;
-    	
-    	navigate(Urls.Ami.METER_DETAIL + editDeviceId);
-    	MCT420cLMeterDetailsPage meterDetailsPageWillEdit = new MCT420cLMeterDetailsPage(driverExt, editDeviceId);
-    	
-    	EditMeterModal editModal = meterDetailsPageWillEdit.showMeterEditModal();
+
+        navigate(Urls.Ami.METER_DETAIL + editDeviceId);
+
+        EditMeterModal editModal = editPage.showMeterEditModal();
 
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String deviceName = "AT " + MeterEnums.MeterType.MCT420CL.getMeterType() + " Meter " + timeStamp;
         int meterNumber = faker.number().numberBetween(1, 999999);
         int physicalAddress = faker.number().numberBetween(1, 4194304);
         String status = "Disabled";
-        
+
         editModal.getDeviceName().setInputValue(deviceName);
         editModal.getMeterNumber().setInputValue(String.valueOf(meterNumber));
         editModal.getPhysicalAddress().setInputValue(String.valueOf(physicalAddress));
         editModal.getRoute().selectItemByIndex(2);
         editModal.getStatus().selectValue(status);
-        
+
         String route = editModal.getRoute().getSelectedValue();
 
         editModal.clickOkAndWaitForModalToClose();
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL + editDeviceId, Optional.of(10));
 
-        meterDetailsPageWillEdit = new MCT420cLMeterDetailsPage(driverExt, editDeviceId);
-
-        String userMsg = meterDetailsPageWillEdit.getUserMessage();
+        String userMsg = editPage.getUserMessage();
 
         softly.assertThat(userMsg).isEqualTo(METER + deviceName + UPDATED);
-        softly.assertThat(meterDetailsPageWillEdit.getMeterInfoPanel().getTable().getValueByRow(0)).isEqualTo(deviceName);
-        softly.assertThat(meterDetailsPageWillEdit.getMeterInfoPanel().getTable().getValueByRow(1)).isEqualTo(String.valueOf(meterNumber));
-        softly.assertThat(meterDetailsPageWillEdit.getMeterInfoPanel().getTable().getValueByRow(2)).isEqualTo(MeterEnums.MeterType.MCT420CL.getMeterType());
-        softly.assertThat(meterDetailsPageWillEdit.getMeterInfoPanel().getTable().getValueByRow(3)).isEqualTo(String.valueOf(physicalAddress));
-        softly.assertThat(meterDetailsPageWillEdit.getMeterInfoPanel().getTable().getValueByRow(4)).isEqualTo(route);
-        softly.assertThat(meterDetailsPageWillEdit.getMeterInfoPanel().getTable().getValueByRow(5)).isEqualTo(status);
+        softly.assertThat(editPage.getMeterInfoPanel().getTable().getValueByRow(0)).isEqualTo(deviceName);
+        softly.assertThat(editPage.getMeterInfoPanel().getTable().getValueByRow(1)).isEqualTo(String.valueOf(meterNumber));
+        softly.assertThat(editPage.getMeterInfoPanel().getTable().getValueByRow(2)).isEqualTo(MeterEnums.MeterType.MCT420CL.getMeterType());
+        softly.assertThat(editPage.getMeterInfoPanel().getTable().getValueByRow(3)).isEqualTo(String.valueOf(physicalAddress));
+        softly.assertThat(editPage.getMeterInfoPanel().getTable().getValueByRow(4)).isEqualTo(route);
+        softly.assertThat(editPage.getMeterInfoPanel().getTable().getValueByRow(5)).isEqualTo(status);
         softly.assertAll();
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMCTMeter_PhysicalAddress_InvalidValidation() {
-    	
-    	setRefreshPage(true);
-    	    	
-    	EditMeterModal editModal = meterDetailsPageWontEdit.showMeterEditModal();
-    	  
-        String physicalAddress = "41 Charles St.";
+        setRefreshPage(true);
+
+        EditMeterModal editModal = editPage.showMeterEditModal();
+
+        String physicalAddress = faker.lorem().characters(5);
 
         editModal.getPhysicalAddress().setInputValue(physicalAddress);
 
@@ -131,19 +122,19 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
 
         assertThat(errorMsg).isEqualTo("Must be a valid integer value.");
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMCTMeter_PhysicalAddress_MaxValueValidation() {
-    	//The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length after a form submission
-    	setRefreshPage(true);
+        // The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length
+        // after a form submission
+        setRefreshPage(true);
 
-    	EditMeterModal editModal = meterDetailsPageWontEdit.showMeterEditModal();
+        EditMeterModal editModal = editPage.showMeterEditModal();
 
         int physicalAddress = 4194304;
 
-        
         editModal.getPhysicalAddress().setInputValue(String.valueOf(physicalAddress));
-        
+
         editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getPhysicalAddress().getValidationError();
@@ -152,30 +143,48 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
+    public void editMCTMeter_PhysicalAddress_MinValueValidation() {
+        // The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length
+        // after a form submission
+        setRefreshPage(true);
+
+        EditMeterModal editModal = editPage.showMeterEditModal();
+
+        int physicalAddress = -1;
+
+        editModal.getPhysicalAddress().setInputValue(String.valueOf(physicalAddress));
+
+        editModal.clickOkAndWaitForSpinner();
+
+        String errorMsg = editModal.getPhysicalAddress().getValidationError();
+
+        assertThat(errorMsg).isEqualTo("Physical address must be within range(s): [0 - 4194303].");
+    }
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMCTMeter_PhysicalAddress_RequiredValidation() {
-    	//The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length after a form submission
-    	setRefreshPage(true);
-    	
-    	MCT420cLMeterDetailsPage meterDetailsPageCouldEdit = new MCT420cLMeterDetailsPage(driverExt, WONT_EDIT_DEVICE_ID);
+        // The improvement suggestion YUK-22989 was submitted to have the field use MaxLength instead of validating the length
+        // after a form submission
+        setRefreshPage(true);
 
-    	EditMeterModal editModal = meterDetailsPageCouldEdit.showMeterEditModal();
-    	
-    	editModal.getPhysicalAddress().setInputValue("");
+        EditMeterModal editModal = editPage.showMeterEditModal();
 
-    	editModal.clickOkAndWaitForSpinner();
+        editModal.getPhysicalAddress().setInputValue("");
+
+        editModal.clickOkAndWaitForSpinner();
 
         String errorMsg = editModal.getPhysicalAddress().getValidationError();
 
         assertThat(errorMsg).isEqualTo("Physical address is required.");
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMCTMeter_Route_LabelsCorrect() {
-    	setRefreshPage(true);
-    	SoftAssertions softly = new SoftAssertions();
-    	
-    	EditMeterModal editModal = meterDetailsPageWontEdit.showMeterEditModal();
-    	List<String> optionValues = editModal.getRoute().getOptionValues();
+        setRefreshPage(true);
+        SoftAssertions softly = new SoftAssertions();
+
+        EditMeterModal editModal = editPage.showMeterEditModal();
+        List<String> optionValues = editModal.getRoute().getOptionValues();
         softly.assertThat(optionValues).contains("a_CCU-710A");
         softly.assertThat(optionValues).contains("a_CCU-721");
         softly.assertThat(optionValues).contains("a_LCU-EASTRIVER");
@@ -194,19 +203,19 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
         softly.assertThat(optionValues).contains("a_XML");
         softly.assertAll();
     }
-    
+
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void editMCTMeter_Check_AllFields() {
-    	setRefreshPage(true);
-    	SoftAssertions softly = new SoftAssertions();
-    	
-    	EditMeterModal editModal = meterDetailsPageWontEdit.showMeterEditModal();
-    	softly.assertThat(editModal.getDeviceName().getInputValue()).isEqualTo("AT Wont Edit MCT-420cL");
-    	softly.assertThat(editModal.getMeterNumber().getInputValue()).isEqualTo("1300000");
-    	softly.assertThat(editModal.getPhysicalAddress().getInputValue()).isEqualTo("120000");
-    	softly.assertThat(editModal.getRoute().getSelectedValue()).isEqualTo("a_CCU-710A");
-    	softly.assertThat(editModal.getStatus().getCheckedValue()).isEqualTo("Enabled");
-    	softly.assertAll();
+        setRefreshPage(true);
+        SoftAssertions softly = new SoftAssertions();
+
+        EditMeterModal editModal = editPage.showMeterEditModal();
+        softly.assertThat(editModal.getDeviceName().getInputValue()).isEqualTo("AT Wont Edit MCT-420cL");
+        softly.assertThat(editModal.getMeterNumber().getInputValue()).isEqualTo("1300000");
+        softly.assertThat(editModal.getPhysicalAddress().getInputValue()).isEqualTo("120000");
+        softly.assertThat(editModal.getRoute().getSelectedValue()).isEqualTo("a_CCU-710A");
+        softly.assertThat(editModal.getStatus().getCheckedValue()).isEqualTo("Enabled");
+        softly.assertAll();
     }
-    
+
 }

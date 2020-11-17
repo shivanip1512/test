@@ -82,7 +82,6 @@ public class RFN420cLMeterDetailsPage extends PageBase {
     }
     
     public EditMeterModal showMeterEditModal() {
-
         getMeterInfoPanel().getEdit().click();
 
         SeleniumTestSetup.waitUntilModalOpenByDescribedBy("meter-info-popup");
@@ -91,7 +90,6 @@ public class RFN420cLMeterDetailsPage extends PageBase {
     }    
     
     public ConfirmModal showAndWaitConfirmDeleteModal() {
-        
         getAction().clickAndSelectOptionByText("Delete Meter");       
                       
         SeleniumTestSetup.waitUntilModalOpenByDescribedBy("yukon_dialog_confirm");
