@@ -422,7 +422,7 @@ public interface DeviceConfigurationDao {
 
 
     /**
-     * Returns error code for the Device Config State, null if error code is not available or error code is 0
+     * Returns error code for the Device Config State entry, null if error code is not available or error code is 0
      */
     Integer getErrorCodeByDeviceId(int deviceId);
 }
