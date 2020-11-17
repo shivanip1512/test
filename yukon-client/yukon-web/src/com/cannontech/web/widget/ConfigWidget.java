@@ -180,7 +180,11 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
         jsonResponse.put("isInProgress", isInProgress);
         jsonResponse.put("isInSync", isInSync);
         jsonResponse.put("isOutOfSync", isOutOfSync);
-
+        
+        if (configState.getLastActionStatus() == LastActionStatus.FAILURE && configState.getCreId() != null) {
+            Integer errorCode = deviceConfigurationDao.getErrorCodeByDeviceId(deviceId);
+            jsonResponse.put("errorCode", errorCode);
+        }
         return jsonResponse;
 
     }
