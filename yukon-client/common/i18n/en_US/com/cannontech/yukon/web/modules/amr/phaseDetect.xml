@@ -140,6 +140,14 @@
     <entry key="yukon.web.modules.amr.phaseDetect.results.phaseAInit">Phase A Initial:</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.results.phaseBInit">Phase B Initial:</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.results.phaseCInit">Phase C Initial:</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.results.phaseA">Phase A</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.results.phaseB">Phase B</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.results.phaseC">Phase C</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.results.undefined">Undefined</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.results.phaseAB">Phase AB</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.results.phaseAC">Phase AC</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.results.phaseBC">Phase BC</entry>
+    <entry key="yukon.web.modules.amr.phaseDetect.results.phaseABC">Phase ABC</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.results.meterName">Meter Name</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.results.errorMsg">Error Message</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.results.voltageReadings">Voltage Readings</entry>

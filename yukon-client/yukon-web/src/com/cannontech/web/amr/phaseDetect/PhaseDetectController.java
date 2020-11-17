@@ -547,17 +547,18 @@ public class PhaseDetectController {
     }
     
     @RequestMapping("chart")
-    public @ResponseBody Map<String, Object> chart(String key) {
+    public @ResponseBody Map<String, Object> chart(String key, YukonUserContext userContext) {
         
         Map<String, Integer> phaseResultsMap = getChartPhaseResults(phaseDetectResultsCache.getResult(key));
         int total = phaseResultsMap.values().stream().reduce(0, Integer::sum);
         List<PhaseDetectResultDetail> phaseDetectDetails = Lists.newArrayList();
         Map<String, Object> phaseDetectResults = Maps.newHashMap();
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         phaseResultsMap.forEach((mapKey, value) -> {
             PhaseDetectResultDetail details = new PhaseDetectResultDetail();
             details.setMeterCount(value);
             details.calculatePrecentage(total);
-            details.setPhase(mapKey);
+            details.setPhase(accessor.getMessage("yukon.web.modules.amr.phaseDetect.results." + mapKey));
             details.setColorHexValue(phaseColors.get(mapKey).getHexValue());
             phaseDetectDetails.add(details);
         });
