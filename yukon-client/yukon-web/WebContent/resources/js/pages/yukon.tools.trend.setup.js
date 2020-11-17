@@ -30,7 +30,7 @@ yukon.tools.trend.setup = (function() {
                 dialog.find(".js-color-input").val(color.toHexString());
             },
             show: function(color) {
-                //Display color name instead of color hex value
+                //Display color name instead of color hex value as a tooltip text
                 var colors = $(document).find(".sp-thumb-el:visible");
                 colors.each(function(index) {
                     var hexValue = $(this).prop('title'),
