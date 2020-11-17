@@ -28,7 +28,7 @@ get-update-delete-operation:
     tags:
      - Control Scenario
     summary: 'Retrieve Control Scenario'
-    description: 'API to retrieve control scenario based on passed control ccenario id.'
+    description: 'API to retrieve control scenario based on passed control scenario id.'
     parameters:
       - name: id
         description: 'Unique identifier of the control ccenario.'
