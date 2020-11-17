@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/30/2020 11:08:24 AM                       */
+/* Created on:     11/17/2020 3:00:22 PM                        */
 /*==============================================================*/
 
 
@@ -6533,6 +6533,15 @@ create table LMGroup  (
 );
 
 insert into lmgroup values( 0, 0 );
+
+/*==============================================================*/
+/* Table: LMGroupEatonCloud                                     */
+/*==============================================================*/
+create table LMGroupEatonCloud  (
+   YukonGroupId         NUMBER                          not null,
+   RelayUsasge          VARCHAR2(15),
+   constraint PK_LMGROUPEATONCLOUD primary key (YukonGroupId)
+);
 
 /*==============================================================*/
 /* Table: LMGroupEmetcon                                        */
@@ -13107,6 +13116,11 @@ alter table LMEnergyExchangeProgramOffer
 alter table LMGroup
    add constraint FK_Device_LMGrpBase2 foreign key (DeviceID)
       references DEVICE (DEVICEID);
+
+alter table LMGroupEatonCloud
+   add constraint FK_LMGroupEatonCloud_LMGroup foreign key (YukonGroupId)
+      references LMGroup (DeviceID)
+      on delete cascade;
 
 alter table LMGroupEmetcon
    add constraint FK_LmGroupEmetcon_LMGroup foreign key (DEVICEID)
