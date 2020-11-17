@@ -21,7 +21,7 @@
 
 <c:if test="${not empty pageScope.highlightNodePath}">
     <c:set var="highlight" value="${fn:split(highlightNodePath, '/')}"/>
-    <c:set var="initiallySelect" value="${highlight[highlight.length-1]}"/>
+    <c:set var="initiallySelect" value="${highlight[fn:length(highlight)-1]}"/>
 </c:if>
 
 <div id="internalTreeContainer_${id}" class="inline-tree ${pageScope.styleClass}">

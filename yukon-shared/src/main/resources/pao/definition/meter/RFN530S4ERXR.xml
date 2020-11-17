@@ -24,6 +24,16 @@
         <category type="rfnTempAlarm"/>
     </configuration>
     <pointInfos>
+        <pointInfo name="Average Power Factor" attributes="AVERAGE_POWER_FACTOR"/>
+        <pointInfo name="Average Power Factor Frozen" attributes="AVERAGE_POWER_FACTOR_FROZEN"/>
+        <pointInfo name="Average Power Factor Rate A" attributes="AVERAGE_POWER_FACTOR_RATE_A"/>
+        <pointInfo name="Average Power Factor Frozen Rate A" attributes="AVERAGE_POWER_FACTOR_FROZEN_RATE_A"/>
+        <pointInfo name="Average Power Factor Rate B" attributes="AVERAGE_POWER_FACTOR_RATE_B"/>
+        <pointInfo name="Average Power Factor Frozen Rate B" attributes="AVERAGE_POWER_FACTOR_FROZEN_RATE_B"/>
+        <pointInfo name="Average Power Factor Rate C" attributes="AVERAGE_POWER_FACTOR_RATE_C"/>
+        <pointInfo name="Average Power Factor Frozen Rate C" attributes="AVERAGE_POWER_FACTOR_FROZEN_RATE_C"/>
+        <pointInfo name="Average Power Factor Rate D" attributes="AVERAGE_POWER_FACTOR_RATE_D"/>
+        <pointInfo name="Average Power Factor Frozen Rate D" attributes="AVERAGE_POWER_FACTOR_FROZEN_RATE_D"/>
         <pointInfo name="Bad Upgrade Security Param" attributes="BAD_UPGRADE_SECURITY_PARAM"/>
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>

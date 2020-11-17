@@ -9,6 +9,8 @@
 	<form:form id="pxMWForm" action="${updateSettingsUrl}" modelAttribute="settings" method="post">
         <cti:csrfToken/>
         <table class="compact-results-table">
+            <div>Admin/Configuration/Demand Response PX URL: http://localhost:8080/yukon/dev/pxMiddleware (dev)</div>
+            <div>&nbsp</div>
             <thead>
                 <tr>
                     <th>Endpoint</th>

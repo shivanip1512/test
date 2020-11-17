@@ -1,0 +1,89 @@
+search-by-id:
+  post:
+    tags:
+      - Picker
+    summary: Search By Id
+    description: |-
+      API to search devices based on type and point id  passed in requestBody. 
+    
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/pickerSchema.yaml#/POINT_PICKER_SearchById'
+            
+          examples:
+            Search Picker by Id:
+              $ref: '../schemas/pickerSchema.yaml#/components/examples/Point Picker by Id' 
+           
+      required: true
+    responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/pickerSchema.yaml#/POINT_PICKER_Response'
+                 
+              examples:
+                Search Picker by Id:
+                  $ref: '../schemas/pickerSchema.yaml#/components/examples/Point Picker by Id Response' 
+
+
+search-by-query:
+  post:
+    tags:
+      - Picker
+    summary: Search By Query
+    description: |-
+      API to search devices based on type passed in requestBody. 
+    
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/pickerSchema.yaml#/POINT_PICKER_Search'
+            
+          examples:
+            Search Picker by Query:
+              $ref: '../schemas/pickerSchema.yaml#/components/examples/Point Picker by Query' 
+           
+      required: true
+    responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/pickerSchema.yaml#/POINT_PICKER_Response'
+                 
+              examples:
+                Search Picker by Query:
+                  $ref: '../schemas/pickerSchema.yaml#/components/examples/Point Picker by Query Response'
+
+buildPicker-by-type:
+  get:
+    tags:
+      - Picker
+    summary: Build Picker By Type 
+    description: |-
+      API to build picker based on type passed in Url. 
+    parameters:
+      - name: type
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'Type of picker.'
+        
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/pickerSchema.yaml#/POINT_PICKER_SearchByType'
+            
+            examples:
+              Search Picker By Type:
+                $ref: '../schemas/pickerSchema.yaml#/components/examples/Point Picker By Type' 

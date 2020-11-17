@@ -27,7 +27,7 @@ yukon.dev.simulators.pxMWSimulator = ( function() {
             $(document).on('click', '.js-test-endpoint', function () {
                 var endpoint = $(this).data('endpoint');
                 $.ajax({
-                    url: yukon.url('/dev/pxMW/testEndpoint'),
+                    url: yukon.url('/dev/pxMiddleware/testEndpoint'),
                     type: 'post',
                     data: { endpoint : endpoint } 
                 });

@@ -48,6 +48,11 @@ paths:
   /dr/constraints/holidaySchedules:
     $ref: 'api/programConstraintsApi.yaml#/holiday-schedules'
 
+  /dr/controlScenarios:
+    $ref: 'api/controlScenarioApi.yaml#/post-operation'
+  /dr/controlScenarios/{id}:
+    $ref: 'api/controlScenarioApi.yaml#/get-update-delete-operation'
+
   /devices/virtualDevices:
     $ref: 'api/virtualDevicesApi.yaml#/post-get-all-operation'
   /devices/virtualDevices/{id}:
@@ -71,6 +76,13 @@ paths:
     $ref: 'api/attributeAssignmentsApi.yaml#/post-get-operation'
   /attributeAssignments/{id}:
     $ref: 'api/attributeAssignmentsApi.yaml#/get-update-delete-operation'
+    
+  /picker/build/{type}:
+    $ref: 'api/pickerApi.yaml#/buildPicker-by-type'
+  /picker/idSearch:
+    $ref: 'api/pickerApi.yaml#/search-by-id'
+  /picker/search:
+    $ref: 'api/pickerApi.yaml#/search-by-query'
 
 components:
   securitySchemes:
@@ -85,8 +97,9 @@ tags:
   - name: Load Group
   - name: Macro Load Group
   - name: Program Constraints
+  - name: Control Scenario
   - name: Device Readings
   - name: Virtual Devices
   - name: Points
   - name: Attributes
-
+  - name: Picker

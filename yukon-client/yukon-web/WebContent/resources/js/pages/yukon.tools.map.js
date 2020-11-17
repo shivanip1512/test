@@ -267,6 +267,7 @@ yukon.tools.map = (function() {
             yukon.mapping.setScaleForDevice(_deviceFocusCurrentIcon);
         }
         yukon.mapping.hideNeighborsLegend();
+        yukon.mapping.removeDescendantLayers();
     },
     
     //remove neighbors and route information from all icons and set back to initial scale
@@ -675,6 +676,22 @@ yukon.tools.map = (function() {
             /** Destroy the coordinate deletion confirmation popup when cancelled **/
             $(document).on('click', '.cancel-delete', function(event) {
                 $('#confirm-delete').dialog('destroy');
+            });
+            
+            /** Gets the descendants for the device from the network tree **/
+            $(document).on('click', '.js-device-descendants', function() {
+                var deviceId = $(this).data('deviceId'),
+                    focusDevice = yukon.mapping.findFocusDevice(deviceId, true);
+                _removeDeviceFocusLayers();
+                _deviceFocusCurrentIcon = focusDevice;
+                //if focus device was removed, add it back
+                var deviceFound = yukon.mapping.findFocusDevice(deviceId, false);
+                if (deviceFound == null) {
+                    var source = yukon.mapping.getIconLayerSource();
+                    source.addFeature(focusDevice);
+                    _deviceFocusIcons.push(focusDevice);
+                }
+                yukon.mapping.displayDescendants(deviceId, false);
             });
             
             /** Gets the neighbor data from Network Manager **/
