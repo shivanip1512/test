@@ -138,6 +138,10 @@
                 <link>/meter/water/home?deviceId=${deviceId}</link>
                 <labelArgument>${deviceName}</labelArgument>
               </page>
+              <page name="meterDetail.virtual" type="DETAIL">
+                <link>/meter/virtual/home?deviceId=${deviceId}</link>
+                <labelArgument>${deviceName}</labelArgument>
+              </page>
               <page name="meterDetail.gas" type="DETAIL">
                 <link>/meter/gas/home?deviceId=${deviceId}</link>
                 <labelArgument>${deviceName}</labelArgument>
@@ -1810,6 +1814,7 @@
           <page name="smartNotificationsSimulator" type="BASIC"/>
           <page name="cacheManagement" type="BASIC"/>
           <page name="itronSimulator" type="BASIC"/>
+          <page name="pxMWSimulator" type="BASIC"/>
           <page name="jmsApis" type="BASIC"/>
           <page name="nest" type="BASIC">
           <link>/dev/nest/home</link>

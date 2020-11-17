@@ -81,7 +81,7 @@ const std::vector<int> allMetrics = [] {
             X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, o,o,_,_,A,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
 
         //  200                  210                  220                  230                  240                  250                  260                    270                280                  290
-            _,_,_,_,_,_,_,_,_,_, A,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, o,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,X,o,_,_, _,_,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
+            _,_,_,_,_,_,_,_,_,_, A,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,X,_,_,_,_,_,_, o,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,X,o,_,_, _,_,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
 
         //  300                  310                  320                  330                  340                  350
             _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, o,o,_,_,_,_,_,_,_,_, o,o,o,o,o,o,_,_,_,_, o,o,o,o,o,o
@@ -174,7 +174,7 @@ const std::vector<std::string> allDescriptions {
         "Average Received Power Factor (79)",
         "Average Power Factor (Quadrants 1 2 4) (81)",
         "Average Power Factor (Quadrants 2 3 4) (82)",
-        "Average Power Factor (83)",
+        "Average Power Factor (Quadrants 1 2 3 4) (83)",
         "Voltage Phase A (100)",
         "Voltage Phase B (101)",
         "Voltage Phase C (102)",
@@ -219,6 +219,7 @@ const std::vector<std::string> allDescriptions {
         "Peak kVAr (Quadrants 2 3) (181)",
         "Sum Peak kVAr (184)",
         "Sum Peak kVA (210)",
+        "Average Power Factor (233)",
         "Peak Demand Daily (240)",
         "Time in Seconds (256)",
         "Temperature in Centigrade (257)",
@@ -292,7 +293,7 @@ const std::vector<std::string> allDescriptions {
         "Q received, peak demand coincident, Rate A (1070)",
         "Average Power Factor (Quadrants 1 2 4), Rate A (1081)",
         "Average Power Factor (Quadrants 2 3 4), Rate A (1082)",
-        "Average Power Factor, Rate A (1083)",
+        "Average Power Factor (Quadrants 1 2 3 4), Rate A (1083)",
         "Voltage Phase A, Rate A (1100)",
         "Voltage Phase B, Rate A (1101)",
         "Voltage Phase C, Rate A (1102)",
@@ -335,6 +336,7 @@ const std::vector<std::string> allDescriptions {
         "PF Phase C, Rate A (1164)",
         "Sum Peak kVAr, Rate A (1184)",
         "Sum Peak kVA, Rate A (1210)",
+        "Average Power Factor, Rate A (1233)",
         "Time in Seconds, Rate A (1256)",
         "Watt hour delivered, Rate B (2001)",
         "Watt hour received, Rate B (2002)",
@@ -391,7 +393,7 @@ const std::vector<std::string> allDescriptions {
         "Q received, peak demand coincident, Rate B (2070)",
         "Average Power Factor (Quadrants 1 2 4), Rate B (2081)",
         "Average Power Factor (Quadrants 2 3 4), Rate B (2082)",
-        "Average Power Factor, Rate B (2083)",
+        "Average Power Factor (Quadrants 1 2 3 4), Rate B (2083)",
         "Voltage Phase A, Rate B (2100)",
         "Voltage Phase B, Rate B (2101)",
         "Voltage Phase C, Rate B (2102)",
@@ -432,6 +434,7 @@ const std::vector<std::string> allDescriptions {
         "PF Phase A, Rate B (2162)",
         "PF Phase B, Rate B (2163)",
         "PF Phase C, Rate B (2164)",
+        "Average Power Factor, Rate B (2233)",
         "Time in Seconds, Rate B (2256)",
         "Watt hour delivered, Rate C (3001)",
         "Watt hour received, Rate C (3002)",
@@ -488,7 +491,7 @@ const std::vector<std::string> allDescriptions {
         "Q received, peak demand coincident, Rate C (3070)",
         "Average Power Factor (Quadrants 1 2 4), Rate C (3081)",
         "Average Power Factor (Quadrants 2 3 4), Rate C (3082)",
-        "Average Power Factor, Rate C (3083)",
+        "Average Power Factor (Quadrants 1 2 3 4), Rate C (3083)",
         "Voltage Phase A, Rate C (3100)",
         "Voltage Phase B, Rate C (3101)",
         "Voltage Phase C, Rate C (3102)",
@@ -529,6 +532,7 @@ const std::vector<std::string> allDescriptions {
         "PF Phase A, Rate C (3162)",
         "PF Phase B, Rate C (3163)",
         "PF Phase C, Rate C (3164)",
+        "Average Power Factor, Rate C (3233)",
         "Time in Seconds, Rate C (3256)",
         "Watt hour delivered, Rate D (4001)",
         "Watt hour received, Rate D (4002)",
@@ -585,7 +589,7 @@ const std::vector<std::string> allDescriptions {
         "Q received, peak demand coincident, Rate D (4070)",
         "Average Power Factor (Quadrants 1 2 4), Rate D (4081)",
         "Average Power Factor (Quadrants 2 3 4), Rate D (4082)",
-        "Average Power Factor, Rate D (4083)",
+        "Average Power Factor (Quadrants 1 2 3 4), Rate D (4083)",
         "Voltage Phase A, Rate D (4100)",
         "Voltage Phase B, Rate D (4101)",
         "Voltage Phase C, Rate D (4102)",
@@ -626,6 +630,7 @@ const std::vector<std::string> allDescriptions {
         "PF Phase A, Rate D (4162)",
         "PF Phase B, Rate D (4163)",
         "PF Phase C, Rate D (4164)",
+        "Average Power Factor, Rate D (4233)",
         "Time in Seconds, Rate D (4256)",
  };
 

@@ -66,6 +66,9 @@ public class PaoDetailUrlHelper {
         urlBuilder.put(PaoTag.VIRTUAL_DEVICE_DISPLAYABLE, pao -> "/stars/virtualDevice/" + pao.getPaoIdentifier().getPaoId());
         pageNameBuilder.put(PaoTag.VIRTUAL_DEVICE_DISPLAYABLE, "virtualDevice.detail");
 
+        urlBuilder.put(PaoTag.VIRTUAL_METER_DISPLAYABLE, pao -> "/meter/virtual/home?deviceId=" + pao.getPaoIdentifier().getPaoId());
+        pageNameBuilder.put(PaoTag.VIRTUAL_METER_DISPLAYABLE, "meterDetail.virtual");
+
         supportDeviceUrlPatterns = urlBuilder.build();
         supportDevicePageNames = pageNameBuilder.build();
 

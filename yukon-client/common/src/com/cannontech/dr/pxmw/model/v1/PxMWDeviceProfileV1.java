@@ -1,51 +1,32 @@
-package com.cannontech.dr.pxmw.service.model;
+package com.cannontech.dr.pxmw.model.v1;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-class Device{
-    public String vendor;
-    public String family;
-    public String role;
-    public String model;
-    public String model_lname;
-    public String model_sname;
-    public String hardware;
-    public String software;
-    public String mcl_id;
-}
-
-class Channel{
-    public String tag;
-    public String mcltag;
-}
-
-/**
- * Data for a single device profile.
- */
-
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PxMWDeviceProfile {
-    private final String deviceGuid;
+public class PxMWDeviceProfileV1 implements Serializable {
+    private final String profileGuid;
     private final String createdTime;
     private final String createdByUser;
     private final String modifiedTime;
     private final String modifiedByUser;
-    private final Device device;
-    private final List <Channel> channels;
+    private final PxMWDeviceV1 device;
+    private final List <PxMWChannelV1> channels;
 
     @JsonCreator
-    public PxMWDeviceProfile(@JsonProperty("id") String deviceGuid, 
+    public PxMWDeviceProfileV1(@JsonProperty("id") String profileGuid, 
                              @JsonProperty("created") String createdTime, 
                              @JsonProperty("created_by") String createdByUser, 
                              @JsonProperty("modified") String modifiedTime, 
                              @JsonProperty("modified_by") String modifiedByUser,
-                             @JsonProperty("device") Device device, 
-                             List <Channel> channels) {
-        this.deviceGuid = deviceGuid;
+                             @JsonProperty("device") PxMWDeviceV1 device, 
+                             @JsonProperty("channels") List <PxMWChannelV1> channels) {
+        this.profileGuid = profileGuid;
         this.createdTime = createdTime;
         this.createdByUser = createdByUser;
         this.modifiedTime = modifiedTime;
@@ -55,8 +36,8 @@ public class PxMWDeviceProfile {
     }
 
     @JsonProperty("id")
-    public String getDeviceGuid() {
-        return deviceGuid;
+    public String getDeviceProfileGuid() {
+        return profileGuid;
     }
 
     @JsonProperty("created")
@@ -80,12 +61,12 @@ public class PxMWDeviceProfile {
     }
 
     @JsonProperty("device")
-    public Device getDevice() {
+    public PxMWDeviceV1 getDevice() {
         return device;
     }
-
-    public List <Channel> getChannels() {
+    
+    @JsonProperty("channels")
+    public List <PxMWChannelV1> getChannels() {
         return channels;
     }
-
 }

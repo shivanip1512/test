@@ -17,15 +17,21 @@ yukon.ami.meterDetails = (function () {
             updateMeterTypeFields : function() {
                 var rfMeterTypes = yukon.fromJson('#rf-meter-types'),
                     mctMeterTypes = yukon.fromJson('#mct-meter-types'),
+                    virtualMeterType = yukon.fromJson('#virtual-meter-type'),
                     meterType = $('#meter-type').val(),
                     isRF = rfMeterTypes.indexOf(meterType) !== -1,
-                    isMCT = mctMeterTypes.indexOf(meterType) !== -1;
+                    isMCT = mctMeterTypes.indexOf(meterType) !== -1,
+                    isVirtual = virtualMeterType.indexOf(meterType) !== -1;
                 if (isRF) {
                     $('.js-rf-fields').removeClass('dn');
                     $('.js-mct-fields').addClass('dn');
                     $('.js-ied-fields').addClass('dn');
                 } else if (isMCT) {
                     $('.js-mct-fields').removeClass('dn');
+                    $('.js-rf-fields').addClass('dn');
+                    $('.js-ied-fields').addClass('dn');
+                } else if (isVirtual) {
+                    $('.js-mct-fields').addClass('dn');
                     $('.js-rf-fields').addClass('dn');
                     $('.js-ied-fields').addClass('dn');
                 }
