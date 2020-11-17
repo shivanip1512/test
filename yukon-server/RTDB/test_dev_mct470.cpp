@@ -2798,7 +2798,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 13);
             BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0xae);
             BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
-            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig tou schedule 1");
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install tou schedule 1");
 
             INMESS im = makeInmessReply(*outmess);
 
@@ -2815,7 +2815,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 13);
             BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0xaf);
             BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
-            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig tou schedule 3");
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install tou schedule 3");
 
             INMESS im = makeInmessReply(*outmess);
 
@@ -2832,7 +2832,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 11);
             BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0xad);
             BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
-            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig tou");
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install tou");
 
             INMESS im = makeInmessReply(*outmess);
 
