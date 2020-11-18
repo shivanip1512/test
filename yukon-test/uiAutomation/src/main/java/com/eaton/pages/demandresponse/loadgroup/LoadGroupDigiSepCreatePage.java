@@ -1,7 +1,6 @@
 package com.eaton.pages.demandresponse.loadgroup;
 
 import com.eaton.elements.DropDownMultiSelectElement;
-import com.eaton.elements.Section;
 import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.Urls;

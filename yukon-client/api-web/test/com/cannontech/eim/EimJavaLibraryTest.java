@@ -261,6 +261,8 @@ enum IgnoredThirdPartyJavaLibraries {
     YUKON_WEB("yukon-web.jar", IgnoreReason.YUKON_PROJECT),
     YUKON_WEB_JSP("yukon-web-jsp.jar", IgnoreReason.YUKON_PROJECT),
 
+    ANT_JACOCO("jacocoant.jar", IgnoreReason.ANT_BUILD_HELPERS),
+    ANT_JACOCO_AGENT("jacocoagent.jar", IgnoreReason.ANT_BUILD_HELPERS),
     ANT_LAUNCHER("ant-launcher.jar", IgnoreReason.ANT_BUILD_HELPERS),
     ANT("ant.jar", IgnoreReason.ANT_BUILD_HELPERS),
     ANT_JUNIT4("ant-junit4.jar", IgnoreReason.ANT_BUILD_HELPERS),

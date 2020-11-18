@@ -18,16 +18,19 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.assets.commchannels.CommChannelDetailPage;
 import com.eaton.pages.assets.commchannels.CommChannelsListPage;
+import com.github.javafaker.Faker;
 
 public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
     private CommChannelsListPage listPage;
     private DriverExtensions driverExt;
+    private Faker faker;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
         navigate(Urls.Assets.COMM_CHANNELS_LIST);
         listPage = new CommChannelsListPage(driverExt);
+        faker = SeleniumTestSetup.getFaker();
     }
     
     @AfterMethod(alwaysRun = true)
@@ -35,7 +38,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         refreshPage(listPage);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.COMM_CHANNELS })
     public void createCommChannelTerminalServer_AllFields_Success() {
         CreateTerminalServerCommChannelModal createModal = listPage.showAndWaitCreateTerminalServerCommChannelModal();
         
@@ -48,7 +51,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         createModal.getType().selectItemByValue("TSERVER_SHARED");
         waitForLoadingSpinner();
         createModal.getIpAddress().setInputValue("127.0.0.1");
-        createModal.getPortNumber().setInputValue(Integer.toString(getRandomNum().nextInt(65536)));
+        createModal.getPortNumber().setInputValue(Integer.toString(faker.number().numberBetween(1, 65536)));
         createModal.getBaudRate().selectItemByValue("BAUD_14400");
 
         createModal.clickOkAndWaitForModalToClose();
@@ -62,7 +65,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void createCommChannelTerminalServer_Labels_Correct() {
         SoftAssertions softly = new SoftAssertions();
         CreateTerminalServerCommChannelModal createModal = listPage.showAndWaitCreateTerminalServerCommChannelModal();
@@ -82,7 +85,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void createCommChannelTerminalServer_IpAddress_RequiredValidation() {
         CreateTerminalServerCommChannelModal createModal = listPage.showAndWaitCreateTerminalServerCommChannelModal();
 
@@ -98,7 +101,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void createCommChannelTerminalServer_IpAddress_InvalidValidation() {
         CreateTerminalServerCommChannelModal createModal = listPage.showAndWaitCreateTerminalServerCommChannelModal();
 
@@ -117,7 +120,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void createCommChannelTerminalServer_PortNumber_MinValueValidation() {
         CreateTerminalServerCommChannelModal createModal = listPage.showAndWaitCreateTerminalServerCommChannelModal();
 
@@ -134,7 +137,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void createCommChannelTerminalServer_PortNumber_MaxValueValidation() {
         CreateTerminalServerCommChannelModal createModal = listPage.showAndWaitCreateTerminalServerCommChannelModal();                
 
@@ -151,7 +154,7 @@ public class CommChannelTerminalServerCreateTests extends SeleniumTestSetup {
         assertThat(errorMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Assets.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.COMM_CHANNELS })
     public void createCommChannelTerminalServer_PortNumber_RequiredValidation() {
         CreateTerminalServerCommChannelModal createModal = listPage.showAndWaitCreateTerminalServerCommChannelModal();
 

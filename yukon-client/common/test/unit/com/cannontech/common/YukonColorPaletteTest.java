@@ -1,9 +1,16 @@
 package com.cannontech.common;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashSet;
+import java.util.InvalidPropertiesFormatException;
+import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,5 +55,25 @@ public class YukonColorPaletteTest {
         Set<String> colorsDifference = Sets.difference(colorsDefinedInFile, yukonColorPaletteEnumValues);
         assertTrue("Found colors in colors.less file that are not defined in YukonColorPalette. Define an enum value in YukonColorPalette for these colors.: " + colorsDifference, colorsDifference.isEmpty());
     }
+ 
+    @Test
+    public void testMissingColor() throws InvalidPropertiesFormatException, IOException {
+        String userDirectory = System.getProperty("user.dir");
 
+        try {
+            if (!userDirectory.contains("common")) {
+                String clientDir = userDirectory.substring(0, userDirectory.lastIndexOf("\\") + 1);
+                userDirectory = clientDir + "common";
+            }
+            InputStream inputStream = new FileInputStream(userDirectory + "/i18n/en_US/com/cannontech/yukon/common/general.xml");
+            Properties generalProperties = new Properties();
+            generalProperties.loadFromXML(inputStream);
+            for (YukonColorPalette  attr : YukonColorPalette.values()) {
+                var colorEntry = generalProperties.get(attr.getFormatKey());
+                assertNotNull("No key for " + attr + " in general.xml file", colorEntry);
+            }
+        } catch (FileNotFoundException e) {
+            fail("Caught exception in testMissingColor: " + e.getMessage());
+        }
+    }
 }

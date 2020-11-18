@@ -39,22 +39,19 @@ public class MeterWRL420cLEditTests extends SeleniumTestSetup {
         refreshPage(meterDetailsPage);
     }
 
-    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Ami.AMI })
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cLEdit_RequiredFieldsOnly_Success() {
-
         String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited " + MeterEnums.MeterType.WRL420CL.getMeterType() + " " + timeStamp;
 
         EditMeterModal editModal = meterDetailsPage.showMeterEditModal();
 
-        editModal.getdeviceName().setInputValue(name);
+        editModal.getDeviceName().setInputValue(name);
         editModal.clickOkAndWaitForModalToClose();
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL + DEVICEID, Optional.of(10));
 
-        WRL420cLMeterDetailsPage detailPage = new WRL420cLMeterDetailsPage(driverExt, DEVICEID);
-
-        String userMsg = detailPage.getUserMessage();
+        String userMsg = meterDetailsPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(METER + name + UPDATED);
     }

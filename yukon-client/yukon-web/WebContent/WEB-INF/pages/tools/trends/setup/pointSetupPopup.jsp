@@ -10,7 +10,8 @@
     <cti:uniqueIdentifier var="uniqueId"/>
     <input type="hidden" class="js-date-type-enum-value" value="${graphTypeDateEnumValue}"/>
     <c:forEach items="${colors}" var="color">
-        <input type="hidden" class="js-color-item" value="${color}"/>
+        <cti:msg var="colorName" key="${color.formatKey}"/>
+        <input type="hidden" class="js-color-item" value="${color.hexValue}" data-color-name="${colorName}"/>
     </c:forEach>
     
     <cti:url var="addPointUrl" value="/tools/trend/addPointOrMarker"/>

@@ -30,7 +30,7 @@ yukon.ui.fancyTree= (function () {
         $('.found', tree).removeClass('found');
         
         if (match.length > 0) {
-            tree.fancytree('getTree').visit(function (node) {
+            $.ui.fancytree.getTree(tree).visit(function (node) {
                 if (node.data.text.toLowerCase().match(match)) {
                     node.makeVisible();   //show this guy
                     if (node.span) {
@@ -50,13 +50,48 @@ yukon.ui.fancyTree= (function () {
     _initializeTree = function () {
         $('.js-fancy-tree').each(function() {
             var dataUrl = $(this).data('url'),
+                initiallySelect = $(this).data('initiallySelect'),
+                scrollToHighlighted = $(this).data('scrollToHighlighted'),
+                multiSelect = $(this).data('multiSelect'),
                 treeParameters = yukon.fromJson($(this).find('#js-tree-parameters')),
-                source = dataUrl ? { url: dataUrl } : yukon.fromJson($(this).find('#js-json-data')),
+                jsonData = $(this).find('#js-json-data'),
+                source = dataUrl ? { url: dataUrl } : JSON.parse(yukon.fromJson(jsonData)),
                 options = $.extend({
                     source: source,
                     minExpandLevel: 2,
-                    icon: false,
-                    escapeTitles: true
+                    escapeTitles: true,
+                    click: function(event, data) {
+                        var node = data.node;
+                        if (data.targetType != 'checkbox' && data.targetType != 'expander') {
+                            if (!node.isFolder()) {
+                                node.toggleSelected();
+                            }
+                        }
+                    },
+                    init: function(event, data) {
+                        if (initiallySelect) {
+                            //show the initially selected item
+                            var node = data.tree.getNodeByKey(initiallySelect);
+                            node.setSelected(true);
+                            if (scrollToHighlighted) {
+                                node.setActive(true);
+                            }
+                        } else {
+                            //or open all of the first level children
+                            var root = data.tree.rootNode;
+                            if (root.children != null) {
+                                for (var i = 0; i < root.children.length; i++) {
+                                    root.children[i].setExpanded(true);
+                                } 
+                            }
+                        }
+                    },
+                    dblClick: function(event, data) {
+                        data.node.toggleExpand();
+                    },
+                    clickFolderMode: 2,
+                    selectMode: multiSelect ? 2 : 1,
+                    activeVisible: false
                 }, JSON.parse(treeParameters) || {});
             $(this).fancytree(options);
             $(this).find('.fancytree-container').addClass('fancytree-connectors');
@@ -75,13 +110,13 @@ yukon.ui.fancyTree= (function () {
             /** Expand All. */
             $(document).on('click', '.fancytree-open-all', function () {
                 var treeId = $(this).data('treeId');
-                $('#' + treeId).fancytree('getTree').expandAll();
+                $.ui.fancytree.getTree('#' + treeId).expandAll();
             });
             
             /** Collapse All. */
             $(document).on('click', '.fancytree-close-all', function () {
                 var treeId = $(this).data('treeId');
-                $('#' + treeId).fancytree('getTree').expandAll(false);
+                $.ui.fancytree.getTree('#' + treeId).expandAll(false);
             });
             
             $(document).on('keyup', 'input.fancytree-search', function (ev) {

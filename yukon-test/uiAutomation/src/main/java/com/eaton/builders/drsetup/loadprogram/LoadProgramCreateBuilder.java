@@ -9,6 +9,7 @@ import org.javatuples.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.eaton.builders.drsetup.loadprogram.ProgramEnums.ProgramType;
 import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
 import com.github.javafaker.Faker;
 
@@ -19,6 +20,7 @@ public class LoadProgramCreateBuilder {
     public static class Builder {
 
         private Faker faker = new Faker();
+        private ProgramType programType;
         private String type;
         private String name;
         private String operationalState;
@@ -30,12 +32,13 @@ public class LoadProgramCreateBuilder {
         private int controlWindowOneAvailableStopTimeInMinutes;
         private int controlWindowTwoAvailableStartTimeInMinutes;
         private int controlWindowTwoAvailableStopTimeInMinutes;
-        private List<JSONObject> gears = new ArrayList<JSONObject>();
-        private List<Integer> assignedGroupIds = new ArrayList<Integer>();
+        private List<JSONObject> gears = new ArrayList<>();
+        private List<Integer> assignedGroupIds = new ArrayList<>();
         private int groupOrder = 1;
 
         public Builder(ProgramEnums.ProgramType type, List<JSONObject> gears, List<Integer> assignedGroupIds) {
-            this.type = type.getProgramType();
+            this.programType = type;
+            this.type = programType.getProgramType();
             this.gears = gears;
             this.assignedGroupIds = assignedGroupIds;
         }
@@ -44,14 +47,14 @@ public class LoadProgramCreateBuilder {
             String u = UUID.randomUUID().toString();
             String uuid = u.replace("-", "");
 
-            this.name = name.orElse(type + uuid);
+            this.name = name.orElse(programType.getDesc() + uuid);
             return this;
         }
 
         public Builder withOperationalState(Optional<ProgramEnums.OperationalState> operationalState) {
-            ProgramEnums.OperationalState OperationalState = operationalState
+            ProgramEnums.OperationalState opState = operationalState
                     .orElse(ProgramEnums.OperationalState.getRandomOperationalState());
-            this.operationalState = OperationalState.getOperationalState();
+            this.operationalState = opState.getOperationalState();
             return this;
         }
 

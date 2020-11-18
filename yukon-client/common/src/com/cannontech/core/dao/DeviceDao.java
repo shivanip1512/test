@@ -205,4 +205,24 @@ public interface DeviceDao {
      * @return The PaoMacAddress of each device with a primary mac address, but no secondary mac address.
      */
     List<PaoMacAddress> findAllDevicesWithNoSecondaryMacAddress();
+
+    /**
+     * @return true if guid exists
+     */
+    boolean isGuidExists(String guid);
+    
+    /**
+     * @return guid for device
+     */
+    String getGuid(int deviceId) throws NotFoundException;
+
+    /**
+     * Update the guid for the specified device.
+     */
+    void updateGuid(int deviceId, String guid);
+    
+    /**
+     * Inserts guid.
+     */
+    void insertGuid(int deviceId, String guid);
 }

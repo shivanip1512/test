@@ -1,8 +1,6 @@
 package com.cannontech.web.api.dr.controlArea;
 
 import java.util.HashMap;
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.dr.setup.ControlArea;
-import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.dr.area.service.ControlAreaSetupService;
@@ -64,12 +61,6 @@ public class ControlAreaSetupApiController {
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
-    @GetMapping("/normalState/{pointId}")
-    public ResponseEntity<Object> getNormalState(@PathVariable int pointId) {
-        List<LMDto> normalStates = controlAreaService.retrieveNormalState(pointId);
-        return new ResponseEntity<>(normalStates, HttpStatus.OK);
-    }
-    
     @InitBinder("controlArea")
     public void setupBinder(WebDataBinder binder) {
         binder.setValidator(controlAreaSetupValidator);

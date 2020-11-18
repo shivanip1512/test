@@ -3,8 +3,6 @@ package com.cannontech.web.api;
 public class ApiURL {
 
     public static final String drLoadGroupUrl = "/dr/loadGroups";
-    public static final String drPointGroupStartStateUrl = "/dr/loadGroups/getPointGroupStartState/";
-
 
     public static final String drSetupFilterUrl = "/dr/setup/filter";
     public static final String retrieveAllRoutesUrl = "/core/setup/route/allRoutes";
@@ -22,7 +20,6 @@ public class ApiURL {
     public static final String drSeasonScheduleUrl = "/dr/constraints/seasonSchedules";
 
     public static final String drControlAreaUrl = "/dr/controlAreas";
-    public static final String drNormalStateUrl = "/dr/controlAreas/normalState/";
 
     public static final String drControlScenarioUrl = "/dr/controlScenarios";
 
@@ -31,7 +28,9 @@ public class ApiURL {
     public static final String virtualDeviceUrl = "/devices/virtualDevices";
 
     public static final String trendUrl = "/trends";
-    
+
+    public static final String pointUrl = "/points/";
+
     public static final String attributeUrl = "/attributes";
     public static final String attributeAssignmentsUrl = "/attributeAssignments";
     

@@ -1,7 +1,7 @@
 yukon.namespace('yukon.assets.gateway.list');
 
 /**
- * Module that handles the behavior on the gatway list page (localhost:8080/yukon/stars/gateways).
+ * Module that handles the behavior on the gateway list page (localhost:8080/yukon/stars/gateways).
  * @module yukon.assets.gateway.list
  * @requires JQUERY
  * @requires MOMENT
@@ -125,7 +125,6 @@ yukon.assets.gateway.list = (function () {
                     _updateFirmwareRow(row, update);
                     
                     // Append the new row and do some show/hide, in case there were no rows before this one.
-                    $('.js-no-firmware-updates').hide();
                     $('#firmware-table tbody').prepend(row);
                     $('#firmware-table').show();
                 } else {
@@ -279,51 +278,37 @@ yukon.assets.gateway.list = (function () {
             
             /** Start clicked on the certificate update popup. */
             $(document).on('yukon:assets:gateway:cert:update', function (ev) {
-                
                 var popup = $('#gateway-cert-popup'),
                     file = popup.find('input[type=file]'),
-                    gateways = popup.find('.js-select-all-item'),
-                    chosen = popup.find('.js-select-all-item:checked'),
+                    gateways = popup.find("input[name='gatewayIdList']").map(function () {return $(this).val();}).get().join(","),
                     btns = popup.closest('.ui-dialog').find('.ui-dialog-buttonset'),
                     primary = btns.find('.js-primary-action'),
                     secondary = btns.find('.js-secondary-action'),
                     valid = true;
-                
+
                 if (!file.val()) {
-                    file.addClass('animated shake-subtle error')
-                    .one(yg.events.animationend, function() { $(this).removeClass('animated shake-subtle error'); });
+                    popup.addMessage({message: $('.js-no-file-upload').val(), messageClass: 'error'});
+                    valid = false;
+                } else if (gateways.length === 0) {
+                    popup.addMessage({message: $('.js-no-gateway-selected').val(), messageClass: 'error'});
                     valid = false;
                 }
-                
-                if (!chosen.length) {
-                    gateways.addClass('animated shake-subtle error')
-                    .one(yg.events.animationend, function() { $(this).removeClass('animated shake-subtle error'); });
-                    valid = false;
-                }
-                
+
                 if (!valid) return;
-                
                 yukon.ui.busy(primary);
                 secondary.prop('disabled', true);
-                
                 popup.find('.user-message').remove();
-                
+
                 $('#gateway-cert-form').ajaxSubmit({
                     url: yukon.url('/stars/gateways/cert-update'), 
                     type: 'post',
+                    data: { gateways: gateways},
                     success: function (updateText, status, xhr, $form) {
-                        
                         popup.dialog('close');
-                        
-                        var 
-                        update = JSON.parse(updateText),
-                        row = $('.js-new-cert-update').clone()
-                              .removeClass('js-new-cert-update')
-                              .attr('data-yui', update.yukonUpdateId);
-                        
+                        var update = JSON.parse(updateText),
+                            row = $('.js-new-cert-update').clone().removeClass('js-new-cert-update').attr('data-yui', update.yukonUpdateId);
+                        // Add an entry to the certificates updates information table
                         _updateCertRow(row, update);
-                        
-                        $('.js-no-cert-updates').hide();
                         $('#cert-table tbody').prepend(row);
                         $('#cert-table').show();
                     },

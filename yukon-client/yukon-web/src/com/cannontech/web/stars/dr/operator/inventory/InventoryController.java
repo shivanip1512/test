@@ -229,6 +229,7 @@ public class InventoryController {
         // Setup elements to hide/show based on device type/class
         model.addAttribute("displayTypeKey", ".displayType." + clazz);
 
+        model.addAttribute("showGuid", type.isSupportsGuid());
         model.addAttribute("showMacAddress", type.isSupportsMacAddress());
         if (type.isZigbee()) {
             model.addAttribute("macAddressEditable", true);
@@ -473,6 +474,7 @@ public class InventoryController {
         // Setup elements to hide/show based on device type/class
         model.addAttribute("displayTypeKey", ".displayType." + clazz);
 
+        model.addAttribute("showGuid", type.isSupportsGuid());
         model.addAttribute("showMacAddress", type.isSupportsMacAddress());
         if (type.isZigbee()) {
             if (!type.isGateway()) {

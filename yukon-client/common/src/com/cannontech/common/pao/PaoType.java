@@ -163,6 +163,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     LCR6600S(DeviceTypes.LCR6600S, "LCR-6600S", PaoCategory.DEVICE, PaoClass.ITRON),
     LCR6601S(DeviceTypes.LCR6601S, "LCR-6601S", PaoCategory.DEVICE, PaoClass.ITRON),
+
+    LCR6200C(DeviceTypes.LCR6200C, "LCR-6200C", PaoCategory.DEVICE, PaoClass.EATON_CLOUD),
+    LCR6600C(DeviceTypes.LCR6600C, "LCR-6600C", PaoCategory.DEVICE, PaoClass.EATON_CLOUD),
+    LCR_DISCONNECT_C(DeviceTypes.LCR_DISCONNECT_C, "LCR-DisconnectC", PaoCategory.DEVICE, PaoClass.EATON_CLOUD),
     
     RFN_GATEWAY(DeviceTypes.RFN_GATEWAY, "RF Gateway", PaoCategory.DEVICE, PaoClass.RFMESH),
     GWY800(DeviceTypes.GWY800, "GWY-800", PaoCategory.DEVICE, PaoClass.RFMESH),
@@ -345,6 +349,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> wifiTypes;
     private final static ImmutableSet<PaoType> loadGroupSupportedFromWeb;
     private final static ImmutableSet<PaoType> batteryAnalysisTypes;
+    private final static ImmutableSet<PaoType> virtualTypes;
 
     public final static int INVALID = -1;
     
@@ -376,6 +381,9 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LM_ITRON_PROGRAM,
             LM_METER_DISCONNECT_PROGRAM
             );
+
+        virtualTypes = ImmutableSet.of(
+                VIRTUAL_METER);
         
         directProgramTypes = ImmutableSet.of(
             LM_DIRECT_PROGRAM,
@@ -897,7 +905,11 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     public boolean isPlc() {
         return paoClass == PaoClass.CARRIER;
     }
-    
+
+    public boolean isVirtual() {
+        return paoClass == PaoClass.VIRTUAL;
+    }
+
     public boolean isTwoWayRfnLcr() {
         return twoWayLcrTypes.contains(this) 
                 && isRfn();
@@ -1083,6 +1095,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public static ImmutableSet<PaoType> getRtuTypes() {
         return rtuTypes;
+    }
+
+    public static ImmutableSet<PaoType> getVirtualTypes() {
+        return virtualTypes;
     }
 
     public static ImmutableSet<PaoType> getIonTypes() {

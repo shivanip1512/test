@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -34,6 +35,7 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.SqlParameterSink;
@@ -579,5 +581,58 @@ public final class DeviceDaoImpl implements DeviceDao {
         SimpleDevice device = new SimpleDevice(paoIdentifier);
 
         return device;
+    }
+    
+    @Override
+    public boolean isGuidExists(String guid) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Guid");
+        sql.append("FROM DeviceGuid");
+        sql.append("WHERE Guid").eq(guid);
+        try {
+            jdbcTemplate.queryForString(sql);
+            return true;
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public void insertGuid(int deviceId, String guid) {
+        try {
+            SqlStatementBuilder createSql = new SqlStatementBuilder();
+            SqlParameterSink params = createSql.insertInto("DeviceGuid");
+            params.addValue("DeviceId", deviceId);
+            params.addValue("Guid", guid);
+            jdbcTemplate.update(createSql);
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateException("Unable to add guid. Guid may already exist.", e);
+        }
+    }
+
+    @Override
+    public void updateGuid(int deviceId, String guid) {
+        try {
+            SqlStatementBuilder updateSql = new SqlStatementBuilder();
+            SqlParameterSink params = updateSql.update("DeviceGuid");
+            params.addValue("Guid", guid);
+            updateSql.append("WHERE DeviceId").eq(deviceId);
+            jdbcTemplate.update(updateSql);
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateException("Unable to add guid. Guid may already exist.", e);
+        }
+    }
+
+    @Override
+    public String getGuid(int deviceId) throws NotFoundException {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Guid");
+        sql.append("FROM DeviceGuid");
+        sql.append("WHERE DeviceId").eq(deviceId);
+        try {
+            return jdbcTemplate.queryForString(sql);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Guid is not found for device id " + deviceId, e);
+        }
     }
 }

@@ -16,8 +16,8 @@ yukon.tools.trend.setup = (function() {
     
     _initColorPicker = function (dialog) {
         var colorArray = dialog.find(".js-color-item").map(function () {return $(this).val();}).get(),
-               colorArrayLength = colorArray.length,
-               firstRowOfColors = colorArray.splice(0, colorArrayLength/2);
+            colorArrayLength = colorArray.length,
+            firstRowOfColors = colorArray.splice(0, colorArrayLength/2);
         
         dialog.find(".js-color-picker").spectrum({
             showPaletteOnly: true,
@@ -28,6 +28,15 @@ yukon.tools.trend.setup = (function() {
             preferredFormat: "hex",
             move: function(color){
                 dialog.find(".js-color-input").val(color.toHexString());
+            },
+            show: function(color) {
+                //Display color name instead of color hex value as a tooltip text
+                var colors = $(document).find(".sp-thumb-el:visible");
+                colors.each(function(index) {
+                    var hexValue = $(this).prop('title'),
+                        colorName = dialog.find("input[value='" + hexValue + "']").data("colorName");
+                    $(this).prop('title', colorName);
+                });
             }
         });
     },

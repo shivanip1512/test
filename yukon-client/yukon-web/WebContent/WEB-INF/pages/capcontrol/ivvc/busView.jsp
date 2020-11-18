@@ -1,7 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="fancyTree" tagdir="/WEB-INF/tags/fancyTree" %>
 <%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -206,12 +204,13 @@
                 
             </cti:tab>
             <cti:msg2 var="zoneHierarchy" key=".zoneHierarchy.title" />
-            <cti:tab title="${zoneHierarchy}" headerClasses="js-zone-hierarchy">
+            <cti:tab title="${zoneHierarchy}">
                 <div class="column-10-14">
                     <div class="column one">
                         <tags:boxContainer2 nameKey="zones" hideEnabled="false">
                             <cti:url var="treeUrl" value="/capcontrol/ivvc/bus/${subBusId}/zoneHierarchy"/>
-                            <fancyTree:inlineTree id="zoneHierarchyTree" dataUrl="${treeUrl}" includeControlBar="true" treeParameters='{"minExpandLevel": "1"}'/>
+                            <fancyTree:inlineTree id="zoneHierarchyTree" dataUrl="${treeUrl}" includeControlBar="true" 
+                                treeParameters='{"minExpandLevel": "1", "icon": false}' highlightNodePath="${zones.zone.zoneId}" scrollToHighlighted="true"/>
                             <c:if test="${hasEditingRole}">
                                 <div class="action-area">         
                                     <cti:button nameKey="create" onclick="yukon.da.zone.wizard.showZoneCreationWizard('${zoneCreatorUrl}', '${zoneCreationWizardTitle}');" icon="icon-add"/>
@@ -220,7 +219,7 @@
                         </tags:boxContainer2>
                     </div>
                     <div class="column two nogutter">
-                        <!-- TODO: Zone Detail will be displayed here in YUK-22267 -->
+                        <div class="js-selected-zone-details"></div>
                     </div>
                 </div>
             </cti:tab>
@@ -273,7 +272,8 @@
     </table>
 
     <cti:includeScript link="/resources/js/common/yukon.table.dynamic.js"/>
-    <cti:includeScript link="/resources/js/pages/yukon.da.busview.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.da.command.js" />
     <cti:includeScript link="/resources/js/pages/yukon.da.zone.wizard.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.da.busview.js"/>
 
 </cti:standardPage>

@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
-import com.cannontech.dr.pxmw.service.PxMWCommunicationService;
+import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
 import com.cannontech.dr.pxwhite.service.impl.PxWhiteCommunicationException;
 import com.cannontech.services.pxmw.authToken.message.PxMWAuthTokenRequest;
 import com.cannontech.services.pxmw.authToken.message.PxMWAuthTokenResponse;
@@ -25,7 +25,7 @@ public class PxMWAuthTokenServiceImpl implements PxMWAuthTokenService, MessageLi
 
     private static final Logger log = YukonLogManager.getLogger(PxMWAuthTokenServiceImpl.class);
     
-    @Autowired private PxMWCommunicationService pxMWCommunicationService;
+    @Autowired private PxMWCommunicationServiceV1 pxMWCommunicationService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonJmsTemplate jmsTemplate;
 

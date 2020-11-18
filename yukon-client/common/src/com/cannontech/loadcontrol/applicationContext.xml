@@ -160,9 +160,11 @@
     <bean class="com.cannontech.dr.nest.dao.impl.NestDaoImpl"/>
 
     <bean class="com.cannontech.dr.pxwhite.service.impl.PxWhiteCommunicationServiceImpl"/>
+    <bean class="com.cannontech.dr.pxmw.service.impl.v1.PxMWCommunicationServiceImplV1"/>
     
     <bean class="com.cannontech.dr.itron.dao.impl.ItronDaoImpl"/>
 
     <bean class="com.cannontech.dr.meterDisconnect.dao.impl.DrMeterDisconnectStatusDaoImpl"/>
     <bean class="com.cannontech.dr.meterDisconnect.service.impl.DrMeterDisconnectStatusServiceImpl"/>
+
 </beans>

@@ -12,16 +12,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.rfn.message.gateway.AppMode;
 import com.cannontech.common.rfn.message.gateway.ConflictType;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
 import com.cannontech.common.rfn.message.gateway.DataSequence;
 import com.cannontech.common.rfn.message.gateway.Radio;
+import com.cannontech.common.rfn.model.CertificateUpdate;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
+import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateSummary;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
+import com.cannontech.web.stars.gateway.GatewayListController.CertificateUpdatesSortBy;
+import com.cannontech.web.stars.gateway.GatewayListController.FirmwareUpdatesSortBy;
 
 public class GatewayControllerHelper {
     
@@ -143,5 +149,47 @@ public class GatewayControllerHelper {
             }
         });
     }
-    
+
+    public static Comparator<RfnGatewayFirmwareUpdateSummary> getFirmwareComparator(SortingParameters sorting,
+            FirmwareUpdatesSortBy sortBy) {
+        Comparator<RfnGatewayFirmwareUpdateSummary> comparator = (o1, o2) -> {
+            return o1.getSendDate().compareTo(o2.getSendDate());
+        };
+        if (sortBy == FirmwareUpdatesSortBy.PENDING) {
+            comparator = (o1, o2) -> (o1.getGatewayUpdatesPending() - o2.getGatewayUpdatesPending());
+        }
+        if (sortBy == FirmwareUpdatesSortBy.FAILED) {
+            comparator = (o1, o2) -> (o1.getGatewayUpdatesFailed() - o2.getGatewayUpdatesFailed());
+        }
+        if (sortBy == FirmwareUpdatesSortBy.SUCCESSFUL) {
+            comparator = (o1, o2) -> (o1.getGatewayUpdatesSuccessful() - o2.getGatewayUpdatesSuccessful());
+        }
+        if (sorting.getDirection() == Direction.desc) {
+            comparator = Collections.reverseOrder(comparator);
+        }
+        return comparator;
+    }
+
+    public static Comparator<CertificateUpdate> getCertificateComparator(SortingParameters sorting,
+            CertificateUpdatesSortBy sortBy) {
+        Comparator<CertificateUpdate> comparator = (o1, o2) -> {
+            return o1.getTimestamp().compareTo(o2.getTimestamp());
+        };
+        if (sortBy == CertificateUpdatesSortBy.CERTIFICATE) {
+            comparator = (o1, o2) -> (o1.getFileName().compareToIgnoreCase(o2.getFileName()));
+        }
+        if (sortBy == CertificateUpdatesSortBy.PENDING) {
+            comparator = (o1, o2) -> (o1.getPending().size() - o2.getPending().size());
+        }
+        if (sortBy == CertificateUpdatesSortBy.FAILED) {
+            comparator = (o1, o2) -> (o1.getFailed().size() - o2.getFailed().size());
+        }
+        if (sortBy == CertificateUpdatesSortBy.SUCCESSFUL) {
+            comparator = (o1, o2) -> (o1.getSuccessful().size() - o2.getSuccessful().size());
+        }
+        if (sorting.getDirection() == Direction.desc) {
+            comparator = Collections.reverseOrder(comparator);
+        }
+        return comparator;
+    }
 }

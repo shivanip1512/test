@@ -27,7 +27,7 @@ public class MeterRfn420flEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
     }
 
-    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Ami.AMI })
+    @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.AMI })
     public void meterRfn420flEdit_RequiredFieldsOnly_Success() {
         navigate(Urls.Ami.METER_DETAIL + "492");
         String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
@@ -37,14 +37,12 @@ public class MeterRfn420flEditTests extends SeleniumTestSetup {
 
         EditMeterModal editModal = meterDetailsPage.showMeterEditModal();
 
-        editModal.getdeviceName().setInputValue(name);
+        editModal.getDeviceName().setInputValue(name);
         editModal.clickOkAndWaitForModalToClose();
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL + 492, Optional.of(10));
 
-        MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, 492);
-
-        String userMsg = detailPage.getUserMessage();
+        String userMsg = meterDetailsPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(METER + name + UPDATED);
     }

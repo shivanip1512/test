@@ -33,7 +33,7 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpMCTEdit_AllFieldsWithBronzeAddress_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited MCT Ldgrp " + timeStamp;
@@ -72,7 +72,7 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.DemandResponse.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpMCTEdit_AllFieldsWithMCTAddress_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited MCT Ldgrp " + timeStamp;

@@ -5,22 +5,28 @@ import java.util.Random;
 public class ProgramEnums {
     
     public enum ProgramType {
-        DIRECT_PROGRAM("LM_DIRECT_PROGRAM"),
-        SEP_PROGRAM("LM_SEP_PROGRAM"), 
-        ECOBEE_PROGRAM("LM_ECOBEE_PROGRAM"), 
-        HONEYWELL_PROGRAM("LM_HONEYWELL_PROGRAM"), 
-        ITRON_PROGRAM("LM_ITRON_PROGRAM"), 
-        NEST_PROGRAM("LM_NEST_PROGRAM"), 
-        METER_DISCONNECT_PROGRAM("LM_METER_DISCONNECT_PROGRAM");
+        DIRECT_PROGRAM("LM_DIRECT_PROGRAM", "Direct"),
+        SEP_PROGRAM("LM_SEP_PROGRAM", "Sep"), 
+        ECOBEE_PROGRAM("LM_ECOBEE_PROGRAM", "Ecobee"), 
+        HONEYWELL_PROGRAM("LM_HONEYWELL_PROGRAM", "Honeywell"), 
+        ITRON_PROGRAM("LM_ITRON_PROGRAM", "Itron"), 
+        NEST_PROGRAM("LM_NEST_PROGRAM", "Nest"), 
+        METER_DISCONNECT_PROGRAM("LM_METER_DISCONNECT_PROGRAM", "Disconnect");
 
         private final String type;
+        private final String desc;
 
-        ProgramType(String type) {
+        ProgramType(String type, String desc) {
             this.type = type;
+            this.desc = desc;
         }
 
         public String getProgramType() {
             return this.type;
+        }
+        
+        public String getDesc() {
+            return this.desc;
         }
     }
 
