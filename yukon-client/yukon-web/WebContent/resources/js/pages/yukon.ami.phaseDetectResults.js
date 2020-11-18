@@ -17,13 +17,13 @@ yukon.ami.phaseDetectResults = (function() {
         var array = [];
         $.each(data.phaseDetectDetails, function (index, value) {
             var json = {
-                    name: value.phase,
-                    filter: value.phase,
-                    displayPercentage: value.percentage < 1 && value.percentage != 0 ? '&lt;1%' : yukon.percent(value.percentage, 100, 1),
-                    y: (value.percentage < 1 && value.percentage != 0 ? 1 : value.percentage),
-                    x: value.meterCount,
-                    color: value.colorHexValue
-            }
+                name: value.phase,
+                filter: value.phase,
+                displayPercentage: value.percentage < 1 && value.percentage != 0 ? '&lt;1%' : yukon.percent(value.percentage, 100, 1),
+                y: (value.percentage < 1 && value.percentage != 0 ? 1 : value.percentage),
+                x: value.meterCount,
+                color: value.colorHexValue
+            };
             array.push(json);
         });
         return array;
@@ -41,7 +41,6 @@ yukon.ami.phaseDetectResults = (function() {
                 url: yukon.url("/amr/phaseDetect/chart?key=" + $(".js-cache-key").val()),
                 dataType : 'json'
             }).done(function(data) {
-                console.log(data);
                 debug.log('building chart');
 
                 $("#js-pie-chart-container").highcharts({
@@ -65,8 +64,8 @@ yukon.ami.phaseDetectResults = (function() {
                         borderWidth: 0,
                         useHTML: true,
                         labelFormatter: function (point) {
-                            var legendValueText = '<span class="js-phase-detect-results-legend-value dn">' + this.filter + '</span>';
-                            var spanText = '<span class="badge" style="width:60px;color:white;background-color:' + this.color + '">' + this.x + '</span> ';
+                            var legendValueText = '<span class="js-phase-detect-results-legend-value dn">' + this.filter + '</span>',
+                                spanText = '<span class="badge" style="margin:1px;width:60px;color:white;background-color:' + this.color + '">' + this.x + '</span> ';
                             return legendValueText + spanText + this.name + ': ' + this.displayPercentage;
                         },
                         layout: 'vertical',

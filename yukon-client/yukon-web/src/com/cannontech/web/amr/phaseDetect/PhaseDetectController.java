@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,8 +23,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectData;
-import com.cannontech.amr.phaseDetect.data.PhaseDetectResultDetail;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectResult;
+import com.cannontech.amr.phaseDetect.data.PhaseDetectResultDetail;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectState;
 import com.cannontech.amr.phaseDetect.service.PhaseDetectCancelledException;
 import com.cannontech.amr.phaseDetect.service.PhaseDetectService;
@@ -43,6 +42,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Phase;
 import com.cannontech.common.model.Route;
@@ -62,8 +62,6 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -74,17 +72,7 @@ import com.google.common.collect.Maps;
 public class PhaseDetectController {
     
     private static final Logger log = YukonLogManager.getLogger(PhaseDetectController.class);
-    private static final String PHASE_A = "phaseA";
-    private static final String PHASE_B = "phaseB";
-    private static final String PHASE_C = "phaseC";
-    private static final String UNDEFINED = "undefined";
-    private static final String PHASE_AB = "phaseAB";
-    private static final String PHASE_AC = "phaseAC";
-    private static final String PHASE_BC = "phaseBC";
-    private static final String PHASE_ABC = "phaseABC";
-    
-    private ImmutableMap<String, YukonColorPalette> phaseColors;
-    
+        
     @Autowired private SubstationToRouteMappingDao strmDao;
     @Autowired private SubstationDao substationDao;
     @Autowired private PhaseDetectService phaseDetectService;
@@ -100,18 +88,30 @@ public class PhaseDetectController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver = null;
     @Autowired @Qualifier("phaseDetect") private RecentResultsCache<PhaseDetectResult> phaseDetectResultsCache;
     
-    @PostConstruct
-    public void init() {
-        Builder<String, YukonColorPalette> builder = ImmutableMap.builder();
-        builder.put(PHASE_A, YukonColorPalette.BLUE);
-        builder.put(PHASE_B, YukonColorPalette.GREEN);
-        builder.put(PHASE_C, YukonColorPalette.ORANGE);
-        builder.put(UNDEFINED, YukonColorPalette.GRAY);
-        builder.put(PHASE_AB, YukonColorPalette.PURPLE);
-        builder.put(PHASE_BC, YukonColorPalette.WINE);
-        builder.put(PHASE_AC, YukonColorPalette.YELLOW);
-        builder.put(PHASE_ABC, YukonColorPalette.TEAL);
-        phaseColors = builder.build();
+    private enum PhaseDisplay implements DisplayableEnum {
+        PHASE_A(YukonColorPalette.BLUE),
+        PHASE_B(YukonColorPalette.GREEN),
+        PHASE_C(YukonColorPalette.ORANGE),
+        PHASE_AB(YukonColorPalette.PURPLE),
+        PHASE_AC(YukonColorPalette.YELLOW),
+        PHASE_BC(YukonColorPalette.WINE),
+        PHASE_ABC(YukonColorPalette.TEAL),
+        UNDEFINED(YukonColorPalette.GRAY);
+        
+        private YukonColorPalette color;
+
+        PhaseDisplay(YukonColorPalette color) {
+            this.color = color;
+        }
+        
+        public YukonColorPalette getColor() {
+            return color;
+        }
+
+		@Override
+		public String getFormatKey() {
+			return "yukon.web.modules.amr.phaseDetect.results." + this.name();
+		}
     }
 
     @RequestMapping("home")
@@ -279,9 +279,9 @@ public class PhaseDetectController {
         model.addAttribute("data", phaseDetectService.getPhaseDetectResult().getTestData());
         model.addAttribute("state", phaseDetectService.getPhaseDetectState());
         model.addAttribute("phases", Phase.getRealPhases());
-        model.addAttribute(PHASE_A, Phase.A);
-        model.addAttribute(PHASE_B, Phase.B);
-        model.addAttribute(PHASE_C, Phase.C);
+        model.addAttribute("phaseA", Phase.A);
+        model.addAttribute("phaseB", Phase.B);
+        model.addAttribute("phaseC", Phase.C);
         Boolean readCanceled = phaseDetectService.getPhaseDetectState().isReadCanceled();
         CommandRequestExecutionIdentifier identifier = phaseDetectService.getPhaseDetectResult().getCommandRequestExecutionIdentifier();
         if(identifier != null){
@@ -549,7 +549,7 @@ public class PhaseDetectController {
     @RequestMapping("chart")
     public @ResponseBody Map<String, Object> chart(String key, YukonUserContext userContext) {
         
-        Map<String, Integer> phaseResultsMap = getChartPhaseResults(phaseDetectResultsCache.getResult(key));
+        Map<PhaseDisplay, Integer> phaseResultsMap = getChartPhaseResults(phaseDetectResultsCache.getResult(key));
         int total = phaseResultsMap.values().stream().reduce(0, Integer::sum);
         List<PhaseDetectResultDetail> phaseDetectDetails = Lists.newArrayList();
         Map<String, Object> phaseDetectResults = Maps.newHashMap();
@@ -558,75 +558,75 @@ public class PhaseDetectController {
             PhaseDetectResultDetail details = new PhaseDetectResultDetail();
             details.setMeterCount(value);
             details.calculatePrecentage(total);
-            details.setPhase(accessor.getMessage("yukon.web.modules.amr.phaseDetect.results." + mapKey));
-            details.setColorHexValue(phaseColors.get(mapKey).getHexValue());
+            details.setPhase(accessor.getMessage(mapKey.getFormatKey()));
+            details.setColorHexValue(mapKey.getColor().getHexValue());
             phaseDetectDetails.add(details);
         });
         phaseDetectResults.put("phaseDetectDetails", phaseDetectDetails);
         return phaseDetectResults;
     }
 
-    private Map<String, Integer> getChartPhaseResults(PhaseDetectResult result) {
+    private Map<PhaseDisplay, Integer> getChartPhaseResults(PhaseDetectResult result) {
         
-        Map<String, Integer> phaseResultsMap = Maps.newHashMap();
+        Map<PhaseDisplay, Integer> phaseResultsMap = Maps.newHashMap();
         try {
             DeviceGroup aGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.A);
             int groupACount = deviceGroupService.getDeviceCount(Collections.singletonList(aGroup));
-            phaseResultsMap.put(PHASE_A, groupACount);
+            phaseResultsMap.put(PhaseDisplay.PHASE_A, groupACount);
         } catch (NotFoundException e){
-            phaseResultsMap.put(PHASE_A, 0);
+            phaseResultsMap.put(PhaseDisplay.PHASE_A, 0);
         }
         
         try {
             DeviceGroup bGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.B);
             int groupBCount = deviceGroupService.getDeviceCount(Collections.singletonList(bGroup));
-            phaseResultsMap.put(PHASE_B, groupBCount);
+            phaseResultsMap.put(PhaseDisplay.PHASE_B, groupBCount);
         } catch (NotFoundException e){
-            phaseResultsMap.put(PHASE_B, 0);
+            phaseResultsMap.put(PhaseDisplay.PHASE_B, 0);
         }
         
         try {
             DeviceGroup cGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.C);
             int groupCCount = deviceGroupService.getDeviceCount(Collections.singletonList(cGroup));
-            phaseResultsMap.put(PHASE_C, groupCCount);
+            phaseResultsMap.put(PhaseDisplay.PHASE_C, groupCCount);
         } catch (NotFoundException e){
-            phaseResultsMap.put(PHASE_C, 0);
+            phaseResultsMap.put(PhaseDisplay.PHASE_C, 0);
         }
         
         List<PlcMeter> undefinedMeters = getUndefinedMeters(result);
-        phaseResultsMap.put(UNDEFINED, undefinedMeters.size());
+        phaseResultsMap.put(PhaseDisplay.UNDEFINED, undefinedMeters.size());
         
         if (!result.getTestData().isReadAfterAll()) {
             try {
                 DeviceGroup abGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.AB);
                 int groupABCount = deviceGroupService.getDeviceCount(Collections.singletonList(abGroup));
-                phaseResultsMap.put(PHASE_AB, groupABCount);
+                phaseResultsMap.put(PhaseDisplay.PHASE_AB, groupABCount);
             } catch (NotFoundException e){
-                phaseResultsMap.put(PHASE_AB, 0);
+                phaseResultsMap.put(PhaseDisplay.PHASE_AB, 0);
             }
             
             try {
                 DeviceGroup acGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.AC);
                 int groupACCount = deviceGroupService.getDeviceCount(Collections.singletonList(acGroup));
-                phaseResultsMap.put(PHASE_AC, groupACCount);
+                phaseResultsMap.put(PhaseDisplay.PHASE_AC, groupACCount);
             } catch (NotFoundException e){
-                phaseResultsMap.put(PHASE_AC, 0);
+                phaseResultsMap.put(PhaseDisplay.PHASE_AC, 0);
             }
             
             try {
                 DeviceGroup bcGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.BC);
                 int groupBCCount = deviceGroupService.getDeviceCount(Collections.singletonList(bcGroup));
-                phaseResultsMap.put(PHASE_BC, groupBCCount);
+                phaseResultsMap.put(PhaseDisplay.PHASE_BC, groupBCCount);
             } catch (NotFoundException e){
-                phaseResultsMap.put(PHASE_BC, 0);
+                phaseResultsMap.put(PhaseDisplay.PHASE_BC, 0);
             }
             
             try {
                 DeviceGroup abcGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.ABC);
                 int groupABCCount = deviceGroupService.getDeviceCount(Collections.singletonList(abcGroup));
-                phaseResultsMap.put(PHASE_ABC, groupABCCount);
+                phaseResultsMap.put(PhaseDisplay.PHASE_ABC, groupABCCount);
             } catch (NotFoundException e){
-                phaseResultsMap.put(PHASE_ABC, 0);
+                phaseResultsMap.put(PhaseDisplay.PHASE_ABC, 0);
             }
         }
         return phaseResultsMap;
