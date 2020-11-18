@@ -399,10 +399,7 @@ public class LoadGroupSetupController {
         if (response.getStatusCode() == HttpStatus.OK) {
             startStates = (List<LMDto>) response.getBody();
         }
-        
-        /**
-         * Raw state is either 0 or 1 in Control start state of Point Load Group
-         */
+        //  Raw state is either 0 or 1 in Control start state of Point Load Group
         return startStates.stream()
                           .filter(state -> (state.getId() == 0 || state.getId() == 1))
                           .collect(Collectors.toList());
