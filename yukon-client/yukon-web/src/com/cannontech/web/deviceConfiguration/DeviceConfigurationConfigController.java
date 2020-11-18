@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigDouble;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidConfigurationRemovalException;
 import com.cannontech.common.device.config.model.DeviceConfigCategory;
@@ -69,6 +71,7 @@ public class DeviceConfigurationConfigController {
     @Autowired private ObjectFormattingService formattingService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private ConfigurationSource configurationSource;
     
     private final Comparator<PaoType> paoTypeAlphaComparator = new Comparator<PaoType>() {
         @Override
@@ -555,6 +558,10 @@ public class DeviceConfigurationConfigController {
         model.addAttribute("optionalCategoryToDeviceTypesMap", optionalTypes);
         
         model.addAttribute("editingRoleProperty", YukonRoleProperty.ADMIN_EDIT_CONFIG);
+        
+        //Add attributes needed for RFN Meter
+        model.addAttribute("rfnMetrologyConfigurationType", CategoryType.RFN_METROLOGY_CONFIGURATION.value());
+        model.addAttribute("firmwareVersion", configurationSource.getDouble(MasterConfigDouble.RFN_FIRMWARE));
     }
     
     private Map<String, Collection<PaoType>> collectCategoryMap(Collection<Entry<ConfigurationCategory, PaoType>> categoryTypeLists) {
