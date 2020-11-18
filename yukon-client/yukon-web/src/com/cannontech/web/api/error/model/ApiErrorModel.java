@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 /*
  * Model for API error response
  */
-public class ApiErrors {
+public class ApiErrorModel {
     String title;
     String type;
     int code;
@@ -16,7 +16,7 @@ public class ApiErrors {
     String requestUri;
     String logRef;
     // Only include for validation errors.
-    @JsonInclude(Include.NON_NULL) List<ApiFieldError> errors;
+    @JsonInclude(Include.NON_NULL) List<ApiFieldErrorModel> errors;
 
     public String getTitle() {
         return title;
@@ -66,11 +66,11 @@ public class ApiErrors {
         this.logRef = logRef;
     }
 
-    public List<ApiFieldError> getErrors() {
+    public List<ApiFieldErrorModel> getErrors() {
         return errors;
     }
 
-    public void setErrors(List<ApiFieldError> errors) {
+    public void setErrors(List<ApiFieldErrorModel> errors) {
         this.errors = errors;
     }
 

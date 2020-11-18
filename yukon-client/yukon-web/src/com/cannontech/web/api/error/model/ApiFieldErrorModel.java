@@ -1,6 +1,6 @@
 package com.cannontech.web.api.error.model;
 
-public class ApiFieldError {
+public class ApiFieldErrorModel {
     String title;
     String type;
     int code;
