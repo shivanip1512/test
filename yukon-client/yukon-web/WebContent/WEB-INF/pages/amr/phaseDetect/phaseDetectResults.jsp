@@ -498,5 +498,5 @@
         </div>
     </tags:sectionContainer2>
     <cti:includeScript link="HIGH_STOCK"/>
-     <cti:includeScript link="/resources/js/pages/yukon.ami.phaseDetectResults.js" />
+    <cti:includeScript link="/resources/js/pages/yukon.ami.phaseDetectResults.js" />
 </cti:standardPage>
