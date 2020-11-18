@@ -561,7 +561,8 @@ public class DeviceConfigurationConfigController {
         
         //Add attributes needed for RFN Metrology Configuration
         model.addAttribute("rfnMetrologyConfigurationType", CategoryType.RFN_METROLOGY_CONFIGURATION.value());
-        model.addAttribute("firmwareVersion", configurationSource.getDouble(MasterConfigDouble.RFN_FIRMWARE));
+        Double firmwareVersion = configurationSource.getDouble(MasterConfigDouble.RFN_FIRMWARE);
+        model.addAttribute("isFirmwareLessThan9_4", firmwareVersion == null || firmwareVersion < 9.4);
     }
     
     private Map<String, Collection<PaoType>> collectCategoryMap(Collection<Entry<ConfigurationCategory, PaoType>> categoryTypeLists) {

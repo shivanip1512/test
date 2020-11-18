@@ -28,11 +28,9 @@
         </c:choose>
     </c:if>
     
-    <c:if test="${catType == rfnMetrologyConfigurationType}">
-        <!-- If Firmware Version is not in Master.config or the value is less that 9.4 display warning -->
-        <c:if test="${firmwareVersion == null || firmwareVersion < 9.4}">
-            <tags:alertBox type="warning" key=".${catType}.warning"/>
-        </c:if>
+    <!-- If Firmware Version is not in Master.config or the value is less that 9.4 display warning -->
+    <c:if test="${catType == rfnMetrologyConfigurationType && isFirmwareLessThan9_4}">
+        <tags:alertBox type="warning" key=".${catType}.warning"/>
     </c:if>
     
     <tags:nameValueContainer2>
