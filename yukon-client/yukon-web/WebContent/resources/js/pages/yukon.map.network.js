@@ -187,6 +187,7 @@ yukon.map.network = (function () {
         if (_deviceFocusCurrentIcon != null && _deviceIcon.getId() != _deviceFocusCurrentIcon.getId()) {
             yukon.mapping.setScaleForDevice(_deviceFocusCurrentIcon);
         }
+        yukon.mapping.removeDescendantLayers();
     },
     
     _addNeighborDataToMap = function(deviceId, neighbors) {
@@ -573,6 +574,22 @@ yukon.map.network = (function () {
                         yukon.mapping.updateZoom(_map);
                     }
                     _addAllPrimaryRoutes();
+                });
+                
+                /** Gets the descendants for the device from the network tree **/
+                $(document).on('click', '.js-device-descendants', function() {
+                    var deviceId = $(this).data('deviceId');
+                        focusDevice = yukon.mapping.findFocusDevice(deviceId, true);
+                    _removeDeviceFocusLayers();
+                    _deviceFocusCurrentIcon = focusDevice;
+                    //if focus device was removed, add it back
+                    var deviceFound = yukon.mapping.findFocusDevice(deviceId, false);
+                    if (deviceFound == null) {
+                        var source = yukon.mapping.getIconLayerSource();
+                        source.addFeature(focusDevice);
+                        _deviceFocusIcons.push(focusDevice);
+                    }
+                    yukon.mapping.displayDescendants(deviceId, true);
                 });
                 
                 /** Gets the neighbor data from Network Manager **/

@@ -15,6 +15,7 @@ import com.cannontech.common.dr.setup.LoadGroupItron;
 import com.cannontech.common.dr.setup.LoadGroupMCT;
 import com.cannontech.common.dr.setup.LoadGroupNest;
 import com.cannontech.common.dr.setup.LoadGroupPoint;
+import com.cannontech.common.dr.setup.LoadGroupRFNExpresscom;
 import com.cannontech.common.dr.setup.LoadGroupRipple;
 import com.cannontech.common.dr.setup.LoadGroupVersacom;
 import com.cannontech.common.pao.PaoType;
@@ -38,8 +39,10 @@ public class LoadGroupBaseConverter implements Converter<String, LoadGroupBase> 
         }
         switch (paoType) {
         case LM_GROUP_EXPRESSCOMM:
-        case LM_GROUP_RFN_EXPRESSCOMM:
             loadGroup = new LoadGroupExpresscom();
+            break;
+        case LM_GROUP_RFN_EXPRESSCOMM:
+            loadGroup = new LoadGroupRFNExpresscom();
             break;
         case LM_GROUP_ITRON:
             loadGroup = new LoadGroupItron();

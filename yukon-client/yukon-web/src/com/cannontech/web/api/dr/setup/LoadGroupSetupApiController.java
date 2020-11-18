@@ -18,9 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.LMCopy;
-import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -76,11 +74,6 @@ public class LoadGroupSetupApiController {
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("id", paoId);
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
-    }
-
-    @GetMapping("/getPointGroupStartState/{pointId}")
-    public ResponseEntity<List<ControlRawState>> getPointGroupStartState(@PathVariable int pointId) {
-        return new ResponseEntity<>(loadGroupService.getPointGroupStartState(pointId), HttpStatus.OK);
     }
 
     @InitBinder("loadGroupBase")
