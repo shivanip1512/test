@@ -29,7 +29,7 @@
     </c:if>
     
     <!-- If Firmware Version is not in Master.config or the value is less that 9.4 display warning -->
-    <c:if test="${catType == rfnMetrologyConfigurationType && isFirmwareLessThan9_4}">
+    <c:if test="${catType == rfnMetrologyConfigurationType && displayRfnMetrologyWarning}">
         <tags:alertBox type="warning" key=".${catType}.warning"/>
     </c:if>
     
