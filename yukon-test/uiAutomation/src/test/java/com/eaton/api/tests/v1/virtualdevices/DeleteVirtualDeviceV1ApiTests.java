@@ -31,12 +31,29 @@ public class DeleteVirtualDeviceV1ApiTests {
         assertThat(response.statusCode()).isEqualTo(200);
     }
     
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void deleteVirtualDevice_NotFoundId_400BadRequest() {
         String invalidId = faker.number().digits(9);
         
         ExtractableResponse<?> response = ApiCallHelper.delete(APIs.VirtualDevice.DELETE_VIRTUALDEVICE + invalidId);
         
         assertThat(response.statusCode()).isEqualTo(400);
+    }
+    
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    public void deleteVirtualDevice_InvalidAttrId_400BadRequest() {
+        String invalidId = faker.number().digits(12);
+        
+        ExtractableResponse<?> response = ApiCallHelper.delete(APIs.VirtualDevice.DELETE_VIRTUALDEVICE + invalidId);
+        
+        assertThat(response.statusCode()).isEqualTo(400);
+    }
+    
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
+    public void deleteVirtualDevice_EmptyId_404NotFound() {
+        
+        ExtractableResponse<?> response = ApiCallHelper.delete(APIs.VirtualDevice.DELETE_VIRTUALDEVICE + "");
+        
+        assertThat(response.statusCode()).isEqualTo(404);
     }
 }
