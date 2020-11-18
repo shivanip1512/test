@@ -118,7 +118,7 @@ public class DeveloperController {
     @Autowired private YukonListDao listDao;
     @Autowired private EncryptedRouteDao encryptedRouteDao;
     @Autowired private ItronSecurityService itronSecurityService;
-//    @Autowired private PxMWAuthTokenSecurityTest pxMWAuthTokenSecurityTest;
+    @Autowired private PxMWAuthTokenSecurityTest pxMWAuthTokenSecurityTest;
 
     private final Map<String, Integer> databaseFields;
     private final Map<String, String> categoryFields;
@@ -365,8 +365,8 @@ public class DeveloperController {
     public String getPxMWToken(ModelMap model, FlashScope flash) {
         String authToken = "";
         try {
-            authToken = "123456";
-//            authToken = pxMWAuthTokenSecurityTest.getAuthenticationToken();
+//            authToken = "123456";
+            authToken = pxMWAuthTokenSecurityTest.getAuthenticationToken();
         } catch(Exception e) {
             MessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.dev.pxMWToken.loadError");
             flash.setError(message);
