@@ -75,6 +75,7 @@ protected:
 
    virtual void sendRequests(CtiDeviceBase::CtiMessageList& vgList, CtiDeviceBase::CtiMessageList& retList, CtiDeviceBase::OutMessageList& outList, const ConnectionHandle connectionHandle);
    virtual void sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase::CtiMessageList &retList, const int priority, const ConnectionHandle connectionHandle);
+   virtual void submitOutMessages(CtiDeviceBase::OutMessageList& outList);
 
    virtual std::vector<long> getDeviceGroupMembers( std::string groupname ) const;
 
