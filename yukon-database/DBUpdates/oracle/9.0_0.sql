@@ -132,7 +132,7 @@ INSERT INTO DBUpdates VALUES ('YUK-23092', '9.0.0', SYSDATE);
 /* @start YUK-23290 */
 create table LMGroupEatonCloud  (
    YukonGroupId         NUMBER                          not null,
-   RelayUsasge          VARCHAR2(15),
+   RelayUsasge          VARCHAR2(15)                    not null,
    constraint PK_LMGROUPEATONCLOUD primary key (YukonGroupId)
 );
 

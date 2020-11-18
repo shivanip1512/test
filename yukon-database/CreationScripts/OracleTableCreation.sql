@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/17/2020 3:00:22 PM                        */
+/* Created on:     11/18/2020 9:06:39 AM                        */
 /*==============================================================*/
 
 
@@ -6539,7 +6539,7 @@ insert into lmgroup values( 0, 0 );
 /*==============================================================*/
 create table LMGroupEatonCloud  (
    YukonGroupId         NUMBER                          not null,
-   RelayUsasge          VARCHAR2(15),
+   RelayUsasge          VARCHAR2(15)                    not null,
    constraint PK_LMGROUPEATONCLOUD primary key (YukonGroupId)
 );
 
