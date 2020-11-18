@@ -21,7 +21,7 @@
                         <span title="${perms}" class="disabled"><i:inline key="${wrapper.page}"/></span>
                     </c:if>
                     </li>
-                </c:forEach>            
+                </c:forEach>
             </ul>
         </tags:sectionContainer2>
     </div>
@@ -94,7 +94,8 @@
                                 <c:forEach var="writer" items="${writerList}">
                                     <c:if test="${writer.optional}">
                                         <label>
-                                            <form:checkbox path="optionalWritersToInclude" value="${writer.name}"/> 
+                                            <form:checkbox path="optionalWritersToInclude" value="${writer.name}"
+                                                           id="${writer.name}"/>
                                             <i:inline key=".supportBundle.writerName.${writer.name}"/>
                                         </label><br>
                                     </c:if>
