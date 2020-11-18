@@ -34,7 +34,7 @@ yukon.tools.trend.setup = (function() {
                 var colors = $(document).find(".sp-thumb-el:visible");
                 colors.each(function(index) {
                     var hexValue = $(this).prop('title'),
-                           colorName = dialog.find("input[value='" + hexValue + "']").data("colorName");
+                        colorName = dialog.find("input[value='" + hexValue + "']").data("colorName");
                     $(this).prop('title', colorName);
                 });
             }
