@@ -2902,43 +2902,7 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
         BOOST_CHECK_EQUAL(mct420.getGroupMessageCount(UserMessageId, connHandle), 4);
 
         {
-            auto retList_itr = retList.cbegin();
-            {
-                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
-
-                BOOST_REQUIRE(retMsg);
-
-                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Emetcon DLC command sent on route ");
-                BOOST_CHECK_EQUAL(retMsg->Status(), 0);
-                BOOST_CHECK(retMsg->ExpectMore());
-            }
-            {
-                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
-
-                BOOST_REQUIRE(retMsg);
-
-                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Emetcon DLC command sent on route ");
-                BOOST_CHECK_EQUAL(retMsg->Status(), 0);
-                BOOST_CHECK(retMsg->ExpectMore());
-            }
-            {
-                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
-
-                BOOST_REQUIRE(retMsg);
-
-                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Emetcon DLC command sent on route ");
-                BOOST_CHECK_EQUAL(retMsg->Status(), 0);
-                BOOST_CHECK(retMsg->ExpectMore());
-            }
-            {
-                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
-
-                BOOST_REQUIRE(retMsg);
-
-                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Emetcon DLC command sent on route ");
-                BOOST_CHECK_EQUAL(retMsg->Status(), 0);
-                BOOST_CHECK(retMsg->ExpectMore());
-            }
+            BOOST_CHECK(boost::algorithm::all_of(retList, isSentOnRouteMsg));
             delete_container(retList);
             retList.clear();
         }
@@ -2956,12 +2920,7 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
             BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0xf6);
             BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
 
-            INMESS im;
-            OutEchoToIN(*outmess, im);
-
-            const auto data = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            boost::copy(data, stdext::make_checked_array_iterator(im.Buffer.DSt.Message, DSTRUCT::MessageLength_Max));
-            im.Buffer.DSt.Length = data.size();
+            INMESS im = makeInmessReply(*outmess);
 
             mct420.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
 
@@ -2979,11 +2938,7 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
             BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0xf3);
             BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
 
-            INMESS im;
-            OutEchoToIN(*outmess, im);
-
-            im.Buffer.DSt.Message[0] = 0;
-            im.Buffer.DSt.Length = 1;
+            INMESS im = makeInmessReply(*outmess);
 
             mct420.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
 
@@ -3001,11 +2956,7 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
             BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x4f);
             BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
 
-            INMESS im;
-            OutEchoToIN(*outmess, im);
-
-            im.Buffer.DSt.Message[0] = 0;
-            im.Buffer.DSt.Length = 1;
+            INMESS im = makeInmessReply(*outmess);
 
             mct420.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
 
@@ -3023,11 +2974,7 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
             BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x3f);
             BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
 
-            INMESS im;
-            OutEchoToIN(*outmess, im);
-
-            im.Buffer.DSt.Message[0] = 0;
-            im.Buffer.DSt.Length = 1;
+            INMESS im = makeInmessReply(*outmess);
 
             mct420.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
 
@@ -3045,12 +2992,7 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
             BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0xf7);
             BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
 
-            INMESS im;
-            OutEchoToIN(*outmess, im);
-
-            const auto data = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            boost::copy(data, stdext::make_checked_array_iterator(im.Buffer.DSt.Message, DSTRUCT::MessageLength_Max));
-            im.Buffer.DSt.Length = data.size();
+            INMESS im = makeInmessReply(*outmess);
 
             mct420.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
 
@@ -3345,6 +3287,461 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
 
                 BOOST_CHECK_EQUAL(retMsg->ResultString(),
                     "Test MCT-420CD / Display metric 14: Slot Disabled"
+                    "\nDisplay metric 15: Slot Disabled"
+                    "\nDisplay metric 16: Slot Disabled"
+                    "\nDisplay metric 17: Slot Disabled"
+                    "\nDisplay metric 18: Slot Disabled"
+                    "\nDisplay metric 19: Slot Disabled"
+                    "\nDisplay metric 20: Slot Disabled"
+                    "\nDisplay metric 21: Slot Disabled"
+                    "\nDisplay metric 22: Slot Disabled"
+                    "\nDisplay metric 23: Slot Disabled"
+                    "\nDisplay metric 24: Slot Disabled"
+                    "\nDisplay metric 25: Slot Disabled"
+                    "\nDisplay metric 26: Slot Disabled"
+                    "\n");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), false);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+        }
+    }
+
+    BOOST_AUTO_TEST_CASE(test_getconfig_install_all_mct420fl_expectMore)
+    {
+        test_Mct420FL mct420;
+
+        constexpr int UserMessageId = 11235;
+
+        request.setCommandString("getconfig install all");
+        request.setUserMessageId(UserMessageId);
+
+        CtiCommandParser parse(request.CommandString());
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct420.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(5, retList.size());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(5, outList.size());
+
+        BOOST_CHECK_EQUAL(mct420.getGroupMessageCount(UserMessageId, connHandle), 5);
+
+        {
+            BOOST_CHECK(boost::algorithm::all_of(retList, isSentOnRouteMsg));
+            delete_container(retList);
+            retList.clear();
+        }
+
+        auto outList_itr = outList.cbegin();
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0xf6);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 13);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0xf6);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct420.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct420.getGroupMessageCount(UserMessageId, connHandle), 5);
+        }
+        BOOST_CHECK_EQUAL(6, outList.size());
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0xf3);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 2);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0xf3);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct420.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct420.getGroupMessageCount(UserMessageId, connHandle), 4);
+        }
+        BOOST_CHECK_EQUAL(6, outList.size());
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0xfe);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 13);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0xfe);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct420.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct420.getGroupMessageCount(UserMessageId, connHandle), 3);
+        }
+        BOOST_CHECK_EQUAL(6, outList.size());
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x4f);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x4f);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct420.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct420.getGroupMessageCount(UserMessageId, connHandle), 2);
+        }
+        BOOST_CHECK_EQUAL(6, outList.size());
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x3f);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x3f);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct420.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct420.getGroupMessageCount(UserMessageId, connHandle), 1);
+        }
+        BOOST_REQUIRE_EQUAL(6, outList.size());
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0xf7);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 13);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0xf7);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct420.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct420.getGroupMessageCount(UserMessageId, connHandle), 0);
+        }
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 6);
+        {
+            auto retList_itr = retList.cbegin();
+
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Emetcon DLC command sent on route ");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(),
+                    "Test MCT-420FL / Display metric 1: Slot Disabled"
+                    "\nDisplay metric 2: Slot Disabled"
+                    "\nDisplay metric 3: Slot Disabled"
+                    "\nDisplay metric 4: Slot Disabled"
+                    "\nDisplay metric 5: Slot Disabled"
+                    "\nDisplay metric 6: Slot Disabled"
+                    "\nDisplay metric 7: Slot Disabled"
+                    "\nDisplay metric 8: Slot Disabled"
+                    "\nDisplay metric 9: Slot Disabled"
+                    "\nDisplay metric 10: Slot Disabled"
+                    "\nDisplay metric 11: Slot Disabled"
+                    "\nDisplay metric 12: Slot Disabled"
+                    "\nDisplay metric 13: Slot Disabled"
+                    "\n");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), 
+                    "Test MCT-420FL / "
+                    "\nConfig data received: 00 00 00 00 00 00 00 00 00 00 00 00 00");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Test MCT-420FL / Scheduled day of freeze: (disabled)\n");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 00");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(),
+                    "Test MCT-420FL / Display metric 14: Slot Disabled"
+                    "\nDisplay metric 15: Slot Disabled"
+                    "\nDisplay metric 16: Slot Disabled"
+                    "\nDisplay metric 17: Slot Disabled"
+                    "\nDisplay metric 18: Slot Disabled"
+                    "\nDisplay metric 19: Slot Disabled"
+                    "\nDisplay metric 20: Slot Disabled"
+                    "\nDisplay metric 21: Slot Disabled"
+                    "\nDisplay metric 22: Slot Disabled"
+                    "\nDisplay metric 23: Slot Disabled"
+                    "\nDisplay metric 24: Slot Disabled"
+                    "\nDisplay metric 25: Slot Disabled"
+                    "\nDisplay metric 26: Slot Disabled"
+                    "\n");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), false);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+        }
+    }
+
+    BOOST_AUTO_TEST_CASE(test_getconfig_install_all_mct420fd_expectMore)
+    {
+        test_Mct420FD mct420;
+
+        constexpr int UserMessageId = 11235;
+
+        request.setCommandString("getconfig install all");
+        request.setUserMessageId(UserMessageId);
+
+        CtiCommandParser parse(request.CommandString());
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct420.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(5, retList.size());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(5, outList.size());
+
+        BOOST_CHECK_EQUAL(mct420.getGroupMessageCount(UserMessageId, connHandle), 5);
+
+        {
+            BOOST_CHECK(boost::algorithm::all_of(retList, isSentOnRouteMsg));
+            delete_container(retList);
+            retList.clear();
+        }
+
+        auto outList_itr = outList.cbegin();
+
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0xf6);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 13);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0xf6);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
+
+            INMESS im;
+            OutEchoToIN(*outmess, im);
+
+            const auto data = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            boost::copy(data, stdext::make_checked_array_iterator(im.Buffer.DSt.Message, DSTRUCT::MessageLength_Max));
+            im.Buffer.DSt.Length = data.size();
+
+            mct420.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct420.getGroupMessageCount(UserMessageId, connHandle), 5);
+        }
+        BOOST_CHECK_EQUAL(6, outList.size());
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0xf3);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 2);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0xf3);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct420.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct420.getGroupMessageCount(UserMessageId, connHandle), 4);
+        }
+        BOOST_CHECK_EQUAL(6, outList.size());
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0xfe);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 13);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0xfe);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct420.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct420.getGroupMessageCount(UserMessageId, connHandle), 3);
+        }
+        BOOST_CHECK_EQUAL(6, outList.size());
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x4f);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x4f);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct420.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct420.getGroupMessageCount(UserMessageId, connHandle), 2);
+        }
+        BOOST_CHECK_EQUAL(6, outList.size());
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x3f);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x3f);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct420.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct420.getGroupMessageCount(UserMessageId, connHandle), 1);
+        }
+        BOOST_REQUIRE_EQUAL(6, outList.size());
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0xf7);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 13);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0xf7);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct420.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct420.getGroupMessageCount(UserMessageId, connHandle), 0);
+        }
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 6);
+        {
+            auto retList_itr = retList.cbegin();
+
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Emetcon DLC command sent on route ");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(),
+                    "Test MCT-420FD / Display metric 1: Slot Disabled"
+                    "\nDisplay metric 2: Slot Disabled"
+                    "\nDisplay metric 3: Slot Disabled"
+                    "\nDisplay metric 4: Slot Disabled"
+                    "\nDisplay metric 5: Slot Disabled"
+                    "\nDisplay metric 6: Slot Disabled"
+                    "\nDisplay metric 7: Slot Disabled"
+                    "\nDisplay metric 8: Slot Disabled"
+                    "\nDisplay metric 9: Slot Disabled"
+                    "\nDisplay metric 10: Slot Disabled"
+                    "\nDisplay metric 11: Slot Disabled"
+                    "\nDisplay metric 12: Slot Disabled"
+                    "\nDisplay metric 13: Slot Disabled"
+                    "\n");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Test MCT-420FD / "
+                    "\nConfig data received: 00 00 00 00 00 00 00 00 00 00 00 00 00");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Test MCT-420FD / Scheduled day of freeze: (disabled)\n");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 00");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(),
+                    "Test MCT-420FD / Display metric 14: Slot Disabled"
                     "\nDisplay metric 15: Slot Disabled"
                     "\nDisplay metric 16: Slot Disabled"
                     "\nDisplay metric 17: Slot Disabled"

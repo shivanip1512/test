@@ -12,8 +12,10 @@
 #include "pt_status.h"
 #include "dev_single.h"
 #include "dev_ccu.h"
+#include "dev_dlcbase.h"
 #include "dev_mct410.h"
 #include "dev_mct420.h"
+#include "dev_mct470.h"
 #include "dev_rfnMeter.h"
 #include "dev_rfnCommercial.h"
 #include "dev_rfn_LgyrFocus_al.h"
@@ -24,6 +26,7 @@
 #include "std_helper.h"
 
 #include "boost_test_helpers.h"
+#include <boost/algorithm/cxx11/all_of.hpp>
 #include <boost/range/algorithm/count.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/variant.hpp>
@@ -461,59 +464,66 @@ struct test_CtiRouteCCU : CtiRouteCCU
     }
 };
 
-struct test_Mct410flDevice : Cti::Devices::Mct410Device
+template <typename BaseDevice, DeviceTypes type>
+struct test_PlcDevice : BaseDevice
 {
-    test_Mct410flDevice(std::string& name)
+    test_PlcDevice(const std::string name)
     {
         _name = name;
-        setDeviceType(TYPEMCT410FL);
+        setDeviceType(type);
     }
-
     CtiRouteSPtr getRoute(long id) const override
     {
         return boost::make_shared<test_CtiRouteCCU>();
     }
 };
 
-struct test_Mct420flDevice : Cti::Devices::Mct420Device
+struct test_Mct410flDevice : test_PlcDevice<Cti::Devices::Mct410Device, TYPEMCT410FL>
 {
-    test_Mct420flDevice(std::string& name)
-    {
-        _name = name;
-        setDeviceType(TYPEMCT420FL);
-    }
-
-    CtiRouteSPtr getRoute(long id) const override
-    {
-        return boost::make_shared<test_CtiRouteCCU>();
-    }
+    using test_PlcDevice::test_PlcDevice;
+};
+struct test_Mct420flDevice : test_PlcDevice<Cti::Devices::Mct420Device, TYPEMCT420FL>
+{
+    using test_PlcDevice::test_PlcDevice;
+};
+struct test_Mct420clDevice : test_PlcDevice<Cti::Devices::Mct420Device, TYPEMCT420CL>
+{
+    using test_PlcDevice::test_PlcDevice;
+};
+struct test_Mct420cdDevice : test_PlcDevice<Cti::Devices::Mct420Device, TYPEMCT420CD>
+{
+    using test_PlcDevice::test_PlcDevice;
+};
+struct test_Mct430s4Device : test_PlcDevice<Cti::Devices::Mct470Device, TYPEMCT430S4>
+{
+    using test_PlcDevice::test_PlcDevice;
+};
+struct test_Mct470Device : test_PlcDevice<Cti::Devices::Mct470Device, TYPEMCT470>
+{
+    using test_PlcDevice::test_PlcDevice;
 };
 
-struct test_Rfn410flDevice : Cti::Devices::Rfn410flDevice
+template <typename BaseDevice, DeviceTypes type>
+struct test_RfnDevice : BaseDevice
 {
-    test_Rfn410flDevice(std::string& name)
+    test_RfnDevice(const std::string name)
     {
         _name = name;
-        setDeviceType(TYPE_RFN410FL);
+        setDeviceType(type);
     }
 };
-
-struct test_Rfn430sl1Device : Cti::Devices::Rfn430sl1Device
+    
+struct test_Rfn410flDevice : test_RfnDevice<Cti::Devices::Rfn410flDevice, TYPE_RFN410FL>
 {
-    test_Rfn430sl1Device(std::string& name)
-    {
-        _name = name;
-        setDeviceType(TYPE_RFN430SL1);
-    }
+    using test_RfnDevice::test_RfnDevice;
 };
-
-struct test_Rfn510flDevice : Cti::Devices::Rfn510flDevice
+struct test_Rfn430sl1Device : test_RfnDevice<Cti::Devices::Rfn430sl1Device, TYPE_RFN430SL1>
 {
-    test_Rfn510flDevice(std::string& name)
-    {
-        _name = name;
-        setDeviceType(TYPE_RFN510FL);
-    }
+    using test_RfnDevice::test_RfnDevice;
+};
+struct test_Rfn510flDevice : test_RfnDevice<Cti::Devices::Rfn510flDevice, TYPE_RFN510FL>
+{
+    using test_RfnDevice::test_RfnDevice;
 };
 
 struct test_RfBatteryNodeDevice : Cti::Devices::RfBatteryNodeDevice
@@ -577,18 +587,36 @@ struct test_DeviceManager : CtiDeviceManager
         return ptr_type();
     }
 
+    static constexpr int MCT410FL_ID = 502;
+    static constexpr int MCT420FL_ID = 503;
+    static constexpr int MCT420CL_ID = 504;
+    static constexpr int MCT420CD_ID = 505;
+    static constexpr int MCT430S4_ID = 506;
+    static constexpr int MCT470_ID = 507;
+    static constexpr int MCT420FD_ID = 508;
+    static constexpr int MCT410FD_ID = 509;
+    static constexpr int MCT410CL_ID = 510;
+    static constexpr int MCT410CD_ID = 511;
+
     std::map<int, Cti::Devices::RfnDeviceSPtr> rfnDevices {
         { 123, boost::make_shared<test_Rfn410flDevice>("JIMMY JOHNS GARGANTUAN (123)"s) },
         {  49, boost::make_shared<test_Rfn410flDevice>("JIMMY JOHNS VITO (49)"s) },
         { 499, boost::make_shared<test_Rfn430sl1Device>("JIMMY JOHNS TURKEY TOM (499)"s) },
         { 500, boost::make_shared<test_Rfn510flDevice>("JIMMY JOHNS ITALIAN NIGHT CLUB (500)"s) },
-        { 501, boost::make_shared<test_RfBatteryNodeDevice>("JIMMY JOHNS ULTIMATE PORKER (501)"s) },
-    };
+        { 501, boost::make_shared<test_RfBatteryNodeDevice>("JIMMY JOHNS ULTIMATE PORKER (501)"s) } };
 
     std::map<int, ptr_type> otherDevices {
         {  42, devSingle },
-        { 502, boost::make_shared<test_Mct410flDevice>("MCT-410fL (502)"s) },
-        { 503, boost::make_shared<test_Mct420flDevice>("MCT-420fL (503)"s) },
+        { MCT410CL_ID, boost::make_shared<test_Mct410flDevice>("MCT-410cL"s) },
+        { MCT410CD_ID, boost::make_shared<test_Mct410flDevice>("MCT-410cD"s) },
+        { MCT410FL_ID, boost::make_shared<test_Mct410flDevice>("MCT-410fL"s) },
+        { MCT410FD_ID, boost::make_shared<test_Mct410flDevice>("MCT-410fD"s) },
+        { MCT420FL_ID, boost::make_shared<test_Mct420flDevice>("MCT-420fL"s) },
+        { MCT420FD_ID, boost::make_shared<test_Mct420flDevice>("MCT-420fD"s) },
+        { MCT420CL_ID, boost::make_shared<test_Mct420clDevice>("MCT-420cL"s) },
+        { MCT420CD_ID, boost::make_shared<test_Mct420cdDevice>("MCT-420cD"s) },
+        { MCT430S4_ID, boost::make_shared<test_Mct430s4Device>("MCT-430S4"s) },
+        { MCT470_ID,   boost::make_shared<test_Mct470Device>  ("MCT-470"s) },
     };
 
     Cti::Devices::RfnDeviceSPtr getDeviceByRfnIdentifier(const Cti::RfnIdentifier& rfnId) override
@@ -704,6 +732,15 @@ bool isSentOnRouteMsg(const CtiMessage* msg)
     if( auto ret = dynamic_cast<const CtiReturnMsg*>(msg) )
     {
         return ret->ResultString() == "Emetcon DLC command sent on route ";
+    }
+
+    return false;
+}
+bool isSentOnRouteMsg_unq(const std::unique_ptr<CtiMessage>& msg)
+{
+    if( auto ret = dynamic_cast<const CtiReturnMsg*>(msg.get()) )
+    {
+        return ret->ExpectMore() && ret->ResultString() == "Emetcon DLC command sent on route ";
     }
 
     return false;

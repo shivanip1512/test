@@ -562,7 +562,6 @@ BOOST_AUTO_TEST_SUITE_END()
 struct mctExecute_helper : executeRequest_helper
 {
     const Cti::ConnectionHandle connHandle{ 999 };
-//    const int UserMessageId = 11235;
     CtiRequestMsg request;
     OUTMESS *om;
 
@@ -575,7 +574,6 @@ struct mctExecute_helper : executeRequest_helper
     {
         om = new OUTMESS;
         request.setConnectionHandle(connHandle);
-//        request.setUserMessageId(UserMessageId);
     }
     ~mctExecute_helper()
     {
@@ -3390,34 +3388,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_CHECK_EQUAL(mct410.getGroupMessageCount(UserMessageId, connHandle), 3);
 
         {
-            auto retList_itr = retList.cbegin();
-            {
-                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
-
-                BOOST_REQUIRE(retMsg);
-
-                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Emetcon DLC command sent on route ");
-                BOOST_CHECK_EQUAL(retMsg->Status(), 0);
-                BOOST_CHECK(retMsg->ExpectMore());
-            }
-            {
-                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
-
-                BOOST_REQUIRE(retMsg);
-
-                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Emetcon DLC command sent on route ");
-                BOOST_CHECK_EQUAL(retMsg->Status(), 0);
-                BOOST_CHECK(retMsg->ExpectMore());
-            }
-            {
-                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
-
-                BOOST_REQUIRE(retMsg);
-
-                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Emetcon DLC command sent on route ");
-                BOOST_CHECK_EQUAL(retMsg->Status(), 0);
-                BOOST_CHECK(retMsg->ExpectMore());
-            }
+            BOOST_CHECK(boost::algorithm::all_of(retList, isSentOnRouteMsg));
             delete_container(retList);
             retList.clear();
         }
