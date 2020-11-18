@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/18/2020 9:07:50 AM                        */
+/* Created on:     11/18/2020 3:20:37 PM                        */
 /*==============================================================*/
 
 
@@ -6923,7 +6923,7 @@ insert into lmgroup values( 0, 0 );
 /*==============================================================*/
 create table LMGroupEatonCloud (
    YukonGroupId         numeric              not null,
-   RelayUsasge          varchar(15)          not null,
+   RelayUsage           varchar(15)          not null,
    constraint PK_LMGROUPEATONCLOUD primary key (YukonGroupId)
 )
 go
