@@ -189,6 +189,7 @@
     <!-- Used in outOfSync.jsp -->
     <entry key="yukon.web.widgets.configWidget.verifyResult">Verify Result</entry>
     <entry key="yukon.web.widgets.configWidget.inSync">In Sync</entry>
+    <entry key="yukon.web.widgets.configWidget.viewLastError">View Last Error</entry>
 
     <!-- touWidget/render.jsp -->
     <entry key="yukon.web.widgets.touWidget.title">Tou Readings</entry>
