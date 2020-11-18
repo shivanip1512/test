@@ -39,11 +39,13 @@ yukon.widget.config = (function () {
                         status.html("<a href=javascript:void(0) class=js-out-of-sync>" + yukon.escapeXml(data.statusText) + "</a>");
                     }
                 }
-                //show last error
+                //show/hide last error
+                var lastErrorSpan = widgetContainer.find('.js-last-error');
                 if (data.errorCode) {
-                    var lastErrorSpan = widgetContainer.find('.js-last-error');
-                    lastErrorSpan.attr('data-error-code', yukon.escapeXml(data.errorCode))
+                    lastErrorSpan.data('error-code', yukon.escapeXml(data.errorCode))
                     lastErrorSpan.removeClass('dn');
+                } else {
+                    lastErrorSpan.addClass('dn');
                 }
             }
             var configBtns = widgetContainer.find('.js-config-action-btns');
