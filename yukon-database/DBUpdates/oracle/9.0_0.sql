@@ -129,6 +129,20 @@ INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry WH
 INSERT INTO DBUpdates VALUES ('YUK-23092', '9.0.0', SYSDATE);
 /* @end YUK-23092 */
 
+/* @start YUK-23295 */
+UPDATE YukonRoleProperty
+SET DefaultValue = 'OWNER'
+WHERE KeyName = 'Allow Disconnect Control'
+AND DefaultValue ='true'
+
+UPDATE YukonRoleProperty
+SET DefaultValue = 'NO_ACCESS'
+WHERE KeyName = 'Allow Disconnect Control'
+AND DefaultValue ='false'
+
+INSERT INTO DBUpdates VALUES ('YUK-23295', '9.0.0', SYSDATE);
+/* @end YUK-23295 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
