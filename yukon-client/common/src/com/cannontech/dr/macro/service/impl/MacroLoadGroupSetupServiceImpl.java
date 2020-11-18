@@ -32,7 +32,7 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
     @Autowired private DemandResponseEventLogService logService;
 
     @Override
-    public MacroLoadGroup retrieve(int loadGroupId) {
+    public MacroLoadGroup retrieve(int loadGroupId, LiteYukonUser liteYukonUser) {
         Optional<LiteYukonPAObject> liteLoadGroup = getGroupFromCache(loadGroupId);
         if (liteLoadGroup.isEmpty()) {
             throw new NotFoundException("Macro load group Id not found");

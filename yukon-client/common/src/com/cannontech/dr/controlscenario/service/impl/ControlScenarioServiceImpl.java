@@ -80,7 +80,7 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
         return null;
     }
     @Override
-    public ControlScenario retrieve(int controlScenarioId) {
+    public ControlScenario retrieve(int controlScenarioId, LiteYukonUser liteYukonUser) {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(controlScenarioId);
         if (pao == null) {
             throw new NotFoundException("Scenario Id not found");

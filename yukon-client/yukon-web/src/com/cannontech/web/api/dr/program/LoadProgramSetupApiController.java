@@ -42,8 +42,8 @@ public class LoadProgramSetupApiController {
     @Autowired LMProgramValidator lmProgramValidator;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> retrieve(@PathVariable int id) {
-        LoadProgram loadProgram = loadProgramService.retrieve(id);
+    public ResponseEntity<Object> retrieve(@PathVariable int id, YukonUserContext userContext) {
+        LoadProgram loadProgram = loadProgramService.retrieve(id, userContext.getYukonUser());
         return new ResponseEntity<>(loadProgram, HttpStatus.OK);
     }
 
