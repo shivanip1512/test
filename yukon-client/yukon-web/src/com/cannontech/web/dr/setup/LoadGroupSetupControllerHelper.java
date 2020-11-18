@@ -274,12 +274,10 @@ public class LoadGroupSetupControllerHelper {
             startStates = (List<LMDto>) response.getBody();
         }
 
-        /**
-         * Raw state is either 0 or 1 in Control start state of Point Load Group
-         */
-        startStates.stream()
-                   .filter(state -> (state.getId() == 0 || state.getId() == 1))
-                   .collect(Collectors.toList());
+        // Raw state is either 0 or 1 in Control start state of Point Load Group
+        startStates = startStates.stream()
+                                 .filter(state -> (state.getId() == 0 || state.getId() == 1))
+                                 .collect(Collectors.toList());
         model.addAttribute("startStates", startStates);
     }
 

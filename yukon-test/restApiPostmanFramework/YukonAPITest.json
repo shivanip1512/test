@@ -543,26 +543,6 @@
 								}
 							},
 							"response": []
-						},
-						{
-							"name": "GetNormalState",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{api-url}}/dr/controlAreas/normalState/{id}",
-									"host": [
-										"{{api-url}}"
-									],
-									"path": [
-										"dr",
-										"controlAreas",
-										"normalState",
-										"{id}"
-									]
-								}
-							},
-							"response": []
 						}
 					],
 					"protocolProfileBehavior": {},
@@ -1803,28 +1783,6 @@
 							"description": "Delete an existing load group.",
 							"protocolProfileBehavior": {},
 							"_postman_isSubFolder": true
-						},
-						{
-							"name": "getPointGroupStartState",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{api-url}}/api/dr/setup/loadGroup/getPointGroupStartState/1234",
-									"host": [
-										"{{api-url}}"
-									],
-									"path": [
-										"api",
-										"dr",
-										"setup",
-										"loadGroup",
-										"getPointGroupStartState",
-										"1234"
-									]
-								}
-							},
-							"response": []
 						}
 					],
 					"event": [
@@ -3580,6 +3538,38 @@
 										"devices",
 										"{paoId}",
 										"points"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "RetrievePointStates",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/points/{pointId}/states",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}",
+										"states"
 									]
 								}
 							},
