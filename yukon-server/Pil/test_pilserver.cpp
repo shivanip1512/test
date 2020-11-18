@@ -9,9 +9,12 @@
 #include "rtdb_test_helpers.h"
 #include "boost_test_helpers.h"
 
+#include <boost/algorithm/cxx11/all_of.hpp>
+
 BOOST_AUTO_TEST_SUITE( test_pilserver )
 
 using namespace std;
+using Cti::Test::makeInmessReply;
 
 struct Test_PilServer : Cti::Pil::PilServer
 {
@@ -24,6 +27,7 @@ struct Test_PilServer : Cti::Pil::PilServer
     {}
 
     using PilServer::handleRfnDeviceResult;
+    using PilServer::handleInMessageResult;
     using PilServer::analyzeWhiteRabbits;
     using RequestQueue = PilServer::RequestQueue;
 
@@ -49,9 +53,17 @@ struct Test_PilServer : Cti::Pil::PilServer
         return {};
     }
 
-    std::vector<std::unique_ptr<CtiMessage>> vgList, retList;
-    std::vector<std::unique_ptr<OUTMESS>> outList;
+    std::list<std::unique_ptr<CtiMessage>> vgList, retList;
+    std::list<std::unique_ptr<OUTMESS>> outList;
 
+    void submitOutMessages(CtiDeviceBase::OutMessageList& outList_) override
+    {
+        for( auto msg : outList_ )
+        {
+            outList.emplace_back(msg);
+        }
+    }
+        
     void sendResults(CtiDeviceBase::CtiMessageList &vgList_, CtiDeviceBase::CtiMessageList &retList_, const int priority, Cti::ConnectionHandle connectionHandle) override
     {
         for( auto msg : vgList_ )
@@ -83,6 +95,17 @@ struct Test_PilServer : Cti::Pil::PilServer
         }
     }
 };
+
+const auto isExpectMoreReturnMsgFor(int id)
+{
+    return [id](const std::unique_ptr<CtiMessage>& msg) {
+        auto retMsg = dynamic_cast<CtiReturnMsg*>(msg.get());
+
+        return retMsg
+            && retMsg->ExpectMore()
+            && retMsg->UserMessageId() == id;
+    };
+}
 
 struct pilEnvironment
 {
@@ -141,6 +164,65 @@ BOOST_AUTO_TEST_CASE(test_handleRfnDeviceResult)
     BOOST_CHECK_EQUAL(1, devSingle->getGroupMessageCount(11235, handle));
 }
 
+
+BOOST_AUTO_TEST_CASE(test_handleInMessageResult_getconfig_install_all_verify_mcts)
+{
+    for( const auto DeviceId : {
+        Cti::Test::test_DeviceManager::MCT410CL_ID,
+        Cti::Test::test_DeviceManager::MCT410CD_ID,
+        Cti::Test::test_DeviceManager::MCT410FL_ID,
+        Cti::Test::test_DeviceManager::MCT410FD_ID,
+        Cti::Test::test_DeviceManager::MCT420CL_ID,
+        Cti::Test::test_DeviceManager::MCT420CD_ID,
+        Cti::Test::test_DeviceManager::MCT420FL_ID,
+        Cti::Test::test_DeviceManager::MCT420FD_ID,
+        Cti::Test::test_DeviceManager::MCT430S4_ID,
+        Cti::Test::test_DeviceManager::MCT470_ID } )
+    {
+        BOOST_TEST_CONTEXT("Device ID: " + std::to_string(DeviceId))
+        {
+            Test_PilServer pilServer;
+
+            constexpr auto UserMessageId = 11235;
+            const Cti::ConnectionHandle handle{ 55441 };
+
+            auto config = boost::make_shared<Cti::Test::test_DeviceConfig>();
+            Cti::Test::Override_ConfigManager overrideConfigManager(config);
+
+            Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;
+
+            CtiRequestMsg reqMsg(DeviceId, "getconfig install all", UserMessageId);
+            reqMsg.setConnectionHandle(handle);
+            reqMsg.setSOE(97);  //  prevents us from attempting DB access by calling SystemLogIdGen()
+
+            pilServer.executeRequest(&reqMsg);
+
+            BOOST_CHECK(pilServer.vgList.empty());
+
+            BOOST_REQUIRE( ! pilServer.outList.empty());
+            
+            //  outList may have additions as we iterate over it
+            for( auto out_itr = pilServer.outList.cbegin(); out_itr != pilServer.outList.cend(); )
+            {
+                pilServer.handleInMessageResult(makeInmessReply(**out_itr++));
+            }
+
+            BOOST_REQUIRE_GT(pilServer.retList.size(), 1);
+            {
+                BOOST_CHECK(std::all_of(
+                    pilServer.retList.cbegin(),
+                    --pilServer.retList.cend(),  //  All but the last entry
+                    isExpectMoreReturnMsgFor(UserMessageId)));
+
+                auto verifyReqMsg = dynamic_cast<CtiRequestMsg*>(pilServer.retList.back().get());
+
+                BOOST_REQUIRE(verifyReqMsg);
+                BOOST_CHECK_EQUAL(verifyReqMsg->CommandString(), "putconfig install all verify");
+                BOOST_CHECK_EQUAL(verifyReqMsg->UserMessageId(), UserMessageId);
+            }
+        }
+    }
+}
 
 BOOST_AUTO_TEST_CASE(test_rfnExpectMore)
 {
