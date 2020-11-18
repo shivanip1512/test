@@ -559,7 +559,7 @@ public class DeviceConfigurationConfigController {
         
         model.addAttribute("editingRoleProperty", YukonRoleProperty.ADMIN_EDIT_CONFIG);
         
-        //Add attributes needed for RFN Meter
+        //Add attributes needed for RFN Metrology Configuration
         model.addAttribute("rfnMetrologyConfigurationType", CategoryType.RFN_METROLOGY_CONFIGURATION.value());
         model.addAttribute("firmwareVersion", configurationSource.getDouble(MasterConfigDouble.RFN_FIRMWARE));
     }
