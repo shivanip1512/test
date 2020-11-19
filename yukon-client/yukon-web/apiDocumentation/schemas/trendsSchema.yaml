@@ -1,11 +1,11 @@
 Trend:
   title: Trend
   required:
-    - name
+    - trendName
    
   type: object
   properties:
-    name:
+    trendName:
       type: string
       maxLength: 40
       description: 'Name of the trend.'
@@ -96,7 +96,7 @@ components:
   examples:
     Trend:
       value:
-        name: Test Trend
+        trendName: Test Trend
         trendSeries:
           - type: DATE_TYPE
             pointId: -110
