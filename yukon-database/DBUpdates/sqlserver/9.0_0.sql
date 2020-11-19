@@ -133,13 +133,7 @@ INSERT INTO DBUpdates VALUES ('YUK-23092', '9.0.0', GETDATE());
 /* @start YUK-23295 */
 UPDATE YukonRoleProperty
 SET DefaultValue = 'OWNER'
-WHERE KeyName = 'Allow Disconnect Control'
-AND DefaultValue ='true'
-
-UPDATE YukonRoleProperty
-SET DefaultValue = 'NO_ACCESS'
-WHERE KeyName = 'Allow Disconnect Control'
-AND DefaultValue ='false'
+WHERE RolePropertyId = -20220;
 
 INSERT INTO DBUpdates VALUES ('YUK-23295', '9.0.0', GETDATE());
 /* @end YUK-23295 */
