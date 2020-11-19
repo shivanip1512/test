@@ -36,7 +36,7 @@ public class PxMWAuthTokenServiceImpl implements PxMWAuthTokenService, MessageLi
     @Override
     public PxMWAuthTokenResponse handle(PxMWAuthTokenRequest request) throws JMSException {
         PxMWAuthTokenResponse response = new PxMWAuthTokenResponse();
-        log.debug("Processing token request");
+        log.debug("Handling token request");
         if (tokenCache.getIfPresent(authTokenKey) == null) {
             String authToken;
             try {
@@ -56,7 +56,6 @@ public class PxMWAuthTokenServiceImpl implements PxMWAuthTokenService, MessageLi
 
     @Override
     public void onMessage(Message message) {
-        log.debug("DO SOMETHING");
         if (message instanceof ObjectMessage) {
             ObjectMessage objMessage = (ObjectMessage) message;
             log.debug("Token Request received by PxMWAuthTokenService");
