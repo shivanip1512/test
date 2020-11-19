@@ -17,6 +17,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWDeviceChannelDetailsV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
@@ -70,9 +71,8 @@ public class PxMWSimulatorController {
     @PostMapping("/testEndpoint")
     public String testEndpoint(PxMWRetrievalUrl endpoint,  FlashScope flashScope, ModelMap model) {
         if (endpoint == PxMWRetrievalUrl.DEVICE_PROFILE_BY_GUID_V1) {
-            PxMWDeviceProfileV1 profile;
             try {
-                profile = pxMWCommunicationServiceV1.getDeviceProfile("A", "222222-d832-49d6-ab60-6212a63bcd10");
+                PxMWDeviceProfileV1 profile = pxMWCommunicationServiceV1.getDeviceProfile("A", "222222-d832-49d6-ab60-6212a63bcd10");
                 log.info(getFormattedJson(profile));
             } catch (PxMWCommunicationExceptionV1 e) {
                 log.info(e.getErrorMessage());
@@ -80,6 +80,13 @@ public class PxMWSimulatorController {
         } else if (endpoint == PxMWRetrievalUrl.DEVICES_BY_SITE_V1) {
             try {
                 PxMWSiteV1 site = pxMWCommunicationServiceV1.getSite("A", "222222-d832-49d6-ab60-6212a63bcd10", null, null);
+                log.info(getFormattedJson(site));
+            } catch (PxMWCommunicationExceptionV1 e) {
+                log.info(getFormattedJson(e.getErrorMessage()));
+            }
+        } else if (endpoint == PxMWRetrievalUrl.DEVICE_CHANNEL_DETAILS_V1) {
+            try {
+                PxMWDeviceChannelDetailsV1 site = pxMWCommunicationServiceV1.getDeviceChannelDetails("A", "222222-d832-49d6-ab60-6212a63bcd10");
                 log.info(getFormattedJson(site));
             } catch (PxMWCommunicationExceptionV1 e) {
                 log.info(getFormattedJson(e.getErrorMessage()));
