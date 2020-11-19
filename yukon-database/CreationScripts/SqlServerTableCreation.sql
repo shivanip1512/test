@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/30/2020 11:05:00 AM                       */
+/* Created on:     11/18/2020 3:20:37 PM                        */
 /*==============================================================*/
 
 
@@ -6917,6 +6917,16 @@ create table LMGroup (
 go
 
 insert into lmgroup values( 0, 0 );
+
+/*==============================================================*/
+/* Table: LMGroupEatonCloud                                     */
+/*==============================================================*/
+create table LMGroupEatonCloud (
+   YukonGroupId         numeric              not null,
+   RelayUsage           varchar(15)          not null,
+   constraint PK_LMGROUPEATONCLOUD primary key (YukonGroupId)
+)
+go
 
 /*==============================================================*/
 /* Table: LMGroupEmetcon                                        */
@@ -14190,6 +14200,12 @@ go
 alter table LMGroup
    add constraint FK_Device_LMGrpBase2 foreign key (DeviceID)
       references DEVICE (DEVICEID)
+go
+
+alter table LMGroupEatonCloud
+   add constraint FK_LMGroupEatonCloud_LMGroup foreign key (YukonGroupId)
+      references LMGroup (DeviceID)
+         on delete cascade
 go
 
 alter table LMGroupEmetcon
