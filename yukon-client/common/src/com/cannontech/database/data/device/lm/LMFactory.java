@@ -97,7 +97,10 @@ public final class LMFactory {
             break;
         case LM_METER_DISCONNECT_PROGRAM:
             retLm = new LmProgramMeterDisconnect();
-            break; 
+            break;
+        case LM_GROUP_EATON_CLOUD:
+            retLm = new LMGroupEatonCloud();
+            break;
         }
 
         if (retLm instanceof DeviceBase) {
