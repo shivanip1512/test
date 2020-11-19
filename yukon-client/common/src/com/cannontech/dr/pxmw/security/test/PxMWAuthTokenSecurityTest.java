@@ -37,7 +37,7 @@ public class PxMWAuthTokenSecurityTest {
         pXMWAuthTokenRequestTemplate = new RequestReplyTemplateImpl<>(JmsApiDirectory.PX_MW_AUTH_TOKEN.getName(),
                 configSource, jmsTemplate);
     }
-    //TODO Make this actually work
+
     public String getAuthenticationToken() {
         String authToken = null;
         BlockingJmsReplyHandler<PxMWAuthTokenResponse> reply = new BlockingJmsReplyHandler<>(PxMWAuthTokenResponse.class);

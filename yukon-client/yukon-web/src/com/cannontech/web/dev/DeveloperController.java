@@ -365,8 +365,7 @@ public class DeveloperController {
     public String getPxMWToken(ModelMap model, FlashScope flash) {
         String authToken = "";
         try {
-//            authToken = pxMWAuthTokenSecurityTest.getAuthenticationToken();
-            authToken = pxMWAuthTokenSecurityTest.getAuthenticationTokenNoJMS();
+            authToken = pxMWAuthTokenSecurityTest.getAuthenticationToken();
         } catch(Exception e) {
             MessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.dev.pxMWToken.loadError");
             flash.setError(message);
