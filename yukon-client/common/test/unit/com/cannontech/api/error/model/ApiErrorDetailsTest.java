@@ -11,7 +11,7 @@ import org.junit.Test;
 public class ApiErrorDetailsTest {
 
     @Test
-    public void findDupicateCode() {
+    public void findDuplicateCode() {
         List<ApiErrorDetails> enumValues = Arrays.asList(ApiErrorDetails.values());
         List<Integer> codes = enumValues.stream()
                 .map(e -> e.getCode())
