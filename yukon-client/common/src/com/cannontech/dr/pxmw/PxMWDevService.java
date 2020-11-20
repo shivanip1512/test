@@ -1,4 +1,4 @@
-package com.cannontech.dr.pxmw.security.test;
+package com.cannontech.dr.pxmw;
 
 import javax.annotation.PostConstruct;
 
@@ -20,12 +20,12 @@ import com.cannontech.services.pxmw.authToken.message.PxMWAuthTokenResponse;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 
-public class PxMWAuthTokenSecurityTest {
-    private static final Logger log = YukonLogManager.getLogger(PxMWAuthTokenSecurityTest.class);
+public class PxMWDevService {
+    private static final Logger log = YukonLogManager.getLogger(PxMWDevService.class);
 
     @Autowired private ConfigurationSource configSource;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
-    
+
     @Autowired private PxMWCommunicationServiceV1 pxMWCommunicationService;
     @Autowired private GlobalSettingDao globalSettingDao;
 
@@ -54,7 +54,7 @@ public class PxMWAuthTokenSecurityTest {
         }
         return authToken;
     }
-    
+
     public String getAuthenticationTokenNoJMS() {
         String authToken = "";
         try {
@@ -65,7 +65,7 @@ public class PxMWAuthTokenSecurityTest {
         } catch (PxWhiteCommunicationException e) {
             log.error("Error obtaining PX White Auth Token", e);
         }
-        
+
         return authToken;
     }
 
