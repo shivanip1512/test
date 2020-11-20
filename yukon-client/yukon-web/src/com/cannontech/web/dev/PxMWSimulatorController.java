@@ -1,5 +1,6 @@
 package com.cannontech.web.dev;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
@@ -68,31 +70,38 @@ public class PxMWSimulatorController {
         return statuses;
     }
 
-    @PostMapping("/testEndpoint")
-    public String testEndpoint(PxMWRetrievalUrl endpoint,  FlashScope flashScope, ModelMap model) {
+    @GetMapping("/testEndpoint")
+    public @ResponseBody Map<String, Object> testEndpoint(PxMWRetrievalUrl endpoint) {
+        Map<String, Object> json = new HashMap<>();  
         if (endpoint == PxMWRetrievalUrl.DEVICE_PROFILE_BY_GUID_V1) {
             try {
                 PxMWDeviceProfileV1 profile = pxMWCommunicationServiceV1.getDeviceProfile("A", "222222-d832-49d6-ab60-6212a63bcd10");
                 log.info(getFormattedJson(profile));
+                json.put("testResultJson", getFormattedJson(profile));
             } catch (PxMWCommunicationExceptionV1 e) {
                 log.info(e.getErrorMessage());
+                json.put("errorMessage", getFormattedJson(e.getErrorMessage()));
             }
         } else if (endpoint == PxMWRetrievalUrl.DEVICES_BY_SITE_V1) {
             try {
                 PxMWSiteV1 site = pxMWCommunicationServiceV1.getSite("A", "222222-d832-49d6-ab60-6212a63bcd10", null, null);
                 log.info(getFormattedJson(site));
+                json.put("testResultJson", getFormattedJson(site));
             } catch (PxMWCommunicationExceptionV1 e) {
                 log.info(getFormattedJson(e.getErrorMessage()));
+                json.put("errorMessage", getFormattedJson(e.getErrorMessage()));
             }
         } else if (endpoint == PxMWRetrievalUrl.DEVICE_CHANNEL_DETAILS_V1) {
             try {
                 PxMWDeviceChannelDetailsV1 site = pxMWCommunicationServiceV1.getDeviceChannelDetails("A", "222222-d832-49d6-ab60-6212a63bcd10");
                 log.info(getFormattedJson(site));
+                json.put("testResultJson", getFormattedJson(site));
             } catch (PxMWCommunicationExceptionV1 e) {
                 log.info(getFormattedJson(e.getErrorMessage()));
+                json.put("errorMessage", getFormattedJson(e.getErrorMessage()));
             }
         }
-        return "redirect:home";
+        return json;
     }
 
     private String getFormattedJson(Object profile) {
