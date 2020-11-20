@@ -247,8 +247,18 @@
         <cti:toJson object="${text}" id="gateway-text"/>
     </div>
 
+    <div class="column-12-12 clearfix">
+        <div class="column one">
+            <cti:msg2 var="helpTextWidget" key="yukon.web.widgets.infrastructureWarningsWidget.helpText"/>
+            <tags:widget bean="infrastructureWarningsWidget" helpText="${helpTextWidget}" deviceType="${deviceType}"/>
+        </div>
+        <div class="column two nogutter">
+        </div>
+    </div>
+
     <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.list.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.shared.js"/>
+    <cti:includeScript link="/resources/js/widgets/yukon.widget.infrastructureWarnings.js"/>
     <div class="dn" id="js-pao-notes-popup"></div>
     <cti:includeScript link="/resources/js/pages/yukon.tools.paonotespopup.js"/>
 </cti:standardPage>

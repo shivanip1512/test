@@ -16,6 +16,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -75,32 +76,39 @@ public class InfrastructureWarningsController {
     }
     
     @GetMapping("updateWidget")
-    public String updateWidget(ModelMap model, YukonUserContext userContext) {
+    public String updateWidget(ModelMap model, YukonUserContext userContext, String deviceType) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         InfrastructureWarningSummary summary = widgetService.getWarningsSummary();
-        model.addAttribute("summary", summary);
         List<InfrastructureWarning> warnings = widgetService.getWarnings();
+        if (!StringUtils.isEmpty(deviceType)) {
+            InfrastructureWarningDeviceCategory deviceCategory = InfrastructureWarningDeviceCategory.valueOf(deviceType);
+            warnings = infrastructureWarningsDao.getWarnings(deviceCategory);
+        }
+        model.addAttribute("summary", summary);
         Comparator<InfrastructureWarning> comparator = (o1, o2) -> o1.getSeverity().name().compareTo(o2.getSeverity().name());
         Collections.sort(warnings, comparator);
         if (warnings.size() > 10) {
             warnings = warnings.subList(0,  10);
         }
         model.addAttribute("warnings",  warnings);
-        model.addAttribute("lastAttemptedRefresh", widgetService.getRunTime(false));
-        Instant nextRun = widgetService.getRunTime(true);
-        if (nextRun.isAfterNow()) {
-            model.addAttribute("nextRefresh", nextRun);
-            model.addAttribute("isRefreshPossible", false);
-            String nextRefreshDate = dateFormattingService.format(nextRun, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
-            model.addAttribute("refreshTooltip", accessor.getMessage(widgetKey + "nextRefresh") + nextRefreshDate);
+        if (StringUtils.isEmpty(deviceType)) {
+            model.addAttribute("lastAttemptedRefresh", widgetService.getRunTime(false));
+            Instant nextRun = widgetService.getRunTime(true);
+            if (nextRun.isAfterNow()) {
+                model.addAttribute("nextRefresh", nextRun);
+                model.addAttribute("isRefreshPossible", false);
+                String nextRefreshDate = dateFormattingService.format(nextRun, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
+                model.addAttribute("refreshTooltip", accessor.getMessage(widgetKey + "nextRefresh") + nextRefreshDate);
+            } else {
+                model.addAttribute("isRefreshPossible", true);
+                model.addAttribute("refreshTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
+            }
+            model.addAttribute("epoch1990", epoch1990);
+            return "infrastructureWarnings/widgetView.jsp";
         } else {
-            model.addAttribute("isRefreshPossible", true);
-            model.addAttribute("refreshTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
+            model.addAttribute("deviceType", deviceType);
+            return "infrastructureWarnings/deviceTypeInfrastructureWarningsWidget.jsp";
         }
-        
-        model.addAttribute("epoch1990", epoch1990);
-
-        return "infrastructureWarnings/widgetView.jsp";
     }
     
     private InfrastructureWarningDeviceCategory[] getTypesInSystem() {
