@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
@@ -19,6 +20,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWDeviceChannelDetailsV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWErrorHandlerV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
@@ -78,10 +80,7 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
 
     @Override
     public PxMWDeviceProfileV1 getDeviceProfile(String token, String deviceProfileGuid) throws PxMWCommunicationExceptionV1 {
-     
-        URI uri = UriComponentsBuilder.fromUriString(getUrl(PxMWRetrievalUrl.DEVICE_PROFILE_BY_GUID_V1.getSuffix()))
-                .buildAndExpand(Map.of("id", deviceProfileGuid))
-                .toUri();
+        URI uri = getUri(Map.of("id", deviceProfileGuid), PxMWRetrievalUrl.DEVICE_PROFILE_BY_GUID_V1);
         log.debug("Getting device profile. Device Profile Guid: {} URL:{}", deviceProfileGuid, uri); 
         HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders(token);
         ResponseEntity<PxMWDeviceProfileV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
@@ -91,9 +90,21 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
     }
     
     @Override
+    public PxMWDeviceChannelDetailsV1 getDeviceChannelDetails(String token, String deviceGuid)
+            throws PxMWCommunicationExceptionV1 {
+        URI uri = getUri(Map.of("deviceId", deviceGuid), PxMWRetrievalUrl.DEVICE_CHANNEL_DETAILS_V1);
+        log.debug("Getting device channel details. Device Guid: {} URL:{}", deviceGuid, uri);
+        HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders(token);
+        ResponseEntity<PxMWDeviceChannelDetailsV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
+                PxMWDeviceChannelDetailsV1.class);
+        log.debug("Got device channel. Device Guid:{} Result:{}", deviceGuid,
+                new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
+        return response.getBody();
+    }
+    
+    @Override
     public PxMWSiteV1 getSite(String token, String siteGuid, Boolean recursive, Boolean includeDetail)
             throws PxMWCommunicationExceptionV1 {
-
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
         if (recursive != null) {
             queryParams.add("recursive", recursive.toString());
@@ -102,10 +113,7 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
             queryParams.add("includeDetail", includeDetail.toString());
         }
         
-        URI uri = UriComponentsBuilder.fromUriString(getUrl(PxMWRetrievalUrl.DEVICES_BY_SITE_V1.getSuffix()))
-                .buildAndExpand(Map.of("id", siteGuid))
-                .toUri();
-
+        URI uri = getUri(Map.of("id", siteGuid), PxMWRetrievalUrl.DEVICES_BY_SITE_V1);
         uri = addQueryParams(queryParams, uri);
   
         log.debug("Getting site info. Site Guid: {} URL: {}", siteGuid, uri);
@@ -115,7 +123,16 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
         log.debug("Got site info. Site Guid:{} Result:{}", siteGuid, new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
         return response.getBody();
     }
-
+    
+    /**
+     * Creates URI
+     */
+    private URI getUri(Map<String, String> params, PxMWRetrievalUrl url) {
+        URI uri = UriComponentsBuilder.fromUriString(getUrl(url.getSuffix()))
+                .buildAndExpand(params)
+                .toUri();
+        return uri;
+    }
     /**
      * Adds query params to URI
      */
