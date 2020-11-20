@@ -1,16 +1,12 @@
 package com.cannontech.web.api.error.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
-public class ApiFieldError {
+public class ApiFieldErrorModel {
     String title;
     String type;
     int code;
     String detail;
     String field;
     String rejectedValue;
-    @JsonInclude(Include.NON_NULL) 
     Object[] parameters;
 
     public String getTitle() {
