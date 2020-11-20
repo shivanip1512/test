@@ -110,7 +110,7 @@ public class SmartNotificationsController {
     public String eventDetailByType(@PathVariable String type,
             @DefaultSort(dir = Direction.desc, sort = "timestamp") SortingParameters sorting,
             @DefaultItemsPerPage(value = 250) PagingParameters paging, ModelMap model, YukonUserContext userContext,
-            @ModelAttribute("filter") SmartNotificationEventFilter filter) {
+            @ModelAttribute("filter") SmartNotificationEventFilter filter, BindingResult bindingResult) {
 
         // Validates Date Range
         validateFilterDates(model, userContext, filter.getStartDate(), filter.getEndDate());
@@ -121,7 +121,7 @@ public class SmartNotificationsController {
     @RequestMapping(value="events/{type}/{parameter}", method=RequestMethod.GET)
     public String eventDetailByTypeId(@PathVariable String type, @PathVariable String parameter, @DefaultSort(dir=Direction.desc, sort="timestamp") SortingParameters sorting, 
                                @DefaultItemsPerPage(value=250) PagingParameters paging, ModelMap model, 
-                               YukonUserContext userContext, @ModelAttribute("filter") SmartNotificationEventFilter filter) {
+                               YukonUserContext userContext, @ModelAttribute("filter") SmartNotificationEventFilter filter, BindingResult bindingResult) {
 
         // Validates Date Range
         validateFilterDates(model, userContext, filter.getStartDate(), filter.getEndDate());
