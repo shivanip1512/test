@@ -28,7 +28,7 @@
         <cti:url var="editorUrl" value="/capcontrol/ivvc/wizard/zoneEditor">
             <cti:param name="zoneId" value="${zoneId}"/>
         </cti:url>
-        <div id="zone-editor-info" data-editor-url="${editorUrl}" data-editor-title="${editorTitle}"/>
+        <div id="zone-editor-info" data-editor-url="${editorUrl}" data-editor-title="${editorTitle}"></div>
         
         <div class="action-area">
             <cti:button classes="js-zone-editor" nameKey="edit" icon="icon-pencil"/>
