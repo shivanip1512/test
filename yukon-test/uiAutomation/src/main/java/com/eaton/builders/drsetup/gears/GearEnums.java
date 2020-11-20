@@ -108,5 +108,26 @@ public class GearEnums {
             return values()[random.nextInt(values().length)];
         }
     }
+    
+    public enum DutyCycleType {
+    	StandardCycle("STANDARD"),
+    	TrueCycle("TRUE_CYCLE"),
+    	SmartCycle("SMART_CYCLE");
+
+        private final String dutyCycleType;
+
+        DutyCycleType(String dutyCycleType) {
+            this.dutyCycleType = dutyCycleType;
+        }
+
+        public String getDutyCycleType() {
+            return this.dutyCycleType;
+        }
+
+        public static DutyCycleType getRandomDutyCycleType() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
+    }
 
 }

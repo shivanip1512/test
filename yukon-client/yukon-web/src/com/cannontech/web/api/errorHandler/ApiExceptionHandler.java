@@ -82,15 +82,15 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
     }
     
- // 401
+    // 403
     @ExceptionHandler({NotAuthorizedException.class})
     public ResponseEntity<Object> handleNotAuthorizedException(final Exception ex, final WebRequest request) {
 
         String uniqueKey = CtiUtilities.getYKUniqueKey();
         logApiException(request, ex, uniqueKey);
 
-        final ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED.value(), "User Not Authorized", uniqueKey);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
+        final ApiError apiError = new ApiError(HttpStatus.FORBIDDEN.value(), "User Not Authorized", uniqueKey);
+        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler({AttachedException.class})

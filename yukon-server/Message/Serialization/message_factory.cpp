@@ -159,7 +159,7 @@ try
 {
     Thrift::RfnSetChannelConfigReply reply;
 
-    reply.__set_reply( Thrift::SetChannelConfigReplyType::type { m.replyCode } );
+    reply.__set_reply( static_cast<Thrift::SetChannelConfigReplyType::type>( m.replyCode ) );
 
     return SerializeThriftBytes( reply );
 }
@@ -262,7 +262,7 @@ try
 
     reply.__set_recordingInterval( m.recordingInterval );
     reply.__set_reportingInterval( m.reportingInterval );
-    reply.__set_reply( Thrift::GetChannelConfigReplyType::type { m.replyCode } );
+    reply.__set_reply( static_cast<Thrift::GetChannelConfigReplyType::type>( m.replyCode ) );
 
     return SerializeThriftBytes( reply );
 }

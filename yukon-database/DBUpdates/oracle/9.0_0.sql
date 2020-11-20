@@ -137,6 +137,21 @@ WHERE RolePropertyId = -20220;
 INSERT INTO DBUpdates VALUES ('YUK-23295', '9.0.0', SYSDATE);
 /* @end YUK-23295 */
 
+/* @start YUK-23290 */
+create table LMGroupEatonCloud  (
+   YukonGroupId         NUMBER                          not null,
+   RelayUsage           VARCHAR2(15)                    not null,
+   constraint PK_LMGROUPEATONCLOUD primary key (YukonGroupId)
+);
+
+alter table LMGroupEatonCloud
+   add constraint FK_LMGroupEatonCloud_LMGroup foreign key (YukonGroupId)
+      references LMGroup (DeviceID)
+      on delete cascade;
+
+INSERT INTO DBUpdates VALUES ('YUK-23290', '9.0.0', SYSDATE);
+/* @end YUK-23290 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
