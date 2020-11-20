@@ -15,9 +15,11 @@ import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.db.graph.GDSTypes;
 import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.database.db.graph.GraphDataSeries;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TrendModel implements DBPersistentConverter<GraphDefinition> {
     private Integer trendId;
+    @JsonProperty("trendName")
     private String name;
     private List<TrendSeries> trendSeries;
 
