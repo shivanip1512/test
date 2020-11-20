@@ -135,6 +135,16 @@ UPDATE YukonRoleProperty
 SET DefaultValue = 'OWNER'
 WHERE RolePropertyId = -20220;
 
+UPDATE YukonGroupRole 
+SET Value = 'OWNER' 
+WHERE RolePropertyID = -20220 
+AND Value = 'true';
+
+UPDATE YukonGroupRole 
+SET Value = 'NO_ACCESS' 
+WHERE RolePropertyID = -20220 
+AND Value = 'false';
+
 INSERT INTO DBUpdates VALUES ('YUK-23295', '9.0.0', GETDATE());
 /* @end YUK-23295 */
 
