@@ -36,8 +36,8 @@ public class ControlScenarioSetupApiController {
     @Autowired private ControlScenarioSetupValidator controlScenarioSetupValidator;
 
     @GetMapping("/{id}")
-    public ResponseEntity<ControlScenario> retrieve(@PathVariable int id) {
-        return new ResponseEntity<>(controlScenarioService.retrieve(id), HttpStatus.OK);
+    public ResponseEntity<ControlScenario> retrieve(@PathVariable int id, YukonUserContext userContext) {
+        return new ResponseEntity<>(controlScenarioService.retrieve(id, userContext.getYukonUser()), HttpStatus.OK);
     }
 
     @PostMapping

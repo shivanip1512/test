@@ -35,7 +35,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
     @Autowired DBDeletionDao dbDeletionDao;
 
     @Override
-    public ProgramConstraint retrieve(int constraintId) {
+    public ProgramConstraint retrieve(int constraintId, LiteYukonUser liteYukonUser) {
         Optional<LiteLMConstraint> lmConstraint = 
                 dbCache.getAllLMProgramConstraints().stream()
                 .filter(liteLMConstraint -> liteLMConstraint.getConstraintID() == constraintId)

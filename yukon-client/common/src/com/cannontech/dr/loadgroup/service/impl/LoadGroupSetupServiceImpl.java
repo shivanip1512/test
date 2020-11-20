@@ -88,7 +88,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
     }
 
     @Override
-    public LoadGroupBase retrieve(int loadGroupId) {
+    public LoadGroupBase retrieve(int loadGroupId, LiteYukonUser liteYukonUser) {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(loadGroupId);
         if (pao == null || pao.getPaoType() == PaoType.MACRO_GROUP) {
             throw new NotFoundException("Id not found");

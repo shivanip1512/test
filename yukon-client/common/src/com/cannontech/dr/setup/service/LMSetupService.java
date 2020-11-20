@@ -17,7 +17,7 @@ public interface LMSetupService<T1, T2> {
     /**
      * Retrieve LM objects based on id.
      */
-    T1 retrieve(int id);
+    T1 retrieve(int id, LiteYukonUser liteYukonUser);
     
     /**
      * Delete the LM object.

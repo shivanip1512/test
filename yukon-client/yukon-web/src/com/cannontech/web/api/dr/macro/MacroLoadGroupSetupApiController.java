@@ -39,8 +39,8 @@ public class MacroLoadGroupSetupApiController {
     @Autowired LMCopyValidator lmCopyValidator;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> retrieve(@PathVariable int id) {
-        MacroLoadGroup loadGroup = macroLoadGroupService.retrieve(id);
+    public ResponseEntity<Object> retrieve(@PathVariable int id, YukonUserContext userContext) {
+        MacroLoadGroup loadGroup = macroLoadGroupService.retrieve(id, userContext.getYukonUser());
         return new ResponseEntity<>(loadGroup, HttpStatus.OK);
     }
 
