@@ -86,7 +86,7 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
     public void ldGrpEmetconEdit_AllFields_Success() {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT Edited Emetcon Ldgrp " + timeStamp;
+        String name = "AT Edited Emetcon Ldgrp" + timeStamp;
         final String EXPECTED_MSG = name + " saved successfully.";
         Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
                 .withAddressUsage(Optional.of(LoadGroupEnums.AddressUsageEmetcon.GOLD))
