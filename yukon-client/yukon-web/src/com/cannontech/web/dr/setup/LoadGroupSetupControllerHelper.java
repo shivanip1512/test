@@ -194,6 +194,12 @@ public class LoadGroupSetupControllerHelper {
                 }
             }
             break;
+        case LM_GROUP_EATON_CLOUD:
+            model.addAttribute("isEatonCloudGroupSelected", true);
+            if (!isViewMode) {
+                model.addAttribute("loadsList", Lists.newArrayList(Loads.values()));
+            }
+            break;
         }
     }
 
@@ -354,6 +360,10 @@ public class LoadGroupSetupControllerHelper {
             if (result.hasFieldErrors("feeder")) {
                 flash.setError(result.getFieldError("feeder"));
             }
+            if (result.hasFieldErrors("relayUsage")) {
+                flash.setError(result.getFieldError("relayUsage"));
+            }
+        case LM_GROUP_EATON_CLOUD:
             if (result.hasFieldErrors("relayUsage")) {
                 flash.setError(result.getFieldError("relayUsage"));
             }
