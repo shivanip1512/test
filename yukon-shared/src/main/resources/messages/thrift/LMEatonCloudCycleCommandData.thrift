@@ -7,7 +7,7 @@ enum LMEatonCloudCycleType {
     SMART_CYCLE = 0x02,
 }
 
-struct RfnExpressComBroadcastReply {
+struct LMEatonCloudCycleCommand {
     1: required     i32                             _groupId;
     2: required     i32                             _controlSeconds;
     3: required     bool                            _isRampIn;
