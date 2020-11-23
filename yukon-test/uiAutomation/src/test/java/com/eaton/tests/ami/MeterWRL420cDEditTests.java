@@ -47,7 +47,7 @@ public class MeterWRL420cDEditTests extends SeleniumTestSetup {
 
         EditMeterModal editModal = meterDetailsPage.showMeterEditModal();
 
-        editModal.getdeviceName().setInputValue(name);
+        editModal.getDeviceName().setInputValue(name);
         editModal.clickOkAndWaitForModalToClose();
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL + Integer.parseInt(deviceId), Optional.of(10));
