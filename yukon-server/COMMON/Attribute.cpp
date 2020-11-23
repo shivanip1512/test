@@ -217,7 +217,7 @@ INIT_ATTRIBUTE( CoincidentPowerFactorPeakKvaQ23,                    "POWER_FACTO
 INIT_ATTRIBUTE( CoincidentPowerFactorPeakTotalKva,                  "POWER_FACTOR_COIN_PEAK_TOTAL_KVA" );
 INIT_ATTRIBUTE( CoincidentPowerFactorDeliveredPeakKwRateA,          "POWER_FACTOR_COIN_DELIVERED_PEAK_KW_RATE_A" );
 INIT_ATTRIBUTE( CoincidentPowerFactorReceivedPeakKwRateA,           "POWER_FACTOR_COIN_RECEIVED_PEAK_KW_RATE_A" );
-INIT_ATTRIBUTE( CoincidentPowerFactorPeakTotalKwRateA,              "POWER_FACTOR_COIN_RECEIVED_PEAK_KW_RATE_A" );
+INIT_ATTRIBUTE( CoincidentPowerFactorPeakTotalKwRateA,              "POWER_FACTOR_COIN_PEAK_TOTAL_KW_RATE_A" );
 INIT_ATTRIBUTE( CoincidentPowerFactorPeakKvarQ12RateA,              "POWER_FACTOR_COIN_PEAK_KVAR_Q12_RATE_A" );
 INIT_ATTRIBUTE( CoincidentPowerFactorPeakKvarQ34RateA,              "POWER_FACTOR_COIN_PEAK_KVAR_Q34_RATE_A" );
 INIT_ATTRIBUTE( CoincidentPowerFactorPeakTotalKvarRateA,            "POWER_FACTOR_COIN_PEAK_TOTAL_KVAR_RATE_A" );
@@ -226,7 +226,7 @@ INIT_ATTRIBUTE( CoincidentPowerFactorPeakKvaQ23RateA,               "POWER_FACTO
 INIT_ATTRIBUTE( CoincidentPowerFactorPeakTotalKvaRateA,             "POWER_FACTOR_COIN_PEAK_TOTAL_KVA_RATE_A" );
 INIT_ATTRIBUTE( CoincidentPowerFactorDeliveredPeakKwRateB,          "POWER_FACTOR_COIN_DELIVERED_PEAK_KW_RATE_B" );
 INIT_ATTRIBUTE( CoincidentPowerFactorReceivedPeakKwRateB,           "POWER_FACTOR_COIN_RECEIVED_PEAK_KW_RATE_B" );
-INIT_ATTRIBUTE( CoincidentPowerFactorPeakTotalKwRateB,              "POWER_FACTOR_COIN_RECEIVED_PEAK_KW_RATE_B" );
+INIT_ATTRIBUTE( CoincidentPowerFactorPeakTotalKwRateB,              "POWER_FACTOR_COIN_PEAK_TOTAL_KW_RATE_B" );
 INIT_ATTRIBUTE( CoincidentPowerFactorPeakKvarQ12RateB,              "POWER_FACTOR_COIN_PEAK_KVAR_Q12_RATE_B" );
 INIT_ATTRIBUTE( CoincidentPowerFactorPeakKvarQ34RateB,              "POWER_FACTOR_COIN_PEAK_KVAR_Q34_RATE_B" );
 INIT_ATTRIBUTE( CoincidentPowerFactorPeakTotalKvarRateB,            "POWER_FACTOR_COIN_PEAK_TOTAL_KVAR_RATE_B" );
@@ -235,7 +235,7 @@ INIT_ATTRIBUTE( CoincidentPowerFactorPeakKvaQ23RateB,               "POWER_FACTO
 INIT_ATTRIBUTE( CoincidentPowerFactorPeakTotalKvaRateB,             "POWER_FACTOR_COIN_PEAK_TOTAL_KVA_RATE_B" );
 INIT_ATTRIBUTE( CoincidentPowerFactorDeliveredPeakKwRateC,          "POWER_FACTOR_COIN_DELIVERED_PEAK_KW_RATE_C" );
 INIT_ATTRIBUTE( CoincidentPowerFactorReceivedPeakKwRateC,           "POWER_FACTOR_COIN_RECEIVED_PEAK_KW_RATE_C" );
-INIT_ATTRIBUTE( CoincidentPowerFactorPeakTotalKwRateC,              "POWER_FACTOR_COIN_RECEIVED_PEAK_KW_RATE_C" );
+INIT_ATTRIBUTE( CoincidentPowerFactorPeakTotalKwRateC,              "POWER_FACTOR_COIN_PEAK_TOTAL_KW_RATE_C" );
 INIT_ATTRIBUTE( CoincidentPowerFactorPeakKvarQ12RateC,              "POWER_FACTOR_COIN_PEAK_KVAR_Q12_RATE_C" );
 INIT_ATTRIBUTE( CoincidentPowerFactorPeakKvarQ34RateC,              "POWER_FACTOR_COIN_PEAK_KVAR_Q34_RATE_C" );
 INIT_ATTRIBUTE( CoincidentPowerFactorPeakTotalKvarRateC,            "POWER_FACTOR_COIN_PEAK_TOTAL_KVAR_RATE_C" );
@@ -244,7 +244,7 @@ INIT_ATTRIBUTE( CoincidentPowerFactorPeakKvaQ23RateC,               "POWER_FACTO
 INIT_ATTRIBUTE( CoincidentPowerFactorPeakTotalKvaRateC,             "POWER_FACTOR_COIN_PEAK_TOTAL_KVA_RATE_C" );
 INIT_ATTRIBUTE( CoincidentPowerFactorDeliveredPeakKwRateD,          "POWER_FACTOR_COIN_DELIVERED_PEAK_KW_RATE_D" );
 INIT_ATTRIBUTE( CoincidentPowerFactorReceivedPeakKwRateD,           "POWER_FACTOR_COIN_RECEIVED_PEAK_KW_RATE_D" );
-INIT_ATTRIBUTE( CoincidentPowerFactorPeakTotalKwRateD,              "POWER_FACTOR_COIN_RECEIVED_PEAK_KW_RATE_D" );
+INIT_ATTRIBUTE( CoincidentPowerFactorPeakTotalKwRateD,              "POWER_FACTOR_COIN_PEAK_TOTAL_KW_RATE_D" );
 INIT_ATTRIBUTE( CoincidentPowerFactorPeakKvarQ12RateD,              "POWER_FACTOR_COIN_PEAK_KVAR_Q12_RATE_D" );
 INIT_ATTRIBUTE( CoincidentPowerFactorPeakKvarQ34RateD,              "POWER_FACTOR_COIN_PEAK_KVAR_Q34_RATE_D" );
 INIT_ATTRIBUTE( CoincidentPowerFactorPeakTotalKvarRateD,            "POWER_FACTOR_COIN_PEAK_TOTAL_KVAR_RATE_D" );
