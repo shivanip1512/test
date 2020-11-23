@@ -2081,6 +2081,270 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <unitofmeasure value="PF"/>
         <decimalplaces value="3"/>
     </point>
+    <point offset="420" type="Analog">
+        <name>Coincident Power Factor Delivered Peak kW</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="421" type="Analog">
+        <name>Coincident Power Factor Received Peak kW</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="422" type="Analog">
+        <name>Coincident Power Factor Peak kVAR (Quadrants 1 2)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="423" type="Analog">
+        <name>Coincident Power Factor Peak kVAR (Quadrants 3 4)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="424" type="Analog">
+        <name>Coincident Power Factor Peak Total kVAR</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="425" type="Analog">
+        <name>Coincident Power Factor Peak kVA (Quadrants 1 4)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="426" type="Analog">
+        <name>Coincident Power Factor Peak kVA (Quadrants 2 3)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="427" type="Analog">
+        <name>Coincident Power Factor Peak Total kVA</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="428" type="Analog">
+        <name>Coincident Power Factor Delivered Peak kW Rate A</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="429" type="Analog">
+        <name>Coincident Power Factor Received Peak kW Rate A</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="430" type="Analog">
+        <name>Coincident Power Factor Peak Total kW Rate A</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="431" type="Analog">
+        <name>Coincident Power Factor Peak kVAR (Quadrants 1 2) Rate A</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="432" type="Analog">
+        <name>Coincident Power Factor Peak kVAR (Quadrants 3 4) Rate A</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="433" type="Analog">
+        <name>Coincident Power Factor Peak Total kVAR Rate A</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="434" type="Analog">
+        <name>Coincident Power Factor Peak kVA (Quadrants 1 4) Rate A</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="435" type="Analog">
+        <name>Coincident Power Factor Peak kVA (Quadrants 2 3) Rate A</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="436" type="Analog">
+        <name>Coincident Power Factor Peak Total kVA Rate A</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="437" type="Analog">
+        <name>Coincident Power Factor Delivered Peak kW Rate B</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="438" type="Analog">
+        <name>Coincident Power Factor Received Peak kW Rate B</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="439" type="Analog">
+        <name>Coincident Power Factor Peak Total kW Rate B</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="440" type="Analog">
+        <name>Coincident Power Factor Peak kVAR (Quadrants 1 2) Rate B</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="441" type="Analog">
+        <name>Coincident Power Factor Peak kVAR (Quadrants 3 4) Rate B</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="442" type="Analog">
+        <name>Coincident Power Factor Peak Total kVAR Rate B</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="443" type="Analog">
+        <name>Coincident Power Factor Peak kVA (Quadrants 1 4) Rate B</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="444" type="Analog">
+        <name>Coincident Power Factor Peak kVA (Quadrants 2 3) Rate B</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="445" type="Analog">
+        <name>Coincident Power Factor Peak Total kVA Rate B</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="446" type="Analog">
+        <name>Coincident Power Factor Delivered Peak kW Rate C</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="447" type="Analog">
+        <name>Coincident Power Factor Received Peak kW Rate C</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="448" type="Analog">
+        <name>Coincident Power Factor Peak Total kW Rate C</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="449" type="Analog">
+        <name>Coincident Power Factor Peak kVAR (Quadrants 1 2) Rate C</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="450" type="Analog">
+        <name>Coincident Power Factor Peak kVAR (Quadrants 3 4) Rate C</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="451" type="Analog">
+        <name>Coincident Power Factor Peak Total kVAR Rate C</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="452" type="Analog">
+        <name>Coincident Power Factor Peak kVA (Quadrants 1 4) Rate C</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="453" type="Analog">
+        <name>Coincident Power Factor Peak kVA (Quadrants 2 3) Rate C</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="454" type="Analog">
+        <name>Coincident Power Factor Peak Total kVA Rate C</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="455" type="Analog">
+        <name>Coincident Power Factor Delivered Peak kW Rate D</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="456" type="Analog">
+        <name>Coincident Power Factor Received Peak kW Rate D</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="457" type="Analog">
+        <name>Coincident Power Factor Peak Total kW Rate D</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="458" type="Analog">
+        <name>Coincident Power Factor Peak kVAR (Quadrants 1 2) Rate D</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="459" type="Analog">
+        <name>Coincident Power Factor Peak kVAR (Quadrants 3 4) Rate D</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="460" type="Analog">
+        <name>Coincident Power Factor Peak Total kVAR Rate D</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="461" type="Analog">
+        <name>Coincident Power Factor Peak kVA (Quadrants 1 4) Rate D</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="462" type="Analog">
+        <name>Coincident Power Factor Peak kVA (Quadrants 2 3) Rate D</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="463" type="Analog">
+        <name>Coincident Power Factor Peak Total kVA Rate D</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -CalcAnalog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="0" type="CalcAnalog">
         <name>Total Outage Count</name>
