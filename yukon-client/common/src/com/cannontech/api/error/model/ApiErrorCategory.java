@@ -38,4 +38,8 @@ public enum ApiErrorCategory {
         this.defaultMessage = defaultMessage;
     }
 
+    // This will return the type, url is fixed, with code appended
+    public String getType() {
+        return "/api/errors/" + getCode();
+    }
 }
