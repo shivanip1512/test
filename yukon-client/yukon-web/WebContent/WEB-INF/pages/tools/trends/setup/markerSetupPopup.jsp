@@ -6,7 +6,8 @@
 
 <cti:msgScope paths="yukon.common,modules.tools.trend">
     <c:forEach items="${colors}" var="color">
-        <input type="hidden" class="js-color-item" value="${color}" />
+        <cti:msg var="colorName" key="${color.formatKey}"/>
+        <input type="hidden" class="js-color-item" value="${color.hexValue}" data-color-name="${colorName}"/>
     </c:forEach>
 
     <cti:url var="addMarkerUrl" value="/tools/trend/addPointOrMarker" />

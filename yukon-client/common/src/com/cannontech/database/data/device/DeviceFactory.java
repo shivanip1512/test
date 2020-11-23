@@ -19,6 +19,7 @@ import com.cannontech.database.data.capcontrol.CapBankControllerLogical;
 import com.cannontech.database.data.capcontrol.CapBankControllerVersacom;
 import com.cannontech.database.data.capcontrol.CapBankController_FP_2800;
 import com.cannontech.database.data.device.lm.LMGroupDigiSep;
+import com.cannontech.database.data.device.lm.LMGroupEatonCloud;
 import com.cannontech.database.data.device.lm.LMGroupEcobee;
 import com.cannontech.database.data.device.lm.LMGroupEmetcon;
 import com.cannontech.database.data.device.lm.LMGroupGolay;
@@ -438,6 +439,9 @@ public final class DeviceFactory {
         case LM_GROUP_METER_DISCONNECT:
             returnDevice = new LMGroupMeterDisconnect();
             break;    
+        case LM_GROUP_EATON_CLOUD:
+            returnDevice = new LMGroupEatonCloud();
+            break;
 
         case CAPBANK:
             returnDevice = new CapBank();

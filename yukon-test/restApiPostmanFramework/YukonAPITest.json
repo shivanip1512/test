@@ -543,26 +543,6 @@
 								}
 							},
 							"response": []
-						},
-						{
-							"name": "GetNormalState",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{api-url}}/dr/controlAreas/normalState/{id}",
-									"host": [
-										"{{api-url}}"
-									],
-									"path": [
-										"dr",
-										"controlAreas",
-										"normalState",
-										"{id}"
-									]
-								}
-							},
-							"response": []
 						}
 					],
 					"protocolProfileBehavior": {},
@@ -1803,28 +1783,6 @@
 							"description": "Delete an existing load group.",
 							"protocolProfileBehavior": {},
 							"_postman_isSubFolder": true
-						},
-						{
-							"name": "getPointGroupStartState",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{api-url}}/api/dr/setup/loadGroup/getPointGroupStartState/1234",
-									"host": [
-										"{{api-url}}"
-									],
-									"path": [
-										"api",
-										"dr",
-										"setup",
-										"loadGroup",
-										"getPointGroupStartState",
-										"1234"
-									]
-								}
-							},
-							"response": []
 						}
 					],
 					"event": [
@@ -3584,6 +3542,38 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "RetrievePointStates",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{api-url}}/api/points/{pointId}/states",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"points",
+										"{pointId}",
+										"states"
+									]
+								}
+							},
+							"response": []
 						}
 					],
 					"protocolProfileBehavior": {},
@@ -3602,7 +3592,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\"name\":\"Trend Test\",\r\n\t\"trendSeries\": [\r\n\t\t{\r\n\t\t\"type\": \"DATE_TYPE\",\r\n\t\t\"pointId\":-110,\r\n\t\t\"label\" : \"System Device / System Point\",\r\n\t\t\"color\" : \"BLACK\",\r\n\t\t\"axis\" :\"LEFT\",\r\n\t\t\"multiplier\" : 1.2,\r\n\t\t\"style\" : \"LINE\",\r\n\t\t\"date\":\"06/06/2020\"\r\n\t\t}\r\n\t]\r\n}",
+							"raw": "{\r\n\t\"trendName\":\"Trend Test\",\r\n\t\"trendSeries\": [\r\n\t\t{\r\n\t\t\"type\": \"DATE_TYPE\",\r\n\t\t\"pointId\":-110,\r\n\t\t\"label\" : \"System Device / System Point\",\r\n\t\t\"color\" : \"BLACK\",\r\n\t\t\"axis\" :\"LEFT\",\r\n\t\t\"multiplier\" : 1.2,\r\n\t\t\"style\" : \"LINE\",\r\n\t\t\"date\":\"06/06/2020\"\r\n\t\t}\r\n\t]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3648,7 +3638,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\"name\":\"Trend Test Update\",\r\n\t\"trendSeries\": [\r\n\t\t{\r\n\t\t\"type\": \"PEAK_TYPE\",\r\n\t\t\"pointId\":-110,\r\n\t\t\"label\" : \"System Device / System Point\",\r\n\t\t\"color\" : \"BLACK\",\r\n\t\t\"axis\" :\"LEFT\",\r\n\t\t\"multiplier\" : 1.2,\r\n\t\t\"style\" : \"LINE\",\r\n\t\t\"date\":\"06/10/2020\"\r\n\t\t}\r\n\t]\r\n}",
+							"raw": "{\r\n\t\"trendName\":\"Trend Test Update\",\r\n\t\"trendSeries\": [\r\n\t\t{\r\n\t\t\"type\": \"PEAK_TYPE\",\r\n\t\t\"pointId\":-110,\r\n\t\t\"label\" : \"System Device / System Point\",\r\n\t\t\"color\" : \"BLACK\",\r\n\t\t\"axis\" :\"LEFT\",\r\n\t\t\"multiplier\" : 1.2,\r\n\t\t\"style\" : \"LINE\",\r\n\t\t\"date\":\"06/10/2020\"\r\n\t\t}\r\n\t]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

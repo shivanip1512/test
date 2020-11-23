@@ -242,7 +242,7 @@ public class AttributeServiceImpl implements AttributeService {
             CustomAttribute customAttribute = (CustomAttribute) attribute;
             //TODO: test
             AttributeAssignment attributeAssignment = customAttributeAssignments.asMap().values().stream()
-                    .filter(assignment -> assignment.getAttributeId() == customAttribute.getCustomAttributeId())
+                    .filter(assignment -> assignment.getAttributeId().equals(customAttribute.getCustomAttributeId()))
                     .findFirst()
                     .orElseThrow(() -> new IllegalUseOfAttribute(
                             "Attribute id:" + customAttribute.getCustomAttributeId() + " doesn't exits (not in cache)"));

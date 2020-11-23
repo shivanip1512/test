@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -201,7 +200,7 @@ public class TrendEditorController {
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, httpMethod, Object.class, trendModel);
             if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 HashMap<String, Object> responseMap = (HashMap<String, Object>) response.getBody();
-                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", responseMap.get("name")));
+                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", responseMap.get("trendName")));
                 return redirectLink + "/" + responseMap.get("trendId");
             }
             
@@ -302,8 +301,7 @@ public class TrendEditorController {
     }
 
     private void setModel(ModelMap model, boolean isMarker) {
-        List<String> colors = Lists.newArrayList(GraphColors.values()).stream().map(color -> color.getHexValue()).collect(Collectors.toList());
-        model.addAttribute("colors", colors);
+        model.addAttribute("colors", GraphColors.values());
         model.addAttribute("axes", Lists.newArrayList(TrendAxis.values()));
         
         if (!isMarker) {

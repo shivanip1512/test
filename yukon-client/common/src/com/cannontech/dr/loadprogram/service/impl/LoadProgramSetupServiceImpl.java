@@ -12,7 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.dr.gear.setup.fields.ProgramGearFields;
 import com.cannontech.common.dr.gear.setup.fields.ProgramGearFieldsBuilder;
@@ -89,7 +88,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
         // Logging events during load program creation
         processEventLogsForProgramCreate(loadProgram, liteYukonUser);
-        updateLoadProgramModel(loadProgram, lmProgramBase);
+        updateLoadProgramModel(loadProgram, lmProgramBase, liteYukonUser);
         return loadProgram;
     }
 
@@ -109,23 +108,23 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         loadProgram.setProgramId(programId);
         loadProgram.buildDBPersistent(lmProgramBase);
         buildGearDBPersistent(loadProgram, lmProgramBase);
-        buildLMMemberControlDBPersistent(lmProgramBase, loadProgram);
+        buildLMMemberControlDBPersistent(lmProgramBase, loadProgram, liteYukonUser);
 
         dbPersistentDao.performDBChange(lmProgramBase, TransactionType.UPDATE);
 
         // Logging events during load program update
         processEventLogsForProgramUpdate(loadProgram, oldGears, liteYukonUser);
 
-        updateLoadProgramModel(loadProgram, lmProgramBase);
+        updateLoadProgramModel(loadProgram, lmProgramBase, liteYukonUser);
         return loadProgram;
     }
 
     @Override
-    public LoadProgram retrieve(int programId) {
+    public LoadProgram retrieve(int programId, LiteYukonUser liteYukonUser) {
         LiteYukonPAObject lmProgram = getProgramFromCache(programId);
         LMProgramBase lmProgramBase = (LMProgramBase) dbPersistentDao.retrieveDBPersistent(lmProgram);
         LoadProgram loadProgram = new LoadProgram();
-        updateLoadProgramModel(loadProgram, lmProgramBase);
+        updateLoadProgramModel(loadProgram, lmProgramBase, liteYukonUser);
         return loadProgram;
     }
 
@@ -231,11 +230,10 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     /**
      * Build DB Persistent for member Control 
      */
-    private void buildLMMemberControlDBPersistent(LMProgramBase lmProgram, LoadProgram loadProgram) {
+    private void buildLMMemberControlDBPersistent(LMProgramBase lmProgram, LoadProgram loadProgram, LiteYukonUser liteYukonUser) {
 
-        LiteYukonUser user = ApiRequestContext.getContext().getLiteYukonUser();
-        if (rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_MEMBER_PROGRAMS, user)
-            || user.getUserID() == UserUtils.USER_ADMIN_ID) {
+        if (rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_MEMBER_PROGRAMS, liteYukonUser)
+            || liteYukonUser.getUserID() == UserUtils.USER_ADMIN_ID) {
             LMProgramDirectBase program = (LMProgramDirectBase) lmProgram;
 
             if (CollectionUtils.isNotEmpty(program.getPAOExclusionVector())) {
@@ -276,7 +274,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     /**
      * Update required fields of Load Program Model. 
      */
-    private void updateLoadProgramModel(LoadProgram loadProgram, LMProgramBase lmProgramBase) {
+    private void updateLoadProgramModel(LoadProgram loadProgram, LMProgramBase lmProgramBase, LiteYukonUser liteYukonUser) {
         loadProgram.buildModel(lmProgramBase);
         setConstraintName(loadProgram);
         if (lmProgramBase instanceof LMProgramDirectBase) {
@@ -289,9 +287,8 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                 setNotificationGroupNames(loadProgram);
             }
             LMProgramDirectBase lmProgramDirectBase = (LMProgramDirectBase) lmProgramBase;
-            LiteYukonUser user = ApiRequestContext.getContext().getLiteYukonUser();
-            if (rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_MEMBER_PROGRAMS, user)
-                    || user.getUserID() == UserUtils.USER_ADMIN_ID) {
+            if (rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_MEMBER_PROGRAMS, liteYukonUser)
+                    || liteYukonUser.getUserID() == UserUtils.USER_ADMIN_ID) {
                 updateMemberControlModel(lmProgramDirectBase, loadProgram);
             }
         }

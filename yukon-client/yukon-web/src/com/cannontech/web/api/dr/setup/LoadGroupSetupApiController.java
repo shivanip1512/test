@@ -37,8 +37,8 @@ public class LoadGroupSetupApiController {
     private List<LoadGroupSetupValidator<? extends LoadGroupBase>> validators;
     
     @GetMapping("/{id}")
-    public ResponseEntity<Object> retrieve(@PathVariable int id) {
-        LoadGroupBase loadGroup = loadGroupService.retrieve(id);
+    public ResponseEntity<Object> retrieve(@PathVariable int id, YukonUserContext userContext) {
+        LoadGroupBase loadGroup = loadGroupService.retrieve(id, userContext.getYukonUser());
         return new ResponseEntity<>(loadGroup, HttpStatus.OK);
     }
 

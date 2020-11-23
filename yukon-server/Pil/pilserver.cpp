@@ -696,8 +696,7 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
                     {
                         if( auto returnMsg = dynamic_cast<CtiReturnMsg*>(msg) )
                         {
-                            if( returnMsg->getConnectionHandle() == InMessage.Return.Connection
-                                && returnMsg->UserMessageId() == InMessage.Return.UserID )
+                            if( returnMsg->UserMessageId() == InMessage.Return.UserID )
                             {
                                 returnMsg->setExpectMore(true);
                             }
@@ -707,12 +706,7 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
             }
         }
 
-        for( OUTMESS *OutMessage : imrp.outList )
-        {
-            OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;
-            _porterOMQueue.putQueue(OutMessage);
-        }
-        imrp.outList.clear();
+        submitOutMessages(imrp.outList);
     }
 
     if( ! retList.empty() )
@@ -1041,6 +1035,15 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
     }
 }
 
+void PilServer::submitOutMessages(CtiDeviceBase::OutMessageList& outList)
+{
+    for( OUTMESS* OutMessage : outList )
+    {
+        OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;
+        _porterOMQueue.putQueue(OutMessage);
+    }
+    outList.clear();
+}
 
 void PilServer::sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase::CtiMessageList &retList, const int priority, const ConnectionHandle connectionHandle)
 {

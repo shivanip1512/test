@@ -33,8 +33,8 @@ public class ControlAreaSetupApiController {
     @Autowired private ControlAreaSetupValidator controlAreaSetupValidator;
 
     @GetMapping("/{id}")
-    public ResponseEntity<ControlArea> retrieve(@PathVariable int id) {
-        return new ResponseEntity<>(controlAreaService.retrieve(id), HttpStatus.OK);
+    public ResponseEntity<ControlArea> retrieve(@PathVariable int id, YukonUserContext userContext) {
+        return new ResponseEntity<>(controlAreaService.retrieve(id, userContext.getYukonUser()), HttpStatus.OK);
     }
 
     @PostMapping

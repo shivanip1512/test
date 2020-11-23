@@ -752,16 +752,18 @@ yukon.mapping = (function () {
                     var icon = yukon.mapping.addFeatureToMapAndArray(feature, _descendantIcons),
                         points = [],
                         parent = source.getFeatureById(parentId);
-                    points.push(icon.getGeometry().getCoordinates());
-                    points.push(parent.getGeometry().getCoordinates());
-                    var lineFeature = new ol.Feature({
-                        geometry: new ol.geom.LineString(points),
-                        name: 'Line'
-                    });
-                    if (dashedLine) {
-                        _descendantDashedLineFeatures.push(lineFeature);
-                    } else {
-                        _descendantLineFeatures.push(lineFeature);
+                    if (parent != null) {
+                        points.push(icon.getGeometry().getCoordinates());
+                        points.push(parent.getGeometry().getCoordinates());
+                        var lineFeature = new ol.Feature({
+                            geometry: new ol.geom.LineString(points),
+                            name: 'Line'
+                        });
+                        if (dashedLine) {
+                            _descendantDashedLineFeatures.push(lineFeature);
+                        } else {
+                            _descendantLineFeatures.push(lineFeature);
+                        }
                     }
                 }
                 yukon.mapping.findDescendants(childNode, parentId);

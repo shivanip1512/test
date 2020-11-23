@@ -4044,7 +4044,9 @@ YukonError_t Mct410Device::decodeGetConfigFreeze(const INMESS &InMessage, const 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
-    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
+    decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
+
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection) );
 
     return status;
 }

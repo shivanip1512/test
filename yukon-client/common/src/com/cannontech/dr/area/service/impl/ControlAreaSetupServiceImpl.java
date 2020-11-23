@@ -51,7 +51,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
      * Retrieve control area based on control area Id.
      */
     @Override
-    public ControlArea retrieve(int areaId) {
+    public ControlArea retrieve(int areaId, LiteYukonUser liteYukonUser) {
         LiteYukonPAObject liteControlArea = dbCache.getAllLMControlAreas()
                                                                  .stream()
                                                                  .filter(controlArea -> controlArea.getLiteID() == areaId)

@@ -38,8 +38,8 @@ public class ProgramConstraintApiController {
     @Autowired ProgramConstraintValidator programConstraintValidator;
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProgramConstraint> retrieve(@PathVariable int id) {
-        return new ResponseEntity<>(programConstraintService.retrieve(id), HttpStatus.OK);
+    public ResponseEntity<ProgramConstraint> retrieve(@PathVariable int id, YukonUserContext userContext) {
+        return new ResponseEntity<>(programConstraintService.retrieve(id, userContext.getYukonUser()), HttpStatus.OK);
     }
 
     @PostMapping

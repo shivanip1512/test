@@ -202,6 +202,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     LM_GROUP_SADIGITAL(DeviceTypes.LM_GROUP_SADIGITAL, "SA-Digital Group", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_VERSACOM(DeviceTypes.LM_GROUP_VERSACOM, "VERSACOM GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_METER_DISCONNECT(DeviceTypes.LM_GROUP_METER_DISCONNECT, "METER DISCONNECT GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
+    LM_GROUP_EATON_CLOUD(DeviceTypes.LM_GROUP_EATON_CLOUD, "EATON CLOUD GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     MACRO_GROUP(DeviceTypes.MACRO_GROUP, "MACRO GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     
     LM_CURTAIL_PROGRAM(DeviceTypes.LM_CURTAIL_PROGRAM, "LM CURTAIL PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
@@ -785,7 +786,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LM_GROUP_METER_DISCONNECT,
             LM_GROUP_MCT,
             LM_GROUP_RIPPLE,
-            LM_GROUP_POINT
+            LM_GROUP_POINT,
+            LM_GROUP_EATON_CLOUD
           );
         
         batteryAnalysisTypes = ImmutableSet.of(
@@ -1178,7 +1180,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
      */
     public static List<PaoType> getAllLMGroupTypes() {
         List<PaoType> paoTypes = Arrays.stream(PaoType.values())
-                                       .filter(paoType -> paoType.isLoadGroup() && paoType.isLoadGroupSupportedFromWeb() && paoType != PaoType.MACRO_GROUP &&paoType != PaoType.LM_GROUP_NEST)
+                                       .filter(paoType -> paoType.isLoadGroup() && paoType.isLoadGroupSupportedFromWeb() && 
+                                               paoType != PaoType.MACRO_GROUP && paoType != PaoType.LM_GROUP_NEST)
                                        .collect(Collectors.toList());
         return paoTypes;
     }

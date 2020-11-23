@@ -71,6 +71,9 @@ public class LMModelFactory {
         case LM_GROUP_RIPPLE:
             loadGroup = new LoadGroupRipple();
             break;
+        case LM_GROUP_EATON_CLOUD:
+            loadGroup = new LoadGroupEatonCloud();
+            break;
 
         }
         return loadGroup;

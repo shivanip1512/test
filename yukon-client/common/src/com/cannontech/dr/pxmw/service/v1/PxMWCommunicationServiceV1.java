@@ -1,6 +1,7 @@
 package com.cannontech.dr.pxmw.service.v1;
 
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWDeviceChannelDetailsV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxwhite.model.TokenDetails;
@@ -68,5 +69,11 @@ public interface PxMWCommunicationServiceV1 {
      * @throws PxMWCommunicationExceptionV1 
      */
     PxMWSiteV1 getSite(String token, String siteGuid, Boolean recursive, Boolean includeDetail) throws PxMWCommunicationExceptionV1;
+
+    /**
+     * Returns the latest readings for a device channels.
+     */
+    PxMWDeviceChannelDetailsV1 getDeviceChannelDetails(String token, String deviceGuid)
+            throws PxMWCommunicationExceptionV1;
 
 }

@@ -1359,6 +1359,21 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     }
     
     @Override
+    public Integer getErrorCodeByDeviceId(int deviceId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ErrorCode");
+        sql.append("FROM DeviceConfigState dcs");
+        sql.append("LEFT JOIN CommandRequestExecResult crer ON crer.CommandRequestExecId = dcs.CommandRequestExecId AND dcs.PAObjectID=crer.DeviceId");
+        sql.append("WHERE PaObjectId").eq(deviceId);
+        try {
+            int errorCode = jdbcTemplate.queryForInt(sql);
+            return errorCode == 0 ? null : errorCode;
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+    
+    @Override
     public void failInProgressDevices() {
         jdbcTemplate.update(getFailInProgressDevicesSql());
     }
