@@ -38,6 +38,11 @@
                     <cti:url var="outOfSyncUrl" value="/deviceConfiguration/summary/${deviceId}/outOfSync"/>
                     <div class="dn js-out-of-sync-popup" data-title="<cti:msg2 key="yukon.web.modules.tools.configs.summary.outOfSync"/>" 
                         data-width="550" data-url="${outOfSyncUrl}" data-destroy-dialog-on-close></div>
+                    <cti:msg2 var="lastErrorHoverText" key=".viewLastError"/>
+                    <cti:msg2 var="errorPopupTitle" key="yukon.web.modules.tools.configs.summary.failure"/>
+                    <span class="js-last-error dn" title="${lastErrorHoverText}" data-popup-title="${errorPopupTitle}">
+                        <cti:icon icon="icon-exclamation fn ML0 vam cp"/>
+                    </span>
                 </tags:nameValue2>
                 
                 <cti:checkRolesAndProperties value="SEND_READ_CONFIG">
