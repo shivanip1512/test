@@ -11,8 +11,10 @@ import org.json.JSONObject;
 
 import com.eaton.builders.drsetup.gears.EcobeeCycleGearBuilder;
 import com.eaton.builders.drsetup.gears.EcobeeSetpointGearBuilder;
+import com.eaton.builders.drsetup.gears.HoneywellCycleGearBuilder;
 import com.eaton.builders.drsetup.gears.ItronCycleGearBuilder;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupEcobeeCreateBuilder;
+import com.eaton.builders.drsetup.loadgroup.LoadGroupHoneywellCreateBuilder;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupItronCreateBuilder;
 import com.eaton.builders.drsetup.loadprogram.ProgramEnums.OperationalState;
 import com.eaton.builders.drsetup.loadprogram.ProgramEnums.ProgramType;
@@ -89,5 +91,23 @@ public class LoadProgramCreateService {
 		hmap.put("LoadProgram", programPair);
 
 		return hmap;
+	}
+	
+	public static Pair<JSONObject, JSONObject> createHoneywellProgramWithCycleGear() {
+		List<JSONObject> gears = new ArrayList<>();
+		gears.add(HoneywellCycleGearBuilder.gearBuilder().build());
+
+		Pair<JSONObject, JSONObject> pairLdGrp = new LoadGroupHoneywellCreateBuilder.Builder(Optional.empty())
+														.withKwCapacity(Optional.empty())
+														.create();
+
+		JSONObject responseLdGrp = pairLdGrp.getValue1();
+		int ldGrpId = responseLdGrp.getInt("id");
+		List<Integer> assignedGroupIds = new ArrayList<>(List.of(ldGrpId));
+
+		return new LoadProgramCreateBuilder.Builder(ProgramEnums.ProgramType.HONEYWELL_PROGRAM, gears, assignedGroupIds)
+				.withGears(gears).withName(Optional.empty())
+				.withOperationalState(Optional.of(ProgramEnums.OperationalState.Automatic))
+				.create();
 	}
 }
