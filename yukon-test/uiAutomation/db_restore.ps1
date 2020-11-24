@@ -8,7 +8,7 @@ param(
  )
  
 Import-Module $PSScriptRoot\..\..\yukon-deploy\vm-install\copy-to-vm\YukonDeploy
-#Stop-Services
+Stop-Services
 
 Function RestoreDatabase () {
 	Write-Host "----------------------------Starting DB restore-------------------------------------------------"
