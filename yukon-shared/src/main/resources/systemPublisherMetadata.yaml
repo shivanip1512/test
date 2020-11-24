@@ -107,9 +107,6 @@ Network Manager :
   - field: gapfillrequests
     description: Gap Fill Requests (24 Hours)
     details: Number of requests within 24 hours for Gap fill. 
-    source: >-
-        SELECT COUNT (*) FROM Gw_Node_Log_Entry nle 
-        WHERE nle.GatewayTimeStamp > CONVERT(BIGINT,(DATEDIFF(s, '1970-01-01', GETUTCDATE()) - 86400)) * 1000 AND nle.GwNodeLogCodeId=408
     iotType: Both
     frequency : EverySixHours
 
@@ -123,17 +120,12 @@ Network Manager :
   - field: maxnodespergateway
     description: Gateway Loading (Max)
     details: Contains the Gateway with highest node count
-    source: SELECT TOP 1 GwTotalNodes FROM Gateway ORDER BY GwTotalNodes DESC
     iotType: Both
     frequency : EverySixHours
 
   - field: gatewayresetcount
     description: Gateway Reset Count (7 Day)
     details: Contains the frequency count of gateway reset for last 7 days.
-    source: >-
-        SELECT COUNT(*) AS "GatewayResetCount(Last7Days)" FROM Gw_Log_Entry gwle
-        WHERE gwle.GatewayTimeStamp > CONVERT(BIGINT,(DATEDIFF(s, '1970-01-01', GETUTCDATE()) - 86400)) * 1000
-        AND gwle.GwLogCodeId=1601
     iotType: Both
     frequency : EverySixHours
 
