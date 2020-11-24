@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionUrl;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -66,6 +68,7 @@ public class InfrastructureWarningsController {
     private final static String baseKey = "yukon.web.widgets.infrastructureWarnings.";
     private final static String widgetKey = "yukon.web.widgets.";
     private static final Instant epoch1990 = new Instant(CtiUtilities.get1990GregCalendar().getTime());
+    private static final Logger log = YukonLogManager.getLogger(InfrastructureWarningsController.class);
 
     @GetMapping("forceUpdate")
     public @ResponseBody Map<String, Object> forceUpdate() {
@@ -76,13 +79,20 @@ public class InfrastructureWarningsController {
     }
     
     @GetMapping("updateWidget")
-    public String updateWidget(ModelMap model, YukonUserContext userContext, String deviceType) {
+    public String updateWidget(ModelMap model, YukonUserContext userContext, String infrastructureWarningDeviceCategory) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         InfrastructureWarningSummary summary = widgetService.getWarningsSummary();
         List<InfrastructureWarning> warnings = widgetService.getWarnings();
-        if (!StringUtils.isEmpty(deviceType)) {
-            InfrastructureWarningDeviceCategory deviceCategory = InfrastructureWarningDeviceCategory.valueOf(deviceType);
-            warnings = infrastructureWarningsDao.getWarnings(deviceCategory);
+        boolean showAllDeviceInfrastructureWarnings = true;
+        if (!StringUtils.isEmpty(infrastructureWarningDeviceCategory)) {
+            try {
+                InfrastructureWarningDeviceCategory deviceCategory = InfrastructureWarningDeviceCategory
+                        .valueOf(infrastructureWarningDeviceCategory);
+                warnings = infrastructureWarningsDao.getWarnings(deviceCategory);
+                showAllDeviceInfrastructureWarnings = false;
+            } catch (IllegalArgumentException e) {
+                log.error(e.getMessage());
+            }
         }
         model.addAttribute("summary", summary);
         Comparator<InfrastructureWarning> comparator = (o1, o2) -> o1.getSeverity().name().compareTo(o2.getSeverity().name());
@@ -91,24 +101,23 @@ public class InfrastructureWarningsController {
             warnings = warnings.subList(0,  10);
         }
         model.addAttribute("warnings",  warnings);
-        if (StringUtils.isEmpty(deviceType)) {
-            model.addAttribute("lastAttemptedRefresh", widgetService.getRunTime(false));
-            Instant nextRun = widgetService.getRunTime(true);
-            if (nextRun.isAfterNow()) {
-                model.addAttribute("nextRefresh", nextRun);
-                model.addAttribute("isRefreshPossible", false);
-                String nextRefreshDate = dateFormattingService.format(nextRun, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
-                model.addAttribute("refreshTooltip", accessor.getMessage(widgetKey + "nextRefresh") + nextRefreshDate);
-            } else {
-                model.addAttribute("isRefreshPossible", true);
-                model.addAttribute("refreshTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
-            }
-            model.addAttribute("epoch1990", epoch1990);
-            return "infrastructureWarnings/widgetView.jsp";
+        model.addAttribute("lastAttemptedRefresh", widgetService.getRunTime(false));
+        Instant nextRun = widgetService.getRunTime(true);
+        if (nextRun.isAfterNow()) {
+            model.addAttribute("nextRefresh", nextRun);
+            model.addAttribute("isRefreshPossible", false);
+            String nextRefreshDate = dateFormattingService.format(nextRun, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
+            model.addAttribute("refreshTooltip", accessor.getMessage(widgetKey + "nextRefresh") + nextRefreshDate);
         } else {
-            model.addAttribute("deviceType", deviceType);
+            model.addAttribute("isRefreshPossible", true);
+            model.addAttribute("refreshTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
+        }
+        model.addAttribute("epoch1990", epoch1990);
+        if (!StringUtils.isEmpty(infrastructureWarningDeviceCategory) && !showAllDeviceInfrastructureWarnings) {
+            model.addAttribute("infrastructureWarningDeviceCategory", infrastructureWarningDeviceCategory);
             return "infrastructureWarnings/deviceTypeInfrastructureWarningsWidget.jsp";
         }
+        return "infrastructureWarnings/widgetView.jsp";
     }
     
     private InfrastructureWarningDeviceCategory[] getTypesInSystem() {

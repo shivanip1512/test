@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths="widgets.infrastructureWarnings">
@@ -14,7 +15,7 @@
             </c:if>
         </tr>
     </table>
-    <%@ include file="infrastructureWarningsDetails.jsp" %>
     <cti:url var="allWarningsUrl" value="/stars/infrastructureWarnings/detail"/>
-    <span class="fr"><a href="${allWarningsUrl}?types=GATEWAY" target="_blank"><i:inline key="yukon.common.viewDetails"/></a></span>
+    <span class="fr"><a href="${allWarningsUrl}?types=${infrastructureWarningDeviceCategory}" target="_blank"><i:inline key="yukon.common.viewDetails"/></a></span>
+    <%@ include file="infrastructureWarningsDetails.jsp" %>
 </cti:msgScope>

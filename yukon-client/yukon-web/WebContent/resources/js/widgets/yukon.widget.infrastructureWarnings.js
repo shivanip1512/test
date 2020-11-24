@@ -15,9 +15,9 @@ yukon.widget.infrastructureWarnings = (function () {
     _updateInterval = 6000,
     
     _update = function () {
-        var deviceType = $('.js-infrastructure-warning-device-type').val();
+        var infrastructureWarningDeviceCategory = $('.js-infrastructure-warning-device-type').val();
         $.ajax({
-            url: yukon.url('/stars/infrastructureWarnings/updateWidget?deviceType='+ deviceType),
+            url: yukon.url('/stars/infrastructureWarnings/updateWidget?infrastructureWarningDeviceCategory='+ infrastructureWarningDeviceCategory),
         }).done(function (data) {
             $('#widgetView').html(data);
         });  

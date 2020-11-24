@@ -250,7 +250,7 @@
     <div class="column-12-12 clearfix">
         <div class="column one">
             <cti:msg2 var="helpTextWidget" key="yukon.web.widgets.infrastructureWarningsWidget.helpText"/>
-            <tags:widget bean="infrastructureWarningsWidget" helpText="${helpTextWidget}" deviceType="${deviceType}"/>
+            <tags:widget bean="infrastructureWarningsWidget" helpText="${helpTextWidget}" infrastructureWarningDeviceCategory="${infrastructureWarningDeviceCategory}"/>
         </div>
         <div class="column two nogutter">
         </div>

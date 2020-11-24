@@ -101,7 +101,7 @@ public class GatewayListController {
                                                                              .map(gateway -> gateway.getPaoIdentifier().getPaoId())
                                                                              .collect(Collectors.toList()));
         model.addAttribute("notesList", notesList);
-        model.addAttribute("deviceType", InfrastructureWarningDeviceCategory.GATEWAY);
+        model.addAttribute("infrastructureWarningDeviceCategory", InfrastructureWarningDeviceCategory.GATEWAY);
         return "gateways/list.jsp";
     }
 

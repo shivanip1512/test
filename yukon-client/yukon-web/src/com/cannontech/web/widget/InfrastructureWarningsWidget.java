@@ -28,13 +28,13 @@ public class InfrastructureWarningsWidget extends AdvancedWidgetControllerBase {
 
     @GetMapping("render")
     public String render(ModelMap model, HttpServletRequest request) {
-        String deviceType = null;
+        String infrastructureWarningDeviceCategory = null;
         try {
-            deviceType = WidgetParameterHelper.getStringParameter(request, "deviceType");
+            infrastructureWarningDeviceCategory = WidgetParameterHelper.getStringParameter(request, "infrastructureWarningDeviceCategory");
         } catch (ServletRequestBindingException e) {
             log.error("Error rendering Infrastructure Warnings Widget", e);
         }
-        model.addAttribute("deviceType", deviceType);
+        model.addAttribute("infrastructureWarningDeviceCategory", infrastructureWarningDeviceCategory);
         return "infrastructureWarningsWidget/render.jsp";
     }
 

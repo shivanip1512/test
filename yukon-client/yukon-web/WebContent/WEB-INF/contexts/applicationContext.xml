@@ -181,9 +181,9 @@
         <property name="required" value="true"/>
     </bean>
     
-    <bean id="widgetInput.deviceType" class="com.cannontech.web.widget.support.SimpleWidgetInput">
-        <property name="name" value="widgetInput.deviceType"/>
-        <property name="description" value="InfrastructureWarningDeviceCategory type"/>
+    <bean id="widgetInput.infrastructureWarningDeviceCategory" class="com.cannontech.web.widget.support.SimpleWidgetInput">
+        <property name="name" value="widgetInput.infrastructureWarningDeviceCategory"/>
+        <property name="description" value="type of InfrastructureWarningDeviceCategory"/>
         <property name="required" value="false"/>
     </bean>
     
