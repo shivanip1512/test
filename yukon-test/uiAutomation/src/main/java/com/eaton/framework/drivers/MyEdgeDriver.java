@@ -1,5 +1,6 @@
 package com.eaton.framework.drivers;
 
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.WebDriver;
@@ -16,22 +17,17 @@ public final class MyEdgeDriver {
     }
 
     public static WebDriver getNewEdgeDriver(boolean useRemoteDriver, String proxy, Boolean useProxy) {
-
-//        WebDriver driver;  
-                
-        //Hard coding edge driver for now since WebDriverManager is not working correctly
-        //Get the msedgedriver.exe from \\PSPL-QA235\d$\EAS SQA Toolsj\SeleniumDrivers\msedgedriver.exe and copy to your local directory
-        //The version of the Edge driver is for Edge Browser Version 80.0.361.111
-        //Change the location to point to where your local version of the edge driver is located
-        System.setProperty("webdriver.edge.driver", "C:\\dev\\workspaces\\yukon\\yukon\\yukon-test\\uiAutomation\\SeleniumDrivers\\" + "msedgedriver.exe");
-        
         WebDriver driver;
+        
         if(useProxy)
             WebDriverManager.edgedriver().proxy(proxy).setup();
         else
             WebDriverManager.edgedriver().setup();
         
-        EdgeOptions options = new EdgeOptions();                   
+        EdgeOptions options = new EdgeOptions();   
+        options.setCapability("useAutomationExtension", false);
+        options.setCapability("excludeSwitches", Collections.singletonList("enable-automation"));
+        options.setCapability( "disable-infobars", true);
 
         if (useRemoteDriver) {
             driver = new RemoteWebDriver(options);
@@ -40,7 +36,7 @@ public final class MyEdgeDriver {
         
         driver.manage().deleteAllCookies();
         driver.manage().window().maximize();
-        driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
+        driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
         EventFiringWebDriver firingDriver = new EventFiringWebDriver(driver);                
