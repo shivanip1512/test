@@ -115,11 +115,49 @@ public class InfrastructureWarningsController {
         model.addAttribute("epoch1990", epoch1990);
         if (!StringUtils.isEmpty(infrastructureWarningDeviceCategory) && !showAllDeviceInfrastructureWarnings) {
             model.addAttribute("infrastructureWarningDeviceCategory", infrastructureWarningDeviceCategory);
+            setDeviceCountForDeviceCategory(model,
+                    InfrastructureWarningDeviceCategory.valueOf(infrastructureWarningDeviceCategory), accessor,
+                    summary);
             return "infrastructureWarnings/deviceTypeInfrastructureWarningsWidget.jsp";
         }
         return "infrastructureWarnings/widgetView.jsp";
     }
-    
+
+    /*
+     * Set the model attributes corresponding to infrastructure warning device category
+     */
+    private void setDeviceCountForDeviceCategory(ModelMap model,
+            InfrastructureWarningDeviceCategory infrastructureWarningDeviceCategory,
+            MessageSourceAccessor accessor, InfrastructureWarningSummary summary) {
+        String deviceLabel = null;
+        switch (infrastructureWarningDeviceCategory) {
+        case RELAY:
+            model.addAttribute("deviceTotalCount", summary.getTotalRelays());
+            model.addAttribute("deviceWarningsCount", summary.getWarningRelays());
+            deviceLabel = accessor.getMessage(baseKey + "relays");
+            model.addAttribute("deviceLabel", deviceLabel);
+            break;
+        case CCU:
+            model.addAttribute("deviceTotalCount", summary.getTotalCcus());
+            model.addAttribute("deviceWarningsCount", summary.getWarningCcus());
+            deviceLabel = accessor.getMessage(baseKey + "CCUs");
+            model.addAttribute("deviceLabel", deviceLabel);
+            break;
+        case REPEATER:
+            model.addAttribute("deviceTotalCount", summary.getTotalRepeaters());
+            model.addAttribute("deviceWarningsCount", summary.getWarningRepeaters());
+            deviceLabel = accessor.getMessage(baseKey + "repeaters");
+            model.addAttribute("deviceLabel", deviceLabel);
+            break;
+        default:
+            model.addAttribute("deviceTotalCount", summary.getTotalGateways());
+            model.addAttribute("deviceWarningsCount", summary.getWarningGateways());
+            deviceLabel = accessor.getMessage(baseKey + "gateways");
+            model.addAttribute("deviceLabel", deviceLabel);
+            break;
+        }
+    }
+
     private InfrastructureWarningDeviceCategory[] getTypesInSystem() {
         InfrastructureWarningSummary summary = widgetService.getWarningsSummary();
         return Arrays.stream(InfrastructureWarningDeviceCategory.values())
