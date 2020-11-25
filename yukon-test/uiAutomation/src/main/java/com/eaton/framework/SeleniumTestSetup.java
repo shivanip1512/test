@@ -43,11 +43,11 @@ public class SeleniumTestSetup {
     private static boolean loggedIn = false;
 
     private static String screenShotPath;
-    
+
     private static String database;
 
     private static Faker faker;
-    
+
     private boolean refreshPage = false;
 
     @BeforeSuite(alwaysRun = true)
@@ -146,11 +146,11 @@ public class SeleniumTestSetup {
     public static String getScreenShotPath() {
         return SeleniumTestSetup.screenShotPath;
     }
-    
+
     private static void setDatabase(String database) {
         SeleniumTestSetup.database = database;
     }
-    
+
     public static String getDatabase() {
         return SeleniumTestSetup.database;
     }
@@ -195,14 +195,14 @@ public class SeleniumTestSetup {
     }
 
     public void waitForPageToLoad(String pageTitle, Optional<Integer> timeOutSeconds) {
-        Integer timeOut = timeOutSeconds.orElse(1);       
+        Integer timeOut = timeOutSeconds.orElse(1);
 
-        SeleniumTestSetup.driverExt.getDriverWait(Optional.of(timeOut)).until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".page-heading"), pageTitle));
+        SeleniumTestSetup.driverExt.getDriverWait(Optional.of(timeOut))
+                .until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".page-heading"), pageTitle));
     }
 
     public void refreshPage(PageBase page) {
         if (getCurrentUrl().equals(getBaseUrl() + page.getPageUrl())) {
-            //driver.navigate().refresh();
             JavascriptExecutor je = (JavascriptExecutor) driver;
             je.executeScript("document.location.reload(true);");
         } else {
@@ -226,12 +226,12 @@ public class SeleniumTestSetup {
     public static void waitUntilModalOpenByDescribedBy(String describedBy) {
         Integer count;
         long startTime = System.currentTimeMillis();
-        
+
         do {
             count = driverExt.findElements(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).size();
-        } while(count.equals(0) && ((System.currentTimeMillis() - startTime) < 2000));
+        } while (count.equals(0) && ((System.currentTimeMillis() - startTime) < 2000));
     }
-    
+
     public static void waitUntilModalOpenDisplayBlock(String describedBy) {
         long startTime = System.currentTimeMillis();
 
@@ -247,12 +247,12 @@ public class SeleniumTestSetup {
     }
 
     public static void waitUntilModalClosedByDescribedBy(String describedBy) {
-        long startTime = System.currentTimeMillis();        
+        long startTime = System.currentTimeMillis();
         Integer count;
-        
+
         do {
             count = driverExt.findElements(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).size();
-        } while(count.equals(1) && ((System.currentTimeMillis() - startTime) < 2000));
+        } while (count.equals(1) && ((System.currentTimeMillis() - startTime) < 2000));
     }
 
     public static void waitUntilModalClosedDisplayNone(String describedBy) {
@@ -283,9 +283,11 @@ public class SeleniumTestSetup {
         long startTime = System.currentTimeMillis();
 
         while ((System.currentTimeMillis() - startTime) < 2000) {
-            List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-labelledby^='ui-id']"), Optional.of(0));
+            List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-labelledby^='ui-id']"),
+                    Optional.of(0));
 
-            Optional<WebElement> el = list.stream().filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle)).findFirst();
+            Optional<WebElement> el = list.stream()
+                    .filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle)).findFirst();
 
             if (el.isPresent()) {
                 break;
@@ -303,10 +305,13 @@ public class SeleniumTestSetup {
         long startTime = System.currentTimeMillis();
 
         while ((System.currentTimeMillis() - startTime) < 2000) {
-            List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-describedby^='ui-id']"), Optional.of(0));
+            List<WebElement> list = driverExt.findElements(By.cssSelector(".ui-dialog[aria-describedby^='ui-id']"),
+                    Optional.of(0));
 
             try {
-                Optional<WebElement> el = list.stream().filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle)).findFirst();
+                Optional<WebElement> el = list.stream()
+                        .filter(x -> x.findElement(By.cssSelector(".ui-dialog-title")).getText().contains(modalTitle))
+                        .findFirst();
 
                 if (!el.isPresent()) {
                     break;
@@ -316,7 +321,7 @@ public class SeleniumTestSetup {
             }
         }
     }
-    
+
     public static void waitUntilDropDownMenuOpen() {
         String display = "display: none;";
 
@@ -324,31 +329,32 @@ public class SeleniumTestSetup {
 
         while (display.equals("display: none;") && (System.currentTimeMillis() - startTime < 2000)) {
             try {
-                 List<WebElement> menus = driverExt.findElements(By.cssSelector(".dropdown-menu"), Optional.of(0));
-                 
-                 Optional<WebElement> el = menus.stream().filter(x -> x.getAttribute("style").contains("display: block;")).findFirst();
-                 
-                 if(el.isPresent()) {
-                     display = el.get().getAttribute("style");
-                 }
+                List<WebElement> menus = driverExt.findElements(By.cssSelector(".dropdown-menu"), Optional.of(0));
+
+                Optional<WebElement> el = menus.stream().filter(x -> x.getAttribute("style").contains("display: block;"))
+                        .findFirst();
+
+                if (el.isPresent()) {
+                    display = el.get().getAttribute("style");
+                }
             } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
             }
         }
     }
-        
+
     public static void navigate(String url) {
         String pageUrl = getBaseUrl() + url;
-            
+
         driver.get(pageUrl);
         waitForUrlToLoad(pageUrl, Optional.empty());
     }
-    
+
     public static int getResponseCode(String urlString) throws IOException {
-        URL u = new URL(urlString); 
-        HttpURLConnection huc =  (HttpURLConnection)  u.openConnection(); 
-        huc.setRequestMethod("GET"); 
-        huc.connect(); 
-        
+        URL u = new URL(urlString);
+        HttpURLConnection huc = (HttpURLConnection) u.openConnection();
+        huc.setRequestMethod("GET");
+        huc.connect();
+
         return huc.getResponseCode();
     }
 
@@ -362,11 +368,11 @@ public class SeleniumTestSetup {
         JavascriptExecutor je = (JavascriptExecutor) driver;
         je.executeScript("arguments[0].scrollIntoView(true);", element);
     }    
-    
+
     public boolean getRefreshPage() {
         return refreshPage;
     }
-    
+
     public void setRefreshPage(boolean refreshPage) {
         this.refreshPage = refreshPage;
     }

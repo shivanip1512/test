@@ -7,10 +7,7 @@
     </listeners>
     <test name="Selenium Tests">
 		<classes>
-			<class name="com.eaton.tests.ami.MeterWRL420cDDetailTests">
-		 		<methods>
-        			<include name="meterWRL420cDDetail_MeterReadings_ValuesCorrect" />
-      			</methods>
+			<class name="com.eaton.tests.ami.MeterCommonEditTests">
       		</class>
 		</classes>
     </test>
