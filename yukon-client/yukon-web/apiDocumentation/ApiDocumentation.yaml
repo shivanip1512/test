@@ -33,6 +33,8 @@ paths:
     $ref: 'api/loadGroupsApi.yaml#/post-operation'
   '/dr/loadGroups/{id}':
     $ref: 'api/loadGroupsApi.yaml#/get-update-delete-operation'
+  /dr/loadGroups/{id}/copy:
+    $ref: 'api/loadGroupsApi.yaml#/copy-operation'
 
   /dr/macroLoadGroups:
     $ref: 'api/MacroLoadGroupsApi.yaml#/post-operation'

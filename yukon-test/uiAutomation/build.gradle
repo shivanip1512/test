@@ -51,6 +51,7 @@ dependencies {
 test{
 	useTestNG(){
 		useDefaultListeners = true
+		testLogging.showStandardStreams = true
 		//outputDirectory = file("c:/selenium_results/" + getDate())
 		suites 'smoketests.xml'
 	}
@@ -58,6 +59,7 @@ test{
 
 task regression(type: Test) {
 	useTestNG(){
+			testLogging.showStandardStreams = true
 			useDefaultListeners = true
 			suites 'AllTests.xml'
 		}	

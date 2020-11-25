@@ -369,3 +369,55 @@ get-update-delete-operation:
             examples:
               Load Group Id:
                 $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/id'
+                
+copy-operation:
+  post:
+    tags:
+      - Load Group 
+    summary: Copy Load Group
+    description: |-
+      API to copy any type of load group based on passed id.
+      Below are the supported load group.
+      - DigiSep 
+      - Eaton Cloud
+      - Ecobee
+      - Emetcon
+      - Expresscom
+      - Honeywell
+      - Itron
+      - MCT
+      - Meter Disconnect
+      - Point 
+      - RFN Expresscom
+      - Ripple
+      - Versacomm
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'Unique identifier for the load group to be copied.'
+    
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/loadGroupsSchema.yaml#/LOAD_GROUP_COPY'
+             
+          examples:
+            Load Group Copy:
+              $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/LoadGroupCopy' 
+           
+      required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/loadGroupsSchema.yaml#/CopyResponse'
+            examples:
+              Load Group Copy:
+                $ref: '../schemas/loadGroupsSchema.yaml#/components/examples/groupId' 
+             
