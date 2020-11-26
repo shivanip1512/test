@@ -40,6 +40,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.infrastructure.model.InfrastructureWarningDeviceCategory;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -100,6 +101,7 @@ public class GatewayListController {
                                                                              .map(gateway -> gateway.getPaoIdentifier().getPaoId())
                                                                              .collect(Collectors.toList()));
         model.addAttribute("notesList", notesList);
+        model.addAttribute("infrastructureWarningDeviceCategory", InfrastructureWarningDeviceCategory.GATEWAY);
         return "gateways/list.jsp";
     }
 
