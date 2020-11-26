@@ -42,47 +42,23 @@ yukon.ami.phaseDetectResults = (function() {
                 dataType : 'json'
             }).done(function(data) {
                 debug.log('building chart');
+                
+                var legendOptionsJSON = {
+                    labelFormatter: function (point) {
+                        var legendValueText = '<span class="js-phase-detect-results-legend-value dn">' + this.filter + '</span>',
+                            spanText = '<span class="badge" style="margin:1px;width:60px;color:white;background-color:' + this.color + '">' + this.x + '</span> ';
+                        return legendValueText + spanText + this.name + ': ' + this.displayPercentage;
+                    }
+                };
 
                 $("#js-pie-chart-container").highcharts({
-                    chart: {
-                        renderTo: 'chart',
-                        plotBackgroundColor: null,
-                        plotBorderWidth: null,
-                        plotShadow: false,
-                        height: 200,
-                        width: 460
-                    },
-                    credits: {
-                        enabled: false
-                    },
-                    legend: {
-                        symbolPadding: -60,
-                        symbolWidth: 0.001,
-                        symbolHeight: 0.001,
-                        symbolRadius: 0,
-                        align: 'right',
-                        borderWidth: 0,
-                        useHTML: true,
-                        labelFormatter: function (point) {
-                            var legendValueText = '<span class="js-phase-detect-results-legend-value dn">' + this.filter + '</span>',
-                                spanText = '<span class="badge" style="margin:1px;width:60px;color:white;background-color:' + this.color + '">' + this.x + '</span> ';
-                            return legendValueText + spanText + this.name + ': ' + this.displayPercentage;
-                        },
-                        layout: 'vertical',
-                        verticalAlign: 'middle'
-                    },
-                    title: { text: null },
-                    tooltip: {
-                        pointFormat: '<b>{point.displayPercentage}, {point.x} devices</b>'
-                    },
+                    chart: yg.highcharts_options.pie_chart_options.chart,
+                    credits: yg.highcharts_options.pie_chart_options.credits,
+                    legend: $.extend({}, yg.highcharts_options.pie_chart_options.legend, legendOptionsJSON),
+                    title: yg.highcharts_options.pie_chart_options.title,
+                    tooltip: yg.highcharts_options.pie_chart_options.tooltip,
                     plotOptions: {
-                        pie: {
-                            allowPointSelect: true,
-                            cursor: 'pointer',
-                            dataLabels: { enabled: false },
-                            showInLegend: true,
-                            borderWidth: 0.25,
-                        }
+                        pie: yg.highcharts_options.pie_chart_options.plotOptions.pie
                     },
                     series: [{
                         type: 'pie',
