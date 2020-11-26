@@ -15,7 +15,7 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
-import com.eaton.pages.demandresponse.LoadProgramDetailPage;
+import com.eaton.pages.demandresponse.loadprogram.LoadProgramDetailPage;
 
 public class LoadProgramDetailsTests extends SeleniumTestSetup {
 
