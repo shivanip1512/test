@@ -75,7 +75,7 @@ var yg = {
                 text: null
             },
             tooltip: {
-                pointFormat: '<b>{point.displayPercentage}, {point.x} devices</b>'
+                pointFormat: '<b>{point.displayPercentage}, {point.x} <cti:msg2 key="yukon.common.devices"/></b>'
             },
             plotOptions: {
                 pie: {
@@ -88,6 +88,7 @@ var yg = {
                     borderWidth: 0.25,
                 }
             },
+            series_type_pie: 'pie'
         }
     },
     

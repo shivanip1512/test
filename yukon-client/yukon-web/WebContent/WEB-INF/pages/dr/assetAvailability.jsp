@@ -31,16 +31,16 @@
                         <c:if test="${showDownload}">
                             <cm:dropdown icon="icon-page-white-excel" type="button" key="yukon.web.components.button.download.label" triggerClasses="fr" menuClasses="no-icons">
                                 <c:if test="${assetAvailabilitySummary.active.deviceCount > 0}">
-                                    <cm:dropdownOption label="Active" href="${paoId}/aa/download/active"/>
+                                    <cm:dropdownOption key="yukon.web.modules.dr.assetDetails.status.ACTIVE" href="${paoId}/aa/download/active"/>
                                 </c:if>
                                 <c:if test="${assetAvailabilitySummary.inactive.deviceCount > 0}">
-                                    <cm:dropdownOption label="Inactive" href="${paoId}/aa/download/inactive"/>
+                                    <cm:dropdownOption key="yukon.web.modules.dr.assetDetails.status.INACTIVE" href="${paoId}/aa/download/inactive"/>
                                 </c:if>
                                 <c:if test="${assetAvailabilitySummary.optedOut.deviceCount > 0}">
-                                    <cm:dropdownOption label="Opted Out" href="${paoId}/aa/download/opted_out"/>
+                                    <cm:dropdownOption key="yukon.web.modules.dr.assetDetails.status.OPTED_OUT" href="${paoId}/aa/download/opted_out"/>
                                 </c:if>
                                 <c:if test="${unavailableSize > 0}">
-                                    <cm:dropdownOption label="Unavailable" href="${paoId}/aa/download/unavailable"/>
+                                    <cm:dropdownOption key="yukon.web.modules.dr.assetDetails.status.UNAVAILABLE" href="${paoId}/aa/download/unavailable"/>
                                 </c:if>
                                 <li class="divider"></li>
                                 <cm:dropdownOption label="All" href="${paoId}/aa/download/all"/>

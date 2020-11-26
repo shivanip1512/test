@@ -88,7 +88,7 @@ yukon.assetAvailability.pieChart = (function () {
                     pie: $.extend({}, yg.highcharts_options.pie_chart_options.plotOptions.pie, plotPieJSON)
                 },
                 series: [{
-                    type: 'pie',
+                    type: yg.highcharts_options.pie_chart_options.series_type_pie,
                     data: yukon.assetAvailability.pieChart.getData(data)
                 }]
             });
