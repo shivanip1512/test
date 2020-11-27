@@ -333,4 +333,8 @@ The Comm Channel Queue Counts details are updated every 6 seconds. The Refresh b
     <!-- Device Points Widget -->
     <entry key="yukon.web.widgets.devicePointsWidget">Device Points</entry>
 
+    <!-- Firmware And Certificate Information Widget -->
+    <entry key="yukon.web.widgets.firmwareAndCertificateInformationWidget">Firmware And Certificate Information</entry>
+    <entry key="yukon.web.widgets.firmwareAndCertificateInformationWidget.helpText">Firmware And Certificate Information Widget Help Text</entry>
+
 </properties>
