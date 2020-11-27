@@ -3,6 +3,7 @@ package com.eaton.tests.demandresponse.loadprogram;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
+import java.util.Map;
 import java.util.Optional;
 
 import org.javatuples.Pair;
@@ -19,25 +20,25 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
-import com.eaton.pages.demandresponse.LoadProgramDetailPage;
+import com.eaton.pages.demandresponse.loadprogram.LoadProgramDetailPage;
 
 public class LoadProgramHoneywellDetailsTests  extends SeleniumTestSetup {
     private DriverExtensions driverExt;
     private LoadProgramDetailPage detailPage;
+	private Integer ldPgmId;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
         setRefreshPage(false);
-        Pair<JSONObject, JSONObject> pair = LoadProgramCreateService.createHoneywellProgramWithCycleGear();
+        Map<String, Pair<JSONObject, JSONObject>> pair = LoadProgramCreateService.createHoneywellProgramAllFieldsWithCycleGear();
         
-        JSONObject response = pair.getValue1();
-        
-        Integer id = response.getInt("programId");
+        Pair<JSONObject, JSONObject> programPair = pair.get("LoadProgram");
+		JSONObject response = programPair.getValue1();
+		ldPgmId = response.getInt("programId");
 
-        navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + id);
-
-        detailPage = new LoadProgramDetailPage(driverExt, id);
+		navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + ldPgmId);
+		detailPage = new LoadProgramDetailPage(driverExt, ldPgmId);
     }
 
     @AfterMethod
@@ -52,15 +53,15 @@ public class LoadProgramHoneywellDetailsTests  extends SeleniumTestSetup {
     public void ldPrgmHoneywellDetail_Delete_Success() {
         setRefreshPage(true);
 
-        Pair<JSONObject, JSONObject> pair = LoadProgramCreateService.createHoneywellProgramWithCycleGear();
+        Map<String, Pair<JSONObject, JSONObject>> pair = LoadProgramCreateService.createHoneywellProgramAllFieldsWithCycleGear();
         
-        JSONObject response = pair.getValue1();
-        int id = response.getInt("programId");
+        Pair<JSONObject, JSONObject> programPair = pair.get("LoadProgram");
+		JSONObject request = programPair.getValue0();
+		JSONObject response = programPair.getValue1();
+		Integer id = response.getInt("programId");	
+		String name = request.getString("name");
         
-        JSONObject request = pair.getValue0();
-        String name = request.getString("name");
-        
-        final String expected_msg = name + " deleted successfully.";
+        final String EXPECTED_MSG = name + " deleted successfully.";
 
         navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + id);
 
@@ -71,7 +72,7 @@ public class LoadProgramHoneywellDetailsTests  extends SeleniumTestSetup {
         DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_GROUP);
         String userMsg = setupPage.getUserMessage();
 
-        assertThat(userMsg).isEqualTo(expected_msg);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
@@ -79,7 +80,7 @@ public class LoadProgramHoneywellDetailsTests  extends SeleniumTestSetup {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String copyName = "Copy Honeywell " + timeStamp;
-        final String expected_msg = copyName + " copied successfully.";
+        final String EXPECTED_MSG = copyName + " copied successfully.";
 
         CopyLoadProgramModal modal = detailPage.showCopyLoadProgramModal();
         modal.getName().setInputValue(copyName);
@@ -88,7 +89,7 @@ public class LoadProgramHoneywellDetailsTests  extends SeleniumTestSetup {
         waitForPageToLoad("Load Program: " + copyName, Optional.empty());
         String userMsg = detailPage.getUserMessage();
 
-        assertThat(userMsg).isEqualTo(expected_msg);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
 }
