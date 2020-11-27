@@ -139,7 +139,7 @@ public class LoadProgramCreatePage extends PageBase {
 	public CreateSepPrgmGearModal showCreateSepPrgmGearModal() {
 		getGearsCreateBtn().click();
 
-		return new CreateSepPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
+		return new CreateSepPrgmGearModal(this.driverExt, Optional.empty(), Optional.of("gear-create-popup-LM_SEP_PROGRAM"));
 	}
 
 	public SelectBoxElement getGears() {

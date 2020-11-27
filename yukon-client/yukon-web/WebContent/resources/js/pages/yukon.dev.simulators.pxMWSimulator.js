@@ -26,10 +26,17 @@ yukon.dev.simulators.pxMWSimulator = ( function() {
             
             $(document).on('click', '.js-test-endpoint', function () {
                 var endpoint = $(this).data('endpoint');
-                $.ajax({
-                    url: yukon.url('/dev/pxMiddleware/testEndpoint'),
-                    type: 'post',
-                    data: { endpoint : endpoint } 
+                $.getJSON(yukon.url('/dev/pxMiddleware/testEndpoint?endpoint=' + endpoint))
+                .done(function (json) {
+                    var resultJson = $('.js-test-endpoint-results');
+                    if (json.testResultJson) {
+                        resultJson.html(json.testResultJson)
+                    }
+                    if (json.errorMessage) {
+                        resultJson.html(json.errorMessage);
+                    }
+                    resultJson.removeClass('dn');
+                    
                 });
             });
 

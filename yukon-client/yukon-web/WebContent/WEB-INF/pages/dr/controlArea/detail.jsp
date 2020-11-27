@@ -364,10 +364,10 @@
     <cti:dataUpdaterCallback function="yukon.dr.dataUpdater.showAction.updateControlAreaMenu(${controlAreaId},${changeGearAllowed},${enableDisableProgramsAllowed})" 
         initialize="true" state="DR_CONTROLAREA/${controlAreaId}/SHOW_ACTION"/>
         
+    <cti:includeScript link="HIGH_STOCK"/>
     <cti:includeScript link="/resources/js/pages/yukon.dr.estimated.load.js"/>
-    <cti:includeScript link="JQUERY_FLOTCHARTS_PIE"/>
-    <!--[if lte IE 8]><cti:includeScript link="JQUERY_EXCANVAS"/><![endif]-->
     <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
+    <cti:includeScript link="/resources/js/common/yukon.assetAvailability.pieChart.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.dr.asset.details.js"/>
     
 </cti:standardPage>

@@ -181,6 +181,12 @@
         <property name="required" value="true"/>
     </bean>
     
+    <bean id="widgetInput.infrastructureWarningDeviceCategory" class="com.cannontech.web.widget.support.SimpleWidgetInput">
+        <property name="name" value="widgetInput.infrastructureWarningDeviceCategory"/>
+        <property name="description" value="type of InfrastructureWarningDeviceCategory"/>
+        <property name="required" value="false"/>
+    </bean>
+    
     <bean id="tdcBackingService" class="com.cannontech.web.updater.tdc.TdcBackingService"/>
         
     <bean id="ecobeeReadBackingService" class="com.cannontech.web.updater.dr.EcobeeReadBackingService"/>
@@ -1266,7 +1272,6 @@
 
     <bean class="com.cannontech.web.common.chart.service.impl.ChartServiceImpl"/>
     <bean class="com.cannontech.web.common.chart.service.impl.FlotChartServiceImpl"/>
-    <bean class="com.cannontech.web.common.chart.service.impl.AssetAvailabilityChartServiceImpl"/>
 
     <bean class="com.cannontech.web.scheduledFileExport.service.impl.ScheduledFileExportServiceImpl"/>
     <bean class="com.cannontech.web.scheduledFileExport.ScheduledFileExportHelper"/>

@@ -12,9 +12,9 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.LoadProgramDetailPage;
-import com.eaton.pages.demandresponse.LoadProgramEditPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupEditPage;
+import com.eaton.pages.demandresponse.loadprogram.LoadProgramDetailPage;
+import com.eaton.pages.demandresponse.loadprogram.LoadProgramEditPage;
 
 public class LoadProgramEditTests extends SeleniumTestSetup {
 
