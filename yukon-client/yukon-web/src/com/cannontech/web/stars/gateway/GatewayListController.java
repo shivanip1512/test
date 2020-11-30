@@ -71,12 +71,14 @@ public class GatewayListController {
 
     @RequestMapping(value = { "/gateways", "/gateways/" }, method = RequestMethod.GET)
     public String gateways(ModelMap model, YukonUserContext userContext, FlashScope flash,
-                           @DefaultSort(dir = Direction.desc, sort = "TIMESTAMP") SortingParameters sorting) {
+                           @DefaultSort(dir = Direction.asc, sort = "NAME") SortingParameters sorting) {
 
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-        Collections.sort(gateways);
+        Direction dir = sorting.getDirection();
+        GatewayListSortBy sortBy = GatewayListSortBy.valueOf(sorting.getSort());
+        Collections.sort(gateways, GatewayControllerHelper.getGatewayListComparator(sorting, sortBy));
         model.addAttribute("gateways", gateways);
-        
+
         // Check for gateways with duplicate colors
         // If any are found, output a flash scope warning to notify the user
         Multimap<Short, RfnGateway> duplicateColorGateways = rfnGatewayService.getDuplicateColorGateways(gateways);
@@ -102,6 +104,13 @@ public class GatewayListController {
                                                                              .collect(Collectors.toList()));
         model.addAttribute("notesList", notesList);
         model.addAttribute("infrastructureWarningDeviceCategory", InfrastructureWarningDeviceCategory.GATEWAY);
+
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        for (GatewayListSortBy column : GatewayListSortBy.values()) {
+            String text = accessor.getMessage(column);
+            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+            model.addAttribute(column.name(), col);
+        }
         return "gateways/list.jsp";
     }
 
@@ -253,6 +262,18 @@ public class GatewayListController {
         @Override
         public String getFormatKey() {
             return "yukon.web.modules.operator.gateways.manageFirmware." + name();
+        }
+    }
+
+    public enum GatewayListSortBy implements DisplayableEnum {
+        NAME,
+        SERAILNO,
+        FIRMWAREVERSION,
+        LASTCOMMUNICATION;
+
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.operator.gateways.list." + name();
         }
     }
 
