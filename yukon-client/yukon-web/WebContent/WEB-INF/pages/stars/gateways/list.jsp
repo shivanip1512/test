@@ -251,6 +251,8 @@
             <tags:widget bean="infrastructureWarningsWidget" helpText="${helpTextWidget}" infrastructureWarningDeviceCategory="${infrastructureWarningDeviceCategory}"/>
         </div>
         <div class="column two nogutter">
+            <cti:msg2 var="helpText" key="yukon.web.widgets.firmwareAndCertificateInformationWidget.helpText"/>
+            <tags:widget bean="firmwareAndCertificateInformationWidget" helpText="${helpText}"/>
         </div>
     </div>
 

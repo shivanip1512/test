@@ -4712,6 +4712,20 @@ Network Manager :
     updated : 2009-02-10
     jira : none
     notes : NM-1642 - do not update this jar with Tomcat upgrade, avoid incompatibility issue with Jakata Struts page redirect.
+    
+  - filename : joda-time-2.10.8.jar
+    yukon group : Common
+    project : Joda Time
+    version : 2.10.8
+    project URL : "https://www.joda.org/joda-time/"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/joda-time/joda-time/2.10.8"
+    md5 : 91ff4435bdfbba33a7b5eba6f8e5588a
+    sha1 : b0442d652c209a7ba7af0410ce219d997a447701
+    updated : 2020-11-20
+    jira : NM-1818
+    notes : This library is required for compatibility between NM SystemData class and Yukon SystemData class.
 
   - filename : jtds-1.3.1_r1289.jar
     yukon group : Database - Microsoft SQL Server

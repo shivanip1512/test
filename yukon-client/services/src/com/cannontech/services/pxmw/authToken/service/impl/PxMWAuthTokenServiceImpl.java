@@ -1,4 +1,4 @@
-package com.cannontech.services.pxmw.authToken.service;
+package com.cannontech.services.pxmw.authToken.service.impl;
 
 import java.util.concurrent.TimeUnit;
 
@@ -16,6 +16,7 @@ import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
 import com.cannontech.dr.pxwhite.service.impl.PxWhiteCommunicationException;
 import com.cannontech.services.pxmw.authToken.message.PxMWAuthTokenRequest;
 import com.cannontech.services.pxmw.authToken.message.PxMWAuthTokenResponse;
+import com.cannontech.services.pxmw.authToken.service.PxMWAuthTokenService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.cache.Cache;
@@ -35,7 +36,7 @@ public class PxMWAuthTokenServiceImpl implements PxMWAuthTokenService, MessageLi
     @Override
     public PxMWAuthTokenResponse handle(PxMWAuthTokenRequest request) throws JMSException {
         PxMWAuthTokenResponse response = new PxMWAuthTokenResponse();
-        
+        log.debug("Handling token request");
         if (tokenCache.getIfPresent(authTokenKey) == null) {
             String authToken;
             try {
@@ -57,6 +58,7 @@ public class PxMWAuthTokenServiceImpl implements PxMWAuthTokenService, MessageLi
     public void onMessage(Message message) {
         if (message instanceof ObjectMessage) {
             ObjectMessage objMessage = (ObjectMessage) message;
+            log.debug("Token Request received by PxMWAuthTokenService");
             try {
                 if (objMessage.getObject() instanceof PxMWAuthTokenRequest) {
                     PxMWAuthTokenResponse response = handle((PxMWAuthTokenRequest) objMessage.getObject());

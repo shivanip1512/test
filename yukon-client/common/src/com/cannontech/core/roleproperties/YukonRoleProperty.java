@@ -273,7 +273,7 @@ public enum YukonRoleProperty {
     STATUS_POINT_MONITORING(METERING, METERING.getBasePropertyId() - 17, booleanType()),
     PORTER_RESPONSE_MONITORING(METERING, METERING.getBasePropertyId() - 18, booleanType()),
     METER_EVENTS(METERING, METERING.getBasePropertyId() - 19, booleanType()),
-    ALLOW_DISCONNECT_CONTROL(METERING, METERING.getBasePropertyId() - 20, booleanType()),
+    ALLOW_DISCONNECT_CONTROL(METERING, METERING.getBasePropertyId() - 20, InputTypeFactory.permissionType(OWNER, INTERACT, NO_ACCESS)),
     DEVICE_DATA_MONITORING(METERING, METERING.getBasePropertyId() - 21, booleanType()),
     WATER_LEAK_REPORT(METERING, METERING.getBasePropertyId() - 22, booleanType()),
     USAGE_THRESHOLD_REPORT(METERING, METERING.getBasePropertyId() - 23, booleanType()),
