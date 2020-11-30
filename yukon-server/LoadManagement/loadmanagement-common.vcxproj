@@ -179,6 +179,9 @@
     <ClCompile Include="..\COMMON\boost_assert.cpp" />
     <ClCompile Include="clistener.cpp" />
     <ClCompile Include="ConstraintViolation.cpp" />
+    <ClCompile Include="EatonCloudCycleGear.cpp" />
+    <ClCompile Include="EatonCloudNoControlGear.cpp" />
+    <ClCompile Include="EatonCloudTimeRefreshGear.cpp" />
     <ClCompile Include="ecobeeCycleGear.cpp" />
     <ClCompile Include="ecobeeSetpointGear.cpp" />
     <ClCompile Include="executor.cpp" />
@@ -200,6 +203,7 @@
     <ClCompile Include="lmfactory.cpp" />
     <ClCompile Include="lmgroupbase.cpp" />
     <ClCompile Include="lmgroupdigisep.cpp" />
+    <ClCompile Include="lmgroupeatoncloud.cpp" />
     <ClCompile Include="lmgroupecobee.cpp" />
     <ClCompile Include="lmgroupemetcon.cpp" />
     <ClCompile Include="lmgroupexpresscom.cpp" />

@@ -723,6 +723,9 @@ const string CtiLMProgramDirectGear::ItronCycleMethod = "ItronCycle";
 const string CtiLMProgramDirectGear::MeterDisconnectMethod = "MeterDisconnect";
 const string CtiLMProgramDirectGear::BeatThePeakMethod = "BeatThePeak";
 const string CtiLMProgramDirectGear::NoControlMethod = "NoControl";
+const string CtiLMProgramDirectGear::EatonCloudCycleMethod = "EatonCloudCycle";
+const string CtiLMProgramDirectGear::EatonCloudTimeRefreshMethod = "EatonCloudTimeRefresh";
+const string CtiLMProgramDirectGear::EatonCloudNoControlMethod = "EatonCloudNoControl";
 
 //Possible method stop types
 const string CtiLMProgramDirectGear::RestoreStopType = "Restore";

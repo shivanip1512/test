@@ -708,6 +708,12 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
 
                     }
 
+/*
+somehow we need to communicate the case where the gear type is an EatonCloudNoControlGear - the program state should be 'NonControlling'
+
+    setProgramState(CtiLMProgramBase::NonControllingState);
+*/
+
                     if( getProgramState() != CtiLMProgramBase::ManualActiveState )
                     {
                         setProgramState(CtiLMProgramBase::FullyActiveState);
