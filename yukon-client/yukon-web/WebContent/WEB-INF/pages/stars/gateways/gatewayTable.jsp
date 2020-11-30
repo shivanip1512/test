@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -136,6 +137,7 @@
             </c:forEach>
         </tbody>
     </table>
+
     <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.list.js"/>
     <div class="dn" id="js-pao-notes-popup"></div>
     <cti:includeScript link="/resources/js/pages/yukon.tools.paonotespopup.js"/>

@@ -94,10 +94,6 @@ public class GatewayListController {
             flash.setWarning(message);
         }
         helper.addText(model, userContext);
-        List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(gateways.stream()
-                .map(gateway -> gateway.getPaoIdentifier().getPaoId())
-                .collect(Collectors.toList()));
-        model.addAttribute("notesList", notesList);
         model.addAttribute("infrastructureWarningDeviceCategory", InfrastructureWarningDeviceCategory.GATEWAY);
         setSortingParamaters(model, userContext, sorting, gateways);
         return "gateways/list.jsp";
@@ -123,6 +119,10 @@ public class GatewayListController {
             SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
             model.addAttribute(column.name(), col);
         }
+        List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(gateways.stream()
+                                                                             .map(gateway -> gateway.getPaoIdentifier().getPaoId())
+                                                                             .collect(Collectors.toList()));
+        model.addAttribute("notesList", notesList);
     }
 
     @GetMapping("/gateways/firmwareDetails")
