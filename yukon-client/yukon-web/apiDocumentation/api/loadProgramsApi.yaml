@@ -1,0 +1,230 @@
+post-operation:
+  post:
+    tags:
+      - Load Program 
+    summary: Create Load Program
+    description: |-
+      API to create any type of load program.
+      Below are the supported load program.
+      - Direct
+      - ecobee
+      - Honeywell
+      - Itron
+      - Meter Disconnect
+      - SEP
+     
+    requestBody:
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_SEP_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ECOBEE_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_HONEYWELL_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_DIRECT_PROGRAM'
+  
+          examples:
+            Meter Disconnect Program:
+              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Meter Disconnect Program' 
+            ecobee Program:
+              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
+            SEP Program:
+              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/SEP Program' 
+            Direct Program:
+              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Direct Program' 
+            Itron Program:
+              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Itron Program'
+            HoneyWell Program:
+              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/HoneyWell Program' 
+              
+      required: true
+    responses:
+        '201':
+          description: 'Created'
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/LM_SEP_PROGRAM'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ECOBEE_PROGRAM'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/LM_HONEYWELL_PROGRAM'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/LM_DIRECT_PROGRAM'
+    
+              examples:
+                Meter Disconnect Program:
+                  $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Meter Disconnect Program' 
+                ecobee Program:
+                  $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
+                SEP Program:
+                  $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/SEP Program' 
+                Direct Program:
+                  $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Direct Program' 
+                Itron Program:
+                  $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Itron Program'
+                HoneyWell Program:
+                  $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/HoneyWell Program' 
+                
+get-update-delete-operation:
+  get:
+    tags:
+      - Load Program
+    summary: Retrieve Load Program
+    description: |-
+      API to retrieve any type of load program based on passed id.
+      Below are the supported load program.
+      - Direct
+      - ecobee
+      - Honeywell
+      - Itron
+      - Meter Disconnect
+      - SEP
+
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'Unique identifier for load program'
+
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+             oneOf:
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_SEP_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ECOBEE_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_HONEYWELL_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_DIRECT_PROGRAM'
+    
+            examples:
+              Meter Disconnect Program:
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Meter Disconnect Program' 
+              ecobee Program:
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
+              SEP Program:
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/SEP Program' 
+              Direct Program:
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Direct Program' 
+              Itron Program:
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Itron Program'
+              HoneyWell Program:
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/HoneyWell Program'
+  put:
+    tags:
+      - Load Program
+    summary: Update Load Program
+    description: |-
+      API to update any type of load program based on passed id.
+      Below are the supported load program.
+      - Direct
+      - ecobee
+      - Honeywell
+      - Itron
+      - Meter Disconnect
+      - SEP
+
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'Unique identifier for load program'
+
+    requestBody:
+      content:
+        application/json:
+          schema:
+           oneOf:
+            - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM'
+            - $ref: '../schemas/loadProgramsSchema.yaml#/LM_SEP_PROGRAM'
+            - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ECOBEE_PROGRAM'
+            - $ref: '../schemas/loadProgramsSchema.yaml#/LM_HONEYWELL_PROGRAM'
+            - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
+            - $ref: '../schemas/loadProgramsSchema.yaml#/LM_DIRECT_PROGRAM'
+    
+          examples:
+            Meter Disconnect Program:
+              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Meter Disconnect Program' 
+            ecobee Program:
+              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
+            SEP Program:
+              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/SEP Program' 
+            Direct Program:
+              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Direct Program' 
+            Itron Program:
+              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Itron Program'
+            HoneyWell Program:
+              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/HoneyWell Program'
+      required: true
+      
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+             oneOf:
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_SEP_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ECOBEE_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_HONEYWELL_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_DIRECT_PROGRAM'
+    
+            examples:
+              Meter Disconnect Program:
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Meter Disconnect Program' 
+              ecobee Program:
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
+              SEP Program:
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/SEP Program' 
+              Direct Program:
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Direct Program' 
+              Itron Program:
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Itron Program'
+              HoneyWell Program:
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/HoneyWell Program'
+             
+  delete:
+    tags:
+      - Load Program
+    summary: Delete Load Program
+    description: |-
+      API to delete any type of load program based on passed id.
+      Below are the supported load program.
+      - Direct
+      - ecobee
+      - Honeywell
+      - Itron
+      - Meter Disconnect
+      - SEP
+
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'Unique identifier for load program'
+
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/loadProgramsSchema.yaml#/id'
+            examples:
+              Load Group Id:
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/id'
+                
