@@ -154,9 +154,9 @@ public class GatewayControllerHelper {
     public static Comparator<RfnGateway> getGatewayListComparator(SortingParameters sorting,
             GatewayListSortBy sortBy) {
         Comparator<RfnGateway> comparator = (o1, o2) -> {
-            return o1.getName().compareTo(o2.getName());
+            return o1.getName().compareToIgnoreCase(o2.getName());
         };
-        if (sortBy == GatewayListSortBy.SERAILNO) {
+        if (sortBy == GatewayListSortBy.SERIALNUMBER) {
             comparator = (o1, o2) -> (o1.getRfnIdentifier().getSensorSerialNumber().compareTo(o2.getRfnIdentifier().getSensorSerialNumber()));
         }
         if (sortBy == GatewayListSortBy.LASTCOMMUNICATION) {
@@ -164,7 +164,7 @@ public class GatewayControllerHelper {
                 if (o1.getData() != null && o2.getData() != null) {
                     return o1.getData().getLastCommStatus().compareTo(o2.getData().getLastCommStatus());
                 } else {
-                    return o1.getName().compareTo(o2.getName());
+                    return o1.getName().compareToIgnoreCase(o2.getName());
                 }
             };
         }
@@ -173,7 +173,7 @@ public class GatewayControllerHelper {
                 if (o1.getData() != null && o2.getData() != null) {
                     return o1.getData().getReleaseVersion().compareTo(o2.getData().getReleaseVersion());
                 } else {
-                    return o1.getName().compareTo(o2.getName());
+                    return o1.getName().compareToIgnoreCase(o2.getName());
                 }
             };
         }

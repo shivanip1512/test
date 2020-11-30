@@ -66,7 +66,7 @@
                     <cti:checkLicenseKey keyName="RF_DATA_STREAMING_ENABLED">
                         <th width="10%"><i:inline key=".streamingCapacity"/></th>
                     </cti:checkLicenseKey>
-                    <tags:sort column="${SERAILNO}"/>
+                    <tags:sort column="${SERIALNUMBER}"/>
                     <th><i:inline key=".ipaddress"/></th>
                     <tags:sort column="${FIRMWAREVERSION}"/>
                     <tags:sort column="${LASTCOMMUNICATION}"/>

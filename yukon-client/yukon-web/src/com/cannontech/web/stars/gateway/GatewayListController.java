@@ -267,7 +267,7 @@ public class GatewayListController {
 
     public enum GatewayListSortBy implements DisplayableEnum {
         NAME,
-        SERAILNO,
+        SERIALNUMBER,
         FIRMWAREVERSION,
         LASTCOMMUNICATION;
 
