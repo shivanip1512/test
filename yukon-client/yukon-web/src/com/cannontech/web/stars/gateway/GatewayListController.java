@@ -69,49 +69,60 @@ public class GatewayListController {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private PaoNotesService paoNotesService;
 
-    @RequestMapping(value = { "/gateways", "/gateways/" }, method = RequestMethod.GET)
+    @GetMapping({ "/gateways", "/gateways/" })
     public String gateways(ModelMap model, YukonUserContext userContext, FlashScope flash,
-                           @DefaultSort(dir = Direction.asc, sort = "NAME") SortingParameters sorting) {
-
+            @DefaultSort(dir = Direction.asc, sort = "NAME") SortingParameters sorting) {
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-        Direction dir = sorting.getDirection();
-        GatewayListSortBy sortBy = GatewayListSortBy.valueOf(sorting.getSort());
-        Collections.sort(gateways, GatewayControllerHelper.getGatewayListComparator(sorting, sortBy));
-        model.addAttribute("gateways", gateways);
-
         // Check for gateways with duplicate colors
         // If any are found, output a flash scope warning to notify the user
         Multimap<Short, RfnGateway> duplicateColorGateways = rfnGatewayService.getDuplicateColorGateways(gateways);
         if (!duplicateColorGateways.isEmpty()) {
-            StringBuilder gatewaysString = new StringBuilder(); 
+            StringBuilder gatewaysString = new StringBuilder();
             for (Short color : duplicateColorGateways.keySet()) {
                 Set<String> gatewayNames = duplicateColorGateways.get(color)
-                                                                 .stream()
-                                                                 .map(RfnGateway::getName)
-                                                                 .collect(Collectors.toSet());
+                        .stream()
+                        .map(RfnGateway::getName)
+                        .collect(Collectors.toSet());
                 gatewaysString.append(color)
-                              .append(" (")
-                              .append(StringUtils.join(gatewayNames, ", "))
-                              .append(") ");
+                        .append(" (")
+                        .append(StringUtils.join(gatewayNames, ", "))
+                        .append(") ");
             }
-            YukonMessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.operator.gateways.list.duplicateColors", 
-                                                                                    gatewaysString);
+            YukonMessageSourceResolvable message = new YukonMessageSourceResolvable(
+                    "yukon.web.modules.operator.gateways.list.duplicateColors",
+                    gatewaysString);
             flash.setWarning(message);
         }
         helper.addText(model, userContext);
         List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(gateways.stream()
-                                                                             .map(gateway -> gateway.getPaoIdentifier().getPaoId())
-                                                                             .collect(Collectors.toList()));
+                .map(gateway -> gateway.getPaoIdentifier().getPaoId())
+                .collect(Collectors.toList()));
         model.addAttribute("notesList", notesList);
         model.addAttribute("infrastructureWarningDeviceCategory", InfrastructureWarningDeviceCategory.GATEWAY);
+        setSortingParamaters(model, userContext, sorting, gateways);
+        return "gateways/list.jsp";
+    }
 
+    @GetMapping("/gateways/list")
+    public String gatewaysList(ModelMap model, YukonUserContext userContext, FlashScope flash,
+            @DefaultSort(dir = Direction.asc, sort = "NAME") SortingParameters sorting) {
+        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
+        setSortingParamaters(model, userContext, sorting, gateways);
+        return "gateways/gatewayTable.jsp";
+    }
+
+    private void setSortingParamaters(ModelMap model, YukonUserContext userContext, SortingParameters sorting,
+            List<RfnGateway> gateways) {
+        Direction dir = sorting.getDirection();
+        GatewayListSortBy sortBy = GatewayListSortBy.valueOf(sorting.getSort());
+        Collections.sort(gateways, GatewayControllerHelper.getGatewayListComparator(sorting, sortBy));
+        model.addAttribute("gateways", gateways);
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         for (GatewayListSortBy column : GatewayListSortBy.values()) {
             String text = accessor.getMessage(column);
             SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
             model.addAttribute(column.name(), col);
         }
-        return "gateways/list.jsp";
     }
 
     @GetMapping("/gateways/firmwareDetails")

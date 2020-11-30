@@ -335,6 +335,9 @@ The Comm Channel Queue Counts details are updated every 6 seconds. The Refresh b
 
     <!-- Firmware And Certificate Information Widget -->
     <entry key="yukon.web.widgets.firmwareAndCertificateInformationWidget">Firmware And Certificate Information</entry>
-    <entry key="yukon.web.widgets.firmwareAndCertificateInformationWidget.helpText">Firmware And Certificate Information Widget Help Text</entry>
+    <entry key="yukon.web.widgets.firmwareAndCertificateInformationWidget.helpText"><![CDATA[
+        Firmware And Certificate Information Widget displays the current and available version for gateways. The latest 3 entries of the certificate updates are also shown.
+        <br><br>Clicking on View Details will navigate the user to manage certificates page.
+    ]]></entry>
 
 </properties>
