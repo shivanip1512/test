@@ -16,7 +16,6 @@ public class SimulatedNmMappingSettings implements Serializable {
     private RfnMetadataMultiQueryResultType metadataQueryResponseType;
     private String metadataResponseString;
     private Integer emptyNullPercent;
-    private Integer minHop;
     private Integer maxHop;
     private Integer nodesOneHop;
     private Integer numberOfDevicesPerGateway;
@@ -57,12 +56,6 @@ public class SimulatedNmMappingSettings implements Serializable {
     }
     public void setEmptyNullPercent(Integer emptyNullPercent) {
         this.emptyNullPercent = emptyNullPercent;
-    }
-    public Integer getMinHop() {
-        return minHop;
-    }
-    public void setMinHop(Integer minHop) {
-        this.minHop = minHop;
     }
     public Integer getMaxHop() {
         return maxHop;

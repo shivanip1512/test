@@ -1088,7 +1088,6 @@ public class NmIntegrationController {
 
     private void updateSettings(FlashScope flash, SimulatedNmMappingSettings currentSettings) {
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_PERCENT_NULL, currentSettings.getEmptyNullPercent());
-        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_MIN_HOP, currentSettings.getMinHop());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_MAX_HOP, currentSettings.getMaxHop());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_NODES_ONE_HOP, currentSettings.getNodesOneHop());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_NUM_DEVICES_PER_GW, currentSettings.getNumberOfDevicesPerGateway());
