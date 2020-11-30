@@ -110,7 +110,7 @@ public class SmartNotificationsController {
     public String eventDetailByType(@PathVariable String type,
             @DefaultSort(dir = Direction.desc, sort = "timestamp") SortingParameters sorting,
             @DefaultItemsPerPage(value = 250) PagingParameters paging, ModelMap model, YukonUserContext userContext,
-            @ModelAttribute("filter") SmartNotificationEventFilter filter, BindingResult bindingResult) {
+            @ModelAttribute("filter") SmartNotificationEventFilter filter) {
 
         // Validates Date Range
         validateFilterDates(model, userContext, filter.getStartDate(), filter.getEndDate());
@@ -121,7 +121,7 @@ public class SmartNotificationsController {
     @RequestMapping(value="events/{type}/{parameter}", method=RequestMethod.GET)
     public String eventDetailByTypeId(@PathVariable String type, @PathVariable String parameter, @DefaultSort(dir=Direction.desc, sort="timestamp") SortingParameters sorting, 
                                @DefaultItemsPerPage(value=250) PagingParameters paging, ModelMap model, 
-                               YukonUserContext userContext, @ModelAttribute("filter") SmartNotificationEventFilter filter, BindingResult bindingResult) {
+                               YukonUserContext userContext, @ModelAttribute("filter") SmartNotificationEventFilter filter) {
 
         // Validates Date Range
         validateFilterDates(model, userContext, filter.getStartDate(), filter.getEndDate());
@@ -590,8 +590,8 @@ public class SmartNotificationsController {
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
 
-        PropertyEditor fullDateTimeEditor = datePropertyEditorFactory.getPropertyEditor(DateFormatEnum.DATEHM, userContext);
+        PropertyEditor fullDateTimeEditor = datePropertyEditorFactory.getPropertyEditor(DateFormatEnum.LONG_DATE_TIME, userContext);
 
-        binder.registerCustomEditor(Date.class, fullDateTimeEditor);
+        binder.registerCustomEditor(DateTime.class, fullDateTimeEditor);
     }
 }
