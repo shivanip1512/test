@@ -12,15 +12,14 @@ yukon.widget.firmwareAndCertificateInformation = (function () {
     
     var
     _initialized = false,
-    _updateInterval = 6000,
-    
+
     _update = function () {
         $.ajax({
             url: yukon.url('/widget/firmwareAndCertificateInformationWidget/render'),
         }).done(function (data) {
             $('#js-firmware-and-certificate-info').html(data);
         }); 
-        setTimeout(_update, _updateInterval)
+        setTimeout(_update, yg._updateInterval);
     },
 
     mod = {

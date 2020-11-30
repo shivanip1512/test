@@ -69,6 +69,9 @@
                     </c:forEach>
                 </tbody>
             </table>
+            <c:if test="${empty certUpdates}">
+                <span class="empty-list compact-results-table"><i:inline key=".certificateUpdates.cert.updates.none"/></span>
+            </c:if>
         </tags:sectionContainer2>
     
         <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
