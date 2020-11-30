@@ -28,6 +28,7 @@ public interface PaoLocationService {
     public enum FeatureProperty {
         
         PAO_IDENTIFIER("paoIdentifier"),
+        PAO_NAME("paoName"),
         ICON("icon");
         
         private final String keyName;

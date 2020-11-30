@@ -71,6 +71,7 @@
                     <cm:dropdown icon="icon-cog">
                         <cm:dropdownOption key="yukon.common.collectionActions" icon="icon-cog-go" linkId="collectionActionLink" newTab="true"/> 
                         <cm:dropdownOption icon="icon-csv" key="yukon.common.download" classes="js-download"/>  
+                        <cm:dropdownOption icon="icon-map-pins" key="yukon.common.exportKml" classes="js-export-map"/>
                     </cm:dropdown>
                 </span>
                 
@@ -106,6 +107,7 @@
         </div>
     </div>
     
+    <cti:includeScript link="/resources/js/lib/download/download.js"/>
     <cti:includeScript link="OPEN_LAYERS"/>
     <cti:includeCss link="/resources/js/lib/open-layers/ol.css"/>
     <cti:includeScript link="/resources/js/common/yukon.mapping.js"/>

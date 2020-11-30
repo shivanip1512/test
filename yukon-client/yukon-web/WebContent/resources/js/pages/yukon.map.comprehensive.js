@@ -57,10 +57,15 @@ yukon.map.comprehensive = (function () {
         for (x in devices.features) {
             var feature = devices.features[x],
                 pao = feature.properties.paoIdentifier,
+                paoName = feature.properties.paoName,
                 src_projection = devices.crs.properties.name,
                 style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'];
                 icon = new ol.Feature({ device: feature, pao: pao });
-            
+                
+                icon.set('type', pao.paoType);
+                icon.set('id', pao.paoId);
+                icon.set('name', paoName);
+
             icon.setId(feature.id);
             icon.setStyle(style);
 

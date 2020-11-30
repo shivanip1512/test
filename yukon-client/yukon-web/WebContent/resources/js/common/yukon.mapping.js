@@ -201,6 +201,27 @@ yukon.mapping = (function () {
                 yukon.mapping.showHideAllRelays();
             });        
             
+            $(document).on('click', '.js-export-map', function () {
+                var kmlFormat = new ol.format.KML({
+                        //extractStyles: false, 
+                        //writeStyles: false
+                        //showPointNames: false
+                    }),
+                    allFeatures = [];
+                
+                _map.getLayers().forEach(function (layer) {
+                    if (layer.get('name') === 'icons' || layer instanceof ol.layer.Vector) {
+                        allFeatures.push(...layer.getSource().getFeatures());
+                    }
+                });
+                var kml = kmlFormat.writeFeatures(allFeatures, {
+                    //extractStyles: false,
+                    featureProjection: _map.getView().getProjection()
+                });
+
+                download(kml, "ComprehensiveMap.kml", "text/xml");
+             });
+            
             $('#map-tiles button').click(function (ev) {
                 $(this).siblings().removeClass('on');
                 $(this).addClass('on');
@@ -486,7 +507,7 @@ yukon.mapping = (function () {
                 style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
                 icon = new ol.Feature({ pao: pao });
             icon.setId(feature.id);
-        
+
             //check if device already exists on map
             var deviceFound = yukon.mapping.findFocusDevice(pao.paoId, false);
             if (deviceFound) {

@@ -99,6 +99,7 @@ public class PaoLocationServiceImpl implements PaoLocationService {
             feature.setGeometry(point);
             // Set feature properties.
             feature.getProperties().put(FeatureProperty.PAO_IDENTIFIER.getKeyName(), pao);
+            feature.getProperties().put(FeatureProperty.PAO_NAME.getKeyName(), cache.getAllPaosMap().get(pao.getPaoId()).getPaoName());
             Icon icon = icons.get(pao.getPaoType());
             feature.getProperties().put(FeatureProperty.ICON.getKeyName(), icon != null ? icon : Icon.GENERIC_GREY);
             features.add(feature);
