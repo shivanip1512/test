@@ -160,10 +160,22 @@ public class GatewayControllerHelper {
             comparator = (o1, o2) -> (o1.getRfnIdentifier().getSensorSerialNumber().compareTo(o2.getRfnIdentifier().getSensorSerialNumber()));
         }
         if (sortBy == GatewayListSortBy.LASTCOMMUNICATION) {
-            comparator = (o1, o2) -> (o1.getData().getLastCommStatus().compareTo(o2.getData().getLastCommStatus()));
+            comparator = (o1, o2) -> {
+                if (o1.getData() != null && o2.getData() != null) {
+                    return o1.getData().getLastCommStatus().compareTo(o2.getData().getLastCommStatus());
+                } else {
+                    return o1.getName().compareTo(o2.getName());
+                }
+            };
         }
         if (sortBy == GatewayListSortBy.FIRMWAREVERSION) {
-            comparator = (o1, o2) -> (o1.getData().getReleaseVersion().compareTo(o2.getData().getReleaseVersion()));
+            comparator = (o1, o2) -> {
+                if (o1.getData() != null && o2.getData() != null) {
+                    return o1.getData().getReleaseVersion().compareTo(o2.getData().getReleaseVersion());
+                } else {
+                    return o1.getName().compareTo(o2.getName());
+                }
+            };
         }
         if (sorting.getDirection() == Direction.desc) {
             comparator = Collections.reverseOrder(comparator);
