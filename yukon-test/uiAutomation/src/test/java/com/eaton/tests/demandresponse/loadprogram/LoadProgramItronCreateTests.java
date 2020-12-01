@@ -20,8 +20,8 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.LoadProgramCreatePage;
-import com.eaton.pages.demandresponse.LoadProgramDetailPage;
+import com.eaton.pages.demandresponse.loadprogram.LoadProgramCreatePage;
+import com.eaton.pages.demandresponse.loadprogram.LoadProgramDetailPage;
 import com.github.javafaker.Faker;
 
 public class LoadProgramItronCreateTests extends SeleniumTestSetup{

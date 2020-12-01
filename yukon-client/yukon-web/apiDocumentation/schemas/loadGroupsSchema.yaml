@@ -938,10 +938,38 @@ LM_GROUP_POINT_Response:
               type: string
               description: 'State the point needs to be in to start control. If value of rawState is 0 then state text value is False.
                             If value of rawState is 1 then state text value is True.'
+                            
+LOAD_GROUP_COPY:
+  title: LOAD_GROUP_COPY
+  required:
+    - LOAD_GROUP_COPY
+  type: object
+  properties:
+    LOAD_GROUP_COPY:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 60
+          description: 'Name for the load group.'
+        routeId:
+          type: integer
+          description: 'Route Id. Route or route macro used to communicate with the devices in this load group.
+                       Route Id is applicable for LM_GROUP_EXPRESSCOMM, LM_GROUP_EMETCON, LM_GROUP_VERSACOM, 
+                       LM_GROUP_RIPPLE, LM_GROUP_MCT load group only.'
+
 id:
   title: id
-  required:
-    - groupId
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the load group.'
+      
+CopyResponse:
+  title: CopyResponse
   type: object
   properties:
     groupId:
@@ -1180,8 +1208,17 @@ components:
           startControlRawState:
             id: 1
             stateText: 'True'
+
+    LoadGroupCopy:
+      value:
+        LOAD_GROUP_COPY:
+          name: TestLoadcopy
+          routeId: 1
     
     id:
       value:
         id: 39223
-  
+
+    groupId:
+      value: 
+        groupId: 20499

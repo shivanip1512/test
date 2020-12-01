@@ -786,7 +786,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LM_GROUP_METER_DISCONNECT,
             LM_GROUP_MCT,
             LM_GROUP_RIPPLE,
-            LM_GROUP_POINT
+            LM_GROUP_POINT,
+            LM_GROUP_EATON_CLOUD
           );
         
         batteryAnalysisTypes = ImmutableSet.of(
@@ -1179,7 +1180,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
      */
     public static List<PaoType> getAllLMGroupTypes() {
         List<PaoType> paoTypes = Arrays.stream(PaoType.values())
-                                       .filter(paoType -> paoType.isLoadGroup() && paoType.isLoadGroupSupportedFromWeb() && paoType != PaoType.MACRO_GROUP &&paoType != PaoType.LM_GROUP_NEST)
+                                       .filter(paoType -> paoType.isLoadGroup() && paoType.isLoadGroupSupportedFromWeb() && 
+                                               paoType != PaoType.MACRO_GROUP && paoType != PaoType.LM_GROUP_NEST)
                                        .collect(Collectors.toList());
         return paoTypes;
     }

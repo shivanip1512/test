@@ -7,6 +7,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.dr.setup.LoadGroupDigiSep;
 import com.cannontech.common.dr.setup.LoadGroupDisconnect;
+import com.cannontech.common.dr.setup.LoadGroupEatonCloud;
 import com.cannontech.common.dr.setup.LoadGroupEcobee;
 import com.cannontech.common.dr.setup.LoadGroupEmetcon;
 import com.cannontech.common.dr.setup.LoadGroupExpresscom;
@@ -76,6 +77,9 @@ public class LoadGroupBaseConverter implements Converter<String, LoadGroupBase> 
             break;
         case LM_GROUP_POINT:
             loadGroup = new LoadGroupPoint();
+            break;
+        case LM_GROUP_EATON_CLOUD:
+            loadGroup = new LoadGroupEatonCloud();
             break;
         }
         return loadGroup;

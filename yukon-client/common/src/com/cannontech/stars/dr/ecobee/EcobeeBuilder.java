@@ -14,6 +14,7 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.CompleteDevice;
 import com.cannontech.common.pao.service.PaoPersistenceService;
@@ -73,8 +74,10 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
     
     @Override
     public void deleteDevice(YukonPao pao, InventoryIdentifier inventoryId) {
-        paoPersistenceService.deletePao(pao.getPaoIdentifier());
-        //Inventory has been deleted, so get the serial number from the cache and send the ecobee delete request.
+        if (!pao.getPaoIdentifier().equals(PaoUtils.SYSTEM_PAOIDENTIFIER)) {
+            paoPersistenceService.deletePao(pao.getPaoIdentifier());
+        }
+        // Inventory has been deleted, so get the serial number from the cache and send the ecobee delete request.
         String serialNumber = inventoryIdToSerialNumber.remove(inventoryId.getInventoryId());
         ecobeeCommunicationService.deleteDevice(serialNumber);
     }

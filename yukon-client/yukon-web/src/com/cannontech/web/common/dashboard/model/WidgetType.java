@@ -73,7 +73,8 @@ public enum WidgetType implements DisplayableEnum {
             .putAll(DATA_COLLECTION, baseJSPath + "yukon.widget.dataCollection.js",
                                      "HIGH_STOCK")
             .putAll(ASSET_AVAILABILITY, baseJSPath + "yukon.widget.assetAvailability.js",
-                    "HIGH_STOCK")
+                    "HIGH_STOCK",
+                    "/resources/js/common/yukon.assetAvailability.pieChart.js")
             .put(INFRASTRUCTURE_WARNINGS, baseJSPath + "yukon.widget.infrastructureWarnings.js")
             .putAll(PORTER_QUEUE_COUNTS, baseJSPath + "yukon.widget.porterQueueCounts.js",
                                          "HIGH_STOCK",

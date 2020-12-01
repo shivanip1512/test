@@ -4,7 +4,8 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
   http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
-    <bean id="pxmwAuthTokenListener" class="com.cannontech.services.pxmw.authToken.service.PxMWAuthTokenServiceImpl" />
+
+    <bean id="pxmwAuthTokenListener" class="com.cannontech.services.pxmw.authToken.service.impl.PxMWAuthTokenServiceImpl" />
     <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
         <property name="destinationName" value="yukon.pxmw.auth.token.PxMWAuthTokenRequest"/>
         <property name="pubSubDomain" value="false"/>

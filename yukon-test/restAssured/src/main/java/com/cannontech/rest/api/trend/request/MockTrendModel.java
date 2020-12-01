@@ -3,6 +3,7 @@ package com.cannontech.rest.api.trend.request;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import lombok.AllArgsConstructor;
@@ -19,6 +20,7 @@ import lombok.Setter;
 @JsonInclude(Include.NON_NULL)
 public class MockTrendModel {
     private Integer trendId;
+    @JsonProperty("trendName")
     private String name;
     private List<MockTrendSeries> trendSeries;
 

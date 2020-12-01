@@ -112,6 +112,9 @@
             <c:if test="${isPointGroupSelected}">
                 <%@ include file="pointGroup.jsp" %>
             </c:if>
+            <c:if test="${isEatonCloudGroupSelected}">
+                <%@ include file="eatonCloud.jsp" %>
+            </c:if>
             <c:if test="${not empty selectedSwitchType}">
                 <%@ include file="loadGroupOptional.jsp" %>
             </c:if>

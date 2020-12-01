@@ -485,8 +485,6 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             simulatedNmMappingSettings.setEmptyNullPercent(
                     yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_PERCENT_NULL));
             simulatedNmMappingSettings
-                    .setMinHop(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_MIN_HOP));
-            simulatedNmMappingSettings
                     .setMaxHop(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_MAX_HOP));
             simulatedNmMappingSettings.setNodesOneHop(
                     yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_NODES_ONE_HOP));
