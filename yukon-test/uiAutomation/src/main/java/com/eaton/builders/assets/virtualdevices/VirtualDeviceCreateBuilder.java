@@ -52,6 +52,7 @@ public class VirtualDeviceCreateBuilder {
     }
 
     public static Builder buildDefaultVirtualDevice() {
-        return new VirtualDeviceCreateBuilder.Builder(Optional.empty()).withEnable(Optional.empty());
+        return new VirtualDeviceCreateBuilder.Builder(Optional.empty())
+                .withEnable(Optional.empty());
     }
 }

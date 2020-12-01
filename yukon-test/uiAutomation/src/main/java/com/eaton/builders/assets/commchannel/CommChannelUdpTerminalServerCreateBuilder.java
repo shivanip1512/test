@@ -14,16 +14,9 @@ public class CommChannelUdpTerminalServerCreateBuilder extends CommChannelShared
         private Integer portNumber;
         private String encryptionKey;
         
-        public static final String TYPE = "UDPPORT";
-        public static final String DEFAULT_NAME = "UDP Port";
-        
         public UdpTerminalServerBuilder(Optional<String> name) {
         	super(name);
-        	this.type = TYPE;
-        	this.defaultName = DEFAULT_NAME;
-        	portNumber = 10000;
-        	encryptionKey = "";
-        	withName(name);
+        	this.type = "UDPPORT";
         }
         
         public UdpTerminalServerBuilder withPortNumber(Optional<Integer> portNumber) {
@@ -41,6 +34,7 @@ public class CommChannelUdpTerminalServerCreateBuilder extends CommChannelShared
             return this;
         }
         
+        @Override
         public JSONObject build() {                  
         	JSONObject j = super.build();
         	

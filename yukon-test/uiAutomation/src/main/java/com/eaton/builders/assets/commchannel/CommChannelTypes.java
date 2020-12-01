@@ -1,5 +1,7 @@
 package com.eaton.builders.assets.commchannel;
 
+import java.util.Random;
+
 public class CommChannelTypes {
 
     public enum BaudRate {
@@ -22,6 +24,11 @@ public class CommChannelTypes {
         public String getBaudRate() {
             return this.baudRate;
         }
+        
+        public static BaudRate getRandomBaudRate() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
     }
     
     public enum ProtocolWrap {
@@ -39,6 +46,11 @@ public class CommChannelTypes {
         public String getProtocolWrap() {
             return this.protocolWrap;
         }
+        
+        public static ProtocolWrap getRandomBaudRate() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
     }
     
     public enum SharedPortType {
@@ -55,6 +67,11 @@ public class CommChannelTypes {
         
         public String getSharedPortType() {
             return this.sharedPortType;
+        }
+        
+        public static SharedPortType getRandomBaudRate() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
         }
     }
 }

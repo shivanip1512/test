@@ -8,28 +8,24 @@ public class CommChannelTerminalServerCreateBuilder extends CommChannelSharedCre
     	protected Integer portNumber;
     	protected String ipAddress;
     	
-        public static final String TYPE = "TSERVER_SHARED";
-        public static final String DEFAULT_NAME = "TCP Terminal Server";
-
         public TerminalServerBuilder(Optional<String> name) {
             super(name);
-            this.type = TYPE;
-            this.defaultName = DEFAULT_NAME;
-            portNumber = 10000;
-            ipAddress = "127.0.0.1";
-            withName(name);
+            this.type = "TSERVER_SHARED";
         }
         
         public TerminalServerBuilder withPortNumber(Optional<Integer> portNumber) {
             this.portNumber = portNumber.orElse(faker.number().numberBetween(1, 65534));
+            
             return this;
         }
         
         public TerminalServerBuilder withIPAddress(Optional<String> ipAddress) {
             this.ipAddress = ipAddress.orElse(faker.internet().ipV4Address());
+            
             return this;
         }
         
+        @Override
         public JSONObject build() {
         	JSONObject j = super.build();
         	

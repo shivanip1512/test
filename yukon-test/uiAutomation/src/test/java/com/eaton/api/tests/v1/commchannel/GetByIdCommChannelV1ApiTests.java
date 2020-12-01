@@ -27,16 +27,7 @@ public class GetByIdCommChannelV1ApiTests {
         Pair<JSONObject, JSONObject> pair = CommChannelCreateService.buildAndCreateCommChannelTCPPortDefault();
         JSONObject createResponse = pair.getValue1();
         Integer id = createResponse.getInt("id");
-        String type = createResponse.getString("type");
-        String name = createResponse.getString("name");
-        Boolean enable = createResponse.getBoolean("enable");
-        String baudRate = createResponse.getString("baudRate");
         JSONObject createResponseTiming = createResponse.getJSONObject("timing");
-        Integer preTxWait = createResponseTiming.getInt("preTxWait");
-        Integer rtsToTxWait = createResponseTiming.getInt("rtsToTxWait");
-        Integer postTxWait = createResponseTiming.getInt("postTxWait");
-        Integer receiveDataWait = createResponseTiming.getInt("receiveDataWait");
-        Integer extraTimeOut = createResponseTiming.getInt("extraTimeOut");
         
         ExtractableResponse<?> response = ApiCallHelper.get(APIs.CommChannel.GET_COMM_CHANNEL + id);
         String res = response.asString();
@@ -45,16 +36,16 @@ public class GetByIdCommChannelV1ApiTests {
         softly.assertThat(response.statusCode()).isEqualTo(200);
         softly.assertThat(json).isNotNull();
         softly.assertThat(json.getInt("id")).isEqualTo(id);
-        softly.assertThat(json.getString("type")).isEqualTo(type);
-        softly.assertThat(json.getString("name")).isEqualTo(name);
-        softly.assertThat(json.getBoolean("enable")).isEqualTo(enable);
-        softly.assertThat(json.getString("baudRate")).isEqualTo(baudRate);
+        softly.assertThat(json.getString("type")).isEqualTo(createResponse.getString("type"));
+        softly.assertThat(json.getString("name")).isEqualTo(createResponse.getString("name"));
+        softly.assertThat(json.getBoolean("enable")).isEqualTo(createResponse.getBoolean("enable"));
+        softly.assertThat(json.getString("baudRate")).isEqualTo(createResponse.getString("baudRate"));
         JSONObject jsonTiming = json.getJSONObject("timing");
-        softly.assertThat(jsonTiming.getInt("preTxWait")).isEqualTo(preTxWait);
-        softly.assertThat(jsonTiming.getInt("rtsToTxWait")).isEqualTo(rtsToTxWait);
-        softly.assertThat(jsonTiming.getInt("postTxWait")).isEqualTo(postTxWait);
-        softly.assertThat(jsonTiming.getInt("receiveDataWait")).isEqualTo(receiveDataWait);
-        softly.assertThat(jsonTiming.getInt("extraTimeOut")).isEqualTo(extraTimeOut);
+        softly.assertThat(jsonTiming.getInt("preTxWait")).isEqualTo(createResponseTiming.getInt("preTxWait"));
+        softly.assertThat(jsonTiming.getInt("rtsToTxWait")).isEqualTo(createResponseTiming.getInt("rtsToTxWait"));
+        softly.assertThat(jsonTiming.getInt("postTxWait")).isEqualTo(createResponseTiming.getInt("postTxWait"));
+        softly.assertThat(jsonTiming.getInt("receiveDataWait")).isEqualTo(createResponseTiming.getInt("receiveDataWait"));
+        softly.assertThat(jsonTiming.getInt("extraTimeOut")).isEqualTo(createResponseTiming.getInt("extraTimeOut"));
         softly.assertThat(json.length()).isEqualTo(6);
         softly.assertAll();
     }
@@ -219,8 +210,7 @@ public class GetByIdCommChannelV1ApiTests {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.ASSETS,
-            TestConstants.Features.COMM_CHANNELS })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.ASSETS, TestConstants.Features.COMM_CHANNELS })
     public void getByIdCommChannelApi_NotFoundId_400BadRequest() {
         String nonExistingId = faker.number().digits(9);
 
@@ -233,7 +223,7 @@ public class GetByIdCommChannelV1ApiTests {
     public void getByIdCommChannelApi_InvalidId_400BadRequest() {
         String invalidId = faker.number().digits(12);
 
-        ExtractableResponse<?> response = ApiCallHelper.get(APIs.CommChannel.GET_COMM_CHANNEL+ invalidId);
+        ExtractableResponse<?> response = ApiCallHelper.get(APIs.CommChannel.GET_COMM_CHANNEL + invalidId);
 
         assertThat(response.statusCode()).isEqualTo(400);
     }
