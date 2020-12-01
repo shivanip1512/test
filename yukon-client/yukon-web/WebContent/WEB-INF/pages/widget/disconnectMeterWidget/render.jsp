@@ -119,14 +119,16 @@
                 <c:if test="${supportsRead}">
                    <tags:widgetActionRefresh method="read" nameKey="read" icon="icon-read" classes="M0"/>
                 </c:if>
-                <c:if test="${supportsQuery}">
-                   <tags:widgetActionRefresh method="query" nameKey="query" icon="icon-read" classes="M0"/>
-                </c:if>
-                <cti:checkRolesAndProperties value="ALLOW_DISCONNECT_CONTROL">
+                <cti:checkRolesAndProperties value="ALLOW_DISCONNECT_CONTROL" level="INTERACT">
+	                <c:if test="${supportsQuery}">
+	                   <tags:widgetActionRefresh method="query" nameKey="query" icon="icon-read" classes="M0"/>
+	                </c:if>
                     <tags:widgetActionRefresh method="connect" nameKey="connect" showConfirm="true" classes="M0"/>
                     <c:if test="${supportsArm}">
                       <tags:widgetActionRefresh method="arm" nameKey="arm" showConfirm="true" classes="M0"/>
                     </c:if>
+                </cti:checkRolesAndProperties>
+                <cti:checkRolesAndProperties value="ALLOW_DISCONNECT_CONTROL" level="OWNER">
                     <tags:widgetActionRefresh method="disconnect" nameKey="disconnect" showConfirm="true"/>
                 </cti:checkRolesAndProperties>
             </div>

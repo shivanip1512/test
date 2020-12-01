@@ -36,6 +36,7 @@
                     <li><a href="<cti:url value="/dev/getEcobeePGPKeyPair"/>">Ecobee PGP Key Pair</a></li>
                     <li><a href="<cti:url value="/dev/jmsApiDirectory"/>">JMS API Directory</a></li>
                     <li><a href="<cti:url value="/dev/getItronKeyPair"/>">Itron Key Pair</a></li>
+                    <li><a href="<cti:url value="/dev/getPxMWToken"/>">PxMW Token</a></li>
                 </ul>
             </tags:sectionContainer>
         </div>

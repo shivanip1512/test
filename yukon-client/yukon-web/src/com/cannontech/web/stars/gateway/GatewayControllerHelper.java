@@ -28,6 +28,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.stars.gateway.GatewayListController.CertificateUpdatesSortBy;
 import com.cannontech.web.stars.gateway.GatewayListController.FirmwareUpdatesSortBy;
+import com.cannontech.web.stars.gateway.GatewayListController.GatewayListSortBy;
 
 public class GatewayControllerHelper {
     
@@ -148,6 +149,38 @@ public class GatewayControllerHelper {
                 return type1.compareToIgnoreCase(type2);
             }
         });
+    }
+
+    public static Comparator<RfnGateway> getGatewayListComparator(SortingParameters sorting,
+            GatewayListSortBy sortBy) {
+        Comparator<RfnGateway> comparator = (o1, o2) -> {
+            return o1.getName().compareToIgnoreCase(o2.getName());
+        };
+        if (sortBy == GatewayListSortBy.SERIALNUMBER) {
+            comparator = (o1, o2) -> (o1.getRfnIdentifier().getSensorSerialNumber().compareTo(o2.getRfnIdentifier().getSensorSerialNumber()));
+        }
+        if (sortBy == GatewayListSortBy.LASTCOMMUNICATION) {
+            comparator = (o1, o2) -> {
+                if (o1.getData() != null && o2.getData() != null) {
+                    return o1.getData().getLastCommStatus().compareTo(o2.getData().getLastCommStatus());
+                } else {
+                    return o1.getName().compareToIgnoreCase(o2.getName());
+                }
+            };
+        }
+        if (sortBy == GatewayListSortBy.FIRMWAREVERSION) {
+            comparator = (o1, o2) -> {
+                if (o1.getData() != null && o2.getData() != null) {
+                    return o1.getData().getReleaseVersion().compareTo(o2.getData().getReleaseVersion());
+                } else {
+                    return o1.getName().compareToIgnoreCase(o2.getName());
+                }
+            };
+        }
+        if (sorting.getDirection() == Direction.desc) {
+            comparator = Collections.reverseOrder(comparator);
+        }
+        return comparator;
     }
 
     public static Comparator<RfnGatewayFirmwareUpdateSummary> getFirmwareComparator(SortingParameters sorting,
