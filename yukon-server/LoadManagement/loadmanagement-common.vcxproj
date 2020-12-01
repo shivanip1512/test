@@ -181,7 +181,6 @@
     <ClCompile Include="ConstraintViolation.cpp" />
     <ClCompile Include="EatonCloudCycleGear.cpp" />
     <ClCompile Include="EatonCloudNoControlGear.cpp" />
-    <ClCompile Include="EatonCloudTimeRefreshGear.cpp" />
     <ClCompile Include="ecobeeCycleGear.cpp" />
     <ClCompile Include="ecobeeSetpointGear.cpp" />
     <ClCompile Include="executor.cpp" />

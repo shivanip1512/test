@@ -26,8 +26,6 @@ struct EatonCloudControlInterface
 
     virtual bool sendCycleControl( CycleControlParameters parameters ) = 0;
 
-    virtual bool sendTimeRefreshControl( long shedTimeSeconds ) = 0;
-
     virtual bool sendNoControl() = 0;
 };
 

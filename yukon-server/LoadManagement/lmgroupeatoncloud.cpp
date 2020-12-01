@@ -24,6 +24,7 @@ bool LMGroupEatonCloud::sendStopControl( bool stopImmediately )
 {
     CtiTime now;
 
+    // TODO -- jmoc
     // Send the ActiveMQ Thrift EatonCloudRestore message here with above settings - needs definition...
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -42,6 +43,7 @@ bool LMGroupEatonCloud::sendShedControl( long controlMinutes )
 {
     CtiTime now;
 
+    // TODO -- jmoc
     //    // shed == cycle at 100% duty cycle with no ramp in/out
     // Send the ActiveMQ Thrift EatonCloudCyclingControl message here with above settings
 
@@ -62,6 +64,7 @@ bool LMGroupEatonCloud::sendCycleControl( CycleControlParameters parameters )
 
     long controlDurationSeconds = parameters.controlDurationSeconds;
 
+    // TODO -- jmoc
     // Send the ActiveMQ Thrift EatonCloudCyclingControl message here
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -79,39 +82,12 @@ bool LMGroupEatonCloud::sendCycleControl( CycleControlParameters parameters )
     setLastStopTimeSent( now + controlDurationSeconds );
     setGroupControlState( ActiveState );
 
-    return true;
-}
-
-bool LMGroupEatonCloud::sendTimeRefreshControl( long shedTimeSeconds )
-{
-    CtiTime now;
-
-    // Adjust the shedTime based on settings ....  see reduceProgramLoad() for the TimeRefresh stuff...
-
-    // Send the ActiveMQ Thrift EatonCloudCyclingControl message here
-
-    if ( _LM_DEBUG & LM_DEBUG_STANDARD )
-    {
-        CTILOG_DEBUG( dout, "Sending " << _groupTypeName << " Time Refresh command, shed time: " << shedTimeSeconds << "s, LM Group: " << getPAOName() );
-    }
-
-    if ( getGroupControlState() != ActiveState )
-    {
-        setControlStartTime( now );
-        incrementDailyOps();
-    }
-
-    setLastControlSent( now );
-    setLastStopTimeSent( now + shedTimeSeconds );
-    setGroupControlState( ActiveState );
-
-    return true;
+    //return true;
+    return false;   // this will prevent the programs last control time from being updated - don't like as it implies some sort of failure
 }
 
 bool LMGroupEatonCloud::sendNoControl()
 {
-    CtiTime now;
-
     // No message to send
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -119,16 +95,17 @@ bool LMGroupEatonCloud::sendNoControl()
         CTILOG_DEBUG( dout, "No Control gear for " << _groupTypeName << " LM Group: " << getPAOName() );
     }
 
-    setLastControlSent( now );
-    setLastStopTimeSent( now );
+    // TODO -- jmoc
+    //  is this true...  legacy gears don't seem to set this (maybe?) - needs investigation
     setGroupControlState( InactiveState );
 
     return true;
 }
 
-
 bool LMGroupEatonCloud::doesStopRequireCommandAt( const CtiTime & currentTime ) const
 {
+    // TODO -- jmoc
+    //  is this true?
     // Always send the restore at the end of control.
 
     return true;

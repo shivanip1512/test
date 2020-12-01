@@ -102,7 +102,6 @@ DECLARE_COLLECTABLE( CtiLMProgramDirectGear );
     static const std::string BeatThePeakMethod;
     static const std::string NoControlMethod;
     static const std::string EatonCloudCycleMethod;
-    static const std::string EatonCloudTimeRefreshMethod;
     static const std::string EatonCloudNoControlMethod;
 
     //Possible method stop types

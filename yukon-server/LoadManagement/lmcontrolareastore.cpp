@@ -40,7 +40,6 @@
 #include "ItronCycleGear.h"
 #include "MeterDisconnectGear.h"
 #include "EatonCloudCycleGear.h"
-#include "EatonCloudTimeRefreshGear.h"
 #include "EatonCloudNoControlGear.h"
 #include "resolvers.h"
 #include "devicetypes.h"
@@ -1005,10 +1004,6 @@ void CtiLMControlAreaStore::reset()
                     else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::EatonCloudCycleMethod) )
                     {
                         newDirectGear = CTIDBG_new Cti::LoadManagement::EatonCloudCycleGear(rdr);
-                    }
-                    else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::EatonCloudTimeRefreshMethod) )
-                    {
-                        newDirectGear = CTIDBG_new Cti::LoadManagement::EatonCloudTimeRefreshGear(rdr);
                     }
                     else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::EatonCloudNoControlMethod) )
                     {

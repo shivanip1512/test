@@ -26,6 +26,9 @@ public:
     double calculateLoadReduction( double groupCapacity ) const;
 
     std::size_t getFixedSize() const override    { return sizeof( *this ); }
+
+    bool performsControl() const override   { return false; }
+
 };
 
 }
