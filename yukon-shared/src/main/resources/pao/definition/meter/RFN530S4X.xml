@@ -40,50 +40,50 @@
         <pointInfo name="Current Phase B" attributes="CURRENT_PHASE_B"/>
         <pointInfo name="Current Phase C" attributes="CURRENT_PHASE_C"/>
         <pointInfo name="Coincident Power Factor" attributes="POWER_FACTOR_COIN"/>
-        <pointInfo name="Delivered Coincident Power Factor Peak kW" attributes="DELIVERED_COIN_POWER_FACTOR_PEAK_KW"/>
-        <pointInfo name="Received Coincident Power Factor Peak kW" attributes="RECEIVED_COIN_POWER_FACTOR_PEAK_KW"/>
-        <pointInfo name="Delivered Coincident Power Factor Peak kVAr" attributes="DELIVERED_COIN_POWER_FACTOR_PEAK_KVAR"/>
-        <pointInfo name="Received Coincident Power Factor Peak kVAr" attributes="RECEIVED_COIN_POWER_FACTOR_PEAK_KVAR"/>
-        <pointInfo name="Sum Coincident Power Factor Peak kVAr" attributes="SUM_COIN_POWER_FACTOR_PEAK_KVAR"/>
-        <pointInfo name="Delivered Coincident Power Factor Peak kVA" attributes="DELIVERED_COIN_POWER_FACTOR_PEAK_KVA"/>
-        <pointInfo name="Received Coincident Power Factor Peak kVA" attributes="RECEIVED_COIN_POWER_FACTOR_PEAK_KVA"/>
-        <pointInfo name="Sum Coincident Power Factor Peak kVA" attributes="SUM_COIN_POWER_FACTOR_PEAK_KVA"/>
-        <pointInfo name="Delivered Coincident Power Factor Peak kW Rate A" attributes="DELIVERED_COIN_POWER_FACTOR_PEAK_KW_RATE_A"/>
-        <pointInfo name="Received Coincident Power Factor Peak kW Rate A" attributes="RECEIVED_COIN_POWER_FACTOR_PEAK_KW_RATE_A"/>
-        <pointInfo name="Sum Coincident Power Factor Peak kW Rate A" attributes="SUM_COIN_POWER_FACTOR_PEAK_KW_RATE_A"/>
-        <pointInfo name="Delivered Coincident Power Factor Peak kVAr Rate A" attributes="DELIVERED_COIN_POWER_FACTOR_PEAK_KVAR_RATE_A"/>
-        <pointInfo name="Received Coincident Power Factor Peak kVAr Rate A" attributes="RECEIVED_COIN_POWER_FACTOR_PEAK_KVAR_RATE_A"/>
-        <pointInfo name="Sum Coincident Power Factor Peak kVAr Rate A" attributes="SUM_COIN_POWER_FACTOR_PEAK_KVAR_RATE_A"/>
-        <pointInfo name="Delivered Coincident Power Factor Peak kVA Rate A" attributes="DELIVERED_COIN_POWER_FACTOR_PEAK_KVA_RATE_A"/>
-        <pointInfo name="Received Coincident Power Factor Peak kVA Rate A" attributes="RECEIVED_COIN_POWER_FACTOR_PEAK_KVA_RATE_A"/>
-        <pointInfo name="Sum Coincident Power Factor Peak kVA Rate A" attributes="SUM_COIN_POWER_FACTOR_PEAK_KVA_RATE_A"/>
-        <pointInfo name="Delivered Coincident Power Factor Peak kW Rate B" attributes="DELIVERED_COIN_POWER_FACTOR_PEAK_KW_RATE_B"/>
-        <pointInfo name="Received Coincident Power Factor Peak kW Rate B" attributes="RECEIVED_COIN_POWER_FACTOR_PEAK_KW_RATE_B"/>
-        <pointInfo name="Sum Coincident Power Factor Peak kW Rate B" attributes="SUM_COIN_POWER_FACTOR_PEAK_KW_RATE_B"/>
-        <pointInfo name="Delivered Coincident Power Factor Peak kVAr Rate B" attributes="DELIVERED_COIN_POWER_FACTOR_PEAK_KVAR_RATE_B"/>
-        <pointInfo name="Received Coincident Power Factor Peak kVAr Rate B" attributes="RECEIVED_COIN_POWER_FACTOR_PEAK_KVAR_RATE_B"/>
-        <pointInfo name="Sum Coincident Power Factor Peak kVAr Rate B" attributes="SUM_COIN_POWER_FACTOR_PEAK_KVAR_RATE_B"/>
-        <pointInfo name="Delivered Coincident Power Factor Peak kVA Rate B" attributes="DELIVERED_COIN_POWER_FACTOR_PEAK_KVA_RATE_B"/>
-        <pointInfo name="Received Coincident Power Factor Peak kVA Rate B" attributes="RECEIVED_COIN_POWER_FACTOR_PEAK_KVA_RATE_B"/>
-        <pointInfo name="Sum Coincident Power Factor Peak kVA Rate B" attributes="SUM_COIN_POWER_FACTOR_PEAK_KVA_RATE_B"/>
-        <pointInfo name="Delivered Coincident Power Factor Peak kW Rate C" attributes="DELIVERED_COIN_POWER_FACTOR_PEAK_KW_RATE_C"/>
-        <pointInfo name="Received Coincident Power Factor Peak kW Rate C" attributes="RECEIVED_COIN_POWER_FACTOR_PEAK_KW_RATE_C"/>
-        <pointInfo name="Sum Coincident Power Factor Peak kW Rate C" attributes="SUM_COIN_POWER_FACTOR_PEAK_KW_RATE_C"/>
-        <pointInfo name="Delivered Coincident Power Factor Peak kVAr Rate C" attributes="DELIVERED_COIN_POWER_FACTOR_PEAK_KVAR_RATE_C"/>
-        <pointInfo name="Received Coincident Power Factor Peak kVAr Rate C" attributes="RECEIVED_COIN_POWER_FACTOR_PEAK_KVAR_RATE_C"/>
-        <pointInfo name="Sum Coincident Power Factor Peak kVAr Rate C" attributes="SUM_COIN_POWER_FACTOR_PEAK_KVAR_RATE_C"/>
-        <pointInfo name="Delivered Coincident Power Factor Peak kVA Rate C" attributes="DELIVERED_COIN_POWER_FACTOR_PEAK_KVA_RATE_C"/>
-        <pointInfo name="Received Coincident Power Factor Peak kVA Rate C" attributes="RECEIVED_COIN_POWER_FACTOR_PEAK_KVA_RATE_C"/>
-        <pointInfo name="Sum Coincident Power Factor Peak kVA Rate C" attributes="SUM_COIN_POWER_FACTOR_PEAK_KVA_RATE_D"/>
-        <pointInfo name="Delivered Coincident Power Factor Peak kW Rate D" attributes="DELIVERED_COIN_POWER_FACTOR_PEAK_KW_RATE_D"/>
-        <pointInfo name="Received Coincident Power Factor Peak kW Rate D" attributes="RECEIVED_COIN_POWER_FACTOR_PEAK_KW_RATE_D"/>
-        <pointInfo name="Sum Coincident Power Factor Peak kW Rate D" attributes="SUM_COIN_POWER_FACTOR_PEAK_KW_RATE_D"/>
-        <pointInfo name="Delivered Coincident Power Factor Peak kVAr Rate D" attributes="DELIVERED_COIN_POWER_FACTOR_PEAK_KVAR_RATE_D"/>
-        <pointInfo name="Received Coincident Power Factor Peak kVAr Rate D" attributes="RECEIVED_COIN_POWER_FACTOR_PEAK_KVAR_RATE_D"/>
-        <pointInfo name="Sum Coincident Power Factor Peak kVAr Rate D" attributes="SUM_COIN_POWER_FACTOR_PEAK_KVAR_RATE_D"/>
-        <pointInfo name="Delivered Coincident Power Factor Peak kVA Rate D" attributes="DELIVERED_COIN_POWER_FACTOR_PEAK_KVA_RATE_D"/>
-        <pointInfo name="Received Coincident Power Factor Peak kVA Rate D" attributes="RECEIVED_COIN_POWER_FACTOR_PEAK_KVA_RATE_D"/>
-        <pointInfo name="Sum Coincident Power Factor Peak kVA Rate D" attributes="SUM_COIN_POWER_FACTOR_PEAK_KVA_RATE_D"/>
+        <pointInfo name="Coincident Power Factor at Delivered Peak kW" attributes="COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KW"/>
+        <pointInfo name="Coincident Power Factor at Received Peak kW" attributes="COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KW"/>
+        <pointInfo name="Coincident Power Factor at Delivered Peak kVAr" attributes="COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVAR"/>
+        <pointInfo name="Coincident Power Factor at Received Peak kVAr" attributes="COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVAR"/>
+        <pointInfo name="Coincident Power Factor at Sum Peak kVAr" attributes="COIN_POWER_FACTOR_AT_SUM_PEAK_KVAR"/>
+        <pointInfo name="Coincident Power Factor at Delivered Peak kVA" attributes="COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA"/>
+        <pointInfo name="Coincident Power Factor at Received Peak kVA" attributes="COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVA"/>
+        <pointInfo name="Coincident Power Factor at Sum Peak kVA" attributes="COIN_POWER_FACTOR_AT_SUM_PEAK_KVA"/>
+        <pointInfo name="Coincident Power Factor at Delivered Peak kW Rate A" attributes="COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KW_RATE_A"/>
+        <pointInfo name="Coincident Power Factor at Received Peak kW Rate A" attributes="COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KW_RATE_A"/>
+        <pointInfo name="Coincident Power Factor at Sum Peak kW Rate A" attributes="COIN_POWER_FACTOR_AT_SUM_PEAK_KW_RATE_A"/>
+        <pointInfo name="Coincident Power Factor at Delivered Peak kVAr Rate A" attributes="COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVAR_RATE_A"/>
+        <pointInfo name="Coincident Power Factor at Received Peak kVAr Rate A" attributes="COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVAR_RATE_A"/>
+        <pointInfo name="Coincident Power Factor at Sum Peak kVAr Rate A" attributes="COIN_POWER_FACTOR_AT_SUM_PEAK_KVAR_RATE_A"/>
+        <pointInfo name="Coincident Power Factor at Delivered Peak kVA Rate A" attributes="COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_A"/>
+        <pointInfo name="Coincident Power Factor at Received Peak kVA Rate A" attributes="COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVA_RATE_A"/>
+        <pointInfo name="Coincident Power Factor at Sum Peak kVA Rate A" attributes="COIN_POWER_FACTOR_AT_SUM_PEAK_KVA_RATE_A"/>
+        <pointInfo name="Coincident Power Factor at Delivered Peak kW Rate B" attributes="COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KW_RATE_B"/>
+        <pointInfo name="Coincident Power Factor at Received Peak kW Rate B" attributes="COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KW_RATE_B"/>
+        <pointInfo name="Coincident Power Factor at Sum Peak kW Rate B" attributes="COIN_POWER_FACTOR_AT_SUM_PEAK_KW_RATE_B"/>
+        <pointInfo name="Coincident Power Factor at Delivered Peak kVAr Rate B" attributes="COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVAR_RATE_B"/>
+        <pointInfo name="Coincident Power Factor at Received Peak kVAr Rate B" attributes="COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVAR_RATE_B"/>
+        <pointInfo name="Coincident Power Factor at Sum Peak kVAr Rate B" attributes="COIN_POWER_FACTOR_AT_SUM_PEAK_KVAR_RATE_B"/>
+        <pointInfo name="Coincident Power Factor at Delivered Peak kVA Rate B" attributes="COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_B"/>
+        <pointInfo name="Coincident Power Factor at Received Peak kVA Rate B" attributes="COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVA_RATE_B"/>
+        <pointInfo name="Coincident Power Factor at Sum Peak kVA Rate B" attributes="COIN_POWER_FACTOR_AT_SUM_PEAK_KVA_RATE_B"/>
+        <pointInfo name="Coincident Power Factor at Delivered Peak kW Rate C" attributes="COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KW_RATE_C"/>
+        <pointInfo name="Coincident Power Factor at Received Peak kW Rate C" attributes="COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KW_RATE_C"/>
+        <pointInfo name="Coincident Power Factor at Sum Peak kW Rate C" attributes="COIN_POWER_FACTOR_AT_SUM_PEAK_KW_RATE_C"/>
+        <pointInfo name="Coincident Power Factor at Delivered Peak kVAr Rate C" attributes="COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVAR_RATE_C"/>
+        <pointInfo name="Coincident Power Factor at Received Peak kVAr Rate C" attributes="COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVAR_RATE_C"/>
+        <pointInfo name="Coincident Power Factor at Sum Peak kVAr Rate C" attributes="COIN_POWER_FACTOR_AT_SUM_PEAK_KVAR_RATE_C"/>
+        <pointInfo name="Coincident Power Factor at Delivered Peak kVA Rate C" attributes="COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_C"/>
+        <pointInfo name="Coincident Power Factor at Received Peak kVA Rate C" attributes="COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVA_RATE_C"/>
+        <pointInfo name="Coincident Power Factor at Sum Peak kVA Rate C" attributes="COIN_POWER_FACTOR_AT_SUM_PEAK_KVA_RATE_D"/>
+        <pointInfo name="Coincident Power Factor at Delivered Peak kW Rate D" attributes="COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KW_RATE_D"/>
+        <pointInfo name="Coincident Power Factor at Received Peak kW Rate D" attributes="COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KW_RATE_D"/>
+        <pointInfo name="Coincident Power Factor at Sum Peak kW Rate D" attributes="COIN_POWER_FACTOR_AT_SUM_PEAK_KW_RATE_D"/>
+        <pointInfo name="Coincident Power Factor at Delivered Peak kVAr Rate D" attributes="COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVAR_RATE_D"/>
+        <pointInfo name="Coincident Power Factor at Received Peak kVAr Rate D" attributes="COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVAR_RATE_D"/>
+        <pointInfo name="Coincident Power Factor at Sum Peak kVAr Rate D" attributes="COIN_POWER_FACTOR_AT_SUM_PEAK_KVAR_RATE_D"/>
+        <pointInfo name="Coincident Power Factor at Delivered Peak kVA Rate D" attributes="COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_D"/>
+        <pointInfo name="Coincident Power Factor at Received Peak kVA Rate D" attributes="COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVA_RATE_D"/>
+        <pointInfo name="Coincident Power Factor at Sum Peak kVA Rate D" attributes="COIN_POWER_FACTOR_AT_SUM_PEAK_KVA_RATE_D"/>
         <pointInfo name="Delivered kVA" attributes="DELIVERED_KVA"/>
         <pointInfo name="Delivered kVAh" attributes="KVAH"/>
         <pointInfo name="Delivered kVAh (Rate A kVAh)" attributes="KVAH_RATE_A"/>

@@ -5824,7 +5824,7 @@
                 <modifier>Net Flow</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Coincident Power Factor Peak kW">
+        <point name="Coincident Power Factor at Delivered Peak kW">
            <uom>PF</uom>
            <multiplier value=".001"/>
            <parseSiPrefix/>
@@ -5842,7 +5842,7 @@
            </baseModifiers>
         </point>
 
-        <point name="Received Coincident Power Factor Peak kW">
+        <point name="Coincident Power Factor at Received Peak kW">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -5860,7 +5860,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Delivered Coincident Power Factor Peak kVAr">
+        <point name="Coincident Power Factor at Delivered Peak kVAr">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -5878,7 +5878,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Received Coincident Power Factor Peak kVAr">
+        <point name="Coincident Power Factor at Received Peak kVAr">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -5896,7 +5896,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Sum Coincident Power Factor Peak kVAr">
+        <point name="Coincident Power Factor at Sum Peak kVAr">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -5916,7 +5916,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Delivered Coincident Power Factor Peak kVA">
+        <point name="Coincident Power Factor at Delivered Peak kVA">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -5934,7 +5934,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Received Coincident Power Factor Peak kVA">
+        <point name="Coincident Power Factor at Received Peak kVA">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -5952,7 +5952,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Sum Coincident Power Factor Peak kVA">
+        <point name="Coincident Power Factor at Sum Peak kVA">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -5972,7 +5972,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Delivered Coincident Power Factor Peak kW Rate A">
+        <point name="Coincident Power Factor at Delivered Peak kW Rate A">
            <uom>PF</uom>
            <multiplier value=".001"/>
            <parseSiPrefix/>
@@ -5992,7 +5992,7 @@
            </baseModifiers>
         </point>
 
-        <point name="Received Coincident Power Factor Peak kW Rate A">
+        <point name="Coincident Power Factor at Received Peak kW Rate A">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6012,7 +6012,7 @@
           </baseModifiers>
         </point>
         
-        <point name="Sum Coincident Power Factor Peak kW Rate A">
+        <point name="Coincident Power Factor at Sum Peak kW Rate A">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6034,7 +6034,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Delivered Coincident Power Factor Peak kVAr Rate A">
+        <point name="Coincident Power Factor at Delivered Peak kVAr Rate A">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6054,7 +6054,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Received Coincident Power Factor Peak kVAr Rate A">
+        <point name="Coincident Power Factor at Received Peak kVAr Rate A">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6074,7 +6074,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Sum Coincident Power Factor Peak kVAr Rate A">
+        <point name="Coincident Power Factor at Sum Peak kVAr Rate A">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6096,7 +6096,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Delivered Coincident Power Factor Peak kVA Rate A">
+        <point name="Coincident Power Factor at Delivered Peak kVA Rate A">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6116,7 +6116,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Received Coincident Power Factor Peak kVA Rate A">
+        <point name="Coincident Power Factor at Received Peak kVA Rate A">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6136,7 +6136,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Sum Coincident Power Factor Peak kVA Rate A">
+        <point name="Coincident Power Factor at Sum Peak kVA Rate A">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6158,7 +6158,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Delivered Coincident Power Factor Peak kW Rate B">
+        <point name="Coincident Power Factor at Delivered Peak kW Rate B">
            <uom>PF</uom>
            <multiplier value=".001"/>
            <parseSiPrefix/>
@@ -6178,7 +6178,7 @@
            </baseModifiers>
         </point>
 
-        <point name="Received Coincident Power Factor Peak kW Rate B">
+        <point name="Coincident Power Factor at Received Peak kW Rate B">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6198,7 +6198,7 @@
           </baseModifiers>
         </point>
         
-        <point name="Sum Coincident Power Factor Peak kW Rate B">
+        <point name="Coincident Power Factor at Sum Peak kW Rate B">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6220,7 +6220,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Delivered Coincident Power Factor Peak kVAr Rate B">
+        <point name="Coincident Power Factor at Delivered Peak kVAr Rate B">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6240,7 +6240,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Received Coincident Power Factor Peak kVAr Rate B">
+        <point name="Coincident Power Factor at Received Peak kVAr Rate B">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6260,7 +6260,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Sum Coincident Power Factor Peak kVAr Rate B">
+        <point name="Coincident Power Factor at Sum Peak kVAr Rate B">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6282,7 +6282,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Delivered Coincident Power Factor Peak kVA Rate B">
+        <point name="Coincident Power Factor at Delivered Peak kVA Rate B">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6302,7 +6302,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Received Coincident Power Factor Peak kVA Rate B">
+        <point name="Coincident Power Factor at Received Peak kVA Rate B">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6322,7 +6322,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Sum Coincident Power Factor Peak kVA Rate B">
+        <point name="Coincident Power Factor at Sum Peak kVA Rate B">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6344,7 +6344,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Delivered Coincident Power Factor Peak kW Rate C">
+        <point name="Coincident Power Factor at Delivered Peak kW Rate C">
            <uom>PF</uom>
            <multiplier value=".001"/>
            <parseSiPrefix/>
@@ -6364,7 +6364,7 @@
            </baseModifiers>
         </point>
 
-        <point name="Received Coincident Power Factor Peak kW Rate C">
+        <point name="Coincident Power Factor at Received Peak kW Rate C">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6384,7 +6384,7 @@
           </baseModifiers>
         </point>
         
-        <point name="Sum Coincident Power Factor Peak kW Rate C">
+        <point name="Coincident Power Factor at Sum Peak kW Rate C">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6406,7 +6406,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Delivered Coincident Power Factor Peak kVAr Rate C">
+        <point name="Coincident Power Factor at Delivered Peak kVAr Rate C">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6426,7 +6426,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Received Coincident Power Factor Peak kVAr Rate C">
+        <point name="Coincident Power Factor at Received Peak kVAr Rate C">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6446,7 +6446,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Sum Coincident Power Factor Peak kVAr Rate C">
+        <point name="Coincident Power Factor at Sum Peak kVAr Rate C">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6468,7 +6468,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Delivered Coincident Power Factor Peak kVA Rate C">
+        <point name="Coincident Power Factor at Delivered Peak kVA Rate C">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6488,7 +6488,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Received Coincident Power Factor Peak kVA Rate C">
+        <point name="Coincident Power Factor at Received Peak kVA Rate C">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6508,7 +6508,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Sum Coincident Power Factor Peak kVA Rate C">
+        <point name="Coincident Power Factor at Sum Peak kVA Rate C">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6529,7 +6529,7 @@
               <modifier>TOU Rate C</modifier>
           </baseModifiers>
         </point>
-        <point name="Delivered Coincident Power Factor Peak kW Rate D">
+        <point name="Coincident Power Factor at Delivered Peak kW Rate D">
            <uom>PF</uom>
            <multiplier value=".001"/>
            <parseSiPrefix/>
@@ -6549,7 +6549,7 @@
            </baseModifiers>
         </point>
 
-        <point name="Received Coincident Power Factor Peak kW Rate D">
+        <point name="Coincident Power Factor at Received Peak kW Rate D">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6569,7 +6569,7 @@
           </baseModifiers>
         </point>
         
-        <point name="Sum Coincident Power Factor Peak kW Rate D">
+        <point name="Coincident Power Factor at Sum Peak kW Rate D">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6591,7 +6591,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Delivered Coincident Power Factor Peak kVAr Rate D">
+        <point name="Coincident Power Factor at Delivered Peak kVAr Rate D">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6611,7 +6611,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Received Coincident Power Factor Peak kVAr Rate D">
+        <point name="Coincident Power Factor at Received Peak kVAr Rate D">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6631,7 +6631,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Sum Coincident Power Factor Peak kVAr Rate D">
+        <point name="Coincident Power Factor at Sum Peak kVAr Rate D">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6653,7 +6653,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Delivered Coincident Power Factor Peak kVA Rate D">
+        <point name="Coincident Power Factor at Delivered Peak kVA Rate D">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6673,7 +6673,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Received Coincident Power Factor Peak kVA Rate D">
+        <point name="Coincident Power Factor at Received Peak kVA Rate D">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
@@ -6693,7 +6693,7 @@
           </baseModifiers>
         </point>
 
-        <point name="Sum Coincident Power Factor Peak kVA Rate D">
+        <point name="Coincident Power Factor at Sum Peak kVA Rate D">
           <uom>PF</uom>
           <multiplier value=".001"/>
           <parseSiPrefix/>
