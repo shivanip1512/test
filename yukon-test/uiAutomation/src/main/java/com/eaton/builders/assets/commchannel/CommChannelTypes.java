@@ -3,6 +3,23 @@ package com.eaton.builders.assets.commchannel;
 import java.util.Random;
 
 public class CommChannelTypes {
+    
+    public enum CommChannelType {
+        TCPPORT("TCPPORT"),
+        LOCAL_SHARED("LOCAL_SHARED"),
+        UDPPORT("UDPPORT"),
+        TSERVER_SHARED("TSERVER_SHARED");
+        
+        private final String commType;
+        
+        CommChannelType(String commType) {
+            this.commType = commType;
+        }
+        
+        public String getCommChannelType() {
+            return this.commType;
+        }        
+    }
 
     public enum BaudRate {
         
@@ -59,17 +76,46 @@ public class CommChannelTypes {
         ACS("ACS"),
         NONE("NONE");
         
-        private final String sharedPortType;
+        private final String sharedPort;
         
-        SharedPortType(String sharedPortType) {
-            this.sharedPortType = sharedPortType;
+        SharedPortType(String sharedPort) {
+            this.sharedPort = sharedPort;
         }
         
         public String getSharedPortType() {
-            return this.sharedPortType;
+            return this.sharedPort;
         }
         
         public static SharedPortType getRandomBaudRate() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
+    }
+    
+    public enum PhysicalPortType {
+        COM1("com1"),
+        COM2("com2"),
+        COM3("com3"),
+        COM4("com4"),
+        COM5("com5"),
+        COM6("com6"),
+        COM7("com7"),
+        COM8("com8"),
+        COM50("com50"),
+        COM99("com99"),
+        OTHER("Other");
+        
+        private final String physicalPort;
+        
+        PhysicalPortType(String physicalPort) {
+            this.physicalPort = physicalPort;
+        }
+        
+        public String getPhysicalPort() {
+            return this.physicalPort;
+        }
+        
+        public static PhysicalPortType getRandomPhysicalPort() {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }

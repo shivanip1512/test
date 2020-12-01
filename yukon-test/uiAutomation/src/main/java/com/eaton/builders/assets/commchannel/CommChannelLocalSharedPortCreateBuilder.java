@@ -3,19 +3,20 @@ package com.eaton.builders.assets.commchannel;
 import java.util.Optional;
 import org.json.JSONObject;
 
-public class CommChannelLocalSharedPortCreateBuilder extends CommChannelSharedCreateBuilder {
-    public static class LocalSharedPortBuilder extends SharedBuilder {
-        protected String physicalPort;
+import com.eaton.builders.assets.commchannel.CommChannelTypes.CommChannelType;
+import com.eaton.builders.assets.commchannel.CommChannelTypes.PhysicalPortType;
 
-        public static final String TYPE = "LOCAL_SHARED";
+public class CommChannelLocalSharedPortCreateBuilder extends CommChannelCommonCreateBuilder {
+    public static class LocalSharedPortBuilder extends CommonBuilder {
+        protected PhysicalPortType physicalPort;
 
-        public LocalSharedPortBuilder(Optional<String> name) {
-            super(name);
-            this.type = TYPE;
+        public LocalSharedPortBuilder(Optional<String> name, CommChannelType commType) {
+            super(name, commType);
         }
 
-        public LocalSharedPortBuilder withPhysicalPort(Optional<String> physicalPort) {
-            this.physicalPort = physicalPort.orElse("com" + faker.number().numberBetween(1, 255));
+        public LocalSharedPortBuilder withPhysicalPort(Optional<PhysicalPortType> physicalPort) {
+            this.physicalPort = physicalPort.orElse(PhysicalPortType.getRandomPhysicalPort());
+            
             return this;
         }
 
@@ -27,9 +28,5 @@ public class CommChannelLocalSharedPortCreateBuilder extends CommChannelSharedCr
 
             return j;
         }
-    }
-
-    public static LocalSharedPortBuilder buildDefaultCommChannelLocalSharedPort() {
-        return new CommChannelLocalSharedPortCreateBuilder.LocalSharedPortBuilder(Optional.empty());
     }
 }

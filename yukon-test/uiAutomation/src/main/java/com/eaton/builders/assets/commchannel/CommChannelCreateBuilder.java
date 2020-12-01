@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.javatuples.Pair;
 import org.json.JSONObject;
 
+import com.eaton.builders.assets.commchannel.CommChannelTypes.CommChannelType;
 import com.eaton.rest.api.assets.AssetsCreateRequestAPI;
 import com.github.javafaker.Faker;
 
@@ -14,9 +15,8 @@ import io.restassured.response.ExtractableResponse;
 public class CommChannelCreateBuilder {
     public static class Builder {
         protected Faker faker = new Faker();
-        protected String type;
         protected String name;
-        protected String defaultName;
+        protected CommChannelType commType;
         protected boolean enable;
         protected String baudRate;
         protected Integer preTxWait;
@@ -24,12 +24,14 @@ public class CommChannelCreateBuilder {
         protected Integer postTxWait;
         protected Integer receiveDataWait;
         protected Integer extraTimeOut;
+        
 
-        public Builder(Optional<String> name) {
+        public Builder(Optional<String> name, CommChannelType commType) {
             String u = UUID.randomUUID().toString();
             String uuid = u.replace("-", "");
 
-            this.name = name.orElse("AT " + defaultName + " " + uuid);
+            this.name = name.orElse("AT " + commType.getCommChannelType() + uuid);
+            this.commType = commType;
         }
 
         public Builder withEnable(Optional<Boolean> enable) {
@@ -38,7 +40,7 @@ public class CommChannelCreateBuilder {
         }
 
         public Builder withBaudRate(Optional<CommChannelTypes.BaudRate> baudRate) {
-            CommChannelTypes.BaudRate rate = baudRate.orElse(CommChannelTypes.BaudRate.BAUD_300);
+            CommChannelTypes.BaudRate rate = baudRate.orElse(CommChannelTypes.BaudRate.getRandomBaudRate());
 
             this.baudRate = rate.getBaudRate();
             return this;
@@ -75,7 +77,7 @@ public class CommChannelCreateBuilder {
 
         public JSONObject build() {
             JSONObject j = new JSONObject();
-            j.put("type", this.type);
+            j.put("type", this.commType.getCommChannelType());
             j.put("name", this.name);
             j.put("enable", this.enable);
             j.put("baudRate", this.baudRate);
@@ -93,6 +95,7 @@ public class CommChannelCreateBuilder {
 
         public Pair<JSONObject, JSONObject> create() {
             JSONObject request = build();
+            
             ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(request.toString());
 
             String res = createResponse.asString();
