@@ -144,6 +144,7 @@ public enum UserPageType {
                 paoUrls.add(compileUrlParam("/meter/moveIn", "deviceId"));
                 paoUrls.add(compileUrlParam("/meter/moveOut", "deviceId"));
                 paoUrls.add(compileUrlParam("/meter/highBill/view", "deviceId"));
+                paoUrls.add(compileUrlParam("/meter/virtual/home", "deviceId"));
                 paoUrls.add(compileUrlParam("/amr/profile/home", "deviceId"));
                 paoUrls.add(compileUrlParam("/amr/voltageAndTou/home", "deviceId"));
                 paoUrls.add(compileUrlParam("/amr/manualCommand/home", "deviceId"));

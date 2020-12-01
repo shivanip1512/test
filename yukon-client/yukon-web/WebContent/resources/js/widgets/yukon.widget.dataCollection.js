@@ -56,53 +56,26 @@ yukon.widget.dataCollection = (function () {
     /** Build the pie chart for the first time. */
     _buildChart = function (chart, data) {
         debug.log('building chart');
-        //use widget wrapper for width if within widget and summary if on detail page
-        var container = chart.closest('.widgetWrapper'),
-            summaryPage = chart.closest('.js-pie-chart-summary'),
-            onWidget = container.length,
-            containerWidth = onWidget ? container.width() : summaryPage.width(),
-            chartWidth = containerWidth - 20;
-        chart.highcharts({
-            chart: {
-                renderTo: 'chart',
-                plotBackgroundColor: null,
-                plotBorderWidth: null,
-                plotShadow: false,
-                height: 200,
-                width: chartWidth
-            },
-            credits: {
-                enabled: false
-            },
-            legend: {
-                symbolPadding: -60,
-                symbolWidth: 0.001,
-                symbolHeight: 0.001,
-                symbolRadius: 0,
-                align: 'right',
-                borderWidth: 0,
-                useHTML: true,
+        
+        var legendOptionsJSON = {
                 labelFormatter: function (point) {
-                    var legendValueText = '<span class="js-legend-value dn">' + this.filter + '</span>';
-                    var spanText = '<span class="badge" style="margin:2px;width:60px;color:white;background-color:' + this.color + '">' + this.x + '</span> ';
+                    var legendValueText = '<span class="js-legend-value dn">' + this.filter + '</span>',
+                        spanText = '<span class="badge" style="margin:2px;width:60px;color:white;background-color:' + this.color + '">' + this.x + '</span> ';
                     return legendValueText + spanText + this.name + ': ' + this.displayPercentage;
                 },
-                layout: 'vertical',
-                verticalAlign: 'middle'
             },
-            title: { text: null },
-            tooltip: {
-                pointFormat: '<b>{point.displayPercentage}, {point.x} devices</b>'
-            },
+            plotPieJSON = {
+                className: chart.closest('.widgetWrapper').exists() ? 'js-data-pie' : ''
+            };
+
+        chart.highcharts({
+            chart: yg.highcharts_options.pie_chart_options.chart,
+            credits: yg.highcharts_options.pie_chart_options.credits,
+            legend: $.extend({}, yg.highcharts_options.pie_chart_options.legend, legendOptionsJSON),
+            title: yg.highcharts_options.pie_chart_options.title,
+            tooltip: yg.highcharts_options.pie_chart_options.tooltip,
             plotOptions: {
-                pie: {
-                    allowPointSelect: true,
-                    cursor: 'pointer',
-                    dataLabels: { enabled: false },
-                    showInLegend: true,
-                    borderWidth: 0.25,
-                    className: onWidget ? 'js-data-pie' : ''
-                }
+                pie: $.extend({}, yg.highcharts_options.pie_chart_options.plotOptions.pie, plotPieJSON)
             },
             series: [{
                 type: 'pie',

@@ -47,6 +47,48 @@ var yg = {
         global: {
             useUTC: false,
             timezoneOffset : new Date().getTimezoneOffset()
+        },
+        pie_chart_options: {
+            chart: {
+                renderTo: 'chart',
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false,
+                height: 200,
+                width: 460
+            },
+            credits: {
+                enabled: false
+            },
+            legend: {
+                symbolPadding: -60,
+                symbolWidth: 0.001,
+                symbolHeight: 0.001,
+                symbolRadius: 0,
+                align: 'right',
+                borderWidth: 0,
+                useHTML: true,
+                layout: 'vertical',
+                verticalAlign: 'middle'
+            },
+            title: { 
+                text: null
+            },
+            tooltip: {
+                pointFormat: '<b>{point.displayPercentage}, {point.x} <cti:msg2 key="yukon.common.devices"/></b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: false
+                    },
+                    showInLegend: true,
+                    borderWidth: 0.25,
+                }
+            },
+            series_type_pie: 'pie'
         }
     },
     

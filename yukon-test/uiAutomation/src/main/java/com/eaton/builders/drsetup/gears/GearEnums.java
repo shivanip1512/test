@@ -129,5 +129,45 @@ public class GearEnums {
             return values()[random.nextInt(values().length)];
         }
     }
+    
+    public enum RefreshShedType {
+    	FixedShedTime("FixedShedTime"),
+    	DynamicShedTime("DynamicShedTime");
+
+        private final String refreshShedType;
+
+    	RefreshShedType(String refreshShedType) {
+            this.refreshShedType = refreshShedType;
+        }
+
+        public String getRefreshShedType() {
+            return this.refreshShedType;
+        }
+
+        public static RefreshShedType getRandomRefreshShedType() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
+    }
+    
+    public enum GroupSelectionMethod {
+    	LastControlled("LastControlled"),
+    	AlwaysFirstGroup("AlwaysFirstGroup");
+
+        private final String groupSelectionMethod;
+
+        GroupSelectionMethod(String groupSelectionMethod) {
+            this.groupSelectionMethod = groupSelectionMethod;
+        }
+
+        public String getGroupSelectionMethod() {
+            return this.groupSelectionMethod;
+        }
+
+        public static GroupSelectionMethod getRandomGroupSelectionMethod() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
+    }    
 
 }

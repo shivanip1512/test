@@ -16,7 +16,7 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
-import com.eaton.pages.demandresponse.LoadProgramDetailPage;
+import com.eaton.pages.demandresponse.loadprogram.LoadProgramDetailPage;
 import com.eaton.builders.drsetup.loadprogram.LoadProgramCreateService;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.CopyLoadProgramModal;
