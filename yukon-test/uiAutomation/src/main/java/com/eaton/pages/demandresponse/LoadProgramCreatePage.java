@@ -3,6 +3,7 @@ package com.eaton.pages.demandresponse;
 import java.util.Optional;
 
 import com.eaton.elements.Button;
+import com.eaton.elements.CheckboxElement;
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.Section;
 import com.eaton.elements.SelectBoxElement;
@@ -16,6 +17,7 @@ import com.eaton.elements.modals.gears.CreateItronPrgmGearModal;
 import com.eaton.elements.modals.gears.CreateMeterDisconnectPrgmModal;
 import com.eaton.elements.modals.gears.CreateSepPrgmGearModal;
 import com.eaton.elements.tabs.LoadGroupsTab;
+import com.eaton.elements.tabs.TabElement;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
@@ -29,7 +31,8 @@ public class LoadProgramCreatePage extends PageBase {
 	private TimePickerElement stopTimeWindowOne;
 	private TimePickerElement startTimeWindowTwo;
 	private TimePickerElement stopTimeWindowTwo;
-
+	private TabElement tabContainer;
+	
 	public LoadProgramCreatePage(DriverExtensions driverExt) {
 		super(driverExt);
 
@@ -38,10 +41,10 @@ public class LoadProgramCreatePage extends PageBase {
 		startTimeWindowOne = new TimePickerElement(this.driverExt, "startTimeWindowOne_inputField");
 		stopTimeWindowOne = new TimePickerElement(this.driverExt, "stopTimeWindowOne_inputField");
 		startTimeWindowTwo = new TimePickerElement(this.driverExt, "startTimeWindowTwo_inputField");
-		stopTimeWindowTwo = new TimePickerElement(this.driverExt, "startTimeWindowTwo_inputField");
+		stopTimeWindowTwo = new TimePickerElement(this.driverExt, "stopTimeWindowTwo_inputField");
 	}
 
-	// General
+	// General	
 	public TextEditElement getName() {
 		return new TextEditElement(this.driverExt, "name");
 	}
@@ -139,7 +142,7 @@ public class LoadProgramCreatePage extends PageBase {
 	public CreateSepPrgmGearModal showCreateSepPrgmGearModal() {
 		getGearsCreateBtn().click();
 
-		return new CreateSepPrgmGearModal(this.driverExt, Optional.empty(), Optional.of("gear-create-popup-LM_SEP_PROGRAM"));
+		return new CreateSepPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
 	}
 
 	public SelectBoxElement getGears() {
@@ -150,5 +153,40 @@ public class LoadProgramCreatePage extends PageBase {
 
 	public LoadGroupsTab getLoadGroupTab() {
 		return new LoadGroupsTab(this.driverExt);
+	}
+	
+	//Notification Tab	
+    public CheckboxElement getProgramStart() {
+        return new CheckboxElement(this.driverExt, "js-program-start-check");
+    }
+    
+    public CheckboxElement getProgramStop() {
+        return new CheckboxElement(this.driverExt, "js-program-stop-check");
+    }
+    
+	public TextEditElement getProgramStartMinutes() {
+		return new TextEditElement(this.driverExt, "notification.programStartInMinutes");
+	}
+
+	public TextEditElement getProgramStopMinutes() {
+		return new TextEditElement(this.driverExt, "notification.programStopInMinutes");
+	}
+	
+	public Section getPageSection(String sectionName) {
+        return new Section(this.driverExt, sectionName);
+    } 
+	
+	public TabElement getTabElement() {
+        return new TabElement(this.driverExt);
+    }
+	
+	public SelectBoxElement getLoadGroupsSelectBox() {
+		tabContainer = new TabElement(driverExt);
+		return new SelectBoxElement(this.driverExt, tabContainer.getTabPanelByName("Load Groups"));
+	}
+	
+	public SelectBoxElement getNotificationSelectBox() {
+		tabContainer = new TabElement(driverExt);
+		return new SelectBoxElement(this.driverExt, tabContainer.getTabPanelByName("Notification"));
 	}
 }

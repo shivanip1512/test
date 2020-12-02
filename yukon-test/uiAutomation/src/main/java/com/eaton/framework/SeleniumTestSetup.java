@@ -230,6 +230,15 @@ public class SeleniumTestSetup {
         } while(count.equals(1) && ((System.currentTimeMillis() - startTime) < 2000));
     }
 
+    public static void waitUntilTableVisiable() {
+        Integer count;
+        long startTime = System.currentTimeMillis();
+        
+        do {
+            count = driverExt.findElements(By.cssSelector("[class='.compact-results-table.picker-results-table']"), Optional.of(0)).size();
+        } while(count.equals(0) && ((System.currentTimeMillis() - startTime) < 2000));
+    }
+    
     public static void waitUntilModalClosedDisplayNone(String describedBy) {
         long startTime = System.currentTimeMillis();
 

@@ -3,6 +3,8 @@ package com.eaton.elements;
 import java.util.Optional;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
@@ -34,6 +36,24 @@ public class TimePickerElement {
 
     public WebElement getPicker(String elementName) {
         return this.driverExt.findElement(By.cssSelector("input[name='" + elementName + "']"), Optional.empty());
+    }
+    
+    public String getValidationError() {
+        String validationError = "";
+        long startTime = System.currentTimeMillis();
+
+        while (validationError.equals("") && (System.currentTimeMillis() - startTime) < 5000) {
+            try {
+                if (this.elementName != null) {
+
+                    validationError = this.driverExt.findElement(By.cssSelector("div[class='error']"), Optional.empty()).getText();   
+                    System.out.println("error: " + validationError);
+                }
+            } catch (StaleElementReferenceException | NoSuchElementException ex) {
+            }
+        }
+        
+        return validationError;
     }
 
 }
