@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -474,17 +475,23 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     /**
      * Adding devices and gateways to map
      */
-    private void colorCodeByGatewayAndAddToMap(NetworkMap map,  Map<Integer, List<DynamicRfnDeviceData>> data) {
+    private void colorCodeByGatewayAndAddToMap(NetworkMap map, Map<Integer, List<DynamicRfnDeviceData>> data) {
         AtomicInteger i = new AtomicInteger(0);
         for (Integer gatewayId : data.keySet()) {
             Color color = Color.values()[i.getAndIncrement()];
-            RfnDevice gateway = data.get(gatewayId).iterator().next().getGateway();
-            Set<RfnIdentifier> devices = data.get(gatewayId).stream()
-                    .map(d -> d.getDevice().getRfnIdentifier())
-                    .collect(Collectors.toSet());
-            log.debug("Color code by gateway {} devices {}", gateway.getName(), devices.size());
-            devices.add(gateway.getRfnIdentifier());
-            addDevicesToMap(map, color, gateway.getName(), devices);
+            Iterator<DynamicRfnDeviceData> iterator = data.get(gatewayId).iterator();
+            if (iterator.hasNext()) {
+                RfnDevice gateway = iterator.next().getGateway();
+                Set<RfnIdentifier> devices = data.get(gatewayId).stream()
+                        .map(d -> d.getDevice().getRfnIdentifier())
+                        .collect(Collectors.toSet());
+                log.debug("Color code by gateway {} devices {}", gateway.getName(), devices.size());
+                devices.add(gateway.getRfnIdentifier());
+                addDevicesToMap(map, color, gateway.getName(), devices);
+            } else {
+                log.info("No devices were found matching the specified filter criteria for gateway ID: " + gatewayId);
+            }
+            
         }
     }
 

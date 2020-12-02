@@ -19,6 +19,8 @@
     <input type="hidden" id="tooManyGatewaysError" value="${tooManyGateways}"/>
     <cti:msg2 var="coordinatesDeleted" key="yukon.web.modules.operator.mapNetwork.location.delete.successful"/>
     <input id="coordinatesDeletedMsg" type="hidden" value="${coordinatesDeleted}"/>
+    <cti:msg2 var="invalidFilterCriteria" key=".invalidFilterCriteria"/>
+    <input type="hidden" id="invalid-filter-criteria-error" value="${invalidFilterCriteria}"/>
     
     <input id="gatewayTypes" type="hidden" value="${gatewayPaoTypes}"/>
     <input id="relayTypes" type="hidden" value="${relayPaoTypes}"/>
@@ -29,6 +31,7 @@
     <div style="height:800px;">
         <div id="comprehensive-map-container" style="height:100%;width:100%;background:white;">
             <div class="filter-section">
+                <div id="invalid-filter-criteria-message"></div>
                 <hr>
                 <form:form id="filter-form" modelAttribute="filter">
                     <i:inline key="yukon.common.filterBy"/>&nbsp;
