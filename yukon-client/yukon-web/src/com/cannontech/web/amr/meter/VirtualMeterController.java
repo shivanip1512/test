@@ -34,16 +34,16 @@ public class VirtualMeterController {
     @GetMapping("home")
     public String home(HttpServletRequest request, ModelMap model) throws ServletException {
         
-        int deviceId = ServletRequestUtils.getIntParameter(request, "deviceId");
-        
-        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
-        model.addAttribute("id", deviceId);
-        model.addAttribute("deviceName", paoLoadingService.getDisplayablePao(device).getName());
-       
-        // do some hinting to speed loading
-        List<LitePoint> litePoints = pointDao.getLitePointsByPaObjectId(deviceId);
-        cachingPointFormattingService.addLitePointsToCache(litePoints);
-        
+        Integer deviceId = ServletRequestUtils.getIntParameter(request, "deviceId");
+        if (deviceId != null) {
+            SimpleDevice device = deviceDao.getYukonDevice(deviceId);
+            model.addAttribute("id", deviceId);
+            model.addAttribute("deviceName", paoLoadingService.getDisplayablePao(device).getName());
+           
+            // do some hinting to speed loading
+            List<LitePoint> litePoints = pointDao.getLitePointsByPaObjectId(deviceId);
+            cachingPointFormattingService.addLitePointsToCache(litePoints);
+        }
         return "virtualMeterHome.jsp";
     }
 }
