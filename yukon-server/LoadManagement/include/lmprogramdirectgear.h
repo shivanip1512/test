@@ -101,6 +101,8 @@ DECLARE_COLLECTABLE( CtiLMProgramDirectGear );
     static const std::string MeterDisconnectMethod;
     static const std::string BeatThePeakMethod;
     static const std::string NoControlMethod;
+    static const std::string EatonCloudCycleMethod;
+    static const std::string EatonCloudNoControlMethod;
 
     //Possible method stop types
     static const std::string RestoreStopType;

@@ -1,4 +1,4 @@
-package com.cannontech.common.device.virtualDevice;
+package com.cannontech.amr.meter.model;
 
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.PaoIdentifier;

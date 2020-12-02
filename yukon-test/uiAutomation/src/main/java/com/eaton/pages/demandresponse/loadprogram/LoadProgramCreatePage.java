@@ -1,4 +1,4 @@
-package com.eaton.pages.demandresponse;
+package com.eaton.pages.demandresponse.loadprogram;
 
 import java.util.Optional;
 

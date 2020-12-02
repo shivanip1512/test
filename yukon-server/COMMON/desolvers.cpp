@@ -219,6 +219,7 @@ string desolveDeviceType( int aType )
         case TYPE_LMGROUP_ITRON:            Ret = "itron group";                break;
         case TYPE_LMGROUP_METER_DISCONNECT: Ret = "meter disconnect group";     break;
         case TYPE_LMGROUP_MCT:              Ret = "mct group";                  break;
+        case TYPE_LMGROUP_EATON_CLOUD:      Ret = "eaton cloud group";          break;            
         case TYPE_LMGROUP_GOLAY:            Ret = "golay group";                break;
         case TYPE_LMGROUP_SADIGITAL:        Ret = "sa-digital group";           break;
         case TYPE_LMGROUP_SA105:            Ret = "sa-105 group";               break;

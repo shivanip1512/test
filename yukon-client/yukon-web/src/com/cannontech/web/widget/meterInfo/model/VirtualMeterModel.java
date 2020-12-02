@@ -1,6 +1,6 @@
 package com.cannontech.web.widget.meterInfo.model;
 
-import com.cannontech.common.device.virtualDevice.VirtualMeter;
+import com.cannontech.amr.meter.model.VirtualMeter;
 
 public class VirtualMeterModel extends MeterModel {
 
