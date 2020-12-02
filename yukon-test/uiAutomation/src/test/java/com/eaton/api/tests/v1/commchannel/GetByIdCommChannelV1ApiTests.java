@@ -20,7 +20,7 @@ public class GetByIdCommChannelV1ApiTests {
     private Faker faker = new Faker();
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.ASSETS, TestConstants.Features.COMM_CHANNELS })
-    public void getByIdCommChannelApi_TCPPort_200Success() {
+    public void getByIdCommChannelApi_TCPPortAllFields_200Success() {
         SoftAssertions softly = new SoftAssertions();
         
         Pair<JSONObject, JSONObject> pair = CommChannelCreateService.createTCPPortAllFields();
@@ -34,7 +34,6 @@ public class GetByIdCommChannelV1ApiTests {
         JSONObject jsonTiming = json.getJSONObject("timing");
 
         softly.assertThat(response.statusCode()).isEqualTo(200);
-        softly.assertThat(json).isNotNull();
         softly.assertThat(json.getString("type")).isEqualTo(createResponse.getString("type"));
         softly.assertThat(json.getString("name")).isEqualTo(createResponse.getString("name"));
         softly.assertThat(json.getBoolean("enable")).isEqualTo(createResponse.getBoolean("enable"));
@@ -65,8 +64,6 @@ public class GetByIdCommChannelV1ApiTests {
         JSONObject jsonSharing = json.getJSONObject("sharing");
 
         softly.assertThat(response.statusCode()).isEqualTo(200);
-        softly.assertThat(json).isNotNull();
-        softly.assertThat(json.getInt("id")).isEqualTo(id);
         softly.assertThat(json.getString("type")).isEqualTo(createResponse.getString("type"));
         softly.assertThat(json.getString("name")).isEqualTo(createResponse.getString("name"));
         softly.assertThat(json.getBoolean("enable")).isEqualTo(createResponse.getBoolean("enable"));
@@ -81,7 +78,6 @@ public class GetByIdCommChannelV1ApiTests {
         softly.assertThat(json.getInt("carrierDetectWaitInMilliseconds")).isEqualTo(createResponse.getInt("carrierDetectWaitInMilliseconds"));
         softly.assertThat(json.getString("protocolWrap")).isEqualTo(createResponse.getString("protocolWrap"));
         softly.assertThat(json.getString("physicalPort")).isEqualTo(createResponse.getString("physicalPort"));
-        softly.assertThat(json.length()).isEqualTo(10);
         softly.assertAll();
     }
     

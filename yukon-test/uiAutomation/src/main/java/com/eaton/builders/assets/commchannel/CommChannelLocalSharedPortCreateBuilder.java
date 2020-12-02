@@ -8,15 +8,24 @@ import com.eaton.builders.assets.commchannel.CommChannelTypes.PhysicalPortType;
 
 public class CommChannelLocalSharedPortCreateBuilder extends CommChannelCommonCreateBuilder {
     public static class LocalSharedPortBuilder extends CommonBuilder {
-        protected PhysicalPortType physicalPort;
+        protected String physicalPort;
 
         public LocalSharedPortBuilder(Optional<String> name, CommChannelType commType) {
             super(name, commType);
         }
 
         public LocalSharedPortBuilder withPhysicalPort(Optional<PhysicalPortType> physicalPort) {
-            this.physicalPort = physicalPort.orElse(PhysicalPortType.getRandomPhysicalPort());
-            
+
+            if (physicalPort.isPresent()) {
+                this.physicalPort = physicalPort.get().getPhysicalPort();
+            } else {
+                this.physicalPort = PhysicalPortType.getRandomPhysicalPort().getPhysicalPort();
+            }
+
+            if (this.physicalPort.equals("Other")) {
+                this.physicalPort = "com" + faker.random().nextInt(9, 99999);
+            }
+
             return this;
         }
 

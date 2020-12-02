@@ -21,8 +21,7 @@ public class CommChannelTypes {
         }        
     }
 
-    public enum BaudRate {
-        
+    public enum BaudRateType {
         BAUD_300("BAUD_300"),
         BAUD_1200("BAUD_1200"),
         BAUD_2400("BAUD_2400"),
@@ -34,7 +33,7 @@ public class CommChannelTypes {
         
         private final String baudRate;
         
-        BaudRate(String baudRate) {
+        BaudRateType(String baudRate) {
             this.baudRate = baudRate;
         }
         
@@ -42,21 +41,19 @@ public class CommChannelTypes {
             return this.baudRate;
         }
         
-        public static BaudRate getRandomBaudRate() {
+        public static BaudRateType getRandomBaudRate() {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
     }
     
-    public enum ProtocolWrap {
-
-        PROTOCOL_WRAP("Protocol Wrap"),
-        NONE("None"),
+    public enum ProtocolWrapType {
+        NONE("NONE"),
         IDLC("IDLC");
         
         private final String protocolWrap;
         
-        ProtocolWrap(String protocolWrap) {
+        ProtocolWrapType(String protocolWrap) {
             this.protocolWrap = protocolWrap;
         }
         
@@ -64,7 +61,7 @@ public class CommChannelTypes {
             return this.protocolWrap;
         }
         
-        public static ProtocolWrap getRandomBaudRate() {
+        public static ProtocolWrapType getRandomProtocolWrap() {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }
@@ -74,7 +71,7 @@ public class CommChannelTypes {
         
         ILEX("ILEX"),
         ACS("ACS"),
-        NONE("NONE");
+        NONE("None");
         
         private final String sharedPort;
         
@@ -86,7 +83,7 @@ public class CommChannelTypes {
             return this.sharedPort;
         }
         
-        public static SharedPortType getRandomBaudRate() {
+        public static SharedPortType getRandomSharedPort() {
             Random random = new Random();
             return values()[random.nextInt(values().length)];
         }

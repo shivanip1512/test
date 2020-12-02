@@ -11,6 +11,7 @@ import org.testng.SkipException;
 import org.testng.annotations.Test;
 
 import com.eaton.builders.assets.virtualdevices.VirtualDeviceCreateBuilder;
+import com.eaton.builders.assets.virtualdevices.VirtualDeviceCreateService;
 import com.eaton.framework.APIs;
 import com.eaton.framework.TestConstants;
 import com.eaton.rest.api.common.ApiCallHelper;
@@ -25,8 +26,7 @@ public class CreateVirtualDeviceV1ApiTests {
             TestConstants.Features.VIRTUAL_DEVICES })
     public void createVirtualDeviceApi_AllFields_201Created() {
         SoftAssertions softly = new SoftAssertions();
-        Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateBuilder.buildDefaultVirtualDevice()
-                .create();
+        Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateService.createVirtualDeviceOnlyRequiredFields();
 
         JSONObject request = pair.getValue0();
         JSONObject response = pair.getValue1();

@@ -39,8 +39,8 @@ public class CommChannelCreateBuilder {
             return this;
         }
 
-        public Builder withBaudRate(Optional<CommChannelTypes.BaudRate> baudRate) {
-            CommChannelTypes.BaudRate rate = baudRate.orElse(CommChannelTypes.BaudRate.getRandomBaudRate());
+        public Builder withBaudRate(Optional<CommChannelTypes.BaudRateType> baudRate) {
+            CommChannelTypes.BaudRateType rate = baudRate.orElse(CommChannelTypes.BaudRateType.getRandomBaudRate());
 
             this.baudRate = rate.getBaudRate();
             return this;
