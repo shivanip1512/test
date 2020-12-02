@@ -173,7 +173,7 @@ WHERE RolePropertyId = -20220;
 UPDATE YukonGroupRole 
 SET Value = 'OWNER' 
 WHERE RolePropertyID = -20220 
-AND Value = '';
+AND Value = ' ';
 
 INSERT INTO DBUpdates VALUES ('YUK-23313', '9.0.0', GETDATE());
 /* @end YUK-23313 */
