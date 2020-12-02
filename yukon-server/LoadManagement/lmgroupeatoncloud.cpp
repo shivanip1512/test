@@ -27,6 +27,11 @@ bool LMGroupEatonCloud::sendStopControl( bool stopImmediately )
     // TODO -- jmoc
     // Send the ActiveMQ Thrift EatonCloudRestore message here with above settings - needs definition...
 
+    // if stopImmediately == true then we are doing a Restore - if false we do a StopCycle,
+    // we need to add an enum to the stop message...
+    // and what about NoControl gears? based on direct gear code they should do nothing
+
+
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CTILOG_DEBUG( dout, "Sending " << _groupTypeName << " Stop command, LM Group: " << getPAOName() );
@@ -82,8 +87,7 @@ bool LMGroupEatonCloud::sendCycleControl( CycleControlParameters parameters )
     setLastStopTimeSent( now + controlDurationSeconds );
     setGroupControlState( ActiveState );
 
-    //return true;
-    return false;   // this will prevent the programs last control time from being updated - don't like as it implies some sort of failure
+    return true;
 }
 
 bool LMGroupEatonCloud::sendNoControl()
@@ -99,7 +103,8 @@ bool LMGroupEatonCloud::sendNoControl()
     //  is this true...  legacy gears don't seem to set this (maybe?) - needs investigation
     setGroupControlState( InactiveState );
 
-    return true;
+    //return true;
+    return false;   // this will prevent the programs last control time from being updated - don't like as it implies some sort of failure
 }
 
 bool LMGroupEatonCloud::doesStopRequireCommandAt( const CtiTime & currentTime ) const
