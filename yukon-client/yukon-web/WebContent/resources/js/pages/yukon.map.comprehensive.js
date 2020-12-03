@@ -347,17 +347,7 @@ yukon.map.comprehensive = (function () {
                         yukon.mapping.showHideAllGateways();
                         yukon.mapping.showHideAllRelays();
                         var gatewayIds = $(".js-selected-gateways").chosen().val();
-                        yukon.mapping.showHideAllRoutes(gatewayIds);
-                        // Display warning message if no devices were found as per filter criteria
-                        if(data.map.totalDevices == 0) {
-                            var warningMessage = $("#invalid-filter-criteria-error").val();
-                            $('#invalid-filter-criteria-message').addMessage({
-                                message: warningMessage,
-                                messageClass: 'warning'
-                            }).show();
-                        } else {
-                            $('#invalid-filter-criteria-message').hide();
-                        }
+                        yukon.mapping.showHideAllRoutes(gatewayIds);                    
                     }
                 }).always(function () {
                     yukon.ui.unblock('#comprehensive-map-container');
