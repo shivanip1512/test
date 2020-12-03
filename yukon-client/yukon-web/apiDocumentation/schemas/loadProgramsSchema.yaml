@@ -397,7 +397,7 @@ LM_EATON_CLOUD_PROGRAM:
     type:
       type: string
       enum: 
-        - LM_DIRECT_PROGRAM
+        - LM_EATON_CLOUD_PROGRAM
       description: 'Type of load program.'
     operationalState:
       type: string
