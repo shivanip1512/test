@@ -185,6 +185,11 @@ struct LMGroupItron
     1: required     LMGroupBase                     _baseMessage;
 }
 
+struct LMGroupEatonCloud
+{
+    1: required     LMGroupBase                     _baseMessage;
+}
+
 struct LMGroupMeterDisconnect
 {
     1: required     LMGroupBase                     _baseMessage;

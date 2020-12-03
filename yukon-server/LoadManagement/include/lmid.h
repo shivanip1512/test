@@ -48,6 +48,7 @@
 #define LMGROUPNEST_ID                          643
 #define LMGROUPITRON_ID                         644
 #define LMGROUPMETERDISCONNECT_ID               645
+#define LMGROUPEATONCLOUD_ID                    646
 
 
 /* Various debug levels */

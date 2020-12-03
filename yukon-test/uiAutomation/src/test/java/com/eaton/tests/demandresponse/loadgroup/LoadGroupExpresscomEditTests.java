@@ -15,11 +15,11 @@ import org.testng.annotations.Test;
 
 import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupExpresscomCreateBuilder;
-import com.eaton.builders.drsetup.loadgroup.LoadGroupExpresscomCreateBuilder.Builder;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupExpresscomEditPage;
@@ -33,7 +33,6 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
     private Faker faker;
     private Integer id;
     private LoadGroupExpresscomEditPage editPage;
-    Builder builder;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
@@ -45,8 +44,7 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
     public void ldGrpExpresscomEdit_RequiredFieldsOnly_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String editName = "AT Edit Expresscom Ld group " + timeStamp;
-        builder = LoadGroupExpresscomCreateBuilder.buildDefaultExpresscomLoadGroup();
-        Pair<JSONObject, JSONObject> pair = builder
+        Pair<JSONObject, JSONObject> pair = LoadGroupExpresscomCreateBuilder.buildDefaultExpresscomLoadGroup()
                 .create();
 
         final String EXPECTED_MSG = editName + " saved successfully.";
@@ -56,8 +54,8 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
         editPage = new LoadGroupExpresscomEditPage(driverExt, id);
         editPage.getName().setInputValue(editName);
-        // 62 = ARTC
-        editPage.getCommunicationRoute().selectItemByValue("62");
+        String commRoute = TestDbDataType.CommunicationRouteData.ARTC.getId().toString();
+        editPage.getCommunicationRoute().selectItemByValue(commRoute);
 
         editPage.getUsage().setTrueFalseByLabel("Splinter", "SPLINTER", true);
         editPage.getSplinter().setInputValue(String.valueOf(faker.number().numberBetween(1, 254)));
@@ -74,12 +72,13 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpExpresscomEdit_SerialAddressToUser_Success() {
-        builder = LoadGroupExpresscomCreateBuilder.buildDefaultExpresscomLoadGroup();
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String editName = "AT Edit Expresscom Ld group " + timeStamp;
-        Pair<JSONObject, JSONObject> pair = builder
+        
+        Pair<JSONObject, JSONObject> pair = LoadGroupExpresscomCreateBuilder.buildDefaultExpresscomLoadGroup()
                 .withSerial(Optional.of(567))
                 .create();
+
         JSONObject response = pair.getValue1();
         id = response.getInt("id");
         final String EXPECTED_MSG = editName + " saved successfully.";
@@ -105,8 +104,7 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
     public void ldGrpExpresscomEdit_AllFieldsWithoutSerialAddress_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String editName = "AT Edit Expresscom Ld group " + timeStamp;
-        builder = LoadGroupExpresscomCreateBuilder.buildDefaultExpresscomLoadGroup();
-        Pair<JSONObject, JSONObject> pair = builder
+        Pair<JSONObject, JSONObject> pair = LoadGroupExpresscomCreateBuilder.buildDefaultExpresscomLoadGroup()
                 .create();
 
         final String EXPECTED_MSG = editName + " saved successfully.";
@@ -116,8 +114,8 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
         editPage = new LoadGroupExpresscomEditPage(driverExt, id);
         editPage.getName().setInputValue(editName);
-        // 62 = ARTC
-        editPage.getCommunicationRoute().selectItemByValue("62");
+        String commRoute = TestDbDataType.CommunicationRouteData.ARTC.getId().toString();
+        editPage.getCommunicationRoute().selectItemByValue(commRoute);
 
         editPage.getUsage().setTrueFalseByLabel("Splinter", "SPLINTER", true);
         double capacity = faker.number().randomDouble(2, 1, 9999);
@@ -179,7 +177,7 @@ public class LoadGroupExpresscomEditTests extends SeleniumTestSetup {
                 .withProgram(Optional.of(50))
                 .withProtocolPriority(Optional.of(LoadGroupEnums.ProtocolPriorityExpresscom.HIGHEST))
                 .withRelayUsage(Optional.of(relayUsage))
-                .withRouteId(Optional.of(LoadGroupEnums.RouteId.AWCTPTERMINAL))
+                .withRouteId(Optional.of(TestDbDataType.CommunicationRouteData.AWCTPTERMINAL))
                 .withSpid(Optional.of(1000))
                 .withSplinter(Optional.of(200))
                 .withSubstation(Optional.of(65534))

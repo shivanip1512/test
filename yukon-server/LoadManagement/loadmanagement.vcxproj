@@ -365,6 +365,9 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\BeatThePeakControlInterface.h" />
     <ClInclude Include="include\clistener.h" />
     <ClInclude Include="include\ConstraintViolation.h" />
+    <ClInclude Include="include\EatonCloudControlInterface.h" />
+    <ClInclude Include="include\EatonCloudCycleGear.h" />
+    <ClInclude Include="include\EatonCloudNoControlGear.h" />
     <ClInclude Include="include\ecobeeControlInterface.h" />
     <ClInclude Include="include\ecobeeCycleGear.h" />
     <ClInclude Include="include\ecobeeSetpointGear.h" />
@@ -376,6 +379,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\id_loadmanagement.h" />
     <ClInclude Include="include\ItronControlInterface.h" />
     <ClInclude Include="include\ItronCycleGear.h" />
+    <ClInclude Include="include\lmgroupeatoncloud.h" />
     <ClInclude Include="include\lmgrouphoneywell.h" />
     <ClInclude Include="include\lmgroupitron.h" />
     <ClInclude Include="include\lmgroupmeterdisconnect.h" />

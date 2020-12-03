@@ -21,6 +21,7 @@ import com.eaton.elements.modals.CopyLoadGroupModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupMCTDetailsPage;
@@ -30,14 +31,16 @@ public class LoadGroupMCTDetailTests extends SeleniumTestSetup {
     private LoadGroupMCTDetailsPage detailPage;
     private JSONObject response;
     private int id;
+    private Integer commRoute;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
         setRefreshPage(false);
+        commRoute = TestDbDataType.CommunicationRouteData.ACCU710A.getId();
 
         Pair<JSONObject, JSONObject> pair = new LoadGroupMCTCreateBuilder.Builder(Optional.empty())
-                .withCommunicationRoute(28)
+                .withCommunicationRoute(commRoute)
                 .withDisableControl(Optional.of(true))
                 .withDisableGroup(Optional.of(true))
                 .withKwCapacity(Optional.empty())
@@ -65,7 +68,7 @@ public class LoadGroupMCTDetailTests extends SeleniumTestSetup {
     public void ldGrpMCTDetail_Delete_Success() {
         setRefreshPage(true);
         Pair<JSONObject, JSONObject> pair = new LoadGroupMCTCreateBuilder.Builder(Optional.empty())
-                .withCommunicationRoute(28)
+                .withCommunicationRoute(commRoute)
                 .withDisableControl(Optional.of(true))
                 .withDisableGroup(Optional.of(true))
                 .withKwCapacity(Optional.empty())

@@ -326,6 +326,7 @@ static const std::map<std::string, DeviceTypes> device_lookups
     { "nest program",               TYPE_LMPROGRAM_DIRECT },
     { "itron program",              TYPE_LMPROGRAM_DIRECT },
     { "meter disconnect program",   TYPE_LMPROGRAM_DIRECT },
+    { "eaton cloud program",        TYPE_LMPROGRAM_DIRECT },
     { "digi sep group",             TYPE_LMGROUP_DIGI_SEP },
     { "ecobee group",               TYPE_LMGROUP_ECOBEE },
     { "honeywell group",            TYPE_LMGROUP_HONEYWELL },
@@ -339,6 +340,7 @@ static const std::map<std::string, DeviceTypes> device_lookups
     { "point group",                TYPE_LMGROUP_POINT },
     { "ripple group",               TYPE_LMGROUP_RIPPLE },
     { "versacom group",             TYPE_LMGROUP_VERSACOM },
+    { "eaton cloud group",          TYPE_LMGROUP_EATON_CLOUD },
 
     //  --- System ---
     { "macro group",        TYPE_MACRO },
@@ -483,6 +485,7 @@ INT resolveLoadManagementType(const string& _typeStr)
         { "nest program",               TYPE_LMPROGRAM_DIRECT },
         { "itron program",              TYPE_LMPROGRAM_DIRECT },
         { "meter disconnect program",   TYPE_LMPROGRAM_DIRECT },
+        { "eaton cloud program",        TYPE_LMPROGRAM_DIRECT },
         { "lm curtail program",         TYPE_LMPROGRAM_CURTAILMENT },
         { "lm control area",            TYPE_LM_CONTROL_AREA },
         { "ci customer",                TYPE_CI_CUSTOMER },

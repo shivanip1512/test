@@ -5,12 +5,15 @@ import java.util.Optional;
 import org.javatuples.Pair;
 import org.json.JSONObject;
 
+import com.eaton.framework.TestDbDataType;
+
 public class TrendCreateService {
 
     public static Pair<JSONObject, JSONObject> buildAndCreateTrendAllFields() {
+        Integer pointId = TestDbDataType.TrendPointData.CREATE_TREND_ANALOG_POINT_ID.getId();
         return new TrendCreateBuilder.Builder(Optional.empty())
                 .withPoints(new JSONObject[] { new TrendPointBuilder.Builder()
-                        .withpointId(5231)
+                        .withpointId(pointId)
                         .withLabel(Optional.empty())
                         .withColor(Optional.empty())
                         .withStyle(Optional.empty())
@@ -30,7 +33,8 @@ public class TrendCreateService {
 
     public static Pair<JSONObject, JSONObject> buildAndCreateTrendWithPoint(Optional<Integer> pointId, Optional<TrendTypes.Type> pointType) {
         Optional<TrendTypes.Type> type = pointType;
-        Integer point = pointId.orElse(5231);
+        Integer trendPointId = TestDbDataType.TrendPointData.CREATE_TREND_ANALOG_POINT_ID.getId();
+        Integer point = pointId.orElse(trendPointId);
         
         return new TrendCreateBuilder.Builder(Optional.empty())
                 .withPoints(new JSONObject[] { new TrendPointBuilder.Builder()

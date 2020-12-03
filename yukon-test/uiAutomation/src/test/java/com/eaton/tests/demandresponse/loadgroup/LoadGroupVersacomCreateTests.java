@@ -16,6 +16,7 @@ import com.eaton.elements.Section;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupVersacomCreatePage;
@@ -74,8 +75,9 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByValue("LM_GROUP_VERSACOM");
 
         waitForLoadingSpinner();
-        //28 - a_CCU-711
-        createPage.getCommunicationRoute().selectItemByValue("28"); 
+        
+        String commRoute = TestDbDataType.CommunicationRouteData.ACCU711.getId().toString();
+        createPage.getCommunicationRoute().selectItemByValue(commRoute); 
         createPage.getAddressUsage().setTrueFalseByLabel("Serial", "SERIAL", true);
         createPage.getName().setInputValue(name);      
         createPage.getSerialAddress().setInputValue(String.valueOf("40"));
@@ -108,8 +110,8 @@ public class LoadGroupVersacomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByValue("LM_GROUP_VERSACOM");
 
         waitForLoadingSpinner();
-        //28 - a_CCU-711
-        createPage.getCommunicationRoute().selectItemByValue("28");
+        String commRoute = TestDbDataType.CommunicationRouteData.ACCU711.getId().toString();
+        createPage.getCommunicationRoute().selectItemByValue(commRoute);
 
         createPage.getAddressUsage().setTrueFalseByLabel("Section", "SECTION", true);
         createPage.getAddressUsage().setTrueFalseByLabel("Class", "CLASS", true);

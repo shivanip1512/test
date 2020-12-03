@@ -14,6 +14,7 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.MeterEnums;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.ami.WRL420cDMeterDetailsPage;
 
@@ -21,7 +22,7 @@ public class MeterWRL420cDEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
     private WRL420cDMeterDetailsPage meterDetailsPage;
-    private static final int DEVICEID = 1262;
+    private String deviceId;
     private static final String METER = "Meter ";
     private static final String UPDATED = " updated successfully.";
     private static final String DATE_FORMAT = "ddMMyyyyHHmmss";
@@ -29,8 +30,9 @@ public class MeterWRL420cDEditTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        navigate(Urls.Ami.METER_DETAIL + DEVICEID);
-        meterDetailsPage = new WRL420cDMeterDetailsPage(driverExt, DEVICEID);
+        deviceId = TestDbDataType.MeterData.WRL_420CD_EDIT_ID.getId().toString();
+        navigate(Urls.Ami.METER_DETAIL + deviceId);
+        meterDetailsPage = new WRL420cDMeterDetailsPage(driverExt, Integer.parseInt(deviceId));
     }
     
     @AfterMethod(alwaysRun = true)
@@ -48,9 +50,11 @@ public class MeterWRL420cDEditTests extends SeleniumTestSetup {
         editModal.getDeviceName().setInputValue(name);
         editModal.clickOkAndWaitForModalToClose();
 
-        waitForUrlToLoad(Urls.Ami.METER_DETAIL + DEVICEID, Optional.of(10));
+        waitForUrlToLoad(Urls.Ami.METER_DETAIL + Integer.parseInt(deviceId), Optional.of(10));
 
-        String userMsg = meterDetailsPage.getUserMessage();
+        WRL420cDMeterDetailsPage detailPage = new WRL420cDMeterDetailsPage(driverExt, Integer.parseInt(deviceId));
+
+        String userMsg = detailPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(METER + name + UPDATED);
     }

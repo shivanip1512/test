@@ -6,9 +6,9 @@ import org.springframework.jdbc.core.SqlProvider;
 
 import com.cannontech.amr.meter.model.IedMeter;
 import com.cannontech.amr.meter.model.PlcMeter;
+import com.cannontech.amr.meter.model.VirtualMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.model.RfnMeter;
-import com.cannontech.common.device.virtualDevice.VirtualMeter;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.database.YukonResultSet;

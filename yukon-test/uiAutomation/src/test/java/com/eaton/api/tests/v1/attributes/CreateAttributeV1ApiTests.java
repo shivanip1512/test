@@ -66,7 +66,7 @@ public class CreateAttributeV1ApiTests {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void createAttributeApi_MissingName_422Unprocessable() {
-        JSONObject request = new AttributesCreateBuilder.Builder(Optional.of(faker.lorem().characters(61)))
+        JSONObject request = new AttributesCreateBuilder.Builder(Optional.empty())
                 .build();
         
         request.remove("name");

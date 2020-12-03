@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.javatuples.Pair;
 import org.json.JSONObject;
 
+import com.eaton.framework.TestDbDataType;
 import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
 import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 import com.github.javafaker.Faker;
@@ -62,13 +63,14 @@ public class LoadGroupPointCreateBuilder {
         }
 
         public Builder withDeviceUsageId(Optional<Integer> deviceUsageId) {
-            this.deviceUsageId = deviceUsageId.orElse(563);
+            Integer id = TestDbDataType.VoltVarData.CBC_EDIT_ID.getId();
+            this.deviceUsageId = deviceUsageId.orElse(id);
             return this;
         }
 
-        public Builder withPointUsageId(Optional<LoadGroupEnums.PointId> pointUsageId) {
-            LoadGroupEnums.PointId randomPointUsageId = pointUsageId.orElse(LoadGroupEnums.PointId.getRandomPointId());
-            this.pointUsageId = randomPointUsageId.getPointId();
+        public Builder withPointUsageId(Optional<TestDbDataType.PointData> pointUsageId) {
+            TestDbDataType.PointData randomPointUsageId = pointUsageId.orElse(TestDbDataType.PointData.getRandomPointId());
+            this.pointUsageId = randomPointUsageId.getId();
             return this;
         }
 
