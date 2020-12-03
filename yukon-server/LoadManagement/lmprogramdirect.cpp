@@ -676,7 +676,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
 
                 if( SmartGearBase *smartGearObject = dynamic_cast<SmartGearBase *>(currentGearObject) )
                 {
-                    for each( CtiLMGroupPtr currentLMGroup in _lmprogramdirectgroups )
+                    for ( CtiLMGroupPtr currentLMGroup : _lmprogramdirectgroups )
                     {
                         LONG shedTime = getShedTimeForSmartGears();
 
@@ -687,6 +687,11 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                             if( smartGearObject->attemptControl(currentLMGroup, shedTime, expectedLoadReduced) )
                             {
                                 setLastControlSent(CtiTime());
+                                if ( getProgramState() == CtiLMProgramBase::InactiveState )
+                                {
+                                    // Let the world know we are starting up - but only if we actually issue a control!
+                                    scheduleStartNotification(CtiTime());
+                                }
                             }
                         }
                         else
@@ -699,16 +704,13 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                                 }
                             }
                         }
-
-                        if( getProgramState() == CtiLMProgramBase::InactiveState )
-                        {
-                            // Let the world know we are starting up!
-                            scheduleStartNotification(CtiTime());
-                        }
-
                     }
 
-                    if( getProgramState() != CtiLMProgramBase::ManualActiveState )
+                    if ( ! smartGearObject->performsControl() ) // if we are a NoControl gear, our program is in a NonControlling state
+                    {
+                        setProgramState( CtiLMProgramBase::NonControllingState );
+                    }
+                    else if( getProgramState() != CtiLMProgramBase::ManualActiveState )
                     {
                         setProgramState(CtiLMProgramBase::FullyActiveState);
                     }
@@ -1268,7 +1270,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiTime currentTime, CtiMulti
 
             if( SmartGearBase *smartGearObject = dynamic_cast<SmartGearBase *>(currentGearObject) )
             {
-                for each( CtiLMGroupPtr currentLMGroup in _lmprogramdirectgroups )
+                for ( CtiLMGroupPtr currentLMGroup : _lmprogramdirectgroups )
                 {
                     LONG shedTime = getShedTimeForSmartGears();
 
@@ -1292,7 +1294,9 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiTime currentTime, CtiMulti
                         }
                     }
                 }
-                setProgramState(CtiLMProgramBase::ManualActiveState);
+                setProgramState( smartGearObject->performsControl()
+                                    ? CtiLMProgramBase::ManualActiveState
+                                    : CtiLMProgramBase::NonControllingState );
             }
             else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TimeRefreshMethod) )
             {
@@ -2673,9 +2677,8 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForAutomaticGearChange(CtiTime cu
             }
 
             int numberOfActiveGroups = 0;
-            for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
+            for ( CtiLMGroupPtr currentLMGroup : _lmprogramdirectgroups )
             {
-                CtiLMGroupPtr currentLMGroup  = *i;
                 // .checkControl below can modify (shorten) the shed time
                 CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, currentTime);
                 if( getConstraintOverride() || con_checker.checkControl(shedTime, true) )
@@ -2702,7 +2705,14 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForAutomaticGearChange(CtiTime cu
                 }
             }
 
-            updateStandardControlActiveState(numberOfActiveGroups);
+            if ( ! smartGearObject->performsControl() && numberOfActiveGroups == 0 )
+            {
+                setProgramState( CtiLMProgramBase::NonControllingState );
+            }
+            else
+            {
+                updateStandardControlActiveState(numberOfActiveGroups);
+            }
         }
         else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TimeRefreshMethod) )
         {
@@ -3663,7 +3673,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(CtiTime currentTime, CtiM
     {
         if( SmartGearBase *smartGearObject = dynamic_cast<SmartGearBase *>(currentGearObject) )
         {
-            for each( CtiLMGroupPtr currentLMGroup in _lmprogramdirectgroups )
+            for ( CtiLMGroupPtr currentLMGroup : _lmprogramdirectgroups )
             {
                 if( currentLMGroup->readyToControlAt(currentTime) )
                 {
@@ -3697,7 +3707,14 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(CtiTime currentTime, CtiM
                 }
             }
 
-            updateStandardControlActiveState(numberOfActiveGroups);
+            if ( ! smartGearObject->performsControl() && numberOfActiveGroups == 0 )
+            {
+                setProgramState( CtiLMProgramBase::NonControllingState );
+            }
+            else
+            {
+                updateStandardControlActiveState(numberOfActiveGroups);
+            }
         }
         else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TimeRefreshMethod) )
         {

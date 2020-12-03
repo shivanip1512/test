@@ -277,6 +277,7 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType("nest program"),            TYPE_LMPROGRAM_DIRECT);
     BOOST_CHECK_EQUAL(resolveDeviceType("itron program"),           TYPE_LMPROGRAM_DIRECT);
     BOOST_CHECK_EQUAL(resolveDeviceType("meter disconnect program"),TYPE_LMPROGRAM_DIRECT);
+    BOOST_CHECK_EQUAL(resolveDeviceType("eaton cloud program"),     TYPE_LMPROGRAM_DIRECT);
     BOOST_CHECK_EQUAL(resolveDeviceType("digi sep group"),          TYPE_LMGROUP_DIGI_SEP);
     BOOST_CHECK_EQUAL(resolveDeviceType("ecobee group"),            TYPE_LMGROUP_ECOBEE);
     BOOST_CHECK_EQUAL(resolveDeviceType("honeywell group"),         TYPE_LMGROUP_HONEYWELL);
@@ -290,6 +291,7 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType("point group"),             TYPE_LMGROUP_POINT);
     BOOST_CHECK_EQUAL(resolveDeviceType("ripple group"),            TYPE_LMGROUP_RIPPLE);
     BOOST_CHECK_EQUAL(resolveDeviceType("versacom group"),          TYPE_LMGROUP_VERSACOM);
+    BOOST_CHECK_EQUAL(resolveDeviceType("eaton cloud group"),       TYPE_LMGROUP_EATON_CLOUD);
 
     //  --- System ---
     BOOST_CHECK_EQUAL(resolveDeviceType("macro group"),     TYPE_MACRO);
