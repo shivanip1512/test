@@ -432,8 +432,9 @@ LM_EATON_CLOUD_PROGRAM:
     gears:
       type: array
       items:
-        - $ref: '#/EatonCloudCycle'
-        - $ref: '#/NoControl'
+        anyOf:
+          - $ref: '#/EatonCloudCycle'
+          - $ref: '#/NoControl'
     controlWindow:
       $ref: '#/controlWindow'
     assignedGroups:
@@ -1654,6 +1655,12 @@ components:
               criticality: 97
               capacityReduction: 93
               howToStopControl: Restore
+              whenToChangeFields:
+                whenToChange: None
+          - gearName: GearNoControl
+            gearNumber: 11
+            controlMethod: NoControl
+            fields:
               whenToChangeFields:
                 whenToChange: None
         controlWindow:
