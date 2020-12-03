@@ -240,7 +240,7 @@ public class SeleniumTestSetup {
 
         long startTime = System.currentTimeMillis();
 
-        while (display == null && (System.currentTimeMillis() - startTime < 60000)) {
+        while (display == null && (System.currentTimeMillis() - startTime < 2000)) {
             try {
             	if (parentElement.isPresent()) {
                     display = parentElement.get().findElement(By.cssSelector("[class='.compact-results-table']"));	
