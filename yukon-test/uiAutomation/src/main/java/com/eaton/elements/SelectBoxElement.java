@@ -35,7 +35,7 @@ public class SelectBoxElement {
         }
     }
 
-    private WebElement getColumnByColumnName(String columnName) {
+    public WebElement getColumnByColumnName(String columnName) {
         List<WebElement> columns = getSelectBox().findElements(By.cssSelector(".column"));
 
         return columns.stream().filter(element -> element.getText().contains(columnName)).findFirst().orElseThrow();

@@ -230,15 +230,29 @@ public class SeleniumTestSetup {
         } while(count.equals(1) && ((System.currentTimeMillis() - startTime) < 2000));
     }
 
-    public static void waitUntilTableVisiable() {
-        Integer count;
-        long startTime = System.currentTimeMillis();
+    /**
+     * Use this method when going to a page for the first time and table has not loaded
+     * @param parentElement - Optional
+     */
+    public static void waitUntilTableVisiable(Optional<WebElement> parentElement) {
         
-        do {
-            count = driverExt.findElements(By.cssSelector("[class='.compact-results-table.picker-results-table']"), Optional.of(0)).size();
-        } while(count.equals(0) && ((System.currentTimeMillis() - startTime) < 2000));
+        WebElement display = null;
+
+        long startTime = System.currentTimeMillis();
+
+        while (display == null && (System.currentTimeMillis() - startTime < 60000)) {
+            try {
+            	if (parentElement.isPresent()) {
+                    display = parentElement.get().findElement(By.cssSelector("[class='.compact-results-table']"));	
+            	} else {
+            		display = driverExt.findElement(By.cssSelector("[class='.compact-results-table']"), Optional.of(0));
+            	}
+            	
+            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
+            }
+        }
     }
-    
+        
     public static void waitUntilModalClosedDisplayNone(String describedBy) {
         long startTime = System.currentTimeMillis();
 

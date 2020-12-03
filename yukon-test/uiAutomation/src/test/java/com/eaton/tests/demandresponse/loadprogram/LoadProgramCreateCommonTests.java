@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import org.assertj.core.api.SoftAssertions;
 import org.javatuples.Pair;
 import org.json.JSONObject;
@@ -21,6 +23,7 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.loadprogram.LoadProgramCreatePage;
+
 
 public class LoadProgramCreateCommonTests extends SeleniumTestSetup {
 
@@ -359,8 +362,9 @@ public class LoadProgramCreateCommonTests extends SeleniumTestSetup {
 		createPage.getTabElement().clickTabAndWait(ldGrpsTabTitle);
 
 		SelectBoxElement selectBoxElement = createPage.getLoadGroupsSelectBox();
-		waitUntilTableVisiable();
-
+		
+		waitUntilTableVisiable(Optional.of(selectBoxElement.getColumnByColumnName("Available")));
+		
 		assertThat(selectBoxElement.getColumnSearchLabel("Available")).contains("Search:");
 	}
 
@@ -375,7 +379,7 @@ public class LoadProgramCreateCommonTests extends SeleniumTestSetup {
 
 		SelectBoxElement selectBoxElement = createPage.getLoadGroupsSelectBox();
 
-		waitUntilTableVisiable();
+		waitUntilTableVisiable(Optional.of(selectBoxElement.getColumnByColumnName("Available")));
 
 		assertThat(selectBoxElement.getColumnSelectAllLabel("Available")).contains("Select All");
 	}
@@ -392,7 +396,7 @@ public class LoadProgramCreateCommonTests extends SeleniumTestSetup {
 
 		SelectBoxElement selectBoxElement = createPage.getLoadGroupsSelectBox();
 
-		waitUntilTableVisiable();
+		waitUntilTableVisiable(Optional.of(selectBoxElement.getColumnByColumnName("Available")));
 
 		softly.assertThat(selectBoxElement.getColumnTableHeaders("Available").size()).isEqualTo(2);
 		softly.assertThat(selectBoxElement.getColumnTableHeaders("Available").get(0)).isEqualTo("Name");
@@ -411,7 +415,7 @@ public class LoadProgramCreateCommonTests extends SeleniumTestSetup {
 
 		SelectBoxElement selectBoxElement = createPage.getLoadGroupsSelectBox();
 
-		waitUntilTableVisiable();
+		waitUntilTableVisiable(Optional.of(selectBoxElement.getColumnByColumnName("Available")));
 
 		assertThat(selectBoxElement.searchByValidName(ldGrpName)).contains(ldGrpName);
 
@@ -428,7 +432,7 @@ public class LoadProgramCreateCommonTests extends SeleniumTestSetup {
 
 		SelectBoxElement selectBoxElement = createPage.getLoadGroupsSelectBox();
 
-		waitUntilTableVisiable();
+		waitUntilTableVisiable(Optional.of(selectBoxElement.getColumnByColumnName("Available")));
 
 		assertThat(selectBoxElement.searchByInvalidName(ldGrpName+"TestWrongName")).contains("No results found");
 

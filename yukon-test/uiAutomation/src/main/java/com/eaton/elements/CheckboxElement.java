@@ -33,9 +33,8 @@ public class CheckboxElement {
     }
     
     private WebElement getCheckbox() {
-        
-            return this.driverExt.findElement(By.cssSelector("input[type = 'checkbox'][id= '"+this.elementID+"']"), Optional.of(3));
-   
-        }        
+    	return this.driverExt.findElement(By.id(this.elementID), Optional.of(3));
+
+    }        
     
 }
