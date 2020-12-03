@@ -19,173 +19,191 @@ import com.eaton.elements.modals.gears.CreateSepPrgmGearModal;
 import com.eaton.elements.tabs.LoadGroupsTab;
 import com.eaton.elements.tabs.TabElement;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class LoadProgramCreatePage extends PageBase {
 
-	private static final String DESCRIBEDBY = "gear-create-popup-LM_DIRECT_PROGRAM";
-	private static final String ITRON_GEAR_MODAL_DESCRIBEDBY = "gear-create-popup-LM_ITRON_PROGRAM";
-	
-	private TimePickerElement startTimeWindowOne;
-	private TimePickerElement stopTimeWindowOne;
-	private TimePickerElement startTimeWindowTwo;
-	private TimePickerElement stopTimeWindowTwo;
-	private TabElement tabContainer;
-	
-	public LoadProgramCreatePage(DriverExtensions driverExt) {
-		super(driverExt);
+    private static final String DESCRIBEDBY = "gear-create-popup-LM_DIRECT_PROGRAM";
+    private static final String ITRON_GEAR_MODAL_DESCRIBEDBY = "gear-create-popup-LM_ITRON_PROGRAM";
 
-		requiresLogin = true;
-		pageUrl = Urls.DemandResponse.LOAD_PROGRAM_CREATE;
-		startTimeWindowOne = new TimePickerElement(this.driverExt, "startTimeWindowOne_inputField");
-		stopTimeWindowOne = new TimePickerElement(this.driverExt, "stopTimeWindowOne_inputField");
-		startTimeWindowTwo = new TimePickerElement(this.driverExt, "startTimeWindowTwo_inputField");
-		stopTimeWindowTwo = new TimePickerElement(this.driverExt, "stopTimeWindowTwo_inputField");
-	}
+    private TimePickerElement startTimeWindowOne;
+    private TimePickerElement stopTimeWindowOne;
+    private TimePickerElement startTimeWindowTwo;
+    private TimePickerElement stopTimeWindowTwo;
+    private TabElement tabContainer;
 
-	// General	
-	public TextEditElement getName() {
-		return new TextEditElement(this.driverExt, "name");
-	}
+    public LoadProgramCreatePage(DriverExtensions driverExt) {
+        super(driverExt);
 
-	public DropDownElement getType() {
-		return new DropDownElement(this.driverExt, "type");
-	}
+        requiresLogin = true;
+        pageUrl = Urls.DemandResponse.LOAD_PROGRAM_CREATE;
+        startTimeWindowOne = new TimePickerElement(this.driverExt, "startTimeWindowOne_inputField");
+        stopTimeWindowOne = new TimePickerElement(this.driverExt, "stopTimeWindowOne_inputField");
+        startTimeWindowTwo = new TimePickerElement(this.driverExt, "startTimeWindowTwo_inputField");
+        stopTimeWindowTwo = new TimePickerElement(this.driverExt, "stopTimeWindowTwo_inputField");
+    }
 
-	public DropDownElement getOperationalState() {
-		return new DropDownElement(this.driverExt, "operationalState");
-	}
+    // General
+    public TextEditElement getName() {
+        return new TextEditElement(this.driverExt, "name");
+    }
 
-	public DropDownElement getConstraint() {
-		return new DropDownElement(this.driverExt, "constraint.constraintId");
-	}
+    public DropDownElement getType() {
+        return new DropDownElement(this.driverExt, "type");
+    }
 
-	// Trigger Threshold Settings
-	public TextEditElement getTriggerOffset() {
-		return new TextEditElement(this.driverExt, "triggerOffset");
-	}
+    public DropDownElement getOperationalState() {
+        return new DropDownElement(this.driverExt, "operationalState");
+    }
 
-	public TextEditElement getRestoreOffset() {
-		return new TextEditElement(this.driverExt, "restoreOffset");
-	}
+    public DropDownElement getConstraint() {
+        return new DropDownElement(this.driverExt, "constraint.constraintId");
+    }
 
-	// Control Window
-	public SwitchBtnYesNoElement getUseWindowOne() {
-		return new SwitchBtnYesNoElement(this.driverExt, "controlWindowOne");
-	}
+    // Trigger Threshold Settings
+    public TextEditElement getTriggerOffset() {
+        return new TextEditElement(this.driverExt, "triggerOffset");
+    }
 
-	public TimePickerElement getStartTimeWindowOne() {
-		return startTimeWindowOne;
-	}
+    public TextEditElement getRestoreOffset() {
+        return new TextEditElement(this.driverExt, "restoreOffset");
+    }
 
-	public TimePickerElement getStopTimeWindowOne() {
-		return stopTimeWindowOne;
-	}
+    // Control Window
+    public SwitchBtnYesNoElement getUseWindowOne() {
+        return new SwitchBtnYesNoElement(this.driverExt, "controlWindowOne");
+    }
 
-	public TimePickerElement getStartTimeWindowTwo() {
-		return startTimeWindowTwo;
-	}
+    public TimePickerElement getStartTimeWindowOne() {
+        return startTimeWindowOne;
+    }
 
-	public TimePickerElement getStopTimeWindowTwo() {
-		return stopTimeWindowTwo;
-	}
+    public TimePickerElement getStopTimeWindowOne() {
+        return stopTimeWindowOne;
+    }
 
-	public SwitchBtnYesNoElement getUseWindowTwo() {
-		return new SwitchBtnYesNoElement(this.driverExt, "controlWindowTwo");
-	}
+    public TimePickerElement getStartTimeWindowTwo() {
+        return startTimeWindowTwo;
+    }
 
-	public Button getSaveBtn() {
-		return new Button(this.driverExt, "Save");
-	}
+    public TimePickerElement getStopTimeWindowTwo() {
+        return stopTimeWindowTwo;
+    }
 
-	public Button getCancelBtn() {
-		return new Button(this.driverExt, "Cancel");
-	}
+    public SwitchBtnYesNoElement getUseWindowTwo() {
+        return new SwitchBtnYesNoElement(this.driverExt, "controlWindowTwo");
+    }
 
-	public Button getGearsCreateBtn() {
-		return new Button(this.driverExt, "Create");
-	}
+    public Button getSaveBtn() {
+        return new Button(this.driverExt, "Save");
+    }
 
-	public CreateDirectPrgmGearModal showCreateDirectPrgmGearsModal() {
-		getGearsCreateBtn().click();
+    public Button getCancelBtn() {
+        return new Button(this.driverExt, "Cancel");
+    }
 
-		return new CreateDirectPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
-	}
+    public Button getGearsCreateBtn() {
+        return new Button(this.driverExt, "Create");
+    }
+    
+    private void clickCreateGearAndWait(String describedBy) {
+        getGearsCreateBtn().click();
+        
+        SeleniumTestSetup.waitUntilModalOpenByDescribedBy(describedBy); 
+    }
+    
+    private void clickCreateGearAndWaitDisplayBlock(String describedBy) {
+        clickCreateGearAndWait(DESCRIBEDBY);
+        
+        SeleniumTestSetup.waitUntilModalOpenDisplayBlock(describedBy);
+    }
 
-	public CreateEcobeePrgmGearModal showCreateEcobeePrgmGearModal() {
-		getGearsCreateBtn().click();
+    public CreateDirectPrgmGearModal showCreateDirectPrgmGearsModal() {
+        clickCreateGearAndWait(DESCRIBEDBY);
 
-		return new CreateEcobeePrgmGearModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
-	}
+        return new CreateDirectPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
+    }
 
-	public CreateHoneywellPrgmGearModal showCreateHoneywellPrgmGearModal() {
-		getGearsCreateBtn().click();
+    public CreateEcobeePrgmGearModal showCreateEcobeePrgmGearModal() {
+        clickCreateGearAndWait(DESCRIBEDBY);
 
-		return new CreateHoneywellPrgmGearModal(this.driverExt, Optional.empty(),
-				Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
-	}
+        return new CreateEcobeePrgmGearModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
+    }
 
-	public CreateItronPrgmGearModal showCreateItronPrgmGearModal() {
-		getGearsCreateBtn().click();
-		
-		return new CreateItronPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(ITRON_GEAR_MODAL_DESCRIBEDBY));
-	}
+    public CreateHoneywellPrgmGearModal showCreateHoneywellPrgmGearModal() {
+        clickCreateGearAndWait("gear-create-popup-LM_HONEYWELL_PROGRAM");
 
-	public CreateMeterDisconnectPrgmModal showCreateMeterDiconnectPrgmModal() {
-		getGearsCreateBtn().click();
+        return new CreateHoneywellPrgmGearModal(this.driverExt, Optional.empty(),
+                Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
+    }
 
-		return new CreateMeterDisconnectPrgmModal(this.driverExt, Optional.empty(), Optional.of("gear-create-popup-LM_METER_DISCONNECT_PROGRAM"));
-	}
+    public CreateItronPrgmGearModal showCreateItronPrgmGearModal(Optional<Integer> count) {
+        Integer c = count.orElse(1);
+        if (c.equals(1)) {
+            clickCreateGearAndWait(ITRON_GEAR_MODAL_DESCRIBEDBY);
+        } else {
+            clickCreateGearAndWaitDisplayBlock(ITRON_GEAR_MODAL_DESCRIBEDBY);
+        }
+        
+        return new CreateItronPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(ITRON_GEAR_MODAL_DESCRIBEDBY));
+    }
 
-	public CreateSepPrgmGearModal showCreateSepPrgmGearModal() {
-		getGearsCreateBtn().click();
+    public CreateMeterDisconnectPrgmModal showCreateMeterDiconnectPrgmModal() {
+        clickCreateGearAndWait("gear-create-popup-LM_METER_DISCONNECT_PROGRAM");
 
-		return new CreateSepPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
-	}
+        return new CreateMeterDisconnectPrgmModal(this.driverExt, Optional.empty(), Optional.of("gear-create-popup-LM_METER_DISCONNECT_PROGRAM"));
+    }
 
-	public SelectBoxElement getGears() {
-		Section section = new Section(this.driverExt, "Gears");
+    public CreateSepPrgmGearModal showCreateSepPrgmGearModal() {
+        clickCreateGearAndWait(DESCRIBEDBY);
 
-		return new SelectBoxElement(this.driverExt, section.getSection());
-	}
+        return new CreateSepPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
+    }
 
-	public LoadGroupsTab getLoadGroupTab() {
-		return new LoadGroupsTab(this.driverExt);
-	}
-	
-	//Notification Tab	
+    public SelectBoxElement getGears() {
+        Section section = new Section(this.driverExt, "Gears");
+
+        return new SelectBoxElement(this.driverExt, section.getSection());
+    }
+
+    public LoadGroupsTab getLoadGroupTab() {
+        return new LoadGroupsTab(this.driverExt);
+    }
+
+    // Notification Tab
     public CheckboxElement getProgramStart() {
         return new CheckboxElement(this.driverExt, "js-program-start-check");
     }
-    
+
     public CheckboxElement getProgramStop() {
         return new CheckboxElement(this.driverExt, "js-program-stop-check");
     }
-    
-	public TextEditElement getProgramStartMinutes() {
-		return new TextEditElement(this.driverExt, "notification.programStartInMinutes");
-	}
 
-	public TextEditElement getProgramStopMinutes() {
-		return new TextEditElement(this.driverExt, "notification.programStopInMinutes");
-	}
-	
-	public Section getPageSection(String sectionName) {
+    public TextEditElement getProgramStartMinutes() {
+        return new TextEditElement(this.driverExt, "notification.programStartInMinutes");
+    }
+
+    public TextEditElement getProgramStopMinutes() {
+        return new TextEditElement(this.driverExt, "notification.programStopInMinutes");
+    }
+
+    public Section getPageSection(String sectionName) {
         return new Section(this.driverExt, sectionName);
-    } 
-	
-	public TabElement getTabElement() {
+    }
+
+    public TabElement getTabElement() {
         return new TabElement(this.driverExt);
     }
-	
-	public SelectBoxElement getLoadGroupsSelectBox() {
-		tabContainer = new TabElement(driverExt);
-		return new SelectBoxElement(this.driverExt, tabContainer.getTabPanelByName("Load Groups"));
-	}
-	
-	public SelectBoxElement getNotificationSelectBox() {
-		tabContainer = new TabElement(driverExt);
-		return new SelectBoxElement(this.driverExt, tabContainer.getTabPanelByName("Notification"));
-	}
+
+    public SelectBoxElement getLoadGroupsSelectBox() {
+        tabContainer = new TabElement(driverExt);
+        return new SelectBoxElement(this.driverExt, tabContainer.getTabPanelByName("Load Groups"));
+    }
+
+    public SelectBoxElement getNotificationSelectBox() {
+        tabContainer = new TabElement(driverExt);
+        return new SelectBoxElement(this.driverExt, tabContainer.getTabPanelByName("Notification"));
+    }
 }

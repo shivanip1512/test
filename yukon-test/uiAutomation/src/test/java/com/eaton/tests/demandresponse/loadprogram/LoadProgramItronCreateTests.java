@@ -65,7 +65,7 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByValue(TYPE);
         waitForLoadingSpinner();
 
-        CreateItronPrgmGearModal modal = createPage.showCreateItronPrgmGearModal();
+        CreateItronPrgmGearModal modal = createPage.showCreateItronPrgmGearModal(Optional.empty());
 
         modal.getGearName().setInputValue("IC " + timeStamp);
         modal.getGearType().selectItemByValue("ItronCycle");
@@ -104,7 +104,7 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup {
         createPage.getTriggerOffset().setInputValue(String.valueOf(faker.number().numberBetween(0, 100000)));
         createPage.getRestoreOffset().setInputValue(String.valueOf(faker.number().numberBetween(-10000, 100000)));
 
-        CreateItronPrgmGearModal modal = createPage.showCreateItronPrgmGearModal();
+        CreateItronPrgmGearModal modal = createPage.showCreateItronPrgmGearModal(Optional.empty());
 
         modal.getGearName().setInputValue("IC " + timeStamp);
         modal.getGearType().selectItemByValue("ItronCycle");
@@ -139,7 +139,7 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByValue(TYPE);
         waitForLoadingSpinner();
 
-        CreateItronPrgmGearModal modal = createPage.showCreateItronPrgmGearModal();
+        CreateItronPrgmGearModal modal = createPage.showCreateItronPrgmGearModal(Optional.empty());
 
         List<String> actualDropDownValues = modal.getGearType().getOptionValues();
 
@@ -161,7 +161,7 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup {
 
         // Adding 2 gears
         for (int i = 1; i <= 2; i++) {
-            CreateItronPrgmGearModal modal = createPage.showCreateItronPrgmGearModal();
+            CreateItronPrgmGearModal modal = createPage.showCreateItronPrgmGearModal(Optional.of(i));
             waitForLoadingSpinner();
             modal.getGearName().setInputValue("IC Gear " + i);
             modal.getGearType().selectItemByValue("ItronCycle");
@@ -192,7 +192,7 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByValue(TYPE);
         waitForLoadingSpinner();
 
-        CreateItronPrgmGearModal modal = createPage.showCreateItronPrgmGearModal();
+        CreateItronPrgmGearModal modal = createPage.showCreateItronPrgmGearModal(Optional.empty());
 
         modal.getGearType().selectItemByValue("ItronCycle");
         waitForLoadingSpinner();
@@ -210,7 +210,7 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByValue(TYPE);
         waitForLoadingSpinner();
 
-        CreateItronPrgmGearModal modal = createPage.showCreateItronPrgmGearModal();
+        CreateItronPrgmGearModal modal = createPage.showCreateItronPrgmGearModal(Optional.empty());
 
         modal.getGearType().selectItemByValue("ItronCycle");
         waitForLoadingSpinner();
