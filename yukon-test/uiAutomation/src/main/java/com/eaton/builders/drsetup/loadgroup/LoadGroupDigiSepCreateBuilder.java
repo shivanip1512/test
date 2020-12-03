@@ -34,7 +34,7 @@ public class LoadGroupDigiSepCreateBuilder {
             String u = UUID.randomUUID().toString();
             String uuid = u.replace("-", "");
 
-            this.name = name.orElse("AT LG " + uuid);
+            this.name = name.orElse("AT LG" + uuid);
         }
 
         public Builder withName(String name) {

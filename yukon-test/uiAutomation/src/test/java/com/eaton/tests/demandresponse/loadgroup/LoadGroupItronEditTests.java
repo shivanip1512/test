@@ -62,7 +62,7 @@ public class LoadGroupItronEditTests extends SeleniumTestSetup {
         setRefreshPage(true);
         String u = UUID.randomUUID().toString();
         String uuid = u.replace("-", "");
-        String name = "AT LG Edit " + uuid;
+        String name = "AT Edit" + uuid;
         Integer relay;
         Double kwCapacity;
 

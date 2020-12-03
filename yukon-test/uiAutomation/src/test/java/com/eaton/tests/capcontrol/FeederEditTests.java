@@ -13,6 +13,7 @@ import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.FeederDetailPage;
 import com.eaton.pages.capcontrol.FeederEditPage;
@@ -28,8 +29,10 @@ public class FeederEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
         setRefreshPage(false);
         
-        navigate(Urls.CapControl.FEEDER_EDIT + "668" + Urls.EDIT);
-        editPage = new FeederEditPage(driverExt, 668);
+        String feederId = TestDbDataType.VoltVarData.FEEDER_ID.getId().toString();
+        
+        navigate(Urls.CapControl.FEEDER_EDIT + feederId + Urls.EDIT);
+        editPage = new FeederEditPage(driverExt, Integer.parseInt(feederId));
     }
     
     @AfterMethod(alwaysRun = true)
@@ -53,8 +56,9 @@ public class FeederEditTests extends SeleniumTestSetup {
     public void feederEdit_RequiredFieldsOnly_Success() {
         setRefreshPage(true);
         final String EXPECTED_MSG = "Feeder was saved successfully.";
+        String feederEditId = TestDbDataType.VoltVarData.FEEDER_EDIT_ID.getId().toString();
 
-        navigate(Urls.CapControl.FEEDER_EDIT + "458" + Urls.EDIT);
+        navigate(Urls.CapControl.FEEDER_EDIT + feederEditId + Urls.EDIT);
 
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
 
@@ -65,7 +69,7 @@ public class FeederEditTests extends SeleniumTestSetup {
 
         waitForPageToLoad("Feeder: " + name, Optional.empty());
 
-        FeederDetailPage detailsPage = new FeederDetailPage(driverExt, 458);
+        FeederDetailPage detailsPage = new FeederDetailPage(driverExt, Integer.parseInt(feederEditId));
 
         String userMsg = detailsPage.getUserMessage();
 
@@ -76,8 +80,9 @@ public class FeederEditTests extends SeleniumTestSetup {
     public void feederEdit_Delete_Success() {
         setRefreshPage(true);
         final String EXPECTED_MSG = "Feeder AT Delete Feeder deleted successfully.";
+        String feederDeleteId = TestDbDataType.VoltVarData.FEEDER_DELETE_ID.getId().toString();
 
-        navigate(Urls.CapControl.FEEDER_EDIT + "575" + Urls.EDIT);
+        navigate(Urls.CapControl.FEEDER_EDIT + feederDeleteId + Urls.EDIT);
 
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
 

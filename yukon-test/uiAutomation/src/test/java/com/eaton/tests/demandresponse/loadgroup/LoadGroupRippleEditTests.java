@@ -15,6 +15,7 @@ import com.eaton.builders.drsetup.loadgroup.LoadGroupRippleCreateBuilder.Builder
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupRippleEditPage;
@@ -51,8 +52,8 @@ public class LoadGroupRippleEditTests extends SeleniumTestSetup {
         editPage = new LoadGroupRippleEditPage(driverExt, id);
 
         editPage.getName().setInputValue(editName);
-        // 62 = a_RTC
-        editPage.getCommunicationRoute().selectItemByValue("62");
+        String commRoute = TestDbDataType.CommunicationRouteData.ARTC.getId().toString();
+        editPage.getCommunicationRoute().selectItemByValue(commRoute);
         // 1800 = 30 minutes
         editPage.getShedTime().selectItemByValue("1800");
         // TWO_01 = 2.01

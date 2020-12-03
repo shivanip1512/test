@@ -58,6 +58,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
 
         assertThat(createPage.getName().getValidationError()).isEqualTo("Name is required.");
     }
+    
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE})
     public void ldGrpCreate_Type_RequiredValidation() {
         createPage.getType().selectItemByIndex(0);

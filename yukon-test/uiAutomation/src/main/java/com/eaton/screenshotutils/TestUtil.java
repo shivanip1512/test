@@ -1,8 +1,15 @@
 package com.eaton.screenshotutils;
 
+import java.awt.AWTException;
+import java.awt.Rectangle;
+import java.awt.Robot;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+
+import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
 
@@ -21,8 +28,10 @@ public class TestUtil extends SeleniumTestSetup {
 
         try {
             FileUtils.copyFile(scrFile, new File(filePath + methodName + "_" + timeStamp + ".png"));
-            System.out.println("***Placed screen shot in " + filePath + " ***");
-        } catch (IOException e) {
+            Robot robot = new Robot();
+            BufferedImage screenShot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+            ImageIO.write(screenShot, "JPG", new File(filePath + methodName + "_" + timeStamp + "_fullScreen.jpg"));
+        } catch (IOException | AWTException e) {
             e.printStackTrace();
         }
     }
