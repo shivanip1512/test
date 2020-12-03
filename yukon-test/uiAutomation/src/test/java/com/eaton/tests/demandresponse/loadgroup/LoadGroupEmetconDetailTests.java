@@ -76,7 +76,7 @@ public class LoadGroupEmetconDetailTests extends SeleniumTestSetup {
     public void ldGrEmetconDetail_Copy_Success() {
         setRefreshPage(true);
         String name = response.getString("name");
-        final String copyName = "Copy of " + name;
+        final String copyName = "Copied " + name;
         final String expected_msg = copyName + " copied successfully.";
 
         CopyLoadGroupModal modal = detailPage.showCopyLoadGroupModal();

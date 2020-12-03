@@ -129,8 +129,7 @@ public class LoadProgramCreatePage extends PageBase {
 	public CreateItronPrgmGearModal showCreateItronPrgmGearModal() {
 		getGearsCreateBtn().click();
 		
-		return new CreateItronPrgmGearModal(this.driverExt, Optional.empty(), 
-				Optional.of(ITRON_GEAR_MODAL_DESCRIBEDBY));
+		return new CreateItronPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(ITRON_GEAR_MODAL_DESCRIBEDBY));
 	}
 
 	public CreateMeterDisconnectPrgmModal showCreateMeterDiconnectPrgmModal() {

@@ -9,7 +9,8 @@ import org.json.JSONObject;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.RippleAreaCode;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.RippleGroup;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.RippleShedTime;
-import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.RouteId;
+import com.eaton.framework.TestDbDataType;
+import com.eaton.framework.TestDbDataType.CommunicationRouteData;
 import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
 import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 import com.github.javafaker.Faker;
@@ -59,11 +60,10 @@ public class LoadGroupRippleCreateBuilder {
             return this;
         }
 
-        public Builder withRouteId(Optional<LoadGroupEnums.RouteId> routeId) {
-            LoadGroupEnums.RouteId randomRelayUsage = routeId
-                    .orElse(RouteId.getRandomRouteId());
+        public Builder withRouteId(Optional<TestDbDataType.CommunicationRouteData> routeId) {
+            TestDbDataType.CommunicationRouteData randomRelayUsage = routeId.orElse(CommunicationRouteData.getRandomRouteId());
 
-            this.routeId = randomRelayUsage.getRouteId();
+            this.routeId = randomRelayUsage.getId();
             return this;
         }
 
@@ -83,16 +83,14 @@ public class LoadGroupRippleCreateBuilder {
         }
 
         public Builder withAreaCode(Optional<RippleAreaCode> areaCode) {
-            RippleAreaCode randomAreaCode = areaCode
-                    .orElse(RippleAreaCode.getRandomAreaCode());
+            RippleAreaCode randomAreaCode = areaCode.orElse(RippleAreaCode.getRandomAreaCode());
 
             this.areaCode = randomAreaCode.getAreaCode();
             return this;
         }
 
         public Builder withGroup(Optional<RippleGroup> group) {
-            RippleGroup randomGroup = group
-                    .orElse(RippleGroup.getRandomGroup());
+            RippleGroup randomGroup = group.orElse(RippleGroup.getRandomGroup());
 
             this.group = randomGroup.getGroup();
             return this;

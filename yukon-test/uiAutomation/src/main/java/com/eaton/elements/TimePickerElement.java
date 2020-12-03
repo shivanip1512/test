@@ -23,7 +23,7 @@ public class TimePickerElement {
 
     public void setValue(String value) {
         WebElement picker = getPicker(elementName);
-        SeleniumTestSetup.scrollToElement(picker);
+        SeleniumTestSetup.moveToElement(picker);
         picker.clear();
         Actions action = new Actions(driverExt.getDriver());
         action.sendKeys(picker, value).build().perform();

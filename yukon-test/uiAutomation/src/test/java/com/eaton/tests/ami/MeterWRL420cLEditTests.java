@@ -14,6 +14,7 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.MeterEnums;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.ami.WRL420cLMeterDetailsPage;
 
@@ -21,7 +22,7 @@ public class MeterWRL420cLEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
     private WRL420cLMeterDetailsPage meterDetailsPage;
-    private static final int DEVICEID = 1232;
+    private String deviceId;
     private static final String METER = "Meter ";
     private static final String UPDATED = " updated successfully.";
     private static final String DATE_FORMAT = "ddMMyyyyHHmmss";
@@ -29,9 +30,11 @@ public class MeterWRL420cLEditTests extends SeleniumTestSetup {
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
-        navigate(Urls.Ami.METER_DETAIL + DEVICEID);
+        deviceId = TestDbDataType.MeterData.WRL_420CL_EDIT_ID.getId().toString();             
         
-        meterDetailsPage = new WRL420cLMeterDetailsPage(driverExt, DEVICEID);
+        navigate(Urls.Ami.METER_DETAIL + deviceId);
+        
+        meterDetailsPage = new WRL420cLMeterDetailsPage(driverExt, Integer.parseInt(deviceId));
     }
     
     @AfterMethod(alwaysRun = true)
@@ -49,9 +52,11 @@ public class MeterWRL420cLEditTests extends SeleniumTestSetup {
         editModal.getDeviceName().setInputValue(name);
         editModal.clickOkAndWaitForModalToClose();
 
-        waitForUrlToLoad(Urls.Ami.METER_DETAIL + DEVICEID, Optional.of(10));
+        waitForUrlToLoad(Urls.Ami.METER_DETAIL + deviceId, Optional.of(10));
 
-        String userMsg = meterDetailsPage.getUserMessage();
+        WRL420cLMeterDetailsPage detailPage = new WRL420cLMeterDetailsPage(driverExt, Integer.parseInt(deviceId));
+
+        String userMsg = detailPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(METER + name + UPDATED);
     }

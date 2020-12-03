@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.javatuples.Pair;
 import org.json.JSONObject;
 
+import com.eaton.framework.TestDbDataType;
 import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
 import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 import com.github.javafaker.Faker;
@@ -48,10 +49,10 @@ public class LoadGroupExpresscomCreateBuilder {
             return this;
         }
         
-        public Builder withRouteId(Optional<LoadGroupEnums.RouteId> routeId) {
-            LoadGroupEnums.RouteId randomRelayUsage = routeId.orElse(LoadGroupEnums.RouteId.getRandomRouteId());
+        public Builder withRouteId(Optional<TestDbDataType.CommunicationRouteData> routeId) {
+            TestDbDataType.CommunicationRouteData randomRelayUsage = routeId.orElse(TestDbDataType.CommunicationRouteData.getRandomRouteId());
 
-            this.routeId = randomRelayUsage.getRouteId();
+            this.routeId = randomRelayUsage.getId();
             return this;
         }
 

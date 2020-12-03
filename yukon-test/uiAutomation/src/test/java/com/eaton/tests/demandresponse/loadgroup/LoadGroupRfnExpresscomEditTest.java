@@ -48,7 +48,7 @@ public class LoadGroupRfnExpresscomEditTest extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpRfnExpresscomEdit_RequiredFieldsOnly_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT Edited Rfn Expresscom Ldgrp " + timeStamp;
+        String name = "AT Edited Rfn Express Ldgrp" + timeStamp;
         final String expected_msg = name + " saved successfully.";
         Pair<JSONObject, JSONObject> pair = new LoadGroupRfnExpresscomCreateBuilder.Builder(Optional.empty())
                 .withSpid(Optional.of(10))

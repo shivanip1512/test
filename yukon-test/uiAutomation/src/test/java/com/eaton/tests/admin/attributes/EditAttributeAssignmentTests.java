@@ -156,6 +156,6 @@ public class EditAttributeAssignmentTests extends SeleniumTestSetup {
         modal.getpointOffSet().setInputValue(attrAsgmtPointOffset.toString());
         modal.clickOkAndWaitForModalToClose();
         
-        assertThat(page.getAttrAsgmtErrorMsg()).isEqualTo("There was an error assigning Attribute: " + attrName + " to the following device types: " + dtValue + ". Please see logs for more detail.");
+        assertThat(page.getAttrAsgmtErrorMsg()).isEqualToIgnoringCase("There was an error assigning Attribute: " + attrName + " to the following device types: " + dtValue + ". Please see logs for more detail.");
     }
 }
