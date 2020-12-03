@@ -20,13 +20,14 @@ post-operation:
           schema:
             oneOf:
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_DIRECT_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_EATON_CLOUD_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ECOBEE_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_HONEYWELL_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_SEP_PROGRAM'
-              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_EATON_CLOUD_PROGRAM'
               
+              - $ref: '../schemas/loadProgramsSchema.yaml#/EatonCloudCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/ItronCycle'
@@ -38,11 +39,12 @@ post-operation:
               - $ref: '../schemas/loadProgramsSchema.yaml#/TargetCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/TimeRefresh'
               - $ref: '../schemas/loadProgramsSchema.yaml#/TrueCycle'
-              - $ref: '../schemas/loadProgramsSchema.yaml#/EatonCloudCycle'
         
           examples:
             Direct Program:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Direct Program' 
+            Eaton Cloud Program:
+              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
             ecobee Program:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
             HoneyWell Program:
@@ -53,8 +55,6 @@ post-operation:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Meter Disconnect Program'
             SEP Program:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/SEP Program' 
-            Eaton Cloud Program:
-              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
            
               
       required: true
@@ -66,16 +66,18 @@ post-operation:
               schema:
                 oneOf:
                   - $ref: '../schemas/loadProgramsSchema.yaml#/LM_DIRECT_PROGRAM'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/LM_EATON_CLOUD_PROGRAM'
                   - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ECOBEE_PROGRAM'
                   - $ref: '../schemas/loadProgramsSchema.yaml#/LM_HONEYWELL_PROGRAM'
                   - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
                   - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM'
                   - $ref: '../schemas/loadProgramsSchema.yaml#/LM_SEP_PROGRAM'
-                  - $ref: '../schemas/loadProgramsSchema.yaml#/LM_EATON_CLOUD_PROGRAM'
         
               examples:
                 Direct Program:
                   $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Direct Program' 
+                Eaton Cloud Program:
+                  $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
                 ecobee Program:
                   $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
                 HoneyWell Program:
@@ -86,8 +88,6 @@ post-operation:
                   $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Meter Disconnect Program'
                 SEP Program:
                   $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/SEP Program' 
-                Eaton Cloud Program:
-                  $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
                 
 get-update-delete-operation:
   get:
@@ -103,7 +103,7 @@ get-update-delete-operation:
       - Itron
       - Meter Disconnect
       - SEP
-      - Eaton Cloud Program
+      - Eaton Cloud
 
     parameters:
       - name: id
@@ -121,17 +121,19 @@ get-update-delete-operation:
             schema:
              oneOf:
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_DIRECT_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_EATON_CLOUD_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ECOBEE_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_HONEYWELL_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_SEP_PROGRAM'
-              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_EATON_CLOUD_PROGRAM'
               
     
             examples:
               Direct Program:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Direct Program' 
+              Eaton Cloud Program:
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
               ecobee Program:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
               HoneyWell Program:
@@ -142,8 +144,7 @@ get-update-delete-operation:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Meter Disconnect Program'
               SEP Program:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/SEP Program' 
-              Eaton Cloud Program:
-                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
+
 
   put:
     tags:
@@ -174,13 +175,14 @@ get-update-delete-operation:
           schema:
            oneOf:
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_DIRECT_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_EATON_CLOUD_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ECOBEE_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_HONEYWELL_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_SEP_PROGRAM'
-              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_EATON_CLOUD_PROGRAM'
               
+              - $ref: '../schemas/loadProgramsSchema.yaml#/EatonCloudCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/ItronCycle'
@@ -192,11 +194,12 @@ get-update-delete-operation:
               - $ref: '../schemas/loadProgramsSchema.yaml#/TargetCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/TimeRefresh'
               - $ref: '../schemas/loadProgramsSchema.yaml#/TrueCycle'
-              - $ref: '../schemas/loadProgramsSchema.yaml#/EatonCloudCycle'
     
           examples:
             Direct Program:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Direct Program' 
+            Eaton Cloud Program:
+              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
             ecobee Program:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
             HoneyWell Program:
@@ -207,8 +210,6 @@ get-update-delete-operation:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Meter Disconnect Program'
             SEP Program:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/SEP Program' 
-            Eaton Cloud Program:
-              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
       required: true
       
     responses:
@@ -219,16 +220,18 @@ get-update-delete-operation:
             schema:
              oneOf:
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_DIRECT_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_EATON_CLOUD_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ECOBEE_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_HONEYWELL_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_SEP_PROGRAM'
-              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_EATON_CLOUD_PROGRAM'
     
             examples:
               Direct Program:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Direct Program' 
+              Eaton Cloud Program:
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
               ecobee Program:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
               HoneyWell Program:
@@ -239,8 +242,6 @@ get-update-delete-operation:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Meter Disconnect Program'
               SEP Program:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/SEP Program' 
-              Eaton Cloud Program:
-                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
              
   delete:
     tags:
