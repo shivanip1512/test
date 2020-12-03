@@ -24,612 +24,599 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.loadprogram.LoadProgramCreatePage;
 
-
 public class LoadProgramCreateCommonTests extends SeleniumTestSetup {
 
-	private static final String TYPE = "LM_ITRON_PROGRAM";
-	private String timeStamp;
-	private DriverExtensions driverExt;
-	private String ldGrpName;
-	private LoadProgramCreatePage createPage;
+    private static final String TYPE = "LM_ITRON_PROGRAM";
+    private String timeStamp;
+    private DriverExtensions driverExt;
+    private String ldGrpName;
+    private LoadProgramCreatePage createPage;
+
+    @BeforeClass(alwaysRun = true)
+    public void beforeClass() {
+        driverExt = getDriverExt();
+
+        timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        ldGrpName = "Before Class " + timeStamp;
 
-	@BeforeClass(alwaysRun = true)
-	public void beforeClass() {
-		driverExt = getDriverExt();
-
-		timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		ldGrpName = "Before Class " + timeStamp;
+        Pair<JSONObject, JSONObject> pair = LoadGroupCreateService.buildAndCreateVirtualItronLoadGroup();
+
+        JSONObject response = pair.getValue1();
+        ldGrpName = response.getString("name");
+
+        navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
+        createPage = new LoadProgramCreatePage(driverExt);
+    }
+
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        refreshPage(createPage);
+    }
+
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_PageTitle_Correct() {
+        final String EXPECTED_TITLE = "Create Load Program";
+
+        String actualPageTitle = createPage.getPageTitle();
 
-		Pair<JSONObject, JSONObject> pair = LoadGroupCreateService.buildAndCreateVirtualItronLoadGroup();
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
+    }
 
-		JSONObject response = pair.getValue1();
-		ldGrpName = response.getString("name");
-
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_CREATE);
-		createPage = new LoadProgramCreatePage(driverExt);
-	}
-
-	@AfterMethod(alwaysRun = true)
-	public void afterMethod() {
-		refreshPage(createPage);
-	}
-
-	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_PageTitle_Correct() {
-		final String EXPECTED_TITLE = "Create Load Program";
-
-		String actualPageTitle = createPage.getPageTitle();
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_Name_RequiredValidation() {
+        throw new SkipException("Development Defect: YUK-23330");
+        /*
+         * createPage.getName().clearInputValue();
+         * 
+         * createPage.getSaveBtn().click();
+         * 
+         * assertThat(createPage.getName().getValidationError()).
+         * isEqualTo("Name is required.");
+         */
+    }
+
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_Name_InvalidCharValidation() {
+        createPage.getName().setInputValue("test/,");
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
+        createPage.getSaveBtn().click();
 
-		assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
-	}
+        assertThat(createPage.getName().getValidationError()).isEqualTo("Name must not contain any of the following characters: / \\ , ' \" |.");
+    }
 
-	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_Name_RequiredValidation() {
-		throw new SkipException("Development Defect: YUK-23330");
-		/*
-		 * createPage.getName().clearInputValue();
-		 * 
-		 * createPage.getSaveBtn().click();
-		 * 
-		 * assertThat(createPage.getName().getValidationError()).
-		 * isEqualTo("Name is required.");
-		 */
-	}
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_Name_UniqueValidation() {
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_Name_InvalidCharValidation() {
-		createPage.getName().setInputValue("test/,");
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
-		createPage.getSaveBtn().click();
+        Map<String, Pair<JSONObject, JSONObject>> pair = LoadProgramCreateService
+                .createItronProgramAllFieldsWithItronCycleGear();
 
-		assertThat(createPage.getName().getValidationError())
-				.isEqualTo("Name must not contain any of the following characters: / \\ , ' \" |.");
-	}
+        Pair<JSONObject, JSONObject> programPair = pair.get("LoadProgram");
+        JSONObject request = programPair.getValue0();
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_Name_UniqueValidation() {
+        String ldPrgmName = request.getString("name");
+
+        createPage.getName().setInputValue(ldPrgmName);
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
+        createPage.getSaveBtn().click();
 
-		Map<String, Pair<JSONObject, JSONObject>> pair = LoadProgramCreateService
-				.createItronProgramAllFieldsWithItronCycleGear();
+        assertThat(createPage.getName().getValidationError()).isEqualTo("Name must be unique.");
+    }
 
-		Pair<JSONObject, JSONObject> programPair = pair.get("LoadProgram");
-		JSONObject request = programPair.getValue0();
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_Name_MaxlengthValidation() {
+        String maxLength = createPage.getName().getMaxLength();
 
-		String ldPrgmName = request.getString("name");
+        assertThat(maxLength).isEqualTo("60");
+    }
 
-		createPage.getName().setInputValue(ldPrgmName);
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
-		createPage.getSaveBtn().click();
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_Type_RequiredValidation() {
+        createPage.getType().selectItemByIndex(0);
 
-		assertThat(createPage.getName().getValidationError()).isEqualTo("Name must be unique.");
+        createPage.getSaveBtn().click();
 
-	}
+        assertThat(createPage.getType().getValidationError()).isEqualTo("Type is required.");
+    }
 
-	@Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_Name_MaxlengthValidation() {
-		String maxLength = createPage.getName().getMaxLength();
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_Gear_RequiredValidation() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
+        createPage.getSaveBtn().click();
 
-		assertThat(maxLength).isEqualTo("60");
-	}
+        assertThat(createPage.getUserMessage()).contains("Program must contain 1 or more gears.");
+    }
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_Type_RequiredValidation() {
-		createPage.getType().selectItemByIndex(0);
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_LoadGroup_RequiredValidation() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
+        createPage.getSaveBtn().click();
 
-		createPage.getSaveBtn().click();
+        assertThat(createPage.getUserMessage()).contains("At least 1 load group must be present in this current program.");
+    }
 
-		assertThat(createPage.getType().getValidationError()).isEqualTo("Type is required.");
-	}
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_GeneralSection_TitleCorrect() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_Gear_RequiredValidation() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
-		createPage.getSaveBtn().click();
-
-		assertThat(createPage.getUserMessage()).contains("Program must contain 1 or more gears.");
-	}
+        Section optAttr = createPage.getPageSection("General");
+        assertThat(optAttr.getSection()).isNotNull();
+    }
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_LoadGroup_RequiredValidation() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
-		createPage.getSaveBtn().click();
-
-		assertThat(createPage.getUserMessage()).contains("At least 1 load group must be present in this current program.");
-	}
-
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_GeneralSection_TitleCorrect() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
-
-		Section optAttr = createPage.getPageSection("General");
-		assertThat(optAttr.getSection()).isNotNull();
-	}
-
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_GeneralSection_LabelsCorrect() {
-		String sectionName = "General";
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
-
-		List<String> expectedLabels = new ArrayList<>(List.of("Name:", "Type:", "Operational State:", "Constraint:"));
-
-		List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
-
-		assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
-	}
-
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_TriggerThresholdSettingsSection_TitleCorrect() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
-
-		Section optAttr = createPage.getPageSection("Trigger Threshold Settings");
-		assertThat(optAttr.getSection()).isNotNull();
-	}
-
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_TriggerThresholdSettingsSection_LabelsCorrect() {
-		String sectionName = "Trigger Threshold Settings";
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
-
-		List<String> expectedLabels = new ArrayList<>(List.of("Trigger Offset:", "Restore Offset:"));
-
-		List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
-
-		assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
-	}
-
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_ControlWindow_TitleCorrect() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
-
-		Section optAttr = createPage.getPageSection("Control Window");
-		assertThat(optAttr.getSection()).isNotNull();
-	}
-
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_ControlWindow_LabelsCorrect() {
-		String sectionName = "Control Window";
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_GeneralSection_LabelsCorrect() {
+        String sectionName = "General";
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-		createPage.getUseWindowOne().selectValue("Yes");
-		createPage.getUseWindowTwo().selectValue("Yes");
+        List<String> expectedLabels = new ArrayList<>(List.of("Name:", "Type:", "Operational State:", "Constraint:"));
 
-		List<String> expectedLabels = new ArrayList<>(
-				List.of("Use Window 1:", "Start Time:", "Stop Time:", "Use Window 2:", "Start Time:", "Stop Time:"));
+        List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
-		List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
+        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
+    }
 
-		assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
-	}
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_TriggerThresholdSettingsSection_TitleCorrect() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_Type_ValuesCorrect() {
-		List<String> expectedDropDownValues = new ArrayList<>(
-				List.of("Select", "LM ecobee Program", "LM Honeywell Program", "LM Itron Program", "LM Direct Program",
-						"LM SEP Program", "LM Meter Disconnect Program"));
-		List<String> actualDropDownValues = createPage.getType().getOptionValues();
+        Section optAttr = createPage.getPageSection("Trigger Threshold Settings");
+        assertThat(optAttr.getSection()).isNotNull();
+    }
 
-		assertThat(actualDropDownValues).containsExactlyElementsOf(expectedDropDownValues);
-	}
-
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_OperationalState_ValuesCorrect() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
-		
-		List<String> expectedDropDownValues = new ArrayList<>(List.of("Automatic", "Manual Only", "Timed"));
-		List<String> actualDropDownValues = createPage.getOperationalState().getOptionValues();
-
-		assertThat(actualDropDownValues).containsExactlyElementsOf(expectedDropDownValues);
-	}
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_TriggerThresholdSettingsSection_LabelsCorrect() {
+        String sectionName = "Trigger Threshold Settings";
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_OperationalState_DefaultValueCorrect() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
-		
-		String expectedDropDownDefaultValue = "Automatic";
-		String actualDropDownDefaultValue = createPage.getOperationalState().getSelectedValue();
-
-		assertThat(actualDropDownDefaultValue).contains(expectedDropDownDefaultValue);
-	}
-
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_Constraint_DefaultValueCorrect() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
-		String expectedDropDownDefaultValue = "Default Constraint";
-		String actualDropDownDefaultValue = createPage.getConstraint().getSelectedValue();
+        List<String> expectedLabels = new ArrayList<>(List.of("Trigger Offset:", "Restore Offset:"));
 
-		assertThat(actualDropDownDefaultValue).contains(expectedDropDownDefaultValue);
-	}
+        List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_TriggerOffset_InvalidValueValidation() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
+    }
 
-		createPage.getTriggerOffset().setInputValue("test/");
-		createPage.getSaveBtn().click();
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_ControlWindow_TitleCorrect() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-		assertThat(createPage.getTriggerOffset().getValidationError()).isEqualTo("Not a valid value.");
-	}
+        Section optAttr = createPage.getPageSection("Control Window");
+        assertThat(optAttr.getSection()).isNotNull();
+    }
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_TriggerOffset_MaxLengthValidation() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_ControlWindow_LabelsCorrect() {
+        String sectionName = "Control Window";
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-		createPage.getTriggerOffset().setInputValue("1001000");
-		createPage.getSaveBtn().click();
+        createPage.getUseWindowOne().selectValue("Yes");
+        createPage.getUseWindowTwo().selectValue("Yes");
 
-		assertThat(createPage.getTriggerOffset().getValidationError()).isEqualTo("Must be between 0 and 100,000.");
-	}
+        List<String> expectedLabels = new ArrayList<>(List.of("Use Window 1:", "Start Time:", "Stop Time:", "Use Window 2:", "Start Time:", "Stop Time:"));
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_TriggerOffset_MinLengthValidation() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+        List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
-		createPage.getTriggerOffset().setInputValue("-100");
-		createPage.getSaveBtn().click();
+        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
+    }
 
-		assertThat(createPage.getTriggerOffset().getValidationError()).isEqualTo("Must be between 0 and 100,000.");
-	}
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_Type_ValuesCorrect() {
+        List<String> expectedDropDownValues = new ArrayList<>(List.of("Select", "LM ecobee Program", "LM Honeywell Program", "LM Itron Program", "LM Direct Program", "LM SEP Program", "LM Meter Disconnect Program"));
+        List<String> actualDropDownValues = createPage.getType().getOptionValues();
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_RestoreOffset_InvalidValueValidation() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+        assertThat(actualDropDownValues).containsExactlyElementsOf(expectedDropDownValues);
+    }
 
-		createPage.getRestoreOffset().setInputValue("test/");
-		createPage.getSaveBtn().click();
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_OperationalState_ValuesCorrect() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-		assertThat(createPage.getRestoreOffset().getValidationError()).isEqualTo("Not a valid value.");
-	}
+        List<String> expectedDropDownValues = new ArrayList<>(List.of("Automatic", "Manual Only", "Timed"));
+        List<String> actualDropDownValues = createPage.getOperationalState().getOptionValues();
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_RestoreOffset_MaxLengthValidation() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+        assertThat(actualDropDownValues).containsExactlyElementsOf(expectedDropDownValues);
+    }
 
-		createPage.getRestoreOffset().setInputValue("1001000");
-		createPage.getSaveBtn().click();
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_OperationalState_DefaultValueCorrect() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-		assertThat(createPage.getRestoreOffset().getValidationError())
-				.isEqualTo("Must be between -10,000 and 100,000.");
-	}
+        String expectedDropDownDefaultValue = "Automatic";
+        String actualDropDownDefaultValue = createPage.getOperationalState().getSelectedValue();
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_RestoreOffset_MinLengthValidation() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+        assertThat(actualDropDownDefaultValue).contains(expectedDropDownDefaultValue);
+    }
 
-		createPage.getRestoreOffset().setInputValue("-111111100");
-		createPage.getSaveBtn().click();
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_Constraint_DefaultValueCorrect() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
+        String expectedDropDownDefaultValue = "Default Constraint";
+        String actualDropDownDefaultValue = createPage.getConstraint().getSelectedValue();
 
-		assertThat(createPage.getRestoreOffset().getValidationError())
-				.isEqualTo("Must be between -10,000 and 100,000.");
-	}
+        assertThat(actualDropDownDefaultValue).contains(expectedDropDownDefaultValue);
+    }
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_Tab_TitlesCorrect() {
-		SoftAssertions softly = new SoftAssertions();
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_TriggerOffset_InvalidValueValidation() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-		List<String> titles = createPage.getTabElement().getTitles();
+        createPage.getTriggerOffset().setInputValue("test/");
+        createPage.getSaveBtn().click();
 
-		softly.assertThat(titles.size()).isEqualTo(2);
-		softly.assertThat(titles.get(0)).isEqualTo("Load Groups");
-		softly.assertThat(titles.get(1)).isEqualTo("Notification");
-		softly.assertAll();
-	}
+        assertThat(createPage.getTriggerOffset().getValidationError()).isEqualTo("Not a valid value.");
+    }
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_LdGrpsTab_TitlesCorrect() {
-		SoftAssertions softly = new SoftAssertions();
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_TriggerOffset_MaxLengthValidation() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-		String ldGrpsTabTitle = "Load Groups";
+        createPage.getTriggerOffset().setInputValue("1001000");
+        createPage.getSaveBtn().click();
 
-		createPage.getTabElement().clickTabAndWait(ldGrpsTabTitle);
+        assertThat(createPage.getTriggerOffset().getValidationError()).isEqualTo("Must be between 0 and 100,000.");
+    }
 
-		SelectBoxElement selectBoxElement = createPage.getLoadGroupsSelectBox();
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_TriggerOffset_MinLengthValidation() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-		softly.assertThat(selectBoxElement.getColumnHeading("Available")).contains("Available");
-		softly.assertThat(selectBoxElement.getColumnHeading("Assigned")).contains("Assigned");
-		softly.assertAll();
-	}
+        createPage.getTriggerOffset().setInputValue("-100");
+        createPage.getSaveBtn().click();
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_LdGrpsSearch_TitleCorrect() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+        assertThat(createPage.getTriggerOffset().getValidationError()).isEqualTo("Must be between 0 and 100,000.");
+    }
 
-		String ldGrpsTabTitle = "Load Groups";
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_RestoreOffset_InvalidValueValidation() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-		createPage.getTabElement().clickTabAndWait(ldGrpsTabTitle);
+        createPage.getRestoreOffset().setInputValue("test/");
+        createPage.getSaveBtn().click();
 
-		SelectBoxElement selectBoxElement = createPage.getLoadGroupsSelectBox();
-		
-		waitUntilTableVisiable(Optional.of(selectBoxElement.getColumnByColumnName("Available")));
-		
-		assertThat(selectBoxElement.getColumnSearchLabel("Available")).contains("Search:");
-	}
+        assertThat(createPage.getRestoreOffset().getValidationError()).isEqualTo("Not a valid value.");
+    }
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_LdGrpsSelectAll_LabelCorrect() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_RestoreOffset_MaxLengthValidation() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-		String ldGrpsTabTitle = "Load Groups";
+        createPage.getRestoreOffset().setInputValue("1001000");
+        createPage.getSaveBtn().click();
 
-		createPage.getTabElement().clickTabAndWait(ldGrpsTabTitle);
+        assertThat(createPage.getRestoreOffset().getValidationError()).isEqualTo("Must be between -10,000 and 100,000.");
+    }
 
-		SelectBoxElement selectBoxElement = createPage.getLoadGroupsSelectBox();
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_RestoreOffset_MinLengthValidation() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-		waitUntilTableVisiable(Optional.of(selectBoxElement.getColumnByColumnName("Available")));
+        createPage.getRestoreOffset().setInputValue("-111111100");
+        createPage.getSaveBtn().click();
 
-		assertThat(selectBoxElement.getColumnSelectAllLabel("Available")).contains("Select All");
-	}
+        assertThat(createPage.getRestoreOffset().getValidationError()).isEqualTo("Must be between -10,000 and 100,000.");
+    }
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_LdGrpsColumnHeaders_Correct() {
-		SoftAssertions softly = new SoftAssertions();
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_Tab_TitlesCorrect() {
+        SoftAssertions softly = new SoftAssertions();
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-		String ldGrpsTabTitle = "Load Groups";
+        List<String> titles = createPage.getTabElement().getTitles();
 
-		createPage.getTabElement().clickTabAndWait(ldGrpsTabTitle);
+        softly.assertThat(titles.size()).isEqualTo(2);
+        softly.assertThat(titles.get(0)).isEqualTo("Load Groups");
+        softly.assertThat(titles.get(1)).isEqualTo("Notification");
+        softly.assertAll();
+    }
 
-		SelectBoxElement selectBoxElement = createPage.getLoadGroupsSelectBox();
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_LdGrpsTab_TitlesCorrect() {
+        SoftAssertions softly = new SoftAssertions();
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-		waitUntilTableVisiable(Optional.of(selectBoxElement.getColumnByColumnName("Available")));
+        String ldGrpsTabTitle = "Load Groups";
 
-		softly.assertThat(selectBoxElement.getColumnTableHeaders("Available").size()).isEqualTo(2);
-		softly.assertThat(selectBoxElement.getColumnTableHeaders("Available").get(0)).isEqualTo("Name");
-		softly.assertThat(selectBoxElement.getColumnTableHeaders("Available").get(1)).isEqualTo("Type");
-		softly.assertAll();
-	}
+        createPage.getTabElement().clickTabAndWait(ldGrpsTabTitle);
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_LdGrpSearchByValidName_ReturnsCorrectResults() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+        SelectBoxElement selectBoxElement = createPage.getLoadGroupsSelectBox();
 
-		String ldGrpsTabTitle = "Load Groups";
+        softly.assertThat(selectBoxElement.getColumnHeading("Available")).contains("Available");
+        softly.assertThat(selectBoxElement.getColumnHeading("Assigned")).contains("Assigned");
+        softly.assertAll();
+    }
 
-		createPage.getTabElement().clickTabAndWait(ldGrpsTabTitle);
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_LdGrpsSearch_TitleCorrect() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-		SelectBoxElement selectBoxElement = createPage.getLoadGroupsSelectBox();
+        String ldGrpsTabTitle = "Load Groups";
 
-		waitUntilTableVisiable(Optional.of(selectBoxElement.getColumnByColumnName("Available")));
+        createPage.getTabElement().clickTabAndWait(ldGrpsTabTitle);
 
-		assertThat(selectBoxElement.searchByValidName(ldGrpName)).contains(ldGrpName);
+        SelectBoxElement selectBoxElement = createPage.getLoadGroupsSelectBox();
 
-	}
+        waitUntilTableVisiable(Optional.of(selectBoxElement.getColumnByColumnName("Available")));
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_LdGrpsSearchByInvalidName_ReturnsNoResults() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+        assertThat(selectBoxElement.getColumnSearchLabel("Available")).contains("Search:");
+    }
 
-		String ldGrpsTabTitle = "Load Groups";
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_LdGrpsSelectAll_LabelCorrect() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-		createPage.getTabElement().clickTabAndWait(ldGrpsTabTitle);
+        String ldGrpsTabTitle = "Load Groups";
 
-		SelectBoxElement selectBoxElement = createPage.getLoadGroupsSelectBox();
+        createPage.getTabElement().clickTabAndWait(ldGrpsTabTitle);
 
-		waitUntilTableVisiable(Optional.of(selectBoxElement.getColumnByColumnName("Available")));
+        SelectBoxElement selectBoxElement = createPage.getLoadGroupsSelectBox();
 
-		assertThat(selectBoxElement.searchByInvalidName(ldGrpName+"TestWrongName")).contains("No results found");
+        waitUntilTableVisiable(Optional.of(selectBoxElement.getColumnByColumnName("Available")));
 
-	}
+        assertThat(selectBoxElement.getColumnSelectAllLabel("Available")).contains("Select All");
+    }
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_ControlWindowSection_LabelsCorrect() {
-		timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-		String name = "AT LM Itron Program " + timeStamp;
-		String sectionName = "Control Window";
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_LdGrpsColumnHeaders_Correct() {
+        SoftAssertions softly = new SoftAssertions();
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-		createPage.getName().setInputValue(name);
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+        String ldGrpsTabTitle = "Load Groups";
 
-		List<String> expectedLabels = new ArrayList<>(List.of("Use Window 1:", "", "", "Use Window 2:", "", ""));
+        createPage.getTabElement().clickTabAndWait(ldGrpsTabTitle);
 
-		List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
+        SelectBoxElement selectBoxElement = createPage.getLoadGroupsSelectBox();
 
-		assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
-	}
+        waitUntilTableVisiable(Optional.of(selectBoxElement.getColumnByColumnName("Available")));
 
-	@Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_OperationalStateTimed_UseWindowRequiredValidation() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+        softly.assertThat(selectBoxElement.getColumnTableHeaders("Available").size()).isEqualTo(2);
+        softly.assertThat(selectBoxElement.getColumnTableHeaders("Available").get(0)).isEqualTo("Name");
+        softly.assertThat(selectBoxElement.getColumnTableHeaders("Available").get(1)).isEqualTo("Type");
+        softly.assertAll();
+    }
 
-		String EXPECTED_MSG = "A timed program requires a non zero control time to be specified under the control window tab one.";
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_LdGrpSearchByValidName_ReturnsCorrectResults() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-		createPage.getOperationalState().selectItemByValue("Timed");
-		createPage.getSaveBtn().click();
+        String ldGrpsTabTitle = "Load Groups";
 
-		String userMsg = createPage.getUserMessage();
+        createPage.getTabElement().clickTabAndWait(ldGrpsTabTitle);
 
-		assertThat(userMsg).contains(EXPECTED_MSG);
-	}
+        SelectBoxElement selectBoxElement = createPage.getLoadGroupsSelectBox();
 
-	@Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_WindowOneStartTime_RequiredValidation() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+        waitUntilTableVisiable(Optional.of(selectBoxElement.getColumnByColumnName("Available")));
 
-		String EXPECTED_MSG = "Start Time is required.";
+        assertThat(selectBoxElement.searchByValidName(ldGrpName)).contains(ldGrpName);
+    }
 
-		createPage.getUseWindowOne().selectValue("Yes");
-		createPage.getStartTimeWindowOne().clearValue();
-		createPage.getSaveBtn().click();
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_LdGrpsSearchByInvalidName_ReturnsNoResults() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-		String userMsg = createPage.getStartTimeWindowOne().getValidationError();
+        String ldGrpsTabTitle = "Load Groups";
 
-		assertThat(userMsg).contains(EXPECTED_MSG);
-	}
+        createPage.getTabElement().clickTabAndWait(ldGrpsTabTitle);
 
-	@Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_WindowOneStopTime_RequiredValidation() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+        SelectBoxElement selectBoxElement = createPage.getLoadGroupsSelectBox();
 
-		String EXPECTED_MSG = "Stop Time is required.";
+        waitUntilTableVisiable(Optional.of(selectBoxElement.getColumnByColumnName("Available")));
 
-		createPage.getUseWindowOne().selectValue("Yes");
-		createPage.getStopTimeWindowOne().clearValue();
-		createPage.getSaveBtn().click();
+        assertThat(selectBoxElement.searchByInvalidName(ldGrpName + "TestWrongName")).contains("No results found");
+    }
 
-		String userMsg = createPage.getStopTimeWindowOne().getValidationError();
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_ControlWindowSection_LabelsCorrect() {
+        timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String name = "AT LM Itron Program " + timeStamp;
+        String sectionName = "Control Window";
 
-		assertThat(userMsg).contains(EXPECTED_MSG);
-	}
+        createPage.getName().setInputValue(name);
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-	@Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_WindowTwoStartTime_RequiredValidation() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+        List<String> expectedLabels = new ArrayList<>(List.of("Use Window 1:", "", "", "Use Window 2:", "", ""));
 
-		String EXPECTED_MSG = "Start Time is required.";
-		createPage.getUseWindowTwo().selectValue("Yes");
-		createPage.getStartTimeWindowTwo().clearValue();
-		createPage.getSaveBtn().click();
+        List<String> actualLabels = createPage.getPageSection(sectionName).getSectionLabels();
 
-		String userMsg = createPage.getStartTimeWindowTwo().getValidationError();
+        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
+    }
 
-		assertThat(userMsg).contains(EXPECTED_MSG);
-	}
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_OperationalStateTimed_UseWindowRequiredValidation() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-	@Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_WindowTwoStopTime_RequiredValidation() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+        String EXPECTED_MSG = "A timed program requires a non zero control time to be specified under the control window tab one.";
 
-		String EXPECTED_MSG = "Stop Time is required.";
-		createPage.getUseWindowTwo().selectValue("Yes");
-		createPage.getStopTimeWindowTwo().clearValue();
-		createPage.getSaveBtn().click();
+        createPage.getOperationalState().selectItemByValue("Timed");
+        createPage.getSaveBtn().click();
 
-		String userMsg = createPage.getStopTimeWindowTwo().getValidationError();
+        String userMsg = createPage.getUserMessage();
 
-		assertThat(userMsg).contains(EXPECTED_MSG);
-	}
+        assertThat(userMsg).contains(EXPECTED_MSG);
+    }
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_Cancel_NavigatesToCorrectUrl() {
-		createPage.getCancelBtn().click();
-		String EXPECTED_TITLE = "Setup";
-		String actualPageTitle = createPage.getPageTitle();
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_WindowOneStartTime_RequiredValidation() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-		assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
-	}
+        String EXPECTED_MSG = "Start Time is required.";
 
-	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_NotificationField_LabelsCorrect() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+        createPage.getUseWindowOne().selectValue("Yes");
+        createPage.getStartTimeWindowOne().clearValue();
+        createPage.getSaveBtn().click();
 
-		String sectionName = "Notification";
-		List<String> expectedLabels = new ArrayList<>(
-				List.of("Program Start ", "Program Stop ", "Notify On Adjustment", "Notify On Schedule"));
+        String userMsg = createPage.getStartTimeWindowOne().getValidationError();
 
-		createPage.getTabElement().clickTabAndWait(sectionName);
+        assertThat(userMsg).contains(EXPECTED_MSG);
+    }
 
-		SelectBoxElement selectBoxElement = createPage.getLoadGroupsSelectBox();
-		List<String> actualLabels = selectBoxElement.getSectionLabelsNotification();
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_WindowOneStopTime_RequiredValidation() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-		assertThat(actualLabels).containsAll(expectedLabels);
-	}
+        String EXPECTED_MSG = "Stop Time is required.";
 
-	@Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_NotificationPrgmStart_InvalidValueValidation() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
-		String EXPECTED_MSG = "Must be a valid integer value.";
-		String sectionName = "Notification";
+        createPage.getUseWindowOne().selectValue("Yes");
+        createPage.getStopTimeWindowOne().clearValue();
+        createPage.getSaveBtn().click();
 
-		createPage.getTabElement().clickTabAndWait(sectionName);
+        String userMsg = createPage.getStopTimeWindowOne().getValidationError();
 
-		createPage.getProgramStart().setValue(true);
-		createPage.getProgramStartMinutes().setInputValue("abcd");
+        assertThat(userMsg).contains(EXPECTED_MSG);
+    }
 
-		createPage.getSaveBtn().click();
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_WindowTwoStartTime_RequiredValidation() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-		createPage.getTabElement().clickTabAndWait(sectionName);
-		createPage.getProgramStart().setValue(true);
+        String EXPECTED_MSG = "Start Time is required.";
+        createPage.getUseWindowTwo().selectValue("Yes");
+        createPage.getStartTimeWindowTwo().clearValue();
+        createPage.getSaveBtn().click();
 
-		String userMsg = createPage.getProgramStartMinutes().getValidationError();
+        String userMsg = createPage.getStartTimeWindowTwo().getValidationError();
 
-		assertThat(EXPECTED_MSG).isEqualTo(userMsg);
+        assertThat(userMsg).contains(EXPECTED_MSG);
+    }
 
-	}
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_WindowTwoStopTime_RequiredValidation() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-	@Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_NotificationPrgmStop_InvalidValueValidation() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
-		String EXPECTED_MSG = "Must be a valid integer value.";
-		String sectionName = "Notification";
+        String EXPECTED_MSG = "Stop Time is required.";
+        createPage.getUseWindowTwo().selectValue("Yes");
+        createPage.getStopTimeWindowTwo().clearValue();
+        createPage.getSaveBtn().click();
 
-		createPage.getTabElement().clickTabAndWait(sectionName);
+        String userMsg = createPage.getStopTimeWindowTwo().getValidationError();
 
-		createPage.getProgramStop().setValue(true);
-		createPage.getProgramStopMinutes().setInputValue("abcd");
+        assertThat(userMsg).contains(EXPECTED_MSG);
+    }
 
-		createPage.getSaveBtn().click();
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_Cancel_NavigatesToCorrectUrl() {
+        createPage.getCancelBtn().click();
+        String EXPECTED_TITLE = "Setup";
+        String actualPageTitle = createPage.getPageTitle();
 
-		createPage.getTabElement().clickTabAndWait(sectionName);
-		createPage.getProgramStop().setValue(true);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
+    }
 
-		String userMsg = createPage.getProgramStopMinutes().getValidationError();
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_NotificationField_LabelsCorrect() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
 
-		assertThat(EXPECTED_MSG).isEqualTo(userMsg);
+        String sectionName = "Notification";
+        List<String> expectedLabels = new ArrayList<>(List.of("Program Start ", "Program Stop ", "Notify On Adjustment", "Notify On Schedule"));
 
-	}
+        createPage.getTabElement().clickTabAndWait(sectionName);
 
-	@Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_NotificationPrgmStart_MaxLength5Chars() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+        SelectBoxElement selectBoxElement = createPage.getLoadGroupsSelectBox();
+        List<String> actualLabels = selectBoxElement.getSectionLabelsNotification();
 
-		String sectionName = "Notification";
+        assertThat(actualLabels).containsAll(expectedLabels);
+    }
 
-		createPage.getTabElement().clickTabAndWait(sectionName);
-		createPage.getProgramStart().setValue(true);
-		String maxLength = createPage.getProgramStartMinutes().getMaxLength();
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_NotificationPrgmStart_InvalidValueValidation() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
+        String EXPECTED_MSG = "Must be a valid integer value.";
+        String sectionName = "Notification";
 
-		assertThat(maxLength).isEqualTo("5");
-	}
+        createPage.getTabElement().clickTabAndWait(sectionName);
 
-	@Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmCreate_NotificationPrgmStop_MaxLength5Chars() {
-		createPage.getType().selectItemByValue(TYPE);
-		waitForLoadingSpinner();
+        createPage.getProgramStart().setValue(true);
+        createPage.getProgramStartMinutes().setInputValue("abcd");
 
-		String sectionName = "Notification";
+        createPage.getSaveBtn().click();
 
-		createPage.getTabElement().clickTabAndWait(sectionName);
-		createPage.getProgramStop().setValue(true);
-		String maxLength = createPage.getProgramStopMinutes().getMaxLength();
+        createPage.getTabElement().clickTabAndWait(sectionName);
+        createPage.getProgramStart().setValue(true);
 
-		assertThat(maxLength).isEqualTo("5");
-	}
+        String userMsg = createPage.getProgramStartMinutes().getValidationError();
+
+        assertThat(EXPECTED_MSG).isEqualTo(userMsg);
+    }
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_NotificationPrgmStop_InvalidValueValidation() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
+        String EXPECTED_MSG = "Must be a valid integer value.";
+        String sectionName = "Notification";
+
+        createPage.getTabElement().clickTabAndWait(sectionName);
+
+        createPage.getProgramStop().setValue(true);
+        createPage.getProgramStopMinutes().setInputValue("abcd");
+
+        createPage.getSaveBtn().click();
+
+        createPage.getTabElement().clickTabAndWait(sectionName);
+        createPage.getProgramStop().setValue(true);
+
+        String userMsg = createPage.getProgramStopMinutes().getValidationError();
+
+        assertThat(EXPECTED_MSG).isEqualTo(userMsg);
+    }
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_NotificationPrgmStart_MaxLength5Chars() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
+
+        String sectionName = "Notification";
+
+        createPage.getTabElement().clickTabAndWait(sectionName);
+        createPage.getProgramStart().setValue(true);
+        String maxLength = createPage.getProgramStartMinutes().getMaxLength();
+
+        assertThat(maxLength).isEqualTo("5");
+    }
+
+    @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmCreate_NotificationPrgmStop_MaxLength5Chars() {
+        createPage.getType().selectItemByValue(TYPE);
+        waitForLoadingSpinner();
+
+        String sectionName = "Notification";
+
+        createPage.getTabElement().clickTabAndWait(sectionName);
+        createPage.getProgramStop().setValue(true);
+        String maxLength = createPage.getProgramStopMinutes().getMaxLength();
+
+        assertThat(maxLength).isEqualTo("5");
+    }
 
 }
