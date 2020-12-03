@@ -432,7 +432,8 @@ LM_EATON_CLOUD_PROGRAM:
     gears:
       type: array
       items:
-        $ref: '#/EatonCloudCycle'
+        - $ref: '#/EatonCloudCycle'
+        - $ref: '#/NoControl'
     controlWindow:
       $ref: '#/controlWindow'
     assignedGroups:
