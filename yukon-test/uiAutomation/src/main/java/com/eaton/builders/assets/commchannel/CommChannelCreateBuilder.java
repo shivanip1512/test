@@ -30,7 +30,7 @@ public class CommChannelCreateBuilder {
             String u = UUID.randomUUID().toString();
             String uuid = u.replace("-", "");
 
-            this.name = name.orElse("AT " + commType.getCommChannelType() + uuid);
+            this.name = name.orElse("AT " + commType.getCommChannelType() + " " + uuid);
             this.commType = commType;
         }
 
