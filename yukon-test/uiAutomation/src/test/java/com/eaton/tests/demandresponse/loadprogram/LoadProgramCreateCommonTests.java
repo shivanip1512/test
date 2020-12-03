@@ -20,7 +20,7 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.LoadProgramCreatePage;
+import com.eaton.pages.demandresponse.loadprogram.LoadProgramCreatePage;
 
 public class LoadProgramCreateCommonTests extends SeleniumTestSetup {
 
@@ -344,8 +344,8 @@ public class LoadProgramCreateCommonTests extends SeleniumTestSetup {
 
 		SelectBoxElement selectBoxElement = createPage.getLoadGroupsSelectBox();
 
-		softly.assertThat(selectBoxElement.getColumnHeading("Available").contains("Available"));
-		softly.assertThat(selectBoxElement.getColumnHeading("Assigned").contains("Assigned"));
+		softly.assertThat(selectBoxElement.getColumnHeading("Available")).contains("Available");
+		softly.assertThat(selectBoxElement.getColumnHeading("Assigned")).contains("Assigned");
 		softly.assertAll();
 	}
 
@@ -361,7 +361,7 @@ public class LoadProgramCreateCommonTests extends SeleniumTestSetup {
 		SelectBoxElement selectBoxElement = createPage.getLoadGroupsSelectBox();
 		waitUntilTableVisiable();
 
-		assertThat(selectBoxElement.getColumnSearchLabel("Available").contains("Search:"));
+		assertThat(selectBoxElement.getColumnSearchLabel("Available")).contains("Search:");
 	}
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
@@ -377,7 +377,7 @@ public class LoadProgramCreateCommonTests extends SeleniumTestSetup {
 
 		waitUntilTableVisiable();
 
-		assertThat(selectBoxElement.getColumnSelectAllLabel("Available").contains("Select All"));
+		assertThat(selectBoxElement.getColumnSelectAllLabel("Available")).contains("Select All");
 	}
 
 	@Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
@@ -413,7 +413,7 @@ public class LoadProgramCreateCommonTests extends SeleniumTestSetup {
 
 		waitUntilTableVisiable();
 
-		assertThat(selectBoxElement.searchByValidName(ldGrpName).contains(ldGrpName));
+		assertThat(selectBoxElement.searchByValidName(ldGrpName)).contains(ldGrpName);
 
 	}
 
@@ -430,7 +430,7 @@ public class LoadProgramCreateCommonTests extends SeleniumTestSetup {
 
 		waitUntilTableVisiable();
 
-		assertThat(selectBoxElement.searchByInvalidName(ldGrpName + "TestWrongName").contains("No results found"));
+		assertThat(selectBoxElement.searchByInvalidName(ldGrpName+"TestWrongName")).contains("No results found");
 
 	}
 

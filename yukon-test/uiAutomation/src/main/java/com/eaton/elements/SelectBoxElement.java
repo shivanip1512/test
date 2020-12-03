@@ -1,5 +1,6 @@
 package com.eaton.elements;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -146,7 +147,9 @@ public class SelectBoxElement {
 		TextEditElement search = new TextEditElement(this.driverExt, "ss");
 
 		search.setInputValue(value);
-		return this.driverExt.findElement(By.cssSelector("#picker-js-avaliable-groups-picker-no-results"), Optional.of(2)).getText();
-
+		WebElement element  = this.driverExt.findElement(By.cssSelector(".compact-results-table.picker-results-table"), Optional.empty());
+		this.driverExt.waitUntilElementInvisible(element);
+		return this.driverExt.findElement(By.cssSelector("#picker-js-avaliable-groups-picker-no-results"),Optional.of(5)).getText();
+		
 	}
 }
