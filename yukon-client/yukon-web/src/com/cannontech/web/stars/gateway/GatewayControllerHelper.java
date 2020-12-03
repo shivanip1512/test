@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.ui.ModelMap;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.rfn.message.gateway.AppMode;
 import com.cannontech.common.rfn.message.gateway.ConflictType;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
@@ -26,6 +28,7 @@ import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateSummary;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
+import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.stars.gateway.GatewayListController.CertificateUpdatesSortBy;
 import com.cannontech.web.stars.gateway.GatewayListController.FirmwareUpdatesSortBy;
 import com.cannontech.web.stars.gateway.GatewayListController.GatewayListSortBy;
@@ -36,7 +39,8 @@ public class GatewayControllerHelper {
     
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private CronExpressionTagService cronService;
-    
+    @Autowired private PaoNotesService paoNotesService;
+
     public void addText(ModelMap model, YukonUserContext userContext) {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
@@ -224,5 +228,23 @@ public class GatewayControllerHelper {
             comparator = Collections.reverseOrder(comparator);
         }
         return comparator;
+    }
+
+    public void setSortingParamaters(ModelMap model, YukonUserContext userContext, SortingParameters sorting,
+            List<RfnGateway> gateways) {
+        Direction dir = sorting.getDirection();
+        GatewayListSortBy sortBy = GatewayListSortBy.valueOf(sorting.getSort());
+        Collections.sort(gateways, GatewayControllerHelper.getGatewayListComparator(sorting, sortBy));
+        model.addAttribute("gateways", gateways);
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        for (GatewayListSortBy column : GatewayListSortBy.values()) {
+            String text = accessor.getMessage(column);
+            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+            model.addAttribute(column.name(), col);
+        }
+        List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(gateways.stream()
+                                                                             .map(gateway -> gateway.getPaoIdentifier().getPaoId())
+                                                                             .collect(Collectors.toList()));
+        model.addAttribute("notesList", notesList);
     }
 }
