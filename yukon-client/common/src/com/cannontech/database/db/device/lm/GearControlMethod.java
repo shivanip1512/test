@@ -10,6 +10,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.device.lm.BeatThePeakGear;
+import com.cannontech.database.data.device.lm.EatonCloudCycleGear;
 import com.cannontech.database.data.device.lm.EcobeeCycleGear;
 import com.cannontech.database.data.device.lm.EcobeeSetpointGear;
 import com.cannontech.database.data.device.lm.HoneywellCycleGear;
@@ -56,6 +57,7 @@ public enum GearControlMethod implements DatabaseRepresentationSource, Displayab
     SimpleThermostatRamping(SimpleThermostatRampingGear.class, "Simple Thermostat Ramping", PaoType.LM_DIRECT_PROGRAM),
     BeatThePeak(BeatThePeakGear.class, "Beat The Peak", PaoType.LM_DIRECT_PROGRAM),
     MeterDisconnect(MeterDisconnectGear.class, "Meter Disconnect", PaoType.LM_METER_DISCONNECT_PROGRAM),
+    EatonCloudCycle(EatonCloudCycleGear.class, "Eaton Cloud Cycle", PaoType.LM_DIRECT_PROGRAM),
     NoControl(NoControlGear.class, "No Control", PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM);
 
     private static final Logger log = YukonLogManager.getLogger(GearControlMethod.class);

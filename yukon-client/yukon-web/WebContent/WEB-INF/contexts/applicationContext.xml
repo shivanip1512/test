@@ -1444,6 +1444,7 @@
     <bean class="com.cannontech.web.dr.setup.LoadProgramSetupControllerHelper"/>
 
     <bean class="com.cannontech.web.api.dr.gear.setup.fields.validator.GearValidatorHelper"/>
+    <bean id="eatonCloudCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.EatonCloudCycleGearFieldsValidator"/>
     <bean id="MeterDisconnectGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.MeterDisconnectGearFieldsValidator"/>
     <bean id="honeywellCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.HoneywellCycleGearFieldsValidator"/>
     <bean id="honeywellSetpointGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.HoneywellSetpointGearFieldsValidator"/>

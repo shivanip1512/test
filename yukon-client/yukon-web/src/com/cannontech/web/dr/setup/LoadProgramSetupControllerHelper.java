@@ -25,6 +25,7 @@ import com.cannontech.common.dr.gear.setup.StopOrder;
 import com.cannontech.common.dr.gear.setup.TemperatureMeasureUnit;
 import com.cannontech.common.dr.gear.setup.WhenToChange;
 import com.cannontech.common.dr.gear.setup.fields.BeatThePeakGearFields;
+import com.cannontech.common.dr.gear.setup.fields.EatonCloudCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeSetpointGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
@@ -55,6 +56,7 @@ import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.GearControlMethod;
+import com.cannontech.dr.eatonCloud.model.EatonCloudCycleType;
 import com.cannontech.dr.itron.model.ItronCycleType;
 import com.cannontech.dr.nest.model.v3.PeakLoadShape;
 import com.cannontech.dr.nest.model.v3.PostLoadShape;
@@ -222,6 +224,10 @@ public class LoadProgramSetupControllerHelper {
         case MagnitudeCycle:
         case TrueCycle:
         case SmartCycle:
+        case EatonCloudCycle:
+            EatonCloudCycleGearFields eatonCloudCycleGearFields = (EatonCloudCycleGearFields) programGear.getFields();
+            setEatonCloudCycleGearFieldsDefaultValues(eatonCloudCycleGearFields);
+            break;
         case TargetCycle:
             SmartCycleGearFields smartCycleGearFields = (SmartCycleGearFields) programGear.getFields();
             setSmartCycleGearFieldsDefaultValue(smartCycleGearFields);
@@ -454,11 +460,24 @@ public class LoadProgramSetupControllerHelper {
         sepTemperatureOffsetGearFields.setCapacityReduction(100);
     }
     
+    private void setEatonCloudCycleGearFieldsDefaultValues(EatonCloudCycleGearFields eatonCloudCycleGearFields) {
+        eatonCloudCycleGearFields.setRampIn(true);
+        eatonCloudCycleGearFields.setRampOut(true);
+        eatonCloudCycleGearFields.setCapacityReduction(100);
+        eatonCloudCycleGearFields.setDutyCyclePercent(50);
+        eatonCloudCycleGearFields.setCriticality(100);
+    }
+    
     public void populateDefaultValuesForDependentFields(ProgramGear programGear) {
         switch (programGear.getControlMethod()) {
         case MagnitudeCycle:
         case TrueCycle:
         case SmartCycle:
+        case EatonCloudCycle:
+            EatonCloudCycleGearFields eatonCloudCycleGearFields = (EatonCloudCycleGearFields) programGear.getFields();
+            eatonCloudCycleGearFields.setWhenToChangeFields(
+                setWhenToChangeDefaultValues(eatonCloudCycleGearFields.getWhenToChangeFields()));
+            break;
         case TargetCycle:
             SmartCycleGearFields smartCycleGearFields = (SmartCycleGearFields) programGear.getFields();
             smartCycleGearFields.setWhenToChangeFields(
@@ -581,6 +600,12 @@ public class LoadProgramSetupControllerHelper {
         case MagnitudeCycle:
         case TrueCycle:
         case SmartCycle:
+        case EatonCloudCycle:
+            model.addAttribute("whenToChangeFields", WhenToChange.values());
+            model.addAttribute("cycleType", EatonCloudCycleType.values());
+            model.addAttribute("dutyCyclePeriod", ImmutableList.of(15, 30, 60));
+            model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
+            break;
         case TargetCycle:
             model.addAttribute("cycleCountSendType", List.of(CycleCountSendType.FixedCount, CycleCountSendType.CountDown, CycleCountSendType.LimitedCountDown));
             List<Integer> startingPeriodCount = new ArrayList<>();

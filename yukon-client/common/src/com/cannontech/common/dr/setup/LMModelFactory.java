@@ -1,6 +1,7 @@
 package com.cannontech.common.dr.setup;
 
 import com.cannontech.common.dr.gear.setup.fields.BeatThePeakGearFields;
+import com.cannontech.common.dr.gear.setup.fields.EatonCloudCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeSetpointGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
@@ -86,6 +87,9 @@ public class LMModelFactory {
         switch (controlMethod) {
         case TrueCycle:
         case MagnitudeCycle:
+        case EatonCloudCycle:
+            gearFields = new EatonCloudCycleGearFields();
+            break;
         case SmartCycle: 
             gearFields = new SmartCycleGearFields();
             break;
