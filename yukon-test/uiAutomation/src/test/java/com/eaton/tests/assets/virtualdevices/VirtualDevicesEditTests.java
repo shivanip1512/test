@@ -104,9 +104,10 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
         EditVirtualDeviceModal editVirtualDeviceModal = detailPage.showAndWaitEditVirtualDeviceModal();
         // Validate the Labels are correct
         List<String> labels = editVirtualDeviceModal.getFieldLabels();
-        softly.assertThat(labels.size()).isEqualTo(2);
+        softly.assertThat(labels.size()).isEqualTo(3);
         softly.assertThat(labels.get(0)).isEqualTo("Name:");
-        softly.assertThat(labels.get(1)).contains("Status:");
+        softly.assertThat(labels.get(1)).contains("Type:");
+        softly.assertThat(labels.get(2)).contains("Status:");
         softly.assertAll();
     }
 

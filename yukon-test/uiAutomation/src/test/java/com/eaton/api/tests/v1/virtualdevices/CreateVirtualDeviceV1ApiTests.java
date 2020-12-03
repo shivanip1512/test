@@ -123,7 +123,7 @@ public class CreateVirtualDeviceV1ApiTests {
     }
     
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ASSETS, TestConstants.Features.VIRTUAL_DEVICES })
-    public void createVirtualDeviceApi_MissingTypeDefaultsToVirtualSystem_201Success() {
+    public void createVirtualDeviceApi_MissingType_400BadRequest() {
         SoftAssertions softly = new SoftAssertions();
         JSONObject request = new VirtualDeviceCreateBuilder.Builder(Optional.empty())
                 .build();
@@ -132,15 +132,7 @@ public class CreateVirtualDeviceV1ApiTests {
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post(APIs.VirtualDevice.CREATE_VIRTUALDEVICE, request.toString());
 
-        String res = createResponse.asString();
-        JSONObject response = new JSONObject(res);
-        
-        softly.assertThat(createResponse.statusCode()).isEqualTo(201);
-        softly.assertThat(response.getString("name")).isEqualTo(request.getString("name"));
-        softly.assertThat(response.getBoolean("enable")).isEqualTo(request.getBoolean("enable"));
-        softly.assertThat(response.getString("type")).isEqualTo("VIRTUAL_SYSTEM");
-        softly.assertThat(response.getInt("id")).isNotNull();
-        softly.assertAll();
+        assertThat(createResponse.statusCode()).isEqualTo(400);
     }
     
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ASSETS, TestConstants.Features.VIRTUAL_DEVICES })

@@ -2,6 +2,7 @@ package com.eaton.tests.assets.virtualdevices;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +42,8 @@ public class VirtualDevicesListPageTests extends SeleniumTestSetup{
         faker = SeleniumTestSetup.getFaker();
         setRefreshPage(false);
         Builder builder = new VirtualDeviceCreateBuilder.Builder(Optional.empty());
-        String[] deviceNames = { "Virtual Device","virtual test device" , "Sample device", "test device", "test_device" };
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String[] deviceNames = { "Virtual Device" + timeStamp,"virtual test device" + timeStamp, "Sample device" + timeStamp, "test device" + timeStamp, "test_device" + timeStamp};
         for(String deviceName : deviceNames) {
             builder.withName(deviceName).withEnable(Optional.of(faker.random().nextBoolean()));
             Pair<JSONObject, JSONObject> pair = builder.create();
@@ -75,7 +77,7 @@ public class VirtualDevicesListPageTests extends SeleniumTestSetup{
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS  })
     public void virtualDevicesList_ColumnHeaders_Correct() {
         SoftAssertions softly = new SoftAssertions();
-        final int EXPECTED_COUNT = 2;
+        final int EXPECTED_COUNT = 3;
 
         List<String> headers = this.listPage.getTable().getListTableHeaders();
 
@@ -83,6 +85,7 @@ public class VirtualDevicesListPageTests extends SeleniumTestSetup{
 
         softly.assertThat(actualCount).isEqualTo(EXPECTED_COUNT);
         softly.assertThat(headers).contains("Name");
+        softly.assertThat(headers).contains("Meter Number");
         softly.assertThat(headers).contains("Status");
         softly.assertAll();
     }
