@@ -200,6 +200,7 @@ public final class Urls {
 
     public static final class Tools {
         public static final String COLLECTION_ACTIONS = "/collectionActions/home";
+        public static final String AGGREGATE_INTERVAL_DATA_REPORT = "/tools/aggregateIntervalReport/view";
         public static final String COMMANDER = "/tools/commander";
         public static final String DATA_EXPORTER = "/tools/data-exporter/view";
         public static final String DATA_VIEWER = "/tools/data-viewer";

@@ -13,6 +13,7 @@ import io.restassured.response.ExtractableResponse;
 public class VirtualDeviceCreateBuilder {
     public static class Builder {
         private String name;
+        private String type;
         private boolean enable;
 
         public Builder(Optional<String> name) {
@@ -20,12 +21,13 @@ public class VirtualDeviceCreateBuilder {
             String uuid = u.replace("-", "");
 
             this.name = name.orElse("AT Virtual Device " + uuid);
+            this.type = "VIRTUAL_SYSTEM";
         }
 
         public Builder withName(String name) {
             this.name = name;
             return this;
-        }
+        }        
 
         public Builder withEnable(Optional<Boolean> enable) {
             this.enable = enable.orElse(true);
@@ -35,6 +37,7 @@ public class VirtualDeviceCreateBuilder {
         public JSONObject build() {
             JSONObject j = new JSONObject();
             j.put("name", this.name);
+            j.put("type", this.type);
             j.put("enable", this.enable);
 
             return j;
@@ -49,9 +52,5 @@ public class VirtualDeviceCreateBuilder {
 
             return new Pair<>(request, response);
         }
-    }
-
-    public static Builder buildDefaultVirtualDevice() {
-        return new VirtualDeviceCreateBuilder.Builder(Optional.empty()).withEnable(Optional.empty());
     }
 }

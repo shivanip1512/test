@@ -81,6 +81,7 @@ public class LoadGroupEmetconDetailTests extends SeleniumTestSetup {
 
         CopyLoadGroupModal modal = detailPage.showCopyLoadGroupModal();
         modal.getName().setInputValue(copyName);
+        SeleniumTestSetup.waitForLoadingSpinner();
         modal.clickOkAndWaitForModalToClose();
 
         waitForPageToLoad("Load Group: " + copyName, Optional.of(8));
