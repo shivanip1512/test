@@ -41,7 +41,7 @@ public class GatewayControllerHelper {
     @Autowired private CronExpressionTagService cronService;
     @Autowired private PaoNotesService paoNotesService;
 
-    public void addText(ModelMap model, YukonUserContext userContext) {
+    public void addGatewayMessages(ModelMap model, YukonUserContext userContext) {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         Map<String, String> text = new HashMap<>();
@@ -230,7 +230,7 @@ public class GatewayControllerHelper {
         return comparator;
     }
 
-    public void setSortingParamaters(ModelMap model, YukonUserContext userContext, SortingParameters sorting,
+    public void buildGatewayListModel(ModelMap model, YukonUserContext userContext, SortingParameters sorting,
             List<RfnGateway> gateways) {
         Direction dir = sorting.getDirection();
         GatewayListSortBy sortBy = GatewayListSortBy.valueOf(sorting.getSort());

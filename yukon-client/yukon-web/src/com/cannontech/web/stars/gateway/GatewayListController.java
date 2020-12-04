@@ -75,7 +75,7 @@ public class GatewayListController {
     public String gatewaysList(ModelMap model, YukonUserContext userContext, FlashScope flash,
             @DefaultSort(dir = Direction.asc, sort = "NAME") SortingParameters sorting) {
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-        helper.setSortingParamaters(model, userContext, sorting, gateways);
+        helper.buildGatewayListModel(model, userContext, sorting, gateways);
         return "gateways/gatewayTable.jsp";
     }
 
@@ -87,7 +87,7 @@ public class GatewayListController {
         FirmwareUpdatesSortBy sortBy = FirmwareUpdatesSortBy.valueOf(sorting.getSort());
         Collections.sort(firmwareUpdates, GatewayControllerHelper.getFirmwareComparator(sorting, sortBy));
         model.addAttribute("firmwareUpdates", firmwareUpdates);
-        helper.addText(model, userContext);
+        helper.addGatewayMessages(model, userContext);
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         for (FirmwareUpdatesSortBy column : FirmwareUpdatesSortBy.values()) {
             String text = accessor.getMessage(column);
@@ -105,7 +105,7 @@ public class GatewayListController {
         CertificateUpdatesSortBy sortBy = CertificateUpdatesSortBy.valueOf(sorting.getSort());
         Collections.sort(certUpdates, GatewayControllerHelper.getCertificateComparator(sorting, sortBy));
         model.addAttribute("certUpdates", certUpdates);
-        helper.addText(model, userContext);
+        helper.addGatewayMessages(model, userContext);
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         for (CertificateUpdatesSortBy column : CertificateUpdatesSortBy.values()) {
             String text = accessor.getMessage(column);
