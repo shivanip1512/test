@@ -95,7 +95,7 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
     public PxMWDeviceChannelDetailsV1 getDeviceChannelDetails(String deviceGuid)
             throws PxMWCommunicationExceptionV1, PxMWException {
         URI uri = getUri(Map.of("deviceId", deviceGuid), PxMWRetrievalUrl.DEVICE_CHANNEL_DETAILS_V1);
-        log.debug("Getting device channel details. Device Guid: {} URL:{} token:{}", deviceGuid, uri);
+        log.debug("Getting device channel details. Device Guid: {} URL:{}", deviceGuid, uri);
         HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
         ResponseEntity<PxMWDeviceChannelDetailsV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
                 PxMWDeviceChannelDetailsV1.class);
