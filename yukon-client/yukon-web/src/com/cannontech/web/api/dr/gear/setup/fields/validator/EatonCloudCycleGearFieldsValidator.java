@@ -24,7 +24,7 @@ public class EatonCloudCycleGearFieldsValidator extends ProgramGearFieldsValidat
 
     @Override
     public GearControlMethod getControlMethod() {
-        return GearControlMethod.ItronCycle;
+        return GearControlMethod.EatonCloudCycle;
     }
 
     @Override
