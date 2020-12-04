@@ -57,7 +57,7 @@ public enum GearControlMethod implements DatabaseRepresentationSource, Displayab
     SimpleThermostatRamping(SimpleThermostatRampingGear.class, "Simple Thermostat Ramping", PaoType.LM_DIRECT_PROGRAM),
     BeatThePeak(BeatThePeakGear.class, "Beat The Peak", PaoType.LM_DIRECT_PROGRAM),
     MeterDisconnect(MeterDisconnectGear.class, "Meter Disconnect", PaoType.LM_METER_DISCONNECT_PROGRAM),
-    EatonCloudCycle(EatonCloudCycleGear.class, "Eaton Cloud Cycle", PaoType.LM_DIRECT_PROGRAM),
+    EatonCloudCycle(EatonCloudCycleGear.class, "Eaton Cloud Cycle", PaoType.LM_EATON_CLOUD_PROGRAM),
     NoControl(NoControlGear.class, "No Control", PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM);
 
     private static final Logger log = YukonLogManager.getLogger(GearControlMethod.class);

@@ -32,7 +32,7 @@ public class EatonCloudCycleGearFieldsValidator extends ProgramGearFieldsValidat
 
         // Check Eaton Cloud duty Cycle
         lmValidatorHelper.checkIfFieldRequired("dutyCycleType", errors, eatonCloudCycleGear.getDutyCycleType(),
-                "Itron Cycle Type");
+                "Eaton Cloud Cycle Type");
 
         // Check Ramp In
         gearValidatorHelper.checkRampIn(eatonCloudCycleGear.getRampIn(), errors);
