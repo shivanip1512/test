@@ -162,6 +162,19 @@ alter table LMGroupEatonCloud
 INSERT INTO DBUpdates VALUES ('YUK-23290', '9.0.0', SYSDATE);
 /* @end YUK-23290 */
 
+/* @start YUK-23313 */
+UPDATE YukonRoleProperty
+SET DefaultValue = 'NO_ACCESS'
+WHERE RolePropertyId = -20220;
+
+UPDATE YukonGroupRole 
+SET Value = 'OWNER' 
+WHERE RolePropertyID = -20220 
+AND Value = ' ';
+
+INSERT INTO DBUpdates VALUES ('YUK-23313', '9.0.0', SYSDATE);
+/* @end YUK-23313 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

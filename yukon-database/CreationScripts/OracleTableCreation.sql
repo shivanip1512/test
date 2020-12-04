@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/18/2020 3:21:49 PM                        */
+/* Created on:     12/1/2020 1:11:05 PM                         */
 /*==============================================================*/
 
 
@@ -10511,7 +10511,7 @@ INSERT INTO YukonRoleProperty VALUES(-20216,-202,'Validation Engine','false','Co
 INSERT INTO YukonRoleProperty VALUES(-20217,-202,'Status Point Monitor','false','Controls access to the Status Point Monitor');
 INSERT INTO YukonRoleProperty VALUES(-20218,-202,'Porter Response Monitor','false','Controls access to the Porter Response Monitor');
 INSERT INTO YukonRoleProperty VALUES(-20219,-202,'Meter Events','false','Controls access to Meter Events.');
-INSERT INTO YukonRoleProperty VALUES(-20220,-202,'Allow Disconnect Control','OWNER','Controls access to Disconnect, Connect, and Arm operations.');
+INSERT INTO YukonRoleProperty VALUES(-20220,-202,'Allow Disconnect Control','NO_ACCESS','Controls access to Disconnect, Connect, and Arm operations.');
 INSERT INTO YukonRoleProperty VALUES(-20221,-202,'Device Data Monitor','false','Controls access to the Device Data Monitor.');
 INSERT INTO YukonRoleProperty VALUES(-20222,-202,'Water Leak Report','true','Controls access to the Water Leak Report.');
 INSERT INTO YukonRoleProperty VALUES(-20223,-202,'Usage Threshold Report','true','Controls access to the Usage Threshold Report.');
