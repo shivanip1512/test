@@ -224,10 +224,6 @@ public class LoadProgramSetupControllerHelper {
         case MagnitudeCycle:
         case TrueCycle:
         case SmartCycle:
-        case EatonCloudCycle:
-            EatonCloudCycleGearFields eatonCloudCycleGearFields = (EatonCloudCycleGearFields) programGear.getFields();
-            setEatonCloudCycleGearFieldsDefaultValues(eatonCloudCycleGearFields);
-            break;
         case TargetCycle:
             SmartCycleGearFields smartCycleGearFields = (SmartCycleGearFields) programGear.getFields();
             setSmartCycleGearFieldsDefaultValue(smartCycleGearFields);
@@ -287,6 +283,10 @@ public class LoadProgramSetupControllerHelper {
         case Latching:
             LatchingGearFields latchingGearFields = (LatchingGearFields) programGear.getFields();
             latchingGearFields.setCapacityReduction(100);
+            break;
+        case EatonCloudCycle:
+            EatonCloudCycleGearFields eatonCloudCycleGearFields = (EatonCloudCycleGearFields) programGear.getFields();
+            setEatonCloudCycleGearFieldsDefaultValues(eatonCloudCycleGearFields);
             break;
         }
     }
@@ -473,11 +473,6 @@ public class LoadProgramSetupControllerHelper {
         case MagnitudeCycle:
         case TrueCycle:
         case SmartCycle:
-        case EatonCloudCycle:
-            EatonCloudCycleGearFields eatonCloudCycleGearFields = (EatonCloudCycleGearFields) programGear.getFields();
-            eatonCloudCycleGearFields.setWhenToChangeFields(
-                setWhenToChangeDefaultValues(eatonCloudCycleGearFields.getWhenToChangeFields()));
-            break;
         case TargetCycle:
             SmartCycleGearFields smartCycleGearFields = (SmartCycleGearFields) programGear.getFields();
             smartCycleGearFields.setWhenToChangeFields(
@@ -559,6 +554,11 @@ public class LoadProgramSetupControllerHelper {
             beatThePeakGearFields.setWhenToChangeFields(
                 setWhenToChangeDefaultValues(beatThePeakGearFields.getWhenToChangeFields()));
             break;
+        case EatonCloudCycle:
+            EatonCloudCycleGearFields eatonCloudCycleGearFields = (EatonCloudCycleGearFields) programGear.getFields();
+            eatonCloudCycleGearFields.setWhenToChangeFields(
+                setWhenToChangeDefaultValues(eatonCloudCycleGearFields.getWhenToChangeFields()));
+            break;
         case NoControl:
             NoControlGearFields noControlGearFields = (NoControlGearFields) programGear.getFields();
             noControlGearFields.setWhenToChangeFields(
@@ -600,12 +600,6 @@ public class LoadProgramSetupControllerHelper {
         case MagnitudeCycle:
         case TrueCycle:
         case SmartCycle:
-        case EatonCloudCycle:
-            model.addAttribute("whenToChangeFields", WhenToChange.values());
-            model.addAttribute("cycleType", EatonCloudCycleType.values());
-            model.addAttribute("dutyCyclePeriod", ImmutableList.of(15, 30, 60));
-            model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
-            break;
         case TargetCycle:
             model.addAttribute("cycleCountSendType", List.of(CycleCountSendType.FixedCount, CycleCountSendType.CountDown, CycleCountSendType.LimitedCountDown));
             List<Integer> startingPeriodCount = new ArrayList<>();
@@ -712,6 +706,12 @@ public class LoadProgramSetupControllerHelper {
         case Latching:
             model.addAttribute("controlStartState", ControlStartState.values());
             model.addAttribute("whenToChangeFields", WhenToChange.values());
+            break;
+        case EatonCloudCycle:
+            model.addAttribute("whenToChangeFields", WhenToChange.values());
+            model.addAttribute("cycleType", EatonCloudCycleType.values());
+            model.addAttribute("dutyCyclePeriod", ImmutableList.of(15, 30, 60));
+            model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
             break;
         }
     }

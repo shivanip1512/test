@@ -87,9 +87,6 @@ public class LMModelFactory {
         switch (controlMethod) {
         case TrueCycle:
         case MagnitudeCycle:
-        case EatonCloudCycle:
-            gearFields = new EatonCloudCycleGearFields();
-            break;
         case SmartCycle: 
             gearFields = new SmartCycleGearFields();
             break;
@@ -143,6 +140,9 @@ public class LMModelFactory {
             break;
         case BeatThePeak:
             gearFields = new BeatThePeakGearFields();
+            break;
+        case EatonCloudCycle:
+            gearFields = new EatonCloudCycleGearFields();
             break;
         case NoControl:
             gearFields = new NoControlGearFields();
