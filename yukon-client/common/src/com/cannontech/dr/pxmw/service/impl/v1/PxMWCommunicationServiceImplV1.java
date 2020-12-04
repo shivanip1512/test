@@ -72,9 +72,9 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
             if (response.getToken() != null) {
                 return response.getToken();
             }
-            throw new PxMWException("Unable to get to Eaton Cloud token from SM, see SM log for details");
+            throw new PxMWException("Unable to get Eaton Cloud token from SM, see SM log for details");
         } catch (ExecutionException e) {
-            throw new PxMWException("Unable to send a message to SM to get a Eaton Cloud token", e);
+            throw new PxMWException("Unable to send a message to SM to get Eaton Cloud token", e);
         }
     }
     
