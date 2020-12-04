@@ -1,4 +1,4 @@
-package com.cannontech.services.pxmw.authToken.message;
+package com.cannontech.dr.pxmw.message;
 
 import java.io.Serializable;
 

@@ -110,6 +110,8 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.dr.dao.LmReportedAddress;
+import com.cannontech.dr.pxmw.message.PxMWAuthTokenRequest;
+import com.cannontech.dr.pxmw.message.PxMWAuthTokenResponse;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveResponse;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
@@ -127,8 +129,6 @@ import com.cannontech.message.porter.message.MeterProgramValidationResponse;
 import com.cannontech.services.configurationSettingMessage.model.ConfigurationSettings;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenResponse;
-import com.cannontech.services.pxmw.authToken.message.PxMWAuthTokenRequest;
-import com.cannontech.services.pxmw.authToken.message.PxMWAuthTokenResponse;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfigurations;
 import com.cannontech.simulators.message.request.FieldSimulatorStatusRequest;
@@ -1212,7 +1212,7 @@ public final class JmsApiDirectory {
                   .name("PX Middleware Auth Token")
                   .description("Generates a PX Middleware Auth Token")
                   .communicationPattern(REQUEST_RESPONSE)
-                  .queue(new JmsQueue("yukon.pxmw.auth.token.PxMWAuthTokenRequest"))
+                  .queue(new JmsQueue("com.cannontech.dr.pxmw.message.PxMWAuthTokenRequest"))
                   .responseQueue(JmsQueue.TEMP_QUEUE)
                   .requestMessage(PxMWAuthTokenRequest.class)
                   .responseMessage(PxMWAuthTokenResponse.class)
