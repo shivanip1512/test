@@ -88,7 +88,7 @@ public class LoadProgramDirectCreateTests extends SeleniumTestSetup{
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldPrgmDirectCreate_AllFields_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT LM Direct Program " + timeStamp;
@@ -134,7 +134,7 @@ public class LoadProgramDirectCreateTests extends SeleniumTestSetup{
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void ldPrgmDirectCreate_GearType_ValuesCorrect() {
         createPage.getType().selectItemByValue(TYPE);
         waitForLoadingSpinner();
@@ -150,8 +150,8 @@ public class LoadProgramDirectCreateTests extends SeleniumTestSetup{
         assertThat(actualDropDownValues).containsExactlyElementsOf(expectedDropDownValues);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
-    public void ldPrgmItronCreate_WithMultipleGears_Success() {
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmDirectCreate_WithMultipleGears_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT LM Direct Program " + timeStamp;
 
