@@ -33,7 +33,13 @@ struct LMEatonCloudScheduledCycleCommand {
     9: required     i32                             _criticality;
 }
 
-struct LMEatonCloudRestore {
+enum LMEatonCloudStopType {
+    RESTORE = 0x00,
+    STOP_CYCLE = 0x01
+}
+
+struct LMEatonCloudStopCommand {
     1: required     i32                             _groupId;
     2: required     Types.Timestamp                 _restoreTime;
+    3: required     LMEatonCloudStopType            _stopType;
 }

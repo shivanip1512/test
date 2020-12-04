@@ -17,6 +17,9 @@
 #include "RfnDataStreamingUpdate.h"
 #include "Thrift/RfnDataStreamingUpdate_types.h"
 
+#include "LMEatonCloudMessages.h"
+#include "Thrift/LMEatonCloudCommandData_types.h"
+
 #include "std_helper.h"
 
 #include <boost/optional.hpp>
@@ -390,6 +393,61 @@ catch( apache::thrift::TException )
 {
     //  log?
     return boost::none;
+}
+
+template<>
+std::vector<unsigned char> IM_EX_MSG MessageSerializer<LoadManagement::LMEatonCloudStopRequest>::serialize(const LoadManagement::LMEatonCloudStopRequest &m)
+try
+{
+    const std::map<LoadManagement::LMEatonCloudStopRequest::StopType, Thrift::LMEatonCloudStopType::type>   stopTranslator
+    {
+        { LoadManagement::LMEatonCloudStopRequest::StopType::Restore,   Thrift::LMEatonCloudStopType::RESTORE       },
+        { LoadManagement::LMEatonCloudStopRequest::StopType::StopCycle, Thrift::LMEatonCloudStopType::STOP_CYCLE    }
+    };
+
+    Thrift::LMEatonCloudStopCommand request;
+
+    request.__set__groupId      (  m._groupId                       );
+    request.__set__restoreTime  (  m._stopTime.seconds()            );
+    request.__set__stopType     (  stopTranslator.at( m._stopType ) );  // careful about at() and std::out_of_range if map is incomplete... which it currently is NOT
+
+    return SerializeThriftBytes( request );
+}
+catch( apache::thrift::TException )
+{
+    //  log?
+    return {};
+}
+
+template<>
+std::vector<unsigned char> IM_EX_MSG MessageSerializer<LoadManagement::LMEatonCloudCycleRequest>::serialize(const LoadManagement::LMEatonCloudCycleRequest &m)
+try
+{
+    const std::map<LoadManagement::LMEatonCloudCycleRequest::CycleType, Thrift::LMEatonCloudCycleType::type>   cycleTranslator
+    {
+        { LoadManagement::LMEatonCloudCycleRequest::CycleType::StandardCycle,   Thrift::LMEatonCloudCycleType::STANDARD     },
+        { LoadManagement::LMEatonCloudCycleRequest::CycleType::TrueCycle,       Thrift::LMEatonCloudCycleType::TRUE_CYCLE   },
+        { LoadManagement::LMEatonCloudCycleRequest::CycleType::SmartCycle,      Thrift::LMEatonCloudCycleType::SMART_CYCLE  }
+    };
+
+    Thrift::LMEatonCloudScheduledCycleCommand   request;
+
+    request.__set__groupId              (  m._groupId               );
+    request.__set__controlStartDateTime (  m._startTime.seconds()   );
+    request.__set__controlEndDateTime   (  m._stopTime.seconds()    );
+    request.__set__isRampIn             (  m._rampIn  ==  LoadManagement::LMEatonCloudCycleRequest::RampingState::On  );
+    request.__set__isRampOut            (  m._rampOut ==  LoadManagement::LMEatonCloudCycleRequest::RampingState::On  );
+    request.__set__dutyCyclePercentage  (  m._dutyCyclePercent      );
+    request.__set__dutyCyclePeriod      (  m._dutyCyclePeriod       );
+    request.__set__criticality          (  m._criticality           );
+    request.__set__cyclingOption        (  cycleTranslator.at( m._cycleType )  );   // careful about at() and std::out_of_range if map is incomplete... which it currently is NOT
+
+    return SerializeThriftBytes( request );
+}
+catch( apache::thrift::TException )
+{
+    //  log?
+    return {};
 }
 
 

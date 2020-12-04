@@ -3,6 +3,10 @@
 #include "lmid.h"
 #include "lmgroupeatoncloud.h"
 #include "logger.h"
+#include "amq_connection.h"
+#include "amq_queues.h"
+#include "LMEatonCloudMessages.h"
+#include "message_factory.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -22,23 +26,30 @@ CtiLMGroupBase* LMGroupEatonCloud::replicate() const
 
 bool LMGroupEatonCloud::sendStopControl( bool stopImmediately )
 {
-    CtiTime now;
+    using namespace Cti::Messaging;
+    using namespace Cti::Messaging::LoadManagement;
+    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
-    // TODO -- jmoc
-    // Send the ActiveMQ Thrift EatonCloudRestore message here with above settings - needs definition...
+    const CtiTime stopTime; // now
 
-    // if stopImmediately == true then we are doing a Restore - if false we do a StopCycle,
-    // we need to add an enum to the stop message...
-    // and what about NoControl gears? based on direct gear code they should do nothing
-
+    ActiveMQConnectionManager::enqueueMessage(
+        OutboundQueue::EatonCloudStopRequest,
+        Serialization::MessageSerializer<LMEatonCloudStopRequest>::serialize( 
+            {
+                getPAOId(),
+                stopTime,
+                stopImmediately
+                    ? LMEatonCloudStopRequest::StopType::Restore
+                    : LMEatonCloudStopRequest::StopType::StopCycle
+            } ) );
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CTILOG_DEBUG( dout, "Sending " << _groupTypeName << " Stop command, LM Group: " << getPAOName() );
     }
 
-    setLastControlSent( now );
-    setLastStopTimeSent( now );
+    setLastControlSent( stopTime );
+    setLastStopTimeSent( stopTime );
     setGroupControlState( InactiveState );
 
     return true;
@@ -46,31 +57,79 @@ bool LMGroupEatonCloud::sendStopControl( bool stopImmediately )
 
 bool LMGroupEatonCloud::sendShedControl( long controlMinutes )
 {
-    CtiTime now;
+    using namespace Cti::Messaging;
+    using namespace Cti::Messaging::LoadManagement;
+    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
-    // TODO -- jmoc
-    //    // shed == cycle at 100% duty cycle with no ramp in/out
-    // Send the ActiveMQ Thrift EatonCloudCyclingControl message here with above settings
+    const long controlSeconds = 60 * controlMinutes;
+
+    const CtiTime
+        startTime,  // now
+        stopTime = startTime + controlSeconds;
+
+    // shed == cycle at 100% duty cycle with no ramp in/out
+
+    ActiveMQConnectionManager::enqueueMessage(
+        OutboundQueue::EatonCloudCyclingRequest,
+        Serialization::MessageSerializer<LMEatonCloudCycleRequest>::serialize( 
+            {
+                getPAOId(),
+                startTime,
+                stopTime,
+                LMEatonCloudCycleRequest::CycleType::StandardCycle,
+                LMEatonCloudCycleRequest::RampingState::Off,
+                LMEatonCloudCycleRequest::RampingState::Off,
+                100,
+                controlSeconds,
+                100
+            } ) );
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CTILOG_DEBUG( dout, "Sending " << _groupTypeName << " Shed command, LM Group: " << getPAOName() );
     }
 
-    setLastControlSent( now );
-    setLastStopTimeSent( now + ( controlMinutes * 60 ) );
+    setLastControlSent( startTime );
+    setLastStopTimeSent( stopTime );
 
     return true;
 }
 
 bool LMGroupEatonCloud::sendCycleControl( CycleControlParameters parameters )
 {
-    CtiTime now;
+    using namespace Cti::Messaging;
+    using namespace Cti::Messaging::LoadManagement;
+    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
-    long controlDurationSeconds = parameters.controlDurationSeconds;
+    const static std::map<long, LMEatonCloudCycleRequest::CycleType>   cycleLookup
+    {
+        {   0,  LMEatonCloudCycleRequest::CycleType::StandardCycle  },
+        {   1,  LMEatonCloudCycleRequest::CycleType::TrueCycle      },
+        {   2,  LMEatonCloudCycleRequest::CycleType::SmartCycle     }
+    };
 
-    // TODO -- jmoc
-    // Send the ActiveMQ Thrift EatonCloudCyclingControl message here
+    const CtiTime
+        startTime,  // now
+        stopTime = startTime + parameters.controlDurationSeconds;
+
+    ActiveMQConnectionManager::enqueueMessage(
+        OutboundQueue::EatonCloudCyclingRequest,
+        Serialization::MessageSerializer<LMEatonCloudCycleRequest>::serialize( 
+            {
+                getPAOId(),
+                startTime,
+                stopTime,
+                cycleLookup.at(parameters.cyclingOption ),
+                parameters.rampIn
+                    ? LMEatonCloudCycleRequest::RampingState::On
+                    : LMEatonCloudCycleRequest::RampingState::Off,
+                parameters.rampOut
+                    ? LMEatonCloudCycleRequest::RampingState::On
+                    : LMEatonCloudCycleRequest::RampingState::Off,
+                parameters.dutyCyclePercent,
+                parameters.dutyCyclePeriod,
+                parameters.criticality
+            } ) );
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -79,12 +138,12 @@ bool LMGroupEatonCloud::sendCycleControl( CycleControlParameters parameters )
 
     if ( getGroupControlState() != ActiveState )
     {
-        setControlStartTime( now );
+        setControlStartTime( startTime );
         incrementDailyOps();
     }
 
-    setLastControlSent( now );
-    setLastStopTimeSent( now + controlDurationSeconds );
+    setLastControlSent( startTime );
+    setLastStopTimeSent( stopTime );
     setGroupControlState( ActiveState );
 
     return true;
@@ -99,18 +158,14 @@ bool LMGroupEatonCloud::sendNoControl()
         CTILOG_DEBUG( dout, "No Control gear for " << _groupTypeName << " LM Group: " << getPAOName() );
     }
 
-    // TODO -- jmoc
-    //  is this true...  legacy gears don't seem to set this (maybe?) - needs investigation
-    setGroupControlState( InactiveState );
+    //setGroupControlState( InactiveState );  // TODO -- jmoc - do we need to do this here?
 
-    //return true;
-    return false;   // this will prevent the programs last control time from being updated - don't like as it implies some sort of failure
+    return false;
 }
 
 bool LMGroupEatonCloud::doesStopRequireCommandAt( const CtiTime & currentTime ) const
 {
-    // TODO -- jmoc
-    //  is this true?
+    // TODO -- jmoc - is this true?
     // Always send the restore at the end of control.
 
     return true;
