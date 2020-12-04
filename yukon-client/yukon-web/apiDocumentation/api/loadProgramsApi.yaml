@@ -7,12 +7,12 @@ post-operation:
       API to create any type of load program.
       Below are the supported load program.
       - Direct
+      - Eaton Cloud
       - ecobee
       - Honeywell
       - Itron
       - Meter Disconnect
       - SEP
-      - Eaton Cloud
      
     requestBody:
       content:
@@ -98,12 +98,12 @@ get-update-delete-operation:
       API to retrieve any type of load program based on passed id.
       Below are the supported load program.
       - Direct
+      - Eaton Cloud
       - ecobee
       - Honeywell
       - Itron
       - Meter Disconnect
       - SEP
-      - Eaton Cloud
 
     parameters:
       - name: id
@@ -154,12 +154,12 @@ get-update-delete-operation:
       API to update any type of load program based on passed id.
       Below are the supported load program.
       - Direct
+      - Eaton Cloud
       - ecobee
       - Honeywell
       - Itron
       - Meter Disconnect
       - SEP
-      - Eaton Cloud
 
     parameters:
       - name: id
@@ -251,12 +251,12 @@ get-update-delete-operation:
       API to delete any type of load program based on passed id.
       Below are the supported load program.
       - Direct
+      - Eaton Cloud
       - ecobee
       - Honeywell
       - Itron
       - Meter Disconnect
       - SEP
-      - Eaton Cloud
 
     parameters:
       - name: id
