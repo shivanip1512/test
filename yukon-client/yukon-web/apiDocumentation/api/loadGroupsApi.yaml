@@ -72,7 +72,7 @@ post-operation:
               
       required: true
     responses:
-        '200':
+        '201':
           description: 'Created'
           content:
             application/json:

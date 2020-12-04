@@ -531,7 +531,7 @@ TimeRefresh:
     controlMethod:
       type: string
       enum:
-        - SmartCycle
+        - TimeRefresh
       description: 'Type of gear.'
     fields:
       required:
@@ -775,9 +775,9 @@ TargetCycle:
                 type: number
                 minimum: 0.0
                 maximum: 99999.999
-                description: 'Targeted amount of kW reduction.'      
+                description: 'Targeted amount of kW reduction.'
                 
-SmartCycle_TrueCycle_MagnitudeCycle_TargetCycle_Fields:           
+SmartCycle_TrueCycle_MagnitudeCycle_TargetCycle_Fields:
   required:
     - noRamp
     - controlPercent
@@ -848,7 +848,7 @@ SmartCycle_TrueCycle_MagnitudeCycle_TargetCycle_Fields:
     capacityReduction:
       $ref: '#capacityReduction'
     whenToChangeFields:
-      $ref: '#whenToChangeFields'            
+      $ref: '#whenToChangeFields'
 
 EcobeeCycle:
   title: EcobeeCycle
@@ -1117,10 +1117,733 @@ Latching:
           enum:
             - Open
             - Close
-          description: 'Controls whether an open or close command is sent at the beginning of control..'
+          description: 'Controls whether an open or close command is sent at the beginning of control.'
         capacityReduction:
           $ref: '#capacityReduction'
-         
+
+SimpleThermostatRamping:
+  title: SimpleThermostatRamping
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+    - fields
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - SimpleThermostatRamping
+      description: 'Type of gear.'
+    fields:
+      required:
+        - mode
+        - randomStartTimeInMinutes
+        - preOpTemp
+        - preOpTimeInMinutes
+        - preOpHoldInMinutes
+        - rampPerHour
+        - max
+        - rampOutTimeInMinutes
+        - maxRuntimeInMinutes
+        - howToStopControl
+        - whenToChangeFields
+      type: object
+      properties:
+        mode:
+          type: string
+          enum:
+            - HEAT
+            - COOL
+          description: 'Thermostat mode.'
+        randomStartTimeInMinutes:
+          type: integer
+          minimum: 0
+          maximum: 120
+          description: 'A random offset between zero minutes and the Random Start Time value is added to the start of control.'
+        preOpTemp:
+          type: integer
+          minimum: -20
+          maximum: 20
+          description: 'Number of degrees the temperature is decreased during the Pre-Op Cool Time or is increased during the Pre-Op Heat Time.'
+        preOpTimeInMinutes:
+          type: integer
+          minimum: 0
+          maximum: 300
+          description: 'Length of time that the temperature is decreased during a Pre-Op Cool. 
+                        Length of time that the temperature is increased during a Pre-Op Heat.'
+        preOpHoldInMinutes:
+          type: integer
+          minimum: 0
+          maximum: 300
+          description: 'Length of time that the Pre-Op Cool temperature is held.
+                        Length of time that the Pre-Op Heat temperature is held.'
+        maxRuntimeInMinutes:
+          type: integer
+          minimum: 240
+          maximum: 1439
+          description: 'Maximum runtime of the load program.'
+        rampPerHour:
+          type: number
+          minimum: -9.9
+          maximum: 9.9
+          description: 'Number of degrees that the temperature increases or decreases each hour during the load program run time.'
+        max:
+          type: integer
+          minimum: 0
+          maximum: 20
+          description: 'Maximum number of degrees that the temperature can ramp/change during the load program run time.'
+        rampOutTimeInMinutes:
+          type: integer
+          minimum: 0
+          maximum: 300
+          description: 'Length of time that the temperature is decreased or increased to the original setpoint before control stops.'
+   
+        howToStopControl:
+          type: string
+          enum:
+            - TimeIn 
+            - Restore
+          description: 'TimeIn - The control stops when the cycle period is over.
+                        Restore – A restore command is sent to the device.'
+       
+        whenToChangeFields:
+          $ref: '#whenToChangeFields'
+
+ThermostatRamping:
+  title: ThermostatRamping
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+    - fields
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - ThermostatRamping
+      description: 'Type of gear.'
+    fields:
+      required:
+        - isHeatMode
+        - isCoolMode
+        - tempMeasureUnit
+        - setpoint
+        - minValue
+        - maxValue
+        - random
+        - valueB
+        - valueD
+        - valueF
+        - valueTa
+        - valueTb
+        - valueTc
+        - valueTd
+        - valueTe
+        - valueTf
+        - capacityReduction
+        - howToStopControl
+        - whenToChangeFields
+      type: object
+      properties:
+        isHeatMode:
+          type: boolean
+          description: 'Thermostat mode.'
+        isCoolMode:
+          type: boolean
+          description: 'Thermostat mode.'
+        tempMeasureUnit:
+          type: string
+          enum:
+            - CELSIUS
+            - FAHRENHEIT
+          description: 'The unit of measure of temperature.'
+        setpoint:
+          type: string
+          enum:
+            - ABSOLUTE
+            - DELTA
+          description: 'Setpoint.'
+        minValue:
+          type: integer
+          minimum: -2147483648
+          maximum: 2147483647
+          description: 'Minimum temperature.'
+        maxValue:
+          type: integer
+          minimum: -2147483648
+          maximum: 2147483647
+          description: 'Maximum temperature.'
+        random:
+          type: number
+          minimum: -2147483648
+          maximum: 2147483647
+          description: 'Random offset time. A random offset between 0 minutes and the Rand value is added to any delay time.'
+        valueTa:
+          type: integer
+          minimum: -2147483648
+          maximum: 2147483647
+          description: 'Delay time.'
+        valueTb:
+          type: integer
+          minimum: -2147483648
+          maximum: 2147483647
+          description: 'Ramp time.'
+        valueB:
+          type: integer
+          minimum: -2147483648
+          maximum: 2147483647
+          description: 'Delta B – Setpoint delta relative to the uncontrolled setpoint.
+                        ABSOLUTE B – Absolute setpoint.
+                        If setpoint is DELTA then valueB is of delta. If setpoint is ABSOLUTE then valueB is of absolute.'
+        valueTc:
+          type: integer
+          minimum: -2147483648
+          maximum: 2147483647
+          description: 'Plateau time (During this time, the setpoint Abs B is maintained).'
+        valueTd:
+          type: integer
+          minimum: -2147483648
+          maximum: 2147483647
+          description: 'Ramp time.'
+        valueD:
+          type: integer
+          minimum: -2147483648
+          maximum: 2147483647
+          description: 'Delta D – Setpoint delta relative to Delta B.
+                        ABSOLUTE D – Absolute setpoint.
+                        If setpoint is DELTA then valueD is of delta. If setpoint is ABSOLUTE then valueD is of absolute.'
+        valueTe:
+          type: integer
+          minimum: -2147483648
+          maximum: 2147483647
+          description: 'Plateau time (During this time, the setpoint Abs D is maintained).'
+        valueTf:
+          type: integer
+          minimum: -2147483648
+          maximum: 2147483647
+          description: 'Ramp time.'
+        valueF:
+          type: integer
+          minimum: -2147483648
+          maximum: 2147483647
+          description: 'Delta F – Setpoint delta relative to Delta D.
+                        ABSOLUTE F – Absolute setpoint.
+                        If setpoint is DELTA then valueF is of delta. If setpoint is ABSOLUTE then valueF is of absolute.'
+        howToStopControl:
+          type: string
+          enum:
+            - TimeIn 
+            - Restore
+          description: 'TimeIn - The control stops when the cycle period is over.
+                        Restore – A restore command is sent to the device.'
+        capacityReduction:
+          $ref: '#capacityReduction'
+        whenToChangeFields:
+          $ref: '#whenToChangeFields'
+
+BeatThePeak:  
+  title: BeatThePeak
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+    - fields
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - BeatThePeak
+      description: 'Type of gear.'
+    fields:
+      required:
+        - indicator
+        - timeoutInMinutes
+        - resendInMinutes
+        - whenToChangeFields
+      type: object
+      properties:
+        indicator:
+          type: string
+          enum:
+            - Yellow
+            - Red
+          description: 'The color of the light (Yellow or Red) shown on a Beat the Peak device when the corresponding gear is active.'
+        timeoutInMinutes:
+          type: integer
+          minimum: 0
+          maximum: 99999    
+          description: 'Max Indicator Timeout - The longest time period the Beat the Peak device will remain on the current 
+                        setting without receiving another message.'
+        resendInMinutes:
+          type: integer
+          minimum: 0
+          maximum: 99999
+          description: 'Resend Rate - The frequency rate that Load Management uses to resend the last command with no changes 
+                        in the program.'
+        whenToChangeFields:
+          $ref: '#whenToChangeFields'
+
+Rotation:
+  title: Rotation
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+    - fields
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - Rotation
+      description: 'Type of gear.'
+    fields:
+      required:
+        - shedTime
+        - groupSelectionMethod
+        - numberOfGroups
+        - sendRate
+        - howToStopControl
+        - capacityReduction
+        - whenToChangeFields
+      type: object
+      properties:
+        shedTime:
+          type: integer
+          minimum: 0
+          maximum: 162000
+          description: 'Shed time interval. Valid values are (in sec)- 0, 60, 120, 300, 480, 600, 900, 1200, 1800, 2700, 3600, 7200, 18000,
+                      28800, 36000, 54000, 72000, 108000, 162000.'
+        sendRate:
+          type: integer
+          minimum: 0
+          maximum: 162000
+          description: 'Command Resend Rate - Rate at which the shed command is resent.
+                      Valid values are (in sec)- 0, 60, 120, 300, 480, 600, 900, 1200, 1800, 2700, 3600, 7200, 18000,
+                      28800, 36000, 54000, 72000, 108000, 162000.'
+        numberOfGroups:
+          type: integer
+          minimum: 0
+          maximum: 25
+          description: 'Number of load groups that are shed for each refresh.'
+        groupSelectionMethod:
+          type: string
+          enum: 
+            - LastControlled
+            - AlwaysFirstGroup
+            - LeastControlTime
+          description: 'Last Controlled – Selects the next load group in the list 
+                        based on the last load group controlled.
+                        Always First Group – Always selects the first load group 
+                        in the list.
+                        Least Control Time – Selects the load group whose seasonal 
+                        control time is the least.'
+        howToStopControl:
+          type: string
+          enum:
+            - TimeIn
+            - Restore
+          description: 'TimeIn - The control stops when the cycle period is over.
+                        Restore – A restore command is sent to the device.'
+        capacityReduction:
+          $ref: '#capacityReduction'
+        whenToChangeFields:
+          $ref: '#whenToChangeFields' 
+ 
+MasterCycle:
+  title: MasterCycle
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+    - fields
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - MasterCycle
+      description: 'Type of gear.'
+    
+    fields:
+      required:
+        - controlPercent
+        - cyclePeriodInMinutes
+        - groupSelectionMethod
+        - rampInPercent
+        - rampInIntervalInSeconds
+        - rampOutPercent
+        - rampOutIntervalInSeconds
+        - howToStopControl
+        - stopOrder
+        - capacityReduction
+        - whenToChangeFields
+      type: object
+      properties:
+        controlPercent:
+          minimum: 5
+          maximum: 100
+          description: 'Cycle percentage.'
+        cyclePeriodInMinutes:
+          type: integer
+          minimum: 5
+          maximum: 945
+          description: 'Cycle period in minutes.'
+        groupSelectionMethod:
+          type: string
+          enum: 
+            - LastControlled
+            - AlwaysFirstGroup
+            - LeastControlTime
+          description: 'Last Controlled – Selects the next load group in the list 
+                        based on the last load group controlled.
+                        Always First Group – Always selects the first load group 
+                        in the list.
+                        Least Control Time – Selects the load group whose seasonal 
+                        control time is the least.'
+        rampInPercent: 
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: 'Percentage of the load groups to ramp in at each interval.
+                        This is required field when rampInPercent is not null.'
+        rampInIntervalInSeconds:
+          type: integer
+          minimum: -99999
+          maximum: 99999
+          description: 'Interval in seconds over which to ramp in a percentage
+                        of the load groups.
+                        This is required field when rampInIntervalInSeconds is not null.'
+        rampOutPercent:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: 'Percentage of the load groups to ramp out at each interval.
+                        When type of howToStopControl is RampOutTimeIn or 
+                        RampOutRestore then this field is required.'
+        rampOutIntervalInSeconds:
+          type: integer
+          minimum: -99999
+          maximum: 99999
+          description: 'Interval in seconds over which to ramp out a percentage of
+                        the load groups.
+                        When type of howToStopControl is RampOutTimeIn or 
+                        RampOutRestore then this field is required.'
+        stopOrder:
+          type: string
+          enum:
+            - FIRSTINFIRSTOUT
+            - RANDOM
+          description: 'Random – The system selects a random load group to stop.
+                        First In First Out – The first group that was controlled 
+                        is the first group to stop. The second group that was 
+                        controlled is the second group to stop, etc.
+                        When type of howToStopControl is RampOutTimeIn or 
+                        RampOutRestore then this field is required.'
+        howToStopControl:
+          type: string
+          enum:
+            - TimeIn
+            - Restore
+            - RampOutTimeIn
+            - RampOutRestore
+          description: 'TimeIn - The control stops when the cycle period is over.
+                        Restore – A restore command is sent to the device.
+                        RampOutTimeIn - The control ramps out when the cycle period is over.
+                        RampOutRestore - The control ramps out when a restore command is 
+                        sent to the device.'
+        capacityReduction:
+          $ref: '#capacityReduction'
+        whenToChangeFields:
+          $ref: '#whenToChangeFields'
+ 
+EcobeeSetpoint:
+  title: EcobeeSetpoint
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+    - fields
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - EcobeeSetpoint
+      description: 'Type of gear.'
+    fields:
+      required:
+        - mandatory
+        - setpointOffset
+        - howToStopControl
+        - capacityReduction
+        - whenToChangeFields
+      type: object
+      properties:
+        mandatory:
+          type: boolean
+          description: 'Mandatory field.'
+        setpointOffset:
+          type: integer
+          minimum: -10
+          maximum: 10
+          description: 'setpointOffset value.'
+        mode:
+          type: string
+          enum:
+            - HEAT
+            - COOL
+          default: COOL
+          description: 'Thermostat mode.'
+        howToStopControl:
+          type: string
+          enum:
+            - Restore
+          description: 'Restore – A restore command is sent to the device.'
+        capacityReduction:
+          $ref: '#capacityReduction'
+        whenToChangeFields:
+          $ref: '#whenToChangeFields'
+
+HoneywellSetpoint:
+  title: HoneywellSetpoint
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+    - fields
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - HoneywellSetpoint
+      description: 'Type of gear.'
+    fields:
+      required:
+        - mandatory
+        - setpointOffset
+        - howToStopControl
+        - capacityReduction
+        - whenToChangeFields
+      type: object
+      properties:
+        mandatory:
+          type: boolean
+          description: 'Mandatory field.'
+        setpointOffset:
+          type: integer
+          minimum: -10
+          maximum: 10
+          description: 'setpointOffset value.'
+        mode:
+          type: string
+          enum:
+            - HEAT
+            - COOL
+          default: COOL
+          description: 'Thermostat mode.'
+        howToStopControl:
+          type: string
+          enum:
+            - Restore
+          description: 'Restore – A restore command is sent to the device.'
+        capacityReduction:
+          $ref: '#capacityReduction'
+        whenToChangeFields:
+          $ref: '#whenToChangeFields'
+
+SepCycle:
+  title: SepCycle
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+    - fields
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - SepCycle
+      description: 'Type of gear.'
+    fields:
+      required:
+        - rampIn
+        - rampOut
+        - trueCycle
+        - controlPercent
+        - criticality
+        - howToStopControl
+        - capacityReduction
+        - whenToChangeFields
+      type: object
+      properties:
+        rampIn:
+          type: boolean
+          description: 'Ramp in.'
+        rampOut:
+          type: boolean
+          description: 'Ramp out.'
+        controlPercent: 
+          type: integer
+          minimum: 5
+          maximum: 100
+          description: 'Control percentage.'
+        trueCycle:
+          type: boolean
+          description: 'True Cycle or adaptive algorithm.'
+        criticality:
+          type: integer
+          minimum: 1
+          maximum: 15
+          description: 'Criticality value.'
+        
+        howToStopControl:
+          type: string
+          enum:
+            - TimeIn
+            - Restore
+          description: 'TimeIn - The control stops when the cycle period is over.
+                        Restore – A restore command is sent to the device.'
+        capacityReduction:
+          $ref: '#capacityReduction'
+        whenToChangeFields:
+          $ref: '#whenToChangeFields'
+        
+SepTemperatureOffset:
+  title: SepTemperatureOffset
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+    - fields
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - SepTemperatureOffset
+      description: 'Type of gear.'
+    fields:
+      required:
+        - rampIn
+        - rampOut
+        - tempMeasureUnit
+        - mode
+        - offset
+        - criticality
+        - howToStopControl
+        - capacityReduction
+        - whenToChangeFields
+      type: object
+      properties:
+        rampIn:
+          type: boolean
+          description: 'Ramp in.'
+        rampOut:
+          type: boolean
+          description: 'Ramp out.'
+        mode:
+          type: string
+          enum:
+            - HEAT
+            - COOL
+          description: 'Thermostat mode.'
+        offset: 
+          type: number
+          minimum: 0.1 
+          maximum: 77.7
+          description: 'Heating/cooling offset value.'
+        criticality:
+          type: integer
+          minimum: 1
+          maximum: 15
+          description: 'Criticality value.'
+        tempMeasureUnit:
+          type: string
+          enum:
+            - CELSIUS
+            - FAHRENHEIT 
+          description: 'The unit of measure of temperature.'
+        howToStopControl:
+          type: string
+          enum:
+            - TimeIn
+            - Restore
+          description: 'TimeIn - The control stops when the cycle period is over.
+                        Restore – A restore command is sent to the device.'
+        capacityReduction:
+          $ref: '#capacityReduction'
+        whenToChangeFields:
+          $ref: '#whenToChangeFields'
+          
 howToStopControl:
   type: string
   enum:
