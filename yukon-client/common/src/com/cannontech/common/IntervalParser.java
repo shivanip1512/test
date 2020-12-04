@@ -106,7 +106,7 @@ public class IntervalParser {
                     format(stopDate, context));
             hasValidInterval = false;
         }
-        intervals = createIntervals(unit, interval, firstInterval, lastInterval);
+        intervals = createIntervals(interval, firstInterval, lastInterval, unit);
         logIntervals(startDate, stopDate, context);
     }
 
@@ -124,7 +124,7 @@ public class IntervalParser {
     /**
      * Creates intervals starting from the firstInterval and ending with the lastInterval
      */
-    private Map<Long, Date> createIntervals(ChronoUnit unit, TimeIntervals interval, Instant firstInterval, Instant lastInterval) {
+    private Map<Long, Date> createIntervals(TimeIntervals interval, Instant firstInterval, Instant lastInterval, ChronoUnit unit) {
         Map<Long, Date> intervals = new LinkedHashMap<>();
         Instant first = firstInterval;
         while (first.isBefore(lastInterval) || first.equals(lastInterval)) {
