@@ -110,8 +110,8 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.dr.dao.LmReportedAddress;
-import com.cannontech.dr.pxmw.message.PxMWAuthTokenRequest;
-import com.cannontech.dr.pxmw.message.PxMWAuthTokenResponse;
+import com.cannontech.dr.pxmw.message.PxMWAuthTokenRequestV1;
+import com.cannontech.dr.pxmw.message.v1.PxMWAuthTokenResponseV1;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveResponse;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
@@ -1207,15 +1207,15 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_FIELD_SIMULATOR)
                   .build();
     
-    public static final JmsApi<PxMWAuthTokenRequest, ?, PxMWAuthTokenResponse> PX_MW_AUTH_TOKEN = 
-            JmsApi.builder(PxMWAuthTokenRequest.class, PxMWAuthTokenResponse.class)
+    public static final JmsApi<PxMWAuthTokenRequestV1, ?, PxMWAuthTokenResponseV1> PX_MW_AUTH_TOKEN = 
+            JmsApi.builder(PxMWAuthTokenRequestV1.class, PxMWAuthTokenResponseV1.class)
                   .name("PX Middleware Auth Token")
                   .description("Generates a PX Middleware Auth Token")
                   .communicationPattern(REQUEST_RESPONSE)
-                  .queue(new JmsQueue("com.cannontech.dr.pxmw.message.PxMWAuthTokenRequest"))
+                  .queue(new JmsQueue("com.cannontech.dr.pxmw.message.v1.PxMWAuthTokenRequestV1"))
                   .responseQueue(JmsQueue.TEMP_QUEUE)
-                  .requestMessage(PxMWAuthTokenRequest.class)
-                  .responseMessage(PxMWAuthTokenResponse.class)
+                  .requestMessage(PxMWAuthTokenRequestV1.class)
+                  .responseMessage(PxMWAuthTokenResponseV1.class)
                   .sender(YUKON_WEBSERVER)
                   .sender(YUKON_SERVICE_MANAGER)
                   .receiver(YUKON_SERVICE_MANAGER)

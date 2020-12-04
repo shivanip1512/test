@@ -25,8 +25,8 @@ import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
-import com.cannontech.dr.pxmw.message.PxMWAuthTokenRequest;
-import com.cannontech.dr.pxmw.message.PxMWAuthTokenResponse;
+import com.cannontech.dr.pxmw.message.PxMWAuthTokenRequestV1;
+import com.cannontech.dr.pxmw.message.v1.PxMWAuthTokenResponseV1;
 import com.cannontech.dr.pxmw.model.PxMWException;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
@@ -43,7 +43,7 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
 
     private static final Logger log = YukonLogManager.getLogger(PxMWCommunicationServiceImplV1.class);
 
-    private RequestReplyTemplate<PxMWAuthTokenResponse> pXMWAuthTokenRequestTemplate;
+    private RequestReplyTemplate<PxMWAuthTokenResponseV1> pXMWAuthTokenRequestTemplate;
     @Autowired private ConfigurationSource configSource;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     @Autowired GlobalSettingDao settingDao;
@@ -60,22 +60,21 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
 
     @Override
     public PxMWTokenV1 getToken() throws PxMWCommunicationExceptionV1, PxMWException {
-        BlockingJmsReplyHandler<PxMWAuthTokenResponse> reply = new BlockingJmsReplyHandler<>(PxMWAuthTokenResponse.class);
-        PxMWAuthTokenRequest request = new PxMWAuthTokenRequest();
+        BlockingJmsReplyHandler<PxMWAuthTokenResponseV1> reply = new BlockingJmsReplyHandler<>(PxMWAuthTokenResponseV1.class);
+        PxMWAuthTokenRequestV1 request = new PxMWAuthTokenRequestV1();
         pXMWAuthTokenRequestTemplate.send(request, reply);
         try {
-            PxMWAuthTokenResponse response = reply.waitForCompletion();
+            PxMWAuthTokenResponseV1 response = reply.waitForCompletion();
             if (response.getError() != null) {
                 // got error from PX White
-                throw (PxMWCommunicationExceptionV1) response.getError();
+                throw response.getError();
             }
             if (response.getToken() != null) {
-                return (PxMWTokenV1) response.getToken();
+                return response.getToken();
             }
-            throw new PxMWException("Unable to get to PX White token from SM, see SM log for details");
+            throw new PxMWException("Unable to get to Eaton Cloud token from SM, see SM log for details");
         } catch (ExecutionException e) {
-            log.error("Error getting PX White token", e);
-            throw new PxMWException("Unable to send a message to SM to get a PX White token", e);
+            throw new PxMWException("Unable to send a message to SM to get a Eaton Cloud token", e);
         }
     }
     

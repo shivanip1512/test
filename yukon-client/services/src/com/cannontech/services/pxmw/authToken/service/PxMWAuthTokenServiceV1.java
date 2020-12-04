@@ -14,8 +14,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
-import com.cannontech.dr.pxmw.message.PxMWAuthTokenRequest;
-import com.cannontech.dr.pxmw.message.PxMWAuthTokenResponse;
+import com.cannontech.dr.pxmw.message.PxMWAuthTokenRequestV1;
+import com.cannontech.dr.pxmw.message.v1.PxMWAuthTokenResponseV1;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCredentialsV1;
@@ -48,17 +48,17 @@ public class PxMWAuthTokenServiceV1 implements MessageListener {
         if (message instanceof ObjectMessage) {
             ObjectMessage objMessage = (ObjectMessage) message;
             try {
-                if (objMessage.getObject() instanceof PxMWAuthTokenRequest) {
+                if (objMessage.getObject() instanceof PxMWAuthTokenRequestV1) {
                     PxMWCredentialsV1 credentials = getCredentials();
                     PxMWTokenV1 cachedToken = tokenCache.getIfPresent(credentials.getUser());
                     if ((cachedToken != null)) {
                         sendResponse(message, cachedToken, null);
                     } else {
-                        log.info("Retrieving new PX White security token for {}.", credentials.getUser());
+                        log.info("Retrieving new Eaton Cloud token for {}.", credentials.getUser());
                         String url = PxMWRetrievalUrl.SECURITY_TOKEN.getUrl(settingDao, log, restTemplate);
                         try {
                             PxMWTokenV1 newToken = restTemplate.postForObject(url, credentials, PxMWTokenV1.class);
-                            log.info("Retrieved new PX White security token for {}.", credentials.getUser());
+                            log.info("Retrieved new Eaton Cloud token for {}.", credentials.getUser());
                             tokenCache.put(credentials.getUser(), newToken);
                             sendResponse(message, newToken, null);
                         } catch (PxMWCommunicationExceptionV1 e) {
@@ -79,13 +79,13 @@ public class PxMWAuthTokenServiceV1 implements MessageListener {
 
     private void sendResponse(Message message, PxMWTokenV1 cachedToken, PxMWCommunicationExceptionV1 error) throws JMSException {
         if (cachedToken != null) {
-            log.debug("Got PX White security token:{}",
+            log.debug("Got Eaton Cloud token:{}",
                     new GsonBuilder().setPrettyPrinting().create().toJson(cachedToken));
         } else if (error != null) {
-            log.error("Attempted to retrieve PX White security token but got error:{}",
+            log.error("Attempted to retrieve Eaton Cloud token but got error:{}",
                     new GsonBuilder().setPrettyPrinting().create().toJson(error.getErrorMessage()));
         }
-        jmsTemplate.convertAndSend(message.getJMSReplyTo(), new PxMWAuthTokenResponse(cachedToken, error));
+        jmsTemplate.convertAndSend(message.getJMSReplyTo(), new PxMWAuthTokenResponseV1(cachedToken, error));
     }
 
     private PxMWCredentialsV1 getCredentials() {
