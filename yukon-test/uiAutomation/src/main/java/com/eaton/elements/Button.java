@@ -6,6 +6,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
 
 public class Button {
 
@@ -42,8 +43,8 @@ public class Button {
     }
 
     public void click() {
-        //WebElement button = getButton();
-        //this.driverExt.waitUntilElementClickable(button);
+        WebElement button = getButton();
+        SeleniumTestSetup.moveToElement(button);
         getButton().click();
     }
 }

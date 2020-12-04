@@ -17,6 +17,7 @@ import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupExpresscomPage;
@@ -78,8 +79,8 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
         waitForLoadingSpinner();
 
-        // 55 = a_REPEATER-801
-        createPage.getCommunicationRoute().selectItemByValue("55");
+        Integer commRoute = TestDbDataType.CommunicationRouteData.AREPEATER801.getId();
+        createPage.getCommunicationRoute().selectItemByValue(commRoute.toString());
         createPage.getGeographicalAddress().setTrueFalseByLabel("Serial", "SERIAL", true);
         createPage.getSerial().setInputValue(String.valueOf(faker.number().numberBetween(1, 999999999)));
         createPage.getUsage().setTrueFalseByLabel("Load", "LOAD", true);
@@ -107,8 +108,8 @@ public class LoadGroupExpresscomCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByValue("LM_GROUP_EXPRESSCOMM");
         waitForLoadingSpinner();
 
-        // 62 = a_RTC
-        createPage.getCommunicationRoute().selectItemByValue("62");
+        Integer commRoute = TestDbDataType.CommunicationRouteData.ARTC.getId();
+        createPage.getCommunicationRoute().selectItemByValue(commRoute.toString());
 
         createPage.getGeographicalAddress().setTrueFalseByLabel("GEO", "GEO", true);
         createPage.getGeographicalAddress().setTrueFalseByLabel("Substation", "SUBSTATION", true);

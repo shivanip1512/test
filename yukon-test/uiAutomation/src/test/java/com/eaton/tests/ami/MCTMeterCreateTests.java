@@ -44,7 +44,6 @@ public class MCTMeterCreateTests extends SeleniumTestSetup {
         if (getRefreshPage()) {
             refreshPage(amiDashboardPage);
         }
-
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
@@ -62,7 +61,6 @@ public class MCTMeterCreateTests extends SeleniumTestSetup {
         softly.assertThat(fieldLabels.get(5)).isEqualTo("Route:");
         softly.assertThat(fieldLabels.get(9)).isEqualTo("Status:");
         softly.assertAll();
-
     }
 
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.AMI })
@@ -168,7 +166,5 @@ public class MCTMeterCreateTests extends SeleniumTestSetup {
         softly.assertThat(optionValues).contains("a_WCTP-TERMINAL");
         softly.assertThat(optionValues).contains("a_XML");
         softly.assertAll();
-
     }
-
 }

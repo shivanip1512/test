@@ -27,7 +27,7 @@ public class LoadGroupEcobeeCreateBuilder {
             String u = UUID.randomUUID().toString();            
             String uuid = u.replace("-", "");
             
-            this.name = name.orElse("AT LG " + uuid);
+            this.name = name.orElse("AT LG" + uuid);
         }
         
         public Builder withKwCapacity(Optional<Double> kwCapacity) {

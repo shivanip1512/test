@@ -14,6 +14,7 @@ import com.eaton.elements.modals.SelectPointModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupPointCreatePage;
@@ -57,7 +58,10 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
         createPage.getName().setInputValue(name);
         SelectPointModal pointGroupControlDevice = createPage.showAndWaitPointGroupControlDeviceModal();
-        pointGroupControlDevice.selectPointById("SCADA Override", "4230");
+        
+        String controlDevicePtId = TestDbDataType.PointData.SCADA_OVERRIDE.getId().toString();
+        String controlDevicePoint = TestDbDataType.PointData.SCADA_OVERRIDE.getName();
+        pointGroupControlDevice.selectPointById(controlDevicePoint, controlDevicePtId);
         pointGroupControlDevice.clickOkAndWaitForModalCloseDisplayNone();
         
         createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
@@ -121,7 +125,10 @@ public class LoadGroupPointCreateTests extends SeleniumTestSetup {
         waitForLoadingSpinner();
 
         SelectPointModal pointGroupControlDevice = createPage.showAndWaitPointGroupControlDeviceModal();
-        pointGroupControlDevice.selectPointById("SCADA Override", "4230");
+        
+        String controlDevicePtId = TestDbDataType.PointData.SCADA_OVERRIDE.getId().toString();
+        String controlDevicePoint = TestDbDataType.PointData.SCADA_OVERRIDE.getName();
+        pointGroupControlDevice.selectPointById(controlDevicePoint, controlDevicePtId);
         pointGroupControlDevice.clickOkAndWaitForModalCloseDisplayNone();
 
         assertThat(createPage.getControlDevicePointLabelText()).contains("SCADA Override");

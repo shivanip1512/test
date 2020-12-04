@@ -48,8 +48,12 @@ LM_METER_DISCONNECT_PROGRAM:
                     a restore offset with a negative value causes the trigger threshold to be raised.'
     constraint:
       $ref: '#/constraint'
+    
     gears:
-      $ref: '#/MeterDisconnect'
+      type: array
+      items:
+        $ref: '#/MeterDisconnect'
+      
     controlWindow:
       $ref: '#/controlWindow'
     assignedGroups:
@@ -110,7 +114,9 @@ LM_SEP_PROGRAM:
     constraint:
       $ref: '#/constraint'
     gears:
-      $ref: '#/NoControl'
+      type: array
+      items:
+        $ref: '#/NoControl'
     controlWindow:
       $ref: '#/controlWindow'
     assignedGroups:
@@ -170,8 +176,11 @@ LM_ECOBEE_PROGRAM:
                     a restore offset with a negative value causes the trigger threshold to be raised.'
     constraint:
       $ref: '#/constraint'
+    
     gears:
-      $ref: '#/EcobeeCycle'
+      type: array
+      items:
+        $ref: '#/EcobeeCycle'
     controlWindow:
       $ref: '#/controlWindow'
     assignedGroups:
@@ -232,7 +241,9 @@ LM_HONEYWELL_PROGRAM:
     constraint:
       $ref: '#/constraint'
     gears:
-      $ref: '#/HoneywellCycle'
+      type: array
+      items:
+        $ref: '#/HoneywellCycle'
     controlWindow:
       $ref: '#/controlWindow'
     assignedGroups:
@@ -293,7 +304,9 @@ LM_ITRON_PROGRAM:
     constraint:
       $ref: '#/constraint'
     gears:
-      $ref: '#/ItronCycle'
+      type: array
+      items:
+        $ref: '#/ItronCycle'
     controlWindow:
       $ref: '#/controlWindow'
     assignedGroups:
@@ -354,7 +367,9 @@ LM_DIRECT_PROGRAM:
     constraint:
       $ref: '#/constraint'
     gears:
-      $ref: '#/NoControl'
+      type: array
+      items:
+        $ref: '#/NoControl'
     controlWindow:
       $ref: '#/controlWindow'
     assignedGroups:
@@ -497,7 +512,236 @@ memberControl:
       type: string
       description: 'Subordinate program name.' 
 
-EcobeeCycle:
+TimeRefresh:
+  title: TimeRefresh
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+    - fields
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - SmartCycle
+      description: 'Type of gear.'
+    fields:
+      required:
+        - refreshShedType
+        - shedTime
+        - groupSelectionMethod
+        - numberOfGroups
+        - sendRate
+        - howToStopControl
+        - stopOrder
+        - rampOutPercent
+        - rampOutIntervalInSeconds
+        - rampInPercent
+        - rampInIntervalInSeconds
+        - capacityReduction
+        - whenToChangeFields
+      type: object
+      properties:
+        refreshShedType:
+          type: string
+          enum: 
+            - FixedShedTime
+            - DynamicShedTime
+          description: 'Fixed Shed Time – Shed time is specified in the gear.
+                        Dynamic Shed Time – Shed time is dynamically calculated.'
+        shedTime:
+          type: integer
+          minimum: 0
+          maximum: 162000
+          description: 'Shed time interval. Valid values are (in sec)- 0, 60, 120, 300, 480, 600, 900, 1200, 1800, 2700, 3600, 7200, 18000,
+                      28800, 36000, 54000, 72000, 108000, 162000.'
+        sendRate:
+          type: integer
+          minimum: 0
+          maximum: 162000
+          description: 'Command Resend Rate - Rate at which the shed command is resent.
+                      Valid values are (in sec)- 0, 60, 120, 300, 480, 600, 900, 1200, 1800, 2700, 3600, 7200, 18000,
+                      28800, 36000, 54000, 72000, 108000, 162000.'
+        numberOfGroups:
+          type: integer
+          minimum: 0
+          maximum: 25
+          description: 'Number of load groups that are shed for each refresh.'
+        groupSelectionMethod:
+          type: string
+          enum: 
+            - LastControlled
+            - AlwaysFirstGroup
+            - LeastControlTime
+          description: 'Last Controlled – Selects the next load group in the list 
+                        based on the last load group controlled.
+                        Always First Group – Always selects the first load group 
+                        in the list.
+                        Least Control Time – Selects the load group whose seasonal 
+                        control time is the least.'
+        rampInPercent: 
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: 'Percentage of the load groups to ramp in at each interval.
+                        This is required field when rampInPercent is not null.'
+        rampInIntervalInSeconds:
+          type: integer
+          minimum: -99999
+          maximum: 99999
+          description: 'Interval in seconds over which to ramp in a percentage
+                        of the load groups.
+                        This is required field when rampInIntervalInSeconds is not null.'
+        rampOutPercent:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: 'Percentage of the load groups to ramp out at each interval.
+                        When type of howToStopControl is RampOutTimeIn or 
+                        RampOutRestore then this field is required.'
+        rampOutIntervalInSeconds:
+          type: integer
+          minimum: -99999
+          maximum: 99999
+          description: 'Interval in seconds over which to ramp out a percentage of
+                        the load groups.
+                        When type of howToStopControl is RampOutTimeIn or 
+                        RampOutRestore then this field is required.'
+        stopOrder:
+          type: string
+          enum:
+            - FIRSTINFIRSTOUT
+            - RANDOM
+          description: 'Random – The system selects a random load group to stop.
+                        First In First Out – The first group that was controlled 
+                        is the first group to stop. The second group that was 
+                        controlled is the second group to stop, etc.
+                        When type of howToStopControl is RampOutTimeIn or 
+                        RampOutRestore then this field is required.'
+        stopCommandRepeat:
+          type: integer
+          minimum: 0
+          maximum: 5
+          description: 'Stop Command Repeat.'
+        howToStopControl:
+          type: string
+          enum:
+            - TimeIn
+            - Restore
+            - RampOutTimeIn
+            - RampOutRestore
+          description: 'TimeIn - The control stops when the cycle period is over.
+                        Restore – A restore command is sent to the device.
+                        RampOutTimeIn - The control ramps out when the cycle period is over.
+                        RampOutRestore - The control ramps out when a restore command is 
+                        sent to the device.'
+        capacityReduction:
+          $ref: '#capacityReduction'
+        whenToChangeFields:
+          $ref: '#whenToChangeFields'
+
+SmartCycle:
+  title: SmartCycle
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+    - fields
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - SmartCycle
+      description: 'Type of gear.'
+    fields:
+      required:
+        - stopCommandRepeat
+      allOf:
+        - $ref: '#SmartCycle_TrueCycle_MagnitudeCycle_TargetCycle_Fields'
+        - type: object
+          properties:
+            stopCommandRepeat:
+              type: integer
+              minimum: 0
+              maximum: 5
+              description: 'Stop Command Repeat.'
+TrueCycle:
+  title: TrueCycle
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+    - fields
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - TrueCycle
+      description: 'Type of gear.'
+    
+    fields:
+      required:
+        - stopCommandRepeat
+      allOf:
+        - $ref: '#SmartCycle_TrueCycle_MagnitudeCycle_TargetCycle_Fields'
+        - type: object
+          properties:
+            stopCommandRepeat:
+              type: integer
+              minimum: 0
+              maximum: 5
+              description: 'Stop Command Repeat.'
+
+MagnitudeCycle:
+  title: MagnitudeCycle
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+    - fields
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - MagnitudeCycle
+      description: 'Type of gear.'
+    fields:
+      $ref: '#SmartCycle_TrueCycle_MagnitudeCycle_TargetCycle_Fields'
+
+TargetCycle:  
+  title: TargetCycle
   type: array
   items:
     required:
@@ -517,226 +761,366 @@ EcobeeCycle:
       controlMethod:
         type: string
         enum:
-          - EcobeeCycle
+          - TargetCycle
         description: 'Type of gear.'
+      
       fields:
         required:
-          - mandatory
-          - rampIn
-          - rampOut
-          - controlPercent
-          - howToStopControl
-          - capacityReduction
-          - whenToChangeFields
-        type: object
-        properties:
-          mandatory:
-            type: boolean
-            description: 'Mandatory field.'
-          rampIn:
-            type: boolean
-            description: 'Ramp in.'
-          rampOut:
-            type: boolean
-            description: 'Ramp out.'
-          controlPercent: 
-            type: integer
-            minimum: 5
-            maximum: 100
-            description: 'Control percentage.'
-          howToStopControl:
-            type: string
-            enum:
-              - Restore
-            description: 'Restore – A restore command is sent to the device.'
-          capacityReduction:
-            $ref: '#capacityReduction'
-          whenToChangeFields:
-            $ref: '#whenToChangeFields'
+          - kWReduction
+        allOf:
+          - $ref: '#SmartCycle_TrueCycle_MagnitudeCycle_TargetCycle_Fields'
+          - type: object
+            properties:
+              kWReduction:
+                type: number
+                minimum: 0.0
+                maximum: 99999.999
+                description: 'Targeted amount of kW reduction.'      
+                
+SmartCycle_TrueCycle_MagnitudeCycle_TargetCycle_Fields:           
+  required:
+    - noRamp
+    - controlPercent
+    - cyclePeriodInMinutes
+    - cycleCountSendType
+    - maxCycleCount
+    - startingPeriodCount
+    - sendRate
+    - howToStopControl
+    - capacityReduction
+    - whenToChangeFields
+  type: object
+  properties:
+    controlPercent:
+      minimum: 5
+      maximum: 100
+      description: 'Cycle percentage.'
+    cyclePeriodInMinutes:
+      type: integer
+      minimum: 1
+      maximum: 945
+      description: 'Cycle period in minutes.'
+    cycleCountSendType:
+      type: string
+      enum:
+        - FixedCount
+        - CountDown
+        - LimitedCountDown 
+      description: 'Fixed Count – The same number of cycle counts are sent 
+                    to the switch.
+                    Count Down – The number of cycle counts sent decreases at
+                    each resend.
+                    Limited Count Down – Used with LCR 2000s, which do not 
+                    allow cycle counts to be sent to them. The cycle count is 
+                    hard coded in switch.
+                    The purpose of Count Down and Limited Count Down is to end
+                    up with zero cycle counts at the end of control.'
+    maxCycleCount: 
+      type: integer
+      minimum: 0
+      maximum: 63
+      description: 'Maximum number of cycles that can be sent.'
+    startingPeriodCount:
+      type: integer
+      minimum: 1
+      maximum: 63
+      description: 'Count that is used when automatic control starts.'
+    sendRate:
+      type: integer
+      minimum: 0
+      maximum: 162000
+      description: 'Command Resend Rate - Rate at which the shed command is resent.
+                    Valid values are (in sec)- 0, 60, 120, 300, 480, 600, 900, 1200, 1800, 2700, 3600, 7200, 18000,
+                    28800, 36000, 54000, 72000, 108000, 162000.'
+    noRamp:
+      type: boolean
+      description: 'To disable the ExpressCom ramping feature. When true it will
+                    disable the ExpressCom ramping feature.'
+    
+    howToStopControl:
+      type: string
+      enum:
+        - Restore
+        - StopCycle
+      description: 'Restore – A restore command is sent to the device.
+                    StopCycle - The period count is set to 0, so the cycle 
+                    stops the next period.'
+    capacityReduction:
+      $ref: '#capacityReduction'
+    whenToChangeFields:
+      $ref: '#whenToChangeFields'            
+
+EcobeeCycle:
+  title: EcobeeCycle
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+    - fields
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - EcobeeCycle
+      description: 'Type of gear.'
+    fields:
+      required:
+        - mandatory
+        - rampIn
+        - rampOut
+        - controlPercent
+        - howToStopControl
+        - capacityReduction
+        - whenToChangeFields
+      type: object
+      properties:
+        mandatory:
+          type: boolean
+          description: 'Mandatory field.'
+        rampIn:
+          type: boolean
+          description: 'Ramp in.'
+        rampOut:
+          type: boolean
+          description: 'Ramp out.'
+        controlPercent: 
+          type: integer
+          minimum: 5
+          maximum: 100
+          description: 'Control percentage.'
+        howToStopControl:
+          type: string
+          enum:
+            - Restore
+          description: 'Restore – A restore command is sent to the device.'
+        capacityReduction:
+          $ref: '#capacityReduction'
+        whenToChangeFields:
+          $ref: '#whenToChangeFields'
 
 ItronCycle:
-  type: array
-  items:
-    required:
-      - gearName
-      - gearNumber
-      - controlMethod
-      - fields
-    type: object
-    properties:
-      gearName:
-        type: string
-        maxLength: 30
-        description: 'Name for the gear.'
-      gearNumber:
-        type: integer
-        description: 'Gear number.'
-      controlMethod:
-        type: string
-        enum:
-          - ItronCycle
-        description: 'Type of gear.'
-      fields:
-        required:
-          - dutyCycleType
-          - dutyCyclePercent
-          - dutyCyclePeriodInMinutes
-          - criticality
-          - rampIn
-          - rampOut
-          - howToStopControl
-          - capacityReduction
-          - whenToChangeFields
-        type: object
-        properties:
-          dutyCycleType:
-            type: string
-            enum:
-              - STANDARD
-              - TRUE_CYCLE
-              - SMART_CYCLE
-            description: 'SMART_CYCLE - The LCR hardware performs the cycling.
-                          TRUE_CYCLE - Uses an algorithm to perform cycling, which targets 
-                          a percentage of the time a field device is operating.'
-          dutyCyclePercent:
-            type: integer
-            minimum: 0
-            maximum: 100
-            description: 'Duty cycle in percentage.'
-          dutyCyclePeriodInMinutes:
-            type: integer
-            description: 'Duty cycle period in minutes. 
-                          Valid range of Duty cycle period is 15, 30 and 60 (in minutes).'
-          criticality:
-            type: integer
-            minimum: 0
-            maximum: 255    
-            description: 'Criticality.'
-          howToStopControl:
-            type: string
-            enum:
-              - Restore
-            description: 'Restore – A restore command is sent to the device.'
-          rampIn:
-            type: boolean
-            description: 'Ramp in.'
-          rampOut:
-            type: boolean
-            description: 'Ramp out.'
-          capacityReduction:
-            $ref: '#capacityReduction'
-          whenToChangeFields:
-            $ref: '#whenToChangeFields'  
+  title: ItronCycle
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+    - fields
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - ItronCycle
+      description: 'Type of gear.'
+    fields:
+      required:
+        - dutyCycleType
+        - dutyCyclePercent
+        - dutyCyclePeriodInMinutes
+        - criticality
+        - rampIn
+        - rampOut
+        - howToStopControl
+        - capacityReduction
+        - whenToChangeFields
+      type: object
+      properties:
+        dutyCycleType:
+          type: string
+          enum:
+            - STANDARD
+            - TRUE_CYCLE
+            - SMART_CYCLE
+          description: 'SMART_CYCLE - The LCR hardware performs the cycling.
+                        TRUE_CYCLE - Uses an algorithm to perform cycling, which targets 
+                        a percentage of the time a field device is operating.'
+        dutyCyclePercent:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: 'Duty cycle in percentage.'
+        dutyCyclePeriodInMinutes:
+          type: integer
+          description: 'Duty cycle period in minutes. 
+                        Valid range of Duty cycle period is 15, 30 and 60 (in minutes).'
+        criticality:
+          type: integer
+          minimum: 0
+          maximum: 255    
+          description: 'Criticality.'
+        howToStopControl:
+          type: string
+          enum:
+            - Restore
+          description: 'Restore – A restore command is sent to the device.'
+        rampIn:
+          type: boolean
+          description: 'Ramp in.'
+        rampOut:
+          type: boolean
+          description: 'Ramp out.'
+        capacityReduction:
+          $ref: '#capacityReduction'
+        whenToChangeFields:
+          $ref: '#whenToChangeFields'  
     
 MeterDisconnect:
-  type: array
-  items:
-    required:
-      - gearName
-      - gearNumber
-      - controlMethod
-    type: object
-    properties:
-      gearName:
-        type: string
-        maxLength: 30
-        description: 'Name for the gear.'
-      gearNumber:
-        type: integer
-        description: 'Gear number.'
-      controlMethod:
-        type: string
-        enum:
-          - MeterDisconnect
-        description: 'Type of gear.'
+  title: MeterDisconnect
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - MeterDisconnect
+      description: 'Type of gear.'
         
 NoControl:
-  type: array
-  items:
-    required:
-      - gearName
-      - gearNumber
-      - controlMethod
-      - fields
-    type: object
-    properties:
-      gearName:
-        type: string
-        maxLength: 30
-        description: 'Name for the gear.'
-      gearNumber:
-        type: integer
-        description: 'Gear number.'
-      controlMethod:
-        type: string
-        enum:
-          - NoControl
-        description: 'Type of gear.'
-      fields:
-        required:
-          - whenToChangeFields
-        type: object
-        properties:
-          whenToChangeFields:
-            $ref: '#whenToChangeFields'
+  title: NoControl
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+    - fields
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - NoControl
+      description: 'Type of gear.'
+    fields:
+      required:
+        - whenToChangeFields
+      type: object
+      properties:
+        whenToChangeFields:
+          $ref: '#whenToChangeFields'
                               
 HoneywellCycle:
-  type: array
-  items:
-    required:
-      - gearName
-      - gearNumber
-      - controlMethod
-      - fields
-    type: object
-    properties:
-      gearName:
-        type: string
-        maxLength: 30
-        description: 'Name for the gear.'
-      gearNumber:
-        type: integer
-        description: 'Gear number.'
-      controlMethod:
-        type: string
-        enum:
-          - HoneywellCycle
-        description: 'Type of gear.'
-      fields:
-        required:
-          - mandatory
-          - rampInOut
-          - controlPercent
-          - cyclePeriodInMinutes
-          - howToStopControl
-          - capacityReduction
-          - whenToChangeFields
-        type: object
-        properties:
-          mandatory:
-            type: boolean
-            description: 'Mandatory field.'
-          rampInOut:
-            type: boolean
-            description: 'Ramp in a percentage of the load groups over an interval of time.'
-          controlPercent: 
-            type: integer
-            minimum: 0
-            maximum: 100
-            description: 'Control percentage.'
-          cyclePeriodInMinutes:
-            type: integer
-            description: 'Cycle period in minutes. Allowed value for cycle period is 30 (in mins).'
-          howToStopControl:
-            type: string
-            enum:
-              - Restore
-            description: 'Restore – A restore command is sent to the device.'
-          capacityReduction:
-            $ref: '#capacityReduction'
-          whenToChangeFields:
-            $ref: '#whenToChangeFields'
+  title: HoneywellCycle
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+    - fields
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - HoneywellCycle
+      description: 'Type of gear.'
+    fields:
+      required:
+        - mandatory
+        - rampInOut
+        - controlPercent
+        - cyclePeriodInMinutes
+        - howToStopControl
+        - capacityReduction
+        - whenToChangeFields
+      type: object
+      properties:
+        mandatory:
+          type: boolean
+          description: 'Mandatory field.'
+        rampInOut:
+          type: boolean
+          description: 'Ramp in a percentage of the load groups over an interval of time.'
+        controlPercent: 
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: 'Control percentage.'
+        cyclePeriodInMinutes:
+          type: integer
+          description: 'Cycle period in minutes. Allowed value for cycle period is 30 (in mins).'
+        howToStopControl:
+          type: string
+          enum:
+            - Restore
+          description: 'Restore – A restore command is sent to the device.'
+        capacityReduction:
+          $ref: '#capacityReduction'
+        whenToChangeFields:
+          $ref: '#whenToChangeFields'
 
+Latching:
+  title: Latching
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+    - fields
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - Latching
+      description: 'Type of gear.'
+    fields:
+      required:
+        - startControlState
+        - capacityReduction
+      type: object
+      properties:
+        startControlState:
+          type: string
+          enum:
+            - Open
+            - Close
+          description: 'Controls whether an open or close command is sent at the beginning of control..'
+        capacityReduction:
+          $ref: '#capacityReduction'
+         
 howToStopControl:
   type: string
   enum:
@@ -745,7 +1129,6 @@ howToStopControl:
     - StopCycle
     - RampOutTimeIn
     - RampOutRestore
-  default: Restore
   description: 'TimeIn - The control stops when the cycle period is over.
                 Restore – A restore command is sent to the device.
                 StopCycle - The period count is set to 0, so the cycle stops the next period.

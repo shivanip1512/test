@@ -40,8 +40,8 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
         setRefreshPage(false);
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String[] attributeName = { "attribute" + timeStamp, "a@ttribute" + timeStamp, "123attr" + timeStamp,
-                "VirtAttr" + timeStamp, "ATTRIBUTE1" + timeStamp };
+        String[] attributeName = { "Attribute" + timeStamp, "Cattribute" + timeStamp, "Jattribute" + timeStamp,
+                "Qattribute" + timeStamp, "Zattr" + timeStamp };
 
         for (String name : attributeName) {
             AttributeService.createAttributeWithAssignment(Optional.of(name));

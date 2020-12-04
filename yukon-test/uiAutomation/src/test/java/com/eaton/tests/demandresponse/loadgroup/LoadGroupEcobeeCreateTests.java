@@ -39,7 +39,7 @@ public class LoadGroupEcobeeCreateTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateEcobee_AllFieldsDisableFalse_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT ecobee " + timeStamp;
+        String name = "AT Ecobee " + timeStamp;
         double capacity = faker.number().randomDouble(2, 1, 9999);
 
         final String EXPECTED_MSG = name + " saved successfully.";
@@ -64,7 +64,7 @@ public class LoadGroupEcobeeCreateTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpCreateEcobee_AllFieldsDisableTrue_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT ecobee " + timeStamp;
+        String name = "AT Ecobee " + timeStamp;
         double capacity = faker.number().randomDouble(2, 1, 9999);
 
         final String EXPECTED_MSG = name + " saved successfully.";
