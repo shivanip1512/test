@@ -96,15 +96,17 @@ public class IntervalParser {
         
          //time of the first interval
         Instant firstInterval = findInterval(startDate, interval, true, unit, context);
+        log.debug("First Interval {}", format(firstInterval, context));
         // time of the last interval
         Instant lastInterval = findInterval(stopDate, interval, false, unit, context);
+        log.debug("Last Interval {}", format(lastInterval, context));
         range = Range.inclusive(firstInterval, lastInterval);
         if (firstInterval.isAfter(lastInterval)) {
             log.info("Interval {} is not valid for date range {}-{}", interval, format(startDate, context),
                     format(stopDate, context));
             hasValidInterval = false;
         }
-        intervals = createIntervals(interval, firstInterval, lastInterval);
+        intervals = createIntervals(interval, firstInterval, lastInterval, unit);
         logIntervals(startDate, stopDate, context);
     }
 
@@ -122,12 +124,18 @@ public class IntervalParser {
     /**
      * Creates intervals starting from the firstInterval and ending with the lastInterval
      */
-    private Map<Long, Date> createIntervals(TimeIntervals interval, Instant firstInterval, Instant lastInterval) {
+    private Map<Long, Date> createIntervals(TimeIntervals interval, Instant firstInterval, Instant lastInterval, ChronoUnit unit) {
         Map<Long, Date> intervals = new LinkedHashMap<>();
         Instant first = firstInterval;
         while (first.isBefore(lastInterval) || first.equals(lastInterval)) {
             intervals.put(first.toDate().getTime(), first.toDate());
-            first = first.toDateTime().plusSeconds(interval.getSeconds()).toInstant();
+            if (unit == ChronoUnit.MINUTES) {
+                first = first.toDateTime().plusMinutes((int) interval.getDuration().getStandardMinutes()).toInstant();
+            } else if (unit == ChronoUnit.HOURS) {
+                first = first.toDateTime().plusHours((int) interval.getDuration().getStandardHours()).toInstant();
+            } else if (unit == ChronoUnit.DAYS) {
+                first = first.toDateTime().plusDays((int) interval.getDuration().getStandardDays()).toInstant();
+            }
         }
         return intervals;
     }
