@@ -11,6 +11,7 @@ import org.testng.SkipException;
 import org.testng.annotations.Test;
 
 import com.eaton.builders.assets.virtualdevices.VirtualDeviceCreateBuilder;
+import com.eaton.builders.assets.virtualdevices.VirtualDeviceCreateService;
 import com.eaton.framework.APIs;
 import com.eaton.framework.TestConstants;
 import com.eaton.rest.api.common.ApiCallHelper;
@@ -25,8 +26,7 @@ public class CreateVirtualDeviceV1ApiTests {
             TestConstants.Features.VIRTUAL_DEVICES })
     public void createVirtualDeviceApi_AllFields_201Created() {
         SoftAssertions softly = new SoftAssertions();
-        Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateBuilder.buildDefaultVirtualDevice()
-                .create();
+        Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateService.createVirtualDeviceOnlyRequiredFields();
 
         JSONObject request = pair.getValue0();
         JSONObject response = pair.getValue1();
@@ -102,8 +102,7 @@ public class CreateVirtualDeviceV1ApiTests {
      * =============================================================================
      * ===============================================================
      */
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ASSETS,
-            TestConstants.Features.VIRTUAL_DEVICES })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ASSETS, TestConstants.Features.VIRTUAL_DEVICES })
     public void createVirtualDeviceApi_DuplicateName_422Unprocessable() {
         throw new SkipException("Failing in Yukon 7.5.0, but Working in Yukon 9.0.0");
         /*
@@ -124,7 +123,6 @@ public class CreateVirtualDeviceV1ApiTests {
     
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ASSETS, TestConstants.Features.VIRTUAL_DEVICES })
     public void createVirtualDeviceApi_MissingType_400BadRequest() {
-        SoftAssertions softly = new SoftAssertions();
         JSONObject request = new VirtualDeviceCreateBuilder.Builder(Optional.empty())
                 .build();
 

@@ -153,10 +153,16 @@ public class LoadProgramCreatePage extends PageBase {
         return new CreateMeterDisconnectPrgmModal(this.driverExt, Optional.empty(), Optional.of("gear-create-popup-LM_METER_DISCONNECT_PROGRAM"));
     }
 
-    public CreateSepPrgmGearModal showCreateSepPrgmGearModal() {
-        clickCreateGearAndWait(DESCRIBEDBY);
+    public CreateSepPrgmGearModal showCreateSepPrgmGearModal(Optional<Integer> count) {
+        Integer c = count.orElse(1);
+        if (c.equals(1)) {
+            clickCreateGearAndWait("gear-create-popup-LM_SEP_PROGRAM");
+        } else {
+            clickCreateGearAndWaitDisplayBlock("gear-create-popup-LM_SEP_PROGRAM");
+        }
+        
 
-        return new CreateSepPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
+        return new CreateSepPrgmGearModal(this.driverExt, Optional.empty(), Optional.of("gear-create-popup-LM_SEP_PROGRAM"));
     }
 
     public SelectBoxElement getGears() {

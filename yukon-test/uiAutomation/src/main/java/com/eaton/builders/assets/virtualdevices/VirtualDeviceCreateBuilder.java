@@ -53,8 +53,4 @@ public class VirtualDeviceCreateBuilder {
             return new Pair<>(request, response);
         }
     }
-
-    public static Builder buildDefaultVirtualDevice() {
-        return new VirtualDeviceCreateBuilder.Builder(Optional.empty()).withEnable(Optional.empty());
-    }
 }

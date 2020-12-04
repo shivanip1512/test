@@ -10,7 +10,6 @@ import java.util.Optional;
 import org.assertj.core.api.SoftAssertions;
 import org.javatuples.Pair;
 import org.json.JSONObject;
-import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -26,7 +25,7 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.assets.virtualdevices.VirtualDevicesListPage;
 import com.github.javafaker.Faker;
 
-public class VirtualDevicesListPageTests extends SeleniumTestSetup{
+public class VirtualDevicesListTests extends SeleniumTestSetup{
     
     private VirtualDevicesListPage listPage;
     private DriverExtensions driverExt;
@@ -43,7 +42,7 @@ public class VirtualDevicesListPageTests extends SeleniumTestSetup{
         setRefreshPage(false);
         Builder builder = new VirtualDeviceCreateBuilder.Builder(Optional.empty());
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String[] deviceNames = { "Virtual Device" + timeStamp,"virtual test device" + timeStamp, "Sample device" + timeStamp, "test device" + timeStamp, "test_device" + timeStamp};
+        String[] deviceNames = { "Virtual Device" + timeStamp,"Virtual test device" + timeStamp, "Sample device" + timeStamp, "Test device" + timeStamp, "Zest device" + timeStamp};
         for(String deviceName : deviceNames) {
             builder.withName(deviceName).withEnable(Optional.of(faker.random().nextBoolean()));
             Pair<JSONObject, JSONObject> pair = builder.create();
@@ -104,28 +103,28 @@ public class VirtualDevicesListPageTests extends SeleniumTestSetup{
     /*    Skipping this test as a defect is raised for incorrect sorting order (YUK-22982)*/
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesList_SortNamesAsc_Correctly() {
-        throw new SkipException("Development Defect: YUK-22982");
-//        Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
-//
-//        navigate(Urls.Assets.VIRTUAL_DEVICES_NAME_ASC);
-//
-//        List<String> namesList = listPage.getTable().getDataRowsTextByCellIndex(1);
-//
-//        assertThat(names).isEqualTo(namesList);
+//        throw new SkipException("Development Defect: YUK-22982");
+        Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
+
+        navigate(Urls.Assets.VIRTUAL_DEVICES_NAME_ASC);
+
+        List<String> namesList = listPage.getTable().getDataRowsTextByCellIndex(1);
+
+        assertThat(names).isEqualTo(namesList);
     }
     
     /*    Skipping this test as a defect is raised for incorrect sorting order (YUK-22982)*/
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesList_SortNamesDesc_Correctly() {
-        throw new SkipException("Development Defect: YUK-22982");
-//        Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
-//        Collections.reverse(names);
-//
-//        navigate(Urls.Assets.VIRTUAL_DEVICES_NAME_DESC);
-//
-//        List<String> namesList = listPage.getTable().getDataRowsTextByCellIndex(1);
-//
-//        assertThat(names).isEqualTo(namesList);
+//        throw new SkipException("Development Defect: YUK-22982");
+        Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
+        Collections.reverse(names);
+
+        navigate(Urls.Assets.VIRTUAL_DEVICES_NAME_DESC);
+
+        List<String> namesList = listPage.getTable().getDataRowsTextByCellIndex(1);
+
+        assertThat(names).isEqualTo(namesList);
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })

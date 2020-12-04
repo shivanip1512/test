@@ -52,7 +52,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         Boolean enable;
 
-        Map<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAllPoints(Optional.empty());
+        Map<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.createVirtualDeviceWithAllPoints(Optional.empty());
 
         // Virtual Device Response
         Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");
@@ -329,7 +329,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         final String EXP_POINT_URL = getBaseUrl() + Urls.Tools.POINT + analogPtId;
 
-        String pointUrl = detailPage.getPointsTableRow(1).getCellLinkByIndex(0);
+        String pointUrl = detailPage.getPointsTableRow(0).getCellLinkByIndex(0);
 
         ExtractableResponse<?> response = ApiCallHelper.get(pointUrl);
         
@@ -542,7 +542,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     public void virtualDeviceDetails_DeleteWithPt_Success() {
         setRefreshPage(true);
 
-        Map<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAnalogPoint();
+        Map<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.createVirtualDeviceWithAnalogPoint();
         Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");
 
         JSONObject virtDevResponse = virtualDevice.getValue1();
@@ -566,7 +566,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     public void virtualDeviceDetails_DeleteWithOutPt_Success() {
         setRefreshPage(true);
 
-        Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceOnlyRequiredFields();
+        Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateService.createVirtualDeviceOnlyRequiredFields();
 
         JSONObject virtDevResponse = pair.getValue1();
 
