@@ -39,7 +39,7 @@ public class LoadProgramCreatePage extends PageBase {
         startTimeWindowOne = new TimePickerElement(this.driverExt, "startTimeWindowOne_inputField");
         stopTimeWindowOne = new TimePickerElement(this.driverExt, "stopTimeWindowOne_inputField");
         startTimeWindowTwo = new TimePickerElement(this.driverExt, "startTimeWindowTwo_inputField");
-        stopTimeWindowTwo = new TimePickerElement(this.driverExt, "startTimeWindowTwo_inputField");
+        stopTimeWindowTwo = new TimePickerElement(this.driverExt, "stopTimeWindowTwo_inputField");
     }
 
     // General
