@@ -15,6 +15,7 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.MeterEnums;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.ami.RFN420cLMeterDetailsPage;
 import com.github.javafaker.Faker;
@@ -24,8 +25,7 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
     private DriverExtensions driverExt;
     private Faker faker;
     private RFN420cLMeterDetailsPage detailsPage;
-    private static final int DEVICE_ID = 1295;
-
+    
     private static final String UPDATED = " updated successfully.";
     private static final String METER = "Meter ";
 
@@ -34,9 +34,11 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
         setRefreshPage(false);
         faker = SeleniumTestSetup.getFaker();
+        
+        Integer deviceId = TestDbDataType.MeterData.RFN_420CL_WONTEDIT_ID.getId();
 
-        navigate(Urls.Ami.METER_DETAIL + DEVICE_ID);
-        detailsPage = new RFN420cLMeterDetailsPage(driverExt, DEVICE_ID);
+        navigate(Urls.Ami.METER_DETAIL + deviceId);
+        detailsPage = new RFN420cLMeterDetailsPage(driverExt, deviceId);
     }
 
     @AfterMethod(alwaysRun = true)
@@ -68,7 +70,7 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
         setRefreshPage(true);
         SoftAssertions softly = new SoftAssertions();
 
-        final int editDeviceId = 1297;
+        Integer editDeviceId = TestDbDataType.MeterData.RFN_420CL_WILLEDIT_ID.getId();
         navigate(Urls.Ami.METER_DETAIL + editDeviceId);
 
         EditMeterModal editModal = detailsPage.showMeterEditModal();
@@ -106,7 +108,7 @@ public class RFNMeterEditTests extends SeleniumTestSetup {
         setRefreshPage(true);
         SoftAssertions softly = new SoftAssertions();
 
-        final int editDeviceId = 1297;
+        Integer editDeviceId = TestDbDataType.MeterData.RFN_420CL_EDITALL_ID.getId();
 
         navigate(Urls.Ami.METER_DETAIL + editDeviceId);
 

@@ -179,11 +179,11 @@ public class CreateVirtualDeviceV1ApiTests {
     }
     
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ASSETS, TestConstants.Features.VIRTUAL_DEVICES })
-    public void createVirtualDeviceApi_NoFields_422Unprocessable() {
+    public void createVirtualDeviceApi_NoFields_400BadRequest() {
         JSONObject request = new JSONObject();
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post(APIs.VirtualDevice.CREATE_VIRTUALDEVICE, request.toString());
 
-        assertThat(createResponse.statusCode()).isEqualTo(422);
+        assertThat(createResponse.statusCode()).isEqualTo(400);
     }
 }

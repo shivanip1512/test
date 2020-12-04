@@ -58,6 +58,7 @@ public class TestDbDataType {
         WRL_420CL_EDIT_ID("AT Edit WRL-420cL", 403, 1232),
         MCT_420CL_WILLEDIT_ID("AT Will Edit MCT-420cL", 404, 1294),
         RFN_420CL_WILLEDIT_ID("AT Will Edit RFN-420cL", 405, 1297),
+        RFN_420CL_EDITALL_ID("AT Could Edit RFN-420cL", 391, 1296),
         MCT_420CL_WONTEDIT_ID("AT Wont Edit MCT-420cL", 406, 1292),
         RFN_420CL_WONTEDIT_ID("AT Wont Edit RFN-420cL", 407, 1295),
         MCT_310IL_ID("MCT-310IL (230153)", 408, 259);
