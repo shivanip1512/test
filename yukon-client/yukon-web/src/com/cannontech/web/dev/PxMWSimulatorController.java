@@ -118,5 +118,10 @@ public class PxMWSimulatorController {
     private String getFormattedJson(Object profile) {
         return new GsonBuilder().setPrettyPrinting().create().toJson(profile);
     }
+    
+    private void clearCache() {
+        pxMWCommunicationServiceV1.clearCache();
+        //display success message
+    }
 }
 

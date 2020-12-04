@@ -15,29 +15,36 @@ import com.cannontech.system.dao.GlobalSettingDao;
 public enum PxMWRetrievalUrl {
     SECURITY_TOKEN(PxMWVersion.V1, "/api/v1/security/token",
             "https://adopteriotwebapi.eaton.com/swagger/ui/index#!/Security/Security_GetSecurityToken",
-            List.of(HttpStatus.OK, HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN)),
+            List.of(HttpStatus.OK, HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN),
+            List.of()),
     DEVICE_PROFILE_BY_GUID_V1(PxMWVersion.V1, "/api/v1/deviceprofile/{id}",
             "http://wordpress-prod.tcc.etn.com/wordpress/wp-content/docs/RestApi/IoT.html#device-profile",
-            List.of(HttpStatus.OK)),
+            List.of(HttpStatus.OK),
+            List.of("Profile Guid")),
     DEVICES_BY_SITE_V1(PxMWVersion.V1, "/api/v1/sites/{id}/devices",
             "http://wordpress-prod.tcc.etn.com/wordpress/wp-content/docs/RestApi/IoT.html#site-site-get-1",
-            List.of(HttpStatus.OK, HttpStatus.NOT_FOUND)),
+            List.of(HttpStatus.OK, HttpStatus.NOT_FOUND),
+            List.of("Site Guid", "Recursive* (true, false)", "Include Detail* (true, false)")),
     DEVICE_CHANNEL_DETAILS_V1(PxMWVersion.V1, "/api/v1/device/{deviceId}/channels",
             "https://was-all-apim-eus-dev.portal.azure-api.net/docs/services/device-management-function-app/operations/get-getdevicechanneldetails-1?",
-            List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_FOUND, HttpStatus.FORBIDDEN));
+            List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_FOUND, HttpStatus.FORBIDDEN),
+            List.of("Device Guid"));
 
     private PxMWVersion version;
     private String suffix;
     private String doc;
     private List<HttpStatus> statuses;
+    private List<String> params;
 
-    PxMWRetrievalUrl(PxMWVersion version, String suffix, String doc, List<HttpStatus> statuses) {
+    PxMWRetrievalUrl(PxMWVersion version, String suffix, String doc, List<HttpStatus> statuses, List<String> params) {
         this.suffix = suffix;
         this.doc = doc;
         this.statuses = statuses;
         this.version = version;
+        // * - optional, in () value examples
+        this.params = params;
     }
-
+    
     public String getSuffix() {
         return suffix;
     }
@@ -52,6 +59,10 @@ public enum PxMWRetrievalUrl {
 
     public PxMWVersion getVersion() {
         return version;
+    }
+    
+    public List<String> getParams() {
+        return params;
     }
     
     public String getUrl(GlobalSettingDao settingDao, Logger log, RestTemplate restTemplate) {

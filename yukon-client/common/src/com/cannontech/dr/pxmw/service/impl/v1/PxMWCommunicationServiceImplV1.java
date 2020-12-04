@@ -61,12 +61,11 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
     @Override
     public PxMWTokenV1 getToken() throws PxMWCommunicationExceptionV1, PxMWException {
         BlockingJmsReplyHandler<PxMWAuthTokenResponseV1> reply = new BlockingJmsReplyHandler<>(PxMWAuthTokenResponseV1.class);
-        PxMWAuthTokenRequestV1 request = new PxMWAuthTokenRequestV1();
-        pXMWAuthTokenRequestTemplate.send(request, reply);
+        pXMWAuthTokenRequestTemplate.send(new PxMWAuthTokenRequestV1(), reply);
         try {
             PxMWAuthTokenResponseV1 response = reply.waitForCompletion();
             if (response.getError() != null) {
-                // got error from PX White
+                // got error from Eaton Cloud
                 throw response.getError();
             }
             if (response.getToken() != null) {
@@ -75,6 +74,18 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
             throw new PxMWException("Unable to get Eaton Cloud token from SM, see SM log for details");
         } catch (ExecutionException e) {
             throw new PxMWException("Unable to send a message to SM to get Eaton Cloud token", e);
+        }
+    }
+    
+    @Override
+    public void clearCache() throws PxMWException {
+        BlockingJmsReplyHandler<PxMWAuthTokenResponseV1> reply = new BlockingJmsReplyHandler<>(PxMWAuthTokenResponseV1.class);
+        pXMWAuthTokenRequestTemplate.send(new PxMWAuthTokenRequestV1(true), reply);
+        try {
+           reply.waitForCompletion();
+           return;
+        } catch (ExecutionException e) {
+            throw new PxMWException("Unable to send a message to SM to clear cache", e);
         }
     }
     

@@ -42,4 +42,9 @@ public interface PxMWCommunicationServiceV1 {
      */
     PxMWTokenV1 getToken() throws PxMWCommunicationExceptionV1, PxMWException;
 
+    /**
+     * Used by Simulator to clear token cache in SM
+     */
+    void clearCache() throws PxMWException;
+
 }

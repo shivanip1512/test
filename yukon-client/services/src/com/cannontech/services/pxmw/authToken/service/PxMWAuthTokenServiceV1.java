@@ -50,6 +50,12 @@ public class PxMWAuthTokenServiceV1 implements MessageListener {
             try {
                 if (objMessage.getObject() instanceof PxMWAuthTokenRequestV1) {
                     PxMWCredentialsV1 credentials = getCredentials();
+                    if(((PxMWAuthTokenRequestV1) objMessage.getObject()).isClearCache()) {
+                        log.error("Recieved message from the simulator to invalidate Eaton Cloud token cache");
+                        tokenCache.invalidate(credentials.getUser());
+                        sendResponse(message, null, null);
+                        return;
+                    }
                     PxMWTokenV1 cachedToken = tokenCache.getIfPresent(credentials.getUser());
                     if ((cachedToken != null)) {
                         sendResponse(message, cachedToken, null);
