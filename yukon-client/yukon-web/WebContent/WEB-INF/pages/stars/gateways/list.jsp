@@ -9,7 +9,7 @@
     <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE">
         <div id="gateway-create-popup" class="dn"
             data-dialog
-            data-title="<cti:msg2 key="yukon.common.create"/>" 
+            data-title="<cti:msg2 key=".create.gateway.label"/>" 
             data-url="<cti:url value="/stars/gateways/create"/>" 
             data-width="570" 
             data-min-width="570" 
