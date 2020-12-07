@@ -934,7 +934,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             int numPaos = Iterables.size(paos);
             int numPointIdentifiers = paoPointIdentifiersMap.keySet().size();
             log.debug("loadValuesForGeneratorFactory() # paos : " + numPaos + ".  # point identifiers: " + numPointIdentifiers
-                    + ".  # values resturned: " + result.size() + ".  elapsed time: " + stopwatch.toString());
+                    + ".  # values returned: " + result.size() + ".  elapsed time: " + stopwatch.toString());
         }
         
         return result;

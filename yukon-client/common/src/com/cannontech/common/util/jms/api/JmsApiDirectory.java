@@ -930,7 +930,7 @@ public final class JmsApiDirectory {
     public static final JmsApi<SmartNotificationEventMulti,?,?> SMART_NOTIFICATION_METER_DR_EVENT= 
             JmsApi.builder(SmartNotificationEventMulti.class)
                   .name("Smart Notifications Meter Demand Response Event")
-                  .description("Sent by the MeterDisconnectMessageListener when event event was recieved to notify user of the results.")
+                  .description("Sent by the MeterDisconnectMessageListener when event event was received to notify user of the results.")
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.event.meterDr"))
                   .requestMessage(SmartNotificationEventMulti.class)

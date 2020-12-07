@@ -214,6 +214,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     LM_ITRON_PROGRAM(DeviceTypes.LM_ITRON_PROGRAM, "ITRON PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_NEST_PROGRAM(DeviceTypes.LM_NEST_PROGRAM, "NEST PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_METER_DISCONNECT_PROGRAM(DeviceTypes.LM_METER_DISCONNECT_PROGRAM, "METER DISCONNECT PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
+    LM_EATON_CLOUD_PROGRAM(DeviceTypes.LM_EATON_CLOUD_PROGRAM, "EATON CLOUD PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_CONTROL_AREA(DeviceTypes.LM_CONTROL_AREA, "LM CONTROL AREA", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_SCENARIO(DeviceTypes.LM_SCENARIO, "LMSCENARIO", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     
@@ -374,6 +375,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         lmProgramTypes = ImmutableSet.of(
             LM_CURTAIL_PROGRAM,
             LM_DIRECT_PROGRAM,
+            LM_EATON_CLOUD_PROGRAM,
             LM_ENERGY_EXCHANGE_PROGRAM,
             LM_SEP_PROGRAM,
             LM_ECOBEE_PROGRAM,
@@ -388,6 +390,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         
         directProgramTypes = ImmutableSet.of(
             LM_DIRECT_PROGRAM,
+            LM_EATON_CLOUD_PROGRAM,
             LM_SEP_PROGRAM,
             LM_ECOBEE_PROGRAM,
             LM_HONEYWELL_PROGRAM,
