@@ -1,6 +1,7 @@
 package com.cannontech.dr.pxmw.model;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.core.Logger;
 import org.springframework.http.HttpStatus;
@@ -16,27 +17,27 @@ public enum PxMWRetrievalUrl {
     SECURITY_TOKEN(PxMWVersion.V1, "/api/v1/security/token",
             "https://adopteriotwebapi.eaton.com/swagger/ui/index#!/Security/Security_GetSecurityToken",
             List.of(HttpStatus.OK, HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN),
-            List.of()),
+            Map.of()),
     DEVICE_PROFILE_BY_GUID_V1(PxMWVersion.V1, "/api/v1/deviceprofile/{id}",
             "http://wordpress-prod.tcc.etn.com/wordpress/wp-content/docs/RestApi/IoT.html#device-profile",
             List.of(HttpStatus.OK),
-            List.of("Profile Guid")),
+            Map.of("Profile Guid", "08bc1c6f-f4fd-43c5-8797-cba3a7b5d625")),
     DEVICES_BY_SITE_V1(PxMWVersion.V1, "/api/v1/sites/{id}/devices",
             "http://wordpress-prod.tcc.etn.com/wordpress/wp-content/docs/RestApi/IoT.html#site-site-get-1",
             List.of(HttpStatus.OK, HttpStatus.NOT_FOUND),
-            List.of("Site Guid", "Recursive* (true, false)", "Include Detail* (true, false)")),
+            Map.of("Site Guid", "dd5bf079-b8ea-430c-ad94-1cf54124fc02", "Recursive* (true, false)", "false", "Include Detail* (true, false)", "false")),
     DEVICE_CHANNEL_DETAILS_V1(PxMWVersion.V1, "/api/v1/device/{deviceId}/channels",
             "https://was-all-apim-eus-dev.portal.azure-api.net/docs/services/device-management-function-app/operations/get-getdevicechanneldetails-1?",
             List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_FOUND, HttpStatus.FORBIDDEN),
-            List.of("Device Guid"));
+            Map.of("Device Guid", "3b4dd0db-2144-4fb2-a819-99f7f0a4d5cf"));
 
     private PxMWVersion version;
     private String suffix;
     private String doc;
     private List<HttpStatus> statuses;
-    private List<String> params;
+    private Map<String, String> params;
 
-    PxMWRetrievalUrl(PxMWVersion version, String suffix, String doc, List<HttpStatus> statuses, List<String> params) {
+    PxMWRetrievalUrl(PxMWVersion version, String suffix, String doc, List<HttpStatus> statuses, Map<String, String> params) {
         this.suffix = suffix;
         this.doc = doc;
         this.statuses = statuses;
@@ -61,7 +62,7 @@ public enum PxMWRetrievalUrl {
         return version;
     }
     
-    public List<String> getParams() {
+    public Map<String, String> getParams() {
         return params;
     }
     
