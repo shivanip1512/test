@@ -539,12 +539,13 @@ public class MeterEventsReportController {
             desc = sorting.getDirection() == Direction.desc;
         }
 
-        String[] headerRow = new String[5];
+        String[] headerRow = new String[6];
         headerRow[0] = messageSourceAccessor.getMessage(baseKey + ".report.tableHeader.deviceName.linkText");
-        headerRow[1] = messageSourceAccessor.getMessage(baseKey + ".report.tableHeader.meterNumber.linkText");
-        headerRow[2] = messageSourceAccessor.getMessage(baseKey + ".report.tableHeader.date.linkText");
-        headerRow[3] = messageSourceAccessor.getMessage(baseKey + ".report.tableHeader.event.linkText");
-        headerRow[4] = messageSourceAccessor.getMessage(baseKey + ".report.tableHeader.value.linkText");
+        headerRow[1] = messageSourceAccessor.getMessage(baseKey + ".report.tableHeader.deviceType.linkText");
+        headerRow[2] = messageSourceAccessor.getMessage(baseKey + ".report.tableHeader.meterNumber.linkText");
+        headerRow[3] = messageSourceAccessor.getMessage(baseKey + ".report.tableHeader.date.linkText");
+        headerRow[4] = messageSourceAccessor.getMessage(baseKey + ".report.tableHeader.event.linkText");
+        headerRow[5] = messageSourceAccessor.getMessage(baseKey + ".report.tableHeader.value.linkText");
 
         List<MeterPointValue> events = 
                 paoPointValueService.getMeterPointValues(
@@ -563,15 +564,16 @@ public class MeterEventsReportController {
         List<String[]> dataRows = Lists.newArrayList();
 
         for (MeterPointValue event : events) {
-            String[] dataRow = new String[5];
+            String[] dataRow = new String[6];
             dataRow[0] = event.getDeviceName();
-            dataRow[1] = event.getMeterNumber();
+            dataRow[1] = event.getPaoIdentifier().getPaoType().getPaoTypeName();
+            dataRow[2] = event.getMeterNumber();
 
             DateTime timeStamp = new DateTime(event.getPointValueHolder().getPointDataTimeStamp(), userContext.getJodaTimeZone());
             String dateTimeString = timeStamp.toString(DateTimeFormat.mediumDateTime());
-            dataRow[2] = dateTimeString;
-            dataRow[3] = StringEscapeUtils.escapeCsv(event.getPointName());
-            dataRow[4] = StringEscapeUtils.escapeCsv(pointFormattingService.getValueString(event.getPointValueHolder(), Format.VALUE, userContext));
+            dataRow[3] = dateTimeString;
+            dataRow[4] = StringEscapeUtils.escapeCsv(event.getPointName());
+            dataRow[5] = StringEscapeUtils.escapeCsv(pointFormattingService.getValueString(event.getPointValueHolder(), Format.VALUE, userContext));
             dataRows.add(dataRow);
         }
         
