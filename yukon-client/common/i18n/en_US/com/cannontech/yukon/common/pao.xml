@@ -184,6 +184,7 @@
     <entry key="yukon.common.pao.MACRO_GROUP">Macro Group</entry>
     <entry key="yukon.common.pao.LM_CURTAIL_PROGRAM">LM Curtail Program</entry>
     <entry key="yukon.common.pao.LM_DIRECT_PROGRAM">LM Direct Program</entry>
+    <entry key="yukon.common.pao.LM_EATON_CLOUD_PROGRAM">LM Eaton Cloud Program</entry>
     <entry key="yukon.common.pao.LM_ENERGY_EXCHANGE_PROGRAM">LM Energy Exchange Program</entry>
     <entry key="yukon.common.pao.LM_HONEYWELL_PROGRAM">LM Honeywell Program</entry>
     <entry key="yukon.common.pao.LM_ITRON_PROGRAM">LM Itron Program</entry>
