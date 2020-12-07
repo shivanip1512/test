@@ -25,8 +25,7 @@ public class EatonCloudMessageListener {
         Duration controlDuration = new Duration(startTime, endTime);
         int controlDurationSeconds = controlDuration.toStandardSeconds().getSeconds();
 
-        log.debug("LM Eaton Cloud Command - Group Id: " + groupId + ", startTime: " + startTime + 
-                  ", endTime: " + endTime + ", Duty Cycle Percent: " + dutyCyclePercent);
+        log.debug("LM Eaton Cloud Command - Group Id: {}, startTime: {}, endTime: {}, Duty Cycle Percent: {}", groupId, startTime, endTime, dutyCyclePercent);
 
         recentEventParticipationService.createDeviceControlEvent(0, // ProgramId - I don't think we get/have this
                                                                  0, // EventId - I don't think we get/have this
@@ -43,12 +42,12 @@ public class EatonCloudMessageListener {
     }
 
     public void handleRestoreMessage(int groupId, Instant restoreTime) {
-        log.debug("LM Eaton Cloud Command - Group Id: " + groupId + ", Restore Time: " + restoreTime);
+        log.debug("LM Eaton Cloud Command - Group Id: {}, Restore Time: {}", groupId, restoreTime);
 
         LiteYukonPAObject group = dbCache.getAllLMGroups().stream()
                 .filter(g -> g.getLiteID() == groupId).findAny().orElse(null);
         if (group == null) {
-            log.error("Group with id " + groupId + " is not found");
+            log.error("Group with id {} is not found", groupId);
             return;
         }
 
