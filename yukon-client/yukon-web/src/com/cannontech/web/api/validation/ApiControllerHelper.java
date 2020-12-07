@@ -111,7 +111,7 @@ public class ApiControllerHelper {
                 Object[] params = ((ArrayList) errorMap.get("parameters")).toArray();
                 String field = errorMap.get("field").toString();
                 String codePostfix = errorMap.get("code").toString();
-                String errorCode = keyBase + codePostfix + "." + field;
+                String errorCode = keyBase + field + "." + codePostfix;
 
                 error.rejectValue(field, errorCode, params, StringUtils.EMPTY);
             }
