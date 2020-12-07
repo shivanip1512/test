@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.AddressUsageVersacom;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums.RelayUsage;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.rest.api.drsetup.DrSetupCreateRequest;
 import com.eaton.rest.api.drsetup.DrSetupGetRequest;
 import com.github.javafaker.Faker;
@@ -47,10 +48,10 @@ public class LoadGroupVersacomCreateBuilder {
             return this;
         }
         
-        public Builder withRouteId(Optional<LoadGroupEnums.RouteId> routeId) {
-            LoadGroupEnums.RouteId randomRelayUsage = routeId.orElse(LoadGroupEnums.RouteId.getRandomRouteId());
+        public Builder withRouteId(Optional<TestDbDataType.CommunicationRouteData> routeId) {
+            TestDbDataType.CommunicationRouteData randomRelayUsage = routeId.orElse(TestDbDataType.CommunicationRouteData.getRandomRouteId());
 
-            this.routeId = randomRelayUsage.getRouteId();
+            this.routeId = randomRelayUsage.getId();
             return this;
         }
 

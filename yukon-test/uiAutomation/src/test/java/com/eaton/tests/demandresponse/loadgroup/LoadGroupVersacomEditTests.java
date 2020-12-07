@@ -10,12 +10,12 @@ import org.json.JSONObject;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupVersacomCreateBuilder;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupVersacomCreateBuilder.Builder;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupVersacomEditPage;
@@ -38,7 +38,7 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldGrpVersacomEdit_RequiredFieldsOnly_Success() {
         Pair<JSONObject, JSONObject> pair = new LoadGroupVersacomCreateBuilder.Builder(Optional.empty())
-                .withRouteId(Optional.of(LoadGroupEnums.RouteId.ACCU710A))
+                .withRouteId(Optional.of(TestDbDataType.CommunicationRouteData.ACCU710A))
                 .withUtilityAddress(Optional.empty())
                 .withKwCapacity(Optional.empty())
                 .withDisableGroup(Optional.of(false))
@@ -58,8 +58,8 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
         editPage = new LoadGroupVersacomEditPage(driverExt, id);
         
         editPage.getName().setInputValue(editName);
-        //28 - a_CCU-711
-        editPage.getCommunicationRoute().selectItemByValue("28"); 
+        String commRoute = TestDbDataType.CommunicationRouteData.ACCU711.getId().toString();
+        editPage.getCommunicationRoute().selectItemByValue(commRoute); 
         editPage.getUtilityAddress().setInputValue(String.valueOf(faker.number().numberBetween(1, 254)));
         editPage.getkWCapacity().setInputValue(String.valueOf(capacity));
         editPage.getDisableGroup().selectValue("Yes");
@@ -88,8 +88,8 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
         editPage = new LoadGroupVersacomEditPage(driverExt, id);
         
-        //40 = a_LCU-EASTRIVER
-        editPage.getCommunicationRoute().selectItemByValue("40");
+        String commRoute = TestDbDataType.CommunicationRouteData.ALCUEASTRIVER.getId().toString();
+        editPage.getCommunicationRoute().selectItemByValue(commRoute);
 
         editPage.getAddressUsage().setTrueFalseByLabel("Serial", "SERIAL", false);
         editPage.getAddressUsage().setTrueFalseByLabel("Section", "SECTION", true);
@@ -120,8 +120,8 @@ public class LoadGroupVersacomEditTests extends SeleniumTestSetup {
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
         editPage = new LoadGroupVersacomEditPage(driverExt, id);
 
-        //73 = a_TCU-5000
-        editPage.getCommunicationRoute().selectItemByValue("73");
+        String commRoute = TestDbDataType.CommunicationRouteData.ATCU5000.getId().toString();
+        editPage.getCommunicationRoute().selectItemByValue(commRoute);
 
         editPage.getAddressUsage().setTrueFalseByLabel("Serial", "SERIAL", true);
 

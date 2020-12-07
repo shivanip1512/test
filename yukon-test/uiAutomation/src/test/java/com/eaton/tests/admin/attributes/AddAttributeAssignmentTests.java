@@ -18,6 +18,7 @@ import com.eaton.elements.modals.attributes.AddAttributeAssignmentsModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.admin.attributes.AttributesListPage;
 import com.github.javafaker.Faker;
@@ -147,9 +148,11 @@ public class AddAttributeAssignmentTests extends SeleniumTestSetup {
         SoftAssertions softly = new SoftAssertions();
         AddAttributeAssignmentsModal modal = page.showAddAttrAsgmtAndWait();
         
+        String point = TestDbDataType.DemandResponseData.LOADGROUP_RFNEXPRESSCOM_COPY_ID.getId().toString();
+        
         SelectPointModal pointModal = modal.clickSearchAndWait();
         
-        pointModal.selectPoint("Annual History", Optional.of("4978"));
+        pointModal.selectPoint("Annual History", Optional.of(point));
 
         softly.assertThat(modal.getPointType().getSelectedValue()).isEqualTo("Analog");
         softly.assertThat(modal.getpointOffSet().getInputValue()).isEqualTo("2503");
@@ -179,6 +182,7 @@ public class AddAttributeAssignmentTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.ATTRIBUTES, TestConstants.Features.ADMIN })
     public void addAttributeAssignment_AllPointTypes_Success() {
+        SoftAssertions softly = new SoftAssertions();
         setRefreshPage(true);
         Pair<JSONObject, JSONObject> pair = AttributeService.createAttribute(Optional.empty());        
 
@@ -193,6 +197,25 @@ public class AddAttributeAssignmentTests extends SeleniumTestSetup {
         modal.getpointOffSet().setInputValue(pointOffset.toString());
         modal.clickOkAndWaitForModalToClose();
         
-        assertThat(page.getAttrAsgmtErrorMsg()).isEqualTo("Attribute: " + name + " has been successfully assigned to the following device types: LCR-6200 RFN, LCR-6600 RFN, LCR-6700 RFN, MCT Broadcast, MCT-310IL, MCT-420cL, MCT-430A, RFN-410cL, RFN-420cD, RFN-420cL, RFN-420fL, RFN-430SL4, RFN-530S4x, VIRTUAL SYSTEM, WRL-420cD, WRL-420cL.");                
+        String errMsg = page.getAttrAsgmtErrorMsg();
+        
+        softly.assertThat(errMsg).containsOnlyOnce("Attribute: " + name + " has been successfully assigned to the following device types: ");
+        softly.assertThat(errMsg).containsOnlyOnce("LCR-6200 RFN");
+        softly.assertThat(errMsg).containsOnlyOnce("LCR-6600 RFN");
+        softly.assertThat(errMsg).containsOnlyOnce("LCR-6700 RFN");
+        softly.assertThat(errMsg).containsOnlyOnce("MCT Broadcast");
+        softly.assertThat(errMsg).containsOnlyOnce("MCT-310IL");
+        softly.assertThat(errMsg).containsOnlyOnce("MCT-420cL");
+        softly.assertThat(errMsg).containsOnlyOnce("MCT-430A");
+        softly.assertThat(errMsg).containsOnlyOnce("RFN-410cL");
+        softly.assertThat(errMsg).containsOnlyOnce("RFN-420cD");
+        softly.assertThat(errMsg).containsOnlyOnce("RFN-420cL");
+        softly.assertThat(errMsg).containsOnlyOnce("RFN-420fL");
+        softly.assertThat(errMsg).containsOnlyOnce("RFN-430SL4");
+        softly.assertThat(errMsg).containsOnlyOnce("RFN-530S4x");
+        softly.assertThat(errMsg).containsOnlyOnce("VIRTUAL SYSTEM");
+        softly.assertThat(errMsg).containsOnlyOnce("WRL-420cD");
+        softly.assertThat(errMsg).containsOnlyOnce("WRL-420cL");
+        softly.assertAll();
     }
 }

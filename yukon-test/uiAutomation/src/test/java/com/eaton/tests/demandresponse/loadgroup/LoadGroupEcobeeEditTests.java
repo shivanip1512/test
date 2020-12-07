@@ -33,12 +33,11 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
         setRefreshPage(false);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        name = "Before Class " + timeStamp;
+        name = "AT Ecobee" + timeStamp;
         Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.of(name))
                 .create();
         JSONObject response = pair.getValue1();
         Integer id = response.getInt("id");
-        //name = response.getString("name");
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + id + Urls.EDIT);
         editPage = new LoadGroupEditPage(driverExt, id);
     }
@@ -64,12 +63,12 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
     public void ldGrpEcobeeEdit_RequiredFieldsOnly_Success() {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String newName = "AT Ecobee Required " + timeStamp;
         String editName = "AT Ecobee Edited Required " + timeStamp;
         final String EXPECTED_MSG = editName + " saved successfully.";        
         
-        Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.of(newName))
+        Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty())
                 .create();
+        
         JSONObject response = pair.getValue1();
         Integer editId = response.getInt("id");
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + editId + Urls.EDIT);
@@ -167,11 +166,10 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
     public void ldGrpEcobeeEdit_AllFields_Success() {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String newName = "AT All Fields " + timeStamp;
-        String editName = "AT Edited Ecobee Ldgrp " + timeStamp;
+        String editName = "AT Edited Ecobee" + timeStamp;
         final String EXPECTED_MSG = editName + " saved successfully.";
 
-        Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.of(newName))
+        Pair<JSONObject, JSONObject> pair = new LoadGroupEcobeeCreateBuilder.Builder(Optional.empty())
                 .create();
         
         JSONObject response = pair.getValue1();

@@ -10,6 +10,7 @@ import com.eaton.elements.modals.EditMeterModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.ami.RFN420cLMeterDetailsPage;
 
@@ -18,15 +19,15 @@ public class MeterCommonEditTests extends SeleniumTestSetup {
     private DriverExtensions driverExt;
     private RFN420cLMeterDetailsPage editPage;
 
-    private static final int DEVICE_ID = 1295;
-
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
         setRefreshPage(false);
+        
+        Integer deviceId = TestDbDataType.MeterData.RFN_420CL_WONTEDIT_ID.getId();
 
-        navigate(Urls.Ami.METER_DETAIL + DEVICE_ID);
-        editPage = new RFN420cLMeterDetailsPage(driverExt, DEVICE_ID);
+        navigate(Urls.Ami.METER_DETAIL + deviceId);
+        editPage = new RFN420cLMeterDetailsPage(driverExt, deviceId);
     }
 
     @AfterMethod(alwaysRun = true)

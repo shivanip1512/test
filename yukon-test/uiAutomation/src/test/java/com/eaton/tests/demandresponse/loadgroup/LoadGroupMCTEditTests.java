@@ -13,6 +13,7 @@ import com.eaton.elements.modals.SelectMCTMeterModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import org.javatuples.Pair;
 import org.json.JSONObject;
@@ -26,11 +27,13 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
     private Integer id;
     private LoadGroupMCTEditPage editPage;
     private DriverExtensions driverExt;
-    private Integer routeId = 28;
+    private Integer routeId;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
+        
+        routeId = TestDbDataType.CommunicationRouteData.ACCU710A.getId();
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
@@ -38,13 +41,14 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited MCT Ldgrp " + timeStamp;
         final String EXPECTED_MSG = name + " saved successfully.";
+        Integer mctMeter = TestDbDataType.MeterData.MCT_310IL_ID.getId();
 
         Pair<JSONObject, JSONObject> pair = new LoadGroupMCTCreateBuilder.Builder(Optional.empty())
                 .withCommunicationRoute(routeId)
                 .withDisableControl(Optional.empty())
                 .withDisableGroup(Optional.empty())
                 .withKwCapacity(Optional.empty())
-                .withMctDeviceId(259)
+                .withMctDeviceId(mctMeter)
                 .withlevel(LoadGroupEnums.AddressLevelMCT.MCT_ADDRESS)
                 .withRelayUsage(Arrays.asList(LoadGroupEnums.RelayUsage.RELAY_2))
                 .create();
@@ -56,8 +60,8 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
 
         editPage = new LoadGroupMCTEditPage(driverExt, id);
         editPage.getName().setInputValue(name);
-        // 36 = a_CCU-721
-        editPage.getCommunicationRoute().selectItemByValue("36");
+        String commRoute = TestDbDataType.CommunicationRouteData.ACCU721.getId().toString();
+        editPage.getCommunicationRoute().selectItemByValue(commRoute);
         editPage.getAddressLevel().selectItemByValue("BRONZE");
         editPage.getAddress().setInputValue("123");
         editPage.getRelayUsage().setTrueFalseByLabel("Relay 3", "RELAY_3", true);
@@ -94,8 +98,8 @@ public class LoadGroupMCTEditTests extends SeleniumTestSetup {
 
         editPage = new LoadGroupMCTEditPage(driverExt, id);
         editPage.getName().setInputValue(name);
-        // 62 - a_RTC
-        editPage.getCommunicationRoute().selectItemByValue("62");
+        String commRoute = TestDbDataType.CommunicationRouteData.ARTC.getId().toString();
+        editPage.getCommunicationRoute().selectItemByValue(commRoute);
         editPage.getAddressLevel().selectItemByValue("MCT_ADDRESS");
         SelectMCTMeterModal mctMeterModal = this.editPage.showAndWaitMCTMeter();
         mctMeterModal.selectMeter("a_MCT-430A");

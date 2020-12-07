@@ -55,8 +55,9 @@ public class LoadProgramSEPCreateTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = name + " saved successfully.";
 
         createPage.getType().selectItemByValue(TYPE);
+        SeleniumTestSetup.waitForLoadingSpinner();
         createPage.getName().setInputValue(name);
-        CreateSepPrgmGearModal gearModal = createPage.showCreateSepPrgmGearModal();
+        CreateSepPrgmGearModal gearModal = createPage.showCreateSepPrgmGearModal(Optional.empty());
         gearModal.getGearName().setInputValue("sepGear");
         gearModal.getGearType().selectItemByValue("SepCycle");
         waitForLoadingSpinner();
@@ -80,8 +81,10 @@ public class LoadProgramSEPCreateTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = name + " saved successfully.";
 
         createPage.getType().selectItemByValue(TYPE);
+        SeleniumTestSetup.waitForLoadingSpinner();
+        
         createPage.getName().setInputValue(name);
-        CreateSepPrgmGearModal gearModal = createPage.showCreateSepPrgmGearModal();
+        CreateSepPrgmGearModal gearModal = createPage.showCreateSepPrgmGearModal(Optional.empty());
         gearModal.getGearName().setInputValue("sepGear");
         gearModal.getGearType().selectItemByValue("SepCycle");
         waitForLoadingSpinner();
@@ -110,7 +113,8 @@ public class LoadProgramSEPCreateTests extends SeleniumTestSetup {
         List<String> expectedGearTypes = new ArrayList<>(List.of("Select", "SEP Cycle", "SEP Temperature Offset", "No Control"));
 
         createPage.getType().selectItemByValue(TYPE);
-        CreateSepPrgmGearModal gearModal = createPage.showCreateSepPrgmGearModal();
+        SeleniumTestSetup.waitForLoadingSpinner();
+        CreateSepPrgmGearModal gearModal = createPage.showCreateSepPrgmGearModal(Optional.empty());
         List<String> gearTypes = gearModal.getGearType().getOptionValues();
         assertThat(gearTypes).containsAll(expectedGearTypes);
     }
@@ -123,10 +127,11 @@ public class LoadProgramSEPCreateTests extends SeleniumTestSetup {
         final String EXPECTED_MSG = name + " saved successfully.";
 
         createPage.getType().selectItemByValue(TYPE);
+        SeleniumTestSetup.waitForLoadingSpinner();
         createPage.getName().setInputValue(name);
         // Adding 2 gears
         for (int i = 1; i <= 2; i++) {
-            CreateSepPrgmGearModal modal = createPage.showCreateSepPrgmGearModal();
+            CreateSepPrgmGearModal modal = createPage.showCreateSepPrgmGearModal(Optional.of(i));
             waitForLoadingSpinner();
             modal.getGearName().setInputValue("SEP Gear " + i);
             modal.getGearType().selectItemByValue("SepCycle");

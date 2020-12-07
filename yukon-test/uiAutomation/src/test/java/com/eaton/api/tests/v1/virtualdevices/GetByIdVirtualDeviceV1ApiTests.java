@@ -20,11 +20,11 @@ import io.restassured.response.ExtractableResponse;
 public class GetByIdVirtualDeviceV1ApiTests {
     private Faker faker = new Faker();
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.ASSETS,
-            TestConstants.Features.VIRTUAL_DEVICES })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.ASSETS, TestConstants.Features.VIRTUAL_DEVICES })
     public void getByIdVirtualDeviceApi_200Success() {
         SoftAssertions softly = new SoftAssertions();
-        Pair<JSONObject, JSONObject> pair = new VirtualDeviceCreateBuilder.Builder(Optional.empty()).create();
+        Pair<JSONObject, JSONObject> pair = new VirtualDeviceCreateBuilder.Builder(Optional.empty())
+                .create();
         JSONObject createResponse = pair.getValue1();
         String name = createResponse.getString("name");
         Integer id = createResponse.getInt("id");
@@ -42,8 +42,7 @@ public class GetByIdVirtualDeviceV1ApiTests {
         softly.assertAll();
     }
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.ASSETS,
-            TestConstants.Features.VIRTUAL_DEVICES })
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.ASSETS, TestConstants.Features.VIRTUAL_DEVICES })
     public void getByIdVirtualDeviceApi_NotFoundId_400BadRequest() {
         String nonExistingId = faker.number().digits(9);
 
@@ -51,8 +50,7 @@ public class GetByIdVirtualDeviceV1ApiTests {
         assertThat(response.statusCode()).isEqualTo(400);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.ASSETS,
-            TestConstants.Features.VIRTUAL_DEVICES })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.ASSETS, TestConstants.Features.VIRTUAL_DEVICES })
     public void getByIdVirtualDeviceApi_InvalidId_400BadRequest() {
         String invalidId = faker.number().digits(12);
 
@@ -61,8 +59,7 @@ public class GetByIdVirtualDeviceV1ApiTests {
         assertThat(response.statusCode()).isEqualTo(400);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ASSETS,
-            TestConstants.Features.VIRTUAL_DEVICES })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ASSETS, TestConstants.Features.VIRTUAL_DEVICES })
     public void getByIdVirtualDeviceApi_EmptyId_404NotFound() {
         ExtractableResponse<?> response = ApiCallHelper.get(APIs.VirtualDevice.GET_VIRTUALDEVICE + "");
 

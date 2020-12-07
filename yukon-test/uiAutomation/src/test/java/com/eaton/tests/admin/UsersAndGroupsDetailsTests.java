@@ -14,6 +14,7 @@ import com.eaton.elements.modals.CreateUserModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.admin.RoleGroupDetailsPage;
 import com.eaton.pages.admin.UserDetailPage;
@@ -58,15 +59,17 @@ public class UsersAndGroupsDetailsTests extends SeleniumTestSetup {
         CreateUserModal createModal = page.showAndWaitCreateUserModal();
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String userGroup = TestDbDataType.AdminData.QA_ADMIN_USERGROUP_ID.getId().toString();
+        String energyCoId = TestDbDataType.EnergyCompanyData.EC_ID.getId().toString();
         
         String name = "ATUser" + timeStamp;
         createModal.getUserName().setInputValue(name);
         createModal.getPassword().setInputValue("At12345!");
         createModal.getConfirmPassword().setInputValue("At12345!");
         //42 = QA Admin User Grp
-        createModal.getUserGroup().selectItemByValue("42");
+        createModal.getUserGroup().selectItemByValue(userGroup);
         //64 = QA_Test
-        createModal.getEnergyCompany().selectItemByValue("64");
+        createModal.getEnergyCompany().selectItemByValue(energyCoId);
         
         createModal.clickOk();
         

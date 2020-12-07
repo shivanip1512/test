@@ -34,13 +34,13 @@ public class TextEditElement extends EditElement {
 
     public void clearInputValue() {
         WebElement input = getEditElement();
-        SeleniumTestSetup.scrollToElement(input);
+        SeleniumTestSetup.moveToElement(input);
         input.clear();
     }
 
     public void setInputValue(String value) {
         WebElement input = getEditElement();
-        SeleniumTestSetup.scrollToElement(input);
+        SeleniumTestSetup.moveToElement(input);
 
         input.click();
         input.clear();

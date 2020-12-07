@@ -102,41 +102,6 @@ public class LoadGroupEnums {
         }
     }
 
-    public enum RouteId {
-        ACCU710A(28),
-        ACCU711(32),
-        ACCU721(36),
-        ALCUEASTRIVER(40),
-        APAGINGTAPTERMINAL(43),
-        AREPEATER800(52),
-        AREPEATER801(55),
-        AREPEATER900(46),
-        AREPEATER902(49),
-        AREPEATER921(58),
-        ARTC(62),
-        ARTULMI(66),
-        ASNPPTERMINAL(69),
-        ATCU5000(73),
-        ATCU5500(77),
-        AWCTPTERMINAL(80),
-        AXML(84);
-
-        private final int communicationRouteId;
-
-        RouteId(Integer communicationRouteId) {
-            this.communicationRouteId = communicationRouteId;
-        }
-
-        public Integer getRouteId() {
-            return this.communicationRouteId;
-        }
-
-        public static RouteId getRandomRouteId() {
-            Random random = new Random();
-            return values()[random.nextInt(values().length)];
-        }
-    }
-
     public enum AddressUsageEmetcon {
         GOLD("GOLD"),
         SILVER("SILVER");
@@ -412,30 +377,6 @@ public class LoadGroupEnums {
         public String getDeviceClassSet() {
             return this.deviceClassSet;
         }          
-    }
-
-    public enum PointId {
-        SCADA_OVERRIDE(4230),
-        CVR_MODE(4231),
-        CAPACITOR_BANK_STATE(4249),
-        REMOTE_CONTROL_MODE(4251),
-        OVUV_CONTROL(4255),
-        MANUAL_CONTROL_MODE(4265);
-
-        private final Integer pointUsageId;
-
-        PointId(Integer pointId) {
-            this.pointUsageId = pointId;
-        }
-
-        public Integer getPointId() {
-            return this.pointUsageId;
-        }
-
-        public static PointId getRandomPointId() {
-            Random random = new Random();
-            return values()[random.nextInt(values().length)];
-        }
     }
 
     public enum PointStartControlRawState {

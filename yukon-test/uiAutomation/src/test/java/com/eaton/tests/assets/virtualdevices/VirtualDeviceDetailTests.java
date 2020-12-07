@@ -34,6 +34,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     private Integer virtualDeviceId;
     private String virtualDeviceName;
     private String virtualDeviceStatus;
+    private String type;
     private Integer analogPtId;
 
     // ===================================================================================================
@@ -51,7 +52,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         Boolean enable;
 
-        Map<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAllPoints(Optional.empty());
+        Map<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.createVirtualDeviceWithAllPoints(Optional.empty());
 
         // Virtual Device Response
         Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");
@@ -59,9 +60,11 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         virtualDeviceId = virDevResponse.getInt("id");
         virtualDeviceName = virDevResponse.getString("name");
+        type = virDevResponse.getString("type");
+        
         enable = virDevResponse.getBoolean("enable");
 
-        virtualDeviceStatus = (enable.equals(true)) ? "Enabled" : "Disabled";
+        virtualDeviceStatus = (enable.equals(true)) ? "Enabled" : "Disabled";        
 
         // Points Response
         analogPtId = pair.get("AnalogPoint").getValue1().getInt("pointId");
@@ -126,9 +129,10 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         SoftAssertions softly = new SoftAssertions();
 
-        softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getLabelCount()).isEqualTo(2);
+        softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getLabelCount()).isEqualTo(3);
         softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getLabelByRow(0)).isEqualTo("Name:");
-        softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getLabelByRow(1)).isEqualTo("Status:");
+        softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getLabelByRow(1)).isEqualTo("Type:");
+        softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getLabelByRow(2)).isEqualTo("Status:");
         softly.assertAll();
     }
 
@@ -138,9 +142,10 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         SoftAssertions softly = new SoftAssertions();
 
-        softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getValueCount()).isEqualTo(2);
+        softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getValueCount()).isEqualTo(3);
         softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getValueByRow(0)).isEqualTo(virtualDeviceName);
-        softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getValueByRow(1)).isEqualTo(virtualDeviceStatus);
+        softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getValueByRow(1).toUpperCase()).isEqualTo(type.replace("_", " "));
+        softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getValueByRow(2)).isEqualTo(virtualDeviceStatus);
         softly.assertAll();
     }
 
@@ -324,7 +329,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         final String EXP_POINT_URL = getBaseUrl() + Urls.Tools.POINT + analogPtId;
 
-        String pointUrl = detailPage.getPointsTableRow(1).getCellLinkByIndex(0);
+        String pointUrl = detailPage.getPointsTableRow(0).getCellLinkByIndex(0);
 
         ExtractableResponse<?> response = ApiCallHelper.get(pointUrl);
         
@@ -537,7 +542,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     public void virtualDeviceDetails_DeleteWithPt_Success() {
         setRefreshPage(true);
 
-        Map<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAnalogPoint();
+        Map<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.createVirtualDeviceWithAnalogPoint();
         Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");
 
         JSONObject virtDevResponse = virtualDevice.getValue1();
@@ -561,7 +566,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     public void virtualDeviceDetails_DeleteWithOutPt_Success() {
         setRefreshPage(true);
 
-        Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceOnlyRequiredFields();
+        Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateService.createVirtualDeviceOnlyRequiredFields();
 
         JSONObject virtDevResponse = pair.getValue1();
 

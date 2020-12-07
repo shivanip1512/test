@@ -36,7 +36,6 @@ public class MeterCreateCommonTests extends SeleniumTestSetup {
         if (getRefreshPage()) {
             refreshPage(amiDashboardPage);
         }
-
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
@@ -77,6 +76,7 @@ public class MeterCreateCommonTests extends SeleniumTestSetup {
         setRefreshPage(true);
 
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
+        
         assertThat(createModal.getDeviceName().getMaxLength()).isEqualTo("60");
     }
 

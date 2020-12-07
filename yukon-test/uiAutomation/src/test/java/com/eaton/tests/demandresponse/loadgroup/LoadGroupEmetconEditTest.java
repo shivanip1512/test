@@ -13,6 +13,7 @@ import com.eaton.builders.drsetup.loadgroup.LoadGroupEnums;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.loadgroup.LoadGroupEmetconEditPage;
@@ -85,7 +86,7 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
     public void ldGrpEmetconEdit_AllFields_Success() {
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT Edited Emetcon Ldgrp " + timeStamp;
+        String name = "AT Edited Emetcon Ldgrp" + timeStamp;
         final String EXPECTED_MSG = name + " saved successfully.";
         Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
                 .withAddressUsage(Optional.of(LoadGroupEnums.AddressUsageEmetcon.GOLD))
@@ -100,8 +101,8 @@ public class LoadGroupEmetconEditTest extends SeleniumTestSetup {
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + editId + Urls.EDIT);
 
         editPage.getName().setInputValue(name);
-        // 36 = a_CCU-721
-        editPage.getCommuncationRoute().selectItemByValue("36");
+        String commRoute = TestDbDataType.CommunicationRouteData.ACCU721.getId().toString();
+        editPage.getCommuncationRoute().selectItemByValue(commRoute);
         editPage.getaddressUsage().selectByValue("Silver Address");
         editPage.getGoldAddress().setInputValue("4");
         editPage.getSilverAddress().setInputValue("23");

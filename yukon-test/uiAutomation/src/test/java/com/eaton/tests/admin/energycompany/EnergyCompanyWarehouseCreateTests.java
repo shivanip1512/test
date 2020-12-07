@@ -11,6 +11,7 @@ import org.testng.annotations.Test;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.admin.energycompany.EnergyCompanyWarehouseCreatePage;
 import com.eaton.pages.admin.energycompany.EnergyCompanyWarehouseListPage;
@@ -19,13 +20,15 @@ public class EnergyCompanyWarehouseCreateTests extends SeleniumTestSetup {
 
     private EnergyCompanyWarehouseCreatePage createPage;
     private DriverExtensions driverExt;
+    private String ecId;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
         setRefreshPage(false);
-        navigate(Urls.Admin.ENERGY_COMPANY_WAREHOUSE_CREATE + "64");
-        createPage = new EnergyCompanyWarehouseCreatePage(driverExt, 64);
+        ecId = TestDbDataType.EnergyCompanyData.EC_ID.getId().toString();
+        navigate(Urls.Admin.ENERGY_COMPANY_WAREHOUSE_CREATE + ecId);
+        createPage = new EnergyCompanyWarehouseCreatePage(driverExt, Integer.parseInt(ecId));
     }
     
     @AfterMethod(alwaysRun = true)
