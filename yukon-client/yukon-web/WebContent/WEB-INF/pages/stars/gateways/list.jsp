@@ -37,11 +37,16 @@
     <div id="page-actions" class="dn">
         <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE">
             <cm:dropdownOption data-popup="#gateway-create-popup" icon="icon-plus-green">
-                <i:inline key=".create.gateway.label"/>
+                <i:inline key="yukon.common.create"/>
             </cm:dropdownOption>
         </cti:checkRolesAndProperties>
+        <li class="divider"></li>
         <cti:url var="comprehensiveMapUrl" value="/stars/comprehensiveMap/home"/>
         <cm:dropdownOption key="yukon.web.modules.operator.comprehensiveMap.pageName" href="${comprehensiveMapUrl}" icon="icon-map-pins"/>
+        <cm:dropdownOption key=".download" href="${comprehensiveMapUrl}" icon="icon-download"/>
+        <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE">
+            <li class="divider"></li>
+        </cti:checkRolesAndProperties>
         <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
             <cti:url var="manageCertificate" value="/stars/gateways/certificateUpdates"/>
             <cm:dropdownOption icon="icon-drive-go" key=".manageCertificates" href="${manageCertificate}"/>
@@ -50,6 +55,7 @@
             <cti:url var="manageFirmware" value="/stars/gateways/firmwareDetails"/>
             <cm:dropdownOption icon="icon-drive-go" key=".manageFirmware" href="${manageFirmware}"/>
         </cti:checkRolesAndProperties>
+        
     </div>
 
     <div id="gateway-collect-data-popup" class="dn"></div>
