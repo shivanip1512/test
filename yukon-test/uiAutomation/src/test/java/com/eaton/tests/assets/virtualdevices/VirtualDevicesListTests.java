@@ -100,10 +100,8 @@ public class VirtualDevicesListTests extends SeleniumTestSetup{
         assertThat(actualModalTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    /*    Skipping this test as a defect is raised for incorrect sorting order (YUK-22982)*/
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesList_SortNamesAsc_Correctly() {
-//        throw new SkipException("Development Defect: YUK-22982");
         Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
 
         navigate(Urls.Assets.VIRTUAL_DEVICES_NAME_ASC);
@@ -113,10 +111,8 @@ public class VirtualDevicesListTests extends SeleniumTestSetup{
         assertThat(names).isEqualTo(namesList);
     }
     
-    /*    Skipping this test as a defect is raised for incorrect sorting order (YUK-22982)*/
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesList_SortNamesDesc_Correctly() {
-//        throw new SkipException("Development Defect: YUK-22982");
         Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
         Collections.reverse(names);
 

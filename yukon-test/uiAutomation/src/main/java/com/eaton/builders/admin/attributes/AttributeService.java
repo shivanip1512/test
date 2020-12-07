@@ -81,7 +81,7 @@ public class AttributeService {
     
     public static Pair<JSONObject, JSONObject> createAsgmtForAttribute(Integer attributeId) {
         
-        return new AttributeAsgmtCreateBuilder.Builder(Integer.valueOf(attributeId))
+        return new AttributeAsgmtCreateBuilder.Builder(attributeId)
                 .withPaoType(Optional.empty())
                 .withPointType(Optional.empty())
                 .withMultiplier(Optional.empty())
