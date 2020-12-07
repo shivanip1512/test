@@ -389,10 +389,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     DELIVERED_KWH_RATE_C_PER_INTERVAL("Delivered kWh Rate C per Interval", AttributeGroup.USAGE, false), //calculated, not readable
     DELIVERED_KWH_RATE_D_PER_INTERVAL("Delivered kWh Rate D per Interval", AttributeGroup.USAGE, false), //calculated, not readable
     RECEIVED_KWH_PER_INTERVAL("Received kWh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
-    RECEIVED_KWH_RATE_A_PER_INTERVAL("Recieved kWh Rate A per Interval", AttributeGroup.USAGE, false), //calculated, not readable
-    RECEIVED_KWH_RATE_B_PER_INTERVAL("Recieved kWh Rate B per Interval", AttributeGroup.USAGE, false), //calculated, not readable
-    RECEIVED_KWH_RATE_C_PER_INTERVAL("Recieved kWh Rate C per Interval", AttributeGroup.USAGE, false), //calculated, not readable
-    RECEIVED_KWH_RATE_D_PER_INTERVAL("Recieved kWh Rate D per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    RECEIVED_KWH_RATE_A_PER_INTERVAL("Received kWh Rate A per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    RECEIVED_KWH_RATE_B_PER_INTERVAL("Received kWh Rate B per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    RECEIVED_KWH_RATE_C_PER_INTERVAL("Received kWh Rate C per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    RECEIVED_KWH_RATE_D_PER_INTERVAL("Received kWh Rate D per Interval", AttributeGroup.USAGE, false), //calculated, not readable
     SUM_KWH_PER_INTERVAL("Sum kWh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
     SUM_KWH_RATE_A_PER_INTERVAL("Sum kWh Rate A per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
     SUM_KWH_RATE_B_PER_INTERVAL("Sum kWh Rate B per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
