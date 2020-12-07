@@ -99,20 +99,22 @@ public class ApiControllerHelper {
      * Populate and return binding error from the AppErrorModel object received from rest call.
      */
     public BindingResult populateBindingErrorForApiErrorModel(BindingResult result, BindException error,
-            ResponseEntity<? extends Object> errorResponse, String keyMessage) {
+            ResponseEntity<? extends Object> errorResponse, String keyBase) {
 
         LinkedHashMap<?, ?> errorObject = (LinkedHashMap<?, ?>) errorResponse.getBody();
         ArrayList<?> errors = (ArrayList<?>) errorObject.get("errors");
 
         if (!errors.isEmpty()) {
 
-            errors.stream().forEach(e -> {
-                Object[] params = ((ArrayList) ((LinkedHashMap<?, ?>) e).get("parameters")).toArray();
-                error.rejectValue(((LinkedHashMap<?, ?>) e).get("field").toString(),
-                        keyMessage + ((LinkedHashMap<?, ?>) e).get("field").toString()
-                                + "." + ((LinkedHashMap<?, ?>) e).get("code").toString(),
-                        params, StringUtils.EMPTY);
-            });
+            for (Object e : errors) {
+                LinkedHashMap<?, ?> errorMap = (LinkedHashMap<?, ?>) e;
+                Object[] params = ((ArrayList) errorMap.get("parameters")).toArray();
+                String field = errorMap.get("field").toString();
+                String codePostfix = errorMap.get("code").toString();
+                String errorCode = keyBase + codePostfix + "." + field;
+
+                error.rejectValue(field, errorCode, params, StringUtils.EMPTY);
+            }
 
             List<ObjectError> mvcErrors = (List<ObjectError>) result.getAllErrors();
             result = new BindException(error.getTarget(), error.getObjectName());
