@@ -130,6 +130,24 @@ INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry WH
 INSERT INTO DBUpdates VALUES ('YUK-23092', '9.0.0', GETDATE());
 /* @end YUK-23092 */
 
+/* @start YUK-23295 */
+UPDATE YukonRoleProperty
+SET DefaultValue = 'OWNER'
+WHERE RolePropertyId = -20220;
+
+UPDATE YukonGroupRole 
+SET Value = 'OWNER' 
+WHERE RolePropertyID = -20220 
+AND Value = 'true';
+
+UPDATE YukonGroupRole 
+SET Value = 'NO_ACCESS' 
+WHERE RolePropertyID = -20220 
+AND Value = 'false';
+
+INSERT INTO DBUpdates VALUES ('YUK-23295', '9.0.0', GETDATE());
+/* @end YUK-23295 */
+
 /* @start YUK-23290 */
 create table LMGroupEatonCloud (
    YukonGroupId         numeric              not null,
@@ -146,6 +164,19 @@ go
 
 INSERT INTO DBUpdates VALUES ('YUK-23290', '9.0.0', GETDATE());
 /* @end YUK-23290 */
+
+/* @start YUK-23313 */
+UPDATE YukonRoleProperty
+SET DefaultValue = 'NO_ACCESS'
+WHERE RolePropertyId = -20220;
+
+UPDATE YukonGroupRole 
+SET Value = 'OWNER' 
+WHERE RolePropertyID = -20220 
+AND Value = ' ';
+
+INSERT INTO DBUpdates VALUES ('YUK-23313', '9.0.0', GETDATE());
+/* @end YUK-23313 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

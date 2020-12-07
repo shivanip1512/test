@@ -112,7 +112,6 @@ public enum YukonSimulatorSettingsKey {
     
     //NetworkTree Settings
     RFN_NETWORK_SIM_TREE_PERCENT_NULL(0, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK),
-    RFN_NETWORK_SIM_TREE_MIN_HOP(2, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIM_TREE_MAX_HOP(9, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIM_TREE_NODES_ONE_HOP(350, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIM_NUM_DEVICES_PER_GW(5000, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK),

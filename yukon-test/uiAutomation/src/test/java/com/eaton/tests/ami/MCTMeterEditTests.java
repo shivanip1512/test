@@ -15,6 +15,7 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.MeterEnums;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.ami.MCT420cLMeterDetailsPage;
 import com.github.javafaker.Faker;
@@ -25,8 +26,6 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
     private Faker faker;
     private MCT420cLMeterDetailsPage editPage;
 
-    private static final int DEVICE_ID = 1292;
-
     private static final String UPDATED = " updated successfully.";
     private static final String METER = "Meter ";
 
@@ -35,9 +34,11 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
         setRefreshPage(false);
         faker = SeleniumTestSetup.getFaker();
+        
+        Integer deviceId = TestDbDataType.MeterData.MCT_420CL_WONTEDIT_ID.getId();
 
-        navigate(Urls.Ami.METER_DETAIL + DEVICE_ID);
-        editPage = new MCT420cLMeterDetailsPage(driverExt, DEVICE_ID);
+        navigate(Urls.Ami.METER_DETAIL + deviceId);
+        editPage = new MCT420cLMeterDetailsPage(driverExt, deviceId);
     }
 
     @AfterMethod(alwaysRun = true)
@@ -70,8 +71,8 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
 
         SoftAssertions softly = new SoftAssertions();
 
-        final int editDeviceId = 1294;
-
+        Integer editDeviceId = TestDbDataType.MeterData.MCT_420CL_WILLEDIT_ID.getId();
+                
         navigate(Urls.Ami.METER_DETAIL + editDeviceId);
 
         EditMeterModal editModal = editPage.showMeterEditModal();
@@ -205,7 +206,7 @@ public class MCTMeterEditTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
-    public void editMCTMeter_Check_AllFields() {
+    public void editMCTMeter_FieldsData_Correct() {
         setRefreshPage(true);
         SoftAssertions softly = new SoftAssertions();
 

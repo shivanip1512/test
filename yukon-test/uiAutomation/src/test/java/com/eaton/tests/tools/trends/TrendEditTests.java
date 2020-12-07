@@ -21,6 +21,7 @@ import com.eaton.elements.modals.TrendPointModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.tools.trends.TrendEditPage;
 
@@ -158,7 +159,10 @@ public class TrendEditTests extends SeleniumTestSetup {
         
         TrendPointModal modal = editPage.showAndWaitAddPointModal();
         SelectPointModal pointModal = modal.showAndWaitSelectPointModal();
-        pointModal.selectPoint("Analog Point for Create Trend", Optional.of("5231"));
+        String pointName = TestDbDataType.TrendPointData.CREATE_TREND_ANALOG_POINT_ID.getName();
+        String pointId = TestDbDataType.TrendPointData.CREATE_TREND_ANALOG_POINT_ID.getId().toString();
+        
+        pointModal.selectPoint(pointName, Optional.of(pointId));
         pointModal.clickOkAndWaitForModalCloseDisplayNone();
         modal.clickOkAndWaitForModalToClose();
         editPage.getSave().click();
@@ -196,7 +200,7 @@ public class TrendEditTests extends SeleniumTestSetup {
         JSONObject response = responses.getValue1();
         Integer newTrendId = response.getInt("trendId");
         String newTrendName = response.getString("name");
-        String pointName = "Analog Point for Create Trend";
+        String pointName = TestDbDataType.TrendPointData.CREATE_TREND_ANALOG_POINT_ID.getName();
         
         navigate(Urls.Tools.TREND_EDIT + newTrendId + Urls.EDIT);
 

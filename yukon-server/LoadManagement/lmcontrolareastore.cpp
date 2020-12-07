@@ -39,6 +39,8 @@
 #include "NestStandardCycleGear.h"
 #include "ItronCycleGear.h"
 #include "MeterDisconnectGear.h"
+#include "EatonCloudCycleGear.h"
+#include "EatonCloudNoControlGear.h"
 #include "resolvers.h"
 #include "devicetypes.h"
 #include "dbaccess.h"
@@ -998,6 +1000,14 @@ void CtiLMControlAreaStore::reset()
                     else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::MeterDisconnectMethod) )
                     {
                         newDirectGear = CTIDBG_new Cti::LoadManagement::MeterDisconnectGear(rdr);
+                    }
+                    else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::EatonCloudCycleMethod) )
+                    {
+                        newDirectGear = CTIDBG_new Cti::LoadManagement::EatonCloudCycleGear(rdr);
+                    }
+                    else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::EatonCloudNoControlMethod) )
+                    {
+                        newDirectGear = CTIDBG_new Cti::LoadManagement::EatonCloudNoControlGear(rdr);
                     }
                     else if (rdr["settings"].isNull())
                     {

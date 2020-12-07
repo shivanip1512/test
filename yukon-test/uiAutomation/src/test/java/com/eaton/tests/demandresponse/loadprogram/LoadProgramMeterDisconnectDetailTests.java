@@ -12,7 +12,6 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.eaton.builders.drsetup.gears.EcobeeCycleGearBuilder;
 import com.eaton.builders.drsetup.gears.MeterDisconnectGearBuilder;
 import com.eaton.builders.drsetup.loadgroup.LoadGroupMeterDisconnectCreateBuilder;
 import com.eaton.builders.drsetup.loadprogram.LoadProgramCreateBuilder;
@@ -24,7 +23,7 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
-import com.eaton.pages.demandresponse.LoadProgramDetailPage;
+import com.eaton.pages.demandresponse.loadprogram.LoadProgramDetailPage;
 
 public class LoadProgramMeterDisconnectDetailTests extends SeleniumTestSetup {
 
@@ -133,10 +132,6 @@ public class LoadProgramMeterDisconnectDetailTests extends SeleniumTestSetup {
         JSONObject response = pair.getValue1();
         int id = response.getInt("programId");
         
-        JSONObject rsp = pair.getValue0();
-        
-        String name = rsp.getString("name");
-
         final String copyName = "Copy Disconnect " + timeStamp;
 
         final String EXPECTED_MSG = copyName + " copied successfully.";

@@ -40,6 +40,11 @@ paths:
     $ref: 'api/MacroLoadGroupsApi.yaml#/post-operation'
   '/dr/macroLoadGroups/{id}':
     $ref: 'api/MacroLoadGroupsApi.yaml#/get-update-delete-operation'
+    
+  /dr/loadPrograms:
+    $ref: 'api/loadProgramsApi.yaml#/post-operation'
+  /dr/loadPrograms/{id}:
+    $ref: 'api/loadProgramsApi.yaml#/get-update-delete-operation'
 
   /dr/constraints:
     $ref: 'api/programConstraintsApi.yaml#/post-operation'

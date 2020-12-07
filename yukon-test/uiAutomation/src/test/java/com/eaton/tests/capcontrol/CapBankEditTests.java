@@ -13,6 +13,7 @@ import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.CapBankDetailPage;
 import com.eaton.pages.capcontrol.CapBankEditPage;
@@ -27,10 +28,11 @@ public class CapBankEditTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         setRefreshPage(false);
+        String capBankId = TestDbDataType.VoltVarData.CAPBANK_ID.getId().toString();
         
-        navigate(Urls.CapControl.CAP_BANK_EDIT + "669" + Urls.EDIT);
+        navigate(Urls.CapControl.CAP_BANK_EDIT + capBankId + Urls.EDIT);
 
-        editPage = new CapBankEditPage(driverExt, 669);
+        editPage = new CapBankEditPage(driverExt, Integer.parseInt(capBankId));
     }
     
     @AfterMethod(alwaysRun = true)
@@ -53,9 +55,11 @@ public class CapBankEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void capBankEdit_RequiredFieldsOnly_Success() {
         setRefreshPage(true);
+        String capBankEditId = TestDbDataType.VoltVarData.CAPBANK_EDIT_ID.getId().toString();
+        
         final String EXPECTED_MSG = "CapBank was saved successfully.";
 
-        navigate(Urls.CapControl.CAP_BANK_EDIT + "459" + Urls.EDIT);
+        navigate(Urls.CapControl.CAP_BANK_EDIT + capBankEditId+ Urls.EDIT);
 
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
 
@@ -66,7 +70,7 @@ public class CapBankEditTests extends SeleniumTestSetup {
 
         waitForPageToLoad("CapBank: " + name, Optional.empty());
 
-        CapBankDetailPage detailsPage = new CapBankDetailPage(driverExt, 459);
+        CapBankDetailPage detailsPage = new CapBankDetailPage(driverExt, Integer.parseInt(capBankEditId));
 
         String userMsg = detailsPage.getUserMessage();
 
@@ -76,9 +80,11 @@ public class CapBankEditTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VOLT_VAR })
     public void capBankEdit_Delete_Success() {
         setRefreshPage(true);
+        String capBankDeleteId = TestDbDataType.VoltVarData.CAPBANK_DELETE_ID.getId().toString();
+        
         final String EXPECTED_MSG = "CapBank AT Delete CapBank deleted successfully.";
 
-        navigate(Urls.CapControl.CAP_BANK_EDIT + "576" + Urls.EDIT);
+        navigate(Urls.CapControl.CAP_BANK_EDIT + capBankDeleteId + Urls.EDIT);
 
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
 

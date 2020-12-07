@@ -13,7 +13,7 @@ public class DriverFactory implements IDriverFactory {
         case "FIREFOX":
             return MyFirefoxDriver.getNewFirefoxDriver(useRemoteDriver, headless, proxy, useProxy);
         case "EDGE":
-            return MyEdgeDriver.getNewEdgeDriver(useRemoteDriver);
+            return MyEdgeDriver.getNewEdgeDriver(useRemoteDriver, proxy, useProxy);
         case "IE":
             return MyInternetExplorerDriver.getNewInternetExplorerDriver(useRemoteDriver);
         default:

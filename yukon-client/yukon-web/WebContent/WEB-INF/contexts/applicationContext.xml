@@ -181,6 +181,12 @@
         <property name="required" value="true"/>
     </bean>
     
+    <bean id="widgetInput.infrastructureWarningDeviceCategory" class="com.cannontech.web.widget.support.SimpleWidgetInput">
+        <property name="name" value="widgetInput.infrastructureWarningDeviceCategory"/>
+        <property name="description" value="type of InfrastructureWarningDeviceCategory"/>
+        <property name="required" value="false"/>
+    </bean>
+    
     <bean id="tdcBackingService" class="com.cannontech.web.updater.tdc.TdcBackingService"/>
         
     <bean id="ecobeeReadBackingService" class="com.cannontech.web.updater.dr.EcobeeReadBackingService"/>

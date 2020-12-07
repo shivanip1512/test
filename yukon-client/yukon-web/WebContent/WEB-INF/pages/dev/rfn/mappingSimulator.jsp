@@ -89,12 +89,7 @@
             </tags:nameValue>
         </tags:nameValueContainer>
         <tags:nameValueContainer tableClass="natural-width">
-            <tags:nameValue name="Min Hop Count">
-                <tags:input path="minHop" size="5"/>
-            </tags:nameValue>
-        </tags:nameValueContainer>
-        <tags:nameValueContainer tableClass="natural-width">
-            <tags:nameValue name="Max Hop Count">
+            <tags:nameValue name="Devices Per Hop">
                 <tags:input path="maxHop" size="5"/>
             </tags:nameValue>
         </tags:nameValueContainer>
