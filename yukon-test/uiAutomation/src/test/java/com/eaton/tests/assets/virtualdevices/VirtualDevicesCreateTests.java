@@ -9,7 +9,6 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.eaton.builders.assets.virtualdevices.VirtualDeviceCreateService;
 import com.eaton.elements.modals.virtualdevices.CreateVirtualDeviceModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
