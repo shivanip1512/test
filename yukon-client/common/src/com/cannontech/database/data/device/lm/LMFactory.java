@@ -102,7 +102,7 @@ public final class LMFactory {
             retLm = new LmProgramMeterDisconnect();
             break;
         case LM_EATON_CLOUD_PROGRAM:
-            retLm = new LMGroupEatonCloud();
+            retLm = new LMProgramEatonCloud();
             break;
         }
 
