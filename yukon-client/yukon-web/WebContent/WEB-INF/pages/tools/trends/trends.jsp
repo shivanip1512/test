@@ -114,8 +114,6 @@
     
     <cti:includeScript link="/resources/js/pages/yukon.tools.trends.js"/>
     <cti:includeScript link="/resources/js/common/yukon.trends.js"/>
-    <cti:includeScript link="HIGH_STOCK"/>
     <cti:includeScript link="HIGH_STOCK_EXPORTING"/>
-    <cti:includeScript link="HIGH_STOCK_NO_DATA"/>
     
 </cti:standardPage>

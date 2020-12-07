@@ -109,6 +109,8 @@ public class LayoutController {
         b.add(JsLibrary.JQUERY_FLOTCHARTS_AXIS_LABEL.getPath(dev));
         b.add(JsLibrary.JQUERY_FLOTCHARTS_RESIZE.getPath(dev));
         b.add(JsLibrary.JQUERY_FLOTCHARTS_TIME.getPath(dev));
+        b.add(JsLibrary.HIGH_STOCK.getPath(dev));
+        b.add(JsLibrary.HIGH_STOCK_NO_DATA.getPath(dev));
         b.add(JsLibrary.JQUERY_SCROLL_TABLE_BODY.getPath(dev));
         libraryScriptFiles = b.build();
         
@@ -132,6 +134,7 @@ public class LayoutController {
         b.add(JsLibrary.YUKON_PICKER.getPath(dev));
         b.add(JsLibrary.YUKON_DEVICE_GROUP_PICKER.getPath(dev));
         b.add(JsLibrary.YUKON_HISTORICAL_READINGS.getPath(dev));
+        b.add(JsLibrary.YUKON_HIGHCHART.getPath(dev));
         yukonScriptFiles = b.build();
         
         /** CSS ORDER MATTERS! **/

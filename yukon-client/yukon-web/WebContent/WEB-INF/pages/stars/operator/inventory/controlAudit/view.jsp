@@ -9,7 +9,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="controlAudit">
-<cti:includeScript link="HIGH_STOCK"/>
 <cti:includeScript link="/resources/js/pages/yukon.assets.control.audit.js"/>
 
 <style>

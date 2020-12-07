@@ -30,6 +30,7 @@ import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.chart.service.FlotChartService;
+import com.cannontech.web.common.chart.service.HighChartService;
 import com.cannontech.web.common.chart.service.impl.GraphDetail;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.google.common.collect.Lists;
@@ -38,6 +39,7 @@ import com.google.common.collect.Lists;
 @RequestMapping("/chart/*")
 public class ChartController {
     
+    @Autowired private HighChartService highChartService;
     @Autowired private FlotChartService flotChartService;
     @Autowired private PointDao pointDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -108,6 +110,44 @@ public class ChartController {
         
         Map<String, Object> graphAsJSON =
                    flotChartService.getMeterGraphData(graphDetails, start, stop, yMin, yMax, graphType, userContext);
+        return graphAsJSON;
+    }
+    
+    @RequestMapping(value = "getChartJson", method = RequestMethod.GET)
+    public @ResponseBody Map<String, Object> getChartJson(YukonUserContext userContext,
+            String pointIds,
+            Integer temperaturePointId,
+            boolean isTemperatureChecked,
+            ChartInterval interval,
+            long startDate,
+            long endDate,
+            Double yMin,
+            Double yMax,
+            @RequestParam(defaultValue = "LINE") GraphType graphType,
+            @RequestParam(defaultValue = "RAW") ConverterType converterType,
+            @RequestParam(required = false) ChartInterval temperatureChartInterval) {
+
+        List<Integer> ids = Lists.newArrayList(StringUtils.parseIntStringForList(pointIds));
+        Integer pointId = ids.get(0);
+        LitePoint point = pointDao.getLitePoint(pointId);
+        UnitOfMeasure unitMeasure = UnitOfMeasure.getForId(point.getUofmID());
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String chartIntervalString = messageSourceAccessor.getMessage(interval.getIntervalString());
+        String leftYLabelUnits = messageSourceAccessor
+                .getMessage(converterType.getFormattedUnits(unitMeasure, chartIntervalString));
+
+        List<GraphDetail> graphDetails = new ArrayList<>();
+        GraphDetail graphDetail = new GraphDetail(pointId, leftYLabelUnits, 1, "left", false, ChartColorsEnum.GREEN, interval);
+        // Set minimum value for Y-axis
+        graphDetail.setyMin(yMin);
+        graphDetail.setConverterType(converterType);
+        graphDetails.add(graphDetail);
+
+        Instant start = new DateTime(startDate).withTimeAtStartOfDay().toInstant();
+        Instant stop = new DateTime(endDate).withTimeAtStartOfDay().plusDays(1).toInstant();
+
+        Map<String, Object> graphAsJSON = highChartService.getMeterGraphData(graphDetails, start, stop, yMin, yMax, graphType,
+                userContext);
         return graphAsJSON;
     }
 

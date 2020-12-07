@@ -59,9 +59,9 @@
                                     </cti:checkRolesAndProperties>
                                 </c:otherwise>
                             </c:choose>
-                        </cm:dropdown>    
-                    </td>      
-                </cti:checkRolesAndProperties>         
+                        </cm:dropdown>
+                    </td>
+                </cti:checkRolesAndProperties>
             </tr>
         </c:forEach>
     </tbody>

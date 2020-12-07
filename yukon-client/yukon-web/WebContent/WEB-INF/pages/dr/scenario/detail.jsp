@@ -203,7 +203,6 @@
         </div>
     </div>
     
-    <cti:includeScript link="HIGH_STOCK"/>
     <cti:includeScript link="/resources/js/common/yukon.assetAvailability.pieChart.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.dr.estimated.load.js"/>
     <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>

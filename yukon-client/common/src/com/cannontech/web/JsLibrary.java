@@ -44,6 +44,7 @@ public enum JsLibrary {
     JQUERY_UI_WIDGET("/resources/js/lib/fileupload/jquery.ui.widget.js"), // https://github.com/blueimp/jQuery-File-Upload/wiki/Basic-plugin
 
     YUKON_FLOTCHARTS("/resources/js/common/yukon.flot.js"), //in-house
+    YUKON_HIGHCHART("/resources/js/common/yukon.highChart.js"), //in-house
     JQUERY_FLOTCHARTS("/resources/js/lib/flotcharts/jquery.flot.min.js"), // http://www.flotcharts.org/
     JQUERY_FLOTCHARTS_PIE("/resources/js/lib/flotcharts/jquery.flot.pie.min.js"), // http://www.flotcharts.org/
     JQUERY_FLOTCHARTS_SELECTION("/resources/js/lib/flotcharts/jquery.flot.selection.min.js"), // http://www.flotcharts.org/

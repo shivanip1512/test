@@ -52,7 +52,7 @@
     <br>
     <div class="filter-container">
         <span class="fr cp close js-close-trend-btn"><cti:icon icon="icon-close-x"/></span>
-        <div id="trend-graph_${pointId}"/>
+        <div id="trend-graph_${pointId}"></div>
     </div>
     <br>
     <br>
