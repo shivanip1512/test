@@ -33,8 +33,7 @@ public class LoadProgramItronDetailTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
         setRefreshPage(false);
 
-        Map<String, Pair<JSONObject, JSONObject>> pair = LoadProgramCreateService
-                .createItronProgramAllFieldsWithItronCycleGear();
+        Map<String, Pair<JSONObject, JSONObject>> pair = LoadProgramCreateService.createItronProgramAllFieldsWithItronCycleGear();
 
         Pair<JSONObject, JSONObject> programPair = pair.get("LoadProgram");
         JSONObject request = programPair.getValue0();
@@ -77,8 +76,7 @@ public class LoadProgramItronDetailTests extends SeleniumTestSetup {
     public void ldPrgmItronDetail_Delete_Success() {
         setRefreshPage(true);
 
-        Map<String, Pair<JSONObject, JSONObject>> pair = LoadProgramCreateService
-                .createItronProgramAllFieldsWithItronCycleGear();
+        Map<String, Pair<JSONObject, JSONObject>> pair = LoadProgramCreateService.createItronProgramAllFieldsWithItronCycleGear();
 
         Pair<JSONObject, JSONObject> programPair = pair.get("LoadProgram");
         JSONObject request = programPair.getValue0();

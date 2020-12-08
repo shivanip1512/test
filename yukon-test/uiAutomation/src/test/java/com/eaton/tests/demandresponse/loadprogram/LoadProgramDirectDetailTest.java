@@ -21,83 +21,81 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
 import com.eaton.pages.demandresponse.loadprogram.LoadProgramDetailPage;
 
-public class LoadProgramDirectDetailTest extends SeleniumTestSetup{
+public class LoadProgramDirectDetailTest extends SeleniumTestSetup {
 
-	private DriverExtensions driverExt;
-	private LoadProgramDetailPage detailPage;
-	private String ldPrgmName;
-	private Integer ldPgmId;
+    private DriverExtensions driverExt;
+    private LoadProgramDetailPage detailPage;
+    private String ldPrgmName;
+    private Integer ldPgmId;
 
-	@BeforeClass(alwaysRun = true)
-	public void beforeClass() {
-		driverExt = getDriverExt();
-		setRefreshPage(false);
+    @BeforeClass(alwaysRun = true)
+    public void beforeClass() {
+        driverExt = getDriverExt();
+        setRefreshPage(false);
 
-		Map<String, Pair<JSONObject, JSONObject>> pair = LoadProgramCreateService
-				.createDirectProgramAllFieldsWithTimeRefreshGear();
+        Map<String, Pair<JSONObject, JSONObject>> pair = LoadProgramCreateService.createDirectProgramAllFieldsWithTimeRefreshGear();
 
-		Pair<JSONObject, JSONObject> programPair = pair.get("LoadProgram");
-		JSONObject request = programPair.getValue0();
-		JSONObject response = programPair.getValue1();
-		ldPgmId = response.getInt("programId");
+        Pair<JSONObject, JSONObject> programPair = pair.get("LoadProgram");
+        JSONObject request = programPair.getValue0();
+        JSONObject response = programPair.getValue1();
+        ldPgmId = response.getInt("programId");
 
-		ldPrgmName = request.getString("name");
+        ldPrgmName = request.getString("name");
 
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + ldPgmId);
-		detailPage = new LoadProgramDetailPage(driverExt, ldPgmId);
-	}
+        navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + ldPgmId);
+        detailPage = new LoadProgramDetailPage(driverExt, ldPgmId);
+    }
 
-	@AfterMethod
-	public void afterMethod() {
-		if (getRefreshPage()) {
-			refreshPage(detailPage);
-		}
-		setRefreshPage(false);
-	}
+    @AfterMethod
+    public void afterMethod() {
+        if (getRefreshPage()) {
+            refreshPage(detailPage);
+        }
+        setRefreshPage(false);
+    }
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmDirectDetail_Copy_Success() {
-		setRefreshPage(true);
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmDirectDetail_Copy_Success() {
+        setRefreshPage(true);
 
-		final String copyName = "Copy of " + ldPrgmName;
+        final String copyName = "Copy of " + ldPrgmName;
 
-		final String EXPECTED_MSG = copyName + " copied successfully.";
+        final String EXPECTED_MSG = copyName + " copied successfully.";
 
-		CopyLoadProgramModal modal = detailPage.showCopyLoadProgramModal();
-		modal.getName().setInputValue(copyName);
-		modal.clickOkAndWaitForModalToClose();
+        CopyLoadProgramModal modal = detailPage.showCopyLoadProgramModal();
+        modal.getName().setInputValue(copyName);
+        modal.clickOkAndWaitForModalToClose();
 
-		waitForPageToLoad("Load Program: " + copyName, Optional.of(8));
-		String userMsg = detailPage.getUserMessage();
+        waitForPageToLoad("Load Program: " + copyName, Optional.of(8));
+        String userMsg = detailPage.getUserMessage();
 
-		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-	}
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+    }
 
-	@Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
-	public void ldPrgmDirectDetail_Delete_Success() {
-		setRefreshPage(true);
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmDirectDetail_Delete_Success() {
+        setRefreshPage(true);
 
-		Map<String, Pair<JSONObject, JSONObject>> pair = LoadProgramCreateService
-				.createItronProgramAllFieldsWithItronCycleGear();
+        Map<String, Pair<JSONObject, JSONObject>> pair = LoadProgramCreateService.createItronProgramAllFieldsWithItronCycleGear();
 
-		Pair<JSONObject, JSONObject> programPair = pair.get("LoadProgram");
-		JSONObject request = programPair.getValue0();
-		JSONObject response = programPair.getValue1();
-		Integer id = response.getInt("programId");	
-		String name = request.getString("name");
-		
-		navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + id);
-		detailPage = new LoadProgramDetailPage(driverExt, id);
+        Pair<JSONObject, JSONObject> programPair = pair.get("LoadProgram");
+        JSONObject request = programPair.getValue0();
+        JSONObject response = programPair.getValue1();
+        Integer id = response.getInt("programId");
+        String name = request.getString("name");
 
-		final String EXPECTED_MSG = name + " deleted successfully.";
+        navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + id);
+        detailPage = new LoadProgramDetailPage(driverExt, id);
 
-		ConfirmModal confirmModal = detailPage.showDeleteLoadProgramModal();
-		confirmModal.clickOkAndWaitForModalToClose();
+        final String EXPECTED_MSG = name + " deleted successfully.";
 
-		waitForPageToLoad("Setup", Optional.empty());
-		DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_PROGRAM);
-		String userMsg = setupPage.getUserMessage();
+        ConfirmModal confirmModal = detailPage.showDeleteLoadProgramModal();
+        confirmModal.clickOkAndWaitForModalToClose();
 
-		assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-	}
+        waitForPageToLoad("Setup", Optional.empty());
+        DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_PROGRAM);
+        String userMsg = setupPage.getUserMessage();
+
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
+    }
 }
