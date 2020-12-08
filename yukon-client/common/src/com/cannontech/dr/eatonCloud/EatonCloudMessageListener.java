@@ -1,7 +1,5 @@
 package com.cannontech.dr.eatonCloud;
 
-import javax.jms.Message;
-
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -21,7 +19,7 @@ public class EatonCloudMessageListener {
     @Autowired private IDatabaseCache dbCache;
     @Autowired private RecentEventParticipationService recentEventParticipationService;
 
-    public void handleCyclingControlMessage(Message message, int groupId, Instant startTime, Instant endTime, int dutyCyclePercent) {
+    public void handleCyclingControlMessage(int groupId, Instant startTime, Instant endTime, int dutyCyclePercent) {
         Duration controlDuration = new Duration(startTime, endTime);
         int controlDurationSeconds = controlDuration.toStandardSeconds().getSeconds();
 
