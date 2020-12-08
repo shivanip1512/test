@@ -540,7 +540,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4EAX, "Delivered kVArh (Rate D kVArh)");
         missing.put(PaoType.RFN530S4EAX, "Delivered kVArh");
         missing.put(PaoType.RFN530S4EAX, "Delivered kW");
-        missing.put(PaoType.RFN530S4EAX, "Delivered kWh");
         missing.put(PaoType.RFN530S4EAX, "Max Voltage Phase A");
         missing.put(PaoType.RFN530S4EAX, "Max Voltage Phase B");
         missing.put(PaoType.RFN530S4EAX, "Max Voltage Phase C");
@@ -681,7 +680,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4EAXR, "Delivered kVArh (Rate D kVArh)");
         missing.put(PaoType.RFN530S4EAXR, "Delivered kVArh");
         missing.put(PaoType.RFN530S4EAXR, "Delivered kW");
-        missing.put(PaoType.RFN530S4EAXR, "Delivered kWh");
         missing.put(PaoType.RFN530S4EAXR, "Max Voltage Phase A");
         missing.put(PaoType.RFN530S4EAXR, "Max Voltage Phase B");
         missing.put(PaoType.RFN530S4EAXR, "Max Voltage Phase C");
@@ -811,7 +809,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4ERX, "Delivered kVArh (Rate D kVArh)");
         missing.put(PaoType.RFN530S4ERX, "Delivered kVArh");
         missing.put(PaoType.RFN530S4ERX, "Delivered kW");
-        missing.put(PaoType.RFN530S4ERX, "Delivered kWh");
         missing.put(PaoType.RFN530S4ERX, "Max Voltage Phase A");
         missing.put(PaoType.RFN530S4ERX, "Max Voltage Phase B");
         missing.put(PaoType.RFN530S4ERX, "Max Voltage Phase C");
@@ -945,7 +942,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4ERXR, "Delivered kVArh (Rate D kVArh)");
         missing.put(PaoType.RFN530S4ERXR, "Delivered kVArh");
         missing.put(PaoType.RFN530S4ERXR, "Delivered kW");
-        missing.put(PaoType.RFN530S4ERXR, "Delivered kWh");
         missing.put(PaoType.RFN530S4ERXR, "Max Voltage Phase A");
         missing.put(PaoType.RFN530S4ERXR, "Max Voltage Phase B");
         missing.put(PaoType.RFN530S4ERXR, "Max Voltage Phase C");

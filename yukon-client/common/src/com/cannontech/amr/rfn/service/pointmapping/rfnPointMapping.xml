@@ -297,8 +297,7 @@
         <paoType value="RFN530S4ERX" />
         <paoType value="RFN530S4ERXR" />
 
-<!-- Does not apply to RFN-530S4e meters -->
-        <point name="Delivered kWh" icdExcludedTypes="RFN530S4ERXR,RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR">
+        <point name="Delivered kWh">
             <uom>Wh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>

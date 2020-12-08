@@ -957,7 +957,7 @@ Itron Sentinel:
 
 #  Table 10 - RFN-500 Node in Landis & Gyr S4e and S4x
 RFN-500 Node in Landis & Gyr S4e and S4x:
-    - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4                                              ], Models: *____-____-650 }
+    - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4                                              ], Models: *ADTR-RDTR-650 }
     - Received Watthours:                         { Unit: *Wh,    Modifiers: [ *Q2, *Q3                                              ], Models: *ADTR-RDTR-650 }
     - Total Watthours:                            { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4                                    ], Models: *ADTR-RDTR-650 }
     - Net Watthours:                              { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net                              ], Models: *ADTR-RDTR-___ }
