@@ -64,9 +64,6 @@
             </tags:sectionContainer2>
             <div id='js-gear-fields-container'>
                 <!-- Include jsp for Gear type -->
-                <c:if test="${selectedGearType == 'EatonCloud' }">
-                    <!-- TODO: include eatonCloud.jsp -->
-                </c:if>
                 <c:if
                     test="${selectedGearType == 'SmartCycle' ||
                         selectedGearType == 'TrueCycle' || selectedGearType == 'MagnitudeCycle' || selectedGearType == 'TargetCycle'}">
@@ -93,8 +90,8 @@
                 <c:if test="${selectedGearType == 'HoneywellSetpoint'}">
                     <%@ include file="honeywellSetpoint.jsp" %>
                 </c:if>
-                <c:if test="${selectedGearType == 'ItronCycle'}">
-                    <%@ include file="itronCycle.jsp" %>
+                <c:if test="${selectedGearType == 'ItronCycle' || selectedGearType == 'EatonCloudCycle'}">
+                    <%@ include file="itronOrEatonCloudCycle.jsp" %>
                 </c:if>
                 <c:if test="${selectedGearType == 'NestStandardCycle'}">
                     <%@ include file="nestStandardCycle.jsp" %>
