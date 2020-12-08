@@ -1,4 +1,4 @@
-package com.cannontech.dr.pxmw.helper;
+package com.cannontech.dr.pxmw.model;
 
 import java.util.Arrays;
 import java.util.Map;

@@ -3,6 +3,7 @@ package com.cannontech.simulators.pxmw.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
 
 import com.cannontech.dr.pxmw.model.v1.PxMWChannelDataV1;
@@ -15,9 +16,25 @@ import com.cannontech.dr.pxmw.model.v1.PxMWErrorV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWErrorsV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 
 public class PxMWDataV1 extends PxMWDataGenerator {
 
+    public Object token() {
+        if (status == HttpStatus.UNAUTHORIZED.value()) {
+            return new PxMWErrorsV1(List.of(new PxMWErrorV1("401", "Unauthorized")));
+        }
+        if (status == HttpStatus.FORBIDDEN.value()) {
+            return new PxMWErrorsV1(List.of(new PxMWErrorV1("403", "User account has been locked out. Please try again after some time.")));
+        }
+        
+        int length = 120;
+        boolean useLetters = true;
+        boolean useNumbers = true;
+        String generatedString = RandomStringUtils.random(length, useLetters, useNumbers);
+        return new PxMWTokenV1(generatedString);
+    }
+    
     public Object deviceprofileV1(String id) {
         PxMWChannelV1 channel = new PxMWChannelV1("12343",
                 "sRelayStatus");
