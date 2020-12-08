@@ -71,7 +71,7 @@ public class GatewayDetailController {
             location.setLongitude(paoLocation.getLongitude());
         }
         model.addAttribute("coordinates", location);
-        helper.addText(model, userContext);
+        helper.addGatewayMessages(model, userContext);
         
         if (gateway.getLocation() != null) {
             FeatureCollection geojson = paoLocationService.getFeatureCollection(Lists.newArrayList(gateway.getLocation()));

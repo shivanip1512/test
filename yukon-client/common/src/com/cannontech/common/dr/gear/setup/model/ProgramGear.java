@@ -2,6 +2,7 @@ package com.cannontech.common.dr.gear.setup.model;
 
 import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.common.dr.gear.setup.fields.BeatThePeakGearFields;
+import com.cannontech.common.dr.gear.setup.fields.EatonCloudCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeSetpointGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
@@ -63,7 +64,8 @@ public class ProgramGear implements DBPersistentConverter<LMProgramDirectGear> {
         @JsonSubTypes.Type(value = TrueCycleGearFields.class, name = "TrueCycle"),
         @JsonSubTypes.Type(value = MagnitudeCycleGearFields.class, name = "MagnitudeCycle"),
         @JsonSubTypes.Type(value = TargetCycleGearFields.class, name = "TargetCycle"),
-        @JsonSubTypes.Type(value = MeterDisconnectGearFields.class, name = "MeterDisconnect")
+        @JsonSubTypes.Type(value = MeterDisconnectGearFields.class, name = "MeterDisconnect"),
+        @JsonSubTypes.Type(value = EatonCloudCycleGearFields.class, name = "EatonCloudCycle")
     })
     
     private ProgramGearFields fields;

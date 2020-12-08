@@ -77,7 +77,7 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
         }
 
         if (!newStatus.getLastUpdate().isAfter(oldStatus.getLastUpdate())) {
-            log.info("Status recieved is not newer then existing status. Discarding the record. \nNew Status {} \nExisting status {}",
+            log.info("Status received is not newer then existing status. Discarding the record. \nNew Status {} \nExisting status {}",
                      newStatus,
                      oldStatus);
             return;
@@ -95,7 +95,7 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
         
         if (newStatus.getStatus() != ProgrammingStatus.IDLE) {
             if (oldStatus.getSource().isOldFirmware()) {
-                log.info("Status recieved is not idle, but existing status was old firmware. Discarding the record. \nNew Status {} \nExisting status {}",
+                log.info("Status received is not idle, but existing status was old firmware. Discarding the record. \nNew Status {} \nExisting status {}",
                         newStatus,
                         oldStatus);
                return;
@@ -106,13 +106,13 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
             MeterProgram assignedProgram = meterProgrammingDao.getProgramByDeviceId(deviceId);
             if (!assignedProgram.getGuid().equals(newStatus.getReportedGuid())) {
                 if (newStatus.getStatus() == ProgrammingStatus.FAILED) {
-                    log.info("Status recieved is failure, but is for a GUID not currently assigned to the device. Discarding the record. \nNew Status {} \nExisting status {}",
+                    log.info("Status received is failure, but is for a GUID not currently assigned to the device. Discarding the record. \nNew Status {} \nExisting status {}",
                              newStatus,
                              oldStatus);
                     return;
                 }
                 if (newStatus.getStatus() != ProgrammingStatus.IDLE) {
-                    log.info("Status recieved is not idle, but is for a GUID not currently assigned to the device. Discarding the record. \nNew Status {} \nExisting status {}",
+                    log.info("Status received is not idle, but is for a GUID not currently assigned to the device. Discarding the record. \nNew Status {} \nExisting status {}",
                             newStatus,
                             oldStatus);
                     return;
@@ -126,7 +126,7 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
                             oldStatus);
                     return;
                 }
-                log.info("Status recieved is idle and guids are mismatched. Updating status to mismatched");
+                log.info("Status received is idle and guids are mismatched. Updating status to mismatched");
                 newStatus.setStatus(ProgrammingStatus.MISMATCHED);
             } else {
                 // If a send is in progress, a failure event should only interrupt the current upload
@@ -134,7 +134,7 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
                 if (oldStatus.getStatus() == ProgrammingStatus.UPLOADING
                         && newStatus.getStatus() == ProgrammingStatus.FAILED
                         && newStatus.getLastUpdate().isBefore(timeoutThreshold)) {
-                    log.info("Status recieved is failure, but existing status is uploading and timeout has not passed. Discarding the record. \nNew Status {} \nExisting status {}",
+                    log.info("Status received is failure, but existing status is uploading and timeout has not passed. Discarding the record. \nNew Status {} \nExisting status {}",
                              newStatus,
                              oldStatus);
                     return;
@@ -142,7 +142,7 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
             }
         } catch (@SuppressWarnings("unused") NotFoundException ex) {
             if (newStatus.getStatus() != ProgrammingStatus.IDLE) {
-                log.info("Status recieved is not idle, but no GUID is assigned to the device. Discarding the record. \nNew Status {} \nExisting status {}",
+                log.info("Status received is not idle, but no GUID is assigned to the device. Discarding the record. \nNew Status {} \nExisting status {}",
                         newStatus,
                         oldStatus);
                 return;

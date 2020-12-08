@@ -31,7 +31,9 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
     public void beforeClass() {
         driverExt = getDriverExt();
         Pair<JSONObject, JSONObject> pair = new VirtualDeviceCreateBuilder.Builder(Optional.empty())
-                .withEnable(Optional.of(true)).create();
+                .withEnable(Optional.of(true))
+                .create();
+        
         virtualDeviceId = pair.getValue1().getInt("id");
         virtualDeviceName = pair.getValue1().getString("name");
         navigate(Urls.Assets.VIRTUAL_DEVICES_EDIT + "/" + virtualDeviceId); 
@@ -59,7 +61,8 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
     public void virtualDeviceEdit_AllFieldsEnabled_Success() {
         // Create disabled virtual device via API
         Pair<JSONObject, JSONObject> pair = new VirtualDeviceCreateBuilder.Builder(Optional.empty())
-                .withEnable(Optional.of(false)).create();
+                .withEnable(Optional.of(true))
+                .create();
         int id = pair.getValue1().getInt("id");
         String virtualDevice = pair.getValue1().getString("name");
         String EXPECTED_MSG = "Edit " + virtualDevice + " saved successfully.";
@@ -81,7 +84,8 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
     public void virtualDeviceEdit_AllFieldsDisabled_Success() {
         // Create disabled virtual device via API
         Pair<JSONObject, JSONObject> pair = new VirtualDeviceCreateBuilder.Builder(Optional.empty())
-                .withEnable(Optional.of(true)).create();
+                .withEnable(Optional.of(false))
+                .create();
         int id = pair.getValue1().getInt("id");
         String virtualDevice = pair.getValue1().getString("name");
         String EXPECTED_MSG = "Edit " + virtualDevice + " saved successfully.";
@@ -104,9 +108,10 @@ public class VirtualDevicesEditTests extends SeleniumTestSetup {
         EditVirtualDeviceModal editVirtualDeviceModal = detailPage.showAndWaitEditVirtualDeviceModal();
         // Validate the Labels are correct
         List<String> labels = editVirtualDeviceModal.getFieldLabels();
-        softly.assertThat(labels.size()).isEqualTo(2);
+        softly.assertThat(labels.size()).isEqualTo(3);
         softly.assertThat(labels.get(0)).isEqualTo("Name:");
-        softly.assertThat(labels.get(1)).contains("Status:");
+        softly.assertThat(labels.get(1)).contains("Type:");
+        softly.assertThat(labels.get(2)).contains("Status:");
         softly.assertAll();
     }
 

@@ -17,15 +17,15 @@ import com.github.javafaker.Faker;
 
 public class VirtualDeviceCreateService {
 
-    public static Pair<JSONObject, JSONObject> buildAndCreateVirtualDeviceOnlyRequiredFields() {
+    public static Pair<JSONObject, JSONObject> createVirtualDeviceOnlyRequiredFields() {
         return new VirtualDeviceCreateBuilder.Builder(Optional.empty())
                 .create();
     }    
 
-    public static Map<String, Pair<JSONObject, JSONObject>> buildAndCreateVirtualDeviceWithAnalogPoint() {
+    public static Map<String, Pair<JSONObject, JSONObject>> createVirtualDeviceWithAnalogPoint() {
         HashMap<String, Pair<JSONObject, JSONObject>> hmap = new HashMap<>();
 
-        Pair<JSONObject, JSONObject> virtualDevicePair = buildAndCreateVirtualDeviceOnlyRequiredFields();
+        Pair<JSONObject, JSONObject> virtualDevicePair = createVirtualDeviceOnlyRequiredFields();
 
         JSONObject response = virtualDevicePair.getValue1();
         Integer paoId = response.getInt("id");
@@ -38,10 +38,10 @@ public class VirtualDeviceCreateService {
         return hmap;
     }
 
-    public static Map<String, Pair<JSONObject, JSONObject>> buildAndCreateVirtualDeviceWithStatusPoint() {
+    public static Map<String, Pair<JSONObject, JSONObject>> createVirtualDeviceWithStatusPoint() {
         HashMap<String, Pair<JSONObject, JSONObject>> hmap = new HashMap<>();
 
-        Pair<JSONObject, JSONObject> virtualDevicePair = buildAndCreateVirtualDeviceOnlyRequiredFields();
+        Pair<JSONObject, JSONObject> virtualDevicePair = createVirtualDeviceOnlyRequiredFields();
 
         JSONObject response = virtualDevicePair.getValue1();
         Integer paoId = response.getInt("id");
@@ -54,10 +54,10 @@ public class VirtualDeviceCreateService {
         return hmap;
     }
 
-    public static Map<String, Pair<JSONObject, JSONObject>> buildAndCreateVirtualDeviceWithCalcAnalogPoint() {
+    public static Map<String, Pair<JSONObject, JSONObject>> createVirtualDeviceWithCalcAnalogPoint() {
         HashMap<String, Pair<JSONObject, JSONObject>> hmap = new HashMap<>();
 
-        Pair<JSONObject, JSONObject> virtualDevicePair = buildAndCreateVirtualDeviceOnlyRequiredFields();
+        Pair<JSONObject, JSONObject> virtualDevicePair = createVirtualDeviceOnlyRequiredFields();
 
         JSONObject response = virtualDevicePair.getValue1();
         Integer paoId = response.getInt("id");
@@ -70,10 +70,10 @@ public class VirtualDeviceCreateService {
         return hmap;
     }
 
-    public static Map<String, Pair<JSONObject, JSONObject>> buildAndCreateVirtualDeviceWithCalcStatusPoint() {
+    public static Map<String, Pair<JSONObject, JSONObject>> createVirtualDeviceWithCalcStatusPoint() {
         HashMap<String, Pair<JSONObject, JSONObject>> hmap = new HashMap<>();
 
-        Pair<JSONObject, JSONObject> virtualDevicePair = buildAndCreateVirtualDeviceOnlyRequiredFields();
+        Pair<JSONObject, JSONObject> virtualDevicePair = createVirtualDeviceOnlyRequiredFields();
 
         JSONObject response = virtualDevicePair.getValue1();
         Integer paoId = response.getInt("id");
@@ -86,10 +86,10 @@ public class VirtualDeviceCreateService {
         return hmap;
     }
 
-    public static Map<String, Pair<JSONObject, JSONObject>> buildAndCreateVirtualDeviceWithPulseAccumulatorPoint() {
+    public static Map<String, Pair<JSONObject, JSONObject>> createVirtualDeviceWithPulseAccumulatorPoint() {
         HashMap<String, Pair<JSONObject, JSONObject>> hmap = new HashMap<>();
 
-        Pair<JSONObject, JSONObject> virtualDevicePair = buildAndCreateVirtualDeviceOnlyRequiredFields();
+        Pair<JSONObject, JSONObject> virtualDevicePair = createVirtualDeviceOnlyRequiredFields();
 
         JSONObject response = virtualDevicePair.getValue1();
         Integer paoId = response.getInt("id");
@@ -102,10 +102,10 @@ public class VirtualDeviceCreateService {
         return hmap;
     }
 
-    public static Map<String, Pair<JSONObject, JSONObject>> buildAndCreateVirtualDeviceWithDemandAccumulatorPoint() {
+    public static Map<String, Pair<JSONObject, JSONObject>> createVirtualDeviceWithDemandAccumulatorPoint() {
         HashMap<String, Pair<JSONObject, JSONObject>> hmap = new HashMap<>();
 
-        Pair<JSONObject, JSONObject> virtualDevicePair = buildAndCreateVirtualDeviceOnlyRequiredFields();
+        Pair<JSONObject, JSONObject> virtualDevicePair = createVirtualDeviceOnlyRequiredFields();
 
         JSONObject response = virtualDevicePair.getValue1();
         Integer paoId = response.getInt("id");
@@ -118,10 +118,10 @@ public class VirtualDeviceCreateService {
         return hmap;
     }
 
-    public static Map<String, Pair<JSONObject, JSONObject>> buildAndCreateVirtualDeviceWithAllPoints(Optional<String> pointName) {
+    public static Map<String, Pair<JSONObject, JSONObject>> createVirtualDeviceWithAllPoints(Optional<String> pointName) {
         HashMap<String, Pair<JSONObject, JSONObject>> hmap = new HashMap<>();
 
-        Pair<JSONObject, JSONObject> virtualDevicePair = buildAndCreateVirtualDeviceOnlyRequiredFields();
+        Pair<JSONObject, JSONObject> virtualDevicePair = createVirtualDeviceOnlyRequiredFields();
 
         JSONObject response = virtualDevicePair.getValue1();
         Integer paoId = response.getInt("id");
@@ -149,7 +149,7 @@ public class VirtualDeviceCreateService {
      * @param count = number of virtual devices to be created
      * @return
      */
-    public static Map<String, Pair<JSONObject, JSONObject>> buildAndCreateMultipleVirtualDeviceRequiredFields(Integer count) {        
+    public static Map<String, Pair<JSONObject, JSONObject>> createMultipleVirtualDeviceRequiredFields(Integer count) {        
         HashMap<String, Pair<JSONObject, JSONObject>> map = new HashMap<>();        
              
         String deviceName;
@@ -182,7 +182,7 @@ public class VirtualDeviceCreateService {
         return map;
     }
     
-    public static Map<String, Pair<JSONObject, JSONObject>> buildAndCreateVirtualDeviceRequiredFieldsWithMultiplePoints(Integer count) {   
+    public static Map<String, Pair<JSONObject, JSONObject>> createVirtualDeviceRequiredFieldsWithMultiplePoints(Integer count) {   
         HashMap<String, Pair<JSONObject, JSONObject>> map = new HashMap<>();
              
         String u = UUID.randomUUID().toString().replace("-", "");

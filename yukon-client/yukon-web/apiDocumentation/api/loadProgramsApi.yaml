@@ -7,6 +7,7 @@ post-operation:
       API to create any type of load program.
       Below are the supported load program.
       - Direct
+      - Eaton Cloud
       - ecobee
       - Honeywell
       - Itron
@@ -19,12 +20,14 @@ post-operation:
           schema:
             oneOf:
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_DIRECT_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_EATON_CLOUD_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ECOBEE_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_HONEYWELL_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_SEP_PROGRAM'
               
+              - $ref: '../schemas/loadProgramsSchema.yaml#/EatonCloudCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/ItronCycle'
@@ -40,6 +43,8 @@ post-operation:
           examples:
             Direct Program:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Direct Program' 
+            Eaton Cloud Program:
+              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
             ecobee Program:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
             HoneyWell Program:
@@ -61,6 +66,7 @@ post-operation:
               schema:
                 oneOf:
                   - $ref: '../schemas/loadProgramsSchema.yaml#/LM_DIRECT_PROGRAM'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/LM_EATON_CLOUD_PROGRAM'
                   - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ECOBEE_PROGRAM'
                   - $ref: '../schemas/loadProgramsSchema.yaml#/LM_HONEYWELL_PROGRAM'
                   - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
@@ -70,6 +76,8 @@ post-operation:
               examples:
                 Direct Program:
                   $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Direct Program' 
+                Eaton Cloud Program:
+                  $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
                 ecobee Program:
                   $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
                 HoneyWell Program:
@@ -90,6 +98,7 @@ get-update-delete-operation:
       API to retrieve any type of load program based on passed id.
       Below are the supported load program.
       - Direct
+      - Eaton Cloud
       - ecobee
       - Honeywell
       - Itron
@@ -112,6 +121,7 @@ get-update-delete-operation:
             schema:
              oneOf:
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_DIRECT_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_EATON_CLOUD_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ECOBEE_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_HONEYWELL_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
@@ -122,6 +132,8 @@ get-update-delete-operation:
             examples:
               Direct Program:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Direct Program' 
+              Eaton Cloud Program:
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
               ecobee Program:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
               HoneyWell Program:
@@ -132,6 +144,8 @@ get-update-delete-operation:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Meter Disconnect Program'
               SEP Program:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/SEP Program' 
+
+
   put:
     tags:
       - Load Program
@@ -140,6 +154,7 @@ get-update-delete-operation:
       API to update any type of load program based on passed id.
       Below are the supported load program.
       - Direct
+      - Eaton Cloud
       - ecobee
       - Honeywell
       - Itron
@@ -160,12 +175,14 @@ get-update-delete-operation:
           schema:
            oneOf:
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_DIRECT_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_EATON_CLOUD_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ECOBEE_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_HONEYWELL_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_SEP_PROGRAM'
               
+              - $ref: '../schemas/loadProgramsSchema.yaml#/EatonCloudCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/ItronCycle'
@@ -181,6 +198,8 @@ get-update-delete-operation:
           examples:
             Direct Program:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Direct Program' 
+            Eaton Cloud Program:
+              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
             ecobee Program:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
             HoneyWell Program:
@@ -201,6 +220,7 @@ get-update-delete-operation:
             schema:
              oneOf:
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_DIRECT_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_EATON_CLOUD_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ECOBEE_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_HONEYWELL_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
@@ -210,6 +230,8 @@ get-update-delete-operation:
             examples:
               Direct Program:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Direct Program' 
+              Eaton Cloud Program:
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
               ecobee Program:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
               HoneyWell Program:
@@ -229,6 +251,7 @@ get-update-delete-operation:
       API to delete any type of load program based on passed id.
       Below are the supported load program.
       - Direct
+      - Eaton Cloud
       - ecobee
       - Honeywell
       - Itron

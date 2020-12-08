@@ -3,6 +3,7 @@ package com.eaton.pages.demandresponse.loadprogram;
 import java.util.Optional;
 
 import com.eaton.elements.Button;
+import com.eaton.elements.CheckboxElement;
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.Section;
 import com.eaton.elements.SelectBoxElement;
@@ -16,6 +17,7 @@ import com.eaton.elements.modals.gears.CreateItronPrgmGearModal;
 import com.eaton.elements.modals.gears.CreateMeterDisconnectPrgmModal;
 import com.eaton.elements.modals.gears.CreateSepPrgmGearModal;
 import com.eaton.elements.tabs.LoadGroupsTab;
+import com.eaton.elements.tabs.TabElement;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
@@ -30,6 +32,7 @@ public class LoadProgramCreatePage extends PageBase {
     private TimePickerElement stopTimeWindowOne;
     private TimePickerElement startTimeWindowTwo;
     private TimePickerElement stopTimeWindowTwo;
+    private TabElement tabContainer;
 
     public LoadProgramCreatePage(DriverExtensions driverExt) {
         super(driverExt);
@@ -112,7 +115,7 @@ public class LoadProgramCreatePage extends PageBase {
     }
     
     private void clickCreateGearAndWaitDisplayBlock(String describedBy) {
-        getGearsCreateBtn().click();
+        clickCreateGearAndWait(DESCRIBEDBY);
         
         SeleniumTestSetup.waitUntilModalOpenDisplayBlock(describedBy);
     }
@@ -132,7 +135,8 @@ public class LoadProgramCreatePage extends PageBase {
     public CreateHoneywellPrgmGearModal showCreateHoneywellPrgmGearModal() {
         clickCreateGearAndWait("gear-create-popup-LM_HONEYWELL_PROGRAM");
 
-        return new CreateHoneywellPrgmGearModal(this.driverExt, Optional.empty(), Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
+        return new CreateHoneywellPrgmGearModal(this.driverExt, Optional.empty(),
+                Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
     }
 
     public CreateItronPrgmGearModal showCreateItronPrgmGearModal(Optional<Integer> count) {
@@ -143,7 +147,6 @@ public class LoadProgramCreatePage extends PageBase {
             clickCreateGearAndWaitDisplayBlock(ITRON_GEAR_MODAL_DESCRIBEDBY);
         }
         
-
         return new CreateItronPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(ITRON_GEAR_MODAL_DESCRIBEDBY));
     }
 
@@ -153,10 +156,16 @@ public class LoadProgramCreatePage extends PageBase {
         return new CreateMeterDisconnectPrgmModal(this.driverExt, Optional.empty(), Optional.of("gear-create-popup-LM_METER_DISCONNECT_PROGRAM"));
     }
 
-    public CreateSepPrgmGearModal showCreateSepPrgmGearModal() {
-        clickCreateGearAndWait(DESCRIBEDBY);
+    public CreateSepPrgmGearModal showCreateSepPrgmGearModal(Optional<Integer> count) {
+        Integer c = count.orElse(1);
+        if (c.equals(1)) {
+            clickCreateGearAndWait("gear-create-popup-LM_SEP_PROGRAM");
+        } else {
+            clickCreateGearAndWaitDisplayBlock("gear-create-popup-LM_SEP_PROGRAM");
+        }
+        
 
-        return new CreateSepPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
+        return new CreateSepPrgmGearModal(this.driverExt, Optional.empty(), Optional.of("gear-create-popup-LM_SEP_PROGRAM"));
     }
 
     public SelectBoxElement getGears() {
@@ -167,5 +176,40 @@ public class LoadProgramCreatePage extends PageBase {
 
     public LoadGroupsTab getLoadGroupTab() {
         return new LoadGroupsTab(this.driverExt);
+    }
+
+    // Notification Tab
+    public CheckboxElement getProgramStart() {
+        return new CheckboxElement(this.driverExt, "js-program-start-check");
+    }
+
+    public CheckboxElement getProgramStop() {
+        return new CheckboxElement(this.driverExt, "js-program-stop-check");
+    }
+
+    public TextEditElement getProgramStartMinutes() {
+        return new TextEditElement(this.driverExt, "notification.programStartInMinutes");
+    }
+
+    public TextEditElement getProgramStopMinutes() {
+        return new TextEditElement(this.driverExt, "notification.programStopInMinutes");
+    }
+
+    public Section getPageSection(String sectionName) {
+        return new Section(this.driverExt, sectionName);
+    }
+
+    public TabElement getTabElement() {
+        return new TabElement(this.driverExt);
+    }
+
+    public SelectBoxElement getLoadGroupsSelectBox() {
+        tabContainer = new TabElement(driverExt);
+        return new SelectBoxElement(this.driverExt, tabContainer.getTabPanelByName("Load Groups"));
+    }
+
+    public SelectBoxElement getNotificationSelectBox() {
+        tabContainer = new TabElement(driverExt);
+        return new SelectBoxElement(this.driverExt, tabContainer.getTabPanelByName("Notification"));
     }
 }
