@@ -86,7 +86,7 @@ public class WebTable {
         long startTime = System.currentTimeMillis();
         String sortable = "";
         try {
-            while (sortable.equals("") && (System.currentTimeMillis() - startTime) < 10000) {
+            while (sortable.equals("") && (System.currentTimeMillis() - startTime) < 5000) {
                 List<WebElement> headers = getColumnHeaders();
 
                 WebElement header = headers.get(index);
@@ -129,29 +129,6 @@ public class WebTable {
         for (WebTableRow row : rows) {
             WebElement cell = row.getCellByIndex(index);
             cellRowsData.add(cell.getText());
-        }
-
-        return cellRowsData;
-    }
-
-    public List<String> getAllRowsTextForColumnByIndex(int index) {
-        List<WebTableRow> rows = getDataRowsFromBody();
-
-        List<String> cellRowsData = new ArrayList<>();
-        
-        long startTime = System.currentTimeMillis();
-        for (WebTableRow row : rows) {
-            String text = "";
-            try {
-                while(text.equals("") && (System.currentTimeMillis() - startTime) < 2000) {
-                    WebElement cell = row.getCellByIndex(index);
-                    text = cell.getText();
-                    if(!text.equals("")) {
-                        cellRowsData.add(text);   
-                    } 
-                }
-            } catch (StaleElementReferenceException ex)  {}
-            
         }
 
         return cellRowsData;
@@ -286,25 +263,29 @@ public class WebTable {
             }
         }        
     }
-
+    
     /**
-     * This method is being added to accommodate for the defect YUK-23130
-     * 
-     * @return
+     *  Waits for the table to clear filter
      */
-    private List<WebTableRow> getDataRowsFromBody() {
-        List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody:nth-child(2) tr"));
+    public void waitForClearFilter() {
+        Integer count = 1;
 
-        List<WebTableRow> newList = new ArrayList<>();
-        for (WebElement element : rowList) {
-
-            newList.add(new WebTableRow(this.driverExt, element));
-        }
-
-        return newList;
+        long startTime = System.currentTimeMillis();      
+        
+        while (count == 1 && ((System.currentTimeMillis() - startTime) < 2000)) {
+            try {
+                WebElement table = this.getTable();
+                
+                count = table.findElements(By.cssSelector("tbody tr")).size(); 
+                
+            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {
+            }
+        }        
     }
 
     public WebTableRow getDataRowByLinkName(String name) {
+        waitForSearch();
+        
         List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody tr"));
         
         WebElement element = rowList.stream().filter(x -> x.findElement(By.cssSelector("a")).getText().contains(name)).findFirst().orElseThrow();
@@ -313,8 +294,8 @@ public class WebTable {
     }
 
     public WebTableRow getDataRowByName(String name) {
-        List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody:nth-child(2) tr"));
-
+        List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody tr"));
+        
         WebElement element = rowList.stream().filter(x -> x.findElement(By.cssSelector("td:nth-child(1)")).getText().contains(name)).findFirst().orElseThrow();
 
         return new WebTableRow(this.driverExt, element);

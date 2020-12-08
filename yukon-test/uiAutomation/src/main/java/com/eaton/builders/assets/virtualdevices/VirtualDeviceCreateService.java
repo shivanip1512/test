@@ -87,7 +87,7 @@ public class VirtualDeviceCreateService {
         return hmap;
     }
 
-    public static Map<String, Pair<JSONObject, JSONObject>> buildAndCreateVirtualDeviceWithPulseAccumulatorPoint() {
+    public static Map<String, Pair<JSONObject, JSONObject>> createVirtualDeviceWithPulseAccumulatorPoint() {
         HashMap<String, Pair<JSONObject, JSONObject>> hmap = new HashMap<>();
 
         Pair<JSONObject, JSONObject> virtualDevicePair = createVirtualDeviceOnlyRequiredFields();
@@ -103,7 +103,7 @@ public class VirtualDeviceCreateService {
         return hmap;
     }
 
-    public static Map<String, Pair<JSONObject, JSONObject>> buildAndCreateVirtualDeviceWithDemandAccumulatorPoint() {
+    public static Map<String, Pair<JSONObject, JSONObject>> createVirtualDeviceWithDemandAccumulatorPoint() {
         HashMap<String, Pair<JSONObject, JSONObject>> hmap = new HashMap<>();
 
         Pair<JSONObject, JSONObject> virtualDevicePair = createVirtualDeviceOnlyRequiredFields();
@@ -119,7 +119,7 @@ public class VirtualDeviceCreateService {
         return hmap;
     }
 
-    public static Map<String, Pair<JSONObject, JSONObject>> buildAndCreateVirtualDeviceWithAllPoints(Optional<String> pointName) {
+    public static Map<String, Pair<JSONObject, JSONObject>> createVirtualDeviceWithAllPoints(Optional<String> pointName) {
         HashMap<String, Pair<JSONObject, JSONObject>> hmap = new HashMap<>();
 
         Pair<JSONObject, JSONObject> virtualDevicePair = createVirtualDeviceOnlyRequiredFields();

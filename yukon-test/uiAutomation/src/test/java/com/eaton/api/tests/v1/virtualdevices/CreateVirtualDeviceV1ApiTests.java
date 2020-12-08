@@ -102,8 +102,7 @@ public class CreateVirtualDeviceV1ApiTests {
      * =============================================================================
      * ===============================================================
      */
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ASSETS,
-            TestConstants.Features.VIRTUAL_DEVICES })
+    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ASSETS, TestConstants.Features.VIRTUAL_DEVICES })
     public void createVirtualDeviceApi_DuplicateName_422Unprocessable() {
         throw new SkipException("Failing in Yukon 7.5.0, but Working in Yukon 9.0.0");
         /*
@@ -123,8 +122,7 @@ public class CreateVirtualDeviceV1ApiTests {
     }
     
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ASSETS, TestConstants.Features.VIRTUAL_DEVICES })
-    public void createVirtualDeviceApi_MissingTypeDefaultsToVirtualSystem_201Success() {
-        SoftAssertions softly = new SoftAssertions();
+    public void createVirtualDeviceApi_MissingType_400BadRequest() {
         JSONObject request = new VirtualDeviceCreateBuilder.Builder(Optional.empty())
                 .build();
 
@@ -132,15 +130,7 @@ public class CreateVirtualDeviceV1ApiTests {
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post(APIs.VirtualDevice.CREATE_VIRTUALDEVICE, request.toString());
 
-        String res = createResponse.asString();
-        JSONObject response = new JSONObject(res);
-        
-        softly.assertThat(createResponse.statusCode()).isEqualTo(201);
-        softly.assertThat(response.getString("name")).isEqualTo(request.getString("name"));
-        softly.assertThat(response.getBoolean("enable")).isEqualTo(request.getBoolean("enable"));
-        softly.assertThat(response.getString("type")).isEqualTo("VIRTUAL_SYSTEM");
-        softly.assertThat(response.getInt("id")).isNotNull();
-        softly.assertAll();
+        assertThat(createResponse.statusCode()).isEqualTo(400);
     }
     
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ASSETS, TestConstants.Features.VIRTUAL_DEVICES })
@@ -189,11 +179,11 @@ public class CreateVirtualDeviceV1ApiTests {
     }
     
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ASSETS, TestConstants.Features.VIRTUAL_DEVICES })
-    public void createVirtualDeviceApi_NoFields_422Unprocessable() {
+    public void createVirtualDeviceApi_NoFields_400BadRequest() {
         JSONObject request = new JSONObject();
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post(APIs.VirtualDevice.CREATE_VIRTUALDEVICE, request.toString());
 
-        assertThat(createResponse.statusCode()).isEqualTo(422);
+        assertThat(createResponse.statusCode()).isEqualTo(400);
     }
 }

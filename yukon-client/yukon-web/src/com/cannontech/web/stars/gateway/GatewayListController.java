@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -38,7 +36,6 @@ import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.infrastructure.model.InfrastructureWarningDeviceCategory;
 import com.cannontech.mbean.ServerDatabaseCache;
@@ -50,7 +47,6 @@ import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 
 @Controller
 @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
@@ -70,32 +66,8 @@ public class GatewayListController {
     @Autowired private PaoNotesService paoNotesService;
 
     @GetMapping({ "/gateways", "/gateways/" })
-    public String gateways(ModelMap model, YukonUserContext userContext, FlashScope flash,
-            @DefaultSort(dir = Direction.asc, sort = "NAME") SortingParameters sorting) {
-        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-        // Check for gateways with duplicate colors
-        // If any are found, output a flash scope warning to notify the user
-        Multimap<Short, RfnGateway> duplicateColorGateways = rfnGatewayService.getDuplicateColorGateways(gateways);
-        if (!duplicateColorGateways.isEmpty()) {
-            StringBuilder gatewaysString = new StringBuilder();
-            for (Short color : duplicateColorGateways.keySet()) {
-                Set<String> gatewayNames = duplicateColorGateways.get(color)
-                        .stream()
-                        .map(RfnGateway::getName)
-                        .collect(Collectors.toSet());
-                gatewaysString.append(color)
-                        .append(" (")
-                        .append(StringUtils.join(gatewayNames, ", "))
-                        .append(") ");
-            }
-            YukonMessageSourceResolvable message = new YukonMessageSourceResolvable(
-                    "yukon.web.modules.operator.gateways.list.duplicateColors",
-                    gatewaysString);
-            flash.setWarning(message);
-        }
-        helper.addText(model, userContext);
+    public String gateways(ModelMap model) {
         model.addAttribute("infrastructureWarningDeviceCategory", InfrastructureWarningDeviceCategory.GATEWAY);
-        setSortingParamaters(model, userContext, sorting, gateways);
         return "gateways/list.jsp";
     }
 
@@ -103,26 +75,8 @@ public class GatewayListController {
     public String gatewaysList(ModelMap model, YukonUserContext userContext, FlashScope flash,
             @DefaultSort(dir = Direction.asc, sort = "NAME") SortingParameters sorting) {
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-        setSortingParamaters(model, userContext, sorting, gateways);
+        helper.buildGatewayListModel(model, userContext, sorting, gateways);
         return "gateways/gatewayTable.jsp";
-    }
-
-    private void setSortingParamaters(ModelMap model, YukonUserContext userContext, SortingParameters sorting,
-            List<RfnGateway> gateways) {
-        Direction dir = sorting.getDirection();
-        GatewayListSortBy sortBy = GatewayListSortBy.valueOf(sorting.getSort());
-        Collections.sort(gateways, GatewayControllerHelper.getGatewayListComparator(sorting, sortBy));
-        model.addAttribute("gateways", gateways);
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        for (GatewayListSortBy column : GatewayListSortBy.values()) {
-            String text = accessor.getMessage(column);
-            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
-            model.addAttribute(column.name(), col);
-        }
-        List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(gateways.stream()
-                                                                             .map(gateway -> gateway.getPaoIdentifier().getPaoId())
-                                                                             .collect(Collectors.toList()));
-        model.addAttribute("notesList", notesList);
     }
 
     @GetMapping("/gateways/firmwareDetails")
@@ -133,7 +87,7 @@ public class GatewayListController {
         FirmwareUpdatesSortBy sortBy = FirmwareUpdatesSortBy.valueOf(sorting.getSort());
         Collections.sort(firmwareUpdates, GatewayControllerHelper.getFirmwareComparator(sorting, sortBy));
         model.addAttribute("firmwareUpdates", firmwareUpdates);
-        helper.addText(model, userContext);
+        helper.addGatewayMessages(model, userContext);
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         for (FirmwareUpdatesSortBy column : FirmwareUpdatesSortBy.values()) {
             String text = accessor.getMessage(column);
@@ -151,7 +105,7 @@ public class GatewayListController {
         CertificateUpdatesSortBy sortBy = CertificateUpdatesSortBy.valueOf(sorting.getSort());
         Collections.sort(certUpdates, GatewayControllerHelper.getCertificateComparator(sorting, sortBy));
         model.addAttribute("certUpdates", certUpdates);
-        helper.addText(model, userContext);
+        helper.addGatewayMessages(model, userContext);
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         for (CertificateUpdatesSortBy column : CertificateUpdatesSortBy.values()) {
             String text = accessor.getMessage(column);

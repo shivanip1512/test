@@ -363,10 +363,12 @@ public class LoadGroupSetupControllerHelper {
             if (result.hasFieldErrors("relayUsage")) {
                 flash.setError(result.getFieldError("relayUsage"));
             }
+            break;
         case LM_GROUP_EATON_CLOUD:
             if (result.hasFieldErrors("relayUsage")) {
                 flash.setError(result.getFieldError("relayUsage"));
             }
+            break;
         }
     }
 

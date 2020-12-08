@@ -2,6 +2,7 @@ package com.eaton.tests.assets.virtualdevices;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -9,7 +10,6 @@ import java.util.Optional;
 import org.assertj.core.api.SoftAssertions;
 import org.javatuples.Pair;
 import org.json.JSONObject;
-import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -25,7 +25,7 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.assets.virtualdevices.VirtualDevicesListPage;
 import com.github.javafaker.Faker;
 
-public class VirtualDevicesListPageTests extends SeleniumTestSetup{
+public class VirtualDevicesListTests extends SeleniumTestSetup{
     
     private VirtualDevicesListPage listPage;
     private DriverExtensions driverExt;
@@ -41,7 +41,8 @@ public class VirtualDevicesListPageTests extends SeleniumTestSetup{
         faker = SeleniumTestSetup.getFaker();
         setRefreshPage(false);
         Builder builder = new VirtualDeviceCreateBuilder.Builder(Optional.empty());
-        String[] deviceNames = { "Virtual Device","virtual test device" , "Sample device", "test device", "test_device" };
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String[] deviceNames = { "Virtual Device" + timeStamp,"Virtual test device" + timeStamp, "Sample device" + timeStamp, "Test device" + timeStamp, "Zest device" + timeStamp};
         for(String deviceName : deviceNames) {
             builder.withName(deviceName).withEnable(Optional.of(faker.random().nextBoolean()));
             Pair<JSONObject, JSONObject> pair = builder.create();
@@ -75,7 +76,7 @@ public class VirtualDevicesListPageTests extends SeleniumTestSetup{
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS  })
     public void virtualDevicesList_ColumnHeaders_Correct() {
         SoftAssertions softly = new SoftAssertions();
-        final int EXPECTED_COUNT = 2;
+        final int EXPECTED_COUNT = 3;
 
         List<String> headers = this.listPage.getTable().getListTableHeaders();
 
@@ -83,6 +84,7 @@ public class VirtualDevicesListPageTests extends SeleniumTestSetup{
 
         softly.assertThat(actualCount).isEqualTo(EXPECTED_COUNT);
         softly.assertThat(headers).contains("Name");
+        softly.assertThat(headers).contains("Meter Number");
         softly.assertThat(headers).contains("Status");
         softly.assertAll();
     }
@@ -98,31 +100,27 @@ public class VirtualDevicesListPageTests extends SeleniumTestSetup{
         assertThat(actualModalTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    /*    Skipping this test as a defect is raised for incorrect sorting order (YUK-22982)*/
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesList_SortNamesAsc_Correctly() {
-        throw new SkipException("Development Defect: YUK-22982");
-//        Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
-//
-//        navigate(Urls.Assets.VIRTUAL_DEVICES_NAME_ASC);
-//
-//        List<String> namesList = listPage.getTable().getDataRowsTextByCellIndex(1);
-//
-//        assertThat(names).isEqualTo(namesList);
+        Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
+
+        navigate(Urls.Assets.VIRTUAL_DEVICES_NAME_ASC);
+
+        List<String> namesList = listPage.getTable().getDataRowsTextByCellIndex(1);
+
+        assertThat(names).isEqualTo(namesList);
     }
     
-    /*    Skipping this test as a defect is raised for incorrect sorting order (YUK-22982)*/
     @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDevicesList_SortNamesDesc_Correctly() {
-        throw new SkipException("Development Defect: YUK-22982");
-//        Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
-//        Collections.reverse(names);
-//
-//        navigate(Urls.Assets.VIRTUAL_DEVICES_NAME_DESC);
-//
-//        List<String> namesList = listPage.getTable().getDataRowsTextByCellIndex(1);
-//
-//        assertThat(names).isEqualTo(namesList);
+        Collections.sort(names, String.CASE_INSENSITIVE_ORDER);
+        Collections.reverse(names);
+
+        navigate(Urls.Assets.VIRTUAL_DEVICES_NAME_DESC);
+
+        List<String> namesList = listPage.getTable().getDataRowsTextByCellIndex(1);
+
+        assertThat(names).isEqualTo(namesList);
     }
     
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })

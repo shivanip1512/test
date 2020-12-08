@@ -318,6 +318,9 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             if (!filter.getDescendantCount().containsAll(Arrays.asList(DescendantCount.values()))) {
                 data.values().forEach(datas -> datas.removeIf(value -> !filter.getDescendantCount()
                         .contains(DescendantCount.getDescendantCount(value.getDescendantCount()))));
+                data = data.entrySet().stream()
+                                      .filter(e -> !e.getValue().isEmpty())
+                                      .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
             }
             if (filter.getColorCodeBy() == ColorCodeBy.GATEWAY) {
                 gatewaysToAddToMap.removeAll(data.keySet().stream().map(id -> gatewayIdsToIdentifiers.get(id))

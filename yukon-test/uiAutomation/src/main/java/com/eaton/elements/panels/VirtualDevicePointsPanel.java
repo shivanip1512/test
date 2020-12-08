@@ -19,11 +19,11 @@ public class VirtualDevicePointsPanel extends BasePanel {
     }
     
     public Button getFilter() {
-        return new Button(this.driverExt, "Filter");
+        return new Button(this.driverExt, "Filter", getPanel());
     }
     
     public DropDownMultiSelectElement getPointType() {
-        return new DropDownMultiSelectElement(this.driverExt, "pointTypeSelector");
+        return new DropDownMultiSelectElement(this.driverExt, "pointTypes", getPanel());
     }
     
     public CreateBtnDropDownElement getCreateBtn() {
