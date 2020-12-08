@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 
+import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.Range;
@@ -126,7 +127,7 @@ public class PointValidationUtil extends ValidationUtils {
         try {
             pointDao.getLitePoint(pointId);
         } catch (NotFoundException ex) {
-            errors.rejectValue(field, "yukon.web.modules.dr.setup.error.pointId.doesNotExist", new Object[] { fieldName }, "");
+            errors.rejectValue(field, Integer.toString(ApiErrorDetails.DOES_NOT_EXISTS.getCode()), new Object[] { fieldName }, "");
         }
     }
 }

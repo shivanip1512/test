@@ -8,6 +8,7 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
+import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -62,14 +63,15 @@ public class ResetPeakValidatorHelper {
         if (!errors.hasFieldErrors("startDate")) {
             YukonValidationUtils.checkIsBlank(errors, "startDate", Objects.toString(startDate, null), dateI18nText, false);
             if (!errors.hasFieldErrors("startDate") && startDate.isAfterNow()) {
-                errors.rejectValue("startDate", "yukon.web.error.date.inThePast");
+                errors.rejectValue("startDate", Integer.toString(ApiErrorDetails.PAST_DATE.getCode()));
             }
         }
     }
     
     public void validateIfResetPeakIsApplicable(Integer trendId, Errors errors) {
         if (!checkIfResetPeakApplicable(Integer.valueOf(trendId))) {
-            errors.reject("yukon.web.error.resetPeak.notApplicable");
+            ApiErrorDetails.BAD_REQUEST.setDefaultMessage("Reset peaks cannot be performed on this trend. No peak trend types found");
+            errors.reject(Integer.toString(ApiErrorDetails.BAD_REQUEST.getCode()));
         }
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.ValidationUtils;
 
+import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.util.Range;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.google.common.collect.Iterables;
@@ -52,7 +53,7 @@ public class YukonValidationUtils extends ValidationUtils {
 
     public static boolean checkExceedsMaxLength(Errors errors, String field, String fieldValue, int max) {
         if (fieldValue != null && fieldValue.length() > max) {
-            errors.rejectValue(field, "yukon.web.error.exceedsMaximumLength", new Object[] { max },
+            errors.rejectValue(field, Integer.toString(ApiErrorDetails.MAX_LENGTH_EXCEEDED.getCode()), new Object[] { max },
                 "Exceeds maximum length of " + max);
             return true;
         }
@@ -115,7 +116,7 @@ public class YukonValidationUtils extends ValidationUtils {
 
     public static boolean checkIsValidDouble(Errors errors, String field, Double fieldValue) {
         if (fieldValue == null || Double.isNaN(fieldValue) || Double.isInfinite(fieldValue)) {
-            errors.rejectValue(field, "yukon.web.error.notValidNumber");
+            errors.rejectValue(field, Integer.toString(ApiErrorDetails.INVALID_VALUE.getCode()));
             return false;
         }
         return true;
@@ -349,7 +350,7 @@ public class YukonValidationUtils extends ValidationUtils {
      */
     public static boolean checkIsBlank(Errors errors, String field, String fieldValue, String messageArg, boolean fieldAllowsNull) {
         if (!(fieldAllowsNull && fieldValue == null) && StringUtils.isBlank(fieldValue)) {
-            errors.rejectValue(field, "yukon.web.error.fieldrequired", new Object[] { messageArg }, "");
+            errors.rejectValue(field, Integer.toString(ApiErrorDetails.FIELD_REQUIRED.getCode()), new Object[] { messageArg }, "");
             return true;
         }
         return false;

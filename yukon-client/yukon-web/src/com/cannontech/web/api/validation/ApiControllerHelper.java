@@ -94,6 +94,45 @@ public class ApiControllerHelper {
         return result;
     }
 
+    
+    /**
+     * Populate and return binding error from the AppErrorModel object received from rest call.
+     */
+    public BindingResult populateBindingErrorForApiErrorModel(BindingResult result, BindException error,
+            ResponseEntity<? extends Object> errorResponse, String keyMessage) {
+
+        LinkedHashMap<?, ?> errorObject = (LinkedHashMap<?, ?>) errorResponse.getBody();
+        ArrayList<?> errors = (ArrayList<?>) errorObject.get("errors");
+
+        if (!errors.isEmpty()) {
+
+            errors.stream().forEach(e -> {
+                Object[] params = ((ArrayList) ((LinkedHashMap<?, ?>) e).get("parameters")).toArray();
+                error.rejectValue(((LinkedHashMap<?, ?>) e).get("field").toString(),
+                        keyMessage + ((LinkedHashMap<?, ?>) e).get("field").toString()
+                                + "." + ((LinkedHashMap<?, ?>) e).get("code").toString(),
+                        params, StringUtils.EMPTY);
+            });
+
+            List<ObjectError> mvcErrors = (List<ObjectError>) result.getAllErrors();
+            result = new BindException(error.getTarget(), error.getObjectName());
+            result.addAllErrors(error);
+
+            for (ObjectError objectError : mvcErrors) {
+                FieldError mvcError = (FieldError) objectError;
+                String fieldName = mvcError.getField();
+                if (result.getFieldError(fieldName) == null) {
+                    result.rejectValue(fieldName, mvcError.getCode());
+                } else if (!fieldName.equals(result.getFieldError(fieldName).getField())) {
+                    result.rejectValue(fieldName, mvcError.getCode());
+                }
+            }
+        } else {
+            result.addAllErrors(error);
+        }
+        return result;
+    }
+
     /**
      * Set the WebServer Url
      */
