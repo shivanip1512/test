@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
-import org.jsoup.select.Evaluator.IsEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
