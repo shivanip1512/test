@@ -54,3 +54,5 @@
         });
     });
 </script>
+
+<cti:includeScript link="/resources/js/pages/yukon.highChart.js"/>
