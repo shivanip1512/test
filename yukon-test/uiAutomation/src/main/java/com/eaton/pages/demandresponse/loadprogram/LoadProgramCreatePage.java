@@ -25,9 +25,6 @@ import com.eaton.pages.PageBase;
 
 public class LoadProgramCreatePage extends PageBase {
 
-    private static final String DESCRIBEDBY = "gear-create-popup-LM_DIRECT_PROGRAM";
-    private static final String ITRON_GEAR_MODAL_DESCRIBEDBY = "gear-create-popup-LM_ITRON_PROGRAM";
-
     private TimePickerElement startTimeWindowOne;
     private TimePickerElement stopTimeWindowOne;
     private TimePickerElement startTimeWindowTwo;
@@ -115,44 +112,63 @@ public class LoadProgramCreatePage extends PageBase {
     }
     
     private void clickCreateGearAndWaitDisplayBlock(String describedBy) {
-        clickCreateGearAndWait(DESCRIBEDBY);
+        clickCreateGearAndWait(describedBy);
         
         SeleniumTestSetup.waitUntilModalOpenDisplayBlock(describedBy);
     }
 
-    public CreateDirectPrgmGearModal showCreateDirectPrgmGearsModal() {
-        clickCreateGearAndWait(DESCRIBEDBY);
-
-        return new CreateDirectPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
+    public CreateDirectPrgmGearModal showCreateDirectPrgmGearsModal(Optional<Integer> count) {
+        Integer c = count.orElse(1);
+        if (c.equals(1)) {
+            clickCreateGearAndWait("gear-create-popup-LM_DIRECT_PROGRAM");
+        } else {
+            clickCreateGearAndWaitDisplayBlock("gear-create-popup-LM_DIRECT_PROGRAM");
+        }
+        
+        return new CreateDirectPrgmGearModal(this.driverExt, Optional.empty(), Optional.of("gear-create-popup-LM_DIRECT_PROGRAM"));
     }
 
-    public CreateEcobeePrgmGearModal showCreateEcobeePrgmGearModal() {
-        clickCreateGearAndWait(DESCRIBEDBY);
-
-        return new CreateEcobeePrgmGearModal(this.driverExt, Optional.empty(), Optional.of(DESCRIBEDBY));
+    public CreateEcobeePrgmGearModal showCreateEcobeePrgmGearModal(Optional<Integer> count) {
+        Integer c = count.orElse(1);
+        if (c.equals(1)) {
+            clickCreateGearAndWait("gear-create-popup-LM_ECOBEE_PROGRAM");
+        } else {
+            clickCreateGearAndWaitDisplayBlock("gear-create-popup-LM_ECOBEE_PROGRAM");
+        }
+        
+        return new CreateEcobeePrgmGearModal(this.driverExt, Optional.empty(), Optional.of("gear-create-popup-LM_ECOBEE_PROGRAM"));
     }
 
-    public CreateHoneywellPrgmGearModal showCreateHoneywellPrgmGearModal() {
-        clickCreateGearAndWait("gear-create-popup-LM_HONEYWELL_PROGRAM");
-
-        return new CreateHoneywellPrgmGearModal(this.driverExt, Optional.empty(),
-                Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
+    public CreateHoneywellPrgmGearModal showCreateHoneywellPrgmGearModal(Optional<Integer> count) {
+        Integer c = count.orElse(1);
+        if (c.equals(1)) {
+            clickCreateGearAndWait("gear-create-popup-LM_HONEYWELL_PROGRAM");
+        } else {
+            clickCreateGearAndWaitDisplayBlock("gear-create-popup-LM_HONEYWELL_PROGRAM");
+        }
+        
+        return new CreateHoneywellPrgmGearModal(this.driverExt, Optional.empty(), Optional.of("gear-create-popup-LM_HONEYWELL_PROGRAM"));
     }
 
     public CreateItronPrgmGearModal showCreateItronPrgmGearModal(Optional<Integer> count) {
         Integer c = count.orElse(1);
         if (c.equals(1)) {
-            clickCreateGearAndWait(ITRON_GEAR_MODAL_DESCRIBEDBY);
+            clickCreateGearAndWait("gear-create-popup-LM_ITRON_PROGRAM");
         } else {
-            clickCreateGearAndWaitDisplayBlock(ITRON_GEAR_MODAL_DESCRIBEDBY);
+            clickCreateGearAndWaitDisplayBlock("gear-create-popup-LM_ITRON_PROGRAM");
         }
         
-        return new CreateItronPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(ITRON_GEAR_MODAL_DESCRIBEDBY));
+        return new CreateItronPrgmGearModal(this.driverExt, Optional.empty(), Optional.of("gear-create-popup-LM_ITRON_PROGRAM"));
     }
 
-    public CreateMeterDisconnectPrgmModal showCreateMeterDiconnectPrgmModal() {
-        clickCreateGearAndWait("gear-create-popup-LM_METER_DISCONNECT_PROGRAM");
-
+    public CreateMeterDisconnectPrgmModal showCreateMeterDiconnectPrgmModal(Optional<Integer> count) {
+        Integer c = count.orElse(1);
+        if (c.equals(1)) {
+            clickCreateGearAndWait("gear-create-popup-LM_METER_DISCONNECT_PROGRAM");
+        } else {
+            clickCreateGearAndWaitDisplayBlock("gear-create-popup-LM_METER_DISCONNECT_PROGRAM");
+        }
+        
         return new CreateMeterDisconnectPrgmModal(this.driverExt, Optional.empty(), Optional.of("gear-create-popup-LM_METER_DISCONNECT_PROGRAM"));
     }
 
@@ -163,7 +179,6 @@ public class LoadProgramCreatePage extends PageBase {
         } else {
             clickCreateGearAndWaitDisplayBlock("gear-create-popup-LM_SEP_PROGRAM");
         }
-        
 
         return new CreateSepPrgmGearModal(this.driverExt, Optional.empty(), Optional.of("gear-create-popup-LM_SEP_PROGRAM"));
     }

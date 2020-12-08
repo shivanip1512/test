@@ -57,7 +57,7 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldPrgmItronCreate_RequiredFieldsOnly_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT LM Direct Program " + timeStamp;
+        String name = "AT Itron Required " + timeStamp;
 
         final String EXPECTED_MSG = name + " saved successfully.";
 
@@ -91,7 +91,7 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldPrgmItronCreate_AllFields_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT LM Direct Program " + timeStamp;
+        String name = "AT Itron All Fields " + timeStamp;
 
         final String EXPECTED_MSG = name + " saved successfully.";
 
@@ -151,7 +151,7 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
     public void ldPrgmItronCreate_WithMultipleGears_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT LM Direct Program " + timeStamp;
+        String name = "AT Itron Multi Gears " + timeStamp;
 
         final String EXPECTED_MSG = name + " saved successfully.";
 

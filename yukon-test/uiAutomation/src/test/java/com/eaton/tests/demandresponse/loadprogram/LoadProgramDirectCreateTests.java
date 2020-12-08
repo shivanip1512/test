@@ -40,7 +40,8 @@ public class LoadProgramDirectCreateTests extends SeleniumTestSetup{
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         ldGrpName = "Before Class " + timeStamp;
 
-        Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup().create();
+        Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
+                .create();
 
         JSONObject response = pair.getValue1();
         ldGrpName = response.getString("name");
@@ -65,7 +66,7 @@ public class LoadProgramDirectCreateTests extends SeleniumTestSetup{
         createPage.getType().selectItemByValue(TYPE);
         waitForLoadingSpinner();
 
-        CreateDirectPrgmGearModal modal = createPage.showCreateDirectPrgmGearsModal();
+        CreateDirectPrgmGearModal modal = createPage.showCreateDirectPrgmGearsModal(Optional.empty());
 
         modal.getGearName().setInputValue("DirectGear " + timeStamp);
         modal.getGearType().selectItemByValue("TimeRefresh");
@@ -104,7 +105,7 @@ public class LoadProgramDirectCreateTests extends SeleniumTestSetup{
         createPage.getTriggerOffset().setInputValue(String.valueOf(faker.number().numberBetween(0, 100000)));
         createPage.getRestoreOffset().setInputValue(String.valueOf(faker.number().numberBetween(-10000, 100000)));
 
-        CreateDirectPrgmGearModal modal = createPage.showCreateDirectPrgmGearsModal();
+        CreateDirectPrgmGearModal modal = createPage.showCreateDirectPrgmGearsModal(Optional.empty());
 
         modal.getGearName().setInputValue("DirectGear " + timeStamp);
         modal.getGearType().selectItemByValue("SmartCycle");
@@ -139,7 +140,7 @@ public class LoadProgramDirectCreateTests extends SeleniumTestSetup{
         createPage.getType().selectItemByValue(TYPE);
         waitForLoadingSpinner();
 
-        CreateDirectPrgmGearModal modal = createPage.showCreateDirectPrgmGearsModal();
+        CreateDirectPrgmGearModal modal = createPage.showCreateDirectPrgmGearsModal(Optional.empty());
 
         List<String> actualDropDownValues = modal.getGearType().getOptionValues();
 
@@ -163,7 +164,7 @@ public class LoadProgramDirectCreateTests extends SeleniumTestSetup{
 
         // Adding 2 gears
         for (int i = 1; i <= 2; i++) {
-            CreateDirectPrgmGearModal modal = createPage.showCreateDirectPrgmGearsModal();
+            CreateDirectPrgmGearModal modal = createPage.showCreateDirectPrgmGearsModal(Optional.of(i));
             waitForLoadingSpinner();
             modal.getGearName().setInputValue("Direct Gear " + i);
             modal.getGearType().selectItemByValue("TimeRefresh");

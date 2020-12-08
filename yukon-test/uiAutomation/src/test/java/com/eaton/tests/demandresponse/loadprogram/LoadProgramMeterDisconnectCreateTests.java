@@ -65,7 +65,7 @@ public class LoadProgramMeterDisconnectCreateTests extends SeleniumTestSetup {
         groupsTab.clickTabAndWait("Load Groups");
         groupsTab.getLoadGroups().addSingleAvailable(ldGrpName);
 
-        CreateMeterDisconnectPrgmModal createGearModal = createPage.showCreateMeterDiconnectPrgmModal();
+        CreateMeterDisconnectPrgmModal createGearModal = createPage.showCreateMeterDiconnectPrgmModal(Optional.empty());
         createGearModal.getGearName().setInputValue(gearName);
         createGearModal.getGearType().selectItemByValue("MeterDisconnect");
         waitForLoadingSpinner();
@@ -114,7 +114,7 @@ public class LoadProgramMeterDisconnectCreateTests extends SeleniumTestSetup {
         groupsTab.clickTabAndWait("Load Groups");
         groupsTab.getLoadGroups().addSingleAvailable(ldGrpName);
 
-        CreateMeterDisconnectPrgmModal createGearModal = createPage.showCreateMeterDiconnectPrgmModal();
+        CreateMeterDisconnectPrgmModal createGearModal = createPage.showCreateMeterDiconnectPrgmModal(Optional.empty());
         createGearModal.getGearName().setInputValue(gearName);
         createGearModal.getGearType().selectItemByValue("MeterDisconnect");
         waitForLoadingSpinner();
@@ -138,7 +138,7 @@ public class LoadProgramMeterDisconnectCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByValue("LM_METER_DISCONNECT_PROGRAM");
         waitForLoadingSpinner();
 
-        CreateMeterDisconnectPrgmModal createGearModal = createPage.showCreateMeterDiconnectPrgmModal();
+        CreateMeterDisconnectPrgmModal createGearModal = createPage.showCreateMeterDiconnectPrgmModal(Optional.empty());
         waitForLoadingSpinner();
 
         List<String> actualGearsList = createGearModal.getGearType().getOptionValues();
