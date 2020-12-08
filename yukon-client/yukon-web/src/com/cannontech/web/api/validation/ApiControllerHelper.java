@@ -11,8 +11,10 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.jsoup.select.Evaluator.IsEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -108,12 +110,18 @@ public class ApiControllerHelper {
 
             for (Object e : errors) {
                 LinkedHashMap<?, ?> errorMap = (LinkedHashMap<?, ?>) e;
-                Object[] params = ((ArrayList) errorMap.get("parameters")).toArray();
+                ArrayList paramList = ((ArrayList) ((LinkedHashMap<?, ?>) e).get("parameters"));
+
                 String field = errorMap.get("field").toString();
                 String codePostfix = errorMap.get("code").toString();
                 String errorCode = keyBase + field + "." + codePostfix;
-
-                error.rejectValue(field, errorCode, params, StringUtils.EMPTY);
+                Object[] params = null;
+                if (CollectionUtils.isNotEmpty(paramList)) {
+                    params = paramList.toArray();
+                    error.rejectValue(field, errorCode, params, StringUtils.EMPTY);
+                } else {
+                    error.rejectValue(field, errorCode);
+                }
             }
 
             List<ObjectError> mvcErrors = (List<ObjectError>) result.getAllErrors();
