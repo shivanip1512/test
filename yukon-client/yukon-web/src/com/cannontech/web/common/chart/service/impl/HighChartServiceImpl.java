@@ -27,12 +27,11 @@ public class HighChartServiceImpl implements HighChartService {
     @Override
     public Map<String, Object> getMeterGraphData(List<GraphDetail> graphDetails, Instant start, Instant stop, Double yMin,
                                                  Double yMax, GraphType graphType, YukonUserContext userContext) {
-        //TODO: We need to change the code for adjustForFlotTimezone()
+         //TODO: Ensure that adjustForFlotTimezone() is not called. These adjustments will be removed in YUK-23405.
          List <Graph<ChartValue<Double>>> graphs = 
                 chartService.getGraphs(graphDetails, start.toDate(), stop.toDate(), userContext, graphType);
 
          List<Map<String, Object>> seriesList = Lists.newArrayList();
-         //TODO: Java 8 code.
          for(int i=0; i<graphDetails.size();i++) {
              seriesList.add(getSeriesDetails(graphs.get(i), graphDetails.get(i), graphType));
          }
@@ -52,12 +51,8 @@ public class HighChartServiceImpl implements HighChartService {
         });
         
         Map<String, Object> xaxisOptions = Maps.newHashMap();
-        //TODO: do we need this datetime adjustments??
-        /*
-         * jquery.flot.js v 0.7 does not support time zones and always displays UTC time
-         * Here we fake it out by adding the server timezone offset to the timestamp
-         * so the times line up between the plot and the data.
-         */
+        
+        //TODO: These adjustments will be removed in YUK-23405.
         long xAxisMin = start.getMillis() + TimeZone.getDefault().getOffset(start.getMillis());
         long xAxisMax = stop.getMillis() + TimeZone.getDefault().getOffset(stop.getMillis());
         xaxisOptions.put(HighChartOptionKey.MIN.getKey(), xAxisMin);
@@ -65,13 +60,11 @@ public class HighChartServiceImpl implements HighChartService {
         
         Duration duration = new Duration(start.getMillis(), stop.getMillis());
         if (duration.getStandardDays() > 365) {
-            xaxisOptions.put("datetimeFormat", HighChartOptionKey.DATE_FORMAT_MONTH_YEAR);
+            xaxisOptions.put("datetimeFormat", HighChartOptionKey.DATE_FORMAT_MONTH_YEAR.getKey());
         } else {
-            xaxisOptions.put("datetimeFormat", HighChartOptionKey.DATE_FORMAT_MONTH_DATE);
+            xaxisOptions.put("datetimeFormat", HighChartOptionKey.DATE_FORMAT_MONTH_DATE.getKey());
         }
         
-        //TODO: check if HighChart library also has the limitation about timezone support. Check FlotChartSeriveImpl line 89.
-
         Map<String, Object> dataAndOptions = Maps.newHashMap();
         dataAndOptions.put("seriesDetails", seriesList);
         dataAndOptions.put(HighChartOptionKey.X_AXIS.getKey(), xaxisOptions);

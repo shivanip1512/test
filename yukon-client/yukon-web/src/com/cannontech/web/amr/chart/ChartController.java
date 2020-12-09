@@ -9,9 +9,9 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -44,7 +44,7 @@ public class ChartController {
     @Autowired private PointDao pointDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
-    @RequestMapping(value="chart", method = RequestMethod.GET)
+    @GetMapping("chart")
     public @ResponseBody Map<String, Object> chart(YukonUserContext userContext,
                         String pointIds,
                         Integer temperaturePointId,
@@ -113,7 +113,7 @@ public class ChartController {
         return graphAsJSON;
     }
     
-    @RequestMapping(value = "getChartJson", method = RequestMethod.GET)
+    @GetMapping("getChartJson")
     public @ResponseBody Map<String, Object> getChartJson(YukonUserContext userContext,
             String pointIds,
             Integer temperaturePointId,
