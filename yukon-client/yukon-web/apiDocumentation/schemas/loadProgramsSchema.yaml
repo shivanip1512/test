@@ -24,10 +24,11 @@ LM_METER_DISCONNECT_PROGRAM:
         - Automatic
         - ManualOnly
         - Timed
-      description: 'Operational state of the load program.
-                    Automatic – The program controls when the trigger threshold is exceeded or when the program is manually started.
-                    Manual Only – The program must be manually started to perform control.
-                    Timed – The program controls during the specified control windows.'
+      description: |- 
+                    Operational state of the load program.
+                    - Automatic - The program controls when the trigger threshold is exceeded or when the program is manually started.
+                    - Manual Only - The program must be manually started to perform control.
+                    - Timed - The program controls during the specified control windows.
     triggerOffset:
       type: number
       minimum: 0.0
@@ -89,10 +90,11 @@ LM_SEP_PROGRAM:
         - Automatic
         - ManualOnly
         - Timed
-      description: 'Operational state of the load program.
-                    Automatic – The program controls when the trigger threshold is exceeded or when the program is manually started.
-                    Manual Only – The program must be manually started to perform control.
-                    Timed – The program controls during the specified control windows.'
+      description: |- 
+                    Operational state of the load program.
+                    - Automatic - The program controls when the trigger threshold is exceeded or when the program is manually started.
+                    - Manual Only - The program must be manually started to perform control.
+                    - Timed - The program controls during the specified control windows.
     triggerOffset:
       type: number
       minimum: 0.0
@@ -152,10 +154,11 @@ LM_ECOBEE_PROGRAM:
         - Automatic
         - ManualOnly
         - Timed
-      description: 'Operational state of the load program.
-                    Automatic – The program controls when the trigger threshold is exceeded or when the program is manually started.
-                    Manual Only – The program must be manually started to perform control.
-                    Timed – The program controls during the specified control windows.'
+      description: |- 
+                    Operational state of the load program.
+                    - Automatic - The program controls when the trigger threshold is exceeded or when the program is manually started.
+                    - Manual Only - The program must be manually started to perform control.
+                    - Timed - The program controls during the specified control windows.
     triggerOffset:
       type: number
       minimum: 0.0
@@ -216,10 +219,11 @@ LM_HONEYWELL_PROGRAM:
         - Automatic
         - ManualOnly
         - Timed
-      description: 'Operational state of the load program.
-                    Automatic – The program controls when the trigger threshold is exceeded or when the program is manually started.
-                    Manual Only – The program must be manually started to perform control.
-                    Timed – The program controls during the specified control windows.'
+      description: |- 
+                    Operational state of the load program.
+                    - Automatic - The program controls when the trigger threshold is exceeded or when the program is manually started.
+                    - Manual Only - The program must be manually started to perform control.
+                    - Timed - The program controls during the specified control windows.
     triggerOffset:
       type: number
       minimum: 0.0
@@ -279,10 +283,11 @@ LM_ITRON_PROGRAM:
         - Automatic
         - ManualOnly
         - Timed
-      description: 'Operational state of the load program.
-                    Automatic – The program controls when the trigger threshold is exceeded or when the program is manually started.
-                    Manual Only – The program must be manually started to perform control.
-                    Timed – The program controls during the specified control windows.'
+      description: |- 
+                    Operational state of the load program.
+                    - Automatic - The program controls when the trigger threshold is exceeded or when the program is manually started.
+                    - Manual Only - The program must be manually started to perform control.
+                    - Timed - The program controls during the specified control windows.
     triggerOffset:
       type: number
       minimum: 0.0
@@ -342,10 +347,11 @@ LM_DIRECT_PROGRAM:
         - Automatic
         - ManualOnly
         - Timed
-      description: 'Operational state of the load program.
-                    Automatic – The program controls when the trigger threshold is exceeded or when the program is manually started.
-                    Manual Only – The program must be manually started to perform control.
-                    Timed – The program controls during the specified control windows.'
+      description: |- 
+                    Operational state of the load program.
+                    - Automatic - The program controls when the trigger threshold is exceeded or when the program is manually started.
+                    - Manual Only - The program must be manually started to perform control.
+                    - Timed - The program controls during the specified control windows.
     triggerOffset:
       type: number
       minimum: 0.0
@@ -378,7 +384,7 @@ LM_DIRECT_PROGRAM:
       $ref: '#/notification'
     memberControl:
       $ref: '#/memberControl'
-
+      
 LM_EATON_CLOUD_PROGRAM:
   title: LM_EATON_CLOUD_PROGRAM
   required:
@@ -405,10 +411,11 @@ LM_EATON_CLOUD_PROGRAM:
         - Automatic
         - ManualOnly
         - Timed
-      description: 'Operational state of the load program.
-                    Automatic – The program controls when the trigger threshold is exceeded or when the program is manually started.
-                    Manual Only – The program must be manually started to perform control.
-                    Timed – The program controls during the specified control windows.'
+      description: |-
+                    Operational state of the load program.
+                    - Automatic - The program controls when the trigger threshold is exceeded or when the program is manually started.
+                    - Manual Only - The program must be manually started to perform control.
+                    - Timed - The program controls during the specified control windows.
     triggerOffset:
       type: number
       minimum: 0.0
@@ -620,8 +627,9 @@ TimeRefresh:
           enum: 
             - FixedShedTime
             - DynamicShedTime
-          description: 'Fixed Shed Time – Shed time is specified in the gear.
-                        Dynamic Shed Time – Shed time is dynamically calculated.'
+          description: |- 
+                        - Fixed Shed Time - Shed time is specified in the gear.
+                        - Dynamic Shed Time - Shed time is dynamically calculated.
         shedTime:
           type: integer
           minimum: 0
@@ -646,12 +654,12 @@ TimeRefresh:
             - LastControlled
             - AlwaysFirstGroup
             - LeastControlTime
-          description: 'Last Controlled – Selects the next load group in the list 
-                        based on the last load group controlled.
-                        Always First Group – Always selects the first load group 
-                        in the list.
-                        Least Control Time – Selects the load group whose seasonal 
-                        control time is the least.'
+          description: |- 
+                        - Last Controlled - Selects the next load group in the list based on the last load group controlled.
+                        - Always First Group - Always selects the first load group 
+                          in the list.
+                        - Least Control Time - Selects the load group whose seasonal control time is the least.
+                          
         rampInPercent: 
           type: integer
           minimum: 0
@@ -685,12 +693,12 @@ TimeRefresh:
           enum:
             - FIRSTINFIRSTOUT
             - RANDOM
-          description: 'Random – The system selects a random load group to stop.
-                        First In First Out – The first group that was controlled 
-                        is the first group to stop. The second group that was 
-                        controlled is the second group to stop, etc.
-                        When type of howToStopControl is RampOutTimeIn or 
-                        RampOutRestore then this field is required.'
+          description: |- 
+                        - Random - The system selects a random load group to stop.
+                        - First In First Out - The first group that was controlled is the first group to stop.
+                         The second group that was controlled is the second group to stop, etc.
+                         When type of howToStopControl is RampOutTimeIn or RampOutRestore then this field is required.
+                        
         stopCommandRepeat:
           type: integer
           minimum: 0
@@ -703,11 +711,12 @@ TimeRefresh:
             - Restore
             - RampOutTimeIn
             - RampOutRestore
-          description: 'TimeIn - The control stops when the cycle period is over.
-                        Restore – A restore command is sent to the device.
-                        RampOutTimeIn - The control ramps out when the cycle period is over.
-                        RampOutRestore - The control ramps out when a restore command is 
-                        sent to the device.'
+          description: |- 
+                        - TimeIn - The control stops when the cycle period is over.
+                        - Restore - A restore command is sent to the device.
+                        - RampOutTimeIn - The control ramps out when the cycle period is over.
+                        - RampOutRestore - The control ramps out when a restore command is sent to the device.
+                        
         capacityReduction:
           $ref: '#capacityReduction'
         whenToChangeFields:
@@ -807,40 +816,38 @@ MagnitudeCycle:
 
 TargetCycle:  
   title: TargetCycle
-  type: array
-  items:
-    required:
-      - gearName
-      - gearNumber
-      - controlMethod
-      - fields
-    type: object
-    properties:
-      gearName:
-        type: string
-        maxLength: 30
-        description: 'Name for the gear.'
-      gearNumber:
-        type: integer
-        description: 'Gear number.'
-      controlMethod:
-        type: string
-        enum:
-          - TargetCycle
-        description: 'Type of gear.'
-      
-      fields:
-        required:
-          - kWReduction
-        allOf:
-          - $ref: '#SmartCycle_TrueCycle_MagnitudeCycle_TargetCycle_Fields'
-          - type: object
-            properties:
-              kWReduction:
-                type: number
-                minimum: 0.0
-                maximum: 99999.999
-                description: 'Targeted amount of kW reduction.'
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+    - fields
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - TargetCycle
+      description: 'Type of gear.'
+    
+    fields:
+      required:
+        - kWReduction
+      allOf:
+        - $ref: '#SmartCycle_TrueCycle_MagnitudeCycle_TargetCycle_Fields'
+        - type: object
+          properties:
+            kWReduction:
+              type: number
+              minimum: 0.0
+              maximum: 99999.999
+              description: 'Targeted amount of kW reduction.'
                 
 SmartCycle_TrueCycle_MagnitudeCycle_TargetCycle_Fields:
   required:
@@ -871,15 +878,13 @@ SmartCycle_TrueCycle_MagnitudeCycle_TargetCycle_Fields:
         - FixedCount
         - CountDown
         - LimitedCountDown 
-      description: 'Fixed Count – The same number of cycle counts are sent 
-                    to the switch.
-                    Count Down – The number of cycle counts sent decreases at
-                    each resend.
-                    Limited Count Down – Used with LCR 2000s, which do not 
-                    allow cycle counts to be sent to them. The cycle count is 
-                    hard coded in switch.
-                    The purpose of Count Down and Limited Count Down is to end
-                    up with zero cycle counts at the end of control.'
+      description: |- 
+                    - Fixed Count - The same number of cycle counts are sent to the switch.
+                    - Count Down - The number of cycle counts sent decreases at each resend.
+                    - Limited Count Down - Used with LCR 2000s, which do not allow cycle counts to be
+                      sent to them. The cycle count is hard coded in switch.
+                    The purpose of Count Down and Limited Count Down is to end up with zero cycle counts at the end of control.
+                    
     maxCycleCount: 
       type: integer
       minimum: 0
@@ -907,9 +912,10 @@ SmartCycle_TrueCycle_MagnitudeCycle_TargetCycle_Fields:
       enum:
         - Restore
         - StopCycle
-      description: 'Restore – A restore command is sent to the device.
-                    StopCycle - The period count is set to 0, so the cycle 
-                    stops the next period.'
+      description: |- 
+                    - Restore - A restore command is sent to the device.
+                    - StopCycle - The period count is set to 0, so the cycle stops the next period.
+                    
     capacityReduction:
       $ref: '#capacityReduction'
     whenToChangeFields:
@@ -965,7 +971,8 @@ EcobeeCycle:
           type: string
           enum:
             - Restore
-          description: 'Restore – A restore command is sent to the device.'
+          description: |- 
+                        - Restore - A restore command is sent to the device.
         capacityReduction:
           $ref: '#capacityReduction'
         whenToChangeFields:
@@ -1011,9 +1018,10 @@ ItronCycle:
             - STANDARD
             - TRUE_CYCLE
             - SMART_CYCLE
-          description: 'SMART_CYCLE - The LCR hardware performs the cycling.
-                        TRUE_CYCLE - Uses an algorithm to perform cycling, which targets 
-                        a percentage of the time a field device is operating.'
+          description: |- 
+                        - SMART_CYCLE - The LCR hardware performs the cycling.
+                        - TRUE_CYCLE - Uses an algorithm to perform cycling, which targets 
+                          a percentage of the time a field device is operating.
         dutyCyclePercent:
           type: integer
           minimum: 0
@@ -1032,7 +1040,8 @@ ItronCycle:
           type: string
           enum:
             - Restore
-          description: 'Restore – A restore command is sent to the device.'
+          description: |-
+                        - Restore - A restore command is sent to the device.
         rampIn:
           type: boolean
           description: 'Ramp in.'
@@ -1043,7 +1052,7 @@ ItronCycle:
           $ref: '#capacityReduction'
         whenToChangeFields:
           $ref: '#whenToChangeFields'  
-    
+
 EatonCloudCycle:
   title: EatonCloudCycle
   required:
@@ -1084,9 +1093,10 @@ EatonCloudCycle:
             - STANDARD
             - TRUE_CYCLE
             - SMART_CYCLE
-          description: 'SMART_CYCLE - The LCR hardware performs the cycling.
-                        TRUE_CYCLE - Uses an algorithm to perform cycling, which targets 
-                        a percentage of the time a field device is operating.'
+          description: |-
+                        - SMART_CYCLE - The LCR hardware performs the cycling.
+                        - TRUE_CYCLE - Uses an algorithm to perform cycling, which targets 
+                          a percentage of the time a field device is operating.
         dutyCyclePercent:
           type: integer
           minimum: 0
@@ -1115,8 +1125,8 @@ EatonCloudCycle:
         capacityReduction:
           $ref: '#capacityReduction'
         whenToChangeFields:
-          $ref: '#whenToChangeFields'  
-
+          $ref: '#whenToChangeFields'
+          
 MeterDisconnect:
   title: MeterDisconnect
   required:
@@ -1217,7 +1227,8 @@ HoneywellCycle:
           type: string
           enum:
             - Restore
-          description: 'Restore – A restore command is sent to the device.'
+          description: |- 
+                        - Restore - A restore command is sent to the device.
         capacityReduction:
           $ref: '#capacityReduction'
         whenToChangeFields:
@@ -1349,8 +1360,9 @@ SimpleThermostatRamping:
           enum:
             - TimeIn 
             - Restore
-          description: 'TimeIn - The control stops when the cycle period is over.
-                        Restore – A restore command is sent to the device.'
+          description: |-   
+                        - TimeIn - The control stops when the cycle period is over.
+                        - Restore - A restore command is sent to the device.
        
         whenToChangeFields:
           $ref: '#whenToChangeFields'
@@ -1446,8 +1458,8 @@ ThermostatRamping:
           type: integer
           minimum: -2147483648
           maximum: 2147483647
-          description: 'Delta B – Setpoint delta relative to the uncontrolled setpoint.
-                        ABSOLUTE B – Absolute setpoint.
+          description: 'Delta B - Setpoint delta relative to the uncontrolled setpoint.
+                        ABSOLUTE B - Absolute setpoint.
                         If setpoint is DELTA then valueB is of delta. If setpoint is ABSOLUTE then valueB is of absolute.'
         valueTc:
           type: integer
@@ -1463,8 +1475,8 @@ ThermostatRamping:
           type: integer
           minimum: -2147483648
           maximum: 2147483647
-          description: 'Delta D – Setpoint delta relative to Delta B.
-                        ABSOLUTE D – Absolute setpoint.
+          description: 'Delta D - Setpoint delta relative to Delta B.
+                        ABSOLUTE D - Absolute setpoint.
                         If setpoint is DELTA then valueD is of delta. If setpoint is ABSOLUTE then valueD is of absolute.'
         valueTe:
           type: integer
@@ -1480,16 +1492,17 @@ ThermostatRamping:
           type: integer
           minimum: -2147483648
           maximum: 2147483647
-          description: 'Delta F – Setpoint delta relative to Delta D.
-                        ABSOLUTE F – Absolute setpoint.
+          description: 'Delta F - Setpoint delta relative to Delta D.
+                        ABSOLUTE F - Absolute setpoint.
                         If setpoint is DELTA then valueF is of delta. If setpoint is ABSOLUTE then valueF is of absolute.'
         howToStopControl:
           type: string
           enum:
             - TimeIn 
             - Restore
-          description: 'TimeIn - The control stops when the cycle period is over.
-                        Restore – A restore command is sent to the device.'
+          description: |- 
+                        - TimeIn - The control stops when the cycle period is over.
+                        - Restore - A restore command is sent to the device.
         capacityReduction:
           $ref: '#capacityReduction'
         whenToChangeFields:
@@ -1601,19 +1614,19 @@ Rotation:
             - LastControlled
             - AlwaysFirstGroup
             - LeastControlTime
-          description: 'Last Controlled – Selects the next load group in the list 
-                        based on the last load group controlled.
-                        Always First Group – Always selects the first load group 
-                        in the list.
-                        Least Control Time – Selects the load group whose seasonal 
-                        control time is the least.'
+          description: |- 
+                        - Last Controlled - Selects the next load group in the list based on the last load group controlled.
+                        - Always First Group - Always selects the first load group in the list.
+                        - Least Control Time - Selects the load group whose seasonal control time is the least.
+                        
         howToStopControl:
           type: string
           enum:
             - TimeIn
             - Restore
-          description: 'TimeIn - The control stops when the cycle period is over.
-                        Restore – A restore command is sent to the device.'
+          description: |-
+                        - TimeIn - The control stops when the cycle period is over.
+                        - Restore - A restore command is sent to the device.
         capacityReduction:
           $ref: '#capacityReduction'
         whenToChangeFields:
@@ -1671,12 +1684,11 @@ MasterCycle:
             - LastControlled
             - AlwaysFirstGroup
             - LeastControlTime
-          description: 'Last Controlled – Selects the next load group in the list 
-                        based on the last load group controlled.
-                        Always First Group – Always selects the first load group 
-                        in the list.
-                        Least Control Time – Selects the load group whose seasonal 
-                        control time is the least.'
+          description: |-
+                        - Last Controlled - Selects the next load group in the list based on the last load group controlled.
+                        - Always First Group - Always selects the first load group in the list.
+                        - Least Control Time - Selects the load group whose seasonal control time is the least.
+                          
         rampInPercent: 
           type: integer
           minimum: 0
@@ -1710,12 +1722,12 @@ MasterCycle:
           enum:
             - FIRSTINFIRSTOUT
             - RANDOM
-          description: 'Random – The system selects a random load group to stop.
-                        First In First Out – The first group that was controlled 
-                        is the first group to stop. The second group that was 
-                        controlled is the second group to stop, etc.
-                        When type of howToStopControl is RampOutTimeIn or 
-                        RampOutRestore then this field is required.'
+          description: |- 
+                        - Random - The system selects a random load group to stop.
+                        - First In First Out - The first group that was controlled is the first group to stop.
+                          The second group that was controlled is the second group to stop, etc.
+                         When type of howToStopControl is RampOutTimeIn or RampOutRestore then this field is required.
+                        
         howToStopControl:
           type: string
           enum:
@@ -1723,11 +1735,12 @@ MasterCycle:
             - Restore
             - RampOutTimeIn
             - RampOutRestore
-          description: 'TimeIn - The control stops when the cycle period is over.
-                        Restore – A restore command is sent to the device.
-                        RampOutTimeIn - The control ramps out when the cycle period is over.
-                        RampOutRestore - The control ramps out when a restore command is 
-                        sent to the device.'
+          description: |-
+                        - TimeIn - The control stops when the cycle period is over.
+                        - Restore - A restore command is sent to the device.
+                        - RampOutTimeIn - The control ramps out when the cycle period is over.
+                        - RampOutRestore - The control ramps out when a restore command is sent to the device.
+                        
         capacityReduction:
           $ref: '#capacityReduction'
         whenToChangeFields:
@@ -1770,7 +1783,7 @@ EcobeeSetpoint:
           type: integer
           minimum: -10
           maximum: 10
-          description: 'setpointOffset value.'
+          description: 'Temperature offset from thermostats original set point.'
         mode:
           type: string
           enum:
@@ -1782,7 +1795,8 @@ EcobeeSetpoint:
           type: string
           enum:
             - Restore
-          description: 'Restore – A restore command is sent to the device.'
+          description: |- 
+                        - Restore - A restore command is sent to the device.
         capacityReduction:
           $ref: '#capacityReduction'
         whenToChangeFields:
@@ -1825,7 +1839,7 @@ HoneywellSetpoint:
           type: integer
           minimum: -10
           maximum: 10
-          description: 'setpointOffset value.'
+          description: 'Temperature offset from thermostats original set point.'
         mode:
           type: string
           enum:
@@ -1837,7 +1851,8 @@ HoneywellSetpoint:
           type: string
           enum:
             - Restore
-          description: 'Restore – A restore command is sent to the device.'
+          description: |- 
+                        - Restore - A restore command is sent to the device.
         capacityReduction:
           $ref: '#capacityReduction'
         whenToChangeFields:
@@ -1889,7 +1904,7 @@ SepCycle:
           description: 'Control percentage.'
         trueCycle:
           type: boolean
-          description: 'True Cycle or adaptive algorithm.'
+          description: 'True Cycle or adaptive algorithm. Actual control time will be affected by devices historical runtime'
         criticality:
           type: integer
           minimum: 1
@@ -1901,8 +1916,9 @@ SepCycle:
           enum:
             - TimeIn
             - Restore
-          description: 'TimeIn - The control stops when the cycle period is over.
-                        Restore – A restore command is sent to the device.'
+          description: |- 
+                        - TimeIn - The control stops when the cycle period is over.
+                        - Restore - A restore command is sent to the device.
         capacityReduction:
           $ref: '#capacityReduction'
         whenToChangeFields:
@@ -1975,8 +1991,9 @@ SepTemperatureOffset:
           enum:
             - TimeIn
             - Restore
-          description: 'TimeIn - The control stops when the cycle period is over.
-                        Restore – A restore command is sent to the device.'
+          description: |- 
+                        - TimeIn - The control stops when the cycle period is over.
+                        - Restore - A restore command is sent to the device.
         capacityReduction:
           $ref: '#capacityReduction'
         whenToChangeFields:
@@ -1990,17 +2007,18 @@ howToStopControl:
     - StopCycle
     - RampOutTimeIn
     - RampOutRestore
-  description: 'TimeIn - The control stops when the cycle period is over.
-                Restore – A restore command is sent to the device.
-                StopCycle - The period count is set to 0, so the cycle stops the next period.
-                RampOutTimeIn - The control ramps out when the cycle period is over.
-                RampOutRestore - The control ramps out when a restore command is 
-                sent to the device.'            
+  description: |-
+                - TimeIn - The control stops when the cycle period is over.
+                - Restore - A restore command is sent to the device.
+                - StopCycle - The period count is set to 0, so the cycle stops the next period.
+                - RampOutTimeIn - The control ramps out when the cycle period is over.
+                - RampOutRestore - The control ramps out when a restore command is 
+                  sent to the device.          
 capacityReduction:
   type: integer
   minimum: 0
   maximum: 100
-  description: 'Percentage of each load group’s kW capacity (if specified), 
+  description: 'Percentage of each load groups kW capacity (if specified), 
                which determines the amount of kW reduction that must occur 
                before control can stop.'  
 whenToChangeFields:
@@ -2019,12 +2037,14 @@ whenToChangeFields:
         - Duration
         - Priority
         - TriggerOffset
-      description: 'None – The gear switches only when it is manually switched.
-                    Duration – The gear switches when the duration ends.
-                    Priority – The gear switches when the priority of the control area reaches the change priority.
-                    TriggerOffset – Triggers are defined in Control Areas. 
-                    The gear changes when the Control Area threshold value reaches the
-                    trigger plus the offset value in the Trigger Offset.'
+      description: |-
+                    - None - The gear switches only when it is manually switched.
+                    - Duration - The gear switches when the duration ends.
+                    - Priority - The gear switches when the priority of the control area reaches the change priority.
+                    - TriggerOffset - Triggers are defined in Control Areas. 
+                      The gear changes when the Control Area threshold value reaches the trigger plus the offset value
+                      in the Trigger Offset.
+                    
     changeDurationInMinutes:
       type: integer
       minimum: 0
@@ -2355,7 +2375,6 @@ components:
           assignedNotificationGroups:
             - notificationGrpID: 2
               notificationGrpName: Jess Notification
-
     Eaton Cloud Program:
       value:       
         name: EatonCloudProgramTest
@@ -2454,4 +2473,3 @@ components:
     id:
       value:
         id: 39223
-    
