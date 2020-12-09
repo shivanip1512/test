@@ -1,6 +1,7 @@
 <%@ tag body-content="empty" description="HighChart tag for displaying historical pointId data as a line or bar chart (See HighChartServiceImpl.java:getMeterGraphData)" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 
 <%@ attribute name="title" required="true"%>
 <%@ attribute name="pointIds" required="true" description="Comma seperated list of pointIds"%>
@@ -17,6 +18,8 @@
 <%@ attribute name="ymax"%>
 <%@ attribute name="chartWidth" type="java.lang.Integer" required="true" description="Width of the chart."%>
 <%@ attribute name="chartHeight" type="java.lang.Integer" required="true" description="Heigth of the chart."%>
+
+<cti:uniqueIdentifier var="uniqueId"/>
 
 <c:url var="chartUrl" scope="page" value="/amr/chart/getChartJson">
     <c:param name="pointIds" value="${pointIds}" />
@@ -42,7 +45,7 @@
     </c:if>
 </c:url>
 
-<div class="js-highchart-chart-container"></div>
+<div id="js-chart-container-${uniqueId}"></div>
 
 <script>
     $(function() {
@@ -50,7 +53,7 @@
             url: '${pageScope.chartUrl}',
             dataType : 'json'
         }).done(function (response, textStatus, jqXHR) {
-            yukon.highChart.buildChart($(".js-highchart-chart-container"), response, '${pageScope.title}', 300, 720);
+            yukon.highChart.buildChart($("#js-chart-container-${uniqueId}"), response, '${pageScope.title}', 300, 720);
         });
     });
 </script>

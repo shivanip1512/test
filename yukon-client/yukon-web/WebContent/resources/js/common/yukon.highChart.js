@@ -49,9 +49,11 @@ yukon.highChart = (function () {
                     type: 'datetime',
                     labels: {
                         formatter: function() {
-                          return Highcharts.dateFormat('%b %e', this.value);
+                            return Highcharts.dateFormat(jsonResponse.xaxis.datetimeFormat, this.value);
                         }
-                    }
+                    },
+                    min: jsonResponse.xaxis.min,
+                    max: jsonResponse.xaxis.max,
                 },
                 tooltip: {
                     useHTML: true,

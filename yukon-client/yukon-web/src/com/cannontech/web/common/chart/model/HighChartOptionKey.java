@@ -3,6 +3,8 @@ package com.cannontech.web.common.chart.model;
 public enum HighChartOptionKey {
     
     COLOR("color"),
+    DATE_FORMAT_MONTH_DATE("%b %e"),
+    DATE_FORMAT_MONTH_YEAR("%b %y"),
     FILL_OPACITY("fillOpacity"),
     MARKER("marker"),
     MIN("min"),
@@ -15,6 +17,7 @@ public enum HighChartOptionKey {
     SHOW_IN_LEGEND("showInLegend"),
     TEXT("text"),
     TITLE("title"),
+    X_AXIS("xaxis"),
     Y_AXIS("yaxis")
     ;
     
