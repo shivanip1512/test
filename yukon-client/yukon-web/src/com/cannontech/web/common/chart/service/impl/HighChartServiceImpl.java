@@ -32,9 +32,9 @@ public class HighChartServiceImpl implements HighChartService {
                 chartService.getGraphs(graphDetails, start.toDate(), stop.toDate(), userContext, graphType);
 
          List<Map<String, Object>> seriesList = Lists.newArrayList();
-         for(int i=0; i<graphDetails.size();i++) {
-             seriesList.add(getSeriesDetails(graphs.get(i), graphDetails.get(i), graphType));
-         }
+         graphs.forEach(graph -> {
+             seriesList.add(getSeriesDetails(graph, graphType));
+         });
         
         List<Map<String, Object>> yAxesOptions = Lists.newArrayList();
         graphDetails.forEach(graphDetail -> {
@@ -73,7 +73,7 @@ public class HighChartServiceImpl implements HighChartService {
         return dataAndOptions;
     }
     
-    private Map<String, Object> getSeriesDetails(Graph<ChartValue<Double>> graph, GraphDetail graphDetail, GraphType graphType) {
+    private Map<String, Object> getSeriesDetails(Graph<ChartValue<Double>> graph, GraphType graphType) {
         Map<String, Object> seriesDetails = Maps.newHashMap();
         seriesDetails.put(HighChartOptionKey.SERIES_DATA.getKey(), getDataArray(graph.getChartData()));
         seriesDetails.put(HighChartOptionKey.SERIES_GRAPH_TYPE.getKey(), graphType.getHighChartType());
@@ -81,7 +81,7 @@ public class HighChartServiceImpl implements HighChartService {
         seriesDetails.put(HighChartOptionKey.COLOR.getKey(), graph.getColor().getColorHex());
         seriesDetails.put(HighChartOptionKey.FILL_OPACITY.getKey(), "0.45");
         seriesDetails.put(HighChartOptionKey.MARKER.getKey(), Collections.singletonMap("enabled", true));
-        seriesDetails.put(HighChartOptionKey.Y_AXIS.getKey(), graphDetail.getAxisIndex() - 1); //The axis index in Highchart starts with 0
+        seriesDetails.put(HighChartOptionKey.Y_AXIS.getKey(), graph.getAxisIndex() - 1); //The axis index in Highchart starts with 0
         return seriesDetails;
     }
 

@@ -53,9 +53,7 @@
             url: '${pageScope.chartUrl}',
             dataType : 'json'
         }).done(function (response, textStatus, jqXHR) {
-            yukon.highChart.buildChart($("#js-chart-container-${uniqueId}"), response, '${pageScope.title}', 300, 720);
+            yukon.highChart.buildChart($("#js-chart-container-${uniqueId}"), response, "${pageScope.title}", "${chartHeight}", "${chartWidth}");
         });
     });
 </script>
-
-<cti:includeScript link="/resources/js/pages/yukon.highChart.js"/>
