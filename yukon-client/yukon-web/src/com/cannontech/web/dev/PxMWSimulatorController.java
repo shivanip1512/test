@@ -72,8 +72,10 @@ public class PxMWSimulatorController {
     }
 
     @GetMapping("/testEndpoint")
-    public @ResponseBody Map<String, Object> testEndpoint(PxMWRetrievalUrl endpoint) {
+    public @ResponseBody Map<String, Object> testEndpoint(PxMWRetrievalUrl endpoint, String params) {
         Map<String, Object> json = new HashMap<>();
+        //if can't parse params
+        //json.put("alertError", "Unable to parse parameters, please see parameter help text.");
         if (endpoint == PxMWRetrievalUrl.DEVICE_PROFILE_BY_GUID_V1) {
             try {
                 PxMWDeviceProfileV1 profile = pxMWCommunicationServiceV1.getDeviceProfile("222222-d832-49d6-ab60-6212a63bcd10");
@@ -114,14 +116,18 @@ public class PxMWSimulatorController {
         }
         return json;
     }
+    
+    @PostMapping("/clearCache")
+    public @ResponseBody Map<String, Object> clearCache() {
+        Map<String, Object> json = new HashMap<>();
+        pxMWCommunicationServiceV1.clearCache();
+        json.put("userMessage", "Cache was successfully cleared.");
+        return json;   
+    }
 
     private String getFormattedJson(Object profile) {
         return new GsonBuilder().setPrettyPrinting().create().toJson(profile);
     }
     
-    private void clearCache() {
-        pxMWCommunicationServiceV1.clearCache();
-        //display success message
-    }
 }
 
