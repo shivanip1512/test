@@ -181,7 +181,8 @@ double CtiCalcComponent::calculate( double input, int &component_quality, CtiTim
                 component_quality = QuestionableQuality;
             }
 
-            if( _calcpoint->getUpdateType() == CalcUpdateType::Historical )
+            if( _calcpoint->getUpdateType() == CalcUpdateType::Historical ||
+                _calcpoint->getUpdateType() == CalcUpdateType::BackfillingHistorical )
             {
                 if( _calcpoint->push( componentPointPtr->getHistoricValue() ) )
                     input = componentPointPtr->getHistoricValue();
