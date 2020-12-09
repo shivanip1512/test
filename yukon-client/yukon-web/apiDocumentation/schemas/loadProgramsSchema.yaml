@@ -1115,7 +1115,8 @@ EatonCloudCycle:
           type: string
           enum:
             - Restore
-          description: 'Restore – A restore command is sent to the device.'
+          description: |-
+                        - Restore - A restore command is sent to the device.
         rampIn:
           type: boolean
           description: 'Ramp in.'
