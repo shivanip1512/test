@@ -40,8 +40,8 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
         setRefreshPage(false);
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String[] attributeName = { "attribute" + timeStamp, "a@ttribute" + timeStamp, "123attr" + timeStamp,
-                "VirtAttr" + timeStamp, "ATTRIBUTE1" + timeStamp };
+        String[] attributeName = { "Attribute" + timeStamp, "Cattribute" + timeStamp, "Jattribute" + timeStamp,
+                "Qattribute" + timeStamp, "Zattr" + timeStamp };
 
         for (String name : attributeName) {
             AttributeService.createAttributeWithAssignment(Optional.of(name));
@@ -54,10 +54,10 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
         navigate(Urls.Admin.ATTRIBUTES_LIST);
 
         page = new AttributesListPage(driverExt);
-        attrNames = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(1);
-        deviceTypes = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(2);
-        pointTypes = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(3);
-        offsets = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(4);
+        attrNames = page.getAttrAsgmtTable().getDataRowsTextByCellIndex(1);
+        deviceTypes = page.getAttrAsgmtTable().getDataRowsTextByCellIndex(2);
+        pointTypes = page.getAttrAsgmtTable().getDataRowsTextByCellIndex(3);
+        offsets = page.getAttrAsgmtTable().getDataRowsTextByCellIndex(4);
         pointOffsets.addAll(offsets.stream().map(Integer::valueOf).collect(Collectors.toList()));
     }
 
@@ -76,7 +76,7 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
         
         page.getAttrAsgmtTable().sortTableHeaderByIndex(0, SortDirection.ASCENDING);
         
-        List<String> namesList = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(1);
+        List<String> namesList = page.getAttrAsgmtTable().getDataRowsTextByCellIndex(1);
         assertThat(attrNames).isEqualTo(namesList);
     }
 
@@ -88,7 +88,7 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
 
         page.getAttrAsgmtTable().sortTableHeaderByIndex(0, SortDirection.DESCENDING);
         
-        List<String> namesList = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(1);
+        List<String> namesList = page.getAttrAsgmtTable().getDataRowsTextByCellIndex(1);
         assertThat(attrNames).isEqualTo(namesList);
     }
     
@@ -99,7 +99,7 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
 
         page.getAttrAsgmtTable().sortTableHeaderByIndex(1, SortDirection.ASCENDING);
 
-        List<String> typesList = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(2);
+        List<String> typesList = page.getAttrAsgmtTable().getDataRowsTextByCellIndex(2);
         assertThat(deviceTypes).isEqualTo(typesList);
     }
 
@@ -111,7 +111,7 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
 
         page.getAttrAsgmtTable().sortTableHeaderByIndex(1, SortDirection.DESCENDING);
 
-        List<String> typesList = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(2);
+        List<String> typesList = page.getAttrAsgmtTable().getDataRowsTextByCellIndex(2);
 
         assertThat(deviceTypes).isEqualTo(typesList);
     }
@@ -123,7 +123,7 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
 
         page.getAttrAsgmtTable().sortTableHeaderByIndex(2, SortDirection.ASCENDING);
 
-        List<String> pointTypeList = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(3);
+        List<String> pointTypeList = page.getAttrAsgmtTable().getDataRowsTextByCellIndex(3);
         assertThat(pointTypes).isEqualTo(pointTypeList);
     }
 
@@ -135,7 +135,7 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
 
         page.getAttrAsgmtTable().sortTableHeaderByIndex(2, SortDirection.DESCENDING);
 
-        List<String> pointTypeList = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(3);
+        List<String> pointTypeList = page.getAttrAsgmtTable().getDataRowsTextByCellIndex(3);
 
         assertThat(pointTypes).isEqualTo(pointTypeList);
     }
@@ -147,7 +147,7 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
 
         page.getAttrAsgmtTable().sortTableHeaderByIndex(3, SortDirection.ASCENDING);
 
-        List<String> pointOffsetList = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(4);
+        List<String> pointOffsetList = page.getAttrAsgmtTable().getDataRowsTextByCellIndex(4);
         List<Integer> offsetList = new ArrayList<Integer>();
         offsetList.addAll(pointOffsetList.stream().map(Integer::valueOf).collect(Collectors.toList()));
         assertThat(pointOffsets).isEqualTo(offsetList);
@@ -161,7 +161,7 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
 
         page.getAttrAsgmtTable().sortTableHeaderByIndex(3, SortDirection.DESCENDING);
 
-        List<String> pointOffsetList = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(4);
+        List<String> pointOffsetList = page.getAttrAsgmtTable().getDataRowsTextByCellIndex(4);
         List<Integer> offsetList = new ArrayList<Integer>();
         offsetList.addAll(pointOffsetList.stream().map(Integer::valueOf).collect(Collectors.toList()));
         assertThat(pointOffsets).isEqualTo(offsetList);
@@ -189,7 +189,7 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
         page.getFilterBtn().click();
         page.getAttrAsgmtTable().waitForFilter();
 
-        List<String> actualTypes = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(2);
+        List<String> actualTypes = page.getAttrAsgmtTable().getDataRowsTextByCellIndex(2);
 
         assertThat(actualTypes).contains(deviceType);
     }
@@ -203,7 +203,7 @@ public class AttributeAssignmentListTests extends SeleniumTestSetup {
         page.getFilterBtn().click();
         page.getAttrAsgmtTable().waitForFilter();
         
-        List<String> actualNames = page.getAttrAsgmtTable().getAllRowsTextForColumnByIndex(1);
+        List<String> actualNames = page.getAttrAsgmtTable().getDataRowsTextByCellIndex(1);
 
         assertThat(actualNames).contains(attrName);
     }

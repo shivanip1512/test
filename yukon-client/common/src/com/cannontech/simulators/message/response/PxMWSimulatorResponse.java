@@ -7,6 +7,7 @@ public class PxMWSimulatorResponse extends SimulatorResponseBase {
     private int status;
 
     public PxMWSimulatorResponse(Object response, int status) {
+        super(true);
         this.response = response;
         this.status = status;
     }

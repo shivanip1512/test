@@ -340,4 +340,6 @@ The Comm Channel Queue Counts details are updated every 6 seconds. The Refresh b
         The Certificate Updates section displays the last 3 certificate updates performed. Clicking on View Details navigates to the Manage Certificates page listing all updates performed.
     ]]></entry>
 
+    <entry key="yukon.web.widgets.gatewayListWidget">Gateway Information</entry>
+
 </properties>

@@ -79,7 +79,7 @@ public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + ldGrpId);
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        final String copyName = "Copy RFN Exp " + timeStamp;
+        final String copyName = "Copied RFN Exp" + timeStamp;
         final String expected_msg = copyName + " copied successfully.";
 
         CopyLoadGroupModal modal = detailPage.showCopyLoadGroupModal();

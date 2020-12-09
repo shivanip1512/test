@@ -598,7 +598,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         try {
             return jdbcTemplate.queryForObject(sql, rfnDynamicRfnDeviceDataRowMapper);
         } catch (EmptyResultDataAccessException e) {
-            log.error("Device " + deviceId + " is not assiciated with a gateway");
+            log.error("Device " + deviceId + " is not associated with a gateway.");
             return null;
         }
     }

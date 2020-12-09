@@ -8,98 +8,97 @@ import java.util.Properties;
 
 public class ConfigFileReader {
 
-	private Properties properties;
-	private static final String FILE_PATH = "configs//config.properties";
+    private Properties properties;
+    private static final String FILE_PATH = "configs//config.properties";
 
-	public ConfigFileReader() throws IOException {
-		BufferedReader reader = null;
+    public ConfigFileReader() throws IOException {
+        BufferedReader reader = null;
 
-		try {
-			reader = new BufferedReader(new FileReader(FILE_PATH));
-			properties = new Properties();
+        try {
+            reader = new BufferedReader(new FileReader(FILE_PATH));
+            properties = new Properties();
 
-			try {
-				properties.load(reader);
-				reader.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+            try {
+                properties.load(reader);
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException("Configuration.properties not found at " + FILE_PATH, e);
-		}
-	}
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Configuration.properties not found at " + FILE_PATH, e);
+        }
+    }
 
-	public String getApplicationUrl() {
+    public String getApplicationUrl() {
 
-		String url = properties.getProperty("url");
+        String url = properties.getProperty("url");
 
-		if (url != null)
-			return url;
+        if (url != null)
+            return url;
 
-		throw new RuntimeException("url is not specified in the Configuration.properties file.");
-	}
+        throw new RuntimeException("url is not specified in the Configuration.properties file.");
+    }
 
-	public String getBrowser() {
+    public String getBrowser() {
 
-		String browser = properties.getProperty("browser");
+        String browser = properties.getProperty("browser");
 
-		if (browser != null)
-			return browser;
+        if (browser != null)
+            return browser;
 
-		throw new RuntimeException("browser is not specified in the Configuration.properties file.");
-	}
+        throw new RuntimeException("browser is not specified in the Configuration.properties file.");
+    }
 
-	public String getProxy() {
-		String proxy = properties.getProperty("proxy");
-		if (proxy != null)
-			return proxy;
-		throw new RuntimeException("proxy is not specified in the Configuration.properties file.");
-	}
+    public String getProxy() {
+        String proxy = properties.getProperty("proxy");
+        if (proxy != null)
+            return proxy;
+        throw new RuntimeException("proxy is not specified in the Configuration.properties file.");
+    }
 
-	public Boolean getProxyFlag() {
-		boolean useProxy = Boolean.parseBoolean(properties.getProperty("useProxy"));
-		if (useProxy)
-			return useProxy;
-		throw new RuntimeException("useProxy(true/false) flag is not specified in the Configuration.properties file.");
-	}
+    public Boolean getProxyFlag() {
+        boolean useProxy = Boolean.parseBoolean(properties.getProperty("useProxy"));
+        if (useProxy)
+            return useProxy;
+        throw new RuntimeException("useProxy(true/false) flag is not specified in the Configuration.properties file.");
+    }
 
-	public String getUseRemoteDriver() {
+    public String getUseRemoteDriver() {
 
-		String useRemoteDriver = properties.getProperty("useRemoteDriver");
+        String useRemoteDriver = properties.getProperty("useRemoteDriver");
 
-		if (useRemoteDriver != null)
-			return useRemoteDriver;
+        if (useRemoteDriver != null)
+            return useRemoteDriver;
 
-		throw new RuntimeException("useRemoteDriver is not specified in the Configuration.properties file.");
-	}
+        throw new RuntimeException("useRemoteDriver is not specified in the Configuration.properties file.");
+    }
 
-	public String getRunHeadless() {
+    public String getRunHeadless() {
 
-		String runHeadless = properties.getProperty("runHeadless");
+        String runHeadless = properties.getProperty("runHeadless");
 
-		if (runHeadless != null)
-			return runHeadless;
+        if (runHeadless != null)
+            return runHeadless;
 
-		throw new RuntimeException("runHeadless is not specified in the Configuration.properties file.");
-	}
+        throw new RuntimeException("runHeadless is not specified in the Configuration.properties file.");
+    }
 
-	public String getScreenShotPath() {
-		String screenShotPath = properties.getProperty("screenShotsPath");
+    public String getScreenShotPath() {
+        String screenShotPath = properties.getProperty("screenShotsPath");
 
-		if (screenShotPath != null)
-			return screenShotPath;
+        if (screenShotPath != null)
+            return screenShotPath;
 
-		throw new RuntimeException("screenShotPath is not specified in the Configuration.properties file.");
-	}
+        throw new RuntimeException("screenShotPath is not specified in the Configuration.properties file.");
+    }
+    
+    public String getDatabaseParameter() {
+        String dataBase = properties.getProperty("database");
 
-	public String getApiParameter(String param) {
+        if (dataBase != null)
+            return dataBase;
 
-		String parameter = properties.getProperty(param);
-
-		if (parameter != null)
-			return parameter;
-
-		throw new RuntimeException("parameter is not specified in the Configuration.properties file.");
-	}
+        throw new RuntimeException("parameter is not specified in the Configuration.properties file.");
+    }
 }

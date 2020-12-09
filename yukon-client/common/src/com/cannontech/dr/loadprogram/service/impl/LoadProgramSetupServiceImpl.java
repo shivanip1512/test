@@ -378,16 +378,11 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                 boolean isNestProgram = programType == PaoType.LM_NEST_PROGRAM;
                 boolean isItronProgram = programType == PaoType.LM_ITRON_PROGRAM;
                 boolean isMeterDisconnectProgram = programType == PaoType.LM_METER_DISCONNECT_PROGRAM;
+                boolean isEatonCloudProgram = programType == PaoType.LM_EATON_CLOUD_PROGRAM;
 
                 if (isSepProgram && isGroupSepCompatible(loadGroupType)) {
                     programGroups.add(buildProgramLoadGroup(group));
-                } else if ((!isSepProgram && !isGroupSepCompatible(loadGroupType))
-                    && (!isEcobeeProgram && !isGroupEcobeeCompatible(loadGroupType))
-                    && (!isHoneywellProgram && !isGroupHoneywellCompatible(loadGroupType))
-                    && (!isItronProgram && !isGroupItronCompatible(loadGroupType))
-                    && (!isNestProgram && !isGroupNestCompatible(loadGroupType))) {
-                    programGroups.add(buildProgramLoadGroup(group));
-                } else if (isEcobeeProgram && isGroupEcobeeCompatible(loadGroupType)) {
+                }  else if (isEcobeeProgram && isGroupEcobeeCompatible(loadGroupType)) {
                     programGroups.add(buildProgramLoadGroup(group));
                 } else if (isHoneywellProgram && isGroupHoneywellCompatible(loadGroupType)) {
                     programGroups.add(buildProgramLoadGroup(group));
@@ -396,6 +391,16 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                 } else if (isItronProgram && isGroupItronCompatible(loadGroupType)) {
                     programGroups.add(buildProgramLoadGroup(group));
                 } else if (isMeterDisconnectProgram && isGroupMeterDisconnectCompatible(loadGroupType)) {
+                    programGroups.add(buildProgramLoadGroup(group));
+                } else if (isEatonCloudProgram && isGroupEatonCloudCompatible(loadGroupType)) {
+                    programGroups.add(buildProgramLoadGroup(group));
+                } else if ((!isSepProgram && !isGroupSepCompatible(loadGroupType))
+                        && (!isEcobeeProgram && !isGroupEcobeeCompatible(loadGroupType))
+                        && (!isHoneywellProgram && !isGroupHoneywellCompatible(loadGroupType))
+                        && (!isNestProgram && !isGroupNestCompatible(loadGroupType))
+                        && (!isItronProgram && !isGroupItronCompatible(loadGroupType))
+                        && (!isMeterDisconnectProgram && !isGroupMeterDisconnectCompatible(loadGroupType))
+                        && (!isEatonCloudProgram && !isGroupEatonCloudCompatible(loadGroupType))) {
                     programGroups.add(buildProgramLoadGroup(group));
                 }
             }
@@ -433,6 +438,10 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     
     private boolean isGroupMeterDisconnectCompatible(PaoType groupType) {
         return groupType == PaoType.LM_GROUP_METER_DISCONNECT;
+    }
+
+    private boolean isGroupEatonCloudCompatible(PaoType groupType) {
+        return groupType == PaoType.LM_GROUP_EATON_CLOUD;
     }
 
     @Override

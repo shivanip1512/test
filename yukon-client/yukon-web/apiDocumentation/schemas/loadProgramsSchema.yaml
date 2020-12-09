@@ -378,6 +378,71 @@ LM_DIRECT_PROGRAM:
       $ref: '#/notification'
     memberControl:
       $ref: '#/memberControl'
+
+LM_EATON_CLOUD_PROGRAM:
+  title: LM_EATON_CLOUD_PROGRAM
+  required:
+    - type
+    - name
+    - operationalState
+    - constraint
+    - gears
+    - assignedGroups
+  type: object
+  properties:
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the load program.'
+    type:
+      type: string
+      enum: 
+        - LM_EATON_CLOUD_PROGRAM
+      description: 'Type of load program.'
+    operationalState:
+      type: string
+      enum: 
+        - Automatic
+        - ManualOnly
+        - Timed
+      description: 'Operational state of the load program.
+                    Automatic – The program controls when the trigger threshold is exceeded or when the program is manually started.
+                    Manual Only – The program must be manually started to perform control.
+                    Timed – The program controls during the specified control windows.'
+    triggerOffset:
+      type: number
+      minimum: 0.0
+      maximum: 99999.9999
+      default: 0.0
+      description: 'When the load program is assigned to a control area, the trigger offset is added to the control area 
+                    trigger threshold. The trigger point defined in the control area must exceed the control area trigger 
+                    threshold plus the trigger offset before the load program can start control.'
+    restoreOffset:
+      type: number
+      minimum: -9999.9999
+      maximum: 99999.9999
+      default: 0.0
+      description: 'When the load program is assigned to a control area, the restore offset is subtracted from the control
+                    area trigger threshold. The trigger point defined in the control area must go below the control area
+                    trigger threshold minus the trigger offset before the load program can stop control. 
+                    A restore offset with a positive value causes the trigger threshold to be lowered; 
+                    a restore offset with a negative value causes the trigger threshold to be raised.'
+    constraint:
+      $ref: '#/constraint'
+    gears:
+      type: array
+      items:
+        anyOf:
+          - $ref: '#/EatonCloudCycle'
+          - $ref: '#/NoControl'
+    controlWindow:
+      $ref: '#/controlWindow'
+    assignedGroups:
+      $ref: '#/assignedGroups'
+    notification:
+      $ref: '#/notification'
+    memberControl:
+      $ref: '#/memberControl'
       
 constraint:
   required:
@@ -979,6 +1044,79 @@ ItronCycle:
         whenToChangeFields:
           $ref: '#whenToChangeFields'  
     
+EatonCloudCycle:
+  title: EatonCloudCycle
+  required:
+    - gearName
+    - gearNumber
+    - controlMethod
+    - fields
+  type: object
+  properties:
+    gearName:
+      type: string
+      maxLength: 30
+      description: 'Name for the gear.'
+    gearNumber:
+      type: integer
+      description: 'Gear number.'
+    controlMethod:
+      type: string
+      enum:
+        - EatonCloudCycle
+      description: 'Type of gear.'
+    fields:
+      required:
+        - dutyCycleType
+        - dutyCyclePercent
+        - dutyCyclePeriodInMinutes
+        - criticality
+        - rampIn
+        - rampOut
+        - howToStopControl
+        - capacityReduction
+        - whenToChangeFields
+      type: object
+      properties:
+        dutyCycleType:
+          type: string
+          enum:
+            - STANDARD
+            - TRUE_CYCLE
+            - SMART_CYCLE
+          description: 'SMART_CYCLE - The LCR hardware performs the cycling.
+                        TRUE_CYCLE - Uses an algorithm to perform cycling, which targets 
+                        a percentage of the time a field device is operating.'
+        dutyCyclePercent:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: 'Duty cycle in percentage.'
+        dutyCyclePeriodInMinutes:
+          type: integer
+          description: 'Duty cycle period in minutes. 
+                        Valid range of Duty cycle period is 15, 30 and 60 (in minutes).'
+        criticality:
+          type: integer
+          minimum: 0
+          maximum: 255    
+          description: 'Criticality.'
+        howToStopControl:
+          type: string
+          enum:
+            - Restore
+          description: 'Restore – A restore command is sent to the device.'
+        rampIn:
+          type: boolean
+          description: 'Ramp in.'
+        rampOut:
+          type: boolean
+          description: 'Ramp out.'
+        capacityReduction:
+          $ref: '#capacityReduction'
+        whenToChangeFields:
+          $ref: '#whenToChangeFields'  
+
 MeterDisconnect:
   title: MeterDisconnect
   required:
@@ -2218,7 +2356,54 @@ components:
             - notificationGrpID: 2
               notificationGrpName: Jess Notification
 
-    
+    Eaton Cloud Program:
+      value:       
+        name: EatonCloudProgramTest
+        type: LM_EATON_CLOUD_PROGRAM
+        operationalState: Automatic
+        constraint:
+          constraintId: 95
+        triggerOffset: 1
+        restoreOffset: 2
+        gears:
+          - gearName: TestGear1
+            gearNumber: 1
+            controlMethod: EatonCycle
+            fields:
+              dutyCycleType: STANDARD
+              rampIn: true
+              rampOut: true
+              dutyCyclePercent: 95
+              dutyCyclePeriodInMinutes: 30
+              criticality: 97
+              capacityReduction: 93
+              howToStopControl: Restore
+              whenToChangeFields:
+                whenToChange: None
+          - gearName: GearNoControl
+            gearNumber: 11
+            controlMethod: NoControl
+            fields:
+              whenToChangeFields:
+                whenToChange: None
+        controlWindow:
+          controlWindowOne:
+            availableStartTimeInMinutes: 0
+            availableStopTimeInMinutes: 0
+          controlWindowTwo:
+            availableStartTimeInMinutes: 1
+            availableStopTimeInMinutes: 5
+        assignedGroups:
+          - groupId: 49236
+            groupName: EatonCloudTest
+            type: LM_GROUP_EATON_CLOUD
+        notification:
+          notifyOnAdjust: false
+          enableOnSchedule: false
+          assignedNotificationGroups:
+            - notificationGrpID: 2
+              notificationGrpName: Jess Notification
+
     HoneyWell Program:
       value:     
         name: Honeywell Program001

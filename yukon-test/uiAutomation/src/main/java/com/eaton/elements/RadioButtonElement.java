@@ -77,13 +77,6 @@ public class RadioButtonElement {
         return null;
     }
 
-    public void scrollTo() {
-        List<WebElement> list = getRadioButtons();
-        WebElement el = list.get(0);
-
-        SeleniumTestSetup.scrollToElement(el);
-    }
-
     public void moveTo() {
         List<WebElement> list = getRadioButtons();
         WebElement el = list.get(0);

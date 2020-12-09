@@ -61,14 +61,12 @@ import com.cannontech.common.util.jms.api.JmsApiCategory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.common.util.jms.api.JmsCommunicatingService;
 import com.cannontech.common.util.jms.api.JmsCommunicationPattern;
-import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.db.security.EncryptionKey;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
-import com.cannontech.dr.pxmw.PxMWDevService;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
 import com.cannontech.encryption.EncryptedRouteDao;
@@ -115,10 +113,8 @@ public class DeveloperController {
     @Autowired private SelectionListService selectionListService;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    @Autowired private YukonListDao listDao;
     @Autowired private EncryptedRouteDao encryptedRouteDao;
     @Autowired private ItronSecurityService itronSecurityService;
-    @Autowired private PxMWDevService pxMWDevService;
 
     private final Map<String, Integer> databaseFields;
     private final Map<String, String> categoryFields;
@@ -359,20 +355,6 @@ public class DeveloperController {
         }
         flash.setError(new YukonMessageSourceResolvable(homeKey + "save.failed"));
         return "itronKeyPair.jsp";
-    }
-
-    @GetMapping("/getPxMWToken")
-    public String getPxMWToken(ModelMap model, FlashScope flash) {
-        String authToken = "";
-        try {
-            authToken = pxMWDevService.getAuthenticationToken();
-        } catch(Exception e) {
-            MessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.dev.pxMWToken.loadError");
-            flash.setError(message);
-            log.warn("Error retrieving Px MiddleWare Authentication Token", e);
-        }
-        model.addAttribute("authToken", authToken);
-        return "pxMWToken.jsp";
     }
 
     @RequestMapping("/jmsApiDirectory")

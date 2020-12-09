@@ -46,7 +46,6 @@ public class MeterWRL420cLCreateTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.LOW, TestConstants.Features.AMI })
     public void meterWRL420cLCreate_AllFields_Success() {
-
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
         int meterNumber = faker.number().numberBetween(1, 999999);

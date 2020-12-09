@@ -10,7 +10,6 @@ import com.eaton.builders.assets.virtualdevices.VirtualDeviceCreateService;
 import com.eaton.framework.APIs;
 import com.eaton.framework.TestConstants;
 import com.eaton.rest.api.common.ApiCallHelper;
-import com.eaton.rest.api.virtualdevice.VirtualDeviceRequest;
 import com.github.javafaker.Faker;
 
 import io.restassured.response.ExtractableResponse;
@@ -21,7 +20,7 @@ public class DeleteVirtualDeviceV1ApiTests {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VIRTUAL_DEVICES })
     public void deleteVirtualDeviceApi_200Success() {
-        Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceOnlyRequiredFields();
+        Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateService.createVirtualDeviceOnlyRequiredFields();
         
         JSONObject createresponse = pair.getValue1();
         Integer id = createresponse.getInt("id");

@@ -85,7 +85,7 @@ public class EditVirtualDeviceV1ApiTests {
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.API, TestConstants.Features.ASSETS, TestConstants.Features.VIRTUAL_DEVICES })
     public void editVirtualDeviceApi_DuplicateName_422Unprocessable() {
-        String name = faker.internet().uuid().replaceAll("-", "");
+        String name = "AT Virtual Device " + faker.internet().uuid().replaceAll("-", "");
 
         new VirtualDeviceCreateBuilder.Builder(Optional.of(name))
             .create();

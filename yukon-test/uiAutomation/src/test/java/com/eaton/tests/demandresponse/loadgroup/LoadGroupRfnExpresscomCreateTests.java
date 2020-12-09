@@ -45,7 +45,7 @@ public class LoadGroupRfnExpresscomCreateTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
     public void LoadGroupRfnExpresscomCreate_AllFields_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "RFN Expresscomm" + timeStamp;
+        String name = "AT Rfn Expresscomm" + timeStamp;
         double capacity = faker.number().randomDouble(2, 1, 9999);
 
         final String EXPECTED_MSG = name + " saved successfully.";
