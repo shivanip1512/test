@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
+import com.cannontech.dr.pxmw.model.v1.PxMWCredentialsV1;
 import com.cannontech.dr.pxmw.service.impl.v1.PxMWCommunicationServiceImplV1;
 import com.cannontech.simulators.message.request.PxMWSimulatorRequest;
 import com.cannontech.simulators.message.response.PxMWSimulatorResponse;
@@ -75,6 +78,19 @@ public class PxMWSimulatorApiControllerV1 {
             PxMWSimulatorResponse response = simulatorsCommunicationService
                     .sendRequest(new PxMWSimulatorRequest(PxMWRetrievalUrl.DEVICE_CHANNEL_DETAILS_V1, "channelsV1",
                             new Class[] { String.class }, new Object[] { deviceId }), PxMWSimulatorResponse.class);
+            return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
+        } catch (ExecutionException e) {
+            log.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @PostMapping("/security/token")
+    public ResponseEntity<Object> token(@RequestBody PxMWCredentialsV1  pxMWCredentialsV1) {
+        try {
+            PxMWSimulatorResponse response = simulatorsCommunicationService
+                    .sendRequest(new PxMWSimulatorRequest(PxMWRetrievalUrl.SECURITY_TOKEN, "token",
+                            new Class[] {}, new Object[] {}), PxMWSimulatorResponse.class);
             return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
         } catch (ExecutionException e) {
             log.error(e);

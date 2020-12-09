@@ -196,9 +196,10 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup {
 
         modal.getGearType().selectItemByValue("ItronCycle");
         waitForLoadingSpinner();
-        
+
         List<String> actualLabels = modal.getPageSection(sectionName).getSectionLabels();
-        List<String> expectedLabels = new ArrayList<>(List.of("Duty Cycle Type:", "Duty Cycle:", "Duty Cycle Period:", "Criticality:", "How To Stop Control:"));
+        List<String> expectedLabels = new ArrayList<>(
+                List.of("Duty Cycle Type:", "Duty Cycle:", "Duty Cycle Period:", "Criticality:", "How To Stop Control:"));
 
         assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
@@ -214,7 +215,7 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup {
 
         modal.getGearType().selectItemByValue("ItronCycle");
         waitForLoadingSpinner();
-        
+
         List<String> actualLabels = modal.getPageSection(sectionName).getSectionLabels();
         List<String> expectedLabels = new ArrayList<>(List.of("Ramp In:", "Ramp Out:"));
 

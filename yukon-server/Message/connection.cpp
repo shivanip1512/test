@@ -144,7 +144,8 @@ void CtiConnection::outThreadFunc()
 
                     if( !_bQuit )
                     {
-                        checkInterruption( Chrono::seconds(1) ); // No runnaway loops ok...
+                        // Prevent a tight loop - only attempt reconnection every second.
+                        checkInterruption( Chrono::seconds(1) ); 
                     }
 
                     continue;
@@ -736,6 +737,7 @@ bool CtiConnection::isConnectionUsable()
                     // if the connection can reconnect, try to restart the thread
                     _outthread.start();
 
+                    //  If the thread exited immediately, we can't recover
                     if( _outthread.tryJoinFor( Chrono::milliseconds(100)) )
                     {
                         _outQueue.clearAndDestroy();
