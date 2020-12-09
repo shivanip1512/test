@@ -9,37 +9,25 @@ import com.google.common.collect.ImmutableMap;
  */
 public enum ApiErrorDetails {
     // Exceptions
-    OBJECT_ALREADY_EXISTS(ApiErrorCategory.NONE.getCode() + 101, ApiErrorCategory.NONE, "Object Already Exists",
-            "An identical object already exists."),
-    AUTHENTICATION_INVALID(ApiErrorCategory.NONE.getCode() + 102, ApiErrorCategory.NONE, "Authentication Invalid",
-            "Username or Password not valid."),
-    NOT_AUTHORIZED(ApiErrorCategory.NONE.getCode() + 103, ApiErrorCategory.NONE, "Not Authorized",
-            "User not authorized to perform this transaction."),
-    DATABASE_ERROR(ApiErrorCategory.NONE.getCode() + 104, ApiErrorCategory.NONE, "Database Error",
-            "Database error occured while performing this transaction."),
-    METHOD_ARGUMENT_MISMATCH(ApiErrorCategory.NONE.getCode() + 105, ApiErrorCategory.NONE, "Method Argument Mismatch",
-            "Method arguments are not matching."),
-    BAD_REQUEST(ApiErrorCategory.NONE.getCode() + 106, ApiErrorCategory.NONE, "Bad Request", "Bad Request."),
+    OBJECT_ALREADY_EXISTS(101, "Object Already Exists", "An identical object already exists."), // code : 100101
+    AUTHENTICATION_INVALID(102, "Authentication Invalid", "Username or Password not valid."), // code : 100102
+    NOT_AUTHORIZED(103, "Not Authorized", "User not authorized to perform this transaction."), // code : 100103
+    DATABASE_ERROR(104, "Database Error", "Database error occured while performing this transaction."), // code : 100104
+    METHOD_ARGUMENT_MISMATCH(105, "Method Argument Mismatch", "Method arguments are not matching."), // code : 100105
+    BAD_REQUEST(106, "Bad Request", "Bad Request."), // code : 100106
 
     // Validation Errors
-    INVALID_VALUE(ApiErrorCategory.VALIDATION_FAILED.getCode() + 101, ApiErrorCategory.VALIDATION_FAILED, "Invalid Value",
-            "Invalid value for the field."),
-    FIELD_REQUIRED(ApiErrorCategory.VALIDATION_FAILED.getCode() + 102, ApiErrorCategory.VALIDATION_FAILED, "Required field",
-            "Field is required."),
-    MAX_LENGTH_EXCEEDED(ApiErrorCategory.VALIDATION_FAILED.getCode() + 103, ApiErrorCategory.VALIDATION_FAILED,
-            "Max Length Exceeded", "Max length exceeded."),
-    ILLEGAL_CHARACTERS(ApiErrorCategory.VALIDATION_FAILED.getCode() + 104, ApiErrorCategory.VALIDATION_FAILED,
-            "Illegal Characters", "Invalid characters."),
-    VALUE_OUTSIDE_VALID_RANGE(ApiErrorCategory.VALIDATION_FAILED.getCode() + 105, ApiErrorCategory.VALIDATION_FAILED,
-            "Invalid Range", "Provided value is out of range."),
-    ALREADY_EXISTS(ApiErrorCategory.VALIDATION_FAILED.getCode() + 106, ApiErrorCategory.VALIDATION_FAILED, "Already exists",
-            "Already exists."),
-    DOES_NOT_EXISTS(ApiErrorCategory.VALIDATION_FAILED.getCode() + 107, ApiErrorCategory.VALIDATION_FAILED, "Does not exists",
-            "Does not exists."),
-    NOT_SUPPORTED(ApiErrorCategory.VALIDATION_FAILED.getCode() + 108, ApiErrorCategory.VALIDATION_FAILED, "Not Supported",
-            "Provided type not supported."),
-    PAST_DATE(ApiErrorCategory.VALIDATION_FAILED.getCode() + 109, ApiErrorCategory.VALIDATION_FAILED, "Past Date",
-            "Date must be in the past.");
+    INVALID_VALUE(ApiErrorCategory.VALIDATION_FAILED, 101, "Invalid Value", "Invalid value for the field."), // code : 101101
+    FIELD_REQUIRED(ApiErrorCategory.VALIDATION_FAILED, 102, "Required field", "Field is required."), // code : 101102
+    MAX_LENGTH_EXCEEDED(ApiErrorCategory.VALIDATION_FAILED, 103, "Max Length Exceeded", "Max length exceeded."), // code : 101103
+    ILLEGAL_CHARACTERS(ApiErrorCategory.VALIDATION_FAILED, 104, "Illegal Characters", "Invalid characters."), // code : 101104
+    VALUE_OUTSIDE_VALID_RANGE(ApiErrorCategory.VALIDATION_FAILED, 105, "Invalid Range", "Provided value is out of range."), // code
+                                                                                                                            // :
+                                                                                                                            // 101105
+    ALREADY_EXISTS(ApiErrorCategory.VALIDATION_FAILED, 106, "Already exists", "Already exists."), // code : 101106
+    DOES_NOT_EXISTS(ApiErrorCategory.VALIDATION_FAILED, 107, "Does not exists", "Does not exists."), // code : 101107
+    NOT_SUPPORTED(ApiErrorCategory.VALIDATION_FAILED, 108, "Not Supported", "Provided type not supported."), // code : 101108
+    PAST_DATE(ApiErrorCategory.VALIDATION_FAILED, 109, "Past Date", "Date must be in the past."); // code : 101109
 
     private ApiErrorCategory category;
     private int code;
@@ -51,16 +39,26 @@ public enum ApiErrorDetails {
     static {
         ImmutableMap.Builder<Integer, ApiErrorDetails> validationFieldErrorsBuilder = ImmutableMap.builder();
         for (ApiErrorDetails errorDetails : ApiErrorDetails.values()) {
-                validationFieldErrorsBuilder.put(errorDetails.code, errorDetails);
+            validationFieldErrorsBuilder.put(errorDetails.code, errorDetails);
         }
         apiErrorDetails = validationFieldErrorsBuilder.build();
     }
 
-    ApiErrorDetails(int code, ApiErrorCategory category, String title, String defaultMessage) {
-        this.code = code;
+    /**
+     * Defines an error in the specified category. The error code will be category code + error ID.
+     */
+    ApiErrorDetails(ApiErrorCategory category, int errorId, String title, String defaultMessage) {
+        this.code = category.getCode() + errorId;
         this.category = category;
         this.title = title;
         this.defaultMessage = defaultMessage;
+    }
+
+    /**
+     * Defines an error under ApiErrorCategory.NONE.
+     */
+    ApiErrorDetails(int errorId, String title, String defaultMessage) {
+        this(ApiErrorCategory.NONE, errorId, title, defaultMessage);
     }
 
     public String getTitle() {
@@ -105,6 +103,13 @@ public enum ApiErrorDetails {
      */
     public static ApiErrorDetails getError(String code) {
         return apiErrorDetails.get(Integer.valueOf(code));
+    }
+
+    /**
+     * Return code in String format.
+     */
+    public String getCodeString(ApiErrorDetails apiErrorDetails) {
+        return Integer.toString(apiErrorDetails.code);
     }
 
 }
