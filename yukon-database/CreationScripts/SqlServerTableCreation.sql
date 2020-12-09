@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     12/1/2020 1:23:04 PM                         */
+/* Created on:     12/9/2020 4:53:33 AM                         */
 /*==============================================================*/
 
 
@@ -494,6 +494,7 @@ create table ArchiveValuesExportField (
    RoundingMode         varchar(20)          null,
    MissingAttribute     varchar(20)          null,
    MissingAttributeValue varchar(20)          null,
+   FieldValue           varchar(7)           null,
    constraint PK_ArchiveValuesExpField primary key (FieldId)
 )
 go
