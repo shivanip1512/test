@@ -16,8 +16,6 @@ BOOST_AUTO_TEST_CASE(test_is_carrier_lp_device_type)
     constexpr auto MaxCount  = 200;
 
     std::vector<bool> expected ( MaxCount, false );
-
-    auto i = expected.begin();
 /*
     (_)(X)(X)(_)(_) (_)(_)(_)(_)(_)  //   0
     (_)(_)(X)(X)(X) (X)(_)(_)(_)(X)  //  10
@@ -25,42 +23,14 @@ BOOST_AUTO_TEST_CASE(test_is_carrier_lp_device_type)
     (X)(X)(X)(X)(X) (X)(X)(_)(_)(_)  //  30
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  40
 */
-    i++;
-    *i++ = true;
-    *i++ = true;
-    i += 7;         //  0
-
-    i += 2;
-    *i++ = true;
-    *i++ = true;
-    *i++ = true;
-    *i++ = true;
-    i += 3;
-    *i++ = true;    // 10
-
-    *i++ = true;
-    i += 3;
-    *i++ = true;
-    *i++ = true;
-    *i++ = true;
-    *i++ = true;
-    *i++ = true;
-    *i++ = true;    // 20
-
-    *i++ = true;
-    *i++ = true;
-    *i++ = true;
-    *i++ = true;
-    *i++ = true;
-    *i++ = true;
-    *i++ = true;
-    i += 3;         // 40
-
-    i += 10;        // 50
+    std::fill_n( expected.begin() +  1,  2, true );
+    std::fill_n( expected.begin() + 12,  4, true );
+    std::fill_n( expected.begin() + 19,  2, true );
+    std::fill_n( expected.begin() + 24, 13, true );
 
     std::vector<bool> results;
 
-    for ( int type = 0; type < 200; ++type )
+    for ( int type = 0; type < MaxCount; ++type )
     {
         results.push_back(isCarrierLPDeviceType(type));
     }
@@ -74,8 +44,6 @@ BOOST_AUTO_TEST_CASE(test_is_dnp_device_type)
     constexpr auto MaxCount  = 200;
 
     std::vector<bool> expected ( MaxCount, false );
-
-    auto i = expected.begin();
 /*
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //   0
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  10
@@ -89,29 +57,14 @@ BOOST_AUTO_TEST_CASE(test_is_dnp_device_type)
     (_)(_)(_)(_)(_) (_)(X)(_)(_)(_)  //  90
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  100
 */
-    i += 10;        //  0
-    i += 10;        // 10
-    i += 10;        // 20
-    i += 10;        // 30
-
-    i += 6;
-    *i++ = true;
-    *i++ = true;
-    i++;
-    *i++ = true;    // 40
-
-    i += 10;        // 50
-    i += 10;        // 60
-    i += 10;        // 70
-    i += 10;        // 80
-
-    i += 6;
-    *i++ = true;
-    i += 3;         // 90
+    expected[ 46 ] = true;
+    expected[ 47 ] = true;
+    expected[ 49 ] = true;
+    expected[ 96 ] = true;
 
     std::vector<bool> results;
 
-    for ( int type = 0; type < 200; ++type )
+    for ( int type = 0; type < MaxCount; ++type )
     {
         results.push_back(isDnpDeviceType(type));
     }

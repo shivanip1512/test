@@ -25,9 +25,8 @@
 #include <boost/optional.hpp>
 #include <boost/assign/list_of.hpp>
 
-namespace Cti {
-namespace Messaging {
-namespace Serialization {
+namespace Cti::Messaging::Serialization
+{
 
 IM_EX_MSG MessageFactory<::CtiMessage> g_messageFactory(::Cti::Messaging::ActiveMQ::MessageType::prefix);
 
@@ -409,7 +408,17 @@ try
 
     request.__set__groupId      (  m._groupId                       );
     request.__set__restoreTime  (  m._stopTime.seconds()            );
-    request.__set__stopType     (  stopTranslator.at( m._stopType ) );  // careful about at() and std::out_of_range if map is incomplete... which it currently is NOT
+
+    if ( auto result = mapFind( stopTranslator, m._stopType ) )
+    {
+        request.__set__stopType ( *result );
+    }
+    else
+    {
+        CTILOG_ERROR( dout, "Unsupported Stop Type enumeration with key: '" << static_cast<int>( m._stopType ) << "'" );
+
+        return {};
+    }
 
     return SerializeThriftBytes( request );
 }
@@ -440,7 +449,17 @@ try
     request.__set__dutyCyclePercentage  (  m._dutyCyclePercent      );
     request.__set__dutyCyclePeriod      (  m._dutyCyclePeriod       );
     request.__set__criticality          (  m._criticality           );
-    request.__set__cyclingOption        (  cycleTranslator.at( m._cycleType )  );   // careful about at() and std::out_of_range if map is incomplete... which it currently is NOT
+
+    if ( auto result = mapFind( cycleTranslator, m._cycleType ) )
+    {
+        request.__set__cyclingOption    ( *result );
+    }
+    else
+    {
+        CTILOG_ERROR( dout, "Unsupported Cycle Type enumeration with key: '" << static_cast<int>( m._cycleType ) << "'" );
+
+        return {};
+    }
 
     return SerializeThriftBytes( request );
 }
@@ -451,6 +470,4 @@ catch( apache::thrift::TException )
 }
 
 
-}
-}
 }

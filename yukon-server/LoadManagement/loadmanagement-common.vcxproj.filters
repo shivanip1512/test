@@ -204,5 +204,8 @@
     <ClCompile Include="EatonCloudNoControlGear.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SmartGearCyclingOption.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

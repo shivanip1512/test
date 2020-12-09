@@ -27,7 +27,9 @@ bool EatonCloudNoControlGear::attemptControl( CtiLMGroupPtr  currentLMGroup,
     {
         expectedLoadReduced += calculateLoadReduction( currentLMGroup->getKWCapacity() );
 
-        return eatonCloudGroup->sendNoControl();
+        const bool doRestore = ciStringEqual( getMethodStopType(), CtiLMProgramDirectGear::RestoreStopType );
+
+        return eatonCloudGroup->sendNoControl( doRestore );
     }
 
     CTILOG_WARN( dout, "Group does not implement the EatonCloud control interface: " << currentLMGroup->getPAOName() );
