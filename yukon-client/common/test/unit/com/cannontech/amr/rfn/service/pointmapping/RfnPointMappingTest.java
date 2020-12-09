@@ -711,10 +711,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4EAXR, "Power Factor Degrees Phase A");
         missing.put(PaoType.RFN530S4EAXR, "Power Factor Degrees Phase B");
         missing.put(PaoType.RFN530S4EAXR, "Power Factor Degrees Phase C");
-        missing.put(PaoType.RFN530S4EAXR, "Rate A kWh");
-        missing.put(PaoType.RFN530S4EAXR, "Rate B kWh");
-        missing.put(PaoType.RFN530S4EAXR, "Rate C kWh");
-        missing.put(PaoType.RFN530S4EAXR, "Rate D kWh");
         missing.put(PaoType.RFN530S4EAXR, "Received Peak kVA (Rate A kVA)");
         missing.put(PaoType.RFN530S4EAXR, "Received Peak kVA (Rate B kVA)");
         missing.put(PaoType.RFN530S4EAXR, "Received Peak kVA (Rate C kVA)");
@@ -743,10 +739,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4EAXR, "Received kVArh (Rate D kVArh)");
         missing.put(PaoType.RFN530S4EAXR, "Received kVArh");
         missing.put(PaoType.RFN530S4EAXR, "Received kW");
-        missing.put(PaoType.RFN530S4EAXR, "Received kWh (Rate A kWh)");
-        missing.put(PaoType.RFN530S4EAXR, "Received kWh (Rate B kWh)");
-        missing.put(PaoType.RFN530S4EAXR, "Received kWh (Rate C kWh)");
-        missing.put(PaoType.RFN530S4EAXR, "Received kWh (Rate D kWh)");
         missing.put(PaoType.RFN530S4EAXR, "Sum Peak kVA (Rate A kVA)");
         missing.put(PaoType.RFN530S4EAXR, "Sum Peak kVA (Rate B kVA)");
         missing.put(PaoType.RFN530S4EAXR, "Sum Peak kVA (Rate C kVA)");
@@ -968,10 +960,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4ERXR, "Power Factor Degrees Phase A");
         missing.put(PaoType.RFN530S4ERXR, "Power Factor Degrees Phase B");
         missing.put(PaoType.RFN530S4ERXR, "Power Factor Degrees Phase C");
-        missing.put(PaoType.RFN530S4ERXR, "Rate A kWh");
-        missing.put(PaoType.RFN530S4ERXR, "Rate B kWh");
-        missing.put(PaoType.RFN530S4ERXR, "Rate C kWh");
-        missing.put(PaoType.RFN530S4ERXR, "Rate D kWh");
         missing.put(PaoType.RFN530S4ERXR, "Received Peak kVA (Rate A kVA)");
         missing.put(PaoType.RFN530S4ERXR, "Received Peak kVA (Rate B kVA)");
         missing.put(PaoType.RFN530S4ERXR, "Received Peak kVA (Rate C kVA)");
@@ -1000,10 +988,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4ERXR, "Received kVArh (Rate D kVArh)");
         missing.put(PaoType.RFN530S4ERXR, "Received kVArh");
         missing.put(PaoType.RFN530S4ERXR, "Received kW");
-        missing.put(PaoType.RFN530S4ERXR, "Received kWh (Rate A kWh)");
-        missing.put(PaoType.RFN530S4ERXR, "Received kWh (Rate B kWh)");
-        missing.put(PaoType.RFN530S4ERXR, "Received kWh (Rate C kWh)");
-        missing.put(PaoType.RFN530S4ERXR, "Received kWh (Rate D kWh)");
         missing.put(PaoType.RFN530S4ERXR, "Sum kVA");
         missing.put(PaoType.RFN530S4ERXR, "Sum kVAr");
         missing.put(PaoType.RFN530S4ERXR, "Sum kW");
