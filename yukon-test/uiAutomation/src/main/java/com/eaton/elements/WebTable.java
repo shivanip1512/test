@@ -139,7 +139,7 @@ public class WebTable {
         List<WebElement> rows = new ArrayList<>();
         long startTime = System.currentTimeMillis();
 
-        while ((rows.size() != 1) && (System.currentTimeMillis() - startTime) < 1000) {
+        while ((rows.size() != 1) && (System.currentTimeMillis() - startTime) < 3000) {
             try {
                 table = getTable();
 
@@ -180,16 +180,36 @@ public class WebTable {
         return anchorElement;
     }
 
-    private void waitForSearch(WebElement parent) {
+//    private void waitForSearch(WebElement parent) {
+//        WebElement table = null;
+//        List<WebElement> rows = new ArrayList<>();
+//        long startTime = System.currentTimeMillis();
+//
+//        while ((rows.size() != 1) && (System.currentTimeMillis() - startTime) < 3000) {
+//            try {
+//                table = parent.findElement(By.cssSelector(".compact-results-table"));
+//
+//                rows = table.findElements(By.cssSelector("tbody tr"));
+//            } catch (StaleElementReferenceException ex) {
+//            }
+//        }
+//    }
+    
+    private void waitForTableSearch(WebElement parent, String value) {
         WebElement table = null;
-        List<WebElement> rows = new ArrayList<>();
+        Boolean found = false;
+        List<WebElement> rows;
         long startTime = System.currentTimeMillis();
 
-        while ((rows.size() != 1) && (System.currentTimeMillis() - startTime) < 3000) {
+        while ((!found) && (System.currentTimeMillis() - startTime) < 3000) {
             try {
                 table = parent.findElement(By.cssSelector(".compact-results-table"));
 
                 rows = table.findElements(By.cssSelector("tbody tr"));
+                
+                if (rows.size() == 1) {
+                    found = rows.stream().anyMatch(x -> x.findElement(By.cssSelector("a")).getText().contains(value));    
+                }
             } catch (StaleElementReferenceException ex) {
             }
         }
@@ -202,7 +222,7 @@ public class WebTable {
 
             search.setInputValue(value);
 
-            waitForSearch(parentElement);
+            waitForTableSearch(parentElement, value);
 
         } else if (parent != null) {
             TextEditElement search = new TextEditElement(this.driverExt, "ss", parent);
@@ -225,7 +245,7 @@ public class WebTable {
 
         search.setInputValue(value);
 
-        waitForSearch(parent);
+        waitForTableSearch(parent, value);
     }
 
     public void clearSearch() {
@@ -253,7 +273,7 @@ public class WebTable {
 
         long startTime = System.currentTimeMillis();      
         
-        while (count != 1 && ((System.currentTimeMillis() - startTime) < 2000)) {
+        while (count != 1 && ((System.currentTimeMillis() - startTime) < 3000)) {
             try {
                 WebElement table = this.getTable();
                 

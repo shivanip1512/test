@@ -13,8 +13,8 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.eaton.builders.drsetup.loadgroup.LoadGroupCreateService;
-import com.eaton.elements.modals.gears.CreateItronPrgmGearModal;
+import com.eaton.builders.drsetup.loadgroup.LoadGroupEmetconCreateBuilder;
+import com.eaton.elements.modals.gears.CreateDirectPrgmGearModal;
 import com.eaton.elements.tabs.LoadGroupsTab;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
@@ -24,10 +24,10 @@ import com.eaton.pages.demandresponse.loadprogram.LoadProgramCreatePage;
 import com.eaton.pages.demandresponse.loadprogram.LoadProgramDetailPage;
 import com.github.javafaker.Faker;
 
-public class LoadProgramItronCreateTests extends SeleniumTestSetup {
+public class LoadProgramDirectCreateTests extends SeleniumTestSetup{
     private Faker faker = new Faker();
 
-    private static final String TYPE = "LM_ITRON_PROGRAM";
+    private static final String TYPE = "LM_DIRECT_PROGRAM";
 
     private DriverExtensions driverExt;
     private String ldGrpName;
@@ -40,7 +40,8 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         ldGrpName = "Before Class " + timeStamp;
 
-        Pair<JSONObject, JSONObject> pair = LoadGroupCreateService.buildAndCreateVirtualItronLoadGroup();
+        Pair<JSONObject, JSONObject> pair = LoadGroupEmetconCreateBuilder.buildDefaultEmetconLoadGroup()
+                .create();
 
         JSONObject response = pair.getValue1();
         ldGrpName = response.getString("name");
@@ -55,9 +56,9 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
-    public void ldPrgmItronCreate_RequiredFieldsOnly_Success() {
+    public void ldPrgmDirectCreate_RequiredFieldsOnly_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT Itron Required " + timeStamp;
+        String name = "AT LM Direct Program " + timeStamp;
 
         final String EXPECTED_MSG = name + " saved successfully.";
 
@@ -65,10 +66,10 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByValue(TYPE);
         waitForLoadingSpinner();
 
-        CreateItronPrgmGearModal modal = createPage.showCreateItronPrgmGearModal(Optional.empty());
+        CreateDirectPrgmGearModal modal = createPage.showCreateDirectPrgmGearsModal(Optional.empty());
 
-        modal.getGearName().setInputValue("IC " + timeStamp);
-        modal.getGearType().selectItemByValue("ItronCycle");
+        modal.getGearName().setInputValue("DirectGear " + timeStamp);
+        modal.getGearType().selectItemByValue("TimeRefresh");
         waitForLoadingSpinner();
         modal.clickOkAndWaitForModalCloseDisplayNone();
 
@@ -88,10 +89,10 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
-    public void ldPrgmItronCreate_AllFields_Success() {
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmDirectCreate_AllFields_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT Itron All Fields " + timeStamp;
+        String name = "AT LM Direct Program " + timeStamp;
 
         final String EXPECTED_MSG = name + " saved successfully.";
 
@@ -104,10 +105,10 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup {
         createPage.getTriggerOffset().setInputValue(String.valueOf(faker.number().numberBetween(0, 100000)));
         createPage.getRestoreOffset().setInputValue(String.valueOf(faker.number().numberBetween(-10000, 100000)));
 
-        CreateItronPrgmGearModal modal = createPage.showCreateItronPrgmGearModal(Optional.empty());
+        CreateDirectPrgmGearModal modal = createPage.showCreateDirectPrgmGearsModal(Optional.empty());
 
-        modal.getGearName().setInputValue("IC " + timeStamp);
-        modal.getGearType().selectItemByValue("ItronCycle");
+        modal.getGearName().setInputValue("DirectGear " + timeStamp);
+        modal.getGearType().selectItemByValue("SmartCycle");
         waitForLoadingSpinner();
         modal.clickOkAndWaitForModalCloseDisplayNone();
 
@@ -134,24 +135,26 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
-    public void ldPrgmItronCreate_GearType_ValuesCorrect() {
+    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmDirectCreate_GearType_ValuesCorrect() {
         createPage.getType().selectItemByValue(TYPE);
         waitForLoadingSpinner();
 
-        CreateItronPrgmGearModal modal = createPage.showCreateItronPrgmGearModal(Optional.empty());
+        CreateDirectPrgmGearModal modal = createPage.showCreateDirectPrgmGearsModal(Optional.empty());
 
         List<String> actualDropDownValues = modal.getGearType().getOptionValues();
 
-        List<String> expectedDropDownValues = new ArrayList<>(List.of("Select", "Itron Cycle"));
+        List<String> expectedDropDownValues = new ArrayList<>(List.of("Select", "Time Refresh", "Smart Cycle", "Master Cycle",
+                "Rotation", "Latching", "True Cycle", "Magnitude Cycle", "Target Cycle", "Thermostat Ramping",
+                "Simple Thermostat Ramping", "Beat The Peak", "No Control"));
 
         assertThat(actualDropDownValues).containsExactlyElementsOf(expectedDropDownValues);
     }
 
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
-    public void ldPrgmItronCreate_WithMultipleGears_Success() {
+    @Test(groups = { TestConstants.Priority.MEDIUM, TestConstants.Features.DEMAND_RESPONSE })
+    public void ldPrgmDirectCreate_WithMultipleGears_Success() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT Itron Multi Gears " + timeStamp;
+        String name = "AT LM Direct Program " + timeStamp;
 
         final String EXPECTED_MSG = name + " saved successfully.";
 
@@ -161,10 +164,10 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup {
 
         // Adding 2 gears
         for (int i = 1; i <= 2; i++) {
-            CreateItronPrgmGearModal modal = createPage.showCreateItronPrgmGearModal(Optional.of(i));
+            CreateDirectPrgmGearModal modal = createPage.showCreateDirectPrgmGearsModal(Optional.of(i));
             waitForLoadingSpinner();
-            modal.getGearName().setInputValue("IC Gear " + i);
-            modal.getGearType().selectItemByValue("ItronCycle");
+            modal.getGearName().setInputValue("Direct Gear " + i);
+            modal.getGearType().selectItemByValue("TimeRefresh");
             waitForLoadingSpinner();
             modal.clickOkAndWaitForModalCloseDisplayNone();
         }
@@ -183,42 +186,5 @@ public class LoadProgramItronCreateTests extends SeleniumTestSetup {
         String userMsg = detailsPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
-    }
-
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
-    public void ldPrgmItronCreate_ItronCycleGearControlParamSection_LabelsCorrect() {
-        String sectionName = "Control Parameters";
-
-        createPage.getType().selectItemByValue(TYPE);
-        waitForLoadingSpinner();
-
-        CreateItronPrgmGearModal modal = createPage.showCreateItronPrgmGearModal(Optional.empty());
-
-        modal.getGearType().selectItemByValue("ItronCycle");
-        waitForLoadingSpinner();
-
-        List<String> actualLabels = modal.getPageSection(sectionName).getSectionLabels();
-        List<String> expectedLabels = new ArrayList<>(
-                List.of("Duty Cycle Type:", "Duty Cycle:", "Duty Cycle Period:", "Criticality:", "How To Stop Control:"));
-
-        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
-    }
-
-    @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.DEMAND_RESPONSE })
-    public void ldPrgmItronCreate_ItronCycleGearRampInRampOutSection_LabelsCorrect() {
-        String sectionName = "Ramp In / Ramp Out";
-
-        createPage.getType().selectItemByValue(TYPE);
-        waitForLoadingSpinner();
-
-        CreateItronPrgmGearModal modal = createPage.showCreateItronPrgmGearModal(Optional.empty());
-
-        modal.getGearType().selectItemByValue("ItronCycle");
-        waitForLoadingSpinner();
-
-        List<String> actualLabels = modal.getPageSection(sectionName).getSectionLabels();
-        List<String> expectedLabels = new ArrayList<>(List.of("Ramp In:", "Ramp Out:"));
-
-        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
 }
