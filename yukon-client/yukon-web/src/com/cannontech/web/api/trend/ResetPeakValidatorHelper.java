@@ -63,7 +63,7 @@ public class ResetPeakValidatorHelper {
         if (!errors.hasFieldErrors("startDate")) {
             YukonValidationUtils.checkIsBlank(errors, "startDate", Objects.toString(startDate, null), dateI18nText, false);
             if (!errors.hasFieldErrors("startDate") && startDate.isAfterNow()) {
-                errors.rejectValue("startDate", Integer.toString(ApiErrorDetails.PAST_DATE.getCode()));
+                errors.rejectValue("startDate", ApiErrorDetails.getCodeString(ApiErrorDetails.PAST_DATE));
             }
         }
     }
@@ -71,7 +71,7 @@ public class ResetPeakValidatorHelper {
     public void validateIfResetPeakIsApplicable(Integer trendId, Errors errors) {
         if (!checkIfResetPeakApplicable(Integer.valueOf(trendId))) {
             ApiErrorDetails.BAD_REQUEST.setDefaultMessage("Reset peaks cannot be performed on this trend. No peak trend types found");
-            errors.reject(Integer.toString(ApiErrorDetails.BAD_REQUEST.getCode()));
+            errors.reject(ApiErrorDetails.getCodeString(ApiErrorDetails.BAD_REQUEST));
         }
     }
 }

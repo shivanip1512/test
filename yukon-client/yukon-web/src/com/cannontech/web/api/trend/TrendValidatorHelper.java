@@ -45,7 +45,7 @@ public class TrendValidatorHelper {
         if (!errors.hasFieldErrors("name")) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", trendName, 40);
             if (StringUtils.containsAny(trendName, PaoUtils.ILLEGAL_NAME_CHARS)) {
-                errors.rejectValue("name", Integer.toString(ApiErrorDetails.ILLEGAL_CHARACTERS.getCode()),
+                errors.rejectValue("name", ApiErrorDetails.getCodeString(ApiErrorDetails.ILLEGAL_CHARACTERS),
                         new Object[] { nameI18nText }, "");
             }
             dbCache.getAllGraphDefinitions()
@@ -54,7 +54,7 @@ public class TrendValidatorHelper {
                    .findAny()
                    .ifPresent(liteGraphDefinition -> {
                        if (trendId == null || liteGraphDefinition.getGraphDefinitionID() != trendId) {
-                            errors.rejectValue("name", Integer.toString(ApiErrorDetails.ALREADY_EXISTS.getCode()),
+                            errors.rejectValue("name", ApiErrorDetails.getCodeString(ApiErrorDetails.ALREADY_EXISTS),
                                     new Object[] { nameI18nText }, "");
                        }
                    });
@@ -89,14 +89,14 @@ public class TrendValidatorHelper {
 
         if (trendSeries.getStyle() != null) {
             if (!RenderType.getWebSupportedTypes().contains(trendSeries.getStyle())) {
-                errors.rejectValue("style", Integer.toString(ApiErrorDetails.NOT_SUPPORTED.getCode()), new Object[] { trendSeries.getStyle() }, "");
+                errors.rejectValue("style", ApiErrorDetails.getCodeString(ApiErrorDetails.NOT_SUPPORTED), new Object[] { trendSeries.getStyle() }, "");
             }
         }
         if (trendSeries.getType() != null && trendSeries.getType().isDateType() && !errors.hasFieldErrors("date")) {
             YukonValidationUtils.checkIsBlank(errors, "date", Objects.toString(trendSeries.getDate(), null), dateI18nText,
                     false);
             if (!errors.hasFieldErrors("date") && trendSeries.getDate().isAfterNow()) {
-                errors.rejectValue("date", Integer.toString(ApiErrorDetails.PAST_DATE.getCode()));
+                errors.rejectValue("date", ApiErrorDetails.getCodeString(ApiErrorDetails.PAST_DATE));
             }
         }
     }
