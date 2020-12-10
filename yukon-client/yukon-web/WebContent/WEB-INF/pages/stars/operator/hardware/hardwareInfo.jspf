@@ -260,7 +260,7 @@ $(function() { updateServiceCompanyInfo();});
                                 </c:when>
                                 <c:otherwise>
                                     <span class="success"  title="<cti:msg2 key=".assetAvailability.active.title"/>">
-                                        <i:inline key=".assetAvailability.active"/>
+                                        <i:inline key="${aaStatus}"/>
                                     </span>
                                 </c:otherwise>
                             </c:choose>
@@ -274,7 +274,7 @@ $(function() { updateServiceCompanyInfo();});
                                 </c:when>
                                 <c:otherwise>
                                     <span title="<cti:msg2 key=".assetAvailability.inactive.title"/>">
-                                        <i:inline key=".assetAvailability.inactive"/>
+                                        <i:inline key="${aaStatus}"/>
                                     </span>
                                 </c:otherwise>
                             </c:choose>
@@ -288,7 +288,7 @@ $(function() { updateServiceCompanyInfo();});
                                 </c:when>
                                 <c:otherwise>
                                     <span title="<cti:msg2 key=".assetAvailability.unavailable.title"/>">
-                                        <i:inline key=".assetAvailability.unavailable"/>
+                                        <i:inline key="${aaStatus}"/>
                                     </span>
                                 </c:otherwise>
                             </c:choose>
