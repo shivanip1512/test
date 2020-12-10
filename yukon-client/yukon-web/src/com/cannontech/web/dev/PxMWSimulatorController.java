@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -77,14 +78,18 @@ public class PxMWSimulatorController {
     public @ResponseBody Map<String, Object> testEndpoint(PxMWRetrievalUrl endpoint, String params) {
         Map<String, Object> json = new HashMap<>();
 
+        if (StringUtils.isEmpty(params)) {
+            json.put("alertError", "Unable to parse parameters, please see parameter help text.");
+            return json;
+        }
+
         List<String> paramList = Stream.of(params.split(","))
                 .map(String::trim)
                 .collect(Collectors.toList());
         if (endpoint == PxMWRetrievalUrl.DEVICE_PROFILE_BY_GUID_V1) {
             try {
-                validateParams(json, paramList, 1);
                 PxMWDeviceProfileV1 profile = pxMWCommunicationServiceV1.getDeviceProfile(paramList.get(0));
-                log.info(getFormattedJson(profile));
+                log.info("params:{} json:{}", params, getFormattedJson(profile));
                 json.put("testResultJson", getFormattedJson(profile));
             } catch (PxMWCommunicationExceptionV1 e) {
                 log.info(e.getErrorMessage());
@@ -92,10 +97,9 @@ public class PxMWSimulatorController {
             }
         } else if (endpoint == PxMWRetrievalUrl.DEVICES_BY_SITE_V1) {
             try {
-                validateParams(json, paramList, 1);
                 PxMWSiteV1 site = pxMWCommunicationServiceV1.getSite(paramList.get(0), parseBoolean(paramList, 1),
                         parseBoolean(paramList, 2));
-                log.info(getFormattedJson(site));
+                log.info("params:{} json:{}", params, getFormattedJson(site));
                 json.put("testResultJson", getFormattedJson(site));
             } catch (PxMWCommunicationExceptionV1 e) {
                 log.info(getFormattedJson(e.getErrorMessage()));
@@ -103,10 +107,9 @@ public class PxMWSimulatorController {
             }
         } else if (endpoint == PxMWRetrievalUrl.DEVICE_CHANNEL_DETAILS_V1) {
             try {
-                validateParams(json, paramList, 1);
                 PxMWDeviceChannelDetailsV1 details = pxMWCommunicationServiceV1
                         .getDeviceChannelDetails(paramList.get(0));
-                log.info(getFormattedJson(details));
+                log.info("params:{} json:{}", params, getFormattedJson(details));
                 json.put("testResultJson", getFormattedJson(details));
             } catch (PxMWCommunicationExceptionV1 e) {
                 log.info(getFormattedJson(e.getErrorMessage()));
@@ -115,7 +118,7 @@ public class PxMWSimulatorController {
         } else if (endpoint == PxMWRetrievalUrl.SECURITY_TOKEN) {
             try {
                 PxMWTokenV1 token = pxMWCommunicationServiceV1.getToken();
-                log.info(getFormattedJson(token));
+                log.info("params:{} json:{}", params, getFormattedJson(token));
                 json.put("testResultJson", getFormattedJson(token));
             } catch (PxMWCommunicationExceptionV1 e) {
                 log.info(getFormattedJson(e.getErrorMessage()));
@@ -132,13 +135,7 @@ public class PxMWSimulatorController {
             return null;
         }
     }
-    
-    private void validateParams(Map<String, Object> json, List<String> paramList, int min) {
-        if(paramList.size() < min) {
-            json.put("alertError", "Unable to parse parameters, please see parameter help text.");
-        }
-    }
-    
+
     @PostMapping("/clearCache")
     public @ResponseBody Map<String, Object> clearCache() {
         Map<String, Object> json = new HashMap<>();

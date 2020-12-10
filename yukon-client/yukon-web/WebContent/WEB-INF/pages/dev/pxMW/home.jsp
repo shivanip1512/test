@@ -42,7 +42,7 @@
                                 <c:forEach var="endpointParam" items="${endpoint.params}">
                                     <c:set var="params" value="${not empty params ? params += ',' += endpointParam.value : endpointParam.value}"/>
                                 </c:forEach>
-                                <input type="text" name="parameters" size="50" value="${params}"/>
+                                <input type="text" id="${endpoint}_parameters" size="50" value="${params}"/>
                                 <cti:uniqueIdentifier var="uid" prefix="parameter-help-"/>
                                 <cti:icon icon="icon-help" classes="fn" data-popup="#${uid}"/>
                                 <div id="${uid}" data-title="Parameters Help" data-width="500" class="dn">

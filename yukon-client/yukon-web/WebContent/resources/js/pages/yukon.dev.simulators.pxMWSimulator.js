@@ -26,7 +26,7 @@ yukon.dev.simulators.pxMWSimulator = ( function() {
             
             $(document).on('click', '.js-test-endpoint', function () {
                 var endpoint = $(this).data('endpoint'),
-                    params = $(this).data('params');
+                params = $('#' + endpoint + '_parameters').val();
                 $.getJSON(yukon.url('/dev/pxMiddleware/testEndpoint?endpoint=' + endpoint + '&params=' + params))
                 .done(function (json) {
                     var resultJson = $('.js-test-endpoint-results');
