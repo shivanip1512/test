@@ -65,32 +65,16 @@ public enum ApiErrorDetails {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public int getCode() {
         return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
     }
 
     public String getDefaultMessage() {
         return defaultMessage;
     }
 
-    public void setDefaultMessage(String defaultMessage) {
-        this.defaultMessage = defaultMessage;
-    }
-
     public ApiErrorCategory getCategory() {
         return category;
-    }
-
-    public void setCategory(ApiErrorCategory category) {
-        this.category = category;
     }
 
     // This will return the type, url is fixed, with code appended

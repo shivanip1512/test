@@ -37,6 +37,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.cannontech.api.error.model.ApiErrorCategory;
 import com.cannontech.api.error.model.ApiErrorDetails;
+import com.cannontech.api.exception.NotSupportedException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.exception.LMObjectDeletionFailureException;
@@ -144,7 +145,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                         InvalidFilteringParametersException.class,
                         InvalidSortingParametersException.class,
                         InvalidPagingParametersException.class,
-                        DuplicateException.class})
+                        DuplicateException.class,
+                        NotSupportedException.class})
     public ResponseEntity<Object> handleBadRequestException(final Exception ex, final WebRequest request) {
 
         String uniqueKey = CtiUtilities.getYKUniqueKey();

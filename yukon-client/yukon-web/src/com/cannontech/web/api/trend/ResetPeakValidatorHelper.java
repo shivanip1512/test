@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.api.error.model.ApiErrorDetails;
+import com.cannontech.api.exception.NotSupportedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -70,8 +71,7 @@ public class ResetPeakValidatorHelper {
     
     public void validateIfResetPeakIsApplicable(Integer trendId, Errors errors) {
         if (!checkIfResetPeakApplicable(Integer.valueOf(trendId))) {
-            ApiErrorDetails.BAD_REQUEST.setDefaultMessage("Reset peaks cannot be performed on this trend. No peak trend types found");
-            errors.reject(ApiErrorDetails.getCodeString(ApiErrorDetails.BAD_REQUEST));
+            throw new NotSupportedException("Reset peaks cannot be performed on this trend. No peak trend types found");
         }
     }
 }
