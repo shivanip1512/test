@@ -1,12 +1,16 @@
 package com.eaton.tests.assets.virtualdevices;
 
-import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.assertj.core.api.SoftAssertions;
 import org.javatuples.Pair;
@@ -14,10 +18,12 @@ import org.testng.annotations.Test;
 import org.json.JSONObject;
 
 import com.eaton.builders.assets.virtualdevices.VirtualDeviceCreateService;
+import com.eaton.elements.WebTable.SortDirection;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.RecentArchievedRadingsModal;
 import com.eaton.elements.modals.virtualdevices.CreateVirtualDeviceModal;
 import com.eaton.elements.modals.virtualdevices.EditVirtualDeviceModal;
+import com.eaton.elements.panels.VirtualDevicePointsPanel;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
@@ -34,15 +40,12 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     private Integer virtualDeviceId;
     private String virtualDeviceName;
     private String virtualDeviceStatus;
+    private String type;
     private Integer analogPtId;
 
-    // ===================================================================================================
-    // Below code Commented due to YUK-23130
-    // ===================================================================================================
-    // private List<String> pointNames;
-    // private List<String> pointTypes;
-    // private List<String> pointOffsets;
-    // private List<String> pointStatus;
+    private List<String> pointNames;
+    private List<String> pointTypes;
+    private List<String> pointOffsets;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
@@ -51,7 +54,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         Boolean enable;
 
-        Map<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAllPoints(Optional.empty());
+        Map<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.createVirtualDeviceWithAllPoints(Optional.empty());
 
         // Virtual Device Response
         Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");
@@ -59,6 +62,8 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         virtualDeviceId = virDevResponse.getInt("id");
         virtualDeviceName = virDevResponse.getString("name");
+        type = virDevResponse.getString("type");
+
         enable = virDevResponse.getBoolean("enable");
 
         virtualDeviceStatus = (enable.equals(true)) ? "Enabled" : "Disabled";
@@ -69,14 +74,9 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         navigate(Urls.Assets.VIRTUAl_DEVICE_DETAIL + virtualDeviceId);
         detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Assets.VIRTUAl_DEVICE_DETAIL, virtualDeviceId);
 
-        // ===================================================================================================
-        // Below code Commented due to YUK-23130
-        // ===================================================================================================
-        // pointNames = detailPage.getVirtualDevicePointsPanel().getTable().getDataRowsTextByCellIndex(1);
-        // pointStatus = detailPage.getVirtualDevicePointsPanel().getTable().getDataRowsTextByCellIndex(2);
-        // pointTypes = detailPage.getVirtualDevicePointsPanel().getTable().getDataRowsTextByCellIndex(6);
-        // pointOffsets = detailPage.getVirtualDevicePointsPanel().getTable().getDataRowsTextByCellIndex(7);
-
+        pointNames = detailPage.getVirtualDevicePointsPanel().getTable().getDataRowsTextByCellIndex(1);
+        pointTypes = detailPage.getVirtualDevicePointsPanel().getTable().getDataRowsTextByCellIndex(6);
+        pointOffsets = detailPage.getVirtualDevicePointsPanel().getTable().getDataRowsTextByCellIndex(7);
     }
 
     @AfterMethod(alwaysRun = true)
@@ -126,9 +126,10 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         SoftAssertions softly = new SoftAssertions();
 
-        softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getLabelCount()).isEqualTo(2);
+        softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getLabelCount()).isEqualTo(3);
         softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getLabelByRow(0)).isEqualTo("Name:");
-        softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getLabelByRow(1)).isEqualTo("Status:");
+        softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getLabelByRow(1)).isEqualTo("Type:");
+        softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getLabelByRow(2)).isEqualTo("Status:");
         softly.assertAll();
     }
 
@@ -138,9 +139,13 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         SoftAssertions softly = new SoftAssertions();
 
-        softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getValueCount()).isEqualTo(2);
-        softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getValueByRow(0)).isEqualTo(virtualDeviceName);
-        softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getValueByRow(1)).isEqualTo(virtualDeviceStatus);
+        softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getValueCount()).isEqualTo(3);
+        softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getValueByRow(0))
+                .isEqualTo(virtualDeviceName);
+        softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getValueByRow(1).toUpperCase())
+                .isEqualTo(type.replace("_", " "));
+        softly.assertThat(detailPage.getVirtualDeviceInfoPanel().getNameStatusTable().getValueByRow(2))
+                .isEqualTo(virtualDeviceStatus);
         softly.assertAll();
     }
 
@@ -179,7 +184,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         final String OTHER_ACTIONS_URL = getBaseUrl() + "/" + Urls.OTHER_ACTIONS + virtualDeviceId;
 
         String actualOtherActionUrl = detailPage.getActionBtn().getOptionLinkByText("Other Actions");
-        
+
         ExtractableResponse<?> response = ApiCallHelper.get(OTHER_ACTIONS_URL);
 
         // Validation for URL
@@ -198,7 +203,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         ConfirmModal deleteConfirmModal = detailPage.showAndWaitDeleteVirtualDeviceModal();
 
         String actualModalTitle = deleteConfirmModal.getModalTitle();
-        
+
         assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
     }
 
@@ -213,7 +218,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         String actualAnalogPtUrl = detailPage.getVirtualDevicePointsPanel().getCreateBtn().getOptionLinkByText("Analog Point");
 
         ExtractableResponse<?> response = ApiCallHelper.get(EXP_ANLG_POINT_URL);
-        
+
         // Assert for URL
         softly.assertThat(actualAnalogPtUrl).isEqualTo(EXP_ANLG_POINT_URL);
         // Assert for response code
@@ -229,10 +234,11 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         final String EXP_CALC_ANLG_POINT_URL = getBaseUrl() + Urls.Tools.CALC_ANALOG_POINT + virtualDeviceId;
 
-        String actualCalcAnlgPtUrl = detailPage.getVirtualDevicePointsPanel().getCreateBtn().getOptionLinkByText("Calc Analog Point");
+        String actualCalcAnlgPtUrl = detailPage.getVirtualDevicePointsPanel().getCreateBtn()
+                .getOptionLinkByText("Calc Analog Point");
 
         ExtractableResponse<?> response = ApiCallHelper.get(EXP_CALC_ANLG_POINT_URL);
-        
+
         // Assert for URL
         softly.assertThat(actualCalcAnlgPtUrl).isEqualTo(EXP_CALC_ANLG_POINT_URL);
         // Assert for response code
@@ -248,10 +254,11 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         final String EXP_CALC_STS_POINT_URL = getBaseUrl() + Urls.Tools.CALC_STATUS_POINT + virtualDeviceId;
 
-        String actualCalcStsPtUrl = detailPage.getVirtualDevicePointsPanel().getCreateBtn().getOptionLinkByText("Calc Status Point");
+        String actualCalcStsPtUrl = detailPage.getVirtualDevicePointsPanel().getCreateBtn()
+                .getOptionLinkByText("Calc Status Point");
 
         ExtractableResponse<?> response = ApiCallHelper.get(EXP_CALC_STS_POINT_URL);
-        
+
         // Validation for URL
         softly.assertThat(actualCalcStsPtUrl).isEqualTo(EXP_CALC_STS_POINT_URL);
         // Validation for response code
@@ -267,13 +274,14 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         final String EXP_DMND_ACC_POINT_URL = getBaseUrl() + Urls.Tools.DEMAND_ACCUMULATOR_POINT + virtualDeviceId;
 
-        String actualCalcStsPtUrl = detailPage.getVirtualDevicePointsPanel().getCreateBtn().getOptionLinkByText("Demand Accumulator Point");
+        String actualCalcStsPtUrl = detailPage.getVirtualDevicePointsPanel().getCreateBtn()
+                .getOptionLinkByText("Demand Accumulator Point");
 
         ExtractableResponse<?> response = ApiCallHelper.get(EXP_DMND_ACC_POINT_URL);
-        
+
         // Validation for URL
         softly.assertThat(actualCalcStsPtUrl).isEqualTo(EXP_DMND_ACC_POINT_URL);
-        // Validation for response code        
+        // Validation for response code
         softly.assertThat(response.statusCode()).isEqualTo(200);
         softly.assertAll();
     }
@@ -286,10 +294,11 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         final String EXP_PLS_ACC_POINT_URL = getBaseUrl() + Urls.Tools.PULSE_ACCUMULATOR_POINT + virtualDeviceId;
 
-        String actualCalcStsPtUrl = detailPage.getVirtualDevicePointsPanel().getCreateBtn().getOptionLinkByText("Pulse Accumulator Point");
+        String actualCalcStsPtUrl = detailPage.getVirtualDevicePointsPanel().getCreateBtn()
+                .getOptionLinkByText("Pulse Accumulator Point");
 
         ExtractableResponse<?> response = ApiCallHelper.get(EXP_PLS_ACC_POINT_URL);
-        
+
         // Validation for URL
         softly.assertThat(actualCalcStsPtUrl).isEqualTo(EXP_PLS_ACC_POINT_URL);
         // Validation for response code
@@ -308,7 +317,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
         String actualCalcStsPtUrl = detailPage.getVirtualDevicePointsPanel().getCreateBtn().getOptionLinkByText("Status Point");
 
         ExtractableResponse<?> response = ApiCallHelper.get(EXP_STS_POINT_URL);
-        
+
         // Validation for URL
         softly.assertThat(actualCalcStsPtUrl).isEqualTo(EXP_STS_POINT_URL);
         // Validation for response code
@@ -324,10 +333,10 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         final String EXP_POINT_URL = getBaseUrl() + Urls.Tools.POINT + analogPtId;
 
-        String pointUrl = detailPage.getPointsTableRow(1).getCellLinkByIndex(0);
+        String pointUrl = detailPage.getPointsTableRow(0).getCellLinkByIndex(0);
 
         ExtractableResponse<?> response = ApiCallHelper.get(pointUrl);
-        
+
         // Validation for URL
         softly.assertThat(EXP_POINT_URL).isEqualTo(pointUrl);
         // Validation for response code
@@ -341,7 +350,8 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
         final String EXP_MODAL_TITLE = "Recent Archived Readings";
 
-        RecentArchievedRadingsModal rcntArchReadingsModal = detailPage.showAndWaitRecentArchievedReadingsModal("Recent Archived Readings", 5);
+        RecentArchievedRadingsModal rcntArchReadingsModal = detailPage
+                .showAndWaitRecentArchievedReadingsModal("Recent Archived Readings", 5);
 
         String title = rcntArchReadingsModal.getModalTitle();
 
@@ -350,174 +360,135 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_FilterPointTypeByStatus_Correct() {
-        throw new SkipException("Development Defect: YUK-23130");
+        setRefreshPage(true);
 
-        // ======================================================================================================================
-        // As YUK-23130 gets fixed, remove above exception and uncomment below test code
-        // ======================================================================================================================
+        VirtualDevicePointsPanel panel = detailPage.getVirtualDevicePointsPanel();
+        panel.getPointType().selectItemByText("Status");
+        panel.getFilter().click();
 
-        /*
-         * setRefreshPage(true);
-         * detailPage.getPointType().selectItemByText("Status");
-         * detailPage.getFilter().click();
-         * 
-         * List<String> pointTypeList = detailPage.getVirtualDevicePointsPanel().getTable().getDataRowsTextByCellIndex(6);
-         * 
-         * assertThat(pointTypeList).containsOnly("Status");
-         */
+        panel.getTable().waitForFilter();
+
+        List<String> pointTypeList = panel.getTable().getDataRowsTextByCellIndex(6);
+
+        assertThat(pointTypeList).containsOnly("Status");
+
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_FilterPointTypeByAnalogPt_Correct() {
-        throw new SkipException("Development Defect: YUK-23130");
+        setRefreshPage(true);
 
-        // ======================================================================================================================
-        // As YUK-23130 gets fixed, remove above exception and uncomment below test code
-        // ======================================================================================================================
-        /*
-         * setRefreshPage(true);
-         * 
-         * detailPage.getPointType().selectItemByText("Analog");
-         * detailPage.getFilter().click();
-         * 
-         * List<String> pointTypeList = detailPage.getVirtualDevicePointsPanel().getTable().getDataRowsTextByCellIndex(6);
-         * 
-         * assertThat(pointTypeList).containsOnly("Analog");
-         */
+        VirtualDevicePointsPanel panel = detailPage.getVirtualDevicePointsPanel();
+        panel.getPointType().selectItemByText("Analog");
+        panel.getFilter().click();
+
+        panel.getTable().waitForFilter();
+
+        List<String> pointTypeList = panel.getTable().getDataRowsTextByCellIndex(6);
+
+        assertThat(pointTypeList).containsOnly("Analog");
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_FilterPointTypeByCalcStatusPt_Correct() {
-        throw new SkipException("Development Defect: YUK-23130");
+        setRefreshPage(true);
 
-        // ======================================================================================================================
-        // As YUK-23130 gets fixed, remove above exception and uncomment below test code
-        // ======================================================================================================================
-        /*
-         * setRefreshPage(true);
-         * 
-         * detailPage.getPointType().selectItemByText("Calc Status");
-         * detailPage.getFilter().click();
-         * 
-         * List<String> pointTypeList = detailPage.getVirtualDevicePointsPanel().getTable().getDataRowsTextByCellIndex(6);
-         * 
-         * assertThat(pointTypeList).containsOnly("Calc Status");
-         */
+        VirtualDevicePointsPanel panel = detailPage.getVirtualDevicePointsPanel();
+        panel.getPointType().selectItemByText("Calc Status");
+        panel.getFilter().click();
+
+        panel.getTable().waitForFilter();
+
+        List<String> pointTypeList = panel.getTable().getDataRowsTextByCellIndex(6);
+
+        assertThat(pointTypeList).containsOnly("Calc Status");
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_FilterPointTypeByDemandAccPt_Correct() {
-        throw new SkipException("Development Defect: YUK-23130");
+        setRefreshPage(true);
 
-        // ======================================================================================================================
-        // As YUK-23130 gets fixed, remove above exception and uncomment below test code
-        // ======================================================================================================================
-        /*
-         * setRefreshPage(true);
-         * 
-         * detailPage.getPointType().selectItemByText("Demand Accumulator");
-         * detailPage.getFilter().click();
-         * 
-         * List<String> pointTypeList = detailPage.getVirtualDevicePointsPanel().getTable().getDataRowsTextByCellIndex(6);
-         * 
-         * assertThat(pointTypeList).containsOnly("Demand Accumulator");
-         */
+        VirtualDevicePointsPanel panel = detailPage.getVirtualDevicePointsPanel();
+        panel.getPointType().selectItemByText("Demand Accumulator");
+        panel.getFilter().click();
+
+        panel.getTable().waitForFilter();
+
+        List<String> pointTypeList = panel.getTable().getDataRowsTextByCellIndex(6);
+
+        assertThat(pointTypeList).containsOnly("Demand Accumulator");
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_FilterPointTypeByPulseAccPt_Correct() {
-        throw new SkipException("Development Defect: YUK-23130");
+        setRefreshPage(true);
 
-        // ======================================================================================================================
-        // As YUK-23130 gets fixed, remove above exception and uncomment below test code
-        // ======================================================================================================================
-        /*
-         * setRefreshPage(true);
-         * 
-         * detailPage.getPointType().selectItemByText("Pulse Accumulator");
-         * detailPage.getFilter().click();
-         * 
-         * List<String> pointTypeList = detailPage.getVirtualDevicePointsPanel().getTable().getDataRowsTextByCellIndex(6);
-         * 
-         * assertThat(pointTypeList).containsOnly("Pulse Accumulator");
-         */
+        VirtualDevicePointsPanel panel = detailPage.getVirtualDevicePointsPanel();
+        panel.getPointType().selectItemByText("Pulse Accumulator");
+        panel.getFilter().click();
+
+        panel.getTable().waitForFilter();
+
+        List<String> pointTypeList = panel.getTable().getDataRowsTextByCellIndex(6);
+
+        assertThat(pointTypeList).containsOnly("Pulse Accumulator");
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_FilterPointTypeByCalcAnalogPt_Correct() {
-        throw new SkipException("Development Defect: YUK-23130");
+        setRefreshPage(true);
 
-        // ======================================================================================================================
-        // As YUK-23130 gets fixed, remove above exception and uncomment below test code
-        // ======================================================================================================================
-        /*
-         * setRefreshPage(true);
-         * 
-         * detailPage.getPointType().selectItemByText("Calc Analog");
-         * detailPage.getFilter().click();
-         * 
-         * List<String> pointTypeList = detailPage.getVirtualDevicePointsPanel().getTable().getDataRowsTextByCellIndex(6);
-         * 
-         * assertThat(pointTypeList).containsOnly("Calc Analog");
-         */
+        VirtualDevicePointsPanel panel = detailPage.getVirtualDevicePointsPanel();
+        panel.getPointType().selectItemByText("Calc Analog");
+        panel.getFilter().click();
+
+        panel.getTable().waitForFilter();
+
+        List<String> pointTypeList = panel.getTable().getDataRowsTextByCellIndex(6);
+
+        assertThat(pointTypeList).containsOnly("Calc Analog");
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_RemoveFilter_CorrectPointsDisplayed() {
-        throw new SkipException("Development Defect: YUK-23130");
+        setRefreshPage(true);
 
-        // ======================================================================================================================
-        // As YUK-23130 gets fixed, remove above exception and uncomment below test code
-        // ======================================================================================================================
-        /*
-         * setRefreshPage(true);
-         * 
-         * detailPage.getPointType().selectItemByText("Calc Analog");
-         * detailPage.getFilter().click();
-         * 
-         * detailPage.getPointType().removeItemByIndex(0);
-         * detailPage.getFilter().click();
-         * 
-         * List<String> pointType = new ArrayList<>(List.of("Analog", "Calc Analog", "Calc Status", "Demand Accumulator",
-         * "Pulse Accumulator", "Status"));
-         * 
-         * List<String> pointTypeList = detailPage.getVirtualDevicePointsPanel().getTable().getDataRowsTextByCellIndex(6);
-         * 
-         * assertThat(pointTypeList).containsExactlyElementsOf(pointType);
-         */
+        VirtualDevicePointsPanel panel = detailPage.getVirtualDevicePointsPanel();
+        panel.getPointType().selectItemByText("Calc Analog");
+        panel.getFilter().click();
+
+        panel.getTable().waitForFilter();
+
+        panel.getPointType().removeItemByIndex(0);
+        panel.getFilter().click();
+
+        panel.getTable().waitForClearFilter();
+
+        List<String> pointType = new ArrayList<>(List.of("Analog", "Calc Analog", "Calc Status", "Demand Accumulator", "Pulse Accumulator", "Status"));
+
+        List<String> pointTypeList = panel.getTable().getDataRowsTextByCellIndex(6);
+
+        assertThat(pointTypeList).containsExactlyElementsOf(pointType);
+
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_FilterMultiplePoints_Correct() {
-        throw new SkipException("Development Defect: YUK-23130");
+        setRefreshPage(true);
 
-        // ======================================================================================================================
-        // As YUK-23130 gets fixed, remove above exception and uncomment below test code
-        // ======================================================================================================================
-        /*
-         * setRefreshPage(true);
-         * 
-         * HashMap<String, Pair<JSONObject, JSONObject>> pair =
-         * VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAllPoints();
-         * Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");
-         * 
-         * JSONObject virtDevResponse = virtualDevice.getValue1();
-         * 
-         * virtualDeviceId = virtDevResponse.getInt("id");
-         * 
-         * detailPage = new VirtualDevicesDetailPage(driverExt, Urls.Features.VIRTUAl_DEVICE_DETAIL, virtualDeviceId);
-         * 
-         * detailPage.getPointType().selectItemByText("Calc Analog");
-         * detailPage.getPointType().selectItemByText("Status");
-         * 
-         * detailPage.getFilter().click();
-         * 
-         * String[] pointType = {"Calc Analog", "Status"};
-         * 
-         * List<String> pointTypeList = detailPage.getVirtualDevicePointsPanel().getTable().getDataRowsTextByCellIndex(6);
-         * 
-         * assertThat(pointTypeList).containsOnly(pointType);
-         */
+        VirtualDevicePointsPanel panel = detailPage.getVirtualDevicePointsPanel();
+        panel.getPointType().selectItemByText("Calc Analog");
+        panel.getPointType().selectItemByText("Status");
+
+        panel.getFilter().click();
+
+        panel.getTable().waitForFilter();
+
+        String[] pointType = { "Calc Analog", "Status" };
+
+        List<String> pointTypeList = panel.getTable().getDataRowsTextByCellIndex(6);
+
+        assertThat(pointTypeList).containsOnly(pointType);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
@@ -537,7 +508,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     public void virtualDeviceDetails_DeleteWithPt_Success() {
         setRefreshPage(true);
 
-        Map<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceWithAnalogPoint();
+        Map<String, Pair<JSONObject, JSONObject>> pair = VirtualDeviceCreateService.createVirtualDeviceWithAnalogPoint();
         Pair<JSONObject, JSONObject> virtualDevice = pair.get("VirtualDevice");
 
         JSONObject virtDevResponse = virtualDevice.getValue1();
@@ -561,7 +532,7 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
     public void virtualDeviceDetails_DeleteWithOutPt_Success() {
         setRefreshPage(true);
 
-        Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceOnlyRequiredFields();
+        Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateService.createVirtualDeviceOnlyRequiredFields();
 
         JSONObject virtDevResponse = pair.getValue1();
 
@@ -582,202 +553,110 @@ public class VirtualDeviceDetailTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_DevPtsColumnHeaders_Correct() {
-        throw new SkipException("Development Defect: YUK-23130");
+        setRefreshPage(false);
 
-        // ======================================================================================================================
-        // As YUK-23130 gets fixed, remove above exception and uncomment below test code
-        // ======================================================================================================================
-        //
+        List<String> expectedLabels = new ArrayList<>(
+                List.of("Point Name", "Attribute", "", "Value/State", "Date/Time", "Point Type", "Point Offset"));
 
-        /*
-         * setRefreshPage(false);
-         * 
-         * //
-         * ======================================================================================================================
-         * 
-         * TODO
-         * 
-         * Please review the list tests that were done in load group, we should be following what was done there. We should be
-         * creating points with specific names to make sure that the sorting is working as we expect it to. The creation of these
-         * should be done in the BeforeClass also so that they can be used for all sorting test methods and we do not create them
-         * in each test.
-         * 
-         * //
-         * ======================================================================================================================
-         * 
-         * List<String> expectedLabels = new ArrayList<>(List.of("Point Name", "Attribute", "", "Value/State", "Date/Time",
-         * "Point Type", "Point Offset"));
-         * 
-         * List<String> actualLabels = detailPage.getVirtualDevicePointsPanel().getTable().getListTableHeaders();
-         * 
-         * assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
-         */
+        List<String> actualLabels = detailPage.getVirtualDevicePointsPanel().getTable().getListTableHeaders();
+
+        assertThat(actualLabels).containsExactlyElementsOf(expectedLabels);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_DevPtsSortPointNamesAsc_Correctly() {
-        throw new SkipException("Development Defect: YUK-23130");
+        setRefreshPage(true);
 
-        // ======================================================================================================================
-        // As YUK-23130 gets fixed, remove above exception and uncomment below test code
-        // ======================================================================================================================
-        /*
-         * setRefreshPage(true);
-         * Collections.sort(pointNames, String.CASE_INSENSITIVE_ORDER);
-         * 
-         * detailPage.getPointsPointsTableHeader().selectColumnNameByLink(1);
-         * //
-         * ======================================================================================================================
-         * 
-         * TODO
-         * 
-         * This code will need to be updated to follow the code for sorting in the Attribute Assignment table. Just clicking the
-         * column header is not enough to get the sorting to work correctly. Name sorting is a little easier than the sorting on
-         * all the other columns Implies for below code too
-         * 
-         * //
-         * ======================================================================================================================
-         * 
-         * List<String> pointNamesList = detailPage.getTable().getDataRowsTextByCellIndex(1);
-         * 
-         * assertThat(pointNames).isEqualTo(pointNamesList);
-         */
+        Collections.sort(pointNames);
+
+        VirtualDevicePointsPanel panel = detailPage.getVirtualDevicePointsPanel();
+
+        panel.getTable().sortTableHeaderByIndex(0, SortDirection.ASCENDING);
+
+        List<String> pointNamesList = panel.getTable().getDataRowsTextByCellIndex(1);
+
+        assertThat(pointNames).isEqualTo(pointNamesList);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_DevPtsSortPointNamesDesc_Correctly() {
-        throw new SkipException("Development Defect: YUK-23130");
+        setRefreshPage(true);
 
-        // ======================================================================================================================
-        // As YUK-23130 gets fixed, remove above exception and uncomment below test code
-        // ======================================================================================================================
-        /*
-         * setRefreshPage(true);
-         * Collections.sort(pointNames, String.CASE_INSENSITIVE_ORDER);
-         * Collections.reverse(pointNames);
-         * 
-         * detailPage.getPointsPointsTableHeader().selectColumnNameByLink(1);
-         * 
-         * List<String> namesList = detailPage.getTable().getDataRowsTextByCellIndex(1);
-         * 
-         * assertThat(pointNames).isEqualTo(namesList);
-         */
+        Collections.sort(pointNames);
+        Collections.reverse(pointNames);
+
+        VirtualDevicePointsPanel panel = detailPage.getVirtualDevicePointsPanel();
+
+        panel.getTable().sortTableHeaderByIndex(0, SortDirection.DESCENDING);
+
+        List<String> pointNamesList = panel.getTable().getDataRowsTextByCellIndex(1);
+
+        assertThat(pointNames).isEqualTo(pointNamesList);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_SortPointTypeAsc_Correctly() {
-        throw new SkipException("Development Defect: YUK-23130");
+        setRefreshPage(true);
 
-        // ======================================================================================================================
-        // As YUK-23130 gets fixed, remove above exception and uncomment below test code
-        // ======================================================================================================================
-        /*
-         * setRefreshPage(true);
-         * Collections.sort(pointTypes, String.CASE_INSENSITIVE_ORDER);
-         * 
-         * detailPage.getPointsPointsTableHeader().selectColumnNameByLink(6);
-         * 
-         * List<String> pointTypesList = detailPage.getTable().getDataRowsTextByCellIndex(6);
-         * 
-         * assertThat(pointTypes).isEqualTo(pointTypesList);
-         */
+        Collections.sort(pointTypes);
+
+        VirtualDevicePointsPanel panel = detailPage.getVirtualDevicePointsPanel();
+
+        panel.getTable().sortTableHeaderByIndex(5, SortDirection.ASCENDING);
+
+        List<String> pointTypesList = panel.getTable().getDataRowsTextByCellIndex(6);
+
+        assertThat(pointTypes).isEqualTo(pointTypesList);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_SortPointTypeDesc_Correctly() {
-        throw new SkipException("Development Defect: YUK-23130");
+        setRefreshPage(true);
 
-        // ======================================================================================================================
-        // As YUK-23130 gets fixed, remove above exception and uncomment below test code
-        // ======================================================================================================================
-        /*
-         * setRefreshPage(true);
-         * Collections.sort(pointTypes, String.CASE_INSENSITIVE_ORDER);
-         * Collections.reverse(pointTypes);
-         * 
-         * detailPage.getPointsPointsTableHeader().selectColumnNameByLink(6);
-         * 
-         * List<String> pointTypesList = detailPage.getTable().getDataRowsTextByCellIndex(6);
-         * 
-         * assertThat(pointTypes).isEqualTo(pointTypesList);
-         */
+        Collections.sort(pointTypes);
+        Collections.reverse(pointTypes);
+
+        VirtualDevicePointsPanel panel = detailPage.getVirtualDevicePointsPanel();
+
+        panel.getTable().sortTableHeaderByIndex(5, SortDirection.DESCENDING);
+
+        List<String> pointTypesList = panel.getTable().getDataRowsTextByCellIndex(6);
+
+        assertThat(pointTypes).isEqualTo(pointTypesList);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_SortPointOffsetAsc_Correctly() {
-        throw new SkipException("Development Defect: YUK-23130");
+        setRefreshPage(true);
+        List<Integer> listOfPointOffsets = new ArrayList<Integer>();
+        listOfPointOffsets.addAll(pointOffsets.stream().map(Integer::valueOf).collect(Collectors.toList()));
+        Collections.sort(listOfPointOffsets);
 
-        // ======================================================================================================================
-        // As YUK-23130 gets fixed, remove above exception and uncomment below test code
-        // ======================================================================================================================
-        /*
-         * setRefreshPage(true);
-         * Collections.sort(pointOffsets, String.CASE_INSENSITIVE_ORDER);
-         * 
-         * detailPage.getPointsPointsTableHeader().selectColumnNameByLink(7);
-         * 
-         * List<String> pointOffsetList = detailPage.getTable().getDataRowsTextByCellIndex(7);
-         * 
-         * assertThat(pointOffsets).isEqualTo(pointOffsetList);
-         */
+        VirtualDevicePointsPanel panel = detailPage.getVirtualDevicePointsPanel();
+
+        panel.getTable().sortTableHeaderByIndex(6, SortDirection.ASCENDING);
+
+        List<String> pointOffsetList = panel.getTable().getDataRowsTextByCellIndex(7);
+        List<Integer> offsetList = new ArrayList<Integer>();
+        offsetList.addAll(pointOffsetList.stream().map(Integer::valueOf).collect(Collectors.toList()));
+        assertThat(listOfPointOffsets).isEqualTo(offsetList);
     }
 
     @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
     public void virtualDeviceDetails_SortPointOffsetDesc_Correctly() {
-        throw new SkipException("Development Defect: YUK-23130");
+        setRefreshPage(true);
+        List<Integer> listOfPointOffsets = new ArrayList<Integer>();
+        listOfPointOffsets.addAll(pointOffsets.stream().map(Integer::valueOf).collect(Collectors.toList()));
+        Collections.sort(listOfPointOffsets);
+        Collections.reverse(listOfPointOffsets);
 
-        // ======================================================================================================================
-        // As YUK-23130 gets fixed, remove above exception and uncomment below test code
-        // ======================================================================================================================
-        /*
-         * setRefreshPage(true);
-         * Collections.sort(pointOffsets, String.CASE_INSENSITIVE_ORDER);
-         * Collections.reverse(pointOffsets);
-         * 
-         * detailPage.getPointsPointsTableHeader().selectColumnNameByLink(7);
-         * 
-         * List<String> pointOffsetList = detailPage.getTable().getDataRowsTextByCellIndex(7);
-         * 
-         * assertThat(pointOffsets).isEqualTo(pointOffsetList);
-         */
-    }
+        VirtualDevicePointsPanel panel = detailPage.getVirtualDevicePointsPanel();
 
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
-    public void virtualDeviceDetails_SortStatusAsc_Correctly() {
-        throw new SkipException("Development Defect: YUK-23130");
+        panel.getTable().sortTableHeaderByIndex(6, SortDirection.DESCENDING);
 
-        // ======================================================================================================================
-        // As YUK-23130 gets fixed, remove above exception and uncomment below test code
-        // ======================================================================================================================
-        /*
-         * setRefreshPage(true);
-         * Collections.sort(pointOffsets, String.CASE_INSENSITIVE_ORDER);
-         * 
-         * detailPage.getPointsPointsTableHeader().selectColumnNameByLink(2);
-         * 
-         * List<String> pointOffsetList = detailPage.getTable().getDataRowsTextByCellIndex(7);
-         * 
-         * assertThat(pointOffsets).isEqualTo(pointStatus);
-         */
-    }
-
-    @Test(groups = { TestConstants.Priority.HIGH, TestConstants.Features.VIRTUAL_DEVICES, TestConstants.Features.ASSETS })
-    public void virtualDeviceDetails_SortStatusDesc_Correctly() {
-        throw new SkipException("Development Defect: YUK-23130");
-
-        // ======================================================================================================================
-        // As YUK-23130 gets fixed, remove above exception and uncomment below test code
-        // ======================================================================================================================
-        /*
-         * setRefreshPage(true);
-         * Collections.sort(pointOffsets, String.CASE_INSENSITIVE_ORDER);
-         * Collections.reverse(pointOffsets);
-         * 
-         * detailPage.getPointsPointsTableHeader().selectColumnNameByLink(2);
-         * 
-         * List<String> pointOffsetList = detailPage.getTable().getDataRowsTextByCellIndex(7);
-         * 
-         * assertThat(pointOffsets).isEqualTo(pointStatus);
-         */
+        List<String> pointOffsetList = panel.getTable().getDataRowsTextByCellIndex(7);
+        List<Integer> offsetList = new ArrayList<Integer>();
+        offsetList.addAll(pointOffsetList.stream().map(Integer::valueOf).collect(Collectors.toList()));
+        assertThat(listOfPointOffsets).isEqualTo(offsetList);
     }
 }

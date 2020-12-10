@@ -9,7 +9,6 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.eaton.builders.assets.virtualdevices.VirtualDeviceCreateService;
 import com.eaton.elements.modals.virtualdevices.CreateVirtualDeviceModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
@@ -43,9 +42,10 @@ public class VirtualDevicesCreateTests extends SeleniumTestSetup {
         CreateVirtualDeviceModal createModal = listPage.showAndWaitCreateVirtualDeviceModal();
         List<String> labels = createModal.getFieldLabels();
 
-        softly.assertThat(labels.size()).isEqualTo(2);
+        softly.assertThat(labels.size()).isEqualTo(3);
         softly.assertThat(labels.get(0)).isEqualTo("Name:");
-        softly.assertThat(labels.get(1)).contains("Status:");
+        softly.assertThat(labels.get(1)).isEqualTo("Type:");
+        softly.assertThat(labels.get(2)).contains("Status:");
         softly.assertAll();
     }
     

@@ -41,9 +41,9 @@ public class LoadGroupSetupListTests extends SeleniumTestSetup {
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         filterName = "LoadGroup " + timeStamp;
-        String[] ecobeeLdGrpName = { "123ecobee" + timeStamp, "2@$Ecobeegrp" + timeStamp, "ecobeeldgrplower" + timeStamp,
-                "ECOBEELDGRPUPPER" + timeStamp, filterName };
-        String[] itronLdGrpName = { "12itron" + timeStamp, "it$ron@group" + timeStamp };
+        String[] ecobeeLdGrpName = { "Ecobee" + timeStamp, "Jecobeegrp" + timeStamp, "Necobeeldgrplower" + timeStamp,
+                "Zloadgroup" + timeStamp, filterName };
+        String[] itronLdGrpName = { "Itron" + timeStamp, "Pitron" + timeStamp };
 
         for (int i = 0; i < ecobeeLdGrpName.length; i++) {
             new LoadGroupEcobeeCreateBuilder.Builder(Optional.of(ecobeeLdGrpName[i]))

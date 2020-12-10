@@ -54,12 +54,14 @@
 <entry key="yukon.web.modules.dr.paoType.LM_CONTROL_AREA">Control Area</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_DIRECT_PROGRAM">Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_SEP_PROGRAM">SEP Program</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_EATON_CLOUD_PROGRAM">Eaton Cloud Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_ECOBEE_PROGRAM">ecobee Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_HONEYWELL_PROGRAM">Honeywell Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_ITRON_PROGRAM">Itron Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_METER_DISCONNECT_PROGRAM">Meter Disconnect Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_NEST_PROGRAM">Nest Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_DIGI_SEP">Digi SEP Group</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_GROUP_EATON_CLOUD">Eaton Cloud</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_ECOBEE">ecobee Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_HONEYWELL">Honeywell Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_ITRON">Itron Group</entry>
@@ -113,6 +115,8 @@
 <entry key="yukon.web.modules.operator.optOutAdmin.pageDescription">Opt Out Status</entry>
 <entry key="yukon.web.modules.operator.optOutScheduledEvents.pageName">Scheduled Opt Outs</entry>
 <entry key="yukon.web.modules.operator.optOutScheduledEvents.pageDescription">Scheduled Opt Outs</entry>
+
+<entry key="yukon.web.modules.operator.assetAvailability.unavailable">Unavailable</entry>
 
 <!--  Control Area Field Values -->
 <entry key="yukon.web.modules.dr.controlArea.value.STATE.ACTIVE">Active</entry>
@@ -946,6 +950,7 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.gearControlMethod.HoneywellCycle">Honeywell Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.HoneywellSetpoint">Honeywell Setpoint</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.ItronCycle">Itron Cycle</entry>
+<entry key="yukon.web.modules.dr.gearControlMethod.EatonCloudCycle">Eaton Cloud Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.NestStandardCycle">Nest Standard Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.NestCriticalCycle">Nest Critical Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.SepTemperatureOffset">SEP Temperature Offset</entry>

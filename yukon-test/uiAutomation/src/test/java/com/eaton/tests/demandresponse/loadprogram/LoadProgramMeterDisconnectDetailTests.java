@@ -132,10 +132,6 @@ public class LoadProgramMeterDisconnectDetailTests extends SeleniumTestSetup {
         JSONObject response = pair.getValue1();
         int id = response.getInt("programId");
         
-        JSONObject rsp = pair.getValue0();
-        
-        String name = rsp.getString("name");
-
         final String copyName = "Copy Disconnect " + timeStamp;
 
         final String EXPECTED_MSG = copyName + " copied successfully.";

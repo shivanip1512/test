@@ -60,7 +60,7 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
         createPage.getType().selectItemByValue("LM_DIRECT_PROGRAM");
         waitForLoadingSpinner();
 
-        CreateDirectPrgmGearModal modal = createPage.showCreateDirectPrgmGearsModal();
+        CreateDirectPrgmGearModal modal = createPage.showCreateDirectPrgmGearsModal(Optional.empty());
 
         modal.getGearName().setInputValue("TC " + timeStamp);
         modal.getGearType().selectItemByValue("TrueCycle");

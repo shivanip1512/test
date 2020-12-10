@@ -119,7 +119,7 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
                 
                 //Update service manager cache
                 if (message instanceof GatewayDataResponse) {
-                    log.debug("Received GatewayDataResponse from NM, forwaded to WS to update gateway cache. Message: {}", message);
+                    log.debug("Received GatewayDataResponse from NM, forwarded to WS to update gateway cache. Message: {}", message);
                     GatewayDataResponse gatewayDataMessage = (GatewayDataResponse) message;
                     handleDataMessage(gatewayDataMessage);
                     if (StringUtils.isEmpty(gatewayDataMessage.getUpdateServerUrl())) {

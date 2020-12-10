@@ -10,9 +10,7 @@ public class TestListener extends SeleniumTestSetup implements ITestListener {
     
     @Override
     public void onTestFailure(ITestResult result) {
-        System.out.println("***** Error " + result.getName() + " test has failed *****");
-        
-        String methodName=result.getName().toString().trim();
+        String methodName = result.getName().trim();
         
         TestUtil.captureScreenshot(methodName);
     }

@@ -1015,7 +1015,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4ERXR, "kVArh Leading (Q1 + Q3)");
         
         missing.put(PaoType.RFN530S4X, "Average Power Factor");
-        missing.put(PaoType.RFN530S4X, "Coincident Power Factor");
         missing.put(PaoType.RFN530S4X, "Net kVA");
         missing.put(PaoType.RFN530S4X, "Net kVAr");
         missing.put(PaoType.RFN530S4X, "Net kVArh (Rate A kVArh)");

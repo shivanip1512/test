@@ -29,7 +29,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
      /** 
        * Point Name naming convention: 
-       * [Net|Sum] [Delivered|Received] [Coincident] [Cumulative] [Peak] [UOM] [(Quadrants # #)] [Frozen|Daily] [Rate #|Phase X|Channel #] [per Interval|Load Profile]
+       * [Net|Sum] [Delivered|Received] [Coincident] [Cumulative] [Peak] [UOM] [(Quadrants # #)] [Frozen|Daily] [Rate #|Phase X|Channel #] [per Interval|Load Profile] [ at <base point name>]
        * Examples: 
        * Net kWh OR Net Delivered kWh 
        * Received kWh Rate A 
@@ -216,6 +216,52 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     AVERAGE_RECEIVED_POWER_FACTOR("Average Received Power Factor", AttributeGroup.REACTIVE),
     POWER_FACTOR("Power Factor", AttributeGroup.REACTIVE),
     POWER_FACTOR_COIN("Power Factor Coincidental", AttributeGroup.REACTIVE),
+
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA("Coincident Power Factor at Delivered Peak kVA", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_A("Coincident Power Factor at Delivered Peak kVA Rate A", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_B("Coincident Power Factor at Delivered Peak kVA Rate B", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_C("Coincident Power Factor at Delivered Peak kVA Rate C", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_D("Coincident Power Factor at Delivered Peak kVA Rate D", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVAR("Coincident Power Factor at Delivered Peak kVAr", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVAR_RATE_A("Coincident Power Factor at Delivered Peak kVAr Rate A", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVAR_RATE_B("Coincident Power Factor at Delivered Peak kVAr Rate B", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVAR_RATE_C("Coincident Power Factor at Delivered Peak kVAr Rate C", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVAR_RATE_D("Coincident Power Factor at Delivered Peak kVAr Rate D", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KW("Coincident Power Factor at Delivered Peak kW", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KW_RATE_A("Coincident Power Factor at Delivered Peak kW Rate A", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KW_RATE_B("Coincident Power Factor at Delivered Peak kW Rate B", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KW_RATE_D("Coincident Power Factor at Delivered Peak kW Rate D", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KW_RATE_C("Coincident Power Factor at Delivered Peak kW Rate C", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVA("Coincident Power Factor at Received Peak kVA", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVA_RATE_A("Coincident Power Factor at Received Peak kVA Rate A", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVA_RATE_B("Coincident Power Factor at Received Peak kVA Rate B", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVA_RATE_C("Coincident Power Factor at Received Peak kVA Rate C", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVA_RATE_D("Coincident Power Factor at Received Peak kVA Rate D", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVAR("Coincident Power Factor at Received Peak kVAr", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVAR_RATE_A("Coincident Power Factor at Received Peak kVAr Rate A", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVAR_RATE_B("Coincident Power Factor at Received Peak kVAr Rate B", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVAR_RATE_C("Coincident Power Factor at Received Peak kVAr Rate C", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KVAR_RATE_D("Coincident Power Factor at Received Peak kVAr Rate D", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KW("Coincident Power Factor at Received Peak kW", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KW_RATE_A("Coincident Power Factor at Received Peak kW Rate A", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KW_RATE_B("Coincident Power Factor at Received Peak kW Rate B", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KW_RATE_C("Coincident Power Factor at Received Peak kW Rate C", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_RECEIVED_PEAK_KW_RATE_D("Coincident Power Factor at Received Peak kW Rate D", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KVA("Coincident Power Factor at Sum Peak kVA", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KVA_RATE_A("Coincident Power Factor at Sum Peak kVA Rate A", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KVA_RATE_B("Coincident Power Factor at Sum Peak kVA Rate B", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KVA_RATE_C("Coincident Power Factor at Sum Peak kVA Rate C", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KVA_RATE_D("Coincident Power Factor at Sum Peak kVA Rate D", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KVAR("Coincident Power Factor at Sum Peak kVAr", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KVAR_RATE_A("Coincident Power Factor at Sum Peak kVAr Rate A", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KVAR_RATE_B("Coincident Power Factor at Sum Peak kVAr Rate B", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KVAR_RATE_C("Coincident Power Factor at Sum Peak kVAr Rate C", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KVAR_RATE_D("Coincident Power Factor at Sum Peak kVAr Rate D", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KW_RATE_A("Coincident Power Factor at Sum Peak kW Rate A", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KW_RATE_B("Coincident Power Factor at Sum Peak kW Rate B", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KW_RATE_C("Coincident Power Factor at Sum Peak kW Rate C", AttributeGroup.REACTIVE),
+    COIN_POWER_FACTOR_AT_SUM_PEAK_KW_RATE_D("Coincident Power Factor at Sum Peak kW Rate D", AttributeGroup.REACTIVE),
+
     AVERAGE_POWER_FACTOR_Q124("Average Power Factor (Quadrants 1 2 4)", AttributeGroup.REACTIVE),
     AVERAGE_POWER_FACTOR_Q234("Average Power Factor (Quadrants 2 3 4)", AttributeGroup.REACTIVE),
     AVERAGE_POWER_FACTOR_Q1234("Average Power Factor (Quadrants 1 2 3 4)", AttributeGroup.REACTIVE),
@@ -389,10 +435,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     DELIVERED_KWH_RATE_C_PER_INTERVAL("Delivered kWh Rate C per Interval", AttributeGroup.USAGE, false), //calculated, not readable
     DELIVERED_KWH_RATE_D_PER_INTERVAL("Delivered kWh Rate D per Interval", AttributeGroup.USAGE, false), //calculated, not readable
     RECEIVED_KWH_PER_INTERVAL("Received kWh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
-    RECEIVED_KWH_RATE_A_PER_INTERVAL("Recieved kWh Rate A per Interval", AttributeGroup.USAGE, false), //calculated, not readable
-    RECEIVED_KWH_RATE_B_PER_INTERVAL("Recieved kWh Rate B per Interval", AttributeGroup.USAGE, false), //calculated, not readable
-    RECEIVED_KWH_RATE_C_PER_INTERVAL("Recieved kWh Rate C per Interval", AttributeGroup.USAGE, false), //calculated, not readable
-    RECEIVED_KWH_RATE_D_PER_INTERVAL("Recieved kWh Rate D per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    RECEIVED_KWH_RATE_A_PER_INTERVAL("Received kWh Rate A per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    RECEIVED_KWH_RATE_B_PER_INTERVAL("Received kWh Rate B per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    RECEIVED_KWH_RATE_C_PER_INTERVAL("Received kWh Rate C per Interval", AttributeGroup.USAGE, false), //calculated, not readable
+    RECEIVED_KWH_RATE_D_PER_INTERVAL("Received kWh Rate D per Interval", AttributeGroup.USAGE, false), //calculated, not readable
     SUM_KWH_PER_INTERVAL("Sum kWh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
     SUM_KWH_RATE_A_PER_INTERVAL("Sum kWh Rate A per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
     SUM_KWH_RATE_B_PER_INTERVAL("Sum kWh Rate B per Interval", AttributeGroup.USAGE, false),   //calculated, not readable

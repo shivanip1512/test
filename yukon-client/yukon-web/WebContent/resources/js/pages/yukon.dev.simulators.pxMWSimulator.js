@@ -25,8 +25,9 @@ yukon.dev.simulators.pxMWSimulator = ( function() {
             });
             
             $(document).on('click', '.js-test-endpoint', function () {
-                var endpoint = $(this).data('endpoint');
-                $.getJSON(yukon.url('/dev/pxMiddleware/testEndpoint?endpoint=' + endpoint))
+                var endpoint = $(this).data('endpoint'),
+                    params = $(this).data('params');
+                $.getJSON(yukon.url('/dev/pxMiddleware/testEndpoint?endpoint=' + endpoint + '&params=' + params))
                 .done(function (json) {
                     var resultJson = $('.js-test-endpoint-results');
                     if (json.testResultJson) {
@@ -35,8 +36,23 @@ yukon.dev.simulators.pxMWSimulator = ( function() {
                     if (json.errorMessage) {
                         resultJson.html(json.errorMessage);
                     }
+                    if (json.alertError) {
+                        yukon.ui.alertError(json.alertError);
+                    }
                     resultJson.removeClass('dn');
                     
+                });
+            });
+            
+            $(document).on('click', '.js-clear-cache', function () {
+                $.post(yukon.url('/dev/pxMiddleware/clearCache'));
+                $.ajax({
+                    type: 'POST',
+                    url: yukon.url('/dev/pxMiddleware/clearCache')
+                }).done(function(json) {
+                   if (json.userMessage) {
+                       yukon.ui.alertSuccess(json.userMessage);
+                   } 
                 });
             });
 

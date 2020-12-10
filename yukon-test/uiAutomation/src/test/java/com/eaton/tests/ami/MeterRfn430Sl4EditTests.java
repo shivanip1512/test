@@ -12,6 +12,7 @@ import com.eaton.elements.modals.EditMeterModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
+import com.eaton.framework.TestDbDataType;
 import com.eaton.framework.Urls;
 import com.eaton.pages.ami.MeterDetailsPage;
 
@@ -29,21 +30,25 @@ public class MeterRfn430Sl4EditTests extends SeleniumTestSetup {
 
     @Test(enabled = true, groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.AMI })
     public void meterRfn430Sl4Edit_RequiredFieldsOnly_Success() {
-        navigate(Urls.Ami.METER_DETAIL + "585");
+        String rfn430Sl4EditId = TestDbDataType.MeterData.RFN_430SL4_EDIT_ID.getId().toString();
+        
+        navigate(Urls.Ami.METER_DETAIL + rfn430Sl4EditId);
         
         String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited RFN-430SL4 " + timeStamp;
 
-        MeterDetailsPage meterDetailsPage = new MeterDetailsPage(driverExt, 585);
+        MeterDetailsPage meterDetailsPage = new MeterDetailsPage(driverExt, Integer.parseInt(rfn430Sl4EditId));
 
         EditMeterModal editModal = meterDetailsPage.showMeterEditModal();
 
         editModal.getDeviceName().setInputValue(name);
         editModal.clickOkAndWaitForModalToClose();
 
-        waitForUrlToLoad(Urls.Ami.METER_DETAIL + 585, Optional.of(10));
+        waitForUrlToLoad(Urls.Ami.METER_DETAIL + Integer.parseInt(rfn430Sl4EditId), Optional.of(10));
 
-        String userMsg = meterDetailsPage.getUserMessage();
+        MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, Integer.parseInt(rfn430Sl4EditId));
+
+        String userMsg = detailPage.getUserMessage();
 
         assertThat(userMsg).isEqualTo(METER + name + UPDATED);
     }

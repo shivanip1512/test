@@ -557,6 +557,10 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
      * Returns true when type has guid.
      */
     public boolean isSupportsGuid() {
+        return isEatonCloud();
+    }
+    
+    public boolean isEatonCloud() {
         return eatonCloudTypes.contains(this);
     }
 }

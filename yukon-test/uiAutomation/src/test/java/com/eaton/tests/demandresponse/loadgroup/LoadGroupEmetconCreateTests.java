@@ -49,7 +49,7 @@ public class LoadGroupEmetconCreateTests extends SeleniumTestSetup{
     public void ldGrpCreateEmetcon_AllFields_Success() { 
         setRefreshPage(true);
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        String name = "AT emetcon " + timeStamp;
+        String name = "AT Emetcon" + timeStamp;
         double capacity = faker.number().randomDouble(2, 1, 9999);
         
         final String EXPECTED_MSG = name + " saved successfully.";

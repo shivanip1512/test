@@ -7,6 +7,7 @@ post-operation:
       API to create any type of load program.
       Below are the supported load program.
       - Direct
+      - Eaton Cloud
       - ecobee
       - Honeywell
       - Itron
@@ -19,27 +20,40 @@ post-operation:
           schema:
             oneOf:
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_DIRECT_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_EATON_CLOUD_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ECOBEE_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_HONEYWELL_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_SEP_PROGRAM'
-              
+             
+              - $ref: '../schemas/loadProgramsSchema.yaml#/BeatThePeak'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/EatonCloudCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeSetpoint'
               - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellSetpoint'
               - $ref: '../schemas/loadProgramsSchema.yaml#/ItronCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/Latching'
               - $ref: '../schemas/loadProgramsSchema.yaml#/MagnitudeCycle' 
+              - $ref: '../schemas/loadProgramsSchema.yaml#/MasterCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/MeterDisconnect'
               - $ref: '../schemas/loadProgramsSchema.yaml#/NoControl'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SepCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SepTemperatureOffset'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SimpleThermostatRamping'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/Rotation'
               - $ref: '../schemas/loadProgramsSchema.yaml#/SmartCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/TargetCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/ThermostatRamping'
               - $ref: '../schemas/loadProgramsSchema.yaml#/TimeRefresh'
               - $ref: '../schemas/loadProgramsSchema.yaml#/TrueCycle'
-        
+
           examples:
             Direct Program:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Direct Program' 
+            Eaton Cloud Program:
+              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
             ecobee Program:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
             HoneyWell Program:
@@ -61,15 +75,40 @@ post-operation:
               schema:
                 oneOf:
                   - $ref: '../schemas/loadProgramsSchema.yaml#/LM_DIRECT_PROGRAM'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/LM_EATON_CLOUD_PROGRAM'
                   - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ECOBEE_PROGRAM'
                   - $ref: '../schemas/loadProgramsSchema.yaml#/LM_HONEYWELL_PROGRAM'
                   - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
                   - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM'
                   - $ref: '../schemas/loadProgramsSchema.yaml#/LM_SEP_PROGRAM'
-        
+                  
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/BeatThePeak'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/EatonCloudCycle'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeCycle'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeSetpoint'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellCycle'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellSetpoint'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/ItronCycle'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/Latching'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/MagnitudeCycle' 
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/MasterCycle'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/MeterDisconnect'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/NoControl'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/SepCycle'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/SepTemperatureOffset'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/SimpleThermostatRamping'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/Rotation'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/SmartCycle'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/TargetCycle'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/ThermostatRamping'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/TimeRefresh'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/TrueCycle'
+
               examples:
                 Direct Program:
                   $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Direct Program' 
+                Eaton Cloud Program:
+                  $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
                 ecobee Program:
                   $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
                 HoneyWell Program:
@@ -90,6 +129,7 @@ get-update-delete-operation:
       API to retrieve any type of load program based on passed id.
       Below are the supported load program.
       - Direct
+      - Eaton Cloud
       - ecobee
       - Honeywell
       - Itron
@@ -112,16 +152,41 @@ get-update-delete-operation:
             schema:
              oneOf:
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_DIRECT_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_EATON_CLOUD_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ECOBEE_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_HONEYWELL_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_SEP_PROGRAM'
               
+              - $ref: '../schemas/loadProgramsSchema.yaml#/BeatThePeak'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/EatonCloudCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeSetpoint'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellSetpoint'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/ItronCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/Latching'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/MagnitudeCycle' 
+              - $ref: '../schemas/loadProgramsSchema.yaml#/MasterCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/MeterDisconnect'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/NoControl'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SepCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SepTemperatureOffset'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SimpleThermostatRamping'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/Rotation'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SmartCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/TargetCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/ThermostatRamping'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/TimeRefresh'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/TrueCycle'
+              
     
             examples:
               Direct Program:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Direct Program' 
+              Eaton Cloud Program:
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
               ecobee Program:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
               HoneyWell Program:
@@ -132,6 +197,8 @@ get-update-delete-operation:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Meter Disconnect Program'
               SEP Program:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/SEP Program' 
+
+
   put:
     tags:
       - Load Program
@@ -140,6 +207,7 @@ get-update-delete-operation:
       API to update any type of load program based on passed id.
       Below are the supported load program.
       - Direct
+      - Eaton Cloud
       - ecobee
       - Honeywell
       - Itron
@@ -160,27 +228,40 @@ get-update-delete-operation:
           schema:
            oneOf:
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_DIRECT_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_EATON_CLOUD_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ECOBEE_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_HONEYWELL_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_SEP_PROGRAM'
-              
+
+              - $ref: '../schemas/loadProgramsSchema.yaml#/BeatThePeak'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/EatonCloudCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeSetpoint'
               - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellSetpoint'
               - $ref: '../schemas/loadProgramsSchema.yaml#/ItronCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/Latching'
               - $ref: '../schemas/loadProgramsSchema.yaml#/MagnitudeCycle' 
+              - $ref: '../schemas/loadProgramsSchema.yaml#/MasterCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/MeterDisconnect'
               - $ref: '../schemas/loadProgramsSchema.yaml#/NoControl'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SepCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SepTemperatureOffset'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SimpleThermostatRamping'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/Rotation'
               - $ref: '../schemas/loadProgramsSchema.yaml#/SmartCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/TargetCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/ThermostatRamping'
               - $ref: '../schemas/loadProgramsSchema.yaml#/TimeRefresh'
               - $ref: '../schemas/loadProgramsSchema.yaml#/TrueCycle'
     
           examples:
             Direct Program:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Direct Program' 
+            Eaton Cloud Program:
+              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
             ecobee Program:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
             HoneyWell Program:
@@ -201,15 +282,40 @@ get-update-delete-operation:
             schema:
              oneOf:
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_DIRECT_PROGRAM'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/LM_EATON_CLOUD_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ECOBEE_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_HONEYWELL_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_SEP_PROGRAM'
+              
+              - $ref: '../schemas/loadProgramsSchema.yaml#/BeatThePeak'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/EatonCloudCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeSetpoint'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellSetpoint'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/ItronCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/Latching'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/MagnitudeCycle' 
+              - $ref: '../schemas/loadProgramsSchema.yaml#/MasterCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/MeterDisconnect'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/NoControl'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SepCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SepTemperatureOffset'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SimpleThermostatRamping'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/Rotation'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SmartCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/TargetCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/ThermostatRamping'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/TimeRefresh'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/TrueCycle'
     
             examples:
               Direct Program:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Direct Program' 
+              Eaton Cloud Program:
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Eaton Cloud Program'
               ecobee Program:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/ecobee Program'
               HoneyWell Program:
@@ -229,6 +335,7 @@ get-update-delete-operation:
       API to delete any type of load program based on passed id.
       Below are the supported load program.
       - Direct
+      - Eaton Cloud
       - ecobee
       - Honeywell
       - Itron
@@ -251,5 +358,5 @@ get-update-delete-operation:
             schema:
               $ref: '../schemas/loadProgramsSchema.yaml#/id'
             examples:
-              Load Group Id:
+              Load Program Id:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/id'

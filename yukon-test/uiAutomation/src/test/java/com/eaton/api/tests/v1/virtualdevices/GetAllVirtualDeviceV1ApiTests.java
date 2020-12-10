@@ -18,7 +18,7 @@ public class GetAllVirtualDeviceV1ApiTests {
     @Test(groups = { TestConstants.Priority.CRITICAL, TestConstants.Features.VIRTUAL_DEVICES })
     public void getAllVirtualDeviceApi_200Success() {
         SoftAssertions softly = new SoftAssertions();
-        Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateService.buildAndCreateVirtualDeviceOnlyRequiredFields();
+        Pair<JSONObject, JSONObject> pair = VirtualDeviceCreateService.createVirtualDeviceOnlyRequiredFields();
         
         JSONObject createResponse = pair.getValue1();
         
