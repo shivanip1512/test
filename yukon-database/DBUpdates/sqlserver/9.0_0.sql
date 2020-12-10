@@ -179,10 +179,7 @@ INSERT INTO DBUpdates VALUES ('YUK-23313', '9.0.0', GETDATE());
 /* @end YUK-23313 */
 
 /* @start YUK-23280 */
-ALTER TABLE ArchiveValuesExportField ADD FieldValue VARCHAR(7) NULL;
-GO
-
-UPDATE ArchiveValuesExportField SET FieldValue = 'DEFAULT' WHERE FieldType = 'ATTRIBUTE_NAME';
+UPDATE ArchiveValuesExportField SET Pattern = 'DEFAULT' WHERE FieldType = 'ATTRIBUTE_NAME';
 
 INSERT INTO DBUpdates VALUES ('YUK-23280', '9.0.0', GETDATE());
 /* @end YUK-23280 */

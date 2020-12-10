@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/9/2020 4:59:17 AM                         */
+/* Created on:     12/1/2020 1:11:05 PM                         */
 /*==============================================================*/
 
 
@@ -468,7 +468,6 @@ create table ArchiveValuesExportField  (
    RoundingMode         VARCHAR2(20),
    MissingAttribute     VARCHAR2(20),
    MissingAttributeValue VARCHAR2(20),
-   FieldValue           VARCHAR2(7),
    constraint PK_ArchiveValuesExpField primary key (FieldId)
 );
 
