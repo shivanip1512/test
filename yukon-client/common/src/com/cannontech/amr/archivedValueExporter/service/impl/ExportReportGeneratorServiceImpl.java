@@ -193,7 +193,9 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             boolean isOnInterval,
             TimeIntervals interval) throws IOException {
         
-        log.info("Generating report for {} devices. Attributes: {}", allPaos.size(), attributes);
+        if (format.getFormatType() == ArchivedValuesExportFormatType.DYNAMIC_ATTRIBUTE) {
+            log.info("Generating report for {} devices. Attributes: {}", allPaos.size(), attributes);
+        }
 
         Set<OptionalField> requestedFields = new HashSet<>();
         boolean needsName = false;
