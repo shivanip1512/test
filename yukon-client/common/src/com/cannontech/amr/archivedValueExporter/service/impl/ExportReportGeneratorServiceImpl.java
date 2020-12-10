@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
 import com.cannontech.amr.archivedValueExporter.model.AttributeField;
+import com.cannontech.amr.archivedValueExporter.model.CMEPUnitEnum;
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
 import com.cannontech.amr.archivedValueExporter.model.ExportField;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
@@ -473,7 +474,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         case ROUTE:
             return StringUtils.isEmpty(paoData.getRouteName()) ? "" : paoData.getRouteName();
         case ATTRIBUTE_NAME:
-            return getAttributeName(attribute, userContext);
+            return getAttributeName(attribute, userContext, exportField.getPattern());
         case UNIT_OF_MEASURE:
             return getUOMValue(pao, attribute, userContext, unitMeasureLookupTable);
         case POINT_NAME:
@@ -834,15 +835,20 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     }
 
     /**
-     * Gets the attribute name.
+     * Gets the attribute name. When fieldValue is CMEP and the attribute is exist in CMEPUnitEnum return CMEPUnitEnum name else
+     * return Attribute's 18n value.
      */
-    private String getAttributeName(Attribute attribute, YukonUserContext userContext) {
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+    private String getAttributeName(Attribute attribute, YukonUserContext userContext, String fieldValue) {
         String attributeName = null;
-        if (null != attribute) {
-            attributeName = messageSourceAccessor.getMessage(attribute.getMessage());
+        if ("CMEP".equalsIgnoreCase(fieldValue)) {
+            attributeName = CMEPUnitEnum.fromValue(attribute);
         }
-
+        if (StringUtils.isEmpty(attributeName)) {
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            if (null != attribute) {
+                attributeName = messageSourceAccessor.getMessage(attribute.getMessage());
+            }
+        }
         return attributeName;
     }
 

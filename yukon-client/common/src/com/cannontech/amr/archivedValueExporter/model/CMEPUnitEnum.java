@@ -1,4 +1,4 @@
-package com.cannontech.billing.model;
+package com.cannontech.amr.archivedValueExporter.model;
 
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -47,5 +47,14 @@ public enum CMEPUnitEnum {
             throw new IllegalUseOfAttribute("The unit "+name()+" is not currently supported by Yukon");
         }
         return attribute;
+    }
+
+    public static String fromValue(Attribute attribute) {
+        for (CMEPUnitEnum unitEnum : CMEPUnitEnum.values()) {
+            if (attribute == unitEnum.attribute) {
+                return unitEnum.name();
+            }
+        }
+        return null;
     }
 }
