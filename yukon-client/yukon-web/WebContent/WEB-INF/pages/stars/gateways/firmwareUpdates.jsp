@@ -118,6 +118,5 @@
         </table>
         <cti:toJson object="${text}" id="gateway-text"/>
     </div>
-    <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.manageFirmware.js"/>
 </cti:standardPage>
