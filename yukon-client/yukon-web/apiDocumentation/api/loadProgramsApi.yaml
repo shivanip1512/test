@@ -26,20 +26,29 @@ post-operation:
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_SEP_PROGRAM'
-              
+             
+              - $ref: '../schemas/loadProgramsSchema.yaml#/BeatThePeak'
               - $ref: '../schemas/loadProgramsSchema.yaml#/EatonCloudCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeSetpoint'
               - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellSetpoint'
               - $ref: '../schemas/loadProgramsSchema.yaml#/ItronCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/Latching'
               - $ref: '../schemas/loadProgramsSchema.yaml#/MagnitudeCycle' 
+              - $ref: '../schemas/loadProgramsSchema.yaml#/MasterCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/MeterDisconnect'
               - $ref: '../schemas/loadProgramsSchema.yaml#/NoControl'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SepCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SepTemperatureOffset'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SimpleThermostatRamping'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/Rotation'
               - $ref: '../schemas/loadProgramsSchema.yaml#/SmartCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/TargetCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/ThermostatRamping'
               - $ref: '../schemas/loadProgramsSchema.yaml#/TimeRefresh'
               - $ref: '../schemas/loadProgramsSchema.yaml#/TrueCycle'
-        
+
           examples:
             Direct Program:
               $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Direct Program' 
@@ -72,7 +81,29 @@ post-operation:
                   - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
                   - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM'
                   - $ref: '../schemas/loadProgramsSchema.yaml#/LM_SEP_PROGRAM'
-        
+                  
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/BeatThePeak'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/EatonCloudCycle'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeCycle'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeSetpoint'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellCycle'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellSetpoint'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/ItronCycle'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/Latching'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/MagnitudeCycle' 
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/MasterCycle'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/MeterDisconnect'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/NoControl'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/SepCycle'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/SepTemperatureOffset'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/SimpleThermostatRamping'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/Rotation'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/SmartCycle'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/TargetCycle'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/ThermostatRamping'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/TimeRefresh'
+                  - $ref: '../schemas/loadProgramsSchema.yaml#/TrueCycle'
+
               examples:
                 Direct Program:
                   $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/Direct Program' 
@@ -128,6 +159,28 @@ get-update-delete-operation:
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_SEP_PROGRAM'
               
+              - $ref: '../schemas/loadProgramsSchema.yaml#/BeatThePeak'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/EatonCloudCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeSetpoint'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellSetpoint'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/ItronCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/Latching'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/MagnitudeCycle' 
+              - $ref: '../schemas/loadProgramsSchema.yaml#/MasterCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/MeterDisconnect'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/NoControl'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SepCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SepTemperatureOffset'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SimpleThermostatRamping'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/Rotation'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SmartCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/TargetCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/ThermostatRamping'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/TimeRefresh'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/TrueCycle'
+              
     
             examples:
               Direct Program:
@@ -181,17 +234,26 @@ get-update-delete-operation:
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_SEP_PROGRAM'
-              
+
+              - $ref: '../schemas/loadProgramsSchema.yaml#/BeatThePeak'
               - $ref: '../schemas/loadProgramsSchema.yaml#/EatonCloudCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeSetpoint'
               - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellSetpoint'
               - $ref: '../schemas/loadProgramsSchema.yaml#/ItronCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/Latching'
               - $ref: '../schemas/loadProgramsSchema.yaml#/MagnitudeCycle' 
+              - $ref: '../schemas/loadProgramsSchema.yaml#/MasterCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/MeterDisconnect'
               - $ref: '../schemas/loadProgramsSchema.yaml#/NoControl'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SepCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SepTemperatureOffset'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SimpleThermostatRamping'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/Rotation'
               - $ref: '../schemas/loadProgramsSchema.yaml#/SmartCycle'
               - $ref: '../schemas/loadProgramsSchema.yaml#/TargetCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/ThermostatRamping'
               - $ref: '../schemas/loadProgramsSchema.yaml#/TimeRefresh'
               - $ref: '../schemas/loadProgramsSchema.yaml#/TrueCycle'
     
@@ -226,6 +288,28 @@ get-update-delete-operation:
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_ITRON_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_METER_DISCONNECT_PROGRAM'
               - $ref: '../schemas/loadProgramsSchema.yaml#/LM_SEP_PROGRAM'
+              
+              - $ref: '../schemas/loadProgramsSchema.yaml#/BeatThePeak'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/EatonCloudCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/EcobeeSetpoint'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/HoneywellSetpoint'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/ItronCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/Latching'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/MagnitudeCycle' 
+              - $ref: '../schemas/loadProgramsSchema.yaml#/MasterCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/MeterDisconnect'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/NoControl'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SepCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SepTemperatureOffset'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SimpleThermostatRamping'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/Rotation'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/SmartCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/TargetCycle'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/ThermostatRamping'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/TimeRefresh'
+              - $ref: '../schemas/loadProgramsSchema.yaml#/TrueCycle'
     
             examples:
               Direct Program:
@@ -274,5 +358,5 @@ get-update-delete-operation:
             schema:
               $ref: '../schemas/loadProgramsSchema.yaml#/id'
             examples:
-              Load Group Id:
+              Load Program Id:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/id'
