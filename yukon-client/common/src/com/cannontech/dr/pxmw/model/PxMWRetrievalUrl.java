@@ -73,8 +73,9 @@ public enum PxMWRetrievalUrl {
     
     public String getUrl(GlobalSettingDao settingDao, Logger log, RestTemplate restTemplate) {
         String url = settingDao.getString(GlobalSettingType.PX_MIDDLEWARE_URL) + this.getSuffix();
-        log.debug("{}", url);
+        log.debug("Eaton Cloud URL: {}", url);
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setOutputStreaming(false);
         if (useProxy(url)) {
             YukonHttpProxy.fromGlobalSetting(settingDao).ifPresent(httpProxy -> {
                 factory.setProxy(httpProxy.getJavaHttpProxy());

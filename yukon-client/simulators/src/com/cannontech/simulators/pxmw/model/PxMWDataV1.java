@@ -22,10 +22,13 @@ public class PxMWDataV1 extends PxMWDataGenerator {
 
     public Object token() {
         if (status == HttpStatus.UNAUTHORIZED.value()) {
-            return new PxMWErrorsV1(List.of(new PxMWErrorV1("401", "Unauthorized")));
+            PxMWErrorsV1 errors = new PxMWErrorsV1(List.of(new PxMWErrorV1(String.valueOf(status), "Unauthorized")));
+            return errors;
+                    
         }
         if (status == HttpStatus.FORBIDDEN.value()) {
-            return new PxMWErrorsV1(List.of(new PxMWErrorV1("403", "User account has been locked out. Please try again after some time.")));
+            PxMWErrorsV1 errors = new PxMWErrorsV1(List.of(new PxMWErrorV1(String.valueOf(status), "User account has been locked out. Please try again after some time.")));
+            return errors;
         }
         
         int length = 120;
