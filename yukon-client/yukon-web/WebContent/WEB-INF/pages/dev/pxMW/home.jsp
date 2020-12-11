@@ -9,11 +9,17 @@
 <c:if test="${not empty userMessage}">
     <tags:alertBox type="success" includeCloseButton="true">${userMessage}</tags:alertBox>
 </c:if>
-
-     <div class="notes">Configure the PX URL - Admin/Configuration/Demand Response PX URL: http://localhost:8080/yukon/dev/pxMiddleware (dev)
-        <br/>For the Endpoint you would like to test, select the Status to be returned and enter any parameters that are needed as a comma separated string.
+     <div class="notes">
+        <br/>For the Endpoint you would like to test using simulator, select the Status to be returned and enter any parameters that are needed as a comma separated string.
         <br/>Click on the Test button to test the Endpoint and the JSON result will be displayed below.
         <br/>The Clear Cache button will clear the cache.
+        <br/>
+        <br/>
+        <br/>Configure the PX URL - Admin/Configuration/Demand Response
+        <br/>PX URL:https://adopteriotwebapi.eaton.com
+        <br/>Simulator URL: http://localhost:8080/yukon/dev/pxMiddleware
+        <br/>
+        <br/>Currently using: <b>${url}</b>
      </div>
      <br/>
 	    
@@ -24,7 +30,9 @@
             <thead>
                 <tr>
                     <th>Endpoint</th>
-                    <th>Status</th>
+                     <c:if test="${isLocalHost}">
+                        <th>Simulated Status</th>
+                    </c:if>
                     <th>Parameters</th>
                     <th></th>
                 </tr>
@@ -33,9 +41,11 @@
                 <c:forEach var="endpoint" items="${endpoints}" varStatus="status">
                     <tr>
                         <td><a href="${endpoint.doc}" target="_blank">${endpoint.suffix}</a></td>
-                        <td>
-                            <tags:selectWithItems path="selectedStatuses[${endpoint}]" items="${endpoint.statuses}" inputClass="js-selected-status"/>
-                        </td>
+                        <c:if test="${isLocalHost}">
+	                        <td>
+	                            <tags:selectWithItems path="selectedStatuses[${endpoint}]" items="${endpoint.statuses}" inputClass="js-selected-status"/>
+	                        </td>
+	                    </c:if>
                         <td>
                             <c:if test="${not empty endpoint.params}">
                                 <c:set var="params" value=""/>
