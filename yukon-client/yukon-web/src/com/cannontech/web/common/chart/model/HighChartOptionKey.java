@@ -4,7 +4,7 @@ public enum HighChartOptionKey {
     
     COLOR("color"),
     DATE_FORMAT_MONTH_DATE("%b %e"),
-    DATE_FORMAT_MONTH_YEAR("%b %y"),
+    DATE_FORMAT_MONTH_YEAR("%b '%y"),
     FILL_OPACITY("fillOpacity"),
     MARKER("marker"),
     MIN("min"),
