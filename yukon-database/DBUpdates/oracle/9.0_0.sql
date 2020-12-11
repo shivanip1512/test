@@ -175,6 +175,12 @@ AND Value = ' ';
 INSERT INTO DBUpdates VALUES ('YUK-23313', '9.0.0', SYSDATE);
 /* @end YUK-23313 */
 
+/* @start YUK-23280 */
+UPDATE ArchiveValuesExportField SET Pattern = 'DEFAULT' WHERE FieldType = 'ATTRIBUTE_NAME';
+
+INSERT INTO DBUpdates VALUES ('YUK-23280', '9.0.0', SYSDATE);
+/* @end YUK-23280 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
