@@ -31,33 +31,49 @@ bool LMGroupEatonCloud::sendStopControl( bool stopImmediately )
     using namespace Cti::Messaging::LoadManagement;
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
-    // HACK - the UI only has 'Restore' as an option, but it should be only 'StopCycle'...
-    // jmoc -- do we need the 'Restore' at all, future functionality??
-    stopImmediately = false;
-    //
+    // Send the stop only if we are currently active, the idea being that if we get here via a no control gear
+    //  then we don't need to send a message since we are already stopped.
 
-    const CtiTime stopTime; // now
-
-    ActiveMQConnectionManager::enqueueMessage(
-        OutboundQueue::EatonCloudStopRequest,
-        Serialization::MessageSerializer<LMEatonCloudStopRequest>::serialize( 
-            {
-                getPAOId(),
-                stopTime,
-                stopImmediately
-                    ? LMEatonCloudStopRequest::StopType::Restore
-                    : LMEatonCloudStopRequest::StopType::StopCycle
-            } ) );
-
-    if ( _LM_DEBUG & LM_DEBUG_STANDARD )
+    if ( getGroupControlState() == ActiveState )
     {
-        CTILOG_DEBUG( dout, "Sending " << _groupTypeName << " Stop command, LM Group: " << getPAOName() );
+        // HACK - the UI only has 'Restore' as an option, but it should be only 'StopCycle'...
+        // jmoc -- do we need the 'Restore' at all, future functionality??
+        stopImmediately = false;
+        //
+
+        const CtiTime stopTime; // now
+
+        const auto serializedMessage = 
+            Serialization::MessageSerializer<LMEatonCloudStopRequest>::serialize( 
+                {
+                    getPAOId(),
+                    stopTime,
+                    stopImmediately
+                        ? LMEatonCloudStopRequest::StopType::Restore
+                        : LMEatonCloudStopRequest::StopType::StopCycle
+                } );
+
+        if ( serializedMessage.empty() )
+        {
+            CTILOG_ERROR( dout, "Serialization error for " << _groupTypeName << " Stop command, LM Group: " << getPAOName() );
+
+            return false;
+        }
+
+        ActiveMQConnectionManager::enqueueMessage(
+            OutboundQueue::EatonCloudStopRequest,
+            serializedMessage );
+
+        if ( _LM_DEBUG & LM_DEBUG_STANDARD )
+        {
+            CTILOG_DEBUG( dout, "Sending " << _groupTypeName << " Stop command, LM Group: " << getPAOName() );
+        }
+
+        setLastControlSent( stopTime );
+        setLastStopTimeSent( stopTime );
+
+        setGroupControlState( InactiveState );
     }
-
-    setLastControlSent( stopTime );
-    setLastStopTimeSent( stopTime );
-
-    setGroupControlState( InactiveState );
 
     return true;
 }
@@ -76,8 +92,7 @@ bool LMGroupEatonCloud::sendShedControl( long controlMinutes )
 
     // shed == cycle at 100% duty cycle with no ramp in/out
 
-    ActiveMQConnectionManager::enqueueMessage(
-        OutboundQueue::EatonCloudCyclingRequest,
+    const auto serializedMessage = 
         Serialization::MessageSerializer<LMEatonCloudCycleRequest>::serialize( 
             {
                 getPAOId(),
@@ -89,7 +104,18 @@ bool LMGroupEatonCloud::sendShedControl( long controlMinutes )
                 100,
                 controlSeconds,
                 100
-            } ) );
+            } );
+
+    if ( serializedMessage.empty() )
+    {
+        CTILOG_ERROR( dout, "Serialization error for " << _groupTypeName << " Shed command, LM Group: " << getPAOName() );
+
+        return false;
+    }
+
+    ActiveMQConnectionManager::enqueueMessage(
+        OutboundQueue::EatonCloudCyclingRequest,
+        serializedMessage );
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -116,7 +142,7 @@ bool LMGroupEatonCloud::sendCycleControl( CycleControlParameters parameters )
         {   SmartGearCyclingOption::SmartCycle,     LMEatonCloudCycleRequest::CycleType::SmartCycle     }
     };
 
-    auto cycleTypeToSend = Cti::mapFind( supportedCycleTypes, parameters.cyclingOption );
+    const auto cycleTypeToSend = Cti::mapFind( supportedCycleTypes, parameters.cyclingOption );
 
     // Do not send a control if we are an unsupported cycle type or we fail to get the send type from the map
     if ( parameters.cyclingOption == SmartGearCyclingOption::Unsupported || ! cycleTypeToSend )
@@ -129,8 +155,7 @@ bool LMGroupEatonCloud::sendCycleControl( CycleControlParameters parameters )
         startTime,  // now
         stopTime = startTime + parameters.controlDurationSeconds;
 
-    ActiveMQConnectionManager::enqueueMessage(
-        OutboundQueue::EatonCloudCyclingRequest,
+    const auto serializedMessage = 
         Serialization::MessageSerializer<LMEatonCloudCycleRequest>::serialize( 
             {
                 getPAOId(),
@@ -146,7 +171,18 @@ bool LMGroupEatonCloud::sendCycleControl( CycleControlParameters parameters )
                 parameters.dutyCyclePercent,
                 parameters.dutyCyclePeriod,
                 parameters.criticality
-            } ) );
+            } );
+
+    if ( serializedMessage.empty() )
+    {
+        CTILOG_ERROR( dout, "Serialization error for " << _groupTypeName << " Cycle command, LM Group: " << getPAOName() );
+
+        return false;
+    }
+
+    ActiveMQConnectionManager::enqueueMessage(
+        OutboundQueue::EatonCloudCyclingRequest,
+        serializedMessage );
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -183,34 +219,7 @@ bool LMGroupEatonCloud::sendNoControl( bool doRestore )
 
     if ( getGroupControlState() == ActiveState )
     {
-        // HACK - the UI only has 'Restore' as an option, but it should be only 'StopCycle'...
-        // jmoc -- do we need the 'Restore' at all, future functionality??
-        doRestore = false;
-        //
-
-        const CtiTime stopTime; // now
-
-        ActiveMQConnectionManager::enqueueMessage(
-            OutboundQueue::EatonCloudStopRequest,
-            Serialization::MessageSerializer<LMEatonCloudStopRequest>::serialize( 
-                {
-                    getPAOId(),
-                    stopTime,
-                    doRestore
-                        ? LMEatonCloudStopRequest::StopType::Restore
-                        : LMEatonCloudStopRequest::StopType::StopCycle
-                } ) );
-
-        if ( _LM_DEBUG & LM_DEBUG_STANDARD )
-        {
-            CTILOG_DEBUG( dout, "Sending " << _groupTypeName << " Stop command, LM Group: " << getPAOName() );
-        }
-
-        setLastControlSent( stopTime );
-        setLastStopTimeSent( stopTime );
-        setControlStartTime( gInvalidCtiTime );
-
-        setGroupControlState( InactiveState );
+        sendStopControl( doRestore );
     }
 
     return false;
