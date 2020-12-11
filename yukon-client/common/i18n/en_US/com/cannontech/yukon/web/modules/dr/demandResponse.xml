@@ -61,6 +61,7 @@
 <entry key="yukon.web.modules.dr.paoType.LM_METER_DISCONNECT_PROGRAM">Meter Disconnect Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_NEST_PROGRAM">Nest Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_DIGI_SEP">Digi SEP Group</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_GROUP_EATON_CLOUD">Eaton Cloud</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_ECOBEE">ecobee Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_HONEYWELL">Honeywell Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_ITRON">Itron Group</entry>
@@ -947,6 +948,7 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.gearControlMethod.HoneywellCycle">Honeywell Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.HoneywellSetpoint">Honeywell Setpoint</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.ItronCycle">Itron Cycle</entry>
+<entry key="yukon.web.modules.dr.gearControlMethod.EatonCloudCycle">Eaton Cloud Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.NestStandardCycle">Nest Standard Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.NestCriticalCycle">Nest Critical Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.SepTemperatureOffset">SEP Temperature Offset</entry>

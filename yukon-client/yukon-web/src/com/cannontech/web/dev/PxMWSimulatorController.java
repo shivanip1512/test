@@ -1,10 +1,13 @@
 package com.cannontech.web.dev;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,6 +25,7 @@ import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceChannelDetailsV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 import com.cannontech.dr.pxmw.service.v1.PxMWCommunicationServiceV1;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.simulators.message.request.PxMWSimulatorSettingsUpdateRequest;
@@ -71,12 +75,21 @@ public class PxMWSimulatorController {
     }
 
     @GetMapping("/testEndpoint")
-    public @ResponseBody Map<String, Object> testEndpoint(PxMWRetrievalUrl endpoint) {
-        Map<String, Object> json = new HashMap<>();  
+    public @ResponseBody Map<String, Object> testEndpoint(PxMWRetrievalUrl endpoint, String params) {
+        Map<String, Object> json = new HashMap<>();
+
+        if (StringUtils.isEmpty(params)) {
+            json.put("alertError", "Unable to parse parameters, please see parameter help text.");
+            return json;
+        }
+
+        List<String> paramList = Stream.of(params.split(","))
+                .map(String::trim)
+                .collect(Collectors.toList());
         if (endpoint == PxMWRetrievalUrl.DEVICE_PROFILE_BY_GUID_V1) {
             try {
-                PxMWDeviceProfileV1 profile = pxMWCommunicationServiceV1.getDeviceProfile("A", "222222-d832-49d6-ab60-6212a63bcd10");
-                log.info(getFormattedJson(profile));
+                PxMWDeviceProfileV1 profile = pxMWCommunicationServiceV1.getDeviceProfile(paramList.get(0));
+                log.info("params:{} json:{}", params, getFormattedJson(profile));
                 json.put("testResultJson", getFormattedJson(profile));
             } catch (PxMWCommunicationExceptionV1 e) {
                 log.info(e.getErrorMessage());
@@ -84,8 +97,9 @@ public class PxMWSimulatorController {
             }
         } else if (endpoint == PxMWRetrievalUrl.DEVICES_BY_SITE_V1) {
             try {
-                PxMWSiteV1 site = pxMWCommunicationServiceV1.getSite("A", "222222-d832-49d6-ab60-6212a63bcd10", null, null);
-                log.info(getFormattedJson(site));
+                PxMWSiteV1 site = pxMWCommunicationServiceV1.getSite(paramList.get(0), parseBoolean(paramList, 1),
+                        parseBoolean(paramList, 2));
+                log.info("params:{} json:{}", params, getFormattedJson(site));
                 json.put("testResultJson", getFormattedJson(site));
             } catch (PxMWCommunicationExceptionV1 e) {
                 log.info(getFormattedJson(e.getErrorMessage()));
@@ -93,9 +107,19 @@ public class PxMWSimulatorController {
             }
         } else if (endpoint == PxMWRetrievalUrl.DEVICE_CHANNEL_DETAILS_V1) {
             try {
-                PxMWDeviceChannelDetailsV1 site = pxMWCommunicationServiceV1.getDeviceChannelDetails("A", "222222-d832-49d6-ab60-6212a63bcd10");
-                log.info(getFormattedJson(site));
-                json.put("testResultJson", getFormattedJson(site));
+                PxMWDeviceChannelDetailsV1 details = pxMWCommunicationServiceV1
+                        .getDeviceChannelDetails(paramList.get(0));
+                log.info("params:{} json:{}", params, getFormattedJson(details));
+                json.put("testResultJson", getFormattedJson(details));
+            } catch (PxMWCommunicationExceptionV1 e) {
+                log.info(getFormattedJson(e.getErrorMessage()));
+                json.put("errorMessage", getFormattedJson(e.getErrorMessage()));
+            }
+        } else if (endpoint == PxMWRetrievalUrl.SECURITY_TOKEN) {
+            try {
+                PxMWTokenV1 token = pxMWCommunicationServiceV1.getToken();
+                log.info("params:{} json:{}", params, getFormattedJson(token));
+                json.put("testResultJson", getFormattedJson(token));
             } catch (PxMWCommunicationExceptionV1 e) {
                 log.info(getFormattedJson(e.getErrorMessage()));
                 json.put("errorMessage", getFormattedJson(e.getErrorMessage()));
@@ -103,9 +127,26 @@ public class PxMWSimulatorController {
         }
         return json;
     }
+    
+    private Boolean parseBoolean(List<String> paramList, int index) {
+        try {
+            return Boolean.parseBoolean(paramList.get(index));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @PostMapping("/clearCache")
+    public @ResponseBody Map<String, Object> clearCache() {
+        Map<String, Object> json = new HashMap<>();
+        pxMWCommunicationServiceV1.clearCache();
+        json.put("userMessage", "Cache was successfully cleared.");
+        return json;   
+    }
 
     private String getFormattedJson(Object profile) {
         return new GsonBuilder().setPrettyPrinting().create().toJson(profile);
     }
+    
 }
 

@@ -21,24 +21,24 @@ paths:
 
   /devices/commChannels:
     $ref: 'api/commChannelsApi.yaml#/post-operation'
-  '/devices/commChannels/{id}':
+  /devices/commChannels/{id}:
     $ref: 'api/commChannelsApi.yaml#/get-update-delete-operation'
 
   /trends:
     $ref: 'api/trendsApi.yaml#/post-operation'
-  '/trends/{id}':
+  /trends/{id}:
     $ref: 'api/trendsApi.yaml#/get-update-delete-operation'
   
   /dr/loadGroups:
     $ref: 'api/loadGroupsApi.yaml#/post-operation'
-  '/dr/loadGroups/{id}':
+  /dr/loadGroups/{id}:
     $ref: 'api/loadGroupsApi.yaml#/get-update-delete-operation'
   /dr/loadGroups/{id}/copy:
     $ref: 'api/loadGroupsApi.yaml#/copy-operation'
 
   /dr/macroLoadGroups:
     $ref: 'api/MacroLoadGroupsApi.yaml#/post-operation'
-  '/dr/macroLoadGroups/{id}':
+  /dr/macroLoadGroups/{id}:
     $ref: 'api/MacroLoadGroupsApi.yaml#/get-update-delete-operation'
     
   /dr/loadPrograms:
@@ -48,7 +48,7 @@ paths:
 
   /dr/constraints:
     $ref: 'api/programConstraintsApi.yaml#/post-operation'
-  '/dr/constraints/{id}':
+  /dr/constraints/{id}:
     $ref: 'api/programConstraintsApi.yaml#/get-update-delete-operation'
   /dr/constraints/seasonSchedules:
     $ref: 'api/programConstraintsApi.yaml#/season-schedules'
@@ -103,6 +103,7 @@ tags:
   - name: Trend
   - name: Load Group
   - name: Macro Load Group
+  - name: Load Program
   - name: Program Constraints
   - name: Control Scenario
   - name: Device Readings
