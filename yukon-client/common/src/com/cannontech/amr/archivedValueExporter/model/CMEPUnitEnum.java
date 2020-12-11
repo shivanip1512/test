@@ -3,6 +3,7 @@ package com.cannontech.amr.archivedValueExporter.model;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
+import com.google.common.collect.ImmutableMap;
 
 public enum CMEPUnitEnum {
     KWHREG(BuiltInAttribute.USAGE), // Meter dial or register readings for printing on monthly bill. 
@@ -38,10 +39,22 @@ public enum CMEPUnitEnum {
     
     private Attribute attribute;
     
+    private final static ImmutableMap<Attribute, CMEPUnitEnum> lookupByAttribute;
+
     private CMEPUnitEnum(Attribute attribute) {
         this.attribute = attribute;
     }
-    
+
+    static {
+        ImmutableMap.Builder<Attribute, CMEPUnitEnum> lookupByAttributeBuilder = ImmutableMap.builder();
+        for (CMEPUnitEnum cmepUnitEnum : values()) {
+            if (cmepUnitEnum.attribute != null) {
+                lookupByAttributeBuilder.put(cmepUnitEnum.attribute, cmepUnitEnum);
+            }
+        }
+        lookupByAttribute = lookupByAttributeBuilder.build();
+    }
+
     public Attribute getAttribute() throws IllegalUseOfAttribute {
         if (attribute == null) {
             throw new IllegalUseOfAttribute("The unit "+name()+" is not currently supported by Yukon");
@@ -49,12 +62,10 @@ public enum CMEPUnitEnum {
         return attribute;
     }
 
-    public static String fromValue(Attribute attribute) {
-        for (CMEPUnitEnum unitEnum : CMEPUnitEnum.values()) {
-            if (attribute == unitEnum.attribute) {
-                return unitEnum.name();
-            }
-        }
-        return null;
+    /**
+     * Returns the CMEPUnitEnum to which the specified Attribute is mapped, or null if there is no mapping for the Attribute.
+     */
+    public static CMEPUnitEnum getForAttribute(Attribute attribute) {
+        return lookupByAttribute.get(attribute);
     }
 }

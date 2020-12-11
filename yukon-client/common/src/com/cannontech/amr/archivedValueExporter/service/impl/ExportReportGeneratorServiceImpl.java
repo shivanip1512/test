@@ -841,7 +841,10 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     private String getAttributeName(Attribute attribute, YukonUserContext userContext, String fieldValue) {
         String attributeName = null;
         if ("CMEP".equalsIgnoreCase(fieldValue)) {
-            attributeName = CMEPUnitEnum.fromValue(attribute);
+            CMEPUnitEnum cmepUnitEnum = CMEPUnitEnum.getForAttribute(attribute);
+            if (cmepUnitEnum != null) {
+                attributeName = cmepUnitEnum.toString();
+            }
         }
         if (StringUtils.isEmpty(attributeName)) {
             MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
