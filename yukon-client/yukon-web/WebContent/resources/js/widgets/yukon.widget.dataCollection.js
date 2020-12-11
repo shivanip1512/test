@@ -66,11 +66,15 @@ yukon.widget.dataCollection = (function () {
             },
             plotPieJSON = {
                 className: chart.closest('.widgetWrapper').exists() ? 'js-data-pie' : ''
+            },
+            chartDimensionJSON = {
+                width: 460,
+                height: 200
             };
 
         chart.highcharts({
-            chart: yg.highcharts_options.pie_chart_options.chart,
-            credits: yg.highcharts_options.pie_chart_options.credits,
+            credits: yg.highcharts_options.disable_credits,
+            chart: $.extend({}, yg.highcharts_options.chart_options, chartDimensionJSON),
             legend: $.extend({}, yg.highcharts_options.pie_chart_options.legend, legendOptionsJSON),
             title: yg.highcharts_options.pie_chart_options.title,
             tooltip: yg.highcharts_options.pie_chart_options.tooltip,
@@ -78,7 +82,7 @@ yukon.widget.dataCollection = (function () {
                 pie: $.extend({}, yg.highcharts_options.pie_chart_options.plotOptions.pie, plotPieJSON)
             },
             series: [{
-                type: 'pie',
+                type: yg.highcharts_options.pie_chart_options.series_type_pie,
                 data: _getData(data)
             }]
         });

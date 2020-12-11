@@ -97,7 +97,6 @@
     
     <div id="js-filtered-results"></div>
     
-    <cti:includeScript link="HIGH_STOCK"/>
     <cti:includeScript link="/resources/js/pages/yukon.tools.paonotespopup.js"/>
     <cti:includeScript link="/resources/js/common/yukon.assetAvailability.pieChart.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.dr.assetavailability.detail.js"/>

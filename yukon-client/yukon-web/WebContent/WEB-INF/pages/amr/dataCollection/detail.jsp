@@ -119,7 +119,6 @@
         <%@ include file="deviceTable.jsp" %>
     </div>
     
-    <cti:includeScript link="HIGH_STOCK"/>
     <cti:includeScript link="/resources/js/widgets/yukon.widget.dataCollection.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.ami.dataCollection.detail.js"/>
 

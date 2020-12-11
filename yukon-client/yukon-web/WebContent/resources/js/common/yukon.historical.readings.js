@@ -102,10 +102,7 @@ yukon.historical.readings = (function () {
             });
             
             $(document).on('click', '.js-close-trend-btn', function (event) {
-                $(this).closest(".ui-widget-content").dialog({
-                    width : 500,
-                    height : 400
-                });
+                $(this).closest(".ui-widget-content").dialog();
                 $(this).closest("div[class^='js-trend-container_']").addClass("dn");
             });
             
