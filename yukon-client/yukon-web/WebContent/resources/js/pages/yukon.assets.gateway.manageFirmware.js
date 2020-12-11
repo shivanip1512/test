@@ -17,28 +17,6 @@ yukon.assets.gateway.manageFirmware = (function () {
 
     _text,
 
-    _update = function () {
-        $.ajax({
-            url: yukon.url('/stars/gateways/data'),
-            contentType: 'application/json'
-        }).done(function (gateways) {
-            var dataExists = false;
-            Object.keys(gateways).forEach(function (paoId) {
-                var gateway = gateways[paoId],
-                    data = gateway.data;
-
-                if (data != null) {
-                    if (dataExists === false) {
-                        dataExists = true;
-                        $('.update-servers').find('.disabled').addBack().removeClass('disabled');
-                    }
-                }
-            });
-        }).always(function () {
-            setTimeout(_update, 4000);
-        });
-    },
-
     _updateFirmwareUpdates = function () {
         $.ajax({
             url: yukon.url('/stars/gateways/firmware-update/data'),
@@ -226,7 +204,6 @@ yukon.assets.gateway.manageFirmware = (function () {
                 });
             });
 
-            _update();
             _updateFirmwareUpdates();
             _initialized = true;
         }

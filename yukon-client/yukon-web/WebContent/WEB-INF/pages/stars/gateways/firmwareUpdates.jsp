@@ -35,10 +35,10 @@
 
     <div id="page-actions" class="dn">
         <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
-            <cm:dropdownOption data-popup="#firmware-server-popup" icon="icon-drive-go" classes="update-servers disabled" disabled="true">
+            <cm:dropdownOption data-popup="#firmware-server-popup" icon="icon-drive-go" disabled="${!dataExists}">
                 <i:inline key=".updateServer.set"/>
             </cm:dropdownOption>
-            <cm:dropdownOption data-popup="#send-firmware-upgrade-popup" icon="icon-drive-go" classes="update-servers disabled" disabled="true">
+            <cm:dropdownOption data-popup="#send-firmware-upgrade-popup" icon="icon-drive-go" disabled="${!dataExists}">
                 <i:inline key=".firmwareUpdate"/>
             </cm:dropdownOption>
         </cti:checkRolesAndProperties>
