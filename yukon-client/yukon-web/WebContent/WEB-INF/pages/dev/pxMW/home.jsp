@@ -19,7 +19,7 @@
         <br/>PX URL:https://adopteriotwebapi.eaton.com
         <br/>Simulator URL: http://localhost:8080/yukon/dev/pxMiddleware
         <br/>
-        <br/>Currently using: <b>${url}</b>
+        <br/>Currently using <span class="fwb bg-color-grey txt-color-white">${urlType}</span>: ${url}
      </div>
      <br/>
 	    

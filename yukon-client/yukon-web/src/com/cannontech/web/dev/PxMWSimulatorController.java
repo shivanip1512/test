@@ -52,8 +52,13 @@ public class PxMWSimulatorController {
         model.addAttribute("endpoints", PxMWRetrievalUrl.values());
         model.addAttribute("settings", settings);
         String url = settingDao.getString(GlobalSettingType.PX_MIDDLEWARE_URL);
-        model.addAttribute("isLocalHost", url.contains("localhost") || url.contains("127.0.0.1") ? true : false);
         model.addAttribute("url", url);
+        if (url.contains("localhost") || url.contains("127.0.0.1")) {
+            model.addAttribute("isLocalHost", true);
+            model.addAttribute("urlType", "Simulated URL");
+        } else {
+            model.addAttribute("urlType", "PX White URL");
+        }
         return "pxMW/home.jsp";
     }
 
