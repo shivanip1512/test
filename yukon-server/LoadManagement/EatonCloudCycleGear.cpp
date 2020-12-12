@@ -8,29 +8,17 @@
 
 namespace Cti::LoadManagement {
 
-namespace
-{
-    static const std::map<std::string, long>    cycleOptionResolver
-    {
-        { "STANDARD",       0 },
-        { "TRUE_CYCLE",     1 },
-        { "SMART_CYCLE",    2 }
-    };
-}
-
 EatonCloudCycleGear::EatonCloudCycleGear( Cti::RowReader & rdr )
     :   CtiLMProgramDirectGear( rdr ),
-        _cyclingOption( -1 )
+        _cyclingOption( SmartGearCyclingOption::Unsupported )
 {
     const std::string dbKey = rdr[ "CycleOption" ].as<std::string>();
-    
-    if ( auto result = Cti::mapFind( cycleOptionResolver, dbKey ) )
+
+    _cyclingOption = resolveCyclingOption( dbKey );
+
+    if ( _cyclingOption == SmartGearCyclingOption::Unsupported )
     {
-        _cyclingOption = *result;
-    }
-    else
-    {
-        CTILOG_ERROR( dout, "Gear: '" << getGearName() << "' has an unknown cycle option: '" << dbKey << "'" );
+        CTILOG_ERROR( dout, "Gear: '" << getGearName() << "' has an unknown cycle option: '" << dbKey << "'. No cycling controls will be issued." );
     }
 }
 
@@ -124,7 +112,7 @@ double EatonCloudCycleGear::calculateLoadReduction( double groupCapacity ) const
     return loadScalar * groupCapacity;
 }
 
-long EatonCloudCycleGear::getCyclingOption() const
+SmartGearCyclingOption EatonCloudCycleGear::getCyclingOption() const
 {
     return _cyclingOption;
 }
