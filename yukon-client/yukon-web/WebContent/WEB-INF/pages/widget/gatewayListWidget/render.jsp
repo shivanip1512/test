@@ -65,6 +65,7 @@
         </table>
         <cti:toJson object="${text}" id="gateway-text"/>
     </div>
+
     <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.list.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.shared.js"/>
     <div class="dn" id="js-pao-notes-popup"></div>

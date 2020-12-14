@@ -104,5 +104,5 @@
         </table>
         <cti:toJson object="${text}" id="gateway-text"/>
     </div>
-    <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.list.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.manageCertificate.js"/>
 </cti:standardPage>

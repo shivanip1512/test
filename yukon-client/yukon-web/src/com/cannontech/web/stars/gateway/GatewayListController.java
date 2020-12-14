@@ -94,6 +94,8 @@ public class GatewayListController {
             SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
             model.addAttribute(column.name(), col);
         }
+        Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
+        model.addAttribute("dataExists", gateways.stream().anyMatch(gateway -> (gateway.getData() != null)));
         return "gateways/firmwareUpdates.jsp";
     }
 
