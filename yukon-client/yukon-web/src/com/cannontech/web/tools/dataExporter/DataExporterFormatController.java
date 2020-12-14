@@ -37,6 +37,7 @@ import com.cannontech.amr.archivedValueExporter.model.ExportField;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
 import com.cannontech.amr.archivedValueExporter.model.Field;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
+import com.cannontech.amr.archivedValueExporter.model.FieldValue;
 import com.cannontech.amr.archivedValueExporter.model.MissingAttribute;
 import com.cannontech.amr.archivedValueExporter.model.PadSide;
 import com.cannontech.amr.archivedValueExporter.model.Preview;
@@ -263,6 +264,7 @@ public class DataExporterFormatController {
         
         model.addAttribute("fields", getFields(formatType, attributeList.getAttributes()));
         model.addAttribute("padSides", PadSide.values());
+        model.addAttribute("fieldValues", FieldValue.values());
         model.addAttribute("attributeFields", AttributeField.values());
         model.addAttribute("missingAttributes", MissingAttribute.values());
         model.addAttribute("roundingModes", YukonRoundingMode.values());
@@ -289,6 +291,7 @@ public class DataExporterFormatController {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             
             model.addAttribute("fields", getFields(formatType, attributeList.getAttributes()));
+            model.addAttribute("fieldValues", FieldValue.values());
             model.addAttribute("padSides", PadSide.values());
             model.addAttribute("attributeFields", AttributeField.values());
             model.addAttribute("missingAttributes", MissingAttribute.values());
@@ -313,9 +316,11 @@ public class DataExporterFormatController {
         FieldType type = exportField.getField().getType();
         boolean isPlainText = type == FieldType.PLAIN_TEXT;
         boolean isAttribute = exportField.getField().getAttribute() != null;
-        boolean isTimestamp = exportField.isTimestamp();;
+        boolean isTimestamp = exportField.isTimestamp();
         boolean isValue = exportField.isValue();
-        
+        if(type == FieldType.ATTRIBUTE_NAME) {
+            exportField.setPattern(exportField.getFieldValue().name());
+        }
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         model.clear();
         
@@ -360,6 +365,8 @@ public class DataExporterFormatController {
                 }
             } 
             text.put("pattern", pattern);
+        } else if(type == FieldType.ATTRIBUTE_NAME){
+            text.put("pattern", exportField.getFieldValue().toString());
         } else {
             text.put("pattern", "");
         }

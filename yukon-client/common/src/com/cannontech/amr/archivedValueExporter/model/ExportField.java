@@ -27,6 +27,7 @@ public class ExportField implements Displayable {
     private MissingAttribute missingAttribute;
     private String missingAttributeValue;
     private String pattern;
+    private FieldValue fieldValue;
     
     public int getFieldId() {
         return fieldId;
@@ -152,6 +153,14 @@ public class ExportField implements Displayable {
 
     public void setPattern(String pattern) {
         this.pattern = pattern;
+    }
+
+    public FieldValue getFieldValue() {
+        return fieldValue;
+    }
+
+    public void setFieldValue(FieldValue fieldValue) {
+        this.fieldValue = fieldValue;
     }
 
     public boolean isValue() {
