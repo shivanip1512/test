@@ -2,6 +2,7 @@
 
 #include "lmprogramdirect.h"
 #include "smartgearbase.h"
+#include "SmartGearCyclingOption.h"
 
 
 namespace Cti::LoadManagement {
@@ -36,11 +37,11 @@ public:
 
     std::size_t getFixedSize() const override    { return sizeof( *this ); }
 
-    long getCyclingOption() const;
+    SmartGearCyclingOption getCyclingOption() const;
 
 private:
 
-    long _cyclingOption;
+    SmartGearCyclingOption _cyclingOption;
 };
 
 }

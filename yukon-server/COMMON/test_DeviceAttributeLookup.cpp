@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(test_Lookup_success)
 
         BOOST_REQUIRE(point);
 
-        BOOST_CHECK_EQUAL(point->offset, 3);
+        BOOST_CHECK_EQUAL(point->offset, 1);
         BOOST_CHECK_EQUAL(point->type, 1);
     }
     {

@@ -273,6 +273,7 @@
     <bean class="com.cannontech.stars.dr.hardware.service.impl.HoneywellCommandStrategy"/>
     <bean class="com.cannontech.stars.dr.hardware.service.impl.ItronCommandStrategy"/>
     <bean class="com.cannontech.stars.dr.hardware.service.impl.MeterCommandStrategy"/>
+    <bean class="com.cannontech.stars.dr.hardware.service.impl.EatonCloudCommandStrategy"/>
     <bean id="porterExpressComCommandBuilder" class="com.cannontech.stars.dr.hardware.service.impl.PorterExpressComCommandBuilder"/>
    
     <!-- OPERATOR GENERAL -->

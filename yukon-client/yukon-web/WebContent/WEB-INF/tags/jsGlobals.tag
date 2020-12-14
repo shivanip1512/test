@@ -41,6 +41,9 @@ var yg = {
     },
     
     highcharts_options: {
+        disable_credits: {
+            enabled: false
+        },
         lang: {
             thousandsSep: ","
         },
@@ -48,18 +51,13 @@ var yg = {
             useUTC: false,
             timezoneOffset : new Date().getTimezoneOffset()
         },
+        chart_options: {
+            renderTo: 'chart',
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+        },
         pie_chart_options: {
-            chart: {
-                renderTo: 'chart',
-                plotBackgroundColor: null,
-                plotBorderWidth: null,
-                plotShadow: false,
-                height: 200,
-                width: 460
-            },
-            credits: {
-                enabled: false
-            },
             legend: {
                 symbolPadding: -60,
                 symbolWidth: 0.001,
@@ -88,7 +86,8 @@ var yg = {
                     borderWidth: 0.25,
                 }
             },
-            series_type_pie: 'pie'
+            series_type_pie: 'pie',
+            series_type_area: 'area',
         }
     },
     

@@ -7,31 +7,30 @@
 #include "boostutil.h"
 #include "boost_test_helpers.h"
 
-#include <boost/assign/list_of.hpp>
 
 
 BOOST_AUTO_TEST_SUITE( test_slctdev )
 
 BOOST_AUTO_TEST_CASE(test_is_carrier_lp_device_type)
 {
-    const bool X = true, _ = false;
+    constexpr auto MaxCount  = 200;
 
-    const std::vector<bool> expected = boost::assign::list_of
-        (_)(X)(X)(_)(_) (_)(_)(_)(_)(_)  //   0
-        (_)(_)(X)(X)(X) (X)(_)(_)(_)(X)  //  10
-        (X)(_)(_)(_)(X) (X)(X)(X)(X)(X)  //  20
-        (X)(X)(X)(X)(X) (X)(X)(_)(_)(_)  //  30
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  40
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  50
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  60
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  70
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  80
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  90
-        .repeat(100, _);
+    std::vector<bool> expected ( MaxCount, false );
+/*
+    (_)(X)(X)(_)(_) (_)(_)(_)(_)(_)  //   0
+    (_)(_)(X)(X)(X) (X)(_)(_)(_)(X)  //  10
+    (X)(_)(_)(_)(X) (X)(X)(X)(X)(X)  //  20
+    (X)(X)(X)(X)(X) (X)(X)(_)(_)(_)  //  30
+    (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  40
+*/
+    std::fill_n( expected.begin() +  1,  2, true );
+    std::fill_n( expected.begin() + 12,  4, true );
+    std::fill_n( expected.begin() + 19,  2, true );
+    std::fill_n( expected.begin() + 24, 13, true );
 
     std::vector<bool> results;
 
-    for ( int type = 0; type < 200; ++type )
+    for ( int type = 0; type < MaxCount; ++type )
     {
         results.push_back(isCarrierLPDeviceType(type));
     }
@@ -42,25 +41,30 @@ BOOST_AUTO_TEST_CASE(test_is_carrier_lp_device_type)
 
 BOOST_AUTO_TEST_CASE(test_is_dnp_device_type)
 {
-    const bool X = true, _ = false;
+    constexpr auto MaxCount  = 200;
 
-    const std::vector<bool> expected = boost::assign::list_of
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //   0
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  10
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  20
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  30
-        (_)(_)(_)(_)(_) (_)(X)(X)(_)(X)  //  40
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  50
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  60
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  70
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  80
-        (_)(_)(_)(_)(_) (_)(X)(_)(_)(_)  //  90
-        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  100
-        .repeat(90, _);
+    std::vector<bool> expected ( MaxCount, false );
+/*
+    (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //   0
+    (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  10
+    (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  20
+    (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  30
+    (_)(_)(_)(_)(_) (_)(X)(X)(_)(X)  //  40
+    (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  50
+    (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  60
+    (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  70
+    (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  80
+    (_)(_)(_)(_)(_) (_)(X)(_)(_)(_)  //  90
+    (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  100
+*/
+    expected[ 46 ] = true;
+    expected[ 47 ] = true;
+    expected[ 49 ] = true;
+    expected[ 96 ] = true;
 
     std::vector<bool> results;
 
-    for ( int type = 0; type < 200; ++type )
+    for ( int type = 0; type < MaxCount; ++type )
     {
         results.push_back(isDnpDeviceType(type));
     }

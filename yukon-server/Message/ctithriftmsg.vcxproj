@@ -426,6 +426,8 @@
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\LMDynamicTriggerData_types.cpp">
     </ClCompile>
+    <ClCompile Include="Serialization\Thrift\LMEatonCloudCommandData_constants.cpp" />
+    <ClCompile Include="Serialization\Thrift\LMEatonCloudCommandData_types.cpp" />
     <ClCompile Include="Serialization\Thrift\LMEnergyExchangeAccept_constants.cpp">
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\LMEnergyExchangeAccept_types.cpp">
@@ -676,6 +678,8 @@
     <ClInclude Include="Serialization\Thrift\LMDynamicProgramData_types.h" />
     <ClInclude Include="Serialization\Thrift\LMDynamicTriggerData_constants.h" />
     <ClInclude Include="Serialization\Thrift\LMDynamicTriggerData_types.h" />
+    <ClInclude Include="Serialization\Thrift\LMEatonCloudCommandData_constants.h" />
+    <ClInclude Include="Serialization\Thrift\LMEatonCloudCommandData_types.h" />
     <ClInclude Include="Serialization\Thrift\LMEnergyExchangeAccept_constants.h" />
     <ClInclude Include="Serialization\Thrift\LMEnergyExchangeAccept_types.h" />
     <ClInclude Include="Serialization\Thrift\LMEnergyExchangeControl_constants.h" />

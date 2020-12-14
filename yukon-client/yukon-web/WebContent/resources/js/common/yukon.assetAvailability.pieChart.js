@@ -76,11 +76,15 @@ yukon.assetAvailability.pieChart = (function () {
                 },
                 plotPieJSON = {
                     className: showDetailsPageOnPIEChartClick ? 'js-asset-availability-data-pie' : ''
+                },
+                chartDimensionJSON = {
+                    width: 460,
+                    height: 200
                 };
 
             chart.highcharts({
-                chart: yg.highcharts_options.pie_chart_options.chart,
-                credits: yg.highcharts_options.pie_chart_options.credits,
+                credits: yg.highcharts_options.disable_credits,
+                chart: $.extend({}, yg.highcharts_options.chart_options, chartDimensionJSON),
                 legend: $.extend({}, yg.highcharts_options.pie_chart_options.legend, legendOptionsJSON),
                 title: yg.highcharts_options.pie_chart_options.title,
                 tooltip: yg.highcharts_options.pie_chart_options.tooltip,

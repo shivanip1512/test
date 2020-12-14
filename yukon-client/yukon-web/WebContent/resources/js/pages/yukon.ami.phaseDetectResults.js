@@ -44,16 +44,20 @@ yukon.ami.phaseDetectResults = (function() {
                 debug.log('building chart');
                 
                 var legendOptionsJSON = {
-                    labelFormatter: function (point) {
-                        var legendValueText = '<span class="js-phase-detect-results-legend-value dn">' + this.filter + '</span>',
-                            spanText = '<span class="badge" style="margin:1px;width:60px;color:white;background-color:' + this.color + '">' + this.x + '</span> ';
-                        return legendValueText + spanText + this.name + ': ' + this.displayPercentage;
-                    }
-                };
+                        labelFormatter: function (point) {
+                            var legendValueText = '<span class="js-phase-detect-results-legend-value dn">' + this.filter + '</span>',
+                                spanText = '<span class="badge" style="margin:1px;width:60px;color:white;background-color:' + this.color + '">' + this.x + '</span> ';
+                            return legendValueText + spanText + this.name + ': ' + this.displayPercentage;
+                        }
+                    },
+                    chartDimensionJSON = {
+                        width: 460,
+                        height: 200
+                    };
 
                 $("#js-pie-chart-container").highcharts({
-                    chart: yg.highcharts_options.pie_chart_options.chart,
-                    credits: yg.highcharts_options.pie_chart_options.credits,
+                    credits: yg.highcharts_options.disable_credits,
+                    chart: $.extend({}, yg.highcharts_options.chart_options, chartDimensionJSON),
                     legend: $.extend({}, yg.highcharts_options.pie_chart_options.legend, legendOptionsJSON),
                     title: yg.highcharts_options.pie_chart_options.title,
                     tooltip: yg.highcharts_options.pie_chart_options.tooltip,
@@ -61,7 +65,7 @@ yukon.ami.phaseDetectResults = (function() {
                         pie: yg.highcharts_options.pie_chart_options.plotOptions.pie
                     },
                     series: [{
-                        type: 'pie',
+                        type: yg.highcharts_options.pie_chart_options.series_type_pie,
                         data: _getData(data)
                     }]
                 });

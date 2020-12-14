@@ -237,6 +237,7 @@
     <ClCompile Include="NestStandardCycleGear.cpp" />
     <ClCompile Include="sepcyclegear.cpp" />
     <ClCompile Include="septempoffsetgear.cpp" />
+    <ClCompile Include="SmartGearCyclingOption.cpp" />
     <ClCompile Include="SmartGroupBase.cpp" />
     <ClCompile Include="..\precompiled.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
