@@ -318,7 +318,7 @@ public class DataExporterFormatController {
         boolean isAttribute = exportField.getField().getAttribute() != null;
         boolean isTimestamp = exportField.isTimestamp();
         boolean isValue = exportField.isValue();
-        if(type == FieldType.ATTRIBUTE_NAME) {
+        if (type == FieldType.ATTRIBUTE_NAME) {
             exportField.setPattern(exportField.getFieldValue().name());
         }
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);

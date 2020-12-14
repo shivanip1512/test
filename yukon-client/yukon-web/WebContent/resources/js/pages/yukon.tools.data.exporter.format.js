@@ -447,9 +447,7 @@ yukon.tools.dataExporterFormat = (function () {
                         padding.hide();
                         pattern.val(plainText.find('input').val());
                     }
-                    
-                    if(type === 'ATTRIBUTE_NAME')
-                    {
+                    if(type === 'ATTRIBUTE_NAME') {
                         pattern.val(_getFieldValuePattern());
                         fieldVal.show();
                     }
