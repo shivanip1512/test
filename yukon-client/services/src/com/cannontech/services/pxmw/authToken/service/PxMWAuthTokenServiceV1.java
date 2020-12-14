@@ -60,8 +60,8 @@ public class PxMWAuthTokenServiceV1 implements MessageListener {
                     if ((cachedToken != null)) {
                         sendResponse(message, cachedToken, null);
                     } else {
-                        log.info("Retrieving new Eaton Cloud token for {}.", credentials.getUser());
                         String url = PxMWRetrievalUrl.SECURITY_TOKEN.getUrl(settingDao, log, restTemplate);
+                        log.info("Retrieving {} new Eaton Cloud token for {}.", url, credentials.getUser());
                         try {
                             PxMWTokenV1 newToken = restTemplate.postForObject(url, credentials, PxMWTokenV1.class);
                             log.info("Retrieved new Eaton Cloud token for {}.", credentials.getUser());

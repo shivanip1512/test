@@ -31,6 +31,8 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.simulators.message.request.PxMWSimulatorSettingsUpdateRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.google.gson.GsonBuilder;
@@ -41,6 +43,7 @@ import com.google.gson.GsonBuilder;
 public class PxMWSimulatorController {
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
     @Autowired PxMWCommunicationServiceV1 pxMWCommunicationServiceV1;
+    @Autowired GlobalSettingDao settingDao;
     private static final Logger log = YukonLogManager.getLogger(PxMWSimulatorController.class);
     private SimulatedPxMWSettings settings = new SimulatedPxMWSettings();
 
@@ -48,6 +51,14 @@ public class PxMWSimulatorController {
     public String home(ModelMap model) {
         model.addAttribute("endpoints", PxMWRetrievalUrl.values());
         model.addAttribute("settings", settings);
+        String url = settingDao.getString(GlobalSettingType.PX_MIDDLEWARE_URL);
+        model.addAttribute("url", url);
+        if (url.contains("localhost") || url.contains("127.0.0.1")) {
+            model.addAttribute("isLocalHost", true);
+            model.addAttribute("urlType", "Simulated URL");
+        } else {
+            model.addAttribute("urlType", "PX White URL");
+        }
         return "pxMW/home.jsp";
     }
 
@@ -67,6 +78,7 @@ public class PxMWSimulatorController {
         flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Failed to update simulator settings"));
         return "redirect:home";
     }
+    
     private Map<PxMWRetrievalUrl, Integer> getStatuses(SimulatedPxMWSettings settings) {
         Map<PxMWRetrievalUrl, Integer> statuses = settings.getSelectedStatuses().entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey,
@@ -146,7 +158,6 @@ public class PxMWSimulatorController {
 
     private String getFormattedJson(Object profile) {
         return new GsonBuilder().setPrettyPrinting().create().toJson(profile);
-    }
-    
+    } 
 }
 
