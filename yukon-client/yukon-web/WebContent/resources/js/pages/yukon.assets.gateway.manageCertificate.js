@@ -130,6 +130,7 @@ yukon.assets.gateway.manageCertificate = (function () {
                     popup.html(details).dialog({
                         title: _text['cert.update.label'] + ': ' + timestamp,
                         width: 620,
+                        modal: true,
                         height: 400,
                         buttons: [{ text: yg.text.close, click: function () { $(this).dialog('close'); } }]
                     });
