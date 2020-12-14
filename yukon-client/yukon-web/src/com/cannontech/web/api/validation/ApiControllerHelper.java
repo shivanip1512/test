@@ -11,6 +11,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +80,51 @@ public class ApiControllerHelper {
             List<ObjectError> mvcErrors = (List<ObjectError>) result.getAllErrors();
             result = new BindException(error.getTarget(), error.getObjectName());
             result.addAllErrors(error);
+            for (ObjectError objectError : mvcErrors) {
+                FieldError mvcError = (FieldError) objectError;
+                String fieldName = mvcError.getField();
+                if (result.getFieldError(fieldName) == null) {
+                    result.rejectValue(fieldName, mvcError.getCode());
+                } else if (!fieldName.equals(result.getFieldError(fieldName).getField())) {
+                    result.rejectValue(fieldName, mvcError.getCode());
+                }
+            }
+        } else {
+            result.addAllErrors(error);
+        }
+        return result;
+    }
+
+    
+    /**
+     * Populate and return binding error from the AppErrorModel object received from rest call.
+     */
+    public BindingResult populateBindingErrorForApiErrorModel(BindingResult result, BindException error,
+            ResponseEntity<? extends Object> errorResponse, String keyBase) {
+
+        LinkedHashMap<?, ?> errorObject = (LinkedHashMap<?, ?>) errorResponse.getBody();
+        ArrayList<?> errors = (ArrayList<?>) errorObject.get("errors");
+
+        if (!errors.isEmpty()) {
+
+            for (Object e : errors) {
+                LinkedHashMap<?, ?> errorMap = (LinkedHashMap<?, ?>) e;
+                ArrayList paramList = ((ArrayList) ((LinkedHashMap<?, ?>) e).get("parameters"));
+
+                String field = errorMap.get("field").toString();
+                String codePostfix = errorMap.get("code").toString();
+                String errorCode = keyBase + codePostfix;
+                if (CollectionUtils.isNotEmpty(paramList)) {
+                    error.rejectValue(field, errorCode, paramList.toArray(), StringUtils.EMPTY);
+                } else {
+                    error.rejectValue(field, errorCode);
+                }
+            }
+
+            List<ObjectError> mvcErrors = (List<ObjectError>) result.getAllErrors();
+            result = new BindException(error.getTarget(), error.getObjectName());
+            result.addAllErrors(error);
+
             for (ObjectError objectError : mvcErrors) {
                 FieldError mvcError = (FieldError) objectError;
                 String fieldName = mvcError.getField();
