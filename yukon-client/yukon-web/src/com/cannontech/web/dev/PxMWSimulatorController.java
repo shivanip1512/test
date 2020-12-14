@@ -22,7 +22,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWDeviceChannelDetailsV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWDeviceChannelDetailV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
@@ -119,8 +119,9 @@ public class PxMWSimulatorController {
             }
         } else if (endpoint == PxMWRetrievalUrl.DEVICE_CHANNEL_DETAILS_V1) {
             try {
-                PxMWDeviceChannelDetailsV1 details = pxMWCommunicationServiceV1
-                        .getDeviceChannelDetails(paramList.get(0));
+                String deviceGuid = paramList.get(0);
+                paramList.remove(deviceGuid);
+                PxMWDeviceChannelDetailV1 details = pxMWCommunicationServiceV1.getDeviceChannelDetails(deviceGuid, paramList);
                 log.info("params:{} json:{}", params, getFormattedJson(details));
                 json.put("testResultJson", getFormattedJson(details));
             } catch (PxMWCommunicationExceptionV1 e) {

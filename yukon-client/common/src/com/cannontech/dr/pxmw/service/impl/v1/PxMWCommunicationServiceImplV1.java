@@ -1,11 +1,13 @@
 package com.cannontech.dr.pxmw.service.impl.v1;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -30,7 +32,7 @@ import com.cannontech.dr.pxmw.message.v1.PxMWAuthTokenResponseV1;
 import com.cannontech.dr.pxmw.model.PxMWException;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWDeviceChannelDetailsV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWDeviceChannelDetailV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWErrorHandlerV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
@@ -102,14 +104,18 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
     }
 
     @Override
-    public PxMWDeviceChannelDetailsV1 getDeviceChannelDetails(String deviceGuid)
+    public PxMWDeviceChannelDetailV1 getDeviceChannelDetails(String deviceGuid, List<String> tags)
             throws PxMWCommunicationExceptionV1, PxMWException {
-        URI uri = getUri(Map.of("deviceId", deviceGuid), PxMWRetrievalUrl.DEVICE_CHANNEL_DETAILS_V1);
-        log.debug("Getting device channel details. Device Guid: {} URL:{}", deviceGuid, uri);
+        URI uri = getUri(Map.of("id", deviceGuid), PxMWRetrievalUrl.DEVICE_CHANNEL_DETAILS_V1);
+        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+        queryParams.add("tags", StringUtils.join(tags, ','));
+        uri = addQueryParams(queryParams, uri);
+
+        log.debug("Getting device channel details. Device Guid:{} Tags:{} URL:{}", deviceGuid, tags, uri);
         HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
-        ResponseEntity<PxMWDeviceChannelDetailsV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
-                PxMWDeviceChannelDetailsV1.class);
-        log.debug("Got device channel. Device Guid:{} Result:{}", deviceGuid,
+        ResponseEntity<PxMWDeviceChannelDetailV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
+                PxMWDeviceChannelDetailV1.class);
+        log.debug("Got device channel. Device Guid:{} Tags:{} Result:{}", deviceGuid, tags,
                 new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
         return response.getBody();
     }

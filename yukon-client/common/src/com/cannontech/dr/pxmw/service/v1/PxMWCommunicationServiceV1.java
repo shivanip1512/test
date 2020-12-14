@@ -1,8 +1,10 @@
 package com.cannontech.dr.pxmw.service.v1;
 
+import java.util.List;
+
 import com.cannontech.dr.pxmw.model.PxMWException;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWDeviceChannelDetailsV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWDeviceChannelDetailV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
@@ -35,7 +37,8 @@ public interface PxMWCommunicationServiceV1 {
     /**
      * Returns the latest readings for a device channels.
      */
-    PxMWDeviceChannelDetailsV1 getDeviceChannelDetails(String deviceGuid) throws PxMWCommunicationExceptionV1, PxMWException;
+    PxMWDeviceChannelDetailV1 getDeviceChannelDetails(String deviceGuid, List<String> tags)
+            throws PxMWCommunicationExceptionV1, PxMWException;
 
     /**
      * Sends message to SM to get a token, SM will send a message to PX get the token or return a cached token.
@@ -46,5 +49,4 @@ public interface PxMWCommunicationServiceV1 {
      * Used by Simulator to clear token cache in SM
      */
     void clearCache() throws PxMWException;
-
 }

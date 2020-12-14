@@ -72,12 +72,12 @@ public class PxMWSimulatorApiControllerV1 {
         }
     }
     
-    @GetMapping("/device/{deviceId}/channels")
-    public ResponseEntity<Object> channelsV1(@PathVariable String deviceId) {
+    @GetMapping("/devices/{id}/timeseries/latest")
+    public ResponseEntity<Object> channelsV1(@PathVariable String id, @RequestParam String tags) {
         try {
             PxMWSimulatorResponse response = simulatorsCommunicationService
                     .sendRequest(new PxMWSimulatorRequest(PxMWRetrievalUrl.DEVICE_CHANNEL_DETAILS_V1, "channelsV1",
-                            new Class[] { String.class }, new Object[] { deviceId }), PxMWSimulatorResponse.class);
+                            new Class[] { String.class, String.class }, new Object[] { id, tags }), PxMWSimulatorResponse.class);
             return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
         } catch (ExecutionException e) {
             log.error(e);
