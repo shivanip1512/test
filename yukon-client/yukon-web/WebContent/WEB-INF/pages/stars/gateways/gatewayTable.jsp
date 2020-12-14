@@ -138,7 +138,4 @@
         </tbody>
     </table>
 
-    <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.list.js"/>
-    <div class="dn" id="js-pao-notes-popup"></div>
-    <cti:includeScript link="/resources/js/pages/yukon.tools.paonotespopup.js"/>
 </cti:msgScope>
