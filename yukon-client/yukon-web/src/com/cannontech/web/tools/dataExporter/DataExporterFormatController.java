@@ -365,7 +365,7 @@ public class DataExporterFormatController {
                 }
             } 
             text.put("pattern", pattern);
-        } else if(type == FieldType.ATTRIBUTE_NAME){
+        } else if (type == FieldType.ATTRIBUTE_NAME) {
             text.put("pattern", exportField.getFieldValue().toString());
         } else {
             text.put("pattern", "");
