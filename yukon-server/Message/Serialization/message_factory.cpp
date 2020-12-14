@@ -17,14 +17,16 @@
 #include "RfnDataStreamingUpdate.h"
 #include "Thrift/RfnDataStreamingUpdate_types.h"
 
+#include "LMEatonCloudMessages.h"
+#include "Thrift/LMEatonCloudCommandData_types.h"
+
 #include "std_helper.h"
 
 #include <boost/optional.hpp>
 #include <boost/assign/list_of.hpp>
 
-namespace Cti {
-namespace Messaging {
-namespace Serialization {
+namespace Cti::Messaging::Serialization
+{
 
 IM_EX_MSG MessageFactory<::CtiMessage> g_messageFactory(::Cti::Messaging::ActiveMQ::MessageType::prefix);
 
@@ -392,7 +394,80 @@ catch( apache::thrift::TException )
     return boost::none;
 }
 
+template<>
+std::vector<unsigned char> IM_EX_MSG MessageSerializer<LoadManagement::LMEatonCloudStopRequest>::serialize(const LoadManagement::LMEatonCloudStopRequest &m)
+try
+{
+    const std::map<LoadManagement::LMEatonCloudStopRequest::StopType, Thrift::LMEatonCloudStopType::type>   stopTranslator
+    {
+        { LoadManagement::LMEatonCloudStopRequest::StopType::Restore,   Thrift::LMEatonCloudStopType::RESTORE       },
+        { LoadManagement::LMEatonCloudStopRequest::StopType::StopCycle, Thrift::LMEatonCloudStopType::STOP_CYCLE    }
+    };
 
+    Thrift::LMEatonCloudStopCommand request;
+
+    request.__set__groupId      (  m._groupId                       );
+    request.__set__restoreTime  (  m._stopTime.seconds()            );
+
+    if ( auto result = mapFind( stopTranslator, m._stopType ) )
+    {
+        request.__set__stopType ( *result );
+    }
+    else
+    {
+        CTILOG_ERROR( dout, "Unsupported Stop Type enumeration with key: '" << static_cast<int>( m._stopType ) << "'" );
+
+        return {};
+    }
+
+    return SerializeThriftBytes( request );
 }
+catch( apache::thrift::TException )
+{
+    //  log?
+    return {};
 }
+
+template<>
+std::vector<unsigned char> IM_EX_MSG MessageSerializer<LoadManagement::LMEatonCloudCycleRequest>::serialize(const LoadManagement::LMEatonCloudCycleRequest &m)
+try
+{
+    const std::map<LoadManagement::LMEatonCloudCycleRequest::CycleType, Thrift::LMEatonCloudCycleType::type>   cycleTranslator
+    {
+        { LoadManagement::LMEatonCloudCycleRequest::CycleType::StandardCycle,   Thrift::LMEatonCloudCycleType::STANDARD     },
+        { LoadManagement::LMEatonCloudCycleRequest::CycleType::TrueCycle,       Thrift::LMEatonCloudCycleType::TRUE_CYCLE   },
+        { LoadManagement::LMEatonCloudCycleRequest::CycleType::SmartCycle,      Thrift::LMEatonCloudCycleType::SMART_CYCLE  }
+    };
+
+    Thrift::LMEatonCloudScheduledCycleCommand   request;
+
+    request.__set__groupId              (  m._groupId               );
+    request.__set__controlStartDateTime (  m._startTime.seconds()   );
+    request.__set__controlEndDateTime   (  m._stopTime.seconds()    );
+    request.__set__isRampIn             (  m._rampIn  ==  LoadManagement::LMEatonCloudCycleRequest::RampingState::On  );
+    request.__set__isRampOut            (  m._rampOut ==  LoadManagement::LMEatonCloudCycleRequest::RampingState::On  );
+    request.__set__dutyCyclePercentage  (  m._dutyCyclePercent      );
+    request.__set__dutyCyclePeriod      (  m._dutyCyclePeriod       );
+    request.__set__criticality          (  m._criticality           );
+
+    if ( auto result = mapFind( cycleTranslator, m._cycleType ) )
+    {
+        request.__set__cyclingOption    ( *result );
+    }
+    else
+    {
+        CTILOG_ERROR( dout, "Unsupported Cycle Type enumeration with key: '" << static_cast<int>( m._cycleType ) << "'" );
+
+        return {};
+    }
+
+    return SerializeThriftBytes( request );
+}
+catch( apache::thrift::TException )
+{
+    //  log?
+    return {};
+}
+
+
 }

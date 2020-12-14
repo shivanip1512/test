@@ -438,6 +438,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\sepcyclegear.h" />
     <ClInclude Include="include\septempoffsetgear.h" />
     <ClInclude Include="include\smartgearbase.h" />
+    <ClInclude Include="include\SmartGearCyclingOption.h" />
     <ClInclude Include="include\SmartGroupBase.h" />
     <ClInclude Include="include\test_lm_serialization.h" />
   </ItemGroup>

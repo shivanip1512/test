@@ -21,7 +21,7 @@ public:
     virtual bool sendShedControl( long controlMinutes ) override;
 
     bool sendCycleControl( CycleControlParameters parameters ) override;
-    bool sendNoControl() override;
+    bool sendNoControl( bool doRestore ) override;
 
     bool doesStopRequireCommandAt( const CtiTime & currentTime ) const override;
 

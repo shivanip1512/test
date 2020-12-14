@@ -27,7 +27,9 @@ bool EatonCloudNoControlGear::attemptControl( CtiLMGroupPtr  currentLMGroup,
     {
         expectedLoadReduced += calculateLoadReduction( currentLMGroup->getKWCapacity() );
 
-        return eatonCloudGroup->sendNoControl();
+        const bool doRestore = ciStringEqual( getMethodStopType(), CtiLMProgramDirectGear::RestoreStopType );
+
+        return eatonCloudGroup->sendNoControl( doRestore );
     }
 
     CTILOG_WARN( dout, "Group does not implement the EatonCloud control interface: " << currentLMGroup->getPAOName() );
@@ -37,11 +39,12 @@ bool EatonCloudNoControlGear::attemptControl( CtiLMGroupPtr  currentLMGroup,
 
 bool EatonCloudNoControlGear::stopControl( CtiLMGroupPtr currentLMGroup )
 {
-    const bool restoreStop = ciStringEqual( getMethodStopType(), CtiLMProgramDirectGear::RestoreStopType );
+    //const bool restoreStop = ciStringEqual( getMethodStopType(), CtiLMProgramDirectGear::RestoreStopType );
 
     if ( auto eatonCloudGroup = boost::dynamic_pointer_cast<GroupControlInterface>( currentLMGroup ) )
     {
-        return eatonCloudGroup->sendStopControl( restoreStop );
+        //return eatonCloudGroup->sendStopControl( restoreStop );
+        return false;
     }
 
     CTILOG_WARN( dout, "Group does not implement the basic control interface: " << currentLMGroup->getPAOName() );
