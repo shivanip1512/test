@@ -318,15 +318,11 @@ public class DataExporterFormatController {
         boolean isAttribute = exportField.getField().getAttribute() != null;
         boolean isTimestamp = exportField.isTimestamp();
         boolean isValue = exportField.isValue();
-        if (type == FieldType.ATTRIBUTE_NAME) {
-            exportField.setPattern(exportField.getFieldValue().name());
-        }
+
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         model.clear();
-        
+
         Map<String, Object> json = new HashMap<>();
-        json.put("exportField", exportField);
-        
         Map<String, String> text = new HashMap<>();
         text.put("exportField", accessor.getMessage(exportField.getMessage()));
         text.put("attributeField", isAttribute ? accessor.getMessage(exportField.getAttributeField()) : "");
@@ -365,7 +361,8 @@ public class DataExporterFormatController {
                 }
             } 
             text.put("pattern", pattern);
-        } else if (type == FieldType.ATTRIBUTE_NAME) {
+        } else if (exportField.getField().isAttributeName()) {
+            exportField.setPattern(exportField.getFieldValue().name());
             text.put("pattern", exportField.getFieldValue().toString());
         } else {
             text.put("pattern", "");
@@ -381,9 +378,9 @@ public class DataExporterFormatController {
         } else {
             text.put("padding", "");
         }
-        
+        json.put("exportField", exportField);
         json.put("text", text);
-        
+
         resp.setContentType("application/json");
         JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
         
