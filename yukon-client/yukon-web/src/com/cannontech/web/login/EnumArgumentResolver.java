@@ -12,6 +12,7 @@ public class EnumArgumentResolver implements HandlerMethodArgumentResolver {
         return parameter.getParameterType().isEnum();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object resolveArgument(MethodParameter methodParameter,
             ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
@@ -19,8 +20,11 @@ public class EnumArgumentResolver implements HandlerMethodArgumentResolver {
         String parameter = webRequest.getParameter(methodParameter.getParameterName());
         @SuppressWarnings("rawtypes")
         Class parameterType = methodParameter.getParameterType();
-        @SuppressWarnings("unchecked")
-        Object result = Enum.valueOf(parameterType, StringEscapeUtils.escapeXml11(parameter));
-        return result;
+        try {
+            return Enum.valueOf(parameterType, StringEscapeUtils.escapeXml11(parameter));
+        } catch (NullPointerException e) {
+            // Catch only NullPointerException as enum is not mandatory from UI in some cases. If not provided return null.
+            return null;
+        }
     }
 }
