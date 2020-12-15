@@ -24,7 +24,9 @@ ControlArea:
       type: integer  
       minimum: 0
       maximum: 1800
-      description: 'Number of minutes to wait after a control is sent before sending another control.
+      description: 'Number of minutes to wait after control starts before re-evaluating control.
+                    After re-evaluation more or less programs may be controlled depending on configuration 
+                    and the trigger values.
                     Valid values are (in min)- 0, 1, 2, 3, 4, 5, 10, 15, 30.'
     dailyStartTimeInMinutes:
       type: integer  
@@ -122,8 +124,8 @@ trigger:
           - THRESHOLD
           - STATUS
         description: 'The control area reverts to this state each day at midnight.
-                     Status â€“ Control occurs on a status change.
-                     Threshold â€“ Control occurs when the threshold is surpassed.
+                     Status – Control occurs on a status change.
+                     Threshold – Control occurs when the threshold is surpassed.
                      This field is required when trigger object is present in request.'
       controlAreaProjection:
         description: 'This field is required when trigger object is present in request and trigger type is THRESHOLD.'
@@ -145,7 +147,7 @@ trigger:
             type: integer  
             minimum: 2
             maximum: 12
-            description: 'Samples â€“ Number of trigger values to use in the LSF projection. 
+            description: 'Samples – Number of trigger values to use in the LSF projection. 
                            If the trigger values in the projection are older than one hour, the current trigger 
                            value is used.
                            This field is required when trigger object is present in request and trigger type is 
@@ -153,7 +155,7 @@ trigger:
                       
           projectAheadDuration:
             type: integer  
-            description: 'Ahead â€“ How far ahead in time to project values.   
+            description: 'Ahead – How far ahead in time to project values.   
                       This field is required when trigger object is present in request and trigger type is 
                       THRESHOLD and ControlAreaProjectionType is LSF.
                       valid values are 5 min, 10 min, 15 min, 20 min, 25 min, 30 min, 35 min, 40 min, 45 min, 50 min, 55 min, 60 min.'

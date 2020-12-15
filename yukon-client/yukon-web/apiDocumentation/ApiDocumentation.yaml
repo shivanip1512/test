@@ -55,15 +55,15 @@ paths:
   /dr/constraints/holidaySchedules:
     $ref: 'api/programConstraintsApi.yaml#/holiday-schedules'
 
-  /dr/controlScenarios:
-    $ref: 'api/controlScenarioApi.yaml#/post-operation'
-  /dr/controlScenarios/{id}:
-    $ref: 'api/controlScenarioApi.yaml#/get-update-delete-operation'
-    
   /dr/controlAreas:
     $ref: 'api/controlAreasApi.yaml#/post-operation'
   /dr/controlAreas/{id}:
     $ref: 'api/controlAreasApi.yaml#/get-update-delete-operation'
+    
+  /dr/controlScenarios:
+    $ref: 'api/controlScenarioApi.yaml#/post-operation'
+  /dr/controlScenarios/{id}:
+    $ref: 'api/controlScenarioApi.yaml#/get-update-delete-operation'
  
   /devices/virtualDevices:
     $ref: 'api/virtualDevicesApi.yaml#/post-get-all-operation'
@@ -110,8 +110,8 @@ tags:
   - name: Macro Load Group
   - name: Load Program
   - name: Program Constraints
-  - name: Control Scenario
   - name: Control Area 
+  - name: Control Scenario
   - name: Device Readings
   - name: Virtual Devices
   - name: Points
