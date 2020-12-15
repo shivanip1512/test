@@ -1798,6 +1798,7 @@ Metric IDs:
     # ------     
     230: { name: "Power Factor total, minimum",          Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min              ] }
     233: { name: "Average Power Factor",                 Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Avg              ] }
+    234: { name: "Average Power Factor Frozen",          Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Avg, *Prev       ] }
     # ------     
     240: { name: "kW Delivered Daily Max",               Unit: *W,      Modifiers: [ *Q1, *Q4, *DayMax                     ] }
     # ------     

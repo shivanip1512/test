@@ -152,6 +152,7 @@ const MetricInfo metricInfos[] = {
         { 210,  TouRates,  "Sum Peak kVA"                          },
 
         { 233,  TouRates,  "Average Power Factor"                  },
+        { 234,  TouRates,  "Average Power Factor Frozen"           },
 
         { 240,  TouRates,  "Peak Demand Daily"                     },
 
