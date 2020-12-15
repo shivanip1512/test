@@ -100,6 +100,14 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         return searchResult;
     }
     
+    @Override
+    public DeviceConfigSummaryDetail getSummaryForDevice(int deviceId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        buildCommonStateSelect(sql, false);
+        sql.append("WHERE ypo.PAObjectID").eq(deviceId);
+        return jdbcTemplate.queryForObject(sql, detailRowMapper);
+    }
+    
     private SqlStatementBuilder buildUnassignSelect(DeviceConfigSummaryFilter filter, boolean selectCount) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         if (selectCount) {
@@ -127,6 +135,24 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
 
     private SqlStatementBuilder buildStateSelect(DeviceConfigSummaryFilter filter, boolean selectCount) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
+        buildCommonStateSelect(sql, selectCount);
+        sql.append("WHERE ypo.type").in_k(getSupportedPaoTypes());
+        if(!filter.isDisplayAll()) {
+            sql.append("AND scdm.DeviceConfigurationId").in(filter.getConfigurationIds());
+        }
+        if (filter.getStateSelection() == StateSelection.ALL) {
+            sql.append("AND (CurrentState").in_k(filter.getStateSelection().getStates());
+            sql.append("OR LastActionStatus").eq_k(LastActionStatus.IN_PROGRESS).append(")");
+        } else if (filter.getStateSelection() == StateSelection.IN_PROGRESS) {
+            sql.append("AND LastActionStatus").eq_k(LastActionStatus.IN_PROGRESS);
+        } else {
+            sql.append("AND CurrentState").in_k(filter.getStateSelection().getStates());
+        }
+        sql.append("AND ypo.PAOName NOT").startsWith(rfTemplatePrefix);
+        return sql;
+    }
+    
+    private void buildCommonStateSelect(SqlStatementBuilder sql, boolean selectCount) {
         if (selectCount) {
             sql.append("SELECT ypo.PAObjectID");
         } else {
@@ -150,20 +176,6 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         if (!selectCount) {
             sql.append("LEFT JOIN CommandRequestExecResult crer ON crer.CommandRequestExecId = dcs.CommandRequestExecId AND dcs.PAObjectID=crer.DeviceId");
         }
-        sql.append("WHERE ypo.type").in_k(getSupportedPaoTypes());
-        if(!filter.isDisplayAll()) {
-            sql.append("AND scdm.DeviceConfigurationId").in(filter.getConfigurationIds());
-        }
-        if (filter.getStateSelection() == StateSelection.ALL) {
-            sql.append("AND (CurrentState").in_k(filter.getStateSelection().getStates());
-            sql.append("OR LastActionStatus").eq_k(LastActionStatus.IN_PROGRESS).append(")");
-        } else if (filter.getStateSelection() == StateSelection.IN_PROGRESS) {
-            sql.append("AND LastActionStatus").eq_k(LastActionStatus.IN_PROGRESS);
-        } else {
-            sql.append("AND CurrentState").in_k(filter.getStateSelection().getStates());
-        }
-        sql.append("AND ypo.PAOName NOT").startsWith(rfTemplatePrefix);
-        return sql;
     }
 
     private SqlStatementBuilder buildSummarySelect(DeviceConfigSummaryFilter filter, SortBy sortBy,
