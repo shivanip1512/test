@@ -67,4 +67,9 @@ public interface DeviceConfigSummaryDao {
      * Returns action (READ/SEND/VERIFY) history for device.
      */
     List<DeviceConfigActionHistoryDetail> getDeviceConfigActionHistory(int deviceId);
+
+    /**
+     * Returns device configuration summary detail for a single device.
+     */
+    DeviceConfigSummaryDetail getSummaryForDevice(int deviceId);
 }
