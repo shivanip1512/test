@@ -71,8 +71,8 @@ public enum CMEPUnitEnum {
     KWTOUD(BuiltInAttribute.PEAK_DEMAND_RATE_D), // Kilowatt demand, usually expressed as peak value in time interval in time of
                                                  // day buckets for billing; Peak Demand Rate D.
 
-    MaxV(BuiltInAttribute.MAXIMUM_VOLTAGE_DAILY), // Maximum Voltage Daily.
-    MinV(BuiltInAttribute.MINIMUM_VOLTAGE_DAILY), // Minimum Voltage Daily.
+    MAXV(BuiltInAttribute.MAXIMUM_VOLTAGE_DAILY), // Maximum Voltage Daily.
+    MINV(BuiltInAttribute.MINIMUM_VOLTAGE_DAILY), // Minimum Voltage Daily.
 
     NKWHREG(BuiltInAttribute.NET_KWH), // Difference between energy delivered and energy received; UOMs ending in 'REG' indicate
                                        // register or faceplate readings.
