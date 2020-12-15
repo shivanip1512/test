@@ -20,11 +20,11 @@ public class EnumArgumentResolver implements HandlerMethodArgumentResolver {
         String parameter = webRequest.getParameter(methodParameter.getParameterName());
         @SuppressWarnings("rawtypes")
         Class parameterType = methodParameter.getParameterType();
-        try {
-            return Enum.valueOf(parameterType, StringEscapeUtils.escapeXml11(parameter));
-        } catch (NullPointerException e) {
-            // Catch only NullPointerException as enum is not mandatory from UI in some cases. If not provided return null.
-            return null;
+        // Catch only NullPointerException as enum is not mandatory from UI in some cases. If not provided return null.
+        Object result = null;
+        if (parameter != null) {
+            result = Enum.valueOf(parameterType, StringEscapeUtils.escapeXml11(parameter));
         }
+        return result;
     }
 }
