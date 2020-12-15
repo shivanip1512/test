@@ -2,6 +2,8 @@ package com.cannontech.loadcontrol.messages;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.joda.time.Instant;
 
 import com.cannontech.dr.eatonCloud.model.EatonCloudCycleType;
@@ -16,14 +18,6 @@ public class LMEatonCloudScheduledCycleCommand implements Serializable {
     private Integer dutyCyclePercentage;
     private Integer dutyCyclePeriod;
     private Integer criticality;
-
-    @Override
-    public String toString() {
-        return String.format(
-                "LMEatonCloudScheduledCycleCommand [groupId=%s, controlStartDateTime=%s, controlEndDateTime=%s, isRampIn=%s, isRampOut=%s, cyclingOption=%s, dutyCyclePercentage=%s, dutyCyclePeriod=%s, criticality=%s]",
-                groupId, controlStartDateTime, controlEndDateTime, isRampIn, isRampOut, cyclingOption, dutyCyclePercentage,
-                dutyCyclePeriod, criticality);
-    }
 
     public Integer getGroupId() {
         return groupId;
@@ -97,4 +91,8 @@ public class LMEatonCloudScheduledCycleCommand implements Serializable {
         this.criticality = criticality;
     }
 
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }

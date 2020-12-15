@@ -23,7 +23,7 @@ public class LMEatonCloudCycleCommandSerializer extends SimpleThriftSerializer i
         eatonCloudCycleCommand.setIsRampOut(entity.is_isRampOut());
         eatonCloudCycleCommand.setCyclingOption(EatonCloudCycleType.of(entity.get_cyclingOption().getValue()));
         eatonCloudCycleCommand.setDutyCyclePercentage(entity.get_dutyCyclePercentage());
-        eatonCloudCycleCommand.setDutyCyclePeriod(entity.get_dutyCyclePercentage());
+        eatonCloudCycleCommand.setDutyCyclePeriod(entity.get_dutyCyclePeriod());
         eatonCloudCycleCommand.setCriticality(entity.get_criticality());
         eatonCloudCycleCommand.setCurrentDateTime(new Instant(entity.get_currentDateTime()));
 

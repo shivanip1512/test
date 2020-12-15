@@ -9,16 +9,14 @@
     <bean class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.LMEatonCloudCycleCommandSerializer"/>
     <bean class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.LMEatonCloudScheduledCycleCommandSerializer"/>
     <bean class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.LMEatonCloudStopCommandSerializer"/>
-    <bean id="eatonCloudCycleCommandListener" class="com.cannontech.services.dr.eatonCloud.EatonCloudCycleCommandListener"/>
-    <bean id="eatonCloudCycleScheduledCommandListener" class="com.cannontech.services.dr.eatonCloud.EatonCloudCycleScheduledCommandListener"/>
-    <bean id="eatonCloudStopCommandListener" class="com.cannontech.services.dr.eatonCloud.EatonCloudStopCommandListener"/>
+    <bean id="eatonCloudCommandListener" class="com.cannontech.services.dr.eatonCloud.EatonCloudCommandListener"/>
     <jms:listener-container
         connection-factory="connectionFactory"
         destination-type="queue"
         concurrency="1"
         container-type="simple"
         container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
-            <jms:listener destination="com.eaton.eas.yukon.loadmanagement.eatonCloudCycleCommand" ref="eatonCloudCycleCommandListener" method="handleMessage"/>
+            <jms:listener destination="com.eaton.eas.yukon.loadmanagement.eatonCloudCycleCommand" ref="eatonCloudCommandListener" method="handleEatonCloudCycleCommand"/>
     </jms:listener-container>
     <jms:listener-container
         connection-factory="connectionFactory"
@@ -26,7 +24,7 @@
         concurrency="1"
         container-type="simple"
         container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
-            <jms:listener destination="com.eaton.eas.yukon.loadmanagement.eatonCloudScheduledCycleCommand" ref="eatonCloudCycleScheduledCommandListener" method="handleMessage"/>
+            <jms:listener destination="com.eaton.eas.yukon.loadmanagement.eatonCloudScheduledCycleCommand" ref="eatonCloudCommandListener" method="handleEatonCloudCycleScheduledCommand"/>
     </jms:listener-container>
     <jms:listener-container
         connection-factory="connectionFactory"
@@ -34,6 +32,6 @@
         concurrency="1"
         container-type="simple"
         container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
-            <jms:listener destination="com.eaton.eas.yukon.loadmanagement.eatonCloudStopCommand" ref="eatonCloudStopCommandListener" method="handleMessage"/>
+            <jms:listener destination="com.eaton.eas.yukon.loadmanagement.eatonCloudStopCommand" ref="eatonCloudCommandListener" method="handleEatonCloudStopCommand"/>
     </jms:listener-container>
 </beans>

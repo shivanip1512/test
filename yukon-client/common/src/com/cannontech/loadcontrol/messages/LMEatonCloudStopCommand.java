@@ -2,6 +2,8 @@ package com.cannontech.loadcontrol.messages;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.joda.time.Instant;
 
 import com.cannontech.dr.eatonCloud.model.EatonCloudStopType;
@@ -37,6 +39,6 @@ public class LMEatonCloudStopCommand implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("LMEatonCloudStopCommand [groupId=%s, restoreTime=%s, stopType=%s]", groupId, restoreTime, stopType);
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }
