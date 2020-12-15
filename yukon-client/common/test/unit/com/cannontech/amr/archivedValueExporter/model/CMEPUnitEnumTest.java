@@ -12,7 +12,7 @@ import org.junit.Test;
 
 public class CMEPUnitEnumTest {
     @Test
-    public void findDuplicateCode() {
+    public void findDuplicateAttribute() {
         List<CMEPUnitEnum> enumValues = Arrays.asList(CMEPUnitEnum.values());
         List<Attribute> attributes = new ArrayList<Attribute>();
         for (CMEPUnitEnum enumVal : enumValues) {
