@@ -12,12 +12,12 @@ public class GatewayRTCBatteryFailureEvaluator extends InfrastructureStatusWarni
 	
 	@Override
 	public InfrastructureWarningType getWarningType() {
-		return InfrastructureWarningType.GATEWAY_RTC_Battery_Failure;
+		return InfrastructureWarningType.GATEWAY_RTC_BATTERY_FAILURE;
 	}
 
 	@Override
 	public BuiltInAttribute getAttribute() {
-		return BuiltInAttribute.RTC_Battery_Failure;
+		return BuiltInAttribute.RTC_BATTERY_FAILURE;
 	}
 
 	@Override

@@ -12,12 +12,12 @@ public class GatewayHighDiskUsageEvaluator extends InfrastructureStatusWarningEv
 
 	@Override
 	public InfrastructureWarningType getWarningType() {
-		return InfrastructureWarningType.GATEWAY_High_Disk_Usage;
+		return InfrastructureWarningType.GATEWAY_HIGH_DISK_USAGE;
 	}
 
 	@Override
 	public BuiltInAttribute getAttribute() {
-		return BuiltInAttribute.High_Disk_Usage;
+		return BuiltInAttribute.HIGH_DISK_USAGE;
 	}
 
 	@Override

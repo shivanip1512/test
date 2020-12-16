@@ -12,12 +12,12 @@ public class GatewayACPowerFailureEvaluator extends InfrastructureStatusWarningE
 	
 	@Override
 	public InfrastructureWarningType getWarningType() {
-		return InfrastructureWarningType.GATEWAY_AC_Power_Failure;
+		return InfrastructureWarningType.GATEWAY_AC_POWER_FAILURE;
 	}
 
 	@Override
 	public BuiltInAttribute getAttribute() {
-		return BuiltInAttribute.AC_Power_Failure;
+		return BuiltInAttribute.AC_POWER_FAILURE;
 	}
 
 	@Override

@@ -25,8 +25,8 @@
         <pointInfo name="Streaming Device Count" attributes="STREAMING_ACTIVE_DEVICE_COUNT" />
         <pointInfo name="Time Sync Failed" attributes="TIME_SYNC_FAILED"/>
         <pointInfo name="UPS Battery Voltage Low" attributes="UPS_BATTERY_VOLTAGE_LOW"/>
-        <pointInfo name="High Disk Usage" attributes="High_Disk_Usage"/>
-        <pointInfo name="RTC Battery Failure" attributes="RTC_Battery_Failure"/>
-        <pointInfo name="AC Power Failure" attributes="AC_Power_Failure"/>
+        <pointInfo name="High Disk Usage" attributes="HIGH_DISK_USAGE"/>
+        <pointInfo name="RTC Battery Failure" attributes="RTC_BATTERY_FAILURE"/>
+        <pointInfo name="AC Power Failure" attributes="AC_POWER_FAILURE"/>
     </pointInfos>
 </pao>
