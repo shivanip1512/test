@@ -611,7 +611,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     NODE_COUNT_EXCEEDED("Node Count Exceeded", AttributeGroup.RFN_OTHER_EVENT, false),
     UPS_BATTERY_VOLTAGE_LOW("UPS Battery Voltage Low", AttributeGroup.RFN_OTHER_EVENT, false),
     CERTIFICATE_EXPIRATION("Certificate Expiration", AttributeGroup.RFN_OTHER_EVENT, false),
-    
+    High_Disk_Usage("High Disk Usage", AttributeGroup.RFN_OTHER_EVENT, false),
+    RTC_Battery_Failure("RTC Battery Failure", AttributeGroup.RFN_OTHER_EVENT, false),
+    AC_Power_Failure("AC Power Failure", AttributeGroup.RFN_OTHER_EVENT, false),
+       
     // Gateway Statistics
     STREAMING_CAPABLE_DEVICE_COUNT("Connected Device Count", AttributeGroup.GATEWAY_STATISTICS, false),
     STREAMING_ACTIVE_DEVICE_COUNT("Streaming Device Count", AttributeGroup.GATEWAY_STATISTICS, false),

@@ -15,6 +15,9 @@ public enum AlarmType {
     NODE_COUNT_ALARM(5L, AlarmCategory.GW_ALARM, BuiltInAttribute.NODE_COUNT_EXCEEDED),
     EXTERNAL2_ALARM(6L, AlarmCategory.GW_ALARM, BuiltInAttribute.UPS_BATTERY_VOLTAGE_LOW),
     CERTIFICATE_EXPIRATION_ALARM(7L, AlarmCategory.GW_ALARM, BuiltInAttribute.CERTIFICATE_EXPIRATION),
+    High_Disk_Usage_ALARM(8L, AlarmCategory.GW_ALARM, BuiltInAttribute.High_Disk_Usage),
+    RTC_Battery_Failure_ALARM(9L, AlarmCategory.GW_ALARM, BuiltInAttribute.RTC_Battery_Failure),
+    AC_Power_Failure_ALARM(10L, AlarmCategory.GW_ALARM, BuiltInAttribute.AC_Power_Failure),
     ;
     
     private static Map<Long, AlarmType> GwAlarmMap = new HashMap<>();

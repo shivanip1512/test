@@ -598,6 +598,9 @@ public:
     static const Attribute  NodeCountExceeded;
     static const Attribute  UpsBatteryVoltageLow;
     static const Attribute  CertificateExpiration;
+    static const Attribute  HighDiskUsage;
+    static const Attribute  RTCBatteryFailure;
+    static const Attribute  ACPowerFailure;
 
     static const Attribute  StreamingCapableDeviceCount;
     static const Attribute  StreamingActiveDeviceCount;

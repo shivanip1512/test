@@ -63,6 +63,18 @@
         <name>Time Sync Failed</name>
         <stategroup value="TrueFalse"/>
     </point>
+    <point offset="8" type="Status">
+        <name>High Disk Usage</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="11" type="Status">
+        <name>RTC Battery Failure</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="10" type="Status">
+        <name>AC Power Failure</name>
+        <stategroup value="TrueFalse"/>
+    </point>
     <point offset="2000" type="Status">
         <name>Comm Status</name>
         <archive interval="ZERO" type="ON_CHANGE" />
