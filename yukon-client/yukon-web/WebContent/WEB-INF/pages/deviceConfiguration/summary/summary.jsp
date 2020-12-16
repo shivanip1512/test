@@ -54,11 +54,6 @@
         <%@ include file="resultsTable.jsp" %>
     </div>
     
-
-<!--     <script>
-    $('#selectedConfigurations').chosen({width: "300px"});
-</script> -->
-    
     <cti:includeScript link="/resources/js/pages/yukon.device.config.summary.js" />
     <cti:includeCss link="/resources/js/lib/sortable/sortable.css"/>
     <cti:includeScript link="/resources/js/lib/sortable/sortable.js"/>

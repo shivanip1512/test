@@ -341,6 +341,9 @@
                 <entry key="METER_PROGRAMMING">
                     <ref bean="meterProgrammingBackingService"/>
                 </entry>
+                <entry key="DEVICE_CONFIG_SUMMARY">
+                    <ref bean="deviceConfigSummaryBackingService"/>
+                </entry>
             </map>
         </property>
         <property name="bulkBacks">
@@ -1371,6 +1374,8 @@
      <bean id="pqrConfigBackingService" class="com.cannontech.web.updater.pqrConfig.PqrConfigBackingService"/>
      
      <bean id="meterProgrammingBackingService" class="com.cannontech.web.updater.meterProgramming.MeterProgrammingBackingService"/>
+     
+     <bean id="deviceConfigSummaryBackingService" class="com.cannontech.web.updater.deviceConfigSummary.DeviceConfigSummaryBackingService"/>
      
      <bean class="com.cannontech.web.paonote.validator.PaoNoteValidator"/>
      <bean id="scheduledDataImportService" class="com.cannontech.web.scheduledDataImport.service.impl.ScheduledDataImportServiceImpl"/>
