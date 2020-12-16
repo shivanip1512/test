@@ -8,16 +8,16 @@ import com.cannontech.database.db.point.stategroup.EventStatus;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.services.infrastructure.service.InfrastructureStatusWarningEvaluator;
 
-public class ACPowerFailureEvaluator extends InfrastructureStatusWarningEvaluator {
+public class GatewayRTCBatteryFailureEvaluator extends InfrastructureStatusWarningEvaluator {
 	
 	@Override
 	public InfrastructureWarningType getWarningType() {
-		return InfrastructureWarningType.GATEWAY_AC_Power_Failure;
+		return InfrastructureWarningType.GATEWAY_RTC_Battery_Failure;
 	}
 
 	@Override
 	public BuiltInAttribute getAttribute() {
-		return BuiltInAttribute.AC_Power_Failure;
+		return BuiltInAttribute.RTC_Battery_Failure;
 	}
 
 	@Override
