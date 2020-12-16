@@ -2,6 +2,8 @@ package com.cannontech.simulators.pxmw.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
@@ -9,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import com.cannontech.dr.pxmw.model.v1.PxMWChannelDataV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWChannelV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceChannelDetailV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWDeviceChannelDetailsV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWErrorV1;
@@ -89,22 +90,23 @@ public class PxMWDataV1 extends PxMWDataGenerator {
         return site;
     }
     
-    public Object channelsV1(String id) {
-        if (status == HttpStatus.BAD_REQUEST.value()) {
-            return new PxMWErrorsV1(List.of(new PxMWErrorV1("9014", "Please enter valid GUID")));
-        }
-        if (status == HttpStatus.UNAUTHORIZED.value()) {
-            return new PxMWErrorsV1(List.of(new PxMWErrorV1("9001", "Security token must not be null or empty")));
-        }
+    public Object channelsV1(String id, String tags) {
+
         if (status == HttpStatus.NOT_FOUND.value()) {
-            return new PxMWErrorsV1(List.of(new PxMWErrorV1("9004", "Requested data not found")));
+            return new PxMWErrorsV1(List.of(new PxMWErrorV1(
+                    "Device is not registered with System, please check UUID or register your device",
+                    "Latest known values for a list of channels cannot be retrieved for a device which is not registered with system or device registered under a deleted site.")));
         }
-        if (status == HttpStatus.FORBIDDEN.value()) {
-            return new PxMWErrorsV1(List.of(new PxMWErrorV1("9017", "Access denied")));
-        }
-        PxMWChannelDataV1 data = new PxMWChannelDataV1("102812",
-                "TestDevice", "1.9", "KSCFH", "Grain");
-        PxMWDeviceChannelDetailV1 detail = new PxMWDeviceChannelDetailV1(id,  List.of(data));
-        return new  PxMWDeviceChannelDetailsV1("Device channel details retrieved", List.of(detail));
+
+        List<String> tagList = Stream.of(tags.split(","))
+                .map(String::trim)
+                .collect(Collectors.toList());
+
+        List<PxMWChannelDataV1> dataList = tagList.stream().map(value -> {
+            PxMWChannelDataV1 data = new PxMWChannelDataV1(value, value, value, value);
+            return data;
+        }).collect(Collectors.toList());
+
+        return new PxMWDeviceChannelDetailV1("id", dataList);
     }
 }

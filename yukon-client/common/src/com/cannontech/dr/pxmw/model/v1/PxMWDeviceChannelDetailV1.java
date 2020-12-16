@@ -13,18 +13,18 @@ public class PxMWDeviceChannelDetailV1 implements Serializable {
     public final List<PxMWChannelDataV1> channelData;
 
     @JsonCreator
-    public PxMWDeviceChannelDetailV1(@JsonProperty("id") String id,
-            @JsonProperty("channelData") List<PxMWChannelDataV1> channelData) {
+    public PxMWDeviceChannelDetailV1(@JsonProperty("device_id") String id,
+            @JsonProperty("results") List<PxMWChannelDataV1> channelData) {
         this.deviceGuid = id;
         this.channelData = channelData;
     }
 
-    @JsonProperty("id")
+    @JsonProperty("device_id")
     public String getDeviceGuid() {
         return deviceGuid;
     }
 
-    @JsonProperty("channelData")
+    @JsonProperty("results")
     public List<PxMWChannelDataV1> getChannelData() {
         return channelData;
     }

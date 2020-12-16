@@ -30,11 +30,11 @@ public enum PxMWRetrievalUrl {
             "http://wordpress-prod.tcc.etn.com/wordpress/wp-content/docs/RestApi/IoT.html#site-site-get-1",
             List.of(HttpStatus.OK, HttpStatus.NOT_FOUND),
             ImmutableMap.of("Site Guid", "dd5bf079-b8ea-430c-ad94-1cf54124fc02", "Recursive* (true, false)", "false", "Include Detail* (true, false)", "false")),
-    DEVICE_CHANNEL_DETAILS_V1(PxMWVersion.V1, "/api/v1/device/{deviceId}/channels",
+    DEVICE_CHANNEL_DETAILS_V1(PxMWVersion.V1, "/api/v1/devices/{id}/timeseries/latest",
             //used by simulator
-            "https://was-all-apim-eus-dev.portal.azure-api.net/docs/services/device-management-function-app/operations/get-getdevicechanneldetails-1?",
-            List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_FOUND, HttpStatus.FORBIDDEN),
-            ImmutableMap.of("Device Guid", "3b4dd0db-2144-4fb2-a819-99f7f0a4d5cf"));
+            "http://wordpress-prod.tcc.etn.com/wordpress/wp-content/docs/RestApi/IoT.html#timeseries-timeseries-get",
+            List.of(HttpStatus.OK, HttpStatus.NOT_FOUND),
+            ImmutableMap.of("Device Guid", "3b4dd0db-2144-4fb2-a819-99f7f0a4d5cf", "List of Channel Tags", "10230,10231"));
 
     private PxMWVersion version;
     private String suffix;
