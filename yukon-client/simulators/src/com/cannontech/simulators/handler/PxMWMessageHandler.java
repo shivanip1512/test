@@ -53,7 +53,7 @@ public class PxMWMessageHandler extends SimulatorMessageHandler {
                         PxMWDataGenerator generator = data.get(request.getUrl().getVersion());
                         generator.setStatus(status);
                         Method method = generator.getClass().getMethod(request.getMethod(), request.getParamClasses());
-                        return new PxMWSimulatorResponse(method.invoke(generator, request.getParamValues()), status);
+                        return (PxMWSimulatorResponse) method.invoke(generator, request.getParamValues());
                     } catch (Exception e) {
                         throw new IllegalArgumentException(
                                 "Unable to use reflection to call method " + request.getMethod() + " to get data");

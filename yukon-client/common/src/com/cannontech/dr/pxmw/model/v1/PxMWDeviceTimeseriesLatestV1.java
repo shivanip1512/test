@@ -8,12 +8,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PxMWDeviceChannelDetailV1 implements Serializable {
+public class PxMWDeviceTimeseriesLatestV1 implements Serializable {
     public final String deviceGuid;
     public final List<PxMWChannelDataV1> channelData;
 
     @JsonCreator
-    public PxMWDeviceChannelDetailV1(@JsonProperty("device_id") String id,
+    public PxMWDeviceTimeseriesLatestV1(@JsonProperty("device_id") String id,
             @JsonProperty("results") List<PxMWChannelDataV1> channelData) {
         this.deviceGuid = id;
         this.channelData = channelData;

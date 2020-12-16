@@ -1,5 +1,6 @@
 package com.cannontech.web.dev;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.logging.log4j.core.Logger;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
+import com.cannontech.dr.pxmw.model.v1.PxMWChannelValuesRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCredentialsV1;
 import com.cannontech.dr.pxmw.service.impl.v1.PxMWCommunicationServiceImplV1;
 import com.cannontech.simulators.message.request.PxMWSimulatorRequest;
@@ -73,11 +76,24 @@ public class PxMWSimulatorApiControllerV1 {
     }
     
     @GetMapping("/devices/{id}/timeseries/latest")
-    public ResponseEntity<Object> channelsV1(@PathVariable String id, @RequestParam String tags) {
+    public ResponseEntity<Object> timeseriesLatestV1(@PathVariable String id, @RequestParam String tags) {
         try {
             PxMWSimulatorResponse response = simulatorsCommunicationService
-                    .sendRequest(new PxMWSimulatorRequest(PxMWRetrievalUrl.DEVICE_CHANNEL_DETAILS_V1, "channelsV1",
+                    .sendRequest(new PxMWSimulatorRequest(PxMWRetrievalUrl.DEVICE_TIMESERIES_LATEST, "getTimeseriesLatestV1",
                             new Class[] { String.class, String.class }, new Object[] { id, tags }), PxMWSimulatorResponse.class);
+            return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
+        } catch (ExecutionException e) {
+            log.error(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @PutMapping("/devices/{id}/commands/getchannelvalues")
+    public ResponseEntity<Object> getChannelValuesV1(@PathVariable String id, @RequestBody PxMWChannelValuesRequestV1 pxMWChannelValuesRequestV1) {
+        try {
+            PxMWSimulatorResponse response = simulatorsCommunicationService
+                    .sendRequest(new PxMWSimulatorRequest(PxMWRetrievalUrl.DEVICE_GET_CHANNEL_VALUES_V1, "getChannelValuesV1",
+                            new Class[] { String.class, List.class }, new Object[] { id, pxMWChannelValuesRequestV1.getTags() }), PxMWSimulatorResponse.class);
             return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
         } catch (ExecutionException e) {
             log.error(e);
