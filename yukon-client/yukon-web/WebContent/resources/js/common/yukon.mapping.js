@@ -710,7 +710,15 @@ yukon.mapping = (function () {
             $.getJSON(yukon.url('/stars/comprehensiveMap/networkTree') + '?' + $.param({ deviceId: deviceId }))
             .done(function (json) {
                 if (json.tree) {
-                    yukon.mapping.drawAllDescendants(deviceId, json.tree[0]);
+                    var gatewayNode = json.tree[0],
+                        paoId = yukon.mapping.getPaoIdFromData(gatewayNode);
+                    //first check if device is gateway
+                    if (paoId == deviceId) {
+                        yukon.mapping.findDescendants(gatewayNode, deviceId);
+                        yukon.mapping.showDescendantLines();
+                    } else {
+                        yukon.mapping.drawAllDescendants(deviceId, gatewayNode);
+                    }
                 }
                 if (json.errorMsg) {
                     yukon.ui.alertError(json.errorMsg);
