@@ -52,6 +52,9 @@ public class Field implements Displayable {
     public boolean isRuntimeType() {
         return type == FieldType.RUNTIME;
     }
+    public boolean isAttributeName() {
+        return type == FieldType.ATTRIBUTE_NAME;
+    }
 
     @JsonIgnore
     @Override

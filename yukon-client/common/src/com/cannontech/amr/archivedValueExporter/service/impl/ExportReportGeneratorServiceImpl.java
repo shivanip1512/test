@@ -33,6 +33,7 @@ import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
 import com.cannontech.amr.archivedValueExporter.model.ExportField;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
+import com.cannontech.amr.archivedValueExporter.model.FieldValue;
 import com.cannontech.amr.archivedValueExporter.model.Preview;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
 import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorService;
@@ -842,7 +843,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      */
     private String getAttributeName(Attribute attribute, YukonUserContext userContext, String fieldValue) {
         String attributeName = null;
-        if ("CMEP".equalsIgnoreCase(fieldValue)) {
+        if (FieldValue.valueOf(fieldValue) == FieldValue.CMEP) {
             CMEPUnitEnum cmepUnitEnum = CMEPUnitEnum.getForAttribute(attribute);
             if (cmepUnitEnum != null) {
                 attributeName = cmepUnitEnum.toString();

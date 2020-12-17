@@ -66,7 +66,7 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
             }
             
             String pattern = null;
-            if (exportField.isTimestamp() || exportField.isValue() || exportField.getField().isPlainTextType()) {
+            if (exportField.isTimestamp() || exportField.isValue() || exportField.getField().isPlainTextType() || exportField.getField().isAttributeName()) {
                 //Don't use 'SqlUtils.convertStringToDbValue' since we need to store a null in the db for an empty string.
                 pattern = exportField.getPattern().equals("") ? null : exportField.getPattern();
             }
