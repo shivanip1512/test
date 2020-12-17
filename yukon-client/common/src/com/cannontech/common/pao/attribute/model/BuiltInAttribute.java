@@ -614,7 +614,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     HIGH_DISK_USAGE("High Disk Usage", AttributeGroup.RFN_OTHER_EVENT, false),
     RTC_BATTERY_FAILURE("RTC Battery Failure", AttributeGroup.RFN_OTHER_EVENT, false),
     AC_POWER_FAILURE("AC Power Failure", AttributeGroup.RFN_OTHER_EVENT, false),
-       
+
     // Gateway Statistics
     STREAMING_CAPABLE_DEVICE_COUNT("Connected Device Count", AttributeGroup.GATEWAY_STATISTICS, false),
     STREAMING_ACTIVE_DEVICE_COUNT("Streaming Device Count", AttributeGroup.GATEWAY_STATISTICS, false),
