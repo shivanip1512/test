@@ -37,7 +37,6 @@
                     </td>
                     <c:choose>
                         <c:when test="${not empty gateway.data}">
-                            
                             <c:set var="data" value="${gateway.data}"/>
                             <c:set var="title"><cti:msg2 key=".connectionStatus.${data.connectionStatus}"/></c:set>
                             <c:set var="clazz" value="${data.connectionStatus == 'CONNECTED' ? 'green' : 'red'}"/>
@@ -70,12 +69,6 @@
                                 <span class="js-gw-rv-text">
                                     ${fn:escapeXml(gateway.data.releaseVersion)}
                                 </span>
-                                <c:set var="dn" value=""/>
-                                <c:if test="${not gateway.upgradeAvailable}">
-                                    <c:set var="dn" value="dn"/>
-                                </c:if>
-                                <cti:msg2 var="updateAvailable" key=".firmwareUpdateAvailable"/>
-                                <cti:icon icon="icon-download" classes="js-gateway-update-available fn ${dn}" title="${updateAvailable}"/>
                             </td>
                             <c:set var="clazz" value="green"/>
                             <c:if test="${gateway.lastCommFailed}">
@@ -109,13 +102,18 @@
                             </td>
                             <td>
                                 <cm:dropdown data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}">
-                                    <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
+                                    <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="INTERACT">
                                         <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"/>
+                                    </cti:checkRolesAndProperties>
+                                    <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE">
                                         <cm:dropdownOption icon="icon-disconnect" key=".disconnect" classes="js-gw-disconnect"/>
+                                    </cti:checkRolesAndProperties>
+                                    <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="INTERACT">
                                         <li class="divider"></li>
                                     </cti:checkRolesAndProperties>
-                                    <cm:dropdownOption icon="icon-table-row-insert" key=".collectData" 
-                                        classes="js-gw-collect-data"/>
+                                    <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="VIEW">
+                                        <cm:dropdownOption icon="icon-table-row-insert" key=".collectData" classes="js-gw-collect-data"/>
+                                    </cti:checkRolesAndProperties>
                                 </cm:dropdown>
                             </td>
                         </c:when>

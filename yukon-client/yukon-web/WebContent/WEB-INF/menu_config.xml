@@ -250,7 +250,7 @@
       </option>
       <option name="relays">
         <permissions>
-            <roleProperty name="ENDPOINT_PERMISSION" level="VIEW"/>
+            <roleProperty name="MANAGE_INFRASTRUCTURE" level="VIEW"/>
         </permissions>
         <link>/stars/relay</link>
       </option>

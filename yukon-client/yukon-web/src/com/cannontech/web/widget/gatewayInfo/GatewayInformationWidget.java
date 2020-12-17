@@ -51,7 +51,7 @@ import com.cannontech.web.widget.support.SimpleWidgetInput;
  */
 @Controller
 @RequestMapping("/gatewayInformationWidget/*")
-@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
+@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.UPDATE)
 public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
     
     private static final Logger log = YukonLogManager.getLogger(GatewayInformationWidget.class);
@@ -92,7 +92,6 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
         return "gatewayInformationWidget/render.jsp";
     }
     
-    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping(value="edit", method=RequestMethod.GET)
     public String editDialog(ModelMap model, int deviceId, YukonUserContext userContext) {
         
@@ -115,7 +114,6 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
         return "gatewayInformationWidget/settings.jsp";
     }
     
-    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping(value="configure", method=RequestMethod.GET)
     public String configureDialog(ModelMap model, int deviceId, YukonUserContext userContext) {
         
@@ -139,7 +137,6 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
     }
     
     /** Configure the gateway */
-    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping(value="configure", method=RequestMethod.POST)
     public String configure(ModelMap model, YukonUserContext userContext, HttpServletResponse resp, FlashScope flash,
             int deviceId, @ModelAttribute("configuration") GatewayConfiguration configuration, BindingResult result) {
@@ -201,7 +198,6 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
     }
     
     /** Update the gateway */
-    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping(value="edit", method=RequestMethod.PUT)
     public String update(ModelMap model,
             YukonUserContext userContext,
