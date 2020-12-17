@@ -127,7 +127,7 @@ public class PointValidationUtil extends ValidationUtils {
         try {
             pointDao.getLitePoint(pointId);
         } catch (NotFoundException ex) {
-            errors.rejectValue(field, ApiErrorDetails.getCodeString(ApiErrorDetails.DOES_NOT_EXISTS), new Object[] { fieldName }, "");
+            errors.rejectValue(field, ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { fieldName }, "");
         }
     }
 }

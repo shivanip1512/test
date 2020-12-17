@@ -92,8 +92,8 @@ public enum ApiErrorDetails {
     /**
      * Return code in String format.
      */
-    public static String getCodeString(ApiErrorDetails apiErrorDetails) {
-        return Integer.toString(apiErrorDetails.code);
+    public String getCodeString() {
+        return Integer.toString(code);
     }
 
 }

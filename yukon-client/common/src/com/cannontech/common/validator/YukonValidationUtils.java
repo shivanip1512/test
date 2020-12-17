@@ -53,7 +53,7 @@ public class YukonValidationUtils extends ValidationUtils {
 
     public static boolean checkExceedsMaxLength(Errors errors, String field, String fieldValue, int max) {
         if (fieldValue != null && fieldValue.length() > max) {
-            errors.rejectValue(field, ApiErrorDetails.getCodeString(ApiErrorDetails.MAX_LENGTH_EXCEEDED), new Object[] { max },
+            errors.rejectValue(field, ApiErrorDetails.MAX_LENGTH_EXCEEDED.getCodeString(), new Object[] { max },
                 "Exceeds maximum length of " + max);
             return true;
         }
@@ -116,7 +116,7 @@ public class YukonValidationUtils extends ValidationUtils {
 
     public static boolean checkIsValidDouble(Errors errors, String field, Double fieldValue) {
         if (fieldValue == null || Double.isNaN(fieldValue) || Double.isInfinite(fieldValue)) {
-            errors.rejectValue(field, ApiErrorDetails.getCodeString(ApiErrorDetails.INVALID_VALUE));
+            errors.rejectValue(field, ApiErrorDetails.INVALID_VALUE.getCodeString());
             return false;
         }
         return true;
@@ -350,7 +350,7 @@ public class YukonValidationUtils extends ValidationUtils {
      */
     public static boolean checkIsBlank(Errors errors, String field, String fieldValue, String messageArg, boolean fieldAllowsNull) {
         if (!(fieldAllowsNull && fieldValue == null) && StringUtils.isBlank(fieldValue)) {
-            errors.rejectValue(field, ApiErrorDetails.getCodeString(ApiErrorDetails.FIELD_REQUIRED), new Object[] { messageArg }, "");
+            errors.rejectValue(field, ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { messageArg }, "");
             return true;
         }
         return false;
