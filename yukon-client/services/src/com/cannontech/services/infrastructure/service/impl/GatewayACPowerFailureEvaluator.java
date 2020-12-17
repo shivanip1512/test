@@ -7,6 +7,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.database.db.point.stategroup.EventStatus;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.services.infrastructure.service.InfrastructureStatusWarningEvaluator;
+import com.google.common.collect.ImmutableSet;
 
 public class GatewayACPowerFailureEvaluator extends InfrastructureStatusWarningEvaluator {
 	
@@ -27,7 +28,7 @@ public class GatewayACPowerFailureEvaluator extends InfrastructureStatusWarningE
 
 	@Override
 	public Set<PaoType> getSupportedTypes() {
-		return PaoType.getRfGatewayTypes();
+		return ImmutableSet.of(PaoType.GWY800, PaoType.GWY801);
 	}
 
 }
