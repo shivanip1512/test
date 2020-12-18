@@ -10,25 +10,25 @@ import com.cannontech.services.infrastructure.service.InfrastructureStatusWarnin
 import com.google.common.collect.ImmutableSet;
 
 public class GatewayACPowerFailureEvaluator extends InfrastructureStatusWarningEvaluator {
-	
-	@Override
-	public InfrastructureWarningType getWarningType() {
-		return InfrastructureWarningType.GATEWAY_AC_POWER_FAILURE;
-	}
 
-	@Override
-	public BuiltInAttribute getAttribute() {
-		return BuiltInAttribute.AC_POWER_FAILURE;
-	}
+    @Override
+    public InfrastructureWarningType getWarningType() {
+        return InfrastructureWarningType.GATEWAY_AC_POWER_FAILURE;
+    }
 
-	@Override
-	public int getBadState() {
-		return EventStatus.ACTIVE.getRawState();
-	}
+    @Override
+    public BuiltInAttribute getAttribute() {
+        return BuiltInAttribute.AC_POWER_FAILURE;
+    }
 
-	@Override
-	public Set<PaoType> getSupportedTypes() {
-		return ImmutableSet.of(PaoType.GWY800, PaoType.GWY801);
-	}
+    @Override
+    public int getBadState() {
+        return EventStatus.ACTIVE.getRawState();
+    }
+
+    @Override
+    public Set<PaoType> getSupportedTypes() {
+        return ImmutableSet.of(PaoType.GWY800, PaoType.GWY801);
+    }
 
 }

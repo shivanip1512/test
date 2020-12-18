@@ -38,12 +38,12 @@
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_UPS_BATTERY_VOLTAGE_LOW.CLEAR">Gateway no longer detecting low voltage on UPS battery.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CERT_EXPIRATION.LOW">Gateway detecting upcoming certificate expiration.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CERT_EXPIRATION.CLEAR">Gateway no longer detecting upcoming certificate expiration.</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_HIGH_DISK_USAGE.LOW">Gateway detecting High Disk use.</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_HIGH_DISK_USAGE.CLEAR">Gateway no longer detecting High Disk use.</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_RTC_BATTERY_FAILURE.LOW">Gateway detecting RTC Battery Failure.</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_RTC_BATTERY_FAILURE.CLEAR">Gateway no longer detecting RTC Battery Failure.</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_AC_POWER_FAILURE.LOW">Gateway detecting AC Power Failure.</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_AC_POWER_FAILURE.CLEAR">Gateway no longer detecting AC Power Failure.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_HIGH_DISK_USAGE.LOW">Gateway detecting disk usage exceeding 80% availability.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_HIGH_DISK_USAGE.CLEAR">Gateway no longer detecting high disk usage.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_RTC_BATTERY_FAILURE.LOW">Gateway detecting RTC battery failure.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_RTC_BATTERY_FAILURE.CLEAR">Gateway no longer detecting RTC battery failure.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_AC_POWER_FAILURE.LOW">Gateway detecting AC power failure.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_AC_POWER_FAILURE.CLEAR">Gateway no longer detecting AC power failure.</entry>
     
     <entry key="yukon.web.widgets.infrastructureWarnings.gateways">Gateways</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.relays">Relays</entry>

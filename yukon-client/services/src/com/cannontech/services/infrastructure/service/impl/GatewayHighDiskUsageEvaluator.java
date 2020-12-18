@@ -10,23 +10,23 @@ import com.cannontech.services.infrastructure.service.InfrastructureStatusWarnin
 
 public class GatewayHighDiskUsageEvaluator extends InfrastructureStatusWarningEvaluator {
 
-	@Override
-	public InfrastructureWarningType getWarningType() {
-		return InfrastructureWarningType.GATEWAY_HIGH_DISK_USAGE;
-	}
+    @Override
+    public InfrastructureWarningType getWarningType() {
+        return InfrastructureWarningType.GATEWAY_HIGH_DISK_USAGE;
+    }
 
-	@Override
-	public BuiltInAttribute getAttribute() {
-		return BuiltInAttribute.HIGH_DISK_USAGE;
-	}
+    @Override
+    public BuiltInAttribute getAttribute() {
+        return BuiltInAttribute.HIGH_DISK_USAGE;
+    }
 
-	@Override
-	public int getBadState() {
-		return EventStatus.ACTIVE.getRawState();
-	}
+    @Override
+    public int getBadState() {
+        return EventStatus.ACTIVE.getRawState();
+    }
 
-	@Override
-	public Set<PaoType> getSupportedTypes() {
-		return PaoType.getRfGatewayTypes();
-	}
+    @Override
+    public Set<PaoType> getSupportedTypes() {
+        return PaoType.getRfGatewayTypes();
+    }
 }
