@@ -3,9 +3,10 @@ package com.cannontech.dr.pxmw.service.v1;
 import java.util.List;
 
 import com.cannontech.dr.pxmw.model.PxMWException;
+import com.cannontech.dr.pxmw.model.v1.PxMWChannelValueV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWDeviceChannelDetailV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWDeviceTimeseriesLatestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
 
@@ -37,7 +38,7 @@ public interface PxMWCommunicationServiceV1 {
     /**
      * Returns the latest readings for a device channels.
      */
-    PxMWDeviceChannelDetailV1 getDeviceChannelDetails(String deviceGuid, List<String> tags)
+    PxMWDeviceTimeseriesLatestV1 getTimeseriesLatest(String deviceGuid, List<String> tags)
             throws PxMWCommunicationExceptionV1, PxMWException;
 
     /**
@@ -49,4 +50,10 @@ public interface PxMWCommunicationServiceV1 {
      * Used by Simulator to clear token cache in SM
      */
     void clearCache() throws PxMWException;
+
+    /**
+     * Gets the latest values from a list of channels
+     */
+    List<PxMWChannelValueV1> getChannelValues(String deviceGuid, List<String> tags)
+            throws PxMWCommunicationExceptionV1, PxMWException;
 }

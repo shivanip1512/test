@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -31,9 +32,12 @@ import com.cannontech.dr.pxmw.message.PxMWAuthTokenRequestV1;
 import com.cannontech.dr.pxmw.message.v1.PxMWAuthTokenResponseV1;
 import com.cannontech.dr.pxmw.model.PxMWException;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
+import com.cannontech.dr.pxmw.model.v1.PxMWChannelValueV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWChannelValuesRequestV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWChannelValuesV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
-import com.cannontech.dr.pxmw.model.v1.PxMWDeviceChannelDetailV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWDeviceTimeseriesLatestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWErrorHandlerV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWSiteV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWTokenV1;
@@ -104,18 +108,18 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
     }
 
     @Override
-    public PxMWDeviceChannelDetailV1 getDeviceChannelDetails(String deviceGuid, List<String> tags)
+    public PxMWDeviceTimeseriesLatestV1 getTimeseriesLatest(String deviceGuid, List<String> tags)
             throws PxMWCommunicationExceptionV1, PxMWException {
-        URI uri = getUri(Map.of("id", deviceGuid), PxMWRetrievalUrl.DEVICE_CHANNEL_DETAILS_V1);
+        URI uri = getUri(Map.of("id", deviceGuid), PxMWRetrievalUrl.DEVICE_TIMESERIES_LATEST);
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
         queryParams.add("tags", StringUtils.join(tags, ','));
         uri = addQueryParams(queryParams, uri);
 
-        log.debug("Getting device channel details. Device Guid:{} Tags:{} URL:{}", deviceGuid, tags, uri);
+        log.debug("Getting device timeseries latest. Device Guid:{} Tags:{} URL:{}", deviceGuid, tags, uri);
         HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
-        ResponseEntity<PxMWDeviceChannelDetailV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
-                PxMWDeviceChannelDetailV1.class);
-        log.debug("Got device channel. Device Guid:{} Tags:{} Result:{}", deviceGuid, tags,
+        ResponseEntity<PxMWDeviceTimeseriesLatestV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
+                PxMWDeviceTimeseriesLatestV1.class);
+        log.debug("Got device timeseries latest. Device Guid:{} Tags:{} Result:{}", deviceGuid, tags,
                 new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
         return response.getBody();
     }
@@ -141,6 +145,31 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
         log.debug("Got site info. Site Guid:{} Result:{}", siteGuid,
                 new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
         return response.getBody();
+    }
+    
+    @Override
+    public List<PxMWChannelValueV1> getChannelValues(String deviceGuid, List<String> tags)
+            throws PxMWCommunicationExceptionV1, PxMWException {
+        URI uri = getUri(Map.of("id", deviceGuid), PxMWRetrievalUrl.DEVICE_GET_CHANNEL_VALUES_V1);
+        log.debug("Getting device channel values. Device Guid:{} URL:{}", deviceGuid, uri);
+        try {
+            HttpEntity<PxMWChannelValuesRequestV1> requestEntity = getRequestWithAuthHeaders(
+                    new PxMWChannelValuesRequestV1(tags));
+            ResponseEntity<PxMWChannelValuesV1> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity,
+                    PxMWChannelValuesV1.class);
+            int status = Integer.parseInt(response.getBody().getStatus());
+            log.debug("Getting device channel values. Device Guid:{} Response Status:{} Result:{}", deviceGuid, status,
+                    new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
+            HttpStatus httpStatus = HttpStatus.valueOf(status);
+            if (httpStatus == HttpStatus.OK) {
+                return response.getBody().getValues();
+            }
+            throw new PxMWException(httpStatus.value(), status + ":" + response.getBody().getMsg());
+        } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new PxMWException("Exception occured while getting channel values", e);
+        }
     }
 
     /**
