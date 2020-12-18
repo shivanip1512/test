@@ -9,27 +9,27 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="relayDetail">
-
+        
     <input id="device-id" type="hidden" value="${deviceId}">
-
+    
     <dt:pickerIncludes/>
     <cti:includeCss link="/resources/js/lib/dynatree/skin/device.group.css"/>
-
+    
     <%-- Page Actions Button --%>
     <div id="page-actions" class="dn">
-        <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="VIEW">
-            <!-- Actions: Map Network -->
-            <cti:url var="mapNetworkUrl" value="/stars/mapNetwork/home?deviceId=${deviceId}"/>
-            <cm:dropdownOption key=".mapNetwork" href="${mapNetworkUrl}" icon="icon-map"/>
-
-            <!-- Other Collection Actions -->
-            <cti:url var="url" value="/bulk/collectionActions">
-                <cti:param name="collectionType" value="idList"/>
-                <cti:param name="idList.ids" value="${fn:escapeXml(deviceId)}"/>
-            </cti:url>
-            <cm:dropdownOption key=".otherActions.label" href="${url}" icon="icon-cog-go" />
-        </cti:checkRolesAndProperties>
-        <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
+        
+        <!-- Actions: Map Network -->
+        <cti:url var="mapNetworkUrl" value="/stars/mapNetwork/home?deviceId=${deviceId}"/>
+        <cm:dropdownOption key=".mapNetwork" href="${mapNetworkUrl}" icon="icon-map"/>
+        
+        <!-- Other Collection Actions -->
+        <cti:url var="url" value="/bulk/collectionActions">
+            <cti:param name="collectionType" value="idList"/>
+            <cti:param name="idList.ids" value="${fn:escapeXml(deviceId)}"/>
+        </cti:url>
+        <cm:dropdownOption key=".otherActions.label" href="${url}" icon="icon-cog-go" />
+        
+        <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="OWNER">
             <li class="divider"/>
             <cm:dropdownOption id="deleteRelay" icon="icon-cross" key="components.button.delete.label" 
                                data-ok-event="yukon:relay:delete" />
@@ -40,7 +40,7 @@
             </form:form>
         </cti:checkRolesAndProperties>
     </div>
-
+    
     <tags:widgetContainer deviceId="${deviceId}" identify="false">
         <div class="column-12-12 clear">
             <div class="one column">
@@ -49,8 +49,8 @@
                 <tags:widget bean="paoNotesWidget"/>
                 <tags:widget bean="deviceGroupWidget"/>
             </div>
-
             <div class="column two nogutter">
+
                 <cti:msg2 var="warningsTitle" key="yukon.web.widgets.infrastructureWarningsWidget"/>
                 <tags:widget bean="deviceInfrastructureWarningsWidget" title="${warningsTitle}" deviceId="${deviceId}"/>
                 <cti:msg2 var="eventsTitle" key=".relayDetail.relayEvents"/>

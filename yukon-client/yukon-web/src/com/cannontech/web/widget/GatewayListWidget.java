@@ -16,9 +16,12 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.stars.gateway.GatewayControllerHelper;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.google.common.collect.Lists;
@@ -26,6 +29,7 @@ import com.google.common.collect.Multimap;
 
 @Controller
 @RequestMapping("/gatewayListWidget")
+@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
 public class GatewayListWidget extends AdvancedWidgetControllerBase {
 
     @Autowired private RfnGatewayService rfnGatewayService;

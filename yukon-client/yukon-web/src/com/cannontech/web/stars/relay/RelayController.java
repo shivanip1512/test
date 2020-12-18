@@ -41,7 +41,7 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.google.common.collect.Lists;
 
 @Controller
-@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
+@CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.VIEW)
 public class RelayController {
     
     @Autowired private DeviceDao deviceDao;
@@ -112,7 +112,7 @@ public class RelayController {
         return "/relay/relayHome.jsp";
     }
     
-    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     @RequestMapping(value="/relay/{id}", method=RequestMethod.DELETE)
     public String delete(FlashScope flash, @PathVariable int id, ModelMap model) {
         boolean success = rfnRelayService.deleteRelay(id);
