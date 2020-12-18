@@ -31,11 +31,11 @@ import com.google.common.collect.ImmutableSet;
 
 /**
  * This producer uses existing point values to produce new values for different points
- * that are calculated from the existing point values.  Calculation is only done if a
+ * that are calculated from the existing point values. Calculation is only done if a
  * calculator is found that supports calculations based on the existing pao and point type.
  * 
  * This producer uses a concurrent and expiring cache to avoid hitting the database as
- * much as possible since this work is very performance intensive.  The calculator 
+ * much as possible since this work is very performance intensive. The calculator
  * implementations have the responsibility of cleaning out cache values when they detect
  * that they are no longer needed.
  */
@@ -46,15 +46,15 @@ public class CalculatedPointDataProducer {
     @Autowired private AttributeService attributeService;
     @Autowired private ConfigurationSource config;
     @Autowired private List<PointCalculator> calculators;
-    
+
     private static Cache<CacheKey, CacheValue> recentReadings;
     private ImmutableMap<PaoTypePointIdentifier, PointCalculator> calculatorMappings;
-    
+
     private static final Logger log = YukonLogManager.getLogger(CalculatedPointDataProducer.class);
-    
+
     /**
      * The primary method used to pass each {@link CalculationData} on to it's corresponding
-     * {@link PointCalculator}.  Any resulting {@link PointData} messages are to be added to {@code toArchive}
+     * {@link PointCalculator}. Any resulting {@link PointData} messages are to be added to {@code toArchive}
      */
     public void calculate(Collection<? extends CalculationData> calculatorFrom, List<PointData> toArchive) {
         for (CalculationData data : calculatorFrom) {
@@ -67,7 +67,7 @@ public class CalculatedPointDataProducer {
             }
         }
     }
-    
+
     /**
      * Values are dumped into the cache as soon as they are received and just prior to queuing up the
      * appropriate calculator thread.
@@ -80,7 +80,7 @@ public class CalculatedPointDataProducer {
             recentReadings.put(currentKey, value);
         }
     }
-    
+
     @PostConstruct
     public void init() {
         int expireAfter = config.getInteger("RFN_CALC_CACHE_EXPIRATION", 72);
@@ -96,7 +96,23 @@ public class CalculatedPointDataProducer {
                                                                     BuiltInAttribute.KVARH,
                                                                     BuiltInAttribute.USAGE_WATER,
                                                                     BuiltInAttribute.USAGE_GAS,
-                                                                    BuiltInAttribute.KVAH);
+                                                                    BuiltInAttribute.KVAH,
+                                                                    BuiltInAttribute.DELIVERED_KWH_RATE_A,
+                                                                    BuiltInAttribute.DELIVERED_KWH_RATE_B,
+                                                                    BuiltInAttribute.DELIVERED_KWH_RATE_C,
+                                                                    BuiltInAttribute.DELIVERED_KWH_RATE_D,
+                                                                    BuiltInAttribute.RECEIVED_KWH_RATE_A,
+                                                                    BuiltInAttribute.RECEIVED_KWH_RATE_B,
+                                                                    BuiltInAttribute.RECEIVED_KWH_RATE_C,
+                                                                    BuiltInAttribute.RECEIVED_KWH_RATE_D,
+                                                                    BuiltInAttribute.SUM_KWH_RATE_A,
+                                                                    BuiltInAttribute.SUM_KWH_RATE_B,
+                                                                    BuiltInAttribute.SUM_KWH_RATE_C,
+                                                                    BuiltInAttribute.SUM_KWH_RATE_D,
+                                                                    BuiltInAttribute.NET_KWH_RATE_A,
+                                                                    BuiltInAttribute.NET_KWH_RATE_B,
+                                                                    BuiltInAttribute.NET_KWH_RATE_C,
+                                                                    BuiltInAttribute.NET_KWH_RATE_D);
         
         ImmutableMap.Builder<PaoTypePointIdentifier, PointCalculator> b = ImmutableMap.builder();
         for (PaoType type : types) {
@@ -114,10 +130,10 @@ public class CalculatedPointDataProducer {
         }
         calculatorMappings = b.build();
     }
-    
+
     @ManagedAttribute
     public long getCacheSize() {
         return recentReadings.size();
     }
-    
+
 }
