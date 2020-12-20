@@ -98,9 +98,6 @@ Network Manager :
   - field: duprtecolor
     description: Duplicate Route Colors
     details: Contains the count of gateway which has duplicate route colors
-    source: >-
-        SELECT COUNT(*) AS "RouteColorDuplicationCount" FROM Gateway g1, Gateway g2
-        WHERE g1.GwId != g2.GwId AND g1.GwRouteColor=g2.GwRouteColor
     iotType: Both
     frequency : EverySixHours
 
@@ -132,10 +129,6 @@ Network Manager :
   - field: gwsocketcount
     description: Gateway Socket Error Count
     details: Contains the count of Socket error arises in gateway for last 7 days.
-    source: >-
-        SELECT COUNT(*) AS "GatewaySocketErrorCount(Last7Day)" FROM Gw_Log_Entry gwle 
-        WHERE gwle.GatewayTimeStamp > CONVERT(BIGINT,(DATEDIFF(s, '1970-01-01', GETUTCDATE()) - 86400)) * 1000
-        AND (gwle.GwLogCodeId=1301 OR gwle.GwLogCodeId=1302)
     iotType: Both
     frequency : EverySixHours
 
@@ -160,9 +153,6 @@ Network Manager :
   - field: routetablerequests
     description: Route Table Requests
     details: Contains the route table requests for last 24 hours.
-    source: >-
-        SELECT COUNT(*) AS "RouteTableRequests(Last24Hours)" FROM Gw_Node_Log_Entry nle 
-        WHERE nle.GatewayTimeStamp > CONVERT(BIGINT,(DATEDIFF(s, '1970-01-01', GETUTCDATE()) - 86400)) * 1000 AND nle.GwNodeLogCodeId=506
     iotType: Both
     frequency : EverySixHours
 
