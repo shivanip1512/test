@@ -1173,9 +1173,6 @@
 		<col key="yes" def="s38">Shortcut_</col>
 		<col key="yes" def="s72">Component_</col>
 		<row><td>NewShortcut1</td><td>Shortcut Holder</td></row>
-		<row><td>NewShortcut10</td><td>Commander</td></row>
-		<row><td>NewShortcut11</td><td>TDC</td></row>
-		<row><td>NewShortcut12</td><td>Trending</td></row>
 		<row><td>NewShortcut16</td><td>Tomcat</td></row>
 		<row><td>NewShortcut2</td><td>Shortcut Holder</td></row>
 		<row><td>NewShortcut9</td><td>Database Editor</td></row>
@@ -1527,9 +1524,6 @@
 		<col def="S255">ISBuildSourcePath</col>
 		<col def="I2">ISIconIndex</col>
 		<row><td>ARPPRODUCTICON.exe</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\YukonLogin.ico</td><td>0</td></row>
-		<row><td>NewShortcut10_B1E111EE316C4C219712E07FB2F5F627.exe</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\CommanderIcon.ico</td><td>0</td></row>
-		<row><td>NewShortcut11_65FE671901E44013AF5D2059B51753E1.exe</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\tdcIcon.ico</td><td>0</td></row>
-		<row><td>NewShortcut12_3F0AA56CEC2E49DAAB58E5A4C5CCB9C0</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\GraphIcon.ico</td><td>0</td></row>
 		<row><td>NewShortcut16_8779B65EF9F047C7A0909797F114A473.com</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\YukonLogin.ico</td><td>0</td></row>
 		<row><td>NewShortcut1_E507CC381C904EB9A7CCDFC5C6DB7A89.bat</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\YukonLogin.ico</td><td>0</td></row>
 		<row><td>NewShortcut2_44893F0CBFC44164B88D4119B3375CB6.bat</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\YukonLogin.ico</td><td>0</td></row>
@@ -1762,9 +1756,6 @@ UgBlAGwAZQBhAHMAZQAgADEAAQBNAGUAZABpAGEA
 		<col def="S255">ISShortcutName</col>
 		<col def="I4">ISAttributes</col>
 		<row><td>NewShortcut1</td><td>newfolder1</td><td>##ID_STRING88##</td><td/><td>&lt;TARGETDIR&gt;\Server\bin\StartYukon.bat</td><td/><td/><td/><td>NewShortcut1_E507CC381C904EB9A7CCDFC5C6DB7A89.bat</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td>Start Yukon</td><td>18</td></row>
-		<row><td>NewShortcut10</td><td>newfolder2</td><td>##ID_STRING59##</td><td/><td>&lt;TARGETDIR&gt;\Runtime\bin\javaw.exe</td><td>-Xmx256M -Dsun.java2d.noddraw=true -Dyukon.base=%YUKON_BASE% -jar "&lt;TARGETDIR&gt;\client\bin\yc.jar"</td><td/><td/><td>NewShortcut10_B1E111EE316C4C219712E07FB2F5F627.exe</td><td>0</td><td>1</td><td>BIN</td><td/><td/><td/><td/><td/><td>Commander Shortcut</td><td>18</td></row>
-		<row><td>NewShortcut11</td><td>newfolder2</td><td>##ID_STRING60##</td><td/><td>&lt;TARGETDIR&gt;\Runtime\bin\javaw.exe</td><td>-Xmx256M -Dsun.java2d.noddraw=true -Dyukon.base=%YUKON_BASE% -jar "&lt;TARGETDIR&gt;\client\bin\tdc.jar"</td><td/><td/><td>NewShortcut11_65FE671901E44013AF5D2059B51753E1.exe</td><td>0</td><td>1</td><td>BIN</td><td/><td/><td/><td/><td/><td>TDC Shortcut</td><td>18</td></row>
-		<row><td>NewShortcut12</td><td>newfolder2</td><td>##ID_STRING61##</td><td/><td>&lt;TARGETDIR&gt;\Runtime\bin\javaw.exe</td><td>-Xmx256M -Dsun.java2d.noddraw=true -Dyukon.base=%YUKON_BASE% -jar "&lt;TARGETDIR&gt;\client\bin\graph.jar"</td><td/><td/><td>NewShortcut12_3F0AA56CEC2E49DAAB58E5A4C5CCB9C0</td><td>0</td><td>1</td><td>BIN</td><td/><td/><td/><td/><td/><td>Trending Shortcut</td><td>18</td></row>
 		<row><td>NewShortcut16</td><td>DesktopFolder</td><td>##ID_STRING72##</td><td/><td>http://127.0.0.1:8080</td><td/><td/><td/><td>NewShortcut16_8779B65EF9F047C7A0909797F114A473.com</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td>Yukon Login Link</td><td>19</td></row>
 		<row><td>NewShortcut2</td><td>newfolder1</td><td>##ID_STRING89##</td><td/><td>&lt;TARGETDIR&gt;\Server\bin\StopYukon.bat</td><td/><td/><td/><td>NewShortcut2_44893F0CBFC44164B88D4119B3375CB6.bat</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td>Stop Yukon</td><td>18</td></row>
 		<row><td>NewShortcut9</td><td>newfolder2</td><td>##ID_STRING58##</td><td/><td>&lt;TARGETDIR&gt;\Runtime\bin\javaw.exe</td><td>-Xmx256M -Dsun.java2d.noddraw=true -Dyukon.base=%YUKON_BASE% -jar "&lt;TARGETDIR&gt;\client\bin\dbeditor.jar"</td><td/><td/><td>NewShortcut9_201FF432E86F49528A97E812667856DD.exe</td><td>0</td><td>1</td><td>BIN</td><td/><td/><td/><td/><td/><td>DBEditor Shortcut</td><td>18</td></row>
