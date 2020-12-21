@@ -5507,15 +5507,15 @@ JavaScript :
     notes : This library is used to render a chosen drop-down. This is a multiselect dropdown. Eg. DR -> Setup -> FilterBy Load Program -> the dropdown for load program types.
 
   - project : cookie
-    version : 1.4.1
-    project URL : "https://github.com/carhartl/jquery-cookie"
+    version : 2.2.1
+    project URL : "https://github.com/js-cookie/js-cookie/releases/tag/v2.2.1"
     license : MIT
-    license URLs : "https://github.com/carhartl/jquery-cookie/blob/7f88a4e631aba8a8c688fd8999ce6b9bcfd50718/MIT-LICENSE.txt"
+    license URLs : "https://github.com/js-cookie/js-cookie/blob/v2.2.1/LICENSE"
     npm URL : "https://www.npmjs.com/package/js-cookie"
-    md5 : d677b7bbd05eafb0ab6c31a6ff69c46d
-    sha1 : 3a1f8c853cb20eee88ea7e39c23196162049e622
-    jira : YUK-12661
-    updated : 2014-09-24
+    md5 : a3170f36f7733811fda699d3313f805e
+    sha1 : eb70a7076839ecbdebc8f15bfc6079210c48e1fb
+    jira : YUK-22995
+    updated : 2020-12-18
     notes : "This library is used for reading, writing and deleting cookies. No longer maintained, superseded by JS Cookie: https://github.com/js-cookie/js-cookie"
 
   - project : datetimeentry

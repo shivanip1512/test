@@ -14,7 +14,7 @@ public enum JsLibrary {
            "/resources/js/lib/jquery/jquery-3.5.1.js"), // http://www.jquery.com
     
     JQUERY_CHECK_ALL("/resources/js/lib/checkall/jquery.checkall.js"), // https://github.com/mjball/jQuery-CheckAll
-    JQUERY_COOKIE("/resources/js/lib/cookie/jquery.cookie.js"), // https://github.com/carhartl/jquery-cookie
+    JQUERY_COOKIE("/resources/js/lib/cookie/js.cookie-2.2.1.min.js", "/resources/js/lib/cookie/js.cookie.js"), // https://github.com/carhartl/jquery-cookie
     JQUERY_DATE_TIME_ENTRY("/resources/js/lib/datetimeentry/jquery.datetimeentry.min.js",
                            "/resources/js/lib/datetimeentry/jquery.datetimeentry.js"), // http://keith-wood.name/datetimeEntry.html
     JQUERY_FILE_UPLOAD("/resources/js/lib/fileupload/jquery.fileupload.js"), // https://github.com/blueimp/jQuery-File-Upload/tree/master/js

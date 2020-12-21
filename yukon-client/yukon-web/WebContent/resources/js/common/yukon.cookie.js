@@ -1,6 +1,6 @@
 /** jquery.cookie plugin config */
-$.cookie.json = true;
-$.extend($.cookie.defaults, { expires: 365, path: '/' });
+Cookies.json = true;
+$.extend(Cookies.defaults, { expires: 365, path: '/' });
 
 yukon.namespace('yukon.cookie');
 
@@ -27,11 +27,15 @@ yukon.cookie = (function () {
          * @param {string} defaultValue - Returned value if the requested property is not found.
          */
         get: function (scope, persistId, defaultValue) {
-            var c = $.cookie('yukon'), value;
-            if (!c) return defaultValue;
-            value = c[scope + persistId];
-            if (value) {
-                return value;
+            if (Cookies.get('yukon')) {
+                var c = Cookies.getJSON('yukon'), value;
+                if (!c) return defaultValue;
+                value = c[scope + persistId];
+                if (value) {
+                    return value;
+                } else {
+                    return defaultValue;
+                }
             } else {
                 return defaultValue;
             }
@@ -50,10 +54,12 @@ yukon.cookie = (function () {
          * @param {string} value - Value to store.
          */
         set: function (scope, persistId, value) {
-            var c = $.cookie('yukon');
-            if (!c) c = {};
+            var c = {};
+            if (Cookies.get('yukon')) {
+                c = JSON.parse(Cookies.get('yukon'));
+            }
             c[scope + persistId] = value;
-            $.cookie('yukon', c);
+            Cookies.set('yukon', JSON.stringify(c));
         }
         
     };
