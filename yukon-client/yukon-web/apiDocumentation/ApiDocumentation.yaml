@@ -45,6 +45,8 @@ paths:
     $ref: 'api/loadProgramsApi.yaml#/post-operation'
   /dr/loadPrograms/{id}:
     $ref: 'api/loadProgramsApi.yaml#/get-update-delete-operation'
+  /dr/loadPrograms/{id}/copy:
+    $ref: 'api/loadProgramsApi.yaml#/copy-operation'
 
   /dr/constraints:
     $ref: 'api/programConstraintsApi.yaml#/post-operation'
