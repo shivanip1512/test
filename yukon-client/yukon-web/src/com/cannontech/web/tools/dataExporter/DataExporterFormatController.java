@@ -19,11 +19,13 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFormatDao;
@@ -95,15 +97,17 @@ public class DataExporterFormatController {
     @Autowired private AttributeService attributeService;
     @Autowired private AttributeType attributeTypeEditor;
 
-    @RequestMapping(value = "/data-exporter/format/{id}", method = RequestMethod.GET)
-    public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
+    @GetMapping(value = "/data-exporter/format/{id}")
+    public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id,
+            @RequestParam(required = false) boolean isPreview) {
         
-        model.addAttribute("mode", PageEditMode.EDIT);
+        model.addAttribute("mode", isPreview ? PageEditMode.VIEW : PageEditMode.EDIT);
         
         ExportFormat format = archiveValuesExportFormatDao.getByFormatId(id);
         
         model.addAttribute("format", format);
         model.addAttribute("formatName", format.getFormatName());
+        model.addAttribute("isPreview", isPreview);
         
         setupModel(model, userContext, format);
         
@@ -128,20 +132,34 @@ public class DataExporterFormatController {
         return "data-exporter/format/format.jsp";
     }
     
-    @RequestMapping(value = "/data-exporter/format/create", method = RequestMethod.GET)
-    public String create(ModelMap model, YukonUserContext userContext, ArchivedValuesExportFormatType formatType) {
-        
+    @GetMapping(value = "/data-exporter/format/create")
+    public String create(ModelMap model, YukonUserContext userContext,
+            @RequestParam(required = false, name = "formatType", defaultValue = "FIXED_ATTRIBUTE") ArchivedValuesExportFormatType formatType,
+            @RequestParam("useTemplate") boolean useTemplate) {
+
         model.addAttribute("mode", PageEditMode.CREATE);
         
-        ExportFormat format = new ExportFormat();
-        format.setFormatType(formatType);
+        ExportFormat format = null;
+        if (useTemplate) {
+            format = mockExportFormatObject();
+            format.setFormatType(formatType);
+        } else {
+            format = new ExportFormat();
+            format.setFormatType(formatType);
+        }
+
         model.addAttribute("format", format);
-        
+
         setupModel(model, userContext, format);
-        
+
         return "data-exporter/format/format.jsp";
     }
     
+    private ExportFormat mockExportFormatObject() {
+        ExportFormat format = archiveValuesExportFormatDao.getByFormatId(32);
+        return format;
+    }
+
     @RequestMapping(value = "/data-exporter/format", method = RequestMethod.POST)
     public String save(FlashScope flashScope, 
             ModelMap model, 

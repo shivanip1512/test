@@ -17,14 +17,40 @@
     <cti:toJson id="module-config" object="${jsConfig}"/>
 
     <div id="create-format-dialog" title="<cti:msg2 key=".createNewFormat.title"/>" class="dn">
-        <h4 class="db stacked"><i:inline key=".selectFormatType"/></h4>
+        <div class="js-error-message-container"></div>
         <div class="stacked">
-            <div><label><input type="radio" name="newFormatType" checked="checked" value="FIXED_ATTRIBUTE"><i:inline key="${fixedAttribute}"/></label></div>
+            <div>
+                <label>
+                    <input type="radio" name="newFormatType" checked="checked" value="FIXED_ATTRIBUTE" class="js-create-format-option js-do-not-use-template">
+                    <i:inline key="${fixedAttribute}"/>
+                </label>
+            </div>
             <p class="detail" style="margin-left: 30px;"><i:inline key="${fixedAttribute.description}"/></p>
         </div>
         <div class="stacked">
-            <div><label><input type="radio" name="newFormatType" value="DYNAMIC_ATTRIBUTE"><i:inline key="${dynamicAttribute}"/></label></div>
+            <div>
+                <label>
+                    <input type="radio" name="newFormatType" value="DYNAMIC_ATTRIBUTE" class="js-create-format-option js-do-not-use-template">
+                    <i:inline key="${dynamicAttribute}"/>
+                </label>
+            </div>
             <p class="detail" style="margin-left: 30px;"><i:inline key="${dynamicAttribute.description}"/></p>
+        </div>
+        <div class="stacked">
+            <div>
+                <label>
+                    <input type="radio" name="useTemplate" value="true" class="js-create-format-option js-use-template"/>
+                    <i:inline key=".formatType.useTemplate"/>
+                </label>
+                
+            </div>
+            <p class="detail" style="margin-left: 30px;"><i:inline key=".formatType.useTemplate.description"/></p>
+            <div class="dn dib js-avaliable-template-formats" style="margin-left: 30px;">
+                <label><i:inline key=".template"/></label>:
+                <select class="js-template-formats-dropdown"></select>
+                &nbsp;&nbsp;
+                <a class="js-template-preview-link" href="#">Preview</a>
+            </div>
         </div>
     </div>
 
