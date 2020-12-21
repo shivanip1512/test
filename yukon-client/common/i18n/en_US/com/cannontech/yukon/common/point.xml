@@ -683,6 +683,9 @@
     <entry key="yukon.common.attribute.builtInAttribute.NODE_COUNT_EXCEEDED">Node Count Exceeded</entry>
     <entry key="yukon.common.attribute.builtInAttribute.UPS_BATTERY_VOLTAGE_LOW">UPS Battery Voltage Low</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CERTIFICATE_EXPIRATION">Certificate Expiration</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.HIGH_DISK_USAGE">High Disk Usage</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RTC_BATTERY_FAILURE">RTC Battery Failure</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.AC_POWER_FAILURE">AC Power Failure</entry>
     
     <entry key="yukon.common.attribute.builtInAttribute.THERMOSTAT_RELAY_STATE">Thermostat Relay State</entry>
     
