@@ -28,7 +28,7 @@
         <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="VIEW">
             <cti:url var="comprehensiveMapUrl" value="/stars/comprehensiveMap/home"/>
             <cm:dropdownOption key="yukon.web.modules.operator.comprehensiveMap.pageName" href="${comprehensiveMapUrl}" icon="icon-map-pins"/>
-            <cm:dropdownOption key=".download" href="${comprehensiveMapUrl}" icon="icon-download"/>
+            <cm:dropdownOption key=".downloadNetwork" icon="icon-csv" classes="js-download-network-map"/>
         </cti:checkRolesAndProperties>
         <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
             <li class="divider"></li>

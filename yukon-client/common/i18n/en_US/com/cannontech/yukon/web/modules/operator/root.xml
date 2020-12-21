@@ -39,6 +39,7 @@
     <entry key="yukon.web.modules.operator.gateways.list.SERIALNUMBER">Serial Number</entry>
     <entry key="yukon.web.modules.operator.gateways.list.FIRMWAREVERSION">Firmware Version</entry>
     <entry key="yukon.web.modules.operator.gateways.list.LASTCOMMUNICATION">Last Communication</entry>
+    <entry key="yukon.web.modules.operator.gateways.list.downloadNetwork">Download Network Info</entry>
 
     <!-- Manage Firmware -->
     <entry key="yukon.web.modules.operator.gateways.manageFirmware.pageName">Firmware Updates</entry>

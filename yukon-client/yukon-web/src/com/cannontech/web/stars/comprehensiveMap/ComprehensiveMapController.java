@@ -199,14 +199,27 @@ public class ComprehensiveMapController {
         return json;
     }
 
-    
     @GetMapping("download")
     public void download(String groupName, YukonUserContext userContext, HttpServletResponse response) throws IOException {
-        
+        downloadData(groupName, userContext, response);
+    }
+
+    @GetMapping("downloadNetworkInfo")
+    public void downloadNetworkInfo(YukonUserContext userContext, HttpServletResponse response) throws IOException {
+        StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
+        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
+        List<YukonPao> devices = gateways.stream().map(gateway -> gateway.getPaoIdentifier()).collect(Collectors.toList());
+        deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
+        String groupName = tempGroup.getFullName();
+        downloadData(groupName, userContext, response);
+    }
+
+    private void downloadData(String groupName, YukonUserContext userContext, HttpServletResponse response) throws IOException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        //device name, meter number, device type, sensor s/n, lat, long, primary gateway, comm status, mac address, node s/n, link cost, hop count, descendant count, next hop
+        // device name, meter number, device type, sensor s/n, lat, long, primary gateway, comm status, mac address, node s/n,
+        // link cost, hop count, descendant count, next hop
         String[] headerRow = new String[14];
-        
+
         String baseKey = "yukon.web.modules.operator.mapNetwork.";
 
         headerRow[0] = accessor.getMessage(baseKey + "device");
@@ -223,34 +236,35 @@ public class ComprehensiveMapController {
         headerRow[11] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.colorCodeBy.HOP_COUNT");
         headerRow[12] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.colorCodeBy.DESCENDANT_COUNT");
         headerRow[13] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.nextHop");
-        
+
         DeviceGroup group = deviceGroupService.findGroupName(groupName);
         DeviceCollection collection = deviceGroupCollectionHelper.buildDeviceCollection(group);
-        
+
         log.debug("Devices in a group {}", collection.getDeviceCount());
-        
+
         List<DynamicRfnDeviceData> data = rfnDeviceDao.getDynamicRfnDeviceData(collection.getDeviceList().stream()
                 .map(device -> device.getDeviceId()).collect(Collectors.toList()));
         Map<RfnIdentifier, DynamicRfnDeviceData> deviceDataMap = data.stream()
                 .collect(Collectors.toMap(d -> d.getDevice().getRfnIdentifier(), d -> d));
-        
+
         Set<RfnIdentifier> rfnIdentifiers = collection.getDeviceList().stream()
                 .map(device -> rfnDeviceDao.getDeviceForId(device.getDeviceId()).getRfnIdentifier())
                 .collect(Collectors.toSet());
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = new HashMap<>();
         log.debug("Getting data for download for {} devices", rfnIdentifiers.size());
         try {
-            metaData = metadataMultiService.getMetadataForDeviceRfnIdentifiers(rfnIdentifiers, Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, 
-                                                                                         RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA,
-                                                                                         RfnMetadataMulti.NODE_DATA,
-                                                                                         RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA));
+            metaData = metadataMultiService.getMetadataForDeviceRfnIdentifiers(rfnIdentifiers,
+                    Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM,
+                            RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA,
+                            RfnMetadataMulti.NODE_DATA,
+                            RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA));
         } catch (NmCommunicationException e1) {
             log.warn("caught exception in download", e1);
-        } 
-        
+        }
+
         Map<Integer, PaoLocation> locations = paoLocationDao.getLocations(collection.getDeviceList()).stream()
-                .collect(Collectors.toMap(l -> l.getPaoIdentifier().getPaoId(), l->l));
-        
+                .collect(Collectors.toMap(l -> l.getPaoIdentifier().getPaoId(), l -> l));
+
         List<String[]> dataRows = Lists.newArrayList();
         log.debug("Got data from NM for {} devices", metaData.keySet().size());
         for (RfnIdentifier device : metaData.keySet()) {
@@ -259,13 +273,13 @@ public class ComprehensiveMapController {
             LiteYukonPAObject pao = cache.getAllPaosMap().get(rfnDevice.getPaoIdentifier().getPaoId());
             dataRow[0] = pao.getPaoName();
             SimpleMeter meter = cache.getAllMeters().get(rfnDevice.getPaoIdentifier().getPaoId());
-            if(meter != null) {
+            if (meter != null) {
                 dataRow[1] = meter.getMeterNumber();
             }
             dataRow[2] = pao.getPaoType().getPaoTypeName();
             dataRow[3] = device.getSensorSerialNumber();
             PaoLocation location = locations.get(rfnDevice.getPaoIdentifier().getPaoId());
-            if(location != null) {
+            if (location != null) {
                 dataRow[4] = String.valueOf(location.getLatitude());
                 dataRow[5] = String.valueOf(location.getLongitude());
             }
@@ -273,13 +287,14 @@ public class ComprehensiveMapController {
             if (metadata != null) {
                 String statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status.UNKNOWN");
                 NodeComm comm = nmNetworkService.getNodeCommStatusFromMultiQueryResult(rfnDevice, metadata);
-                if(comm != null && comm.getNodeCommStatus() != null) {
-                    statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + comm.getNodeCommStatus());
+                if (comm != null && comm.getNodeCommStatus() != null) {
+                    statusString = accessor
+                            .getMessage("yukon.web.modules.operator.mapNetwork.status." + comm.getNodeCommStatus());
                 }
                 dataRow[7] = statusString;
-        
+
                 DynamicRfnDeviceData deviceData = deviceDataMap.get(device);
-                if(deviceData != null) {
+                if (deviceData != null) {
                     dataRow[6] = deviceData.getGateway().getName();
                     dataRow[12] = String.valueOf(deviceData.getDescendantCount());
                 }
@@ -289,7 +304,8 @@ public class ComprehensiveMapController {
                     dataRow[9] = node.getNodeSerialNumber();
                 }
                 if (metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA)) {
-                    NeighborData neighbor = (NeighborData) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA);
+                    NeighborData neighbor = (NeighborData) metadata.getMetadatas()
+                            .get(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA);
                     LinkQuality linkQuality = LinkQuality.getLinkQuality(neighbor);
                     String linkQualityFormatted = accessor.getMessage(linkQuality.getFormatKey());
                     dataRow[10] = linkQualityFormatted;
@@ -308,14 +324,13 @@ public class ComprehensiveMapController {
             }
             dataRows.add(dataRow);
         }
-        
+
         log.debug("Generated {} rows for CSV file", dataRows.size());
 
         String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
         WebFileUtils.writeToCSV(response, headerRow, dataRows, "ComprehensiveMapDownload_" + now + ".csv");
-
     }
-    
+
     @GetMapping("allGateways")
     public @ResponseBody FeatureCollection allGateways() {
         Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
