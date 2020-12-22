@@ -5516,7 +5516,7 @@ JavaScript :
     sha1 : eb70a7076839ecbdebc8f15bfc6079210c48e1fb
     jira : YUK-22995
     updated : 2020-12-18
-    notes : "This library is used for reading, writing and deleting cookies. No longer maintained, superseded by JS Cookie: https://github.com/js-cookie/js-cookie"
+    notes : "This library is used for reading, writing and deleting cookies. This is available at https://github.com/js-cookie/js-cookie"
 
   - project : datetimeentry
     version : 1.1.1
