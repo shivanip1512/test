@@ -409,13 +409,9 @@ begin
         shortcutDir = FOLDER_PROGRAMS ^ "\\Yukon Clients\\Alarm Monitor.lnk";
         DeleteFile (shortcutDir);
     endif;
-    
+
     //Delete Trending, TDC and Comander shortcuts when upgrading to "9.0.0 ".
-    if(IsInstalledVersionLesser("9.0.0")) then
-        DeleteFile (FOLDER_PROGRAMS ^ "\\Yukon Clients\\Comander.lnk");
-        DeleteFile (FOLDER_PROGRAMS ^ "\\Yukon Clients\\Trending.lnk");
-        DeleteFile (FOLDER_PROGRAMS ^ "\\Yukon Clients\\TDC.lnk");
-    endif;
+    abc();
 
     //Delete Static folder in case of upgrade when installed version < "7.2.0".
     if(IsInstalledVersionLesser("7.2.0")) then
