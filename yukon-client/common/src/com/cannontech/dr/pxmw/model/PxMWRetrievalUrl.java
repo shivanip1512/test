@@ -50,7 +50,13 @@ public enum PxMWRetrievalUrl {
             // 400: Resend, or 500: Terminated. The device determines the appropriate response code.The last BAD_REQUEST and
             // INTERNAL_SERVER_ERROR returned in response body
             // For the simulator we are not returning 400 as BAD_REQUEST but as a 200 with 400 in the response body
-            ImmutableMap.of("Device Guid", "c2c6460b-3a2a-48c5-af03-4326d6598284", "List of Channel Tags", "1123,1124"));
+            ImmutableMap.of("Device Guid", "c2c6460b-3a2a-48c5-af03-4326d6598284", "List of Channel Tags", "1123,1124")),
+    CLOUD_ENABLE(PxMWVersion.V1, "/api/v1/devices/cloudenable",
+            // used by simulator
+            "http://wordpress-prod.tcc.etn.com/wordpress/wp-content/docs/RestApi/IoT.html#device-device-put-1",
+            //200, 404
+            List.of(HttpStatus.OK, HttpStatus.NOT_FOUND),
+            ImmutableMap.of("Device Guid", "ba55b347-cbc9-4a75-81bb-48058b0aa887", "Enable(true)/Disable(false)", "true"));
 
     private PxMWVersion version;
     private String suffix;

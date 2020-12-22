@@ -43,7 +43,7 @@ public class PxMWDataV1 extends PxMWDataGenerator {
         return new PxMWSimulatorResponse(new PxMWTokenV1(generatedString), status);
     }
 
-    public PxMWSimulatorResponse deviceprofileV1(String id) {
+    public PxMWSimulatorResponse deviceProfileV1(String id) {
         PxMWChannelV1 channel = new PxMWChannelV1("12343",
                 "sRelayStatus");
         List<PxMWChannelV1> channelList = new ArrayList<PxMWChannelV1>();
@@ -113,6 +113,18 @@ public class PxMWDataV1 extends PxMWDataGenerator {
         }).collect(Collectors.toList());
 
         return new PxMWSimulatorResponse(new PxMWDeviceTimeseriesLatestV1("id", dataList), status);
+    }
+    
+    public PxMWSimulatorResponse cloudEnable(String id, boolean enable) {
+        if (status == HttpStatus.NOT_FOUND.value()) {
+            PxMWErrorsV1 errors = new PxMWErrorsV1(List.of(new PxMWErrorV1(
+                    "Device is not registered with System, please check UUID or register your device",
+                    "Device which is not registered with system or device registered under a deleted site, cannot be enabled or disabled on the IoTHub")));
+            return new PxMWSimulatorResponse(errors, status);
+        }
+        
+        return enable ? new PxMWSimulatorResponse("Device " + id + " is enabled successfully.",
+                status) : new PxMWSimulatorResponse("Device " + id + " is disabled successfully.", status);
     }
     
     public PxMWSimulatorResponse getChannelValuesV1(String id, List<String> tags) {

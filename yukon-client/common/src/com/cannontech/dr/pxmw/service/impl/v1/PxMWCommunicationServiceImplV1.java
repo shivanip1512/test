@@ -148,6 +148,22 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
     }
     
     @Override
+    public void cloudEnable(String deviceGuid, boolean enable)
+            throws PxMWCommunicationExceptionV1, PxMWException {
+        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+        queryParams.add("id", deviceGuid);
+        queryParams.add("state", String.valueOf(enable));
+
+        URI uri = getUri(PxMWRetrievalUrl.CLOUD_ENABLE);
+        uri = addQueryParams(queryParams, uri);
+
+        log.debug("Cloud enable. Device Guid: {} Enable{} URL: {}", deviceGuid, enable, uri);
+        HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
+        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity, String.class);
+        log.info("Cloud enable. Device Guid: {} Enable{} Result: {}", deviceGuid, response.getBody());
+    }
+    
+    @Override
     public List<PxMWChannelValueV1> getChannelValues(String deviceGuid, List<String> tags)
             throws PxMWCommunicationExceptionV1, PxMWException {
         URI uri = getUri(Map.of("id", deviceGuid), PxMWRetrievalUrl.DEVICE_GET_CHANNEL_VALUES_V1);
@@ -178,6 +194,16 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
     private URI getUri(Map<String, String> params, PxMWRetrievalUrl url) {
         URI uri = UriComponentsBuilder.fromUriString(url.getUrl(settingDao, log, restTemplate))
                 .buildAndExpand(params)
+                .toUri();
+        return uri;
+    }
+    
+    /**
+     * Creates URI
+     */
+    private URI getUri(PxMWRetrievalUrl url) {
+        URI uri = UriComponentsBuilder.fromUriString(url.getUrl(settingDao, log, restTemplate))
+                .build()
                 .toUri();
         return uri;
     }
