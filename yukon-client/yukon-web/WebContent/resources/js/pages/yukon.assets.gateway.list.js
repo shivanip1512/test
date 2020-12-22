@@ -68,13 +68,6 @@ yukon.assets.gateway.list = (function () {
                     capacity.removeClass("badge-success badge-warning badge-error");
                     capacity.addClass(color);
                     row.find('.js-gw-rv-text').text(data.releaseVersion);
-                    if (data.hasUpdateVersion) { 
-                        row.find('.js-gateway-update-available').removeClass('dn');
-                    } else {
-                        if (!row.find('.js-gateway-update-available').hasClass('dn')) {
-                            row.find('.js-gateway-update-available').addClass('dn');
-                        }
-                    }
                     row.find('.js-gw-last-comm').attr('title', timestamp).text(data.lastCommText)
                        .toggleClass('green', data.lastComm == 'SUCCESSFUL')
                        .toggleClass('red', data.lastComm == 'FAILED')

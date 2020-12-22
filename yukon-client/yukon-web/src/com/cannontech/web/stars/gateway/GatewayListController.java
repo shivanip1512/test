@@ -79,6 +79,7 @@ public class GatewayListController {
         return "gateways/gatewayTable.jsp";
     }
 
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
     @GetMapping("/gateways/firmwareDetails")
     public String firmwareDetails(ModelMap model, YukonUserContext userContext,
             @DefaultSort(dir = Direction.desc, sort = "TIMESTAMP") SortingParameters sorting) {
@@ -99,6 +100,7 @@ public class GatewayListController {
         return "gateways/firmwareUpdates.jsp";
     }
 
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
     @GetMapping("/gateways/certificateUpdates")
     public String certificateUpdates(ModelMap model, YukonUserContext userContext,
             @DefaultSort(dir = Direction.desc, sort = "TIMESTAMP") SortingParameters sorting) {

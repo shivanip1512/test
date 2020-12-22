@@ -18,5 +18,6 @@
         <pointInfo name="Ready Nodes" init="true" attributes="READY_NODES"/>
         <pointInfo name="Security Alarm" attributes="SECURITY_ALARM"/>
         <pointInfo name="Time Sync Failed" attributes="TIME_SYNC_FAILED"/>
+        <pointInfo name="High Disk Usage" attributes="HIGH_DISK_USAGE"/>
     </pointInfos>
 </pao>
