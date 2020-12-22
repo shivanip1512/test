@@ -410,7 +410,7 @@ begin
         DeleteFile (shortcutDir);
     endif;
     
-    //Delete Trending, TDC and Comander shortcuts when upgrading to "9.0.0".
+    //Delete Trending, TDC and Comander shortcuts when upgrading to "9.0.0 ".
     if(IsInstalledVersionLesser("9.0.0")) then
         DeleteFile (FOLDER_PROGRAMS ^ "\\Yukon Clients\\Comander.lnk");
         DeleteFile (FOLDER_PROGRAMS ^ "\\Yukon Clients\\Trending.lnk");
