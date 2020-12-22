@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import org.geojson.FeatureCollection;
@@ -68,6 +69,7 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.tools.mapping.model.NetworkMap;
@@ -107,6 +109,7 @@ public class ComprehensiveMapController {
     @Autowired private IDatabaseCache cache;
     @Autowired private PaoLocationService paoLocationService;
     @Autowired private RfnDeviceCreationService rfnDeviceCreationService;
+    @Autowired private ServerDatabaseCache dbCache;
     private Instant networkTreeUpdateTime = null;
 
     private static final Logger log = YukonLogManager.getLogger(ComprehensiveMapController.class);
@@ -209,6 +212,20 @@ public class ComprehensiveMapController {
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
         List<YukonPao> devices = gateways.stream().map(gateway -> gateway.getPaoIdentifier()).collect(Collectors.toList());
+        Set<RfnIdentifier> gatewayIdsToIdentifiers = gateways.stream()
+                .map(gateway -> gateway.getRfnIdentifier())
+                .collect(Collectors.toSet());
+        if (!CollectionUtils.isEmpty(gatewayIdsToIdentifiers)) {
+            Set<Integer> paoIds = rfnDeviceDao.getDeviceIdsForRfnIdentifiers(gatewayIdsToIdentifiers);
+            if (!CollectionUtils.isEmpty(paoIds)) {
+                Map<Integer, PaoLocation> locations = Maps.uniqueIndex(paoLocationDao.getLocations(paoIds),
+                        l -> l.getPaoIdentifier().getPaoId());
+                devices.addAll(paoIds.stream()
+                        .filter(paoId -> !locations.containsKey(paoId))
+                        .map(paoId -> new SimpleDevice(dbCache.getAllPaosMap().get(paoId).getPaoIdentifier()))
+                        .collect(Collectors.toList()));
+            }
+        }
         deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
         String groupName = tempGroup.getFullName();
         downloadData(groupName, userContext, response);
