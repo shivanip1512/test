@@ -1144,15 +1144,16 @@ begin
     sCMD = "/c " + "icacls " + sDir + " /grant LocalService:(OI)(CI)F /T";
     LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_NOWAIT);
 end;
+
 //-----------------------------------------------------------------------
 // Helper function to delete unused shortcuts
 //-----------------------------------------------------------------------
-export prototype abc();
-function abc()
+export prototype removeShotcut();
+function removeShotcut()
 number nResult;
 string shortcutDir;
 begin
-    shortcutDir = FOLDER_PROGRAMS ^ "\\Yukon Clients\\Comander.lnk";
+    shortcutDir = FOLDER_PROGRAMS ^ "\\Yukon Clients\\Commander.lnk";
     nResult = Is (FILE_EXISTS, shortcutDir);
     if (nResult = TRUE) then
         DeleteFile (shortcutDir);
@@ -1162,7 +1163,7 @@ begin
     if (nResult = TRUE) then
         DeleteFile (shortcutDir);
     endif;
-    shortcutDir = FOLDER_PROGRAMS ^ "\\Yukon Clients\\TDC.lnk";
+    shortcutDir = FOLDER_PROGRAMS ^ "\\Yukon Clients\\Tabular Data Console.lnk";
     nResult = Is (FILE_EXISTS, shortcutDir);
     if (nResult = TRUE) then
         DeleteFile (shortcutDir);

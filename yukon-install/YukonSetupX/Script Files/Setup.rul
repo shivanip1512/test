@@ -410,8 +410,8 @@ begin
         DeleteFile (shortcutDir);
     endif;
 
-    //Delete Trending, TDC and Comander shortcuts when upgrading to "9.0.0 ".
-    abc();
+    //Delete Trending, TDC and Commander shortcuts if they are exist.
+    removeShotcut();
 
     //Delete Static folder in case of upgrade when installed version < "7.2.0".
     if(IsInstalledVersionLesser("7.2.0")) then
