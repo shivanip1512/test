@@ -148,9 +148,13 @@ yukon.tools.dataExporter = (function () {
                 var buttons = [{text: _config.text.cancel, click: function() { $(this).dialog('close'); }},
                                {text: _config.text.create, 
                                     click: function() {
-                                        debugger;
-                                        var selectedFormat = $('input[name=newFormatType]:checked').exists() ? $('input[name=newFormatType]:checked').val() : ''; 
-                                        window.location.href = 'format/create?formatType=' + selectedFormat + '&useTemplate=' + $('.js-use-template').is(':checked');
+                                        var useTemplate = $('.js-use-template').is(':checked'),
+                                            templateId = -1,
+                                            selectedFormat = $('input[name=newFormatType]:checked').exists() ? $('input[name=newFormatType]:checked').val() : '';
+                                        if (useTemplate) {
+                                            templateId = $(".js-avaliable-template-formats option:selected").val();
+                                        }
+                                        window.location.href = 'format/create?formatType=' + selectedFormat + '&useTemplate=' + useTemplate + '&templateId=' + templateId;
                                     },
                                     'class': 'primary action'}
                                ];
@@ -224,8 +228,8 @@ yukon.tools.dataExporter = (function () {
             });
             
             $(document).on("click", ".js-template-preview-link", function (event) {
-                event.preventDefault();
-                window.open(yukon.url("/tools/data-exporter/format/" + $(".js-avaliable-template-formats option:selected").val() + "?isPreview=true"));
+                event.preventDefault();	
+                window.open(yukon.url("/tools/data-exporter/format/renderTemplatePreview/" + $(".js-avaliable-template-formats option:selected").val()));
             });
 
             _initialized = true;

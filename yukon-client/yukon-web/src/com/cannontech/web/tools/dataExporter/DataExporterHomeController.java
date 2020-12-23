@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
@@ -162,13 +163,6 @@ public class DataExporterHomeController {
         
         return "data-exporter/home.jsp";
     }
-    
-    //TODO: to be replaced with actual service layer call
-    private List<ExportFormat> mockAvailableFormatTemplate() throws Exception {
-        List<ExportFormat> allFormats = archiveValuesExportFormatDao.getAllFormats();
-//        throw new Exception();
-        return allFormats;
-    }
 
     @RequestMapping("/data-exporter/scheduledJobsTable")
     public String scheduledJobsTable(ModelMap model) {
@@ -274,7 +268,8 @@ public class DataExporterHomeController {
     public @ResponseBody Map<String, Object> getAvaliableFormatTemplates(YukonUserContext userContext) {
         Map<String, Object> json = Maps.newHashMap();
         try {
-            List<ExportFormat> formatTemplates = mockAvailableFormatTemplate();
+            //TODO: to be replaced with actual service layer call
+            List<ExportFormat> formatTemplates = mockAvailableFormatTemplates();
             json.put("formatTemplates", formatTemplates);
         } catch (Exception exception) {
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
@@ -294,6 +289,16 @@ public class DataExporterHomeController {
                 return new ExportFormat();
             }
         }
+    }
+    
+    //TODO: to be replaced with actual service layer call
+    private List<ExportFormat> mockAvailableFormatTemplates() throws Exception {
+        List<ExportFormat> templates = Lists.newArrayList();
+        ExportFormat format = new ExportFormat();
+        format.setFormatId(1);
+        format.setFormatName("CEMP");
+        templates.add(format);
+        return templates;
     }
     
     @InitBinder

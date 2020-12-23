@@ -98,21 +98,34 @@ public class DataExporterFormatController {
     @Autowired private AttributeType attributeTypeEditor;
 
     @GetMapping(value = "/data-exporter/format/{id}")
-    public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id,
-            @RequestParam(required = false) boolean isPreview) {
+    public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
         
-        model.addAttribute("mode", isPreview ? PageEditMode.VIEW : PageEditMode.EDIT);
+        model.addAttribute("mode", PageEditMode.EDIT);
         
         ExportFormat format = archiveValuesExportFormatDao.getByFormatId(id);
         
         model.addAttribute("format", format);
         model.addAttribute("formatName", format.getFormatName());
-        model.addAttribute("isPreview", isPreview);
         
         setupModel(model, userContext, format);
         
         return "data-exporter/format/format.jsp";
     }
+    
+    @GetMapping(value = "/data-exporter/format/renderTemplatePreview/{id}")
+    public String renderTemplatePreview(ModelMap model, YukonUserContext userContext, FlashScope flashScope, @PathVariable int id) {
+        model.addAttribute("mode", PageEditMode.VIEW);
+        ExportFormat exportFormat = null;
+        try {
+            exportFormat = mockExportFormatTemplateObject();
+        } catch (Exception e) {
+            exportFormat = setExportFormatForErrorScenario(flashScope, e);
+        }
+        model.addAttribute("showAttributeSection", exportFormat.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
+        model.addAttribute("format", exportFormat);
+        return "data-exporter/format/format.jsp";
+    }
+    
     
     @RequestMapping(value = "/data-exporter/format/{id}/copy", method = RequestMethod.GET)
     public String copy(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
@@ -133,30 +146,66 @@ public class DataExporterFormatController {
     }
     
     @GetMapping(value = "/data-exporter/format/create")
-    public String create(ModelMap model, YukonUserContext userContext,
+    public String create(ModelMap model, YukonUserContext userContext, FlashScope flashScope,
             @RequestParam(required = false, name = "formatType", defaultValue = "FIXED_ATTRIBUTE") ArchivedValuesExportFormatType formatType,
-            @RequestParam("useTemplate") boolean useTemplate) {
+            @RequestParam("useTemplate") boolean useTemplate, @RequestParam("templateId") int templateId) {
 
         model.addAttribute("mode", PageEditMode.CREATE);
         
         ExportFormat format = null;
         if (useTemplate) {
-            format = mockExportFormatObject();
-            format.setFormatType(formatType);
+            try {
+                //TODO: Remove this log statement and replace mockExportFormatTemplateObject() with service layer call.
+                log.info("Template Id : " + templateId);
+                format = mockExportFormatTemplateObject();
+            } catch (Exception e) {
+                format = setExportFormatForErrorScenario(flashScope, e);
+                model.addAttribute("showAttributeSection", format.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
+            }
         } else {
             format = new ExportFormat();
             format.setFormatType(formatType);
         }
-
         model.addAttribute("format", format);
-
         setupModel(model, userContext, format);
-
         return "data-exporter/format/format.jsp";
     }
     
-    private ExportFormat mockExportFormatObject() {
-        ExportFormat format = archiveValuesExportFormatDao.getByFormatId(32);
+    private ExportFormat setExportFormatForErrorScenario(FlashScope flashScope, Exception exception) {
+        log.error(exception);
+        ExportFormat format = new ExportFormat();
+        format.setFormatType(ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
+        format.setDelimiter(null);
+        format.setDateTimeZoneFormat(null);
+        flashScope.setError(new YukonMessageSourceResolvable(BASE_KEY + "parseTemplate.error"));
+        return format;
+    }
+    
+    private ExportFormat mockExportFormatTemplateObject() throws Exception {
+        ExportFormat format = new ExportFormat();
+        format.setFormatName("Template Formate");
+        format.setHeader("Template Header");
+        format.setFooter("Template Footer");
+        format.setFormatType(ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
+        ExportAttribute attribute = new ExportAttribute();
+        attribute.setAttribute(BuiltInAttribute.BLINK_COUNT);
+        attribute.setDataSelection(DataSelection.MAX);
+        format.getAttributes().add(attribute);
+        ExportField exportField = new ExportField();
+        exportField.setAttributeField(AttributeField.POINT_STATE);
+        Field field = new Field();
+        field.setAttribute(attribute);
+        field.setType(FieldType.DEVICE_TYPE);
+        exportField.setField(field);
+        exportField.setMissingAttribute(MissingAttribute.LEAVE_BLANK);
+        exportField.setMissingAttributeValue("abab");
+        exportField.setPadChar(" ");
+        exportField.setPadSide(PadSide.LEFT);
+        exportField.setPattern("some pattern");
+        exportField.setReadingPattern(ReadingPattern.FIVE_ZERO);
+        exportField.setRoundingMode(YukonRoundingMode.CEILING);
+        exportField.setTimestampPattern(TimestampPattern.DAY_MONTH_YEAR);
+        format.getFields().add(exportField);
         return format;
     }
 
@@ -569,5 +618,4 @@ public class DataExporterFormatController {
             }
         });
     }
-
 }

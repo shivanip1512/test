@@ -81,7 +81,9 @@
                         </select>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
-                        <cti:msg2 key="${format.delimiterType}"/>
+                        <c:if test="${not empty format.delimiter}">
+                            <cti:msg2 key="${format.delimiterType}"/>
+                        </c:if>
                     </cti:displayForPageEditModes>
                     <tags:input id="delimiter" path="delimiter" size="2" maxlength="1"/>
                 </tags:nameValue2>
@@ -101,12 +103,16 @@
                         </form:select>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
-                        <cti:msg2 key="${format.dateTimeZoneFormat}"/>
+                        <c:if test="${not empty format}">
+                            <cti:msg2 key="${format.dateTimeZoneFormat}"/>
+                        </c:if>
                     </cti:displayForPageEditModes>
                 </tags:nameValue2>
                 <tags:nameValue2 excludeColon="true">
-                    <tags:checkbox descriptionNameKey=".excludeAbnormal" path="excludeAbnormal"/>
-                    <tags:helpInfoPopup nameKey=".excludeAbnormal.help"/>
+                    <c:if test="${not empty format.dateTimeZoneFormat}">
+                        <tags:checkbox descriptionNameKey=".excludeAbnormal" path="excludeAbnormal"/>
+                        <tags:helpInfoPopup nameKey=".excludeAbnormal.help"/>
+                    </c:if>
                 </tags:nameValue2>
                 
             </tags:nameValueContainer2>
@@ -228,11 +234,11 @@
                     </c:forEach>
                 </tbody>
             </table>
-            <c:if test="${not isPreview}">
+            <cti:displayForPageEditModes modes="CREATE,EDIT">
                 <div class="action-area">
                     <cti:button id="b-add-field" nameKey="add" icon="icon-add"/>
                 </div>
-            </c:if>
+            </cti:displayForPageEditModes>
         </tags:sectionContainer2>
         
         <h3><i:inline key=".preview.title"/></h3>
