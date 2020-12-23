@@ -49,7 +49,7 @@
                 <label><i:inline key=".template"/></label>:
                 <select class="js-template-formats-dropdown"></select>
                 &nbsp;&nbsp;
-                <a class="js-template-preview-link" href="#"><i:inline key=".preview"/></a>
+                <a class="js-template-preview-link" href="#"><i:inline key=".preview.title"/></a>
             </div>
         </div>
     </div>

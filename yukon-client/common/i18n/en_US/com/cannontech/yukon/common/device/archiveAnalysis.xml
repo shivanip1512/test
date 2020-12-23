@@ -170,16 +170,12 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.EDIT.contextualPageName">Edit</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.CREATE.pageName">Create Format</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.CREATE.contextualPageName">Create</entry>
-        <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.VIEW.pageName">Format Template</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.VIEW.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.VIEW.contextualPageName">Template Preview</entry>
 
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatType">Format Type</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.existingFormat">Format</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.noDevices.tooltip">Select some devices</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.selectFormatType">Select Format Type</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.createNewFormat.title">Create New Format</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.template">Template</entry>
 
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.createdFormat">Created the format {0}</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.updatedFormat">Updated the format {0}</entry>
@@ -312,8 +308,6 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatType.DYNAMIC_ATTRIBUTE">Dynamic Attribute</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatType.FIXED_ATTRIBUTE.description">Results will contain at most one row per device. Data points (attributes) defined as columns within the format. Commonly used for exporting most recent reading for one or more devices.</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatType.DYNAMIC_ATTRIBUTE.description">Results may contain multiple rows per device and attribute. Data points (attributes) are selected at run time. Commonly used for exporting multiple readings over a given date range for one or more devices.</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatType.useTemplate">Use Template</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatType.useTemplate.description">Create a format from a pre-defined template.</entry>
 
     <!-- archivedValueExporter validation -->
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatError.formatNameRequired">The name of format cannot be blank.</entry>
