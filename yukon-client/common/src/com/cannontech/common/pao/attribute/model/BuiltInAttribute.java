@@ -860,6 +860,11 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     private static void buildRfnEventAttributeSets() {
 
         nonIntervalAttributes = ImmutableSet.of(
+                AVERAGE_POWER_FACTOR_FROZEN,
+                AVERAGE_POWER_FACTOR_FROZEN_RATE_A,
+                AVERAGE_POWER_FACTOR_FROZEN_RATE_B,
+                AVERAGE_POWER_FACTOR_FROZEN_RATE_C,
+                AVERAGE_POWER_FACTOR_FROZEN_RATE_D,
                 MAXIMUM_VOLTAGE,
                 MAXIMUM_VOLTAGE_DAILY,
                 MINIMUM_VOLTAGE,
