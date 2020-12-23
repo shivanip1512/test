@@ -210,25 +210,51 @@ public class ComprehensiveMapController {
     @GetMapping("downloadNetworkInfo")
     public void downloadNetworkInfo(YukonUserContext userContext, HttpServletResponse response) throws IOException {
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
+        String groupName = tempGroup.getFullName();
+        NetworkMap map = new NetworkMap();
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
         List<YukonPao> devices = gateways.stream().map(gateway -> gateway.getPaoIdentifier()).collect(Collectors.toList());
-        Set<RfnIdentifier> gatewayIdsToIdentifiers = gateways.stream()
-                .map(gateway -> gateway.getRfnIdentifier())
-                .collect(Collectors.toSet());
-        if (!CollectionUtils.isEmpty(gatewayIdsToIdentifiers)) {
-            Set<Integer> paoIds = rfnDeviceDao.getDeviceIdsForRfnIdentifiers(gatewayIdsToIdentifiers);
+        Map<Integer, RfnIdentifier> gatewayIdsToIdentifiers = gateways.stream()
+                .collect(Collectors.toMap(g -> g.getId(), g -> g.getRfnIdentifier()));
+        Set<RfnIdentifier> gatewaysToAddToMap = new HashSet<>(gatewayIdsToIdentifiers.values());
+        Map<Integer, List<DynamicRfnDeviceData>> data = rfnDeviceDao
+                .getDynamicRfnDeviceDataByGateways(gatewayIdsToIdentifiers.keySet());
+        gatewaysToAddToMap.removeAll(data.keySet()
+                .stream()
+                .map(id -> gatewayIdsToIdentifiers.get(id))
+                .collect(Collectors.toList()));
+        addDevicesToMap(map, data);
+        addDevicesWithoutLocationToMap(map, gatewaysToAddToMap);
+        devices.addAll(map.getDevicesWithoutLocation());
+        log.debug("Devices in map {}", map.getTotalDevices());
+        log.debug("Devices without location {}", map.getDevicesWithoutLocation().size());
+        deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
+        downloadData(groupName, userContext, response);
+    }
+
+    private void addDevicesToMap(NetworkMap map, Map<Integer, List<DynamicRfnDeviceData>> data) {
+        for (Integer gatewayId : data.keySet()) {
+            RfnDevice gateway = data.get(gatewayId).iterator().next().getGateway();
+            Set<RfnIdentifier> devices = data.get(gatewayId).stream()
+                    .map(d -> d.getDevice().getRfnIdentifier())
+                    .collect(Collectors.toSet());
+            devices.add(gateway.getRfnIdentifier());
+            addDevicesWithoutLocationToMap(map, devices);
+        }
+    }
+
+    private void addDevicesWithoutLocationToMap(NetworkMap map, Set<RfnIdentifier> devices) {
+        if (!CollectionUtils.isEmpty(devices)) {
+            Set<Integer> paoIds = rfnDeviceDao.getDeviceIdsForRfnIdentifiers(devices);
             if (!CollectionUtils.isEmpty(paoIds)) {
                 Map<Integer, PaoLocation> locations = Maps.uniqueIndex(paoLocationDao.getLocations(paoIds),
                         l -> l.getPaoIdentifier().getPaoId());
-                devices.addAll(paoIds.stream()
+                map.getDevicesWithoutLocation().addAll(paoIds.stream()
                         .filter(paoId -> !locations.containsKey(paoId))
                         .map(paoId -> new SimpleDevice(dbCache.getAllPaosMap().get(paoId).getPaoIdentifier()))
                         .collect(Collectors.toList()));
             }
         }
-        deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
-        String groupName = tempGroup.getFullName();
-        downloadData(groupName, userContext, response);
     }
 
     private void downloadData(String groupName, YukonUserContext userContext, HttpServletResponse response) throws IOException {
