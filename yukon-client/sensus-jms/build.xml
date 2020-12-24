@@ -91,7 +91,7 @@
 	      <fileset file="${yukon.lib}/spring-core-5.3.2.jar"/>
 	      <fileset file="${yukon.lib}/spring-expression-5.3.2.jar"/>
 	      <fileset file="${yukon.lib}/spring-instrument-5.3.2.jar"/>
-	      <fileset file="${yukon.lib}/spring-spring-jdbc-5.3.2.jar"/>
+	      <fileset file="${yukon.lib}/spring-jdbc-5.3.2.jar"/>
 	      <fileset file="${yukon.lib}/spring-jms-5.3.2.jar"/>
 	      <fileset file="${yukon.lib}/spring-messaging-5.3.2.jar"/>
 	      <fileset file="${yukon.lib}/spring-orm-5.3.2.jar"/>
