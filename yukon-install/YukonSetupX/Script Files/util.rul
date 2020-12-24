@@ -1148,8 +1148,8 @@ end;
 //-----------------------------------------------------------------------
 // Helper function to delete unused shortcuts
 //-----------------------------------------------------------------------
-export prototype removeShotcut();
-function removeShotcut()
+export prototype removeShortcut();
+function removeShortcut()
 number nResult;
 string shortcutDir;
 begin
