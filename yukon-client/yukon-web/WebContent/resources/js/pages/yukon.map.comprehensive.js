@@ -230,7 +230,7 @@ yukon.map.comprehensive = (function () {
             
             if (_initialized) return;
             
-            $(".js-selected-gateways").chosen({width: "350px"});
+            $(".js-selected-gateways").chosen({width: "350px", max_selected_options: 5});
             $(".js-selected-gateways").bind("chosen:maxselected", function () {
                 var gatewayError = $('#tooManyGatewaysError').val();
                 yukon.ui.alertError(gatewayError);
@@ -283,7 +283,7 @@ yukon.map.comprehensive = (function () {
             });
             
             $(document).on('dialogopen', '#js-pao-notes-popup', function() {
-            	$('#device-info').hide();
+                $('#device-info').hide();
             });
             
             /** Change mouse cursor when over marker.  There HAS to be a css way to do this! */

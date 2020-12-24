@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import org.geojson.FeatureCollection;
@@ -69,7 +68,6 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.tools.mapping.model.NetworkMap;
@@ -109,7 +107,6 @@ public class ComprehensiveMapController {
     @Autowired private IDatabaseCache cache;
     @Autowired private PaoLocationService paoLocationService;
     @Autowired private RfnDeviceCreationService rfnDeviceCreationService;
-    @Autowired private ServerDatabaseCache dbCache;
     private Instant networkTreeUpdateTime = null;
 
     private static final Logger log = YukonLogManager.getLogger(ComprehensiveMapController.class);
@@ -140,30 +137,22 @@ public class ComprehensiveMapController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
         NetworkMap map = null;
-        //empty filters mean all
-        if(filter.getLinkQuality().isEmpty()) {
+        // empty filters mean all
+        if (filter.getLinkQuality().isEmpty()) {
             filter.setLinkQuality(Lists.newArrayList(LinkQuality.values()));
         }
-        if(filter.getDescendantCount().isEmpty()) {
+        if (filter.getDescendantCount().isEmpty()) {
             filter.setDescendantCount(Lists.newArrayList(DescendantCount.values()));
         }
-        if(filter.getHopCount().isEmpty()) {
+        if (filter.getHopCount().isEmpty()) {
             filter.setHopCount(Lists.newArrayList(HopCount.values()));
         }
         try {
             map = nmNetworkService.getNetworkMap(filter, accessor);
-            log.debug("Devices in map {}", map.getTotalDevices());
-            log.debug("Devices without location {}", map.getDevicesWithoutLocation().size());
-            //create collection action group
-            StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
-            for(FeatureCollection feature : map.getMappedDevices().values()) {
-                List<YukonPao> devices = feature.getFeatures().stream()
-                        .map(d -> new SimpleDevice(d.getProperty("paoIdentifier"))).collect(Collectors.toList());
-                devices.addAll(map.getDevicesWithoutLocation());
-                deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
-            }
-            json.put("collectionActionRedirect", CollectionActionUrl.COLLECTION_ACTIONS.getUrl() + "?collectionType=group&group.name=" + tempGroup.getFullName());
-            json.put("collectionGroup", tempGroup.getFullName());
+            String groupName = addDevicesToDeviceGroup(map);
+            json.put("collectionActionRedirect",
+                    CollectionActionUrl.COLLECTION_ACTIONS.getUrl() + "?collectionType=group&group.name=" + groupName);
+            json.put("collectionGroup", groupName);
         } catch (NmNetworkException | NmCommunicationException e) {
             String errorMsg = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.nmError");
             log.error(errorMsg, e);
@@ -209,52 +198,38 @@ public class ComprehensiveMapController {
 
     @GetMapping("downloadNetworkInfo")
     public void downloadNetworkInfo(YukonUserContext userContext, HttpServletResponse response) throws IOException {
-        StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
-        String groupName = tempGroup.getFullName();
-        NetworkMap map = new NetworkMap();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-        List<YukonPao> devices = gateways.stream().map(gateway -> gateway.getPaoIdentifier()).collect(Collectors.toList());
-        Map<Integer, RfnIdentifier> gatewayIdsToIdentifiers = gateways.stream()
-                .collect(Collectors.toMap(g -> g.getId(), g -> g.getRfnIdentifier()));
-        Set<RfnIdentifier> gatewaysToAddToMap = new HashSet<>(gatewayIdsToIdentifiers.values());
-        Map<Integer, List<DynamicRfnDeviceData>> data = rfnDeviceDao
-                .getDynamicRfnDeviceDataByGateways(gatewayIdsToIdentifiers.keySet());
-        gatewaysToAddToMap.removeAll(data.keySet()
-                .stream()
-                .map(id -> gatewayIdsToIdentifiers.get(id))
-                .collect(Collectors.toList()));
-        addDevicesToMap(map, data);
-        addDevicesWithoutLocationToMap(map, gatewaysToAddToMap);
-        devices.addAll(map.getDevicesWithoutLocation());
+        NetworkMapFilter filter = new NetworkMapFilter();
+        filter.setLinkQuality(Lists.newArrayList(LinkQuality.values()));
+        filter.setDescendantCount(Lists.newArrayList(DescendantCount.values()));
+        filter.setHopCount(Lists.newArrayList(HopCount.values()));
+        filter.setSelectedGatewayIds(gateways.stream().map(gateway -> gateway.getId()).collect(Collectors.toList()));
+        filter.setColorCodeBy(ColorCodeBy.GATEWAY);
+        NetworkMap map = null;
+        try {
+            map = nmNetworkService.getNetworkMap(filter, accessor);
+            String groupName = addDevicesToDeviceGroup(map);
+            downloadData(groupName, userContext, response);
+        } catch (NmNetworkException | NmCommunicationException e) {
+            String errorMsg = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.nmError");
+            log.error(errorMsg, e);
+        }
+    }
+
+    private String addDevicesToDeviceGroup(NetworkMap map) {
         log.debug("Devices in map {}", map.getTotalDevices());
         log.debug("Devices without location {}", map.getDevicesWithoutLocation().size());
-        deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
-        downloadData(groupName, userContext, response);
-    }
-
-    private void addDevicesToMap(NetworkMap map, Map<Integer, List<DynamicRfnDeviceData>> data) {
-        for (Integer gatewayId : data.keySet()) {
-            RfnDevice gateway = data.get(gatewayId).iterator().next().getGateway();
-            Set<RfnIdentifier> devices = data.get(gatewayId).stream()
-                    .map(d -> d.getDevice().getRfnIdentifier())
-                    .collect(Collectors.toSet());
-            devices.add(gateway.getRfnIdentifier());
-            addDevicesWithoutLocationToMap(map, devices);
+        // create collection action group
+        StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
+        for (FeatureCollection feature : map.getMappedDevices().values()) {
+            List<YukonPao> devices = feature.getFeatures().stream()
+                    .map(d -> new SimpleDevice(d.getProperty("paoIdentifier")))
+                    .collect(Collectors.toList());
+            devices.addAll(map.getDevicesWithoutLocation());
+            deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
         }
-    }
-
-    private void addDevicesWithoutLocationToMap(NetworkMap map, Set<RfnIdentifier> devices) {
-        if (!CollectionUtils.isEmpty(devices)) {
-            Set<Integer> paoIds = rfnDeviceDao.getDeviceIdsForRfnIdentifiers(devices);
-            if (!CollectionUtils.isEmpty(paoIds)) {
-                Map<Integer, PaoLocation> locations = Maps.uniqueIndex(paoLocationDao.getLocations(paoIds),
-                        l -> l.getPaoIdentifier().getPaoId());
-                map.getDevicesWithoutLocation().addAll(paoIds.stream()
-                        .filter(paoId -> !locations.containsKey(paoId))
-                        .map(paoId -> new SimpleDevice(dbCache.getAllPaosMap().get(paoId).getPaoIdentifier()))
-                        .collect(Collectors.toList()));
-            }
-        }
+        return tempGroup.getFullName();
     }
 
     private void downloadData(String groupName, YukonUserContext userContext, HttpServletResponse response) throws IOException {
