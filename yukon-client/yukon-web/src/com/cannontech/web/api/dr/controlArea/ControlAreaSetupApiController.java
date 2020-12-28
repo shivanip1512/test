@@ -46,7 +46,7 @@ public class ControlAreaSetupApiController {
 
     @PutMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
-    public ResponseEntity<Object> update(@Valid @RequestBody ControlArea controlArea, @PathVariable int id,
+    public ResponseEntity<Object> update(@PathVariable int id, @Valid @RequestBody ControlArea controlArea, 
             YukonUserContext userContext) {
         ControlArea updateControlArea = controlAreaService.update(id, controlArea, userContext.getYukonUser());
         return new ResponseEntity<>(updateControlArea, HttpStatus.OK);
