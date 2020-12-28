@@ -36,6 +36,7 @@
 		<echo message=" screenshot_compare      - iterates through each taken screenshot and compares them to the control set of good screenshots" />
 	    <echo message=" send_screenshot_email   - sends out an email if there were any screenshot comparison differences found"/>
 		<echo message=" upgrade_yukon           - upgrades currently installed Yukon"/>
+        <echo message=" cleanup_code_coverage   - delete code coverge folder and dump files peresent."/>
 	</target>
 
 	<target name="download_version">
@@ -101,6 +102,21 @@
 	    <delete dir="C:\Yukon\YukonInstall"/>
 		<delete dir="C:\Yukon\YukonMisc"/>
 	</target>
+
+    <target name="cleanup_code_coverage" >
+        <delete>
+            <fileset dir="C:\CodeCoverage">
+                <exclude name="*.jar"/>
+            </fileset>
+        </delete>
+    </target>
+
+    <target name="run_code_coverage">
+        <echo message="Executing code coverage: C:\CodeCoverage\APICoverage.bat"/>
+        <exec dir="C:\CodeCoverage" executable="cmd">
+            <arg line="/c APICoverage.bat"/>
+        </exec>
+    </target>
 
 	<target name="install">
 		<mkdir dir="${install.to.dir}/Server/Config"/>
