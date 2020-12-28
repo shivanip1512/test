@@ -34,6 +34,7 @@ import com.cannontech.amr.archivedValueExporter.model.ExportField;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
 import com.cannontech.amr.archivedValueExporter.model.Field;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
+import com.cannontech.amr.archivedValueExporter.model.FieldValue;
 import com.cannontech.amr.archivedValueExporter.model.Preview;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.ChangeIdRange;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
@@ -156,6 +157,7 @@ public class ExporterReportGeneratorServiceImplTest {
         ExportField deviceNameExportField = getExportField(0, DEVICE_NAME);
         ExportField routeExportField = getExportField(1, ROUTE);
         ExportField attributeNameExportField = getExportField(2, ATTRIBUTE_NAME, earliestUsageAttribute);
+        attributeNameExportField.setPattern(FieldValue.DEFAULT.name());
         ExportField pointValueExportField = getExportField(3, POINT_VALUE, "####");
         ExportField pointTimestampExportField = getExportField(4, POINT_TIMESTAMP, "MM/dd/yyyy");
         ExportField plainTextExportField = getExportField(5, PLAIN_TEXT, "Plain Text");

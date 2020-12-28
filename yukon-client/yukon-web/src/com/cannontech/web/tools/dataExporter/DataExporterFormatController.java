@@ -39,6 +39,7 @@ import com.cannontech.amr.archivedValueExporter.model.ExportField;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
 import com.cannontech.amr.archivedValueExporter.model.Field;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
+import com.cannontech.amr.archivedValueExporter.model.FieldValue;
 import com.cannontech.amr.archivedValueExporter.model.MissingAttribute;
 import com.cannontech.amr.archivedValueExporter.model.PadSide;
 import com.cannontech.amr.archivedValueExporter.model.Preview;
@@ -330,6 +331,7 @@ public class DataExporterFormatController {
         
         model.addAttribute("fields", getFields(formatType, attributeList.getAttributes()));
         model.addAttribute("padSides", PadSide.values());
+        model.addAttribute("fieldValues", FieldValue.values());
         model.addAttribute("attributeFields", AttributeField.values());
         model.addAttribute("missingAttributes", MissingAttribute.values());
         model.addAttribute("roundingModes", YukonRoundingMode.values());
@@ -356,6 +358,7 @@ public class DataExporterFormatController {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             
             model.addAttribute("fields", getFields(formatType, attributeList.getAttributes()));
+            model.addAttribute("fieldValues", FieldValue.values());
             model.addAttribute("padSides", PadSide.values());
             model.addAttribute("attributeFields", AttributeField.values());
             model.addAttribute("missingAttributes", MissingAttribute.values());
@@ -380,15 +383,13 @@ public class DataExporterFormatController {
         FieldType type = exportField.getField().getType();
         boolean isPlainText = type == FieldType.PLAIN_TEXT;
         boolean isAttribute = exportField.getField().getAttribute() != null;
-        boolean isTimestamp = exportField.isTimestamp();;
+        boolean isTimestamp = exportField.isTimestamp();
         boolean isValue = exportField.isValue();
-        
+
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         model.clear();
-        
+
         Map<String, Object> json = new HashMap<>();
-        json.put("exportField", exportField);
-        
         Map<String, String> text = new HashMap<>();
         text.put("exportField", accessor.getMessage(exportField.getMessage()));
         text.put("attributeField", isAttribute ? accessor.getMessage(exportField.getAttributeField()) : "");
@@ -427,6 +428,9 @@ public class DataExporterFormatController {
                 }
             } 
             text.put("pattern", pattern);
+        } else if (exportField.getField().isAttributeName()) {
+            exportField.setPattern(exportField.getFieldValue().name());
+            text.put("pattern", exportField.getFieldValue().toString());
         } else {
             text.put("pattern", "");
         }
@@ -441,9 +445,9 @@ public class DataExporterFormatController {
         } else {
             text.put("padding", "");
         }
-        
+        json.put("exportField", exportField);
         json.put("text", text);
-        
+
         resp.setContentType("application/json");
         JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
         

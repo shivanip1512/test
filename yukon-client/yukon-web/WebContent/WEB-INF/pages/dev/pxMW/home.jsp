@@ -40,7 +40,7 @@
             <tbody>
                 <c:forEach var="endpoint" items="${endpoints}" varStatus="status">
                     <tr>
-                        <td><a href="${endpoint.doc}" target="_blank">${endpoint.suffix}</a></td>
+                        <td style="width:200px" class="wbba"><a href="${endpoint.doc}" target="_blank">${endpoint.suffix}</a></td>
                         <c:if test="${isLocalHost}">
 	                        <td>
 	                            <tags:selectWithItems path="selectedStatuses[${endpoint}]" items="${endpoint.statuses}" inputClass="js-selected-status"/>
@@ -52,7 +52,7 @@
                                 <c:forEach var="endpointParam" items="${endpoint.params}">
                                     <c:set var="params" value="${not empty params ? params += ',' += endpointParam.value : endpointParam.value}"/>
                                 </c:forEach>
-                                <input type="text" id="${endpoint}_parameters" size="50" value="${params}"/>
+                                <input type="text" id="${endpoint}_parameters" size="40" value="${params}"/>
                                 <cti:uniqueIdentifier var="uid" prefix="parameter-help-"/>
                                 <cti:icon icon="icon-help" classes="fn" data-popup="#${uid}"/>
                                 <div id="${uid}" data-title="Parameters Help" data-width="500" class="dn">

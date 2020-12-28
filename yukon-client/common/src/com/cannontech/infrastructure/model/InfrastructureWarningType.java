@@ -23,6 +23,9 @@ public enum InfrastructureWarningType implements DisplayableEnum {
     GATEWAY_NODE_COUNT_EXCEEDED,
     GATEWAY_UPS_BATTERY_VOLTAGE_LOW,
     GATEWAY_CERT_EXPIRATION,
+    GATEWAY_HIGH_DISK_USAGE,
+    GATEWAY_RTC_BATTERY_FAILURE,
+    GATEWAY_AC_POWER_FAILURE,
     ;
     
     private static final String keyBase = "yukon.web.widgets.infrastructureWarnings.warningType.";

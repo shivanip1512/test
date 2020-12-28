@@ -23,6 +23,7 @@ import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_S
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WATCHDOG;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER_DEV_PAGES;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_LOAD_MANAGEMENT;
 import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.NOTIFICATION;
 import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_ACK_RESPONSE;
 import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_MULTI_RESPONSE;
@@ -122,6 +123,9 @@ import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReply;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastRequest;
 import com.cannontech.infrastructure.model.InfrastructureWarningsRefreshRequest;
 import com.cannontech.infrastructure.model.InfrastructureWarningsRequest;
+import com.cannontech.loadcontrol.messages.LMEatonCloudCycleCommand;
+import com.cannontech.loadcontrol.messages.LMEatonCloudScheduledCycleCommand;
+import com.cannontech.loadcontrol.messages.LMEatonCloudStopCommand;
 import com.cannontech.message.porter.message.DynamicPaoInfoRequest;
 import com.cannontech.message.porter.message.DynamicPaoInfoResponse;
 import com.cannontech.message.porter.message.MeterProgramValidationRequest;
@@ -1220,6 +1224,39 @@ public final class JmsApiDirectory {
                   .sender(YUKON_SERVICE_MANAGER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
+    
+    public static final JmsApi<LMEatonCloudCycleCommand, ?, ?> LM_EATON_CLOUD_CYCLE_COMMAND = 
+            JmsApi.builder(LMEatonCloudCycleCommand.class)
+                  .name("Eaton Cloud Cycle Command")
+                  .description("Send an Eaton Cloud cycle command to Yukon")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.loadmanagement.eatonCloudCycleCommand"))
+                  .requestMessage(LMEatonCloudCycleCommand.class)
+                  .sender(YUKON_LOAD_MANAGEMENT)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+    
+    public static final JmsApi<LMEatonCloudScheduledCycleCommand, ?, ?> LM_EATON_CLOUD_SCHEDULED_CYCLE_COMMAND = 
+            JmsApi.builder(LMEatonCloudScheduledCycleCommand.class)
+                  .name("Eaton Cloud Scheduled Cycle Command")
+                  .description("Send an Eaton Cloud cycle command to Yukon")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.loadmanagement.eatonCloudScheduledCycleCommand"))
+                  .requestMessage(LMEatonCloudScheduledCycleCommand.class)
+                  .sender(YUKON_LOAD_MANAGEMENT)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+    
+    public static final JmsApi<LMEatonCloudStopCommand, ?, ?> LM_EATON_CLOUD_STOP_COMMAND =
+            JmsApi.builder(LMEatonCloudStopCommand.class)
+                  .name("Eaton Cloud Stop Command)")
+                  .description("Send an Eaton Cloud Stop Command")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.loadmanagement.eatonCloudStopCommand"))
+                  .requestMessage(LMEatonCloudStopCommand.class)
+                  .sender(YUKON_LOAD_MANAGEMENT)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
 
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
@@ -1251,6 +1288,9 @@ public final class JmsApiDirectory {
                 CLOUD_DATA_CONFIGURATIONS,
                 ECOBEE_AUTH_TOKEN,
                 LM_ADDRESS_NOTIFICATION,
+                LM_EATON_CLOUD_CYCLE_COMMAND,
+                LM_EATON_CLOUD_SCHEDULED_CYCLE_COMMAND,
+                LM_EATON_CLOUD_STOP_COMMAND,
                 LOCATION,
                 PORTER_DYNAMIC_PAOINFO,
                 PX_MW_AUTH_TOKEN,

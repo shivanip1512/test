@@ -175,6 +175,9 @@
         <dependent-module archiveName="snakeyaml-1.18.2.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/snakeyaml-1.18.2.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="commons-text-1.9.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/commons-text-1.9.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="java-output-path" value="/yukon-web/build/classes"/>
         <property name="context-root" value="yukon"/>
     </wb-module>

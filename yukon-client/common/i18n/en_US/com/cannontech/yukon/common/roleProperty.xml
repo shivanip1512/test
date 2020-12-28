@@ -537,7 +537,7 @@
 
 <!-- Device Management RoleProperties -->
 <entry key="yukon.common.roleProperty.ENDPOINT_PERMISSION">Endpoint Permission</entry>
-<entry key="yukon.common.roleProperty.ENDPOINT_PERMISSION.description">Controls access to create, edit, or delete endpoint devices. i.e Meters. Metering Role controls view access.</entry>
+<entry key="yukon.common.roleProperty.ENDPOINT_PERMISSION.description">Controls access to create, edit, or delete endpoint devices. i.e Meters, Relays. Metering Role controls view access for meter endpoints.</entry>
 <entry key="yukon.common.roleProperty.MANAGE_POINT_DATA">Manage Point Data</entry>
 <entry key="yukon.common.roleProperty.MANAGE_POINT_DATA.description">Controls access to edit, delete, or manually add point data values.</entry>
 <entry key="yukon.common.roleProperty.MANAGE_POINTS">Manage Points</entry>

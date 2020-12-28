@@ -28,8 +28,6 @@
                 <td class="js-gw-ip"></td>
                 <td class="js-gw-rv">
                     <span class="js-gw-rv-text"></span>
-                    <cti:msg2 var="updateAvailable" key=".firmwareUpdateAvailable"/>
-                    <cti:icon icon="icon-download" data-popup="#send-firmware-upgrade-popup" classes="js-gateway-update-available fn cp dn" title="${updateAvailable}"/>
                 </td>
                 <td class="js-gw-last-comm"></td>
                 <td class="js-gw-data-collection">
@@ -40,10 +38,18 @@
                 </td>
                 <td class="action-column">
                     <cm:dropdown>
-                        <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"/>
-                        <cm:dropdownOption icon="icon-disconnect" key=".disconnect" classes="js-gw-disconnect"/>
-                        <li class="divider"></li>
-                        <cm:dropdownOption icon="icon-table-row-insert" key=".collectData" classes="js-gw-collect-data"/>
+                        <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="INTERACT">
+                            <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"/>
+                        </cti:checkRolesAndProperties>
+                        <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE">
+                            <cm:dropdownOption icon="icon-disconnect" key=".disconnect" classes="js-gw-disconnect"/>
+                        </cti:checkRolesAndProperties>
+                        <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="INTERACT">
+                            <li class="divider"></li>
+                        </cti:checkRolesAndProperties>
+                        <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="VIEW">
+                            <cm:dropdownOption icon="icon-table-row-insert" key=".collectData" classes="js-gw-collect-data"/>
+                        </cti:checkRolesAndProperties>
                     </cm:dropdown>
                 </td>
             </tr>
