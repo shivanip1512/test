@@ -806,7 +806,7 @@
                             command="ant -f C:/install.xml cleanup_code_coverage"/>
     </target>
 
-    <target name="copy_API_coverage_files">
+    <target name="copy_API_coverage_files" depends="clean_API_code_coverage_report">
         <echo message="SCP todir ${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" />
         <scp todir="${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/CodeCoverage/" trust="true">
             <fileset dir="${basedir}/yukon-deploy/vm-install/CodeCoverage">
