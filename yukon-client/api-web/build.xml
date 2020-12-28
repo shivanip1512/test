@@ -32,6 +32,7 @@
         <include name="aopalliance-1.0.jar"/>
         <include name="api.jar"/>
         <include name="asm.jar"/>
+        <include name="aspectjweaver-1.9.6.jar"/>
         <include name="axiom-api-1.2.22.jar"/>
         <include name="axiom-impl-1.2.15.jar"/>
         <include name="bcpg-fips-1.0.3.jar"/>
@@ -100,7 +101,6 @@
         <include name="stax-ex-1.8.jar"/>
         <include name="stax2-api-3.1.4.jar"/>
         <include name="spring-*-5.3.2*.jar"/>
-        <include name="aspectjweaver-1.9.6.jar"/>
         <include name="javax.jms-api-2.0.1.jar"/>
         <include name="micrometer-core-1.0.7.jar"/>
         <include name="reactive-streams-1.0.3.jar"/>

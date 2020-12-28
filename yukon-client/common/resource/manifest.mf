@@ -1,5 +1,6 @@
 Manifest-Version: 1.0
 Class-Path: ./ 
+ aspectjweaver-1.9.6.jar 
  itronDeviceManagerTypes_v1_8.jar 
  itronServicePointManagerTypes_v1_3.jar 
  itronProgramEventManagerTypes_v1_6.jar 
@@ -23,7 +24,6 @@ Class-Path: ./
  aopalliance-1.0.jar 
  spring-aop-5.3.2.jar 
  spring-aspects-5.3.2.jar 
- aspectjweaver-1.9.6.jar 
  spring-beans-5.3.2.jar 
  spring-context-5.3.2.jar 
  spring-context-support-5.3.2.jar 
@@ -83,8 +83,8 @@ Class-Path: ./
  slf4j-api-1.7.25.jar 
  org.osgi.core-4.1.0.jar 
  spring-integration-core-5.3.2.RELEASE.jar 
- spring-retry-1.2.5.RELEASE.jar 
  spring-integration-jms-5.3.2.RELEASE.jar 
+ spring-retry-1.2.5.RELEASE.jar 
  xbean-spring-4.5.jar 
  jaxb-api.jar 
  jaxb-impl.jar 

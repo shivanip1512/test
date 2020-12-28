@@ -1,6 +1,7 @@
 Manifest-Version: 1.0
 Main-Class: com.cannontech.simulators.service.SimulatorsService
 Class-Path: ./ 
+ aspectjweaver-1.9.6.jar 
  common.jar 
  cbc.jar 
  yukonappserver.jar 
@@ -8,7 +9,6 @@ Class-Path: ./
  ojdbc10.jar 
  spring-aop-5.3.2.jar 
  spring-aspects-5.3.2.jar 
- aspectjweaver-1.9.6.jar 
  spring-beans-5.3.2.jar 
  spring-context-5.3.2.jar 
  spring-context-support-5.3.2.jar 

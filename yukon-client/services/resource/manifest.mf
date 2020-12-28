@@ -1,6 +1,7 @@
 Manifest-Version: 1.0
 Main-Class: com.cannontech.services.server.YukonServicesServer
 Class-Path: ./ 
+ aspectjweaver-1.9.6.jar 
  graph.jar 
  notification.jar 
  cbc.jar 
@@ -23,7 +24,6 @@ Class-Path: ./
  servlet-api.jar 
  spring-aop-5.3.2.jar 
  spring-aspects-5.3.2.jar 
- aspectjweaver-1.9.6.jar 
  spring-beans-5.3.2.jar 
  spring-context-5.3.2.jar 
  spring-context-support-5.3.2.jar 
