@@ -17,19 +17,28 @@ yukon.highChart = (function () {
     mod = {
     
         buildChart : function (chartContainer, jsonResponse, title, chartHeight, chartWidth) {
+            var gridLineWidth = 0;
+            $.each(jsonResponse.seriesDetails, function(index, item) {
+                if (item.data.length > 0) {
+                    gridLineWidth = 1;
+                }
+            });
+            
             var chartOptionsJSON = {
                     width: chartWidth,
                     height: chartHeight,
-                    zoomType: 'x'
+                    zoomType: 'x',
+                    plotBorderWidth: 2
                 },
                 yaxisOptionsJSON = {
                     title: {
                         align: 'middle',
                         rotation: 270
-                    }
+                    },
+                    gridLineWidth: gridLineWidth
                 },
                 yaxesOptions = [];
-            
+
             $.each(jsonResponse.yaxis, function (index, item) {
                 $.extend(true, jsonResponse.yaxis[index], yaxisOptionsJSON)
             });
@@ -54,6 +63,8 @@ yukon.highChart = (function () {
                     },
                     min: jsonResponse.xaxis.min,
                     max: jsonResponse.xaxis.max,
+                    gridLineWidth: gridLineWidth,
+                    tickWidth: 0
                 },
                 tooltip: {
                     useHTML: true,
