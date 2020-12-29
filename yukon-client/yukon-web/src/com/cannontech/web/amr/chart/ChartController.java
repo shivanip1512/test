@@ -142,6 +142,21 @@ public class ChartController {
         graphDetail.setyMin(yMin);
         graphDetail.setConverterType(converterType);
         graphDetails.add(graphDetail);
+        
+        if (isTemperatureChecked && temperaturePointId != null) {
+            String rightYLabelUnits = messageSourceAccessor.getMessage("yukon.common.chart.yLabel.temperature");
+            // Add graph detail for min temperature trend
+            GraphDetail minTemperatureGraphDetail = new GraphDetail(temperaturePointId, rightYLabelUnits, 2, "right", true,
+                    ChartColorsEnum.LIGHT_BLUE, temperatureChartInterval);
+            graphDetails.add(minTemperatureGraphDetail);
+
+            if (temperatureChartInterval.getMillis() >= ChartInterval.DAY.getMillis()) {
+                // Add graph detail for max temperature trend
+                GraphDetail maxTemperatureGraphDetail = new GraphDetail(temperaturePointId, "", 2, "right", false,
+                        ChartColorsEnum.LIGHT_RED, temperatureChartInterval);
+                graphDetails.add(maxTemperatureGraphDetail);
+            }
+        }
 
         Instant start = new DateTime(startDate).withTimeAtStartOfDay().toInstant();
         Instant stop = new DateTime(endDate).withTimeAtStartOfDay().plusDays(1).toInstant();

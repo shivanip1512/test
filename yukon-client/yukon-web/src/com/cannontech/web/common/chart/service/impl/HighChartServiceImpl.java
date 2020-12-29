@@ -13,6 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.chart.model.ChartValue;
 import com.cannontech.common.chart.model.Graph;
 import com.cannontech.common.chart.model.GraphType;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.chart.model.HighChartOptionKey;
 import com.cannontech.web.common.chart.service.ChartService;
@@ -23,6 +28,8 @@ import com.google.common.collect.Maps;
 public class HighChartServiceImpl implements HighChartService {
 
     @Autowired private ChartService chartService;
+    @Autowired private ServerDatabaseCache cache;
+    @Autowired private PointDao pointDao;
 
     @Override
     public Map<String, Object> getMeterGraphData(List<GraphDetail> graphDetails, Instant start, Instant stop, Double yMin,
@@ -46,6 +53,9 @@ public class HighChartServiceImpl implements HighChartService {
             }
             if (yMax != null) {
                 yAxes.put(HighChartOptionKey.MAX.getKey(), yMax);
+            }
+            if (isTempreaturePoint(graphDetail.getPointId())) {
+                yAxes.put(HighChartOptionKey.OPPOSITE.getKey(), true);
             }
             yAxesOptions.add(yAxes);
         });
@@ -76,11 +86,16 @@ public class HighChartServiceImpl implements HighChartService {
     private Map<String, Object> getSeriesDetails(Graph<ChartValue<Double>> graph, GraphType graphType) {
         Map<String, Object> seriesDetails = Maps.newHashMap();
         seriesDetails.put(HighChartOptionKey.SERIES_DATA.getKey(), getDataArray(graph.getChartData()));
-        seriesDetails.put(HighChartOptionKey.SERIES_GRAPH_TYPE.getKey(), graphType.getHighChartType());
         seriesDetails.put(HighChartOptionKey.SHOW_IN_LEGEND.getKey(), false);
         seriesDetails.put(HighChartOptionKey.COLOR.getKey(), graph.getColor().getColorHex());
-        seriesDetails.put(HighChartOptionKey.FILL_OPACITY.getKey(), "0.45");
-        seriesDetails.put(HighChartOptionKey.MARKER.getKey(), Collections.singletonMap("enabled", true));
+        if (graph.getAxisIndex() == 1) {
+            seriesDetails.put(HighChartOptionKey.FILL_OPACITY.getKey(), "0.45");
+            seriesDetails.put(HighChartOptionKey.MARKER.getKey(), Collections.singletonMap("enabled", true));
+            seriesDetails.put(HighChartOptionKey.SERIES_GRAPH_TYPE.getKey(), graphType.getHighChartType());
+        } else {
+            seriesDetails.put(HighChartOptionKey.MARKER.getKey(), Collections.singletonMap("enabled", false));
+            seriesDetails.put(HighChartOptionKey.SERIES_GRAPH_TYPE.getKey(), GraphType.LINE.getHighChartType());
+        }
         seriesDetails.put(HighChartOptionKey.Y_AXIS.getKey(), graph.getAxisIndex() - 1); //The axis index in Highchart starts with 0
         return seriesDetails;
     }
@@ -95,5 +110,11 @@ public class HighChartServiceImpl implements HighChartService {
             jsonArrayContainer.add(map);
         }
         return jsonArrayContainer;
+    }
+    
+    private boolean isTempreaturePoint(int pointId) {
+        LitePoint lPoint = pointDao.getLitePoint(pointId);
+        LiteYukonPAObject pao = cache.getAllPaosMap().get(lPoint.getPaobjectID());
+        return pao.getPaoType() == PaoType.WEATHER_LOCATION;
     }
 }

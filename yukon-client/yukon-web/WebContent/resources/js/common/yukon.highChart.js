@@ -17,6 +17,7 @@ yukon.highChart = (function () {
     mod = {
     
         buildChart : function (chartContainer, jsonResponse, title, chartHeight, chartWidth) {
+            console.log(jsonResponse);
             var chartOptionsJSON = {
                     width: chartWidth,
                     height: chartHeight,

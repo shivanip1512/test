@@ -1,9 +1,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="highChart" tagdir="/WEB-INF/tags/highChart" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
-<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 
 <script type="text/javascript"> 
 $(function () {
@@ -29,7 +29,7 @@ $(document).ready(function(){
         <h4 class="tac"><cti:msg2 key=".meter"/> <cti:deviceName deviceId="${widgetParameters.deviceId}"/></h4>
 
         <%-- THE CHART --%>
-        <flot:trend title="${title}" pointIds="${pointId}" 
+        <%-- <flot:trend title="${title}" pointIds="${pointId}" 
             temperaturePointId ="${temperaturePointId}" 
             isTemperatureChecked = "${isTemperatureChecked}"
             startDate="${startDate.time}" endDate="${stopDateAdjusted.time}"
@@ -37,7 +37,21 @@ $(document).ready(function(){
             converterType="${attributeGraphType.converterType}"
             graphType="${graphType}"
             temperatureChartInterval="${temperatureChartInterval}"
-            ymin="0"/>
+            ymin="0"/> --%>
+            
+        <highChart:trend title="${title}"
+                         pointIds="${pointId}"
+                         temperaturePointId ="${temperaturePointId}" 
+                         isTemperatureChecked = "${isTemperatureChecked}"
+                         temperatureChartInterval="${temperatureChartInterval}"
+                         startDate="${startDate.time}"
+                         endDate="${stopDateAdjusted.time}"
+                         interval="${interval}"
+                         converterType="${attributeGraphType.converterType}"
+                         graphType="${graphType}"
+                         ymin="0"
+                         chartHeight="300"
+                         chartWidth="400"/>
 
         <table class="compact-results-table trend-settings no-stripes js-trend">
         

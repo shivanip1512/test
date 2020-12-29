@@ -9,6 +9,7 @@ public enum HighChartOptionKey {
     MARKER("marker"),
     MIN("min"),
     MAX("max"),
+    OPPOSITE("opposite"),
     POINT_TOOLTIP("tooltip"), // This is our custom option and not a standard highchart option.
     SERIES_DATA("data"),
     SERIES_GRAPH_TYPE("type"),
