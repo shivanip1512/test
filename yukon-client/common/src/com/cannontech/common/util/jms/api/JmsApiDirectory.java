@@ -1310,8 +1310,8 @@ public final class JmsApiDirectory {
                 LOCATION,
                 PORTER_DYNAMIC_PAOINFO,
                 PX_MW_AUTH_TOKEN,
-                RFN_DEVICE_CREATION_ALERT,
                 RF_SUPPORT_BUNDLE,
+                RFN_DEVICE_CREATION_ALERT,
                 SYSTEM_DATA);
         
         addApis(jmsApis, RFN_LCR, 
