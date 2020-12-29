@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
@@ -25,10 +26,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFormatDao;
 import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
@@ -72,6 +75,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.tools.dataExporter.model.ArchivedValuesExporter;
 import com.cannontech.web.tools.dataExporter.validator.DataRangeValidator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.collect.Maps;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.ARCHIVED_DATA_EXPORT)
@@ -90,6 +94,7 @@ public class DataExporterHomeController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private AttributeService attributeService;
     @Autowired private AttributeType attributeTypeEditor;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
     
@@ -158,7 +163,7 @@ public class DataExporterHomeController {
         
         return "data-exporter/home.jsp";
     }
-    
+
     @RequestMapping("/data-exporter/scheduledJobsTable")
     public String scheduledJobsTable(ModelMap model) {
         List<ScheduledFileExportJobData> jobs
@@ -259,6 +264,20 @@ public class DataExporterHomeController {
         return null;
     }
     
+    @GetMapping("/data-export/getAvaliableFormatTemplates")
+    public @ResponseBody Map<String, Object> getAvaliableFormatTemplates(YukonUserContext userContext) {
+        Map<String, Object> json = Maps.newHashMap();
+        try {
+            //TODO: to be replaced with actual service layer call
+            List<ExportFormat> formatTemplates = mockAvailableFormatTemplates();
+            json.put("formatTemplates", formatTemplates);
+        } catch (Exception exception) {
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            json.put("errorMessage", accessor.getMessage("yukon.web.modules.tools.bulk.archivedValueExporter.parseAvailableTemplates.error"));
+        }
+        return json;
+    }
+    
     private ExportFormat getExportFormat(int selectedFormatId, List<ExportFormat> allFormats) {
         if (selectedFormatId != 0) {
             return archiveValuesExportFormatDao.getByFormatId(selectedFormatId);
@@ -270,6 +289,16 @@ public class DataExporterHomeController {
                 return new ExportFormat();
             }
         }
+    }
+    
+    //TODO: to be replaced with actual service layer call
+    private List<ExportFormat> mockAvailableFormatTemplates() throws Exception {
+        List<ExportFormat> templates = Lists.newArrayList();
+        ExportFormat format = new ExportFormat();
+        format.setFormatId(1);
+        format.setFormatName("CEMP");
+        templates.add(format);
+        return templates;
     }
     
     @InitBinder
