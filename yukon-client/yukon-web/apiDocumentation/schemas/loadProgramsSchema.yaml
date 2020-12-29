@@ -2070,7 +2070,43 @@ whenToChangeFields:
       maximum: 99999.9999
       description: 'Trigger offset. When whenToChange type is TriggerOffset then 
                      this field is required.'        
-           
+
+LOAD_PROGRAM_COPY:
+  title: LOAD_PROGRAM_COPY
+  required:
+    - name
+    - operationalState
+    - constraint
+  type: object
+  properties:
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the load program.'
+    constraint:
+      $ref: '#/constraint'
+    copyMemberControl:
+      type: boolean
+      description: 'Flag to copy member control.'
+    operationalState:
+      type: string
+      enum:
+        - Automatic
+        - ManualOnly
+        - Timed
+      description: |- 
+                Operational state of the load program.
+                - Automatic - The program controls when the trigger threshold is exceeded or when the program is manually started.
+                - Manual Only - The program must be manually started to perform control.
+                - Timed - The program controls during the specified control windows.
+CopyResponse:
+  title: CopyResponse
+  type: object
+  properties:
+    programId:
+      type: integer
+      description: 'Unique identifier of the copied load program.'
+      
 id:
   title: id
   type: object
@@ -2078,6 +2114,7 @@ id:
     id:
       type: integer
       description: 'Unique identifier of the load program.'
+
 
 components:
   examples:
@@ -2470,6 +2507,18 @@ components:
             groupName: LM_GROUP_HONEYWELL_Name
             groupOrder: 1
             type: LM_GROUP_HONEYWELL
+
+    LoadProgramCopy:
+      value:
+        name: EcobeeProgramTestCopy
+        constraint:
+          constraintId: 8
+        copyMemberControl: true
+        operationalState: Automatic
+
+    programId: 
+      value:
+        programId: 20977
 
     id:
       value:
