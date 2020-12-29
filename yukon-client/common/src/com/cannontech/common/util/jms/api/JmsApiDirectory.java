@@ -145,6 +145,8 @@ import com.cannontech.stars.dr.jms.message.DrAttributeDataJmsMessage;
 import com.cannontech.stars.dr.jms.message.DrProgramStatusJmsMessage;
 import com.cannontech.stars.dr.jms.message.EnrollmentJmsMessage;
 import com.cannontech.stars.dr.jms.message.OptOutOptInJmsMessage;
+import com.cannontech.support.rfn.message.RfnSupportBundleRequest;
+import com.cannontech.support.rfn.message.RfnSupportBundleResponse;
 import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
 
 /**
@@ -1258,6 +1260,20 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
 
+    public static final JmsApi<RfnSupportBundleRequest,?,RfnSupportBundleResponse> RF_SUPPORT_BUNDLE =
+            JmsApi.builder(RfnSupportBundleRequest.class, RfnSupportBundleResponse.class)
+                  .name("RF Support Bundle")
+                  .description("Sends a support bundle request from Yukon to Network Manager, specifying file "
+                          + "name and parameters. Response is sent by Network Manager when the support bundle "
+                          + "is generated, processed on a different queue.")
+                  .communicationPattern(REQUEST_RESPONSE)
+                  .queue(new JmsQueue("yukon.qr.obj.support.rfn.RfnSupportBundleRequest"))
+                  .responseQueue(new JmsQueue("yukon.qr.obj.support.rfn.RfnSupportBundleResponse"))
+                  .requestMessage(RfnSupportBundleRequest.class)
+                  .responseMessage(RfnSupportBundleResponse.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(NETWORK_MANAGER)
+                  .build();
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1295,6 +1311,7 @@ public final class JmsApiDirectory {
                 PORTER_DYNAMIC_PAOINFO,
                 PX_MW_AUTH_TOKEN,
                 RFN_DEVICE_CREATION_ALERT,
+                RF_SUPPORT_BUNDLE,
                 SYSTEM_DATA);
         
         addApis(jmsApis, RFN_LCR, 
