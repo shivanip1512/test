@@ -332,6 +332,7 @@
                         <labelArgument>${formatName}</labelArgument>
                     </page>
                     <page name="bulk.archivedValueExporter.CREATE" type="BASIC" hideFavorite="true" />
+                    <page name="bulk.archivedValueExporter.VIEW" type="BASIC" hideFavorite="true" />
                     <page name="bulk.archivedValueExporter.selectDevices" type="BASIC">
                         <link>/amr/archivedValueExporter/selectDevices</link>
                     </page>

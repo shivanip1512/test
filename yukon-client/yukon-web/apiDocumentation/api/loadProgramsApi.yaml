@@ -360,3 +360,49 @@ get-update-delete-operation:
             examples:
               Load Program Id:
                 $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/id'
+     
+copy-operation:
+  post:
+    tags:
+      - Load Program 
+    summary: Copy Load Program
+    description: |-
+      API to copy any type of load program based on passed id.
+      Below are the supported load program.
+      - Direct
+      - Eaton Cloud
+      - ecobee
+      - Honeywell
+      - Itron
+      - Meter Disconnect
+      - SEP
+      
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'Unique identifier for the load program to be copied.'
+    
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/loadProgramsSchema.yaml#/LOAD_PROGRAM_COPY'
+             
+          examples:
+            Load Program Copy:
+              $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/LoadProgramCopy' 
+           
+      required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/loadProgramsSchema.yaml#/CopyResponse'
+            examples:
+              Load Program Copy:
+                $ref: '../schemas/loadProgramsSchema.yaml#/components/examples/programId' 
