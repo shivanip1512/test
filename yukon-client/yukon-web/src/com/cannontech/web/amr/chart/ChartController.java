@@ -152,7 +152,7 @@ public class ChartController {
 
             if (temperatureChartInterval.getMillis() >= ChartInterval.DAY.getMillis()) {
                 // Add graph detail for max temperature trend
-                GraphDetail maxTemperatureGraphDetail = new GraphDetail(temperaturePointId, "", 2, "right", false,
+                GraphDetail maxTemperatureGraphDetail = new GraphDetail(temperaturePointId, rightYLabelUnits, 2, "right", false,
                         ChartColorsEnum.LIGHT_RED, temperatureChartInterval);
                 graphDetails.add(maxTemperatureGraphDetail);
             }

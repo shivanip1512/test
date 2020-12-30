@@ -116,6 +116,7 @@ public class ChartServiceImpl implements ChartService {
             graph.setSeriesTitle(lPoint.getPointName());
             graph.setFormat(pointValueFormat);
             graph.setAxisIndex(graphDetail.getAxisIndex());
+            graph.setPointId(graphDetail.getPointId());
 
             // don't include zero-data graphs if there are more than one graph - amCharts chokes.
             if (graphDetails.size() == 1 || chartData.size() > 0) {

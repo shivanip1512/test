@@ -13,8 +13,10 @@ public enum HighChartOptionKey {
     POINT_TOOLTIP("tooltip"), // This is our custom option and not a standard highchart option.
     SERIES_DATA("data"),
     SERIES_GRAPH_TYPE("type"),
+    POINT_WIDTH("pointWidth"),
     SERIES_X_COORDINATE("x"),
     SERIES_Y_COORDINATE("y"),
+    SERIES_Y_AXIS("yAxis"),
     SHOW_IN_LEGEND("showInLegend"),
     TEXT("text"),
     TITLE("title"),

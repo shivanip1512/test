@@ -14,8 +14,11 @@ $(function () {
 });
 
 $(document).ready(function(){
-    $('#temperature').click(function() {
-        ${widgetParameters.jsWidget}.doDirectActionRefresh('render?isTemperatureChecked=' + this.checked);
+    $('.js-temperature-checkbox').click(function() {
+        var widgetId = $(this).closest('.widgetWrapper').attr('id'),
+            widgetId = widgetId.substring(widgetId.indexOf("_") + 1);
+            widget = yukon.widgets[widgetId];
+        widget.doDirectActionRefresh('render?isTemperatureChecked=' + this.checked);
     });
 });
 
@@ -28,17 +31,6 @@ $(document).ready(function(){
     
         <h4 class="tac"><cti:msg2 key=".meter"/> <cti:deviceName deviceId="${widgetParameters.deviceId}"/></h4>
 
-        <%-- THE CHART --%>
-        <%-- <flot:trend title="${title}" pointIds="${pointId}" 
-            temperaturePointId ="${temperaturePointId}" 
-            isTemperatureChecked = "${isTemperatureChecked}"
-            startDate="${startDate.time}" endDate="${stopDateAdjusted.time}"
-            interval="${interval}"
-            converterType="${attributeGraphType.converterType}"
-            graphType="${graphType}"
-            temperatureChartInterval="${temperatureChartInterval}"
-            ymin="0"/> --%>
-            
         <highChart:trend title="${title}"
                          pointIds="${pointId}"
                          temperaturePointId ="${temperaturePointId}" 
@@ -51,7 +43,7 @@ $(document).ready(function(){
                          graphType="${graphType}"
                          ymin="0"
                          chartHeight="300"
-                         chartWidth="400"/>
+                         chartWidth="470"/>
 
         <table class="compact-results-table trend-settings no-stripes js-trend">
         
@@ -126,7 +118,7 @@ $(document).ready(function(){
                 <tr>
                     <td class="wsnw"><i:inline key=".temperature"/></td>
                     <td>
-                        <input type="checkbox" id="temperature" <c:if test="${isTemperatureChecked}">checked="checked"</c:if>/>
+                        <input type="checkbox" id="temperature" class="js-temperature-checkbox" <c:if test="${isTemperatureChecked}">checked="checked"</c:if>/>
                     </td>
                 </tr>
             </c:if>

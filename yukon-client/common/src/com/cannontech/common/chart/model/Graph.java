@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Graph<T> {
 
+    private int pointId;
     private String seriesTitle = null;
     private String yAxis = "left";
     private List<T> chartData = null;
@@ -55,13 +56,13 @@ public class Graph<T> {
         this.format = format;
     }
 
-	public ChartColorsEnum getColor() {
-		return color;
-	}
+    public ChartColorsEnum getColor() {
+        return color;
+    }
 
-	public void setColor(ChartColorsEnum color) {
-		this.color = color;
-	}
+    public void setColor(ChartColorsEnum color) {
+        this.color = color;
+    }
 
     public FlotLineOptions getLines() {
         return lines;
@@ -87,4 +88,11 @@ public class Graph<T> {
         this.points = points;
     }
 
+    public int getPointId() {
+        return pointId;
+    }
+
+    public void setPointId(int pointId) {
+        this.pointId = pointId;
+    }
 }
