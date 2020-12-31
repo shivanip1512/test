@@ -30,6 +30,12 @@ yukon.widget.csrTrend = (function () {
                 }
             });
 
+            $('.js-temperature-checkbox').click(function() {
+                var widgetId = $(this).closest('.widgetWrapper').attr('id'),
+                    widgetId = widgetId.substring(widgetId.indexOf("_") + 1);
+                    widget = yukon.widgets[widgetId];
+                widget.doDirectActionRefresh('render?isTemperatureChecked=' + this.checked);
+            });
             
             _initialized = true;
         }

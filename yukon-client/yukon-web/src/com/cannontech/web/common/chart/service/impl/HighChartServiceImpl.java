@@ -44,24 +44,24 @@ public class HighChartServiceImpl implements HighChartService {
         });
         
         
-        int noOfTempreaturePoints = 0;
+        int noOfTemperaturePoints = 0;
         for (Graph<ChartValue<Double>> graph : graphs) {
-            if (isTempreaturePoint(graph.getPointId())) {
-                noOfTempreaturePoints++;
+            if (isTemperaturePoint(graph.getPointId())) {
+                noOfTemperaturePoints++;
             }
         }
-        boolean isTempreatureAxisDetailsAdded = false;
+        boolean isTemperatureAxisDetailsAdded = false;
         List<Map<String, Object>> yAxesOptions = Lists.newArrayList();
         for (GraphDetail graphDetail : graphDetails) {
             Map<String, Object> yAxes = new HashMap<>();
-            if (isTempreaturePoint(graphDetail.getPointId())) {
-                if (noOfTempreaturePoints == 2 && isTempreatureAxisDetailsAdded) {
+            if (isTemperaturePoint(graphDetail.getPointId())) {
+                if (noOfTemperaturePoints == 2 && isTemperatureAxisDetailsAdded) {
                     yAxes.put(HighChartOptionKey.TITLE.getKey(),
                             Collections.singletonMap(HighChartOptionKey.TEXT.getKey(), ""));
                 } else {
                     yAxes.put(HighChartOptionKey.TITLE.getKey(),
                             Collections.singletonMap(HighChartOptionKey.TEXT.getKey(), graphDetail.getyLabelUnits()));
-                    isTempreatureAxisDetailsAdded = true;
+                    isTemperatureAxisDetailsAdded = true;
                 }
             } else {
                 yAxes.put(HighChartOptionKey.TITLE.getKey(),
@@ -73,7 +73,7 @@ public class HighChartServiceImpl implements HighChartService {
             if (yMax != null) {
                 yAxes.put(HighChartOptionKey.MAX.getKey(), yMax);
             }
-            if (isTempreaturePoint(graphDetail.getPointId())) {
+            if (isTemperaturePoint(graphDetail.getPointId())) {
                 yAxes.put(HighChartOptionKey.OPPOSITE.getKey(), true);
             }
             yAxesOptions.add(yAxes);
@@ -107,7 +107,7 @@ public class HighChartServiceImpl implements HighChartService {
         seriesDetails.put(HighChartOptionKey.SERIES_DATA.getKey(), getDataArray(graph.getChartData()));
         seriesDetails.put(HighChartOptionKey.SHOW_IN_LEGEND.getKey(), false);
         seriesDetails.put(HighChartOptionKey.COLOR.getKey(), graph.getColor().getColorHex());
-        if (isTempreaturePoint(graph.getPointId())) {
+        if (isTemperaturePoint(graph.getPointId())) {
             seriesDetails.put(HighChartOptionKey.FILL_OPACITY.getKey(), "0");
             seriesDetails.put(HighChartOptionKey.MARKER.getKey(), Collections.singletonMap("enabled", false));
             seriesDetails.put(HighChartOptionKey.SERIES_GRAPH_TYPE.getKey(), GraphType.LINE.getHighChartType());
@@ -135,7 +135,7 @@ public class HighChartServiceImpl implements HighChartService {
         return jsonArrayContainer;
     }
     
-    private boolean isTempreaturePoint(int pointId) {
+    private boolean isTemperaturePoint(int pointId) {
         LitePoint lPoint = pointDao.getLitePoint(pointId);
         LiteYukonPAObject pao = cache.getAllPaosMap().get(lPoint.getPaobjectID());
         return pao.getPaoType() == PaoType.WEATHER_LOCATION;

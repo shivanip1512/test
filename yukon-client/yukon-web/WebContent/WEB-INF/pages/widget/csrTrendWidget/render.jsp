@@ -7,19 +7,8 @@
 
 <script type="text/javascript"> 
 $(function () {
-    var dateTimePicker;
-    dateTimePicker = yukon.ui.initDateTimePickers();
     // init for a specific DOM element and its children
-    dateTimePicker.ancestorInit('#optionalDateFields');
-});
-
-$(document).ready(function(){
-    $('.js-temperature-checkbox').click(function() {
-        var widgetId = $(this).closest('.widgetWrapper').attr('id'),
-            widgetId = widgetId.substring(widgetId.indexOf("_") + 1);
-            widget = yukon.widgets[widgetId];
-        widget.doDirectActionRefresh('render?isTemperatureChecked=' + this.checked);
-    });
+    yukon.ui.initDateTimePickers().ancestorInit('#optionalDateFields');
 });
 
 </script>
