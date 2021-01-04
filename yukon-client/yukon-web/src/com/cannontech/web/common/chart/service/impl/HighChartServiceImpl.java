@@ -54,19 +54,24 @@ public class HighChartServiceImpl implements HighChartService {
         List<Map<String, Object>> yAxesOptions = Lists.newArrayList();
         for (GraphDetail graphDetail : graphDetails) {
             Map<String, Object> yAxes = new HashMap<>();
+            Map<String, Object> titleOptions = new HashMap<>();
+            String titleTxt;
+            int rotation = 270;
             if (isTemperaturePoint(graphDetail.getPointId())) {
                 if (noOfTemperaturePoints == 2 && isTemperatureAxisDetailsAdded) {
-                    yAxes.put(HighChartOptionKey.TITLE.getKey(),
-                            Collections.singletonMap(HighChartOptionKey.TEXT.getKey(), ""));
+                    titleTxt = "";
                 } else {
-                    yAxes.put(HighChartOptionKey.TITLE.getKey(),
-                            Collections.singletonMap(HighChartOptionKey.TEXT.getKey(), graphDetail.getyLabelUnits()));
+                    titleTxt = graphDetail.getyLabelUnits();
+                    rotation = -270;
                     isTemperatureAxisDetailsAdded = true;
                 }
             } else {
-                yAxes.put(HighChartOptionKey.TITLE.getKey(),
-                        Collections.singletonMap(HighChartOptionKey.TEXT.getKey(), graphDetail.getyLabelUnits()));
+                titleTxt = graphDetail.getyLabelUnits();
             }
+            titleOptions.put(HighChartOptionKey.TEXT.getKey(), titleTxt);
+            titleOptions.put(HighChartOptionKey.ROTATION.getKey(), rotation);
+            titleOptions.put(HighChartOptionKey.ALIGN.getKey(), "middle");
+            yAxes.put(HighChartOptionKey.TITLE.getKey(), titleOptions);
             if (yMin != null && graphDetail.getyMin() != null) {
                 yAxes.put(HighChartOptionKey.MIN.getKey(), graphDetail.getyMin());
             }
