@@ -462,6 +462,10 @@ INIT_ATTRIBUTE( ReverseInductivekVArhperInterval,                   "REVERSE_IND
 INIT_ATTRIBUTE( ReverseCapacitivekVArhperInterval,                  "REVERSE_CAPACITIVE_KVARH_PER_INTERVAL" );
 
 INIT_ATTRIBUTE( DeliveredkWLoadProfile,                             "DELIVERED_KW_LOAD_PROFILE" );
+INIT_ATTRIBUTE( DeliveredkWRateALoadProfile,                        "DELIVERED_KW_RATE_A_LOAD_PROFILE" );
+INIT_ATTRIBUTE( DeliveredkWRateBLoadProfile,                        "DELIVERED_KW_RATE_B_LOAD_PROFILE" );
+INIT_ATTRIBUTE( DeliveredkWRateCLoadProfile,                        "DELIVERED_KW_RATE_C_LOAD_PROFILE" );
+INIT_ATTRIBUTE( DeliveredkWRateDLoadProfile,                        "DELIVERED_KW_RATE_D_LOAD_PROFILE" );
 INIT_ATTRIBUTE( DeliveredkVArLoadProfile,                           "DELIVERED_KVAR_LOAD_PROFILE" );
 INIT_ATTRIBUTE( ReceivedkWLoadProfile,                              "RECEIVED_KW_LOAD_PROFILE" );
 INIT_ATTRIBUTE( SumkWLoadProfile,                                   "SUM_KW_LOAD_PROFILE" );
