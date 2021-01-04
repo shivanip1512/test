@@ -115,7 +115,7 @@ public class PxMWDataV1 extends PxMWDataGenerator {
         return new PxMWSimulatorResponse(new PxMWDeviceTimeseriesLatestV1("id", dataList), status);
     }
     
-    public PxMWSimulatorResponse cloudEnable(String id, boolean enable) {
+    public PxMWSimulatorResponse cloudEnableV1(String id, Boolean state) {
         if (status == HttpStatus.NOT_FOUND.value()) {
             PxMWErrorsV1 errors = new PxMWErrorsV1(List.of(new PxMWErrorV1(
                     "Device is not registered with System, please check UUID or register your device",
@@ -123,7 +123,7 @@ public class PxMWDataV1 extends PxMWDataGenerator {
             return new PxMWSimulatorResponse(errors, status);
         }
         
-        return enable ? new PxMWSimulatorResponse("Device " + id + " is enabled successfully.",
+        return state ? new PxMWSimulatorResponse("Device " + id + " is enabled successfully.",
                 status) : new PxMWSimulatorResponse("Device " + id + " is disabled successfully.", status);
     }
     

@@ -115,12 +115,12 @@ public class PxMWSimulatorApiControllerV1 {
     }
     
     @PutMapping("/devices/cloudenable")
-    public ResponseEntity<Object> cloudEnableV1(@PathVariable String id, @RequestParam Boolean enabled) {
+    public ResponseEntity<Object> cloudEnableV1(@RequestParam String id, @RequestParam Boolean state) {
         try {
             PxMWSimulatorResponse response = simulatorsCommunicationService
                     .sendRequest(new PxMWSimulatorRequest(PxMWRetrievalUrl.CLOUD_ENABLE, "cloudEnableV1",
-                            new Class[] { String.class, Boolean.class, },
-                            new Object[] { id, enabled }), PxMWSimulatorResponse.class);
+                            new Class[] { String.class, Boolean.class},
+                            new Object[] { id, state }), PxMWSimulatorResponse.class);
             return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
         } catch (ExecutionException e) {
             log.error(e);
