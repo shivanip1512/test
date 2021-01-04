@@ -90,7 +90,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
     @Override
     public LoadGroupBase retrieve(int loadGroupId, LiteYukonUser liteYukonUser) {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(loadGroupId);
-        if (pao == null || pao.getPaoType() == PaoType.MACRO_GROUP) {
+        if (pao == null || !pao.getPaoType().isLoadGroupSupportedFromWeb()) {
             throw new NotFoundException("Id not found");
         }
         LMGroup loadGroup = (LMGroup) dbPersistentDao.retrieveDBPersistent(pao);
@@ -123,7 +123,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
                                                            .stream()
                                                            .filter(group -> group.getLiteID() == loadGroupId)
                                                            .findFirst();
-        if (liteLoadGroup.isEmpty() || liteLoadGroup.get().getPaoType() == PaoType.MACRO_GROUP) {
+        if (liteLoadGroup.isEmpty() || !liteLoadGroup.get().getPaoType().isLoadGroupSupportedFromWeb()) {
             throw new NotFoundException("Id not found");
         }
         Integer paoId = Integer.valueOf(ServletUtils.getPathVariable("id"));
@@ -141,7 +141,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
                                                           .stream()
                                                           .filter(group -> group.getLiteID() == loadGroupId)
                                                           .findFirst();
-        if (liteLoadGroup.isEmpty() || liteLoadGroup.get().getPaoType() == PaoType.MACRO_GROUP) {
+        if (liteLoadGroup.isEmpty() || !liteLoadGroup.get().getPaoType().isLoadGroupSupportedFromWeb()) {
             throw new NotFoundException("Id not found");
         }
 

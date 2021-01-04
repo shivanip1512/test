@@ -148,7 +148,13 @@ yukon.tools.dataExporter = (function () {
                 var buttons = [{text: _config.text.cancel, click: function() { $(this).dialog('close'); }},
                                {text: _config.text.create, 
                                     click: function() {
-                                        window.location.href = 'format/create?formatType=' + $('input[name=newFormatType]:checked').val();
+                                        var useTemplate = $('.js-use-template').is(':checked'),
+                                            templateId = -1,
+                                            selectedFormat = $('input[name=newFormatType]:checked').exists() ? $('input[name=newFormatType]:checked').val() : '';
+                                        if (useTemplate) {
+                                            templateId = $(".js-avaliable-template-formats option:selected").val();
+                                        }
+                                        window.location.href = 'format/create?formatType=' + selectedFormat + '&useTemplate=' + useTemplate + '&templateId=' + templateId;
                                     },
                                     'class': 'primary action'}
                                ];
@@ -195,6 +201,37 @@ yukon.tools.dataExporter = (function () {
                 _submitForm('view');
             });
             
+            $(document).on("click", ".js-create-format-option", function () {
+                if ($(this).hasClass("js-use-template")) {
+                    $(".js-create-format-option.js-do-not-use-template").prop("checked", false);
+                    $.getJSON(yukon.url("/tools/data-export/getAvaliableFormatTemplates"), function (json) {
+                        $(".js-template-formats-dropdown").find("option").remove();
+                        if (json.hasOwnProperty('formatTemplates')) {
+                            $.each(json.formatTemplates, function (key, val) {
+                                $(".js-template-formats-dropdown").append(new Option(val.formatName, val.formatId));
+                            });
+                        } else {
+                            $("#create-format-dialog").find(".user-message").remove();
+                            $("#create-format-dialog").addMessage({
+                                message: json.errorMessage,
+                                messageClass: 'error'
+                            }); 
+                        }
+                        $(".js-avaliable-template-formats").toggleClass("dn", json.hasOwnProperty('errorMessage'));
+                    });
+                } else {
+                    $("#create-format-dialog").find(".user-message").remove();
+                    $(".js-create-format-option.js-use-template").prop("checked", false);
+                    $(".js-avaliable-template-formats").addClass("dn");
+                }
+                
+            });
+            
+            $(document).on("click", ".js-template-preview-link", function (event) {
+                event.preventDefault();	
+                window.open(yukon.url("/tools/data-exporter/format/renderTemplatePreview/" + $(".js-avaliable-template-formats option:selected").val()));
+            });
+
             _initialized = true;
         }
     };

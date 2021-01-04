@@ -611,7 +611,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     NODE_COUNT_EXCEEDED("Node Count Exceeded", AttributeGroup.RFN_OTHER_EVENT, false),
     UPS_BATTERY_VOLTAGE_LOW("UPS Battery Voltage Low", AttributeGroup.RFN_OTHER_EVENT, false),
     CERTIFICATE_EXPIRATION("Certificate Expiration", AttributeGroup.RFN_OTHER_EVENT, false),
-    
+    HIGH_DISK_USAGE("High Disk Usage", AttributeGroup.RFN_OTHER_EVENT, false),
+    RTC_BATTERY_FAILURE("RTC Battery Failure", AttributeGroup.RFN_OTHER_EVENT, false),
+    AC_POWER_FAILURE("AC Power Failure", AttributeGroup.RFN_OTHER_EVENT, false),
+
     // Gateway Statistics
     STREAMING_CAPABLE_DEVICE_COUNT("Connected Device Count", AttributeGroup.GATEWAY_STATISTICS, false),
     STREAMING_ACTIVE_DEVICE_COUNT("Streaming Device Count", AttributeGroup.GATEWAY_STATISTICS, false),
@@ -857,6 +860,11 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     private static void buildRfnEventAttributeSets() {
 
         nonIntervalAttributes = ImmutableSet.of(
+                AVERAGE_POWER_FACTOR_FROZEN,
+                AVERAGE_POWER_FACTOR_FROZEN_RATE_A,
+                AVERAGE_POWER_FACTOR_FROZEN_RATE_B,
+                AVERAGE_POWER_FACTOR_FROZEN_RATE_C,
+                AVERAGE_POWER_FACTOR_FROZEN_RATE_D,
                 MAXIMUM_VOLTAGE,
                 MAXIMUM_VOLTAGE_DAILY,
                 MINIMUM_VOLTAGE,

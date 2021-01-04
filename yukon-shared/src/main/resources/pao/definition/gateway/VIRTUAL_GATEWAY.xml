@@ -20,5 +20,6 @@
         <pointInfo name="Radio Failure" attributes="RADIO_FAILURE"/>
         <pointInfo name="Ready Nodes" init="true" attributes="READY_NODES" />
         <pointInfo name="Streaming Device Count" attributes="STREAMING_ACTIVE_DEVICE_COUNT" />
+        <pointInfo name="High Disk Usage" attributes="HIGH_DISK_USAGE"/>
     </pointInfos>
 </pao>

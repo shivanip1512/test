@@ -3,7 +3,7 @@
 # Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 
 # Valid operations are start, stop, restart
-param([switch]$Elevated)
+param([switch]$Elevated,[string]$DatabaseType='restart')
 
 function Test-Admin {
   $currentUser = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent())
@@ -23,10 +23,12 @@ exit
 }
 
 Import-Module $PSScriptRoot\YukonDeploy
+Import-Module $PSScriptRoot\YukonDatabase
  
 Stop-Services
-Uninstall-EIMAndSimulator
 Uninstall-Yukon
+Reset-DatabaseSnapshot
 Expand-Installer
 Install-Yukon
+Update-YukonDatabase
 Start-YukonServices

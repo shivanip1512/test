@@ -19,11 +19,13 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFormatDao;
@@ -37,6 +39,7 @@ import com.cannontech.amr.archivedValueExporter.model.ExportField;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
 import com.cannontech.amr.archivedValueExporter.model.Field;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
+import com.cannontech.amr.archivedValueExporter.model.FieldValue;
 import com.cannontech.amr.archivedValueExporter.model.MissingAttribute;
 import com.cannontech.amr.archivedValueExporter.model.PadSide;
 import com.cannontech.amr.archivedValueExporter.model.Preview;
@@ -95,7 +98,7 @@ public class DataExporterFormatController {
     @Autowired private AttributeService attributeService;
     @Autowired private AttributeType attributeTypeEditor;
 
-    @RequestMapping(value = "/data-exporter/format/{id}", method = RequestMethod.GET)
+    @GetMapping(value = "/data-exporter/format/{id}")
     public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
         
         model.addAttribute("mode", PageEditMode.EDIT);
@@ -109,6 +112,21 @@ public class DataExporterFormatController {
         
         return "data-exporter/format/format.jsp";
     }
+    
+    @GetMapping(value = "/data-exporter/format/renderTemplatePreview/{id}")
+    public String renderTemplatePreview(ModelMap model, YukonUserContext userContext, FlashScope flashScope, @PathVariable int id) {
+        model.addAttribute("mode", PageEditMode.VIEW);
+        ExportFormat exportFormat = null;
+        try {
+            exportFormat = mockExportFormatTemplateObject();
+        } catch (Exception e) {
+            exportFormat = setExportFormatForErrorScenario(flashScope, e);
+        }
+        model.addAttribute("showAttributeSection", exportFormat.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
+        model.addAttribute("format", exportFormat);
+        return "data-exporter/format/format.jsp";
+    }
+    
     
     @RequestMapping(value = "/data-exporter/format/{id}/copy", method = RequestMethod.GET)
     public String copy(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
@@ -128,20 +146,70 @@ public class DataExporterFormatController {
         return "data-exporter/format/format.jsp";
     }
     
-    @RequestMapping(value = "/data-exporter/format/create", method = RequestMethod.GET)
-    public String create(ModelMap model, YukonUserContext userContext, ArchivedValuesExportFormatType formatType) {
-        
+    @GetMapping(value = "/data-exporter/format/create")
+    public String create(ModelMap model, YukonUserContext userContext, FlashScope flashScope,
+            @RequestParam(required = false, name = "formatType", defaultValue = "FIXED_ATTRIBUTE") ArchivedValuesExportFormatType formatType,
+            @RequestParam("useTemplate") boolean useTemplate, @RequestParam("templateId") int templateId) {
+
         model.addAttribute("mode", PageEditMode.CREATE);
         
-        ExportFormat format = new ExportFormat();
-        format.setFormatType(formatType);
+        ExportFormat format = null;
+        if (useTemplate) {
+            try {
+                //TODO: Remove this log statement and replace mockExportFormatTemplateObject() with service layer call.
+                log.info("Template Id : " + templateId);
+                format = mockExportFormatTemplateObject();
+            } catch (Exception e) {
+                format = setExportFormatForErrorScenario(flashScope, e);
+                model.addAttribute("showAttributeSection", format.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
+            }
+        } else {
+            format = new ExportFormat();
+            format.setFormatType(formatType);
+        }
         model.addAttribute("format", format);
-        
         setupModel(model, userContext, format);
-        
         return "data-exporter/format/format.jsp";
     }
     
+    private ExportFormat setExportFormatForErrorScenario(FlashScope flashScope, Exception exception) {
+        log.error(exception);
+        ExportFormat format = new ExportFormat();
+        format.setFormatType(ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
+        format.setDelimiter(null);
+        format.setDateTimeZoneFormat(null);
+        flashScope.setError(new YukonMessageSourceResolvable(BASE_KEY + "parseTemplate.error"));
+        return format;
+    }
+    
+    private ExportFormat mockExportFormatTemplateObject() throws Exception {
+        ExportFormat format = new ExportFormat();
+        format.setFormatName("Template Formate");
+        format.setHeader("Template Header");
+        format.setFooter("Template Footer");
+        format.setFormatType(ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
+        ExportAttribute attribute = new ExportAttribute();
+        attribute.setAttribute(BuiltInAttribute.BLINK_COUNT);
+        attribute.setDataSelection(DataSelection.MAX);
+        format.getAttributes().add(attribute);
+        ExportField exportField = new ExportField();
+        exportField.setAttributeField(AttributeField.POINT_STATE);
+        Field field = new Field();
+        field.setAttribute(attribute);
+        field.setType(FieldType.DEVICE_TYPE);
+        exportField.setField(field);
+        exportField.setMissingAttribute(MissingAttribute.LEAVE_BLANK);
+        exportField.setMissingAttributeValue("abab");
+        exportField.setPadChar(" ");
+        exportField.setPadSide(PadSide.LEFT);
+        exportField.setPattern("some pattern");
+        exportField.setReadingPattern(ReadingPattern.FIVE_ZERO);
+        exportField.setRoundingMode(YukonRoundingMode.CEILING);
+        exportField.setTimestampPattern(TimestampPattern.DAY_MONTH_YEAR);
+        format.getFields().add(exportField);
+        return format;
+    }
+
     @RequestMapping(value = "/data-exporter/format", method = RequestMethod.POST)
     public String save(FlashScope flashScope, 
             ModelMap model, 
@@ -263,6 +331,7 @@ public class DataExporterFormatController {
         
         model.addAttribute("fields", getFields(formatType, attributeList.getAttributes()));
         model.addAttribute("padSides", PadSide.values());
+        model.addAttribute("fieldValues", FieldValue.values());
         model.addAttribute("attributeFields", AttributeField.values());
         model.addAttribute("missingAttributes", MissingAttribute.values());
         model.addAttribute("roundingModes", YukonRoundingMode.values());
@@ -289,6 +358,7 @@ public class DataExporterFormatController {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             
             model.addAttribute("fields", getFields(formatType, attributeList.getAttributes()));
+            model.addAttribute("fieldValues", FieldValue.values());
             model.addAttribute("padSides", PadSide.values());
             model.addAttribute("attributeFields", AttributeField.values());
             model.addAttribute("missingAttributes", MissingAttribute.values());
@@ -313,15 +383,13 @@ public class DataExporterFormatController {
         FieldType type = exportField.getField().getType();
         boolean isPlainText = type == FieldType.PLAIN_TEXT;
         boolean isAttribute = exportField.getField().getAttribute() != null;
-        boolean isTimestamp = exportField.isTimestamp();;
+        boolean isTimestamp = exportField.isTimestamp();
         boolean isValue = exportField.isValue();
-        
+
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         model.clear();
-        
+
         Map<String, Object> json = new HashMap<>();
-        json.put("exportField", exportField);
-        
         Map<String, String> text = new HashMap<>();
         text.put("exportField", accessor.getMessage(exportField.getMessage()));
         text.put("attributeField", isAttribute ? accessor.getMessage(exportField.getAttributeField()) : "");
@@ -360,6 +428,9 @@ public class DataExporterFormatController {
                 }
             } 
             text.put("pattern", pattern);
+        } else if (exportField.getField().isAttributeName()) {
+            exportField.setPattern(exportField.getFieldValue().name());
+            text.put("pattern", exportField.getFieldValue().toString());
         } else {
             text.put("pattern", "");
         }
@@ -374,9 +445,9 @@ public class DataExporterFormatController {
         } else {
             text.put("padding", "");
         }
-        
+        json.put("exportField", exportField);
         json.put("text", text);
-        
+
         resp.setContentType("application/json");
         JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
         
@@ -551,5 +622,4 @@ public class DataExporterFormatController {
             }
         });
     }
-
 }
