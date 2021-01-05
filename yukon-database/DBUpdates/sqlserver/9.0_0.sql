@@ -184,6 +184,23 @@ UPDATE ArchiveValuesExportField SET Pattern = 'DEFAULT' WHERE FieldType = 'ATTRI
 INSERT INTO DBUpdates VALUES ('YUK-23280', '9.0.0', GETDATE());
 /* @end YUK-23280 */
 
+/* @start YUK-23348 */
+alter table LMItronCycleGear
+DROP CONSTRAINT FK_LMItronCycleGear_LMPDirGear;
+GO
+
+SP_RENAME 'LMItronCycleGear','new_table_name';
+GO
+
+alter table new_table_name
+   add constraint FK_new_table_name_LMPDirGear foreign key (GearId)
+      references LMProgramDirectGear (GearID)
+         on delete cascade;
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-23348', '9.0.0', GETDATE());
+/* @end YUK-23348 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
