@@ -205,6 +205,8 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn420Centron_putconfig_display )
 
 BOOST_AUTO_TEST_CASE( test_config_notification )
 {
+    const auto tzOverride = Cti::Test::set_to_central_timezone();
+
     auto cmd = Cti::Devices::Commands::RfnCommand::handleUnsolicitedReport(execute_time, test_cmd_rfn_ConfigNotification::payload);
 
     BOOST_REQUIRE(cmd);

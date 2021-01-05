@@ -1497,7 +1497,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_operation_already_execut
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
 {
-    Cti::Test::set_to_central_timezone();
+    const auto tz_override = Cti::Test::set_to_central_timezone();
 
     DnpProtocol dnp;
 
@@ -1664,7 +1664,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_empty_time_block)
 {
-    Cti::Test::set_to_central_timezone();
+    const auto tz_override = Cti::Test::set_to_central_timezone();
 
     DnpProtocol dnp;
 
@@ -1815,7 +1815,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_empty_time_block)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_invalid_time_object)
 {
-    Cti::Test::set_to_central_timezone();
+    const auto tz_override = Cti::Test::set_to_central_timezone();
 
     DnpProtocol dnp;
 
