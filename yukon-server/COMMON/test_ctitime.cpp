@@ -225,8 +225,8 @@ BOOST_AUTO_TEST_CASE(test_ctitime_fromLocalSeconds)
 {
     const auto tz_override = Cti::Test::set_to_central_timezone();
 
-    const long standard_offset = -6 * 60;
-    const long daylight_offset = -5 * 60;
+    constexpr int standard_offset = -6 * 3600;
+    constexpr int daylight_offset = -5 * 3600;
 
     struct TimeParts
     {
@@ -234,17 +234,17 @@ BOOST_AUTO_TEST_CASE(test_ctitime_fromLocalSeconds)
         int tz_offset;
     };
 
-    std::vector<TimeParts> time_parts
+    std::initializer_list<TimeParts> time_parts =
     {
         { /* 2009-01-01 00:00:00 */ 1230768000, standard_offset }, //  known ST date
 
         { /* 2009-03-07 00:00:00 */ 1236384000, standard_offset }, //  standard -> daylight-saving-time transition
-        { /* 2009-03-08 01:59:59 */ 1236477599, standard_offset }, //  1236477599 - standard_offset * 60 = 1236499199
+        { /* 2009-03-08 01:59:59 */ 1236477599, standard_offset }, //  1236477599 - standard_offset = 1236499199
 
         { /* 2009-03-08 02:00:00 */ 1236474000, standard_offset }, //  nonexistent hour;  this test is here to pin the behavior
         { /* 2009-03-08 02:59:59 */ 1236477599, standard_offset }, //    Results in 01:00:00 Standard and 01:59:59 Standard
 
-        { /* 2009-03-08 03:00:00 */ 1236481200, daylight_offset }, //  1236481200 - daylight_offset * 60 = 1236499200
+        { /* 2009-03-08 03:00:00 */ 1236481200, daylight_offset }, //  1236481200 - daylight_offset = 1236499200
         { /* 2009-03-09 00:00:00 */ 1236556800, daylight_offset }, //
 
         { /* 2009-07-01 00:00:00 */ 1246406400, daylight_offset }, //  known DST date
@@ -261,12 +261,10 @@ BOOST_AUTO_TEST_CASE(test_ctitime_fromLocalSeconds)
         { /* 2009-12-31 00:00:00 */ 1262217600, standard_offset }  //  known ST date
     };
 
-    BOOST_REQUIRE( ! time_parts.empty() );
-
-    for each(const TimeParts & tp in time_parts )
+    for(const auto& tp : time_parts )
     {
         const auto t = CtiTime::fromLocalSeconds(tp.local_seconds);
-        BOOST_CHECK_EQUAL(t.seconds(), tp.local_seconds - (tp.tz_offset * 60));
+        BOOST_CHECK_EQUAL(t.seconds(), tp.local_seconds - tp.tz_offset);
     }
 }
 
