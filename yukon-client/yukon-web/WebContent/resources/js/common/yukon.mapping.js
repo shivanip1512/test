@@ -20,7 +20,7 @@ yukon.mapping = (function () {
 
     _routeColor = yg.colors.BLUE_DARK,
 
-    _focusRouteColor = yg.colors.GRAY,
+    _focusRouteColor = yg.colors.NAVY,
 
     _highlightRouteColor = yg.colors.YELLOW,
     
