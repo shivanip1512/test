@@ -1,12 +1,12 @@
-yukon.namespace('yukon.widget.firmwareAndCertificateInformation');
+yukon.namespace('yukon.widget.firmwareInformation');
 
 /**
- * Module for the firmwareAndCertificateInformation widget
- * @module yukon.widget.firmwareAndCertificateInformation
+ * Module for the firmwareInformation widget
+ * @module yukon.widget.firmwareInformation
  * @requires JQUERY
  * @requires yukon
  */
-yukon.widget.firmwareAndCertificateInformation = (function () {
+yukon.widget.firmwareInformation = (function () {
     
     'use strict';
     
@@ -15,10 +15,10 @@ yukon.widget.firmwareAndCertificateInformation = (function () {
 
     _update = function () {
         $.ajax({
-            url: yukon.url('/widget/firmwareAndCertificateInformationWidget/render'),
+            url: yukon.url('/widget/firmwareInformationWidget/render'),
         }).done(function (data) {
-            $('#js-firmware-and-certificate-info').html(data);
-        }); 
+            $('#js-firmware-info').html(data);
+        });
         setTimeout(_update, yg._updateInterval);
     },
 
@@ -38,4 +38,4 @@ yukon.widget.firmwareAndCertificateInformation = (function () {
     return mod;
 })();
 
-$(function () { yukon.widget.firmwareAndCertificateInformation.init(); });
+$(function () { yukon.widget.firmwareInformation.init(); });
