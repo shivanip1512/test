@@ -236,29 +236,29 @@ BOOST_AUTO_TEST_CASE(test_ctitime_fromLocalSeconds)
 
     std::vector<TimeParts> time_parts
     {
-        { /* 2009,  1,  1,  0, 00, 00,*/ 1230768000, standard_offset }, //  known ST date
+        { /* 2009-01-01 00:00:00 */ 1230768000, standard_offset }, //  known ST date
 
-        { /* 2009,  3,  7,  0, 00, 00,*/ 1236384000, standard_offset }, //  standard -> daylight-saving-time transition
-        { /* 2009,  3,  8,  1, 59, 59,*/ 1236477599, standard_offset }, //
+        { /* 2009-03-07 00:00:00 */ 1236384000, standard_offset }, //  standard -> daylight-saving-time transition
+        { /* 2009-03-08 01:59:59 */ 1236477599, standard_offset }, //  1236477599 - standard_offset * 60 = 1236499199
 
-        { /* 2009,  3,  8,  2, 00, 00,*/ 1236474000, standard_offset }, //  nonexistent hour;  this test is here to pin the behavior
-        { /* 2009,  3,  8,  2, 59, 59,*/ 1236477599, standard_offset }, //    Results in 01:00:00 Standard and 01:59:59 Standard
+        { /* 2009-03-08 02:00:00 */ 1236474000, standard_offset }, //  nonexistent hour;  this test is here to pin the behavior
+        { /* 2009-03-08 02:59:59 */ 1236477599, standard_offset }, //    Results in 01:00:00 Standard and 01:59:59 Standard
 
-        { /* 2009,  3,  8,  3, 00, 00,*/ 1236481200, daylight_offset }, //
-        { /* 2009,  3,  9,  0, 00, 00,*/ 1236556800, daylight_offset }, //
+        { /* 2009-03-08 03:00:00 */ 1236481200, daylight_offset }, //  1236481200 - daylight_offset * 60 = 1236499200
+        { /* 2009-03-09 00:00:00 */ 1236556800, daylight_offset }, //
 
-        { /* 2009,  7,  1,  0, 00, 00,*/ 1246406400, daylight_offset }, //  known DST date
+        { /* 2009-07-01 00:00:00 */ 1246406400, daylight_offset }, //  known DST date
 
-        { /* 2009, 10, 31,  0, 00, 00,*/ 1256947200, daylight_offset }, //  daylight-saving-time -> standard transition
-        { /* 2009, 11,  1,  0, 59, 59,*/ 1257037199, daylight_offset }, //
+        { /* 2009-10-31 00:00:00 */ 1256947200, daylight_offset }, //  daylight-saving-time -> standard transition
+        { /* 2009-11-01 00:59:59 */ 1257037199, daylight_offset }, //
 
-        { /* 2009, 11,  1,  1, 00, 00,*/ 1257037200, standard_offset }, //  ambiguous hour;  this test is here to pin the behavior
-        { /* 2009, 11,  1,  1, 59, 59,*/ 1257040799, standard_offset }, //
+        { /* 2009-11-01 01:00:00 */ 1257037200, standard_offset }, //  ambiguous hour;  this test is here to pin the behavior
+        { /* 2009-11-01 01:59:59 */ 1257040799, standard_offset }, //
 
-        { /* 2009, 11,  1,  2, 00, 00,*/ 1257040800, standard_offset }, //
-        { /* 2009, 11,  2,  0, 00, 00,*/ 1257120000, standard_offset }, //
+        { /* 2009-11-01 02:00:00 */ 1257040800, standard_offset }, //
+        { /* 2009-11-02 00:00:00 */ 1257120000, standard_offset }, //
 
-        { /* 2009, 12, 31,  0, 00, 00,*/ 1262217600, standard_offset }  //  known ST date
+        { /* 2009-12-31 00:00:00 */ 1262217600, standard_offset }  //  known ST date
     };
 
     BOOST_REQUIRE( ! time_parts.empty() );
