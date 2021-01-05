@@ -188,14 +188,20 @@ string CtiDate::asString() const
 
 string CtiDate::asStringUSFormat() const
 {
-    //  date format "mm/dd/yyyy" 11 bytes needed
-    char time_str[11];
-    CtiTime tempTime((CtiDate &)(*this), 0, 0, 0);
-    ctitime_t seconds = tempTime.seconds();
-    strftime(time_str, 11, "%m/%d/%Y", localtime(&seconds));
-    time_str[10] = 0;
+    std::string time_str = "00/00/0000";
+    
+    time_str[0] += bdate.month() / 10;
+    time_str[1] += bdate.month() % 10;
+                  
+    time_str[3] += bdate.day() / 10;
+    time_str[4] += bdate.day() % 10;
+                  
+    time_str[6] += bdate.year() / 1000;
+    time_str[7] += bdate.year() /  100 % 10;
+    time_str[8] += bdate.year() /   10 % 10;
+    time_str[9] += bdate.year()        % 10;
 
-    return string(time_str);
+    return time_str;
 }
 
 string CtiDate::weekDayName() const

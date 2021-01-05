@@ -2038,7 +2038,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
 
     BOOST_AUTO_TEST_CASE(test_dev_mct420_getvalue_outage)
     {
-        Cti::Test::set_to_central_timezone();
+        const auto tz_override = Cti::Test::set_to_central_timezone();
 
         mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         10291);
         //  SSPEC revision does not matter for the MCT-420 outage decode
@@ -2118,7 +2118,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
 
     BOOST_AUTO_TEST_CASE(test_dev_mct420cd_getstatus_disconnect)
     {
-        Cti::Test::set_to_central_timezone();
+        const auto tz_override = Cti::Test::set_to_central_timezone();
 
         {
             CtiCommandParser parse( "getstatus disconnect" );

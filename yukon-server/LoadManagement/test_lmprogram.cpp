@@ -16,7 +16,12 @@ extern const CtiTime gEndOfCtiTime;
 // Nonexistent window
 const CtiLMProgramControlWindow *no_window = 0;
 
+struct tzOverride {
+    const decltype(Cti::Test::set_to_central_timezone()) scopedOverride = Cti::Test::set_to_central_timezone();
+};
+
 BOOST_AUTO_TEST_SUITE( test_lmprogram )
+
 
 /*
 ***  TESTING: GetTimeFromOffsetAndDate()
@@ -110,6 +115,8 @@ BOOST_AUTO_TEST_CASE(test_get_wallclock_time_more_than_one_day_negative_offset)
     BOOST_CHECK_EQUAL( time.second(),             0 );
 }
 
+
+BOOST_FIXTURE_TEST_SUITE( test_wallclock, tzOverride )
 
 BOOST_AUTO_TEST_CASE(test_get_wallclock_time_spring_2009_dst)
 {
@@ -224,6 +231,7 @@ BOOST_AUTO_TEST_CASE(test_get_wallclock_time_fall_2009_dst_invalid_time)
     BOOST_CHECK_EQUAL( time.second(),             0 );
 }
 
+BOOST_AUTO_TEST_SUITE_END()
 
 /*
 *** TESTING: getControlWindow()

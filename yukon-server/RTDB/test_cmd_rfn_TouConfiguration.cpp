@@ -345,7 +345,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
 
 BOOST_AUTO_TEST_CASE( test_RfnTouHolidayConfigurationCommand )
 {
-    Cti::Test::set_to_central_timezone();
+    const auto tz_override = Cti::Test::set_to_central_timezone();
 
     const CtiDate date1 = CtiDate( 01, 02, 2025 ),
                   date2 = CtiDate( 14, 06, 2036 ),

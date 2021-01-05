@@ -4215,6 +4215,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
     BOOST_AUTO_TEST_CASE(test_getstatus_lp)
     {
+        const auto tzOverride = Cti::Test::set_to_central_timezone();
+
         mct._type = TYPEMCT470;
         mct._name = "Jimmy";
 
