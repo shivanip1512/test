@@ -43,5 +43,5 @@
         </tags:sectionContainer2>
     </div>
 
-    <cti:includeScript link="/resources/js/widgets/yukon.widget.firmwareAndCertificateInformation.js"/>
+    <cti:includeScript link="/resources/js/widgets/yukon.widget.firmwareInformation.js"/>
 </cti:msgScope>
