@@ -283,6 +283,21 @@ int CtiConfigParameters::getValueAsInt(const string& key, int defaultval)
     return findValueAsInt(key).value_or(defaultval);
 }
 
+unsigned CtiConfigParameters::getValueAsUnsigned(const string& key, unsigned defaultval)
+{
+    if( const auto str = getValueAsString(key);
+        ! str.empty() )
+    {
+        char* end = nullptr;
+        const auto val = strtoull(str.c_str(), &end, 10);
+        if( end != str.c_str() && val <= std::numeric_limits<unsigned>::max() )
+        {
+            return val;
+        }
+    }
+    return defaultval;
+}
+
 ULONG CtiConfigParameters::getValueAsULong(const string& key, ULONG defaultval, int base)
 {
     char *ch;
