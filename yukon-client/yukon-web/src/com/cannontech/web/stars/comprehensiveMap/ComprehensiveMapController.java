@@ -217,6 +217,9 @@ public class ComprehensiveMapController {
         }
     }
 
+    /**
+     * Adding all devices to a temporary group.
+     */
     private String addDevicesToDeviceGroup(NetworkMap map) {
         log.debug("Devices in map {}", map.getTotalDevices());
         log.debug("Devices without location {}", map.getDevicesWithoutLocation().size());

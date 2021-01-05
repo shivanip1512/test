@@ -480,11 +480,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     private void colorCodeByGatewayAndAddToMap(NetworkMap map,  Map<Integer, List<DynamicRfnDeviceData>> data) {
         AtomicInteger i = new AtomicInteger(0);
         for (Integer gatewayId : data.keySet()) {
-            // Set the Color Value back to 0
-            if (i.get() == 10) {
-                i.set(0);
-            }
-            Color color = Color.values()[i.getAndIncrement()];
+            Color color = Color.values()[i.getAndIncrement() % Color.values().length];
             RfnDevice gateway = data.get(gatewayId).iterator().next().getGateway();
             Set<RfnIdentifier> devices = data.get(gatewayId).stream()
                     .map(d -> d.getDevice().getRfnIdentifier())
