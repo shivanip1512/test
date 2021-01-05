@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.dr.pxmw.model.PxMWException;
 import com.cannontech.dr.pxmw.model.v1.PxMWChannelValueV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceTimeseriesLatestV1;
@@ -62,4 +63,7 @@ public interface PxMWCommunicationServiceV1 {
      * The value "true" enables the device and the "false" disables the device.
      */
     void cloudEnable(String deviceGuid, boolean enable) throws PxMWCommunicationExceptionV1, PxMWException;
+
+    void sendCommand(String deviceGuid, String commandGuid, PxMWCommandRequestV1 request)
+            throws PxMWCommunicationExceptionV1, PxMWException;
 }

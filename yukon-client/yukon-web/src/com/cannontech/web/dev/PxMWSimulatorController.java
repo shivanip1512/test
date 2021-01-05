@@ -120,8 +120,11 @@ public class PxMWSimulatorController {
                 paramList.remove(deviceGuid);
                 List<PxMWChannelValueV1> values = pxMWCommunicationServiceV1.getChannelValues(paramList.get(0), paramList);
                 processSuccess(params, json, getFormattedJson(values));
-            }else if (endpoint == PxMWRetrievalUrl.CLOUD_ENABLE) {
-                pxMWCommunicationServiceV1.cloudEnable(paramList.get(0), parseBoolean(paramList, 1));  
+            } else if (endpoint == PxMWRetrievalUrl.CLOUD_ENABLE) {
+                pxMWCommunicationServiceV1.cloudEnable(paramList.get(0), parseBoolean(paramList, 1));
+            } else if (endpoint == PxMWRetrievalUrl.COMMANDS) {
+                String jsonString = paramList.get(2);
+                pxMWCommunicationServiceV1.sendCommand(paramList.get(0), paramList.get(1), null);
             }
         } catch (PxMWCommunicationExceptionV1 e) {
             processError(json, e);

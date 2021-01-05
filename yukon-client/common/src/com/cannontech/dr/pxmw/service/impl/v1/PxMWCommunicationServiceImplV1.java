@@ -35,6 +35,8 @@ import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
 import com.cannontech.dr.pxmw.model.v1.PxMWChannelValueV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWChannelValuesRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWChannelValuesV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWCommandResponseV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceTimeseriesLatestV1;
@@ -181,6 +183,24 @@ public class PxMWCommunicationServiceImplV1 implements PxMWCommunicationServiceV
                 return response.getBody().getValues();
             }
             throw new PxMWException(httpStatus.value(), status + ":" + response.getBody().getMsg());
+        } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new PxMWException("Exception occured while getting channel values", e);
+        }
+    }
+    
+    @Override
+    public void sendCommand(String deviceGuid, String commandGuid, PxMWCommandRequestV1 request)
+            throws PxMWCommunicationExceptionV1, PxMWException {
+        URI uri = getUri(Map.of("id", deviceGuid, "command_instance_id", commandGuid), PxMWRetrievalUrl.COMMANDS);
+        log.debug("Sending command to device. Device Guid:{} Command Guid:{} URL:{}", deviceGuid, commandGuid, uri);
+        try {
+            HttpEntity<PxMWCommandRequestV1> requestEntity = getRequestWithAuthHeaders(request);
+            ResponseEntity<PxMWCommandResponseV1> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity,
+                    PxMWCommandResponseV1.class);
+            log.info("Sent command to device. Device Guid:{} Command Guid:{}", deviceGuid, commandGuid,
+                    new GsonBuilder().setPrettyPrinting().create().toJson(response.getBody()));
         } catch (PxMWCommunicationExceptionV1 | PxMWException e) {
             throw e;
         } catch (Exception e) {

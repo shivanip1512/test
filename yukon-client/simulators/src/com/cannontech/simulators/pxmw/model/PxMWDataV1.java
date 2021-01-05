@@ -123,8 +123,9 @@ public class PxMWDataV1 extends PxMWDataGenerator {
             return new PxMWSimulatorResponse(errors, status);
         }
         
-        return state ? new PxMWSimulatorResponse("Device " + id + " is enabled successfully.",
-                status) : new PxMWSimulatorResponse("Device " + id + " is disabled successfully.", status);
+        return state 
+                ? new PxMWSimulatorResponse("Device " + id + " is enabled successfully.", status) 
+                : new PxMWSimulatorResponse("Device " + id + " is disabled successfully.", status);
     }
     
     public PxMWSimulatorResponse getChannelValuesV1(String id, List<String> tags) {
