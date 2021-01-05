@@ -110,7 +110,6 @@ Network Manager :
   - field: gwcount
     description: Gateway Count
     details: Contains count of gateway
-    source: SELECT COUNT(*) AS "GatewayCount" FROM Gateway
     iotType: Both
     frequency : EverySixHours
 
