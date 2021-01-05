@@ -5,6 +5,7 @@ public enum HighChartOptionKey {
     COLOR("color"),
     DATE_FORMAT_MONTH_DATE("%b %e"),
     DATE_FORMAT_MONTH_YEAR("%b '%y"),
+    DATE_TIME_FORMAT_HOUR_MINUTE_MONTH("%H:%M"),
     FILL_OPACITY("fillOpacity"),
     MARKER("marker"),
     MIN("min"),
