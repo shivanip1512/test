@@ -3,6 +3,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
+<%@ taglib prefix="highChart" tagdir="/WEB-INF/tags/highChart" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
@@ -279,12 +280,18 @@ $(document).on('click', '#b-get-report', function(event) {
                             </c:when>
                         </c:choose>
         
-                        <flot:trend title="${preChartTitle}"
-                            reloadInterval="30" ymin="${yMin}" ymax="${yMax}"
-                            pointIds="${pointId}" startDate="${preChartStartDateMillis}"
-                            endDate="${preChartStopDateMillis}"
-                            interval="${preChartInterval}"
-                            converterType="${converterType}" graphType="${graphType}"/>
+                        <highChart:trend title="${preChartTitle}"
+                                         ymin="${yMin}"
+                                         ymax="${yMax}"
+                                         pointIds="${pointId}"
+                                         startDate="${preChartStartDateMillis}"
+                                         endDate="${preChartStopDateMillis}"
+                                         interval="${preChartInterval}"
+                                         converterType="${converterType}"
+                                         graphType="${graphType}"
+                                         chartHeight="300"
+                                         chartWidth="550"
+                                         reloadInterval="3"/>
                         <br>
                         
                         <%-- tabular data links --%>
@@ -341,12 +348,18 @@ $(document).on('click', '#b-get-report', function(event) {
                             </c:when>
                         </c:choose>
         
-                        <flot:trend title="${postChartTitle}"
-                            reloadInterval="30" ymin="${yMin}" ymax="${yMax}"
-                            pointIds="${pointId}" startDate="${postChartStartDateMillis}"
-                            endDate="${postChartStopDateMillis}"
-                            interval="${postChartInterval}"
-                            converterType="${converterType}" graphType="${graphType}"/>
+                        <highChart:trend title="${postChartTitle}"
+                                         ymin="${yMin}"
+                                         ymax="${yMax}"
+                                         pointIds="${pointId}"
+                                         startDate="${postChartStartDateMillis}"
+                                         endDate="${postChartStopDateMillis}"
+                                         interval="${postChartInterval}"
+                                         converterType="${converterType}"
+                                         graphType="${graphType}"
+                                         chartHeight="300"
+                                         chartWidth="550"
+                                         reloadInterval="3"/>
                         <br>
                         
                         <%-- tabular data links --%>
