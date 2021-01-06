@@ -14,18 +14,23 @@ yukon.highChart = (function () {
  
     var 
     
+    _buildChart = function (parameters) {
+        $.ajax({
+            url: parameters.chartUrl,
+            dataType : 'json'
+        }).done(function (response, textStatus, jqXHR) {
+            yukon.highChart.buildChart($(parameters.containerIdentifier), response, parameters.title,
+                parameters.height, parameters.width);
+        });
+    },
+    
     mod = {
     
         reloadChartAtInterval: function (parameters) {
             setInterval(function(){
-                $.ajax({
-                    url: parameters.chartUrl,
-                    dataType : 'json'
-                }).done(function (response, textStatus, jqXHR) {
-                    yukon.highChart.buildChart($(parameters.containerIdentifier), response, parameters.title,
-                        parameters.height, parameters.width);
-                });
+                _buildChart(parameters);
             }, parameters.reloadInterval * 1000);
+            _buildChart(parameters);
         },
     
         buildChart : function (chartContainer, jsonResponse, title, chartHeight, chartWidth) {

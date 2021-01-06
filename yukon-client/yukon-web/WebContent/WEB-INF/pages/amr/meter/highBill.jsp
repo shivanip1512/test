@@ -291,7 +291,7 @@ $(document).on('click', '#b-get-report', function(event) {
                                          graphType="${graphType}"
                                          chartHeight="300"
                                          chartWidth="550"
-                                         reloadInterval="3"/>
+                                         reloadInterval="30"/>
                         <br>
                         
                         <%-- tabular data links --%>
@@ -359,7 +359,7 @@ $(document).on('click', '#b-get-report', function(event) {
                                          graphType="${graphType}"
                                          chartHeight="300"
                                          chartWidth="550"
-                                         reloadInterval="3"/>
+                                         reloadInterval="30"/>
                         <br>
                         
                         <%-- tabular data links --%>
