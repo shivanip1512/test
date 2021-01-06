@@ -19,6 +19,12 @@ import com.cannontech.clientutils.YukonLogManager;
 public class ApiMethodSignatureTest {
     private Logger log = YukonLogManager.getLogger(ApiMethodSignatureTest.class);
 
+    /*
+     * According to best practice defined in https://confluence-prod.tcc.etn.com/display/EEST/API+Development+Design+Practices#APIDevelopmentDesignPractices MethodSignature, 
+       path variable annotation should be before valid annotation. If not then the test case will fail. 
+       This is done so that if path variables have any issues (like String passed instead of Integer) then this will be handled by spring
+       and validators will not be called. Ref - YUK-23141
+     */
     @Test
     public void testValidMethodSignature() {
         Reflections reflections = new Reflections("com.cannontech.web");
