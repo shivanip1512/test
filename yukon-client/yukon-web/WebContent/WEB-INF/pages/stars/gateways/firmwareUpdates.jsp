@@ -49,7 +49,7 @@
         <div class="column-12-12 clearfix">
             <div class="column one">
                 <cti:msg2 var="helpTextWidget" key="yukon.web.widgets.firmwareInformationWidget.helpText"/>
-                <tags:widget bean="firmwareInformationWidget" helpText="${helpText}"/>
+                <tags:widget bean="firmwareInformationWidget" helpText="${helpTextWidget}"/>
             </div>
         </div>
         <br>
