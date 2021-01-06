@@ -9,8 +9,6 @@
 #include "desolvers.h"
 #include "words.h"
 
-#include <boost/bind/bind.hpp>
-
 using namespace std;
 
 using Cti::Protocols::KlondikeProtocol;
@@ -350,13 +348,14 @@ string Ccu721Device::queueReport() const
 
 unsigned long Ccu721Device::getRequestCount(unsigned long requestID) const
 {
-    using namespace boost::placeholders;
-
     reader_guard lock{ _queued_mux };
 
     return std::count_if(_queued_outmessages.begin(),
                          _queued_outmessages.end(),
-                         boost::bind(findRequestIDMatch, reinterpret_cast<void *>(requestID), _1));
+                         [=]( OUTMESS* om )
+                         {
+                             return findRequestIDMatch(reinterpret_cast<void*>(requestID), om);
+                         } );
 }
 
 
