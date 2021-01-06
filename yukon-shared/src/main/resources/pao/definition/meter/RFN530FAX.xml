@@ -66,6 +66,10 @@
         <pointInfo name="Min Voltage Phase B" attributes="MINIMUM_VOLTAGE_PHASE_B"/>
         <pointInfo name="Min Voltage Phase C" attributes="MINIMUM_VOLTAGE_PHASE_C"/>
         <pointInfo name="Net kW Load Profile" attributes="NET_KW_LOAD_PROFILE"/>
+        <pointInfo name="Net kW Rate A Load Profile" attributes="NET_KW_RATE_A_LOAD_PROFILE"/>
+        <pointInfo name="Net kW Rate B Load Profile" attributes="NET_KW_RATE_B_LOAD_PROFILE"/>
+        <pointInfo name="Net kW Rate C Load Profile" attributes="NET_KW_RATE_C_LOAD_PROFILE"/>
+        <pointInfo name="Net kW Rate D Load Profile" attributes="NET_KW_RATE_D_LOAD_PROFILE"/>
         <pointInfo name="Net kWh" attributes="NET_KWH"/>
         <pointInfo name="Net kWh (Rate A kWh)" attributes="NET_KWH_RATE_A"/>
         <pointInfo name="Net kWh (Rate B kWh)" attributes="NET_KWH_RATE_B"/>
@@ -99,6 +103,10 @@
         <pointInfo name="Rate C kWh" attributes="USAGE_RATE_C,DELIVERED_KWH_RATE_C"/>
         <pointInfo name="Rate D kWh" attributes="USAGE_RATE_D,DELIVERED_KWH_RATE_D"/>
         <pointInfo name="Received kW Load Profile" attributes="RECEIVED_KW_LOAD_PROFILE"/>
+        <pointInfo name="Received kW Rate A Load Profile" attributes="RECEIVED_KW_RATE_A_LOAD_PROFILE"/>
+        <pointInfo name="Received kW Rate B Load Profile" attributes="RECEIVED_KW_RATE_B_LOAD_PROFILE"/>
+        <pointInfo name="Received kW Rate C Load Profile" attributes="RECEIVED_KW_RATE_C_LOAD_PROFILE"/>
+        <pointInfo name="Received kW Rate D Load Profile" attributes="RECEIVED_KW_RATE_D_LOAD_PROFILE"/>
         <pointInfo name="Received kWh" attributes="RECEIVED_KWH"/>
         <pointInfo name="Received kWh (Rate A kWh)" attributes="RECEIVED_KWH_RATE_A"/>
         <pointInfo name="Received kWh (Rate B kWh)" attributes="RECEIVED_KWH_RATE_B"/>
@@ -117,6 +125,10 @@
         <pointInfo name="Service Disconnect Switch Sensor Error" attributes="SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR"/>
         <pointInfo name="Stuck Switch" attributes="STUCK_SWITCH"/>
         <pointInfo name="Sum kW Load Profile" attributes="SUM_KW_LOAD_PROFILE"/>
+        <pointInfo name="Sum kW Rate A Load Profile" attributes="SUM_KW_RATE_A_LOAD_PROFILE"/>
+        <pointInfo name="Sum kW Rate B Load Profile" attributes="SUM_KW_RATE_B_LOAD_PROFILE"/>
+        <pointInfo name="Sum kW Rate C Load Profile" attributes="SUM_KW_RATE_C_LOAD_PROFILE"/>
+        <pointInfo name="Sum kW Rate D Load Profile" attributes="SUM_KW_RATE_D_LOAD_PROFILE"/>
         <pointInfo name="Sum kWh" init="true" attributes="SUM_KWH"/>
         <pointInfo name="Sum kWh (Rate A kWh)" attributes="SUM_KWH_RATE_A"/>
         <pointInfo name="Sum kWh (Rate B kWh)" attributes="SUM_KWH_RATE_B"/>
