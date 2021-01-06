@@ -720,6 +720,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     private static Set<BuiltInAttribute> voltageAttributes;
     
     private static Set<BuiltInAttribute> itronLcrAttributes;
+    
+    private static Set<BuiltInAttribute> calculableAttributes;
 
     static {
 
@@ -743,6 +745,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         buildRelayDataAttributes();
         buildVoltageAttributes();
         buildItronLcrAttributes();
+        buildCalculableAttributes();
     }
 
     /**
@@ -1039,6 +1042,36 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                                             MEMORY_MAP_LOST);
     }
 
+    private static void buildCalculableAttributes() {
+
+        calculableAttributes = ImmutableSet.of(SUM_KWH,
+                                               DELIVERED_KWH,
+                                               RECEIVED_KWH,
+                                               NET_KWH,
+                                               SUM_KVARH,
+                                               SUM_KVAH,
+                                               KVARH,
+                                               USAGE_WATER,
+                                               USAGE_GAS,
+                                               KVAH,
+                                               DELIVERED_KWH_RATE_A,
+                                               DELIVERED_KWH_RATE_B,
+                                               DELIVERED_KWH_RATE_C,
+                                               DELIVERED_KWH_RATE_D,
+                                               RECEIVED_KWH_RATE_A,
+                                               RECEIVED_KWH_RATE_B,
+                                               RECEIVED_KWH_RATE_C,
+                                               RECEIVED_KWH_RATE_D,
+                                               SUM_KWH_RATE_A,
+                                               SUM_KWH_RATE_B,
+                                               SUM_KWH_RATE_C,
+                                               SUM_KWH_RATE_D,
+                                               NET_KWH_RATE_A,
+                                               NET_KWH_RATE_B,
+                                               NET_KWH_RATE_C,
+                                               NET_KWH_RATE_D);
+    }
+
     private String defaultDescription;
     private AttributeGroup attributeGroup;
     private boolean isOnDemandReadable;
@@ -1136,6 +1169,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     
     public static Set<BuiltInAttribute> getItronLcrAttributes() {
         return itronLcrAttributes;
+    }
+
+    public static Set<BuiltInAttribute> getCalculableAttributes() {
+        return calculableAttributes;
     }
 
     @Override

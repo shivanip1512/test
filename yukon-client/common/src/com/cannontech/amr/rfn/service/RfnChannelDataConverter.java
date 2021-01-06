@@ -199,19 +199,10 @@ public class RfnChannelDataConverter {
     @PostConstruct
     private void setCalculationContributors() {
         Set<PaoType> types = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.RFN_POINT_CALCULATION);
-        ImmutableSet<BuiltInAttribute> attributes = ImmutableSet.of(BuiltInAttribute.SUM_KWH, BuiltInAttribute.DELIVERED_KWH, BuiltInAttribute.RECEIVED_KWH,
-                                                                    BuiltInAttribute.NET_KWH, BuiltInAttribute.SUM_KVARH, BuiltInAttribute.SUM_KVAH,
-                                                                    BuiltInAttribute.KVARH, BuiltInAttribute.USAGE_WATER, BuiltInAttribute.KVAH,
-                                                                    BuiltInAttribute.USAGE_GAS, BuiltInAttribute.DELIVERED_KWH_RATE_A, BuiltInAttribute.DELIVERED_KWH_RATE_B,
-                                                                    BuiltInAttribute.DELIVERED_KWH_RATE_C, BuiltInAttribute.DELIVERED_KWH_RATE_D, BuiltInAttribute.RECEIVED_KWH_RATE_A,
-                                                                    BuiltInAttribute.RECEIVED_KWH_RATE_B, BuiltInAttribute.RECEIVED_KWH_RATE_C, BuiltInAttribute.RECEIVED_KWH_RATE_D,
-                                                                    BuiltInAttribute.NET_KWH_RATE_A, BuiltInAttribute.NET_KWH_RATE_B, BuiltInAttribute.NET_KWH_RATE_C,
-                                                                    BuiltInAttribute.NET_KWH_RATE_D, BuiltInAttribute.SUM_KWH_RATE_A, BuiltInAttribute.SUM_KWH_RATE_B,
-                                                                    BuiltInAttribute.SUM_KWH_RATE_C, BuiltInAttribute.SUM_KWH_RATE_D);
         
         ImmutableSet.Builder<PaoTypePointIdentifier> b = ImmutableSet.builder();
         for (PaoType type : types) {
-            for (BuiltInAttribute attribute : attributes) {
+            for (BuiltInAttribute attribute : BuiltInAttribute.getCalculableAttributes()) {
                 try {
                     PaoTypePointIdentifier ptpi = attributeService.getPaoTypePointIdentifierForAttribute(type, attribute);
                     b.add(ptpi);
