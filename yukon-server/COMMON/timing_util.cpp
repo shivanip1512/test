@@ -2,6 +2,7 @@
 
 #include "numstr.h"
 #include "timing_util.h"
+#include <cassert>
 
 
 namespace Cti {

@@ -5,6 +5,8 @@
 #include "msg_pcreturn.h"
 #include "porter.h"  //  for RESULT
 
+#include <boost/bind/bind.hpp>
+
 using std::endl;
 using std::list;
 
@@ -34,6 +36,8 @@ std::string MacroRoute::toString() const
 
 std::vector<long> MacroRoute::getSubrouteIds() const
 {
+    using namespace boost::placeholders;
+
     std::vector<long> ids;
 
     std::transform(

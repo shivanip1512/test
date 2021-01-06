@@ -247,7 +247,7 @@ YukonError_t D_Words (
    const size_t Num = len / (DWORDLEN + 1);
 
    YukonError_t Code;
-   USHORT Dummy, Nack;
+   USHORT Dummy, Nack = 2;
 
    DSt->Length = 0;
    DSt->Alarm = 0;

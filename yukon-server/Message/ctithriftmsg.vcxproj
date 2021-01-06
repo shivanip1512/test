@@ -140,6 +140,7 @@
       <WarningLevel>Level1</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -182,6 +183,7 @@
       <WarningLevel>Level1</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;%(PreprocessorDefinitions)</PreprocessorDefinitions>

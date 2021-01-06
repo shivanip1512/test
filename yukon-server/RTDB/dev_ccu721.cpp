@@ -9,7 +9,7 @@
 #include "desolvers.h"
 #include "words.h"
 
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 
 using namespace std;
 
@@ -350,6 +350,8 @@ string Ccu721Device::queueReport() const
 
 unsigned long Ccu721Device::getRequestCount(unsigned long requestID) const
 {
+    using namespace boost::placeholders;
+
     reader_guard lock{ _queued_mux };
 
     return std::count_if(_queued_outmessages.begin(),

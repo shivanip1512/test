@@ -6,6 +6,7 @@
 #include <boost/optional.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#include <boost/bind/bind.hpp>
 
 #include <regex>
 
@@ -44,6 +45,8 @@ CtiDate parseDateString(std::string date_str)
 
 boost::optional<TimeParts> parseTimeString(std::string time_str)
 {
+    using namespace boost::placeholders;
+
     std::vector<std::string> timeParts;
     boost::split(timeParts, time_str, is_char{':'});
 

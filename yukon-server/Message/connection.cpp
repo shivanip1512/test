@@ -17,6 +17,7 @@
 #include <decaf/internal/util/concurrent/Threading.h>
 
 #include <boost/algorithm/string/replace.hpp>
+#include <boost/bind/bind.hpp>
 
 using namespace std;
 using namespace Cti::Messaging::Serialization;
@@ -47,6 +48,8 @@ CtiConnection::CtiConnection( const string& title, Que_t *inQ, int termSeconds )
     _outQueueLogCountConfig(0),
     _outQueueLogInterval(0)
 {
+    using namespace boost::placeholders;
+
     CTILOG_DEBUG( dout, who() << " - CtiConnection::CtiConnection() @0x" << std::hex << this );
 
     // create message listener and register function and caller

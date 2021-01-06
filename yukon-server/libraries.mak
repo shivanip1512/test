@@ -27,9 +27,9 @@ APR_ICONV_DLL   = libapriconv-1.dll
 
 BOOST_BIN       = $(BOOST)\bin
 !IF "$(CONFIGURATION)"=="DEBUG"
-BOOST_VERSION = vc141-mt-gd-x32-1_67
+BOOST_VERSION = vc142-mt-gd-x32-1_75
 !ELSE
-BOOST_VERSION = vc141-mt-x32-1_67
+BOOST_VERSION = vc142-mt-x32-1_75
 !ENDIF
 BOOST_DLL_1 = boost_chrono-$(BOOST_VERSION).dll
 BOOST_DLL_2 = boost_date_time-$(BOOST_VERSION).dll
