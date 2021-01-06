@@ -1332,7 +1332,7 @@ create table CTIDatabase  (
    constraint PK_CTIDATABASE primary key (Version, Build)
 );
 
-insert into CTIDatabase values('9.0', '05-Jan-2021', 'Latest Update', 0, SYSDATE );
+/* __YUKON_VERSION__ */
 
 /*==============================================================*/
 /* Table: CalcPointBaseline                                     */
