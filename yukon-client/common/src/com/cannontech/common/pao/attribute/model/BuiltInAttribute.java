@@ -1098,6 +1098,11 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                                             MEMORY_MAP_LOST);
     }
 
+    /*
+     * These attributes are used as the basis of several calculated points in Yukon
+     * If rfnMeteringContext is updated with more PerIntervalAndLoadProfileCalculator beans
+     * then this list must be updated with the basedOn attributes
+     */
     private static void buildCalculableAttributes() {
 
         calculableAttributes = ImmutableSet.of(SUM_KWH,
@@ -1227,6 +1232,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         return itronLcrAttributes;
     }
 
+    /**
+     * Returns the attributes that other calculated attributes are based upon
+     */
     public static Set<BuiltInAttribute> getCalculableAttributes() {
         return calculableAttributes;
     }
