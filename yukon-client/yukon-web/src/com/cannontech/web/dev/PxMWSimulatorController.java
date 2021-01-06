@@ -23,6 +23,7 @@ import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.dr.pxmw.model.PxMWException;
 import com.cannontech.dr.pxmw.model.PxMWRetrievalUrl;
 import com.cannontech.dr.pxmw.model.v1.PxMWChannelValueV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceTimeseriesLatestV1;
@@ -37,6 +38,8 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckCparm;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.GsonBuilder;
 
 @Controller
@@ -97,6 +100,11 @@ public class PxMWSimulatorController {
             return json;
         }
         try {
+            String jsonParam = params.substring(params.indexOf("{"), params.lastIndexOf("}") + 1);
+            if(!StringUtils.isEmpty(jsonParam)) {
+                log.info(jsonParam);
+                params = StringUtils.replace(params, jsonParam, "");
+            }
             List<String> paramList = Stream.of(params.split(","))
                     .map(String::trim)
                     .collect(Collectors.toList());
@@ -123,8 +131,12 @@ public class PxMWSimulatorController {
             } else if (endpoint == PxMWRetrievalUrl.CLOUD_ENABLE) {
                 pxMWCommunicationServiceV1.cloudEnable(paramList.get(0), parseBoolean(paramList, 1));
             } else if (endpoint == PxMWRetrievalUrl.COMMANDS) {
-                String jsonString = paramList.get(2);
-                pxMWCommunicationServiceV1.sendCommand(paramList.get(0), paramList.get(1), null);
+                try {
+                    PxMWCommandRequestV1 request = new ObjectMapper().readValue(jsonParam, PxMWCommandRequestV1.class);
+                    pxMWCommunicationServiceV1.sendCommand(paramList.get(0), paramList.get(1), request);
+                } catch (JsonProcessingException e) {
+                    json.put("alertError", e.getMessage());
+                }
             }
         } catch (PxMWCommunicationExceptionV1 e) {
             processError(json, e);

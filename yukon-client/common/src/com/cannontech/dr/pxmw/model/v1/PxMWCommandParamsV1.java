@@ -2,22 +2,28 @@ package com.cannontech.dr.pxmw.model.v1;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PxMWCommandParamsV1 implements Serializable {
     private final String vrelay;
-    private final String cyclePercent;
-    private final String cyclePeriod;
-    private final String cycleCount;
-    private final String startTime;
-    private final String eventId;
-    private final String criticality;
-    private final String randomization;
-    private final String flags;
+    private final Integer cyclePercent;
+    private final Integer cyclePeriod;
+    private final Integer cycleCount;
+    private final Long startTime;
+    private final Integer eventId;
+    private final Integer criticality;
+    private final Integer randomization;
+    private final Integer flags;
 
-    public PxMWCommandParamsV1(String vrelay, String cyclePercent, String cyclePeriod, String cycleCount, String startTime,
-            String eventId, String criticality, String randomization, String flags) {
+    @JsonCreator
+    public PxMWCommandParamsV1(@JsonProperty("vrelay") String vrelay, @JsonProperty("cycle percent") Integer cyclePercent,
+            @JsonProperty("cycle period") Integer cyclePeriod, @JsonProperty("cycle count") Integer cycleCount,
+            @JsonProperty("start time") Long startTime,
+            @JsonProperty("event ID") Integer eventId, @JsonProperty("criticality") Integer criticality,
+            @JsonProperty("randomization") Integer randomization, @JsonProperty("flags") Integer flags) {
         this.vrelay = vrelay;
         this.cyclePercent = cyclePercent;
         this.cyclePeriod = cyclePeriod;
@@ -29,39 +35,48 @@ public class PxMWCommandParamsV1 implements Serializable {
         this.flags = flags;
     }
 
+    @JsonProperty("vrelay")
     public String getVrelay() {
         return vrelay;
     }
 
-    public String getCyclePercent() {
+    @JsonProperty("cycle percent")
+    public Integer getCyclePercent() {
         return cyclePercent;
     }
-
-    public String getCyclePeriod() {
+    
+    @JsonProperty("cycle period")
+    public Integer getCyclePeriod() {
         return cyclePeriod;
     }
 
-    public String getCycleCount() {
+    @JsonProperty("cycle count")
+    public Integer getCycleCount() {
         return cycleCount;
     }
 
-    public String getStartTime() {
+    @JsonProperty("start time")
+    public Long getStartTime() {
         return startTime;
     }
 
-    public String getEventId() {
+    @JsonProperty("event ID")
+    public Integer getEventId() {
         return eventId;
     }
 
-    public String getCriticality() {
+    @JsonProperty("criticality")
+    public Integer getCriticality() {
         return criticality;
     }
 
-    public String getRandomization() {
+    @JsonProperty("randomization")
+    public Integer getRandomization() {
         return randomization;
     }
 
-    public String getFlags() {
+    @JsonProperty("flags")
+    public Integer getFlags() {
         return flags;
     }
 }
