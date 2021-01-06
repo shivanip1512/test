@@ -48,7 +48,7 @@ boost::optional<TimeParts> parseTimeString(std::string time_str)
     boost::split(timeParts, time_str, is_char{':'});
 
     //  make sure none of the strings are empty
-    if( ! std::count_if(timeParts.begin(), timeParts.end(), boost::bind(&std::string::empty, _1)) )
+    if( ! std::count_if(timeParts.begin(), timeParts.end(), std::mem_fn(&std::string::empty)) )
     {
         try
         {

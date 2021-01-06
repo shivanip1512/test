@@ -63,6 +63,7 @@
 #include <boost/range/adaptor/type_erased.hpp>
 #include <boost/range/adaptor/uniqued.hpp>
 #include <boost/range/any_range.hpp>
+#include <boost/bind/bind.hpp>
 
 using namespace Cti;  //  in preparation for moving devices to their own namespace
 using namespace std;
@@ -795,6 +796,8 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const lo
 
 std::vector<CtiDeviceSPtr> CtiDeviceManager::getDiscardableDevices() const
 {
+    using namespace boost::placeholders;
+
     return _smartMap.findAll(boost::bind(&CtiDeviceManager::shouldDiscardDevice, this, _1));
 }
 

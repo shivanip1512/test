@@ -6,7 +6,7 @@
 #include "dbaccess.h"
 #include "GlobalSettings.h"
 
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/optional.hpp>
 #include <boost/optional/optional_io.hpp>
 

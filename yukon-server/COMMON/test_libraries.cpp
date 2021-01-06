@@ -14,6 +14,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <array>
 
 BOOST_AUTO_TEST_SUITE(test_third_party_libraries)
 

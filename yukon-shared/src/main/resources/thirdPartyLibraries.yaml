@@ -5922,16 +5922,16 @@ C++ :
 
   - project : Boost 
     path : BOOST
-    version : 1.67.0
+    version : 1.75.0
     project URL : "https://www.boost.org/"
     license : Boost
     license URLs : "https://www.boost.org/users/license.html"
-    md5 : 1379d54d4f97136be465d39290c67d69
-    sha1 : e7cfb297d5831b7c38e2eb24dadd9586bb8e1687
-    fileCount : 13671
-    totalSize : 388382693
-    updated : 2018-05-17  
-    jira : YUK-18201
+    md5 : c8f05a4abc77dac4c09332c2ceaa7223
+    sha1 : 0a78ec2697d4abc61540fd6a7052b2cc7e9615d6
+    fileCount : 14827
+    totalSize : 203212753
+    updated : 2020-12-22  
+    jira : YUK-22174
     notes : 
 
   - project : Microsoft Debug Help 
