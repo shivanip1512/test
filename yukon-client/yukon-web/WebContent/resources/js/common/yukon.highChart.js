@@ -51,7 +51,7 @@ yukon.highChart = (function () {
                     align: 'center',
                     style: {
                         color: yg.colors.BLACK,
-                        fontSize: '15px'
+                        fontSize: '14px'
                     }
                 },
                 xAxis: {
