@@ -218,7 +218,8 @@ public class ComprehensiveMapController {
     }
 
     /**
-     * Adding all devices to a temporary group.
+     * Adding devices(gateways, meters and LCRs) to a temporary group which will be used for accessing all devices required for
+     * download functionality.
      */
     private String addDevicesToDeviceGroup(NetworkMap map) {
         log.debug("Devices in map {}", map.getTotalDevices());
@@ -235,6 +236,10 @@ public class ComprehensiveMapController {
         return tempGroup.getFullName();
     }
 
+    /**
+     * Establishing the contents of the CSV.
+     * Adding required data to the CSV.
+     */
     private void downloadData(String groupName, YukonUserContext userContext, HttpServletResponse response) throws IOException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         // device name, meter number, device type, sensor s/n, lat, long, primary gateway, comm status, mac address, node s/n,
