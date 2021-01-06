@@ -1,7 +1,6 @@
 package com.cannontech.web.api.errorHandler;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
@@ -13,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.cannontech.api.error.model.ApiErrorCategory;
 import com.cannontech.api.error.model.ApiErrorDetails;
-import com.cannontech.api.exception.RestApiException;
+import com.cannontech.api.exception.NotSupportedException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.exception.LMObjectDeletionFailureException;
@@ -320,6 +320,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     }
 
+
     /**
      * Build json response for no Handler Found in application.
      */
@@ -328,12 +329,20 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         String uniqueKey = CtiUtilities.getYKUniqueKey();
         String url = ServletUtil.getFullURL(request);
         log.error(uniqueKey + " No mapping for " + request.getMethod() + " " + url);
-        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND.value(),
-            String.format("Could not find the %s method for URL %s", request.getMethod(), url), uniqueKey);
+        
+        String message = String.format("Could not find the %s method for URL %s", request.getMethod(), url);
+        ApiErrorModel apiError = new ApiErrorModel();
+        apiError.setCode(ApiErrorDetails.NO_HANDLER_FOUND.getCode());
+        apiError.setDetail(message);
+        apiError.setLogRef(uniqueKey);
+        apiError.setRequestUri(url);
+        apiError.setTitle(ApiErrorDetails.NO_HANDLER_FOUND.getTitle());
+        apiError.setType(ApiErrorDetails.NO_HANDLER_FOUND.getType());
+        
         parseToJson(response, apiError, HttpStatus.NOT_FOUND);
 
     }
-
+    
     /**
      * Handle Method Not Supported exception for API calls
      */
@@ -347,14 +356,36 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         builder.append(ex.getMethod());
         builder.append(" method is not supported for this request. Supported methods are ");
         ex.getSupportedHttpMethods().forEach(t -> builder.append(t + " "));
-
-        final ApiError apiError = new ApiError(HttpStatus.METHOD_NOT_ALLOWED.value(), builder.toString(), uniqueKey);
+        
+        ApiErrorModel apiError = new ApiErrorModel();
+        apiError.setCode(ApiErrorDetails.HTTP_REQUEST_METHOD_NOT_SUPPORTED.getCode());
+        apiError.setDetail(builder.toString());
+        apiError.setLogRef(uniqueKey);
+        apiError.setRequestUri(ServletUtil.getFullURL(request));
+        apiError.setTitle(ApiErrorDetails.HTTP_REQUEST_METHOD_NOT_SUPPORTED.getTitle());
+        apiError.setType(ApiErrorDetails.HTTP_REQUEST_METHOD_NOT_SUPPORTED.getType());
 
         parseToJson(response, apiError, HttpStatus.METHOD_NOT_ALLOWED);
 
     }
+    
+    /**
+     * Handle Method when authentication token in not passed.
+     */
+    public static void authorizationRequired(HttpServletRequest request, HttpServletResponse response, String uniqueKey)
+            throws IOException {
+        final ApiErrorModel apiError = new ApiErrorModel();
+        apiError.setCode(ApiErrorDetails.AUTHENTICATION_REQUIRED.getCode());
+        apiError.setDetail(ApiErrorDetails.AUTHENTICATION_REQUIRED.getDefaultMessage());
+        apiError.setLogRef(uniqueKey);
+        apiError.setRequestUri(ServletUtil.getFullURL(request));
+        apiError.setTitle(ApiErrorDetails.AUTHENTICATION_REQUIRED.getTitle());
+        apiError.setType(ApiErrorDetails.AUTHENTICATION_REQUIRED.getType());
+        
+        parseToJson(response, apiError, HttpStatus.UNAUTHORIZED);
+    }
 
-    public static void parseToJson(HttpServletResponse response, ApiError apiError, HttpStatus httpStatus)
+    public static void parseToJson(HttpServletResponse response, ApiErrorModel apiError, HttpStatus httpStatus)
             throws IOException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(httpStatus.value());
@@ -368,8 +399,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Build and return ApiErrors for Global Error Response for the specified exception.
      */
-    private ApiErrorModel buildGlobalErrorResponse(Exception ex, WebRequest request, String uniqueKey) {
-        ApiErrorDetails errorDetails = ((RestApiException) ex).getErrorDetails();
+    private ApiErrorModel buildGlobalErrorResponse(ApiErrorDetails errorDetails , WebRequest request, String uniqueKey) {
         return buildGlobalErrors(errorDetails, uniqueKey, request);
     }
 
@@ -378,6 +408,11 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
      */
     private ApiErrorModel buildValidationErrorResponse(BindingResult bindingResult, WebRequest request, String uniqueKey) {
         List<ApiFieldErrorModel> errors = new ArrayList<ApiFieldErrorModel>();
+        if (CollectionUtils.isNotEmpty(bindingResult.getGlobalErrors())) {
+
+            ApiErrorDetails errorDetails = ApiErrorDetails.getError(bindingResult.getGlobalErrors().get(0).getCode());
+            return buildGlobalErrors(errorDetails, uniqueKey, request);
+        }
         bindingResult.getFieldErrors().stream().forEach(
                 fieldError -> {
                     ApiFieldErrorModel error = new ApiFieldErrorModel();
