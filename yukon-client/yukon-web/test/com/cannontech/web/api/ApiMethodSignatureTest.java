@@ -17,35 +17,35 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cannontech.clientutils.YukonLogManager;
 
 public class ApiMethodSignatureTest {
-	private Logger log = YukonLogManager.getLogger(ApiMethodSignatureTest.class);
+    private Logger log = YukonLogManager.getLogger(ApiMethodSignatureTest.class);
 
-	@Test
-	public void testValidMethodSignature() {
-		Reflections reflections = new Reflections("com.cannontech.web");
-		Set<Class<?>> classes = reflections.getTypesAnnotatedWith(RestController.class);
-		for (Class aClass : classes) {
-			try {
-				for (final Method method : aClass.getDeclaredMethods()) {
-					Annotation[][] Arrayannotations = method.getParameterAnnotations();
-					boolean validAnnotationFound = false;
-					for (Annotation[] annotationRow : Arrayannotations) {
-						for (Annotation annotation : annotationRow) {
-							if (!validAnnotationFound) {
-								validAnnotationFound = (annotation.annotationType() == Valid.class);
-							}
-							if (validAnnotationFound) {
-								boolean pathVariableFound = (annotation.annotationType() == PathVariable.class);
-								if(pathVariableFound) {
-									log.error("Path variable must be first parameter: "+ aClass.getName() + " Method " + method);
-									assertFalse("Path variable must be first parameter", pathVariableFound);
-								}
-							}
-						}
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
+    @Test
+    public void testValidMethodSignature() {
+        Reflections reflections = new Reflections("com.cannontech.web");
+        Set<Class<?>> classes = reflections.getTypesAnnotatedWith(RestController.class);
+        for (Class aClass : classes) {
+            try {
+                for (final Method method : aClass.getDeclaredMethods()) {
+                    Annotation[][] arrayAnnotations = method.getParameterAnnotations();
+                    boolean validAnnotationFound = false;
+                    for (Annotation[] annotationRow : arrayAnnotations) {
+                        for (Annotation annotation : annotationRow) {
+                            if (!validAnnotationFound) {
+                                validAnnotationFound = (annotation.annotationType() == Valid.class);
+                            }
+                            if (validAnnotationFound) {
+                                boolean pathVariableFound = (annotation.annotationType() == PathVariable.class);
+                                if (pathVariableFound) {
+                                    log.error("Path variable must be first parameter: " + aClass.getName() + " Method " + method);
+                                    assertFalse("Path variable must be first parameter", pathVariableFound);
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

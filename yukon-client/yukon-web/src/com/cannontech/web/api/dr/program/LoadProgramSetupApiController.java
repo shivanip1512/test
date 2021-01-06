@@ -71,7 +71,7 @@ public class LoadProgramSetupApiController {
 
     @PutMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
-    public ResponseEntity<Object> update( @PathVariable int id, @Valid @RequestBody LoadProgram loadProgram,
+    public ResponseEntity<Object> update(@PathVariable int id, @Valid @RequestBody LoadProgram loadProgram,
             YukonUserContext userContext) {
         LoadProgram updateLoadProgram = loadProgramService.update(id, loadProgram, userContext.getYukonUser());
         return new ResponseEntity<>(updateLoadProgram, HttpStatus.OK);
