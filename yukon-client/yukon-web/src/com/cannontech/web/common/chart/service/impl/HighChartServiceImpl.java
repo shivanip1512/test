@@ -63,7 +63,9 @@ public class HighChartServiceImpl implements HighChartService {
         if (duration.getStandardDays() > 365) {
             dateTimeFormat = HighChartOptionKey.DATE_FORMAT_MONTH_YEAR.getKey();
         } else if (duration.getStandardDays() <= 1) {
-            dateTimeFormat = HighChartOptionKey.DATE_TIME_FORMAT_HOUR_MINUTE_MONTH.getKey();
+            dateTimeFormat = HighChartOptionKey.DATE_TIME_FORMAT_HOUR_MINUTE.getKey();
+        } else if (duration.getStandardDays() > 1 && duration.getStandardDays() <= 31) {
+            dateTimeFormat = HighChartOptionKey.DATE_TIME_FORMAT_DATE_MONTH_HOUR_MINUTE.getKey();
         }
         xaxisOptions.put("datetimeFormat", dateTimeFormat);
         
