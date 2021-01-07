@@ -136,10 +136,6 @@ yukon.assets.gateway.list = (function () {
                 });
             });
 
-            $(document).on('click', '.js-download-network-map', function () {
-                window.location = yukon.url('/stars/comprehensiveMap/downloadNetworkInfo');
-            });
-
             _update();
             _initialized = true;
         }

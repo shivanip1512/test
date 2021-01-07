@@ -193,28 +193,60 @@ public class ComprehensiveMapController {
 
     @GetMapping("download")
     public void download(String groupName, YukonUserContext userContext, HttpServletResponse response) throws IOException {
-        downloadData(groupName, userContext, response);
+        String[] headerRow = retrieveDownloadHeaderRow(userContext);
+
+        DeviceGroup group = deviceGroupService.findGroupName(groupName);
+        DeviceCollection collection = deviceGroupCollectionHelper.buildDeviceCollection(group);
+
+        log.debug("Devices in a group {}", collection.getDeviceCount());
+
+        Set<RfnIdentifier> rfnIdentifiers = collection.getDeviceList().stream()
+                .map(device -> rfnDeviceDao.getDeviceForId(device.getDeviceId()).getRfnIdentifier())
+                .collect(Collectors.toSet());
+        Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = new HashMap<>();
+        log.debug("Getting data for download for {} devices", rfnIdentifiers.size());
+        try {
+            metaData = metadataMultiService.getMetadataForDeviceRfnIdentifiers(rfnIdentifiers,
+                    Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM,
+                            RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA,
+                            RfnMetadataMulti.NODE_DATA,
+                            RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA));
+        } catch (NmCommunicationException e1) {
+            log.warn("caught exception in download", e1);
+        }
+        
+        List<String[]> dataRows = retrieveDownloadDataRows(metaData, userContext);
+
+        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "ComprehensiveMapDownload_" + now + ".csv");
     }
 
     @GetMapping("downloadNetworkInfo")
     public void downloadNetworkInfo(YukonUserContext userContext, HttpServletResponse response) throws IOException {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String[] headerRow = retrieveDownloadHeaderRow(userContext);
+        
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-        NetworkMapFilter filter = new NetworkMapFilter();
-        filter.setLinkQuality(Lists.newArrayList(LinkQuality.values()));
-        filter.setDescendantCount(Lists.newArrayList(DescendantCount.values()));
-        filter.setHopCount(Lists.newArrayList(HopCount.values()));
-        filter.setSelectedGatewayIds(gateways.stream().map(gateway -> gateway.getId()).collect(Collectors.toList()));
-        filter.setColorCodeBy(ColorCodeBy.GATEWAY);
-        NetworkMap map = null;
-        try {
-            map = nmNetworkService.getNetworkMap(filter, accessor);
-            String groupName = addDevicesToDeviceGroup(map);
-            downloadData(groupName, userContext, response);
-        } catch (NmNetworkException | NmCommunicationException e) {
-            String errorMsg = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.nmError");
-            log.error(errorMsg, e);
-        }
+        
+        Set<RfnIdentifier> gatewayRfnIdentifiers = gateways.stream()
+                .map(gateway -> gateway.getRfnIdentifier())
+                .collect(Collectors.toSet());
+
+       Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = new HashMap<>();
+       log.debug("Getting data for download for {} gateways", gatewayRfnIdentifiers.size());
+       try {
+           metaData = metadataMultiService.getMetadataForGatewayRfnIdentifiers(gatewayRfnIdentifiers,
+                   Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM,
+                           RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA,
+                           RfnMetadataMulti.NODE_DATA,
+                           RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA));
+       } catch (NmCommunicationException e1) {
+           log.warn("caught exception in download", e1);
+       }
+
+       List<String[]> dataRows = retrieveDownloadDataRows(metaData, userContext);
+
+       String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+       WebFileUtils.writeToCSV(response, headerRow, dataRows, "NetworkInformationDownload_" + now + ".csv");
     }
 
     /**
@@ -235,12 +267,8 @@ public class ComprehensiveMapController {
         }
         return tempGroup.getFullName();
     }
-
-    /**
-     * Establishing the contents of the CSV.
-     * Adding required data to the CSV.
-     */
-    private void downloadData(String groupName, YukonUserContext userContext, HttpServletResponse response) throws IOException {
+    
+    private String[] retrieveDownloadHeaderRow(YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         // device name, meter number, device type, sensor s/n, lat, long, primary gateway, comm status, mac address, node s/n,
         // link cost, hop count, descendant count, next hop
@@ -262,34 +290,27 @@ public class ComprehensiveMapController {
         headerRow[11] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.colorCodeBy.HOP_COUNT");
         headerRow[12] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.colorCodeBy.DESCENDANT_COUNT");
         headerRow[13] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.nextHop");
+        
+        return headerRow;
+    }
+    
+    private List<String[]> retrieveDownloadDataRows(Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData, 
+                                                    YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        
+        //Get Pao Locations for all devices
+        List<RfnDevice> devices = metaData.keySet().stream()
+            .map(rfnIdentifier -> rfnDeviceDao.getDeviceForExactIdentifier(rfnIdentifier))
+            .collect(Collectors.toList());
 
-        DeviceGroup group = deviceGroupService.findGroupName(groupName);
-        DeviceCollection collection = deviceGroupCollectionHelper.buildDeviceCollection(group);
-
-        log.debug("Devices in a group {}", collection.getDeviceCount());
-
-        List<DynamicRfnDeviceData> data = rfnDeviceDao.getDynamicRfnDeviceData(collection.getDeviceList().stream()
-                .map(device -> device.getDeviceId()).collect(Collectors.toList()));
+        Map<Integer, PaoLocation> locations = paoLocationDao.getLocations(devices).stream()
+                .collect(Collectors.toMap(l -> l.getPaoIdentifier().getPaoId(), l -> l));
+        
+        //Get Rfn Device Data for all devices
+        List<DynamicRfnDeviceData> data = rfnDeviceDao.getDynamicRfnDeviceData(devices.stream()
+                .map(device -> device.getPaoIdentifier().getPaoId()).collect(Collectors.toList()));
         Map<RfnIdentifier, DynamicRfnDeviceData> deviceDataMap = data.stream()
                 .collect(Collectors.toMap(d -> d.getDevice().getRfnIdentifier(), d -> d));
-
-        Set<RfnIdentifier> rfnIdentifiers = collection.getDeviceList().stream()
-                .map(device -> rfnDeviceDao.getDeviceForId(device.getDeviceId()).getRfnIdentifier())
-                .collect(Collectors.toSet());
-        Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = new HashMap<>();
-        log.debug("Getting data for download for {} devices", rfnIdentifiers.size());
-        try {
-            metaData = metadataMultiService.getMetadataForDeviceRfnIdentifiers(rfnIdentifiers,
-                    Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM,
-                            RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA,
-                            RfnMetadataMulti.NODE_DATA,
-                            RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA));
-        } catch (NmCommunicationException e1) {
-            log.warn("caught exception in download", e1);
-        }
-
-        Map<Integer, PaoLocation> locations = paoLocationDao.getLocations(collection.getDeviceList()).stream()
-                .collect(Collectors.toMap(l -> l.getPaoIdentifier().getPaoId(), l -> l));
 
         List<String[]> dataRows = Lists.newArrayList();
         log.debug("Got data from NM for {} devices", metaData.keySet().size());
@@ -352,9 +373,8 @@ public class ComprehensiveMapController {
         }
 
         log.debug("Generated {} rows for CSV file", dataRows.size());
-
-        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, "ComprehensiveMapDownload_" + now + ".csv");
+        
+        return dataRows;
     }
 
     @GetMapping("allGateways")
