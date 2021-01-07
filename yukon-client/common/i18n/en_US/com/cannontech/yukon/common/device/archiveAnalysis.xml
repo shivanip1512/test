@@ -406,5 +406,8 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatType.useTemplate.description">Create a format from a pre-defined template.</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.parseAvailableTemplates.error">An error occurred in parsing the available format templates. Please check the log for details.</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.error">An error occurred in parsing the available format template. Please check the log for details.</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.notApplicable">{0} is not applicable for {1} type.</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.required">{0} is required for {1} type.</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.invalid">Invalid {0} type.</entry>
 
 </properties>
