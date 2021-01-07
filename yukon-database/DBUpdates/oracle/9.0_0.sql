@@ -185,10 +185,10 @@ INSERT INTO DBUpdates VALUES ('YUK-23280', '9.0.0', SYSDATE);
 ALTER TABLE LMItronCycleGear
 DROP CONSTRAINT FK_LMItronCycleGear_LMPDirGear;
 
-RENAME TABLE LMItronCycleGear TO new_table_name;
+RENAME TABLE LMItronCycleGear TO LMConfigurableCycleGear;
 
-ALTER TABLE new_table_name
-   ADD CONSTRAINT FK_new_table_name_LMPDirGear FOREIGN KEY (GearId)
+ALTER TABLE LMConfigurableCycleGear
+   ADD CONSTRAINT FK_LMConfigurableCycleGear_LMPDirGear FOREIGN KEY (GearId)
       REFERENCES LMProgramDirectGear (GearID)
       ON DELETE CASCADE;
 

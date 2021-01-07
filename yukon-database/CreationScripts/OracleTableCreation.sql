@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/1/2020 1:11:05 PM                         */
+/* Created on:     1/7/2021 2:42:28 PM                          */
 /*==============================================================*/
 
 
@@ -6199,6 +6199,15 @@ create table LMCONTROLAREAPROGRAM  (
 );
 
 /*==============================================================*/
+/* Table: LMConfigurableCycleGear                               */
+/*==============================================================*/
+create table LMConfigurableCycleGear  (
+   GearId               NUMBER                          not null,
+   CycleOption          NVARCHAR2(20)                   not null,
+   constraint PK_LMCONFIGURABLECYCLEGEAR primary key (GearId)
+);
+
+/*==============================================================*/
 /* Table: LMConfigurationBase                                   */
 /*==============================================================*/
 create table LMConfigurationBase  (
@@ -6829,15 +6838,6 @@ create table LMHardwareToMeterMapping  (
    LMHardwareInventoryID NUMBER                          not null,
    MeterInventoryID     NUMBER                          not null,
    constraint PK_LMHARDWARETOMETERMAPPING primary key (LMHardwareInventoryID, MeterInventoryID)
-);
-
-/*==============================================================*/
-/* Table: LMItronCycleGear                                      */
-/*==============================================================*/
-create table LMItronCycleGear  (
-   GearId               NUMBER                          not null,
-   CycleOption          NVARCHAR2(20)                   not null,
-   constraint PK_LMItronCycleGear primary key (GearId)
 );
 
 /*==============================================================*/
@@ -12992,6 +12992,11 @@ alter table LMCONTROLAREAPROGRAM
    add constraint FK_LMPrg_LMCntlArProg foreign key (LMPROGRAMDEVICEID)
       references LMPROGRAM (DeviceID);
 
+alter table LMConfigurableCycleGear
+   add constraint FK_LMConfigurableCycleGear_LMPDirGear foreign key (GearId)
+      references LMProgramDirectGear (GearID)
+      on delete cascade;
+
 alter table LMConfigurationExpressCom
    add constraint FK_LMCfgXcom_LMCfg foreign key (ConfigurationID)
       references LMConfigurationBase (ConfigurationID);
@@ -13285,11 +13290,6 @@ alter table LMHardwareToMeterMapping
 alter table LMHardwareToMeterMapping
    add constraint FK_LMMETMAP_METERHARDBASE foreign key (MeterInventoryID)
       references MeterHardwareBase (InventoryID);
-
-alter table LMItronCycleGear
-   add constraint FK_LMItronCycleGear_LMPDirGear foreign key (GearId)
-      references LMProgramDirectGear (GearID)
-      on delete cascade;
 
 alter table LMMacsScheduleCustomerList
    add constraint FK_McSchCstLst_MCSched foreign key (ScheduleID)
