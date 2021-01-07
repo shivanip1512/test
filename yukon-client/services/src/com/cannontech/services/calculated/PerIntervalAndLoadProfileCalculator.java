@@ -103,6 +103,8 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
         PaoIdentifier pao = data.getPaoPointValue().getPaoIdentifier();
         PointValueQualityHolder pvqh = data.getPaoPointValue().getPointValueQualityHolder();
         Date timestamp = pvqh.getPointDataTimeStamp();
+        
+        log.debug("Attempting calculation for " + perInterval + " for data " + basedOn);
 
         if (!isValidTimestamp(timestamp)) {
             log.info("Interval and profile data calculations being skipped for " + timestamp + " for Id : "
@@ -307,6 +309,7 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
 
     @PostConstruct
     private void init() {
+        log.debug("Initializing Calculator for " + perInterval + " based on " + basedOn);
         Builder<PaoTypePointIdentifier> b = ImmutableSet.builder();
         Set<PaoType> types = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.RFN_POINT_CALCULATION);
         for (PaoType type : types) {
