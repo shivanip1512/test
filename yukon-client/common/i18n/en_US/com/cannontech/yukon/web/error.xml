@@ -87,5 +87,5 @@
     <entry key="yukon.web.error.101114">Point offset taken by {0}.</entry>
     <entry key="yukon.web.error.101115">Point Type {0} does not match existing type {1} for id: {2}.</entry>
     <entry key="yukon.web.error.101116">PaoId {0} does not match existing paoId {1}.</entry>
-    <entry key="yukon.web.error.101117">{0} must be {1} than {2}.</entry>
+    <entry key="yukon.web.error.101117">Type {0} does not match existing type {1} for id: {2}.</entry>
 </properties>

@@ -53,7 +53,7 @@ public class YukonApiValidationHelper {
     public void checkIfPaoTypeChanged(Errors errors, PaoType paoType, int paoId) {
         LiteYukonPAObject litePao = serverDatabaseCache.getAllPaosMap().get(paoId);
         if (litePao != null && litePao.getPaoType() != paoType) {
-            errors.rejectValue("type", ApiErrorDetails.PAO_ID_MISMATCH.getCodeString(),
+            errors.rejectValue("type", ApiErrorDetails.PAO_TYPE_MISMATCH.getCodeString(),
                     new Object[] { paoType, litePao.getPaoType(), String.valueOf(paoId) }, "");
         }
     }

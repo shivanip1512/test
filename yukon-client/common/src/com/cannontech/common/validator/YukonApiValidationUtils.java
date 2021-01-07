@@ -7,10 +7,12 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
+
 import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.util.Range;
 
-public class YukonApiValidationUtils {
+public class YukonApiValidationUtils extends ValidationUtils {
 
     public static boolean checkExceedsMaxLength(Errors errors, String field, String fieldValue, int max) {
         if (fieldValue != null && fieldValue.length() > max) {
@@ -100,17 +102,6 @@ public class YukonApiValidationUtils {
                 errors.rejectValue(field, ApiErrorDetails.IS_NOT_POSITIVE.getCodeString(), new Object[] { "whole" },
                         "must be a positive whole number.");
             }
-        }
-    }
-
-    /**
-     * Check to ensure that the Data Archiving Interval is less than or equal to the Interval Data Gathering Duration
-     */
-    public static void checkIsDataArchivingIntervalTooLarge(Errors errors, String field, Integer dataArchivingInterval,
-            Integer intervalDataGatheringDuration) {
-        // intervalDataGatheringDuration is multiplied by 60 to convert minutes into seconds.
-        if (dataArchivingInterval > (intervalDataGatheringDuration * 60)) {
-            errors.rejectValue(field, ApiErrorDetails.DATA_ARCHIVING_INTERVEL_TOO_LARGE.getCodeString());
         }
     }
 
