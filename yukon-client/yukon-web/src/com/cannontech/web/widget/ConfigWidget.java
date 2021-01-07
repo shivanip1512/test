@@ -198,7 +198,7 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         DeviceConfigState currentConfigState = deviceConfigurationDao.getDeviceConfigStateByDeviceId(deviceId);
-        if (currentConfigState != null &&  currentConfigState.getLastActionStatus() == LastActionStatus.IN_PROGRESS) {
+        if (currentConfigState != null && currentConfigState.getLastActionStatus() == LastActionStatus.IN_PROGRESS) {
             jsonResponse.put("errorMessage", accessor.getMessage(baseKey + "actionInProgress"));
         } else {
             if (configuration > -1) {
@@ -206,7 +206,8 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
                 DeviceConfigState configState = deviceConfigService.assignConfigToDevice(device, deviceConfig,
                         userContext.getYukonUser());
                 
-                if (configState != null && configState.getCurrentState() == ConfigState.OUT_OF_SYNC) {
+                if (configState != null && 
+                        (configState.getCurrentState() == ConfigState.OUT_OF_SYNC || configState.getCurrentState() == ConfigState.UNREAD)) {
                     //check for upload permission
                     if (rolePropertyDao.checkProperty(YukonRoleProperty.SEND_READ_CONFIG, userContext.getYukonUser())) {
                         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(device.getDeviceId());
