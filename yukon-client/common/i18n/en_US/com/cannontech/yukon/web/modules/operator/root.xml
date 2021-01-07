@@ -79,8 +79,8 @@
     <entry key="yukon.web.modules.operator.gateways.firmware.update.failType">Failure Type</entry>
 
     <!-- Firmware And Certificate Information Widget -->
-    <entry key="yukon.web.modules.operator.gateways.firmwareAndCertificateInformationWidget.firmwareUpdates.title">Firmware Updates</entry>
-    <entry key="yukon.web.modules.operator.gateways.firmwareAndCertificateInformationWidget.certificateUpdates.title">Certificate Updates</entry>
+    <entry key="yukon.web.modules.operator.gateways.firmwareInformationWidget.firmwareUpdates.title">Firmware Updates</entry>
+    <entry key="yukon.web.modules.operator.gateways.firmwareInformationWidget.certificateUpdates.title">Certificate Updates</entry>
 
     <!-- Gateway Details -->
     <entry key="yukon.web.modules.operator.gateways.detail.pageName">Gateway</entry>

@@ -25,6 +25,8 @@ import com.cannontech.common.rfn.model.CertificateUpdate;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateSummary;
+import com.cannontech.common.rfn.service.RfnGatewayCertificateUpdateService;
+import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
@@ -40,6 +42,8 @@ public class GatewayControllerHelper {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private CronExpressionTagService cronService;
     @Autowired private PaoNotesService paoNotesService;
+    @Autowired private RfnGatewayFirmwareUpgradeService rfnGatewayFirmwareUpgradeService;
+    @Autowired private RfnGatewayCertificateUpdateService certificateUpdateService;
 
     public void addGatewayMessages(ModelMap model, YukonUserContext userContext) {
         
@@ -246,5 +250,35 @@ public class GatewayControllerHelper {
                                                                              .map(gateway -> gateway.getPaoIdentifier().getPaoId())
                                                                              .collect(Collectors.toList()));
         model.addAttribute("notesList", notesList);
+    }
+
+    public void buildFirmwareListModel(ModelMap model, YukonUserContext userContext, SortingParameters sorting) {
+        List<RfnGatewayFirmwareUpdateSummary> firmwareUpdates = rfnGatewayFirmwareUpgradeService.getFirmwareUpdateSummaries();
+        Direction dir = sorting.getDirection();
+        FirmwareUpdatesSortBy sortBy = FirmwareUpdatesSortBy.valueOf(sorting.getSort());
+        Collections.sort(firmwareUpdates, GatewayControllerHelper.getFirmwareComparator(sorting, sortBy));
+        model.addAttribute("firmwareUpdates", firmwareUpdates);
+        addGatewayMessages(model, userContext);
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        for (FirmwareUpdatesSortBy column : FirmwareUpdatesSortBy.values()) {
+            String text = accessor.getMessage(column);
+            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+            model.addAttribute(column.name(), col);
+        }
+    }
+
+    public void buildCertificateListModel(ModelMap model, YukonUserContext userContext, SortingParameters sorting) {
+        List<CertificateUpdate> certUpdates = certificateUpdateService.getAllCertificateUpdates();
+        Direction dir = sorting.getDirection();
+        CertificateUpdatesSortBy sortBy = CertificateUpdatesSortBy.valueOf(sorting.getSort());
+        Collections.sort(certUpdates, GatewayControllerHelper.getCertificateComparator(sorting, sortBy));
+        model.addAttribute("certUpdates", certUpdates);
+        addGatewayMessages(model, userContext);
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        for (CertificateUpdatesSortBy column : CertificateUpdatesSortBy.values()) {
+            String text = accessor.getMessage(column);
+            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+            model.addAttribute(column.name(), col);
+        }
     }
 }

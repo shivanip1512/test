@@ -35,88 +35,28 @@
 
     <div id="page-actions" class="dn">
         <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
-            <cm:dropdownOption data-popup="#firmware-server-popup" icon="icon-drive-go" disabled="${!dataExists}">
+            <c:set var="clazz" value="${!dataExists ? 'dn' : ''}"/>
+            <cm:dropdownOption data-popup="#firmware-server-popup ${clazz}" icon="icon-drive-go" disabled="${!dataExists}">
                 <i:inline key=".updateServer.set"/>
             </cm:dropdownOption>
-            <cm:dropdownOption data-popup="#send-firmware-upgrade-popup" icon="icon-drive-go" disabled="${!dataExists}">
+            <cm:dropdownOption data-popup="#send-firmware-upgrade-popup ${clazz}" icon="icon-drive-go" disabled="${!dataExists}">
                 <i:inline key=".firmwareUpdate"/>
             </cm:dropdownOption>
         </cti:checkRolesAndProperties>
     </div>
+    
+    <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
+        <div class="column-12-12 clearfix">
+            <div class="column one">
+                <cti:msg2 var="helpTextWidget" key="yukon.web.widgets.firmwareInformationWidget.helpText"/>
+                <tags:widget bean="firmwareInformationWidget" helpText="${helpTextWidget}"/>
+            </div>
+        </div>
+        <br>
+        <div>
+            <tags:widget bean="firmwareDetailsWidget"/>
+        </div>
+    </cti:checkRolesAndProperties>
 
-    <div id="gateway-firmware-details-popup" class="dn"></div>
-
-    <div data-url="<cti:url value="/stars/gateways/firmwareDetails"/>" data-static>
-        <table id="firmware-table" class="compact-results-table">
-            <thead>
-                <tr>
-                    <tags:sort column="${TIMESTAMP}"/>
-                    <th><i:inline key="yukon.web.modules.operator.gateways.list.firmwareUpdates.totalGateways"/></th>
-                    <th><i:inline key="yukon.web.modules.operator.gateways.list.firmwareUpdates.totalServers"/></th>
-                    <th><i:inline key="yukon.common.status"/></th>
-                    <tags:sort column="${PENDING}"/>
-                    <tags:sort column="${FAILED}"/>
-                    <tags:sort column="${SUCCESSFUL}"/>
-                </tr>
-            </thead>
-            <tfoot></tfoot>
-            <tbody>
-                <c:forEach var="update" items="${firmwareUpdates}">
-                    <tr data-update-id="${update.updateId}">
-                        <td class="js-firmware-update-timestamp">
-                            <a href="javascript:void(0);">
-                                <cti:formatDate value="${update.sendDate}" type="DATEHM_12"/>
-                            </a>
-                        </td>
-                        <td class="js-firmware-gateways">${update.totalGateways}</td>
-                        <td class="js-firmware-update-servers">${update.totalUpdateServers}</td>
-                        <td class="js-firmware-update-status">
-                            <c:choose>
-                                <c:when test="${update.gatewayUpdatesPending == 0}">
-                                    <span class="success"><i:inline key="yukon.common.complete"/></span>
-                                </c:when>
-                                <c:otherwise>
-                                    <div class="progress dib vat">
-                                        <div class="progress-bar progress-bar-success" style="width: ${update.successPercent};"></div>
-                                        <div class="progress-bar progress-bar-danger" style="width: ${update.failedPercent};"></div>
-                                    </div>
-                                    <span class="js-percent">${update.totalPercent}</span>
-                                </c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td class="js-firmware-update-pending subtle">${update.gatewayUpdatesPending}</td>
-                        <td class="js-firmware-update-failed error">${update.gatewayUpdatesFailed}</td>
-                        <td class="js-firmware-update-successful success">${update.gatewayUpdatesSuccessful}</td>
-                    </tr>
-                </c:forEach>
-            </tbody>
-        </table>
-        <c:if test="${empty firmwareUpdates}">
-            <span class="empty-list compact-results-table"><i:inline key=".firmwareUpdates.none"/></span>
-        </c:if>
-    </div>
-
-    <div id="gateway-templates" class="dn">
-        <table>
-            <tr class="js-new-firmware-update" data-update-id="">
-                <td class="js-firmware-update-timestamp">
-                    <a href="javascript:void(0);"></a>
-                </td>
-                <td class="js-firmware-gateways"></td>
-                <td class="js-firmware-update-servers"></td>
-                <td class="js-firmware-update-status">
-                    <div class="progress dib vat">
-                        <div class="progress-bar progress-bar-success"></div>
-                        <div class="progress-bar progress-bar-danger"></div>
-                    </div>
-                    <span class="js-percent"></span>
-                </td>
-                <td class="js-firmware-update-pending subtle"></td>
-                <td class="js-firmware-update-failed error"></td>
-                <td class="js-firmware-update-successful success"></td>
-            </tr>
-        </table>
-        <cti:toJson object="${text}" id="gateway-text"/>
-    </div>
     <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.manageFirmware.js"/>
 </cti:standardPage>
