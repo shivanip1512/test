@@ -81,11 +81,10 @@
     <entry key="yukon.web.error.101109">The start date must be before {0} the end date.</entry>
     <entry key="yukon.web.error.101110">Not greater than integer.</entry>
     <entry key="yukon.web.error.101111">Invalid string length.</entry>
-    <entry key="yukon.web.error.101112">Data archiving interval is too large.</entry>
-    <entry key="yukon.web.error.101113">Must be a positive {0} number.</entry>
+    <entry key="yukon.web.error.101112">Must be a positive {0} number.</entry>
     
-    <entry key="yukon.web.error.101114">Point offset taken by {0}.</entry>
-    <entry key="yukon.web.error.101115">Point type {0} does not match existing type {1} for id: {2}.</entry>
-    <entry key="yukon.web.error.101116">PaoId {0} does not match existing paoId {1}.</entry>
-    <entry key="yukon.web.error.101117">Type {0} does not match existing type {1} for id: {2}.</entry>
+    <entry key="yukon.web.error.101113">Point offset taken by {0}.</entry>
+    <entry key="yukon.web.error.101114">Point type {0} does not match existing type {1} for id: {2}.</entry>
+    <entry key="yukon.web.error.101115">PaoId {0} does not match existing paoId {1}.</entry>
+    <entry key="yukon.web.error.101116">Type {0} does not match existing type {1} for id: {2}.</entry>
 </properties>
