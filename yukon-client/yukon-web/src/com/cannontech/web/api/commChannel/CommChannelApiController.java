@@ -54,7 +54,7 @@ public class CommChannelApiController {
     //Update port
     @PatchMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
-	public ResponseEntity<Object> update(@PathVariable("id") int portId, @Valid @RequestBody PortBase<?> port,
+    public ResponseEntity<Object> update(@PathVariable("id") int portId, @Valid @RequestBody PortBase<?> port,
             YukonUserContext userContext) {
         return new ResponseEntity<>(portService.update(portId, port, userContext.getYukonUser()), HttpStatus.OK);
     }

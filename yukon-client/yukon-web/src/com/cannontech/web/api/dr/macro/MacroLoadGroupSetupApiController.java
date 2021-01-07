@@ -46,7 +46,7 @@ public class MacroLoadGroupSetupApiController {
 
     @PutMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
-	public ResponseEntity<Object> update(@PathVariable int id, @Valid @RequestBody MacroLoadGroup loadGroup,
+    public ResponseEntity<Object> update(@PathVariable int id, @Valid @RequestBody MacroLoadGroup loadGroup,
             YukonUserContext userContext) {
         MacroLoadGroup updateLoadGroup = macroLoadGroupService.update(id, loadGroup, userContext.getYukonUser());
         return new ResponseEntity<>(updateLoadGroup, HttpStatus.OK);

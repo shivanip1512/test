@@ -67,7 +67,7 @@ public class PointApiController <T extends PointBaseModel<?>> {
     }
 
     @PatchMapping("/points/{id}")
-	public ResponseEntity<Object> update(@PathVariable("id") int id, @Valid @RequestBody PointBaseModel<?> pointBase,
+    public ResponseEntity<Object> update(@PathVariable("id") int id, @Valid @RequestBody PointBaseModel<?> pointBase,
             YukonUserContext userContext, HttpServletRequest request) {
         pointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
         return new ResponseEntity<>(pointEditorService.update(id, pointBase, userContext), HttpStatus.OK);
