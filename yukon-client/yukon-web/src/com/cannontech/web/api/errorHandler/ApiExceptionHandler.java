@@ -331,14 +331,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         log.error(uniqueKey + " No mapping for " + request.getMethod() + " " + url);
         
         String message = String.format("Could not find the %s method for URL %s", request.getMethod(), url);
-        ApiErrorModel apiError = new ApiErrorModel();
-        apiError.setCode(ApiErrorDetails.NO_HANDLER_FOUND.getCode());
-        apiError.setDetail(message);
-        apiError.setLogRef(uniqueKey);
-        apiError.setRequestUri(url);
-        apiError.setTitle(ApiErrorDetails.NO_HANDLER_FOUND.getTitle());
-        apiError.setType(ApiErrorDetails.NO_HANDLER_FOUND.getType());
         
+        final ApiErrorModel apiError = new ApiErrorModel(ApiErrorDetails.NO_HANDLER_FOUND, message,
+                ServletUtil.getFullURL(request), uniqueKey);
         parseToJson(response, apiError, HttpStatus.NOT_FOUND);
 
     }
@@ -356,15 +351,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         builder.append(ex.getMethod());
         builder.append(" method is not supported for this request. Supported methods are ");
         ex.getSupportedHttpMethods().forEach(t -> builder.append(t + " "));
-        
-        ApiErrorModel apiError = new ApiErrorModel();
-        apiError.setCode(ApiErrorDetails.HTTP_REQUEST_METHOD_NOT_SUPPORTED.getCode());
-        apiError.setDetail(builder.toString());
-        apiError.setLogRef(uniqueKey);
-        apiError.setRequestUri(ServletUtil.getFullURL(request));
-        apiError.setTitle(ApiErrorDetails.HTTP_REQUEST_METHOD_NOT_SUPPORTED.getTitle());
-        apiError.setType(ApiErrorDetails.HTTP_REQUEST_METHOD_NOT_SUPPORTED.getType());
 
+        final ApiErrorModel apiError = new ApiErrorModel(ApiErrorDetails.HTTP_REQUEST_METHOD_NOT_SUPPORTED, builder.toString(),
+                ServletUtil.getFullURL(request), uniqueKey);
         parseToJson(response, apiError, HttpStatus.METHOD_NOT_ALLOWED);
 
     }
@@ -374,14 +363,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
      */
     public static void authorizationRequired(HttpServletRequest request, HttpServletResponse response, String uniqueKey)
             throws IOException {
-        final ApiErrorModel apiError = new ApiErrorModel();
-        apiError.setCode(ApiErrorDetails.AUTHENTICATION_REQUIRED.getCode());
-        apiError.setDetail(ApiErrorDetails.AUTHENTICATION_REQUIRED.getDefaultMessage());
-        apiError.setLogRef(uniqueKey);
-        apiError.setRequestUri(ServletUtil.getFullURL(request));
-        apiError.setTitle(ApiErrorDetails.AUTHENTICATION_REQUIRED.getTitle());
-        apiError.setType(ApiErrorDetails.AUTHENTICATION_REQUIRED.getType());
-        
+        final ApiErrorModel apiError = new ApiErrorModel(ApiErrorDetails.AUTHENTICATION_REQUIRED, ServletUtil.getFullURL(request),
+                uniqueKey);
         parseToJson(response, apiError, HttpStatus.UNAUTHORIZED);
     }
 
@@ -409,21 +392,13 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     private ApiErrorModel buildValidationErrorResponse(BindingResult bindingResult, WebRequest request, String uniqueKey) {
         List<ApiFieldErrorModel> errors = new ArrayList<ApiFieldErrorModel>();
         if (CollectionUtils.isNotEmpty(bindingResult.getGlobalErrors())) {
-
             ApiErrorDetails errorDetails = ApiErrorDetails.getError(bindingResult.getGlobalErrors().get(0).getCode());
             return buildGlobalErrors(errorDetails, uniqueKey, request);
         }
         bindingResult.getFieldErrors().stream().forEach(
                 fieldError -> {
-                    ApiFieldErrorModel error = new ApiFieldErrorModel();
                     ApiErrorDetails childError = ApiErrorDetails.getError(fieldError.getCode());
-                    error.setTitle(childError.getTitle());
-                    error.setType(childError.getType());
-                    error.setCode(childError.getCode());
-                    error.setDetail(childError.getDefaultMessage());
-                    error.setField(fieldError.getField());
-                    error.setParameters(fieldError.getArguments());
-                    error.setRejectedValue(String.valueOf(fieldError.getRejectedValue()));
+                    ApiFieldErrorModel error = new ApiFieldErrorModel(childError, fieldError);
                     errors.add(error);
                 });
         ApiErrorDetails childError = ApiErrorDetails.getError(bindingResult.getFieldErrors().get(0).getCode());
@@ -433,22 +408,14 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     private ApiErrorModel buildGlobalErrors(ApiErrorDetails errorDetails, String uniqueKey, WebRequest request) {
-        ApiErrorModel apiErrors = new ApiErrorModel();
+        ApiErrorModel apiErrors;
         if (errorDetails.getCategory() == ApiErrorCategory.NONE) {
-            apiErrors.setCode(errorDetails.getCode());
-            apiErrors.setDetail(errorDetails.getDefaultMessage());
-            apiErrors.setLogRef(uniqueKey);
-            apiErrors.setRequestUri(ServletUtil.getFullURL(((ServletWebRequest) request).getRequest()));
-            apiErrors.setTitle(errorDetails.getTitle());
-            apiErrors.setType(errorDetails.getType());
+            apiErrors = new ApiErrorModel(errorDetails, ServletUtil.getFullURL(((ServletWebRequest) request).getRequest()),
+                    uniqueKey);
         } else {
             ApiErrorCategory category = errorDetails.getCategory();
-            apiErrors.setCode(category.getCode());
-            apiErrors.setDetail(category.getDefaultMessage());
-            apiErrors.setLogRef(uniqueKey);
-            apiErrors.setRequestUri(ServletUtil.getFullURL(((ServletWebRequest) request).getRequest()));
-            apiErrors.setTitle(category.getTitle());
-            apiErrors.setType(category.getType());
+            apiErrors = new ApiErrorModel(category, ServletUtil.getFullURL(((ServletWebRequest) request).getRequest()),
+                    uniqueKey);
         }
         return apiErrors;
     }

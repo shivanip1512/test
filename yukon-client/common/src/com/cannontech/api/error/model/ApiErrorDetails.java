@@ -16,8 +16,8 @@ public enum ApiErrorDetails {
     METHOD_ARGUMENT_MISMATCH(105, "Method Argument Mismatch", "Method arguments are not matching."), // code : 100105
     BAD_REQUEST(106, "Bad Request", "Bad Request."), // code : 100106
     AUTHENTICATION_REQUIRED(107, "Authentication required", "Expired or invalid token"),
-    NO_HANDLER_FOUND(108, "No handler found", "No handler found"),
-    HTTP_REQUEST_METHOD_NOT_SUPPORTED(109, "HTTP request method not supported", "HTTP request method not supported"),
+    NO_HANDLER_FOUND(108, "No handler found", "No handler found."),
+    HTTP_REQUEST_METHOD_NOT_SUPPORTED(109, "HTTP request method not supported", "HTTP request method not supported."),
 
 
     // Validation Errors

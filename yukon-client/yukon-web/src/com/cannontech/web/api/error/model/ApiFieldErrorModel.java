@@ -1,5 +1,8 @@
 package com.cannontech.web.api.error.model;
 
+import org.springframework.validation.FieldError;
+
+import com.cannontech.api.error.model.ApiErrorDetails;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -12,6 +15,19 @@ public class ApiFieldErrorModel {
     String rejectedValue;
     @JsonInclude(Include.NON_NULL)
     Object[] parameters;
+
+    public ApiFieldErrorModel() {
+    }
+
+    public ApiFieldErrorModel(ApiErrorDetails errorDetails, FieldError fieldError) {
+        this.title = errorDetails.getTitle();
+        this.type = errorDetails.getType();
+        this.code = errorDetails.getCode();
+        this.detail = errorDetails.getDefaultMessage();
+        this.field = fieldError.getField();
+        this.rejectedValue = String.valueOf(fieldError.getRejectedValue());
+        this.parameters = fieldError.getArguments();
+    }
 
     public String getTitle() {
         return title;
