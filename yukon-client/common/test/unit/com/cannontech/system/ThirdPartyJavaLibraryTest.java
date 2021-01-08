@@ -47,6 +47,8 @@ public class ThirdPartyJavaLibraryTest {
             "jasper-el.jar",
             "jasper.jar",
             "jaspic-api.jar",
+            "javassist-3.26.0-GA.jar",
+            "reflections-0.9.12.jar",
             "tomcat-coyote.jar",
             "tomcat-dbcp.jar",
             "tomcat-i18n-cs.jar",
