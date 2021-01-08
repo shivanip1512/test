@@ -1105,7 +1105,6 @@
     <bean id="exportFieldValidator" class="com.cannontech.web.tools.dataExporter.validator.ExportFieldValidator"/>
     <bean id="dataRangeValidator" class="com.cannontech.web.tools.dataExporter.validator.DataRangeValidator"/>
     <bean class="com.cannontech.web.tools.dataExporter.validator.ExportFormatTemplateValidator"/>
-    <bean class="com.cannontech.web.tools.dataExporter.parser.ExportFormatParser"/>
 
     <bean id="lmReportedDataBackingService" class="com.cannontech.web.updater.dr.LmReportedDataBackingService"/>
     <jms:listener-container 

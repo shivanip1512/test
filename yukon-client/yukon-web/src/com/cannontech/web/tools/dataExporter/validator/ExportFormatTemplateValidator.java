@@ -79,7 +79,7 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
             if (exportField.getField().getType() == FieldType.ATTRIBUTE) {
                 validateAttributeFields(exportField, exportFormat.getAttributes(), errors);
             }
-            validateDependeentFields(exportField, errors);
+            validateDependentFields(exportField, errors);
             errors.popNestedPath();
         }
     }
@@ -109,7 +109,7 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
     /**
      * validate dependent fields based on field type.
      */
-    private void validateDependeentFields(ExportField exportField, Errors errors) {
+    private void validateDependentFields(ExportField exportField, Errors errors) {
         switch (exportField.getField().getType()) {
         case ADDRESS:
         case DEVICE_NAME:

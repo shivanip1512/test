@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
 import com.cannontech.common.stream.StreamUtils;
+import com.cannontech.common.util.YamlParserUtils;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -77,7 +78,8 @@ public class ThirdPartyJavaLibraryTest {
 
         ClassPathResource libraryYaml = new ClassPathResource("thirdPartyLibraries.yaml");
         
-        ThirdPartyLibraries documentedLibraries = ThirdPartyLibraryParser.parse(libraryYaml.getInputStream());
+        ThirdPartyLibraries documentedLibraries = YamlParserUtils.parseToObject(libraryYaml.getInputStream(),
+                ThirdPartyLibraries.class);
         
         Map<String, ThirdPartyJavaLibrary> documentedLibrariesByFilename = Maps.uniqueIndex(documentedLibraries.javaLibraries, l -> l.filename); 
         

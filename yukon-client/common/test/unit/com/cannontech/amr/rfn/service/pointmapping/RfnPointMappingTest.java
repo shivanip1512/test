@@ -30,7 +30,6 @@ import com.cannontech.amr.rfn.service.pointmapping.icd.CoincidentGroupingCollect
 import com.cannontech.amr.rfn.service.pointmapping.icd.PointMapping;
 import com.cannontech.amr.rfn.service.pointmapping.icd.PointMappingIcd;
 import com.cannontech.amr.rfn.service.pointmapping.icd.RfnPointMappingParser;
-import com.cannontech.amr.rfn.service.pointmapping.icd.YukonPointMappingIcdParser;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImplTest;
@@ -38,6 +37,7 @@ import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.common.stream.Try;
+import com.cannontech.common.util.YamlParserUtils;
 import com.cannontech.database.data.point.PointType;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSetMultimap;
@@ -62,7 +62,7 @@ public class RfnPointMappingTest {
     private PointMappingIcd getPointMappingIcd() throws IOException {
         ClassPathResource yukonPointMappingIcdYaml = new ClassPathResource("yukonPointMappingIcd.yaml");
         
-        return YukonPointMappingIcdParser.parse(yukonPointMappingIcdYaml.getInputStream());
+        return YamlParserUtils.parseToObject(yukonPointMappingIcdYaml.getInputStream(), PointMappingIcd.class);
     }
 
     private InputStream getRfnXmlStream() throws IOException {
