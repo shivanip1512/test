@@ -263,6 +263,25 @@ public final class DeviceDaoImpl implements DeviceDao {
     }
     
     @Override
+    public List<SimpleDevice> getDisabledDevices(Iterable<Integer> ids) {
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT ypo.PAObjectID, ypo.Type");
+                sql.append("FROM YukonPaObject ypo");
+                sql.append("WHERE ypo.PAObjectID").in(subList);
+                sql.append("AND disableFlag").eq_k(YNBoolean.YES);
+                return sql;
+            }
+        };
+
+        return template.query(sqlGenerator, ids, SIMPLE_DEVICE_MAPPER);
+    }
+    
+    @Override
     public List<SimpleDevice> getDevicesForPaoTypes(Iterable<PaoType> types) {
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
 
