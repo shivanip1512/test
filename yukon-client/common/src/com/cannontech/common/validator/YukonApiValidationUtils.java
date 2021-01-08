@@ -225,7 +225,7 @@ public class YukonApiValidationUtils extends ValidationUtils {
     public static void checkIsFieldValueGreaterThenTargetValueInt(String field, Integer fieldValue, int targetValue,
             Errors errors) {
         if (fieldValue == null || fieldValue <= targetValue) {
-            errors.rejectValue(field, ApiErrorDetails.NOT_GREATER_THAN_INT.getCodeString(), new Object[] { targetValue }, "");
+            errors.rejectValue(field, ApiErrorDetails.VALUE_BELOW_MINIMUM.getCodeString(), new Object[] { targetValue }, "");
         }
     }
 
