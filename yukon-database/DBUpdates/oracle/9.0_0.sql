@@ -187,6 +187,8 @@ DROP CONSTRAINT FK_LMItronCycleGear_LMPDirGear;
 
 RENAME TABLE LMItronCycleGear TO LMConfigurableCycleGear;
 
+ALTER TABLE LMConfigurableCycleGear RENAME CONSTRAINT PK_LMItronCycleGear TO PK_LMConfigurableCycleGear;
+
 ALTER TABLE LMConfigurableCycleGear
    ADD CONSTRAINT FK_LMConfigurableCycleGear_LMPDirGear FOREIGN KEY (GearId)
       REFERENCES LMProgramDirectGear (GearID)
