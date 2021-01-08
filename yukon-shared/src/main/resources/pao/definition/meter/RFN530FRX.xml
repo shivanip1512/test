@@ -70,7 +70,7 @@
         <pointInfo name="Min Voltage Phase B" attributes="MINIMUM_VOLTAGE_PHASE_B"/>
         <pointInfo name="Min Voltage Phase C" attributes="MINIMUM_VOLTAGE_PHASE_C"/>
         <pointInfo name="Net kVAh"/>
-        <pointInfo name="Net kVArh" attributes="NET_DELIVERED_KVARH"/>
+        <pointInfo name="Net kVArh" attributes="NET_KVARH"/>
         <pointInfo name="Net kW Load Profile" attributes="NET_KW_LOAD_PROFILE"/>
         <pointInfo name="Net kW Rate A Load Profile" attributes="NET_KW_RATE_A_LOAD_PROFILE"/>
         <pointInfo name="Net kW Rate B Load Profile" attributes="NET_KW_RATE_B_LOAD_PROFILE"/>
