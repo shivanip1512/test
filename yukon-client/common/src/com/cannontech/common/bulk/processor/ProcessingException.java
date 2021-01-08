@@ -1,5 +1,6 @@
 package com.cannontech.common.bulk.processor;
 
+import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
 import com.cannontech.common.csvImport.ImportAction;
 import com.cannontech.common.csvImport.ValidationResultType;
 import com.cannontech.common.exception.DisplayableRuntimeException;
@@ -17,9 +18,19 @@ public class ProcessingException extends DisplayableRuntimeException implements
         ProcessorCallbackException {
 
     private static final String keyBase = "yukon.exception.processingException.";
+    private CollectionActionDetail detail = CollectionActionDetail.FAILURE;
 
     public ProcessingException(String message) {
         super(message);
+    }
+    public ProcessingException(String message, CollectionActionDetail detail) {
+        super(message);
+        this.detail = detail;
+    }
+    
+    @Override 
+    public CollectionActionDetail getDetail() {
+        return detail;
     }
     
     public ProcessingException(String message, String key, Throwable cause, PaoIdentifier paoId) {

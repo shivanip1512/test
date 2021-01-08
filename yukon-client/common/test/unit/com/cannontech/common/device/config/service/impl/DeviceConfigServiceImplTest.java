@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,10 +58,18 @@ public class DeviceConfigServiceImplTest {
     private SimpleDevice eight = new SimpleDevice(8, PaoType.MCT420CL);
     private SimpleDevice nine = new SimpleDevice(9, PaoType.RFN420FL);
     private SimpleDevice ten = new SimpleDevice(10, PaoType.MCT420CL);
+    // 11 is disabled
+    private SimpleDevice eleven = new SimpleDevice(11, PaoType.MCT420CL);
+    // 12 is disabled
+    private SimpleDevice twelve = new SimpleDevice(12, PaoType.RFN420FL);
     
-    private List<SimpleDevice> all = List.of(one, two, three, four, five, six, seven, eight, nine, ten);
-    
+    private List<SimpleDevice> enabledDevices = List.of(one, two, three, four, five, six, seven, eight, nine, ten);
+    private List<SimpleDevice> disabledDevices = List.of(eleven, twelve);
+    private List<SimpleDevice> all = new ArrayList<>();
+
     {
+        all.addAll(enabledDevices);
+        all.addAll(disabledDevices);
         Instant startTime = Instant.now();
         Instant stopTime = Instant.now();
         stopTime = stopTime.plus(oneHour);
@@ -75,46 +84,52 @@ public class DeviceConfigServiceImplTest {
                 new DeviceConfigState(seven.getDeviceId(), UNCONFIRMED, SEND, SUCCESS, startTime, stopTime, null),
                 new DeviceConfigState(eight.getDeviceId(), IN_SYNC, READ, IN_PROGRESS, startTime, stopTime, null),
                 new DeviceConfigState(nine.getDeviceId(), UNREAD, ASSIGN, SUCCESS, startTime, stopTime, null),
-                new DeviceConfigState(ten.getDeviceId(), OUT_OF_SYNC, READ, SUCCESS, startTime, stopTime, null))
+                new DeviceConfigState(ten.getDeviceId(), OUT_OF_SYNC, READ, SUCCESS, startTime, stopTime, null),
+                new DeviceConfigState(eleven.getDeviceId(), OUT_OF_SYNC, READ, SUCCESS, startTime, stopTime, null))
+                
                 .collect(StreamUtils.mapToSelf(DeviceConfigState::getDeviceId));
     }
     
     @Test
     public final void build_new_states_for_assign_action() throws Exception {     
         // device is not in the states table -> UNREAD
-        checkState("buildNewStatesForAssignAction", one, UNREAD);
+        checkStateAssigned("buildNewStatesForAssignAction", one, UNREAD);
         // UNKNOWN -> UNREAD
-        checkState("buildNewStatesForAssignAction", two, UNREAD);
+        checkStateAssigned("buildNewStatesForAssignAction", two, UNREAD);
         // was UNREAD remains UNREAD
-        checkState("buildNewStatesForAssignAction", three, UNREAD);
+        checkStateAssigned("buildNewStatesForAssignAction", three, UNREAD);
         // was IN_SYNC -> send verify
-        checkState("buildNewStatesForAssignAction", four, null);
+        checkStateAssigned("buildNewStatesForAssignAction", four, null);
         // was OUT_OF_SYNC -> send verify
-        checkState("buildNewStatesForAssignAction", five, null);
+        checkStateAssigned("buildNewStatesForAssignAction", five, null);
         // was UNASSIGNED -> send verify
-        checkState("buildNewStatesForAssignAction", six, null);
+        checkStateAssigned("buildNewStatesForAssignAction", six, null);
         // was UNCONFIRMED remains UNCONFIRMED
-        checkState("buildNewStatesForAssignAction", seven, UNCONFIRMED);
+        checkStateAssigned("buildNewStatesForAssignAction", seven, UNCONFIRMED);
         // in progress -> NO CHANGE
-        checkState("buildNewStatesForAssignAction", eight, null);
+        checkStateAssigned("buildNewStatesForAssignAction", eight, null);
+        // (disabled device) was OUT_OF_SYNC -> UNKNOWN
+        checkStateAssignedDisabledDevice("buildNewStatesForAssignAction", eleven, UNKNOWN);
+        // (disabled device) device is not in the states table -> UNKNOWN
+        checkStateAssignedDisabledDevice("buildNewStatesForAssignAction", twelve,  UNKNOWN);
     }
 
     @Test
     public final void build_new_states_for_unassign_action() throws Exception {
         // device is not in states table -> NO CHANGE
-        checkState("buildNewStatesForUnassignAction", one, null);
+        checkStateUnassign("buildNewStatesForUnassignAction", one, null);
         // was UNKNOWN -> NO CHANGE
-        checkState("buildNewStatesForUnassignAction", two, null);
+        checkStateUnassign("buildNewStatesForUnassignAction", two, null);
         // was UNREAD -> UNKNOWN
-        checkState("buildNewStatesForUnassignAction", three, UNKNOWN);
+        checkStateUnassign("buildNewStatesForUnassignAction", three, UNKNOWN);
         // was IN_SYNC -> UNASSIGNED
-        checkState("buildNewStatesForUnassignAction", four, UNASSIGNED);
+        checkStateUnassign("buildNewStatesForUnassignAction", four, UNASSIGNED);
         // was OUT_OF_SYNC -> UNASSIGNED
-        checkState("buildNewStatesForUnassignAction", five, UNASSIGNED);
+        checkStateUnassign("buildNewStatesForUnassignAction", five, UNASSIGNED);
         // was UNASSIGNED -> send verify
-        checkState("buildNewStatesForUnassignAction", six, null);
+        checkStateUnassign("buildNewStatesForUnassignAction", six, null);
         // was UNCONFIRMED remains UNCONFIRMED
-        checkState("buildNewStatesForUnassignAction", seven, UNCONFIRMED);
+        checkStateUnassign("buildNewStatesForUnassignAction", seven, UNCONFIRMED);
     }
     
     @Test
@@ -167,7 +182,7 @@ public class DeviceConfigServiceImplTest {
         Method method = DeviceConfigServiceImpl.class.getDeclaredMethod("getDevicesToVerify", List.class, Map.class, List.class);
         method.setAccessible(true);
         List<SimpleDevice> expected = List.of(four, five, six, ten);
-        List<SimpleDevice> devicesToVerify = (List<SimpleDevice>) method.invoke(impl, all, statesInDatabase, List.of(IN_SYNC, OUT_OF_SYNC, UNASSIGNED));
+        List<SimpleDevice> devicesToVerify = (List<SimpleDevice>) method.invoke(impl, enabledDevices, statesInDatabase, List.of(IN_SYNC, OUT_OF_SYNC, UNASSIGNED));
         
         assertEquals(devicesToVerify, expected);
         
@@ -180,7 +195,7 @@ public class DeviceConfigServiceImplTest {
     /**
      * Validates that stateAfterChange is the same as the new state returned by the service. If stateAfterChange is null, the state table will remain unchanged in the database.
      */
-    private void checkState(String methodName, SimpleDevice device, ConfigState stateAfterChange)
+    private void checkStateUnassign(String methodName, SimpleDevice device, ConfigState stateAfterChange)
             throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException {
         Set<DeviceConfigState> newStates = ReflectionTestUtils.<Set<DeviceConfigState>>invokeMethod(impl, methodName, List.of(device), statesInDatabase, Instant.now(), Instant.now());
         ConfigState newState = null;
@@ -189,6 +204,34 @@ public class DeviceConfigServiceImplTest {
         }
         assertEquals(newState, stateAfterChange);
     } 
+    
+    
+    /**
+     * Validates that stateAfterChange is the same as the new state returned by the service. If stateAfterChange is null, the state table will remain unchanged in the database.
+     */
+    private void checkStateAssigned(String methodName, SimpleDevice device, ConfigState stateAfterChange)
+            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException {
+        Set<DeviceConfigState> newStates = ReflectionTestUtils.<Set<DeviceConfigState>>invokeMethod(impl, methodName, List.of(device), statesInDatabase, Instant.now(), Instant.now(), List.of());
+        ConfigState newState = null;
+        if(!newStates.isEmpty()) {
+            newState = Iterables.getOnlyElement(newStates).getCurrentState();
+        }
+        assertEquals(newState, stateAfterChange);
+    } 
+    
+    /**
+     * Validates that stateAfterChange is the same as the new state returned by the service. If stateAfterChange is null, the state table will remain unchanged in the database.
+     */
+    private void checkStateAssignedDisabledDevice(String methodName, SimpleDevice device, ConfigState stateAfterChange)
+            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException {
+        Set<DeviceConfigState> newStates = ReflectionTestUtils.<Set<DeviceConfigState>>invokeMethod(impl, methodName, List.of(), statesInDatabase, Instant.now(), Instant.now(), List.of(device));
+        ConfigState newState = null;
+        if(!newStates.isEmpty()) {
+            newState = Iterables.getOnlyElement(newStates).getCurrentState();
+        }
+        assertEquals(newState, stateAfterChange);
+    } 
+    
     
     /**
      * Validates that stateAfterChange and statusAfterChange is the same as the new state returned by the service. If stateAfterChange is null, the state table will remain unchanged in the database.
