@@ -128,7 +128,6 @@ public:
     static const Attribute  ReceivedPeakDemandRateC;
     static const Attribute  ReceivedPeakDemandRateD;
     static const Attribute  kVA;
-    static const Attribute  KVALaggingPeak;
     static const Attribute  DeliveredkVA;
     static const Attribute  ReceivedkVA;
     static const Attribute  SumkVA;
@@ -145,6 +144,7 @@ public:
     static const Attribute  PeakkVAFrozenRateC;
     static const Attribute  PeakkVAFrozenRateD;
     static const Attribute  PeakkVACoincidental;
+    static const Attribute  DeliveredPeakkVALagging;
     static const Attribute  ReceivedPeakkVA;
     static const Attribute  ReceivedPeakkVARateA;
     static const Attribute  ReceivedPeakkVARateB;

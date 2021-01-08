@@ -137,7 +137,6 @@ INIT_ATTRIBUTE( ReceivedPeakDemandRateB,                            "RECEIVED_PE
 INIT_ATTRIBUTE( ReceivedPeakDemandRateC,                            "RECEIVED_PEAK_DEMAND_RATE_C" );
 INIT_ATTRIBUTE( ReceivedPeakDemandRateD,                            "RECEIVED_PEAK_DEMAND_RATE_D" );
 INIT_ATTRIBUTE( kVA,                                                "KVA" );
-INIT_ATTRIBUTE( KVALaggingPeak,                                     "KVA_LAGGING_PEAK" );
 INIT_ATTRIBUTE( DeliveredkVA,                                       "DELIVERED_KVA" );
 INIT_ATTRIBUTE( ReceivedkVA,                                        "RECEIVED_KVA" );
 INIT_ATTRIBUTE( SumkVA,                                             "SUM_KVA" );
@@ -154,6 +153,7 @@ INIT_ATTRIBUTE( PeakkVAFrozenRateB,                                 "PEAK_KVA_FR
 INIT_ATTRIBUTE( PeakkVAFrozenRateC,                                 "PEAK_KVA_FROZEN_RATE_C");
 INIT_ATTRIBUTE( PeakkVAFrozenRateD,                                 "PEAK_KVA_FROZEN_RATE_D");
 INIT_ATTRIBUTE( PeakkVACoincidental,                                "PEAK_KVA_COIN" );
+INIT_ATTRIBUTE( DeliveredPeakkVALagging,                            "DELIVERED_PEAK_KVA_LAGGING" );
 INIT_ATTRIBUTE( ReceivedPeakkVA,                                    "RECEIVED_PEAK_KVA" );
 INIT_ATTRIBUTE( ReceivedPeakkVARateA,                               "RECEIVED_PEAK_KVA_RATE_A" );
 INIT_ATTRIBUTE( ReceivedPeakkVARateB,                               "RECEIVED_PEAK_KVA_RATE_B" );

@@ -54,7 +54,7 @@
         <pointInfo name="Delivered kWh Rate B per Interval" attributes="DELIVERED_KWH_RATE_B_PER_INTERVAL"/>
         <pointInfo name="Delivered kWh Rate C per Interval" attributes="DELIVERED_KWH_RATE_C_PER_INTERVAL"/>
         <pointInfo name="Delivered kWh Rate D per Interval" attributes="DELIVERED_KWH_RATE_D_PER_INTERVAL"/>
-        <pointInfo name="Delivered Peak kVA" attributes="KVA_LAGGING_PEAK"/>
+        <pointInfo name="Delivered Peak kVA" attributes="DELIVERED_PEAK_KVA_LAGGING"/>
         <pointInfo name="Delivered Peak kVAr" attributes="PEAK_KVAR"/>
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
         <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
