@@ -160,7 +160,7 @@ const std::vector<std::string> allDescriptions {
         "VA received, peak demand (52)",
         "VA delivered, peak demand (Frozen) (53)",
         "VA received, peak demand (Frozen) (54)",
-        "VA lagging peak (55)",
+        "VA lagging, peak demand (55)",
         "Q hour delivered (61)",
         "Q hour received (62)",
         "Q hour total/sum (63)",
