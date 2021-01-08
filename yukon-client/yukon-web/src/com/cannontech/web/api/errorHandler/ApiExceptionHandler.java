@@ -85,10 +85,14 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     */
     @PostConstruct
     public void init() {
-        supportingUris.add(ApiURL.trendUrl);
+       // supportingUris.add(ApiURL.trendUrl);
+       // supportingUris.add(ApiURL.drLoadGroupUrl);
     }
     
-    public boolean isNewApiErrorSupported(WebRequest request) {
+    /**
+     * This method will return true in case of new API Error response otherwise false. 
+     */
+    private boolean isNewApiErrorSupported(WebRequest request) {
         String url = ServletUtil.getFullURL(((ServletWebRequest) request).getRequest());
         return supportingUris.stream().filter(s -> url.contains(s)).findFirst() != null ? true : false;
     }
