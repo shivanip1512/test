@@ -299,7 +299,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_badRequest )
 
 BOOST_AUTO_TEST_CASE(test_cmd_rfn_blockContinuation)
 {
-    Cti::Test::set_to_central_timezone();
+    const auto tz_override = Cti::Test::set_to_central_timezone();
 
     //  a handle for our reference
     test_E2eMessenger *e2e = new test_E2eMessenger;

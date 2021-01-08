@@ -20,7 +20,7 @@ yukon.mapping = (function () {
 
     _routeColor = yg.colors.BLUE_DARK,
 
-    _focusRouteColor = yg.colors.GRAY,
+    _focusRouteColor = yg.colors.NAVY,
 
     _highlightRouteColor = yg.colors.YELLOW,
     
@@ -710,7 +710,16 @@ yukon.mapping = (function () {
             $.getJSON(yukon.url('/stars/comprehensiveMap/networkTree') + '?' + $.param({ deviceId: deviceId }))
             .done(function (json) {
                 if (json.tree) {
-                    yukon.mapping.drawAllDescendants(deviceId, json.tree[0]);
+                    var gatewayNode = json.tree[0],
+                        paoId = yukon.mapping.getPaoIdFromData(gatewayNode);
+                    //first check if device is gateway.
+                    //paoId is a String since it is retrieved from a Map and deviceId is an Integer so using == here instead of ===
+                    if (paoId == deviceId) {
+                        yukon.mapping.findDescendants(gatewayNode, deviceId);
+                        yukon.mapping.showDescendantLines();
+                    } else {
+                        yukon.mapping.drawAllDescendants(deviceId, gatewayNode);
+                    }
                 }
                 if (json.errorMsg) {
                     yukon.ui.alertError(json.errorMsg);
@@ -729,6 +738,7 @@ yukon.mapping = (function () {
                     feature = yukon.mapping.getFeatureFromData(childNode);
                 if (feature != null) {
                     var paoId = yukon.mapping.getPaoIdFromData(childNode);
+                    //paoId is a String since it is retrieved from a Map and deviceId is an Integer so using == here instead of ===
                     if (paoId == deviceId) {
                         yukon.mapping.findDescendants(childNode, deviceId);
                         yukon.mapping.showDescendantLines();

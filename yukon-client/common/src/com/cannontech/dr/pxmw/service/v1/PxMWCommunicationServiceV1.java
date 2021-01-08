@@ -56,4 +56,10 @@ public interface PxMWCommunicationServiceV1 {
      */
     List<PxMWChannelValueV1> getChannelValues(String deviceGuid, List<String> tags)
             throws PxMWCommunicationExceptionV1, PxMWException;
+
+    /**
+     * Enables or disables a device on the IoTHub
+     * The value "true" enables the device and the "false" disables the device.
+     */
+    void cloudEnable(String deviceGuid, boolean enable) throws PxMWCommunicationExceptionV1, PxMWException;
 }

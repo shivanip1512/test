@@ -530,7 +530,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnablePermanentLoadProfileRecordi
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnablePermanentLoadProfileRecording_decoding_exceptions )
 {
-    Cti::Test::set_to_central_timezone();
+    const auto tz_override = Cti::Test::set_to_central_timezone();
 
     const std::vector< RfnCommand::RfnResponsePayload >   responses {
         { 0x69, 0x02, 0x00, 0x00 },
@@ -566,7 +566,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_EnablePermanentLoadProfileRecordi
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfileRecording )
 {
-    Cti::Test::set_to_central_timezone();
+    const auto tz_override = Cti::Test::set_to_central_timezone();
 
     RfnLoadProfileGetRecordingCommand  command;
 
@@ -820,7 +820,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints )
 {
     using Cti::Devices::Commands::RfnCommand;
 
-    Cti::Test::set_to_central_timezone();
+    const auto tz_override = Cti::Test::set_to_central_timezone();
 
     //  begin == end, before today
     {
@@ -983,7 +983,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints_FloatingPoin
 {
     using Cti::Devices::Commands::RfnCommand;
 
-    Cti::Test::set_to_central_timezone();
+    const auto tz_override = Cti::Test::set_to_central_timezone();
 
     //  begin == end, before today
     {

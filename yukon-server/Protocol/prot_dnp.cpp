@@ -1049,7 +1049,7 @@ std::string DnpProtocol::getControlResultString( unsigned char result_status )
 }
 
 
-int timeZoneId(const int incoming, TimeOffset deviceUtcOffset)
+DWORD timeZoneId(const DWORD incoming, TimeOffset deviceUtcOffset)
 {
     if( deviceUtcOffset == TimeOffset::LocalStandard && incoming == TIME_ZONE_ID_DAYLIGHT )
     {

@@ -93,6 +93,10 @@ public class DeviceConfigSummaryDetail {
     public boolean isDisplayFailurePopup() {
         return status == LastActionStatus.FAILURE && errorCode != null ;
     }
+    
+    public boolean isInProgress() {
+        return status == LastActionStatus.IN_PROGRESS;
+    }
 
     public Integer getErrorCode() {
         return errorCode;

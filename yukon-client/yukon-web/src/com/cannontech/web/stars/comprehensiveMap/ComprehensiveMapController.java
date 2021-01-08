@@ -350,7 +350,14 @@ public class ComprehensiveMapController {
     
     @GetMapping("networkTree")
     public @ResponseBody Map<String, Object> primaryRoutes(Integer deviceId) {
-        Set<Integer> gatewayIds = rfnDeviceDao.getGatewayIdsForDevices(new HashSet<>(Arrays.asList(deviceId)));
+        Set<Integer> gatewayIds = new HashSet<Integer>();
+        //check if device is gateway
+        RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
+        if (device.getPaoIdentifier().getPaoType().isRfGateway()) {
+            gatewayIds.add(deviceId);
+        } else {
+            gatewayIds = rfnDeviceDao.getGatewayIdsForDevices(new HashSet<>(Arrays.asList(deviceId)));
+        }
         return getNetworkTree(new ArrayList<>(gatewayIds));
     }
     

@@ -67,7 +67,7 @@ public class PointApiController <T extends PointBaseModel<?>> {
     }
 
     @PatchMapping("/points/{id}")
-    public ResponseEntity<Object> update(@Valid @RequestBody PointBaseModel<?> pointBase, @PathVariable("id") int id,
+    public ResponseEntity<Object> update(@PathVariable("id") int id, @Valid @RequestBody PointBaseModel<?> pointBase,
             YukonUserContext userContext, HttpServletRequest request) {
         pointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
         return new ResponseEntity<>(pointEditorService.update(id, pointBase, userContext), HttpStatus.OK);
@@ -84,7 +84,7 @@ public class PointApiController <T extends PointBaseModel<?>> {
     }
 
     @PostMapping("/points/{id}/copy")
-    public ResponseEntity<Object> copy(@Valid @RequestBody PointCopy pointCopy, @PathVariable("id") int id,
+    public ResponseEntity<Object> copy(@PathVariable("id") int id, @Valid @RequestBody PointCopy pointCopy,
             YukonUserContext userContext, HttpServletRequest request) {
         pointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.CREATE);
         return new ResponseEntity<>(pointEditorService.copy(id, pointCopy), HttpStatus.OK);

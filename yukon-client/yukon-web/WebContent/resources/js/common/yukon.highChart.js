@@ -14,7 +14,24 @@ yukon.highChart = (function () {
  
     var 
     
+    _buildChart = function (parameters) {
+        $.ajax({
+            url: parameters.chartUrl,
+            dataType : 'json'
+        }).done(function (response, textStatus, jqXHR) {
+            yukon.highChart.buildChart($(parameters.containerIdentifier), response, parameters.title,
+                parameters.height, parameters.width);
+        });
+    },
+    
     mod = {
+    
+        reloadChartAtInterval: function (parameters) {
+            setInterval(function(){
+                _buildChart(parameters);
+            }, parameters.reloadInterval * 1000);
+            _buildChart(parameters);
+        },
     
         buildChart : function (chartContainer, jsonResponse, title, chartHeight, chartWidth) {
             var gridLineWidth = 0;
@@ -44,6 +61,11 @@ yukon.highChart = (function () {
             });
             
             chartContainer.highcharts({
+                plotOptions: {
+                    series: {
+                        animation: false
+                    }
+                },
                 credits: yg.highcharts_options.disable_credits,
                 chart: $.extend({}, yg.highcharts_options.chart_options, chartOptionsJSON),
                 title: {
@@ -51,7 +73,7 @@ yukon.highChart = (function () {
                     align: 'center',
                     style: {
                         color: yg.colors.BLACK,
-                        fontSize: '15px'
+                        fontSize: '14px'
                     }
                 },
                 xAxis: {

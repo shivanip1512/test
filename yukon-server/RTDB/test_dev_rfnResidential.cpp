@@ -50,11 +50,17 @@ struct test_state_rfnResidential
     Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;
     boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
     Cti::Test::Override_ConfigManager overrideConfigManager;
+    const decltype(Cti::Test::set_to_central_timezone()) tzOverride;
+    const CtiTime execute_time;
+    const CtiTime decode_time;
 
     test_state_rfnResidential() :
         request( new CtiRequestMsg ),
         fixtureConfig(new Cti::Test::test_DeviceConfig),
-        overrideConfigManager(fixtureConfig)
+        overrideConfigManager(fixtureConfig),
+        tzOverride(Cti::Test::set_to_central_timezone()),
+        execute_time(CtiDate(27, 8, 2013), 15),
+        decode_time (CtiDate(27, 8, 2013), 16)
     {
     }
 
@@ -77,9 +83,6 @@ namespace std {
 namespace test_cmd_rfn_ConfigNotification {
     extern const std::vector<uint8_t> payload;
 }
-
-const CtiTime execute_time( CtiDate( 27, 8, 2013 ) , 15 );
-const CtiTime decode_time ( CtiDate( 27, 8, 2013 ) , 16 );
 
 
 BOOST_FIXTURE_TEST_SUITE( test_dev_rfnResidential, test_state_rfnResidential )
@@ -926,8 +929,6 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
 
 BOOST_AUTO_TEST_CASE( test_putconfig_tou_holiday )
 {
-    Cti::Test::set_to_central_timezone();
-
     test_RfnResidentialDevice dut;
 
     CtiCommandParser parse("putconfig emetcon holiday 02/01/2025 06/14/2036 12/30/2050");

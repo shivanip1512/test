@@ -22,16 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cannontech.common.dr.gear.setup.model.ProgramGear;
 import com.cannontech.common.dr.program.setup.model.LoadProgram;
 import com.cannontech.common.dr.program.setup.model.LoadProgramCopy;
-import com.cannontech.common.dr.program.setup.model.NotificationGroup;
-import com.cannontech.common.dr.program.setup.model.ProgramDirectMemberControl;
-import com.cannontech.common.dr.program.setup.model.ProgramGroup;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.dr.loadprogram.service.LoadProgramSetupService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @RestController
 @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
@@ -65,7 +61,7 @@ public class LoadProgramSetupApiController {
 
     @PostMapping("/{id}/copy")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
-    public ResponseEntity<Object> copy(@Valid @RequestBody LoadProgramCopy loadProgramCopy, @PathVariable int id,
+    public ResponseEntity<Object> copy(@PathVariable int id, @Valid @RequestBody LoadProgramCopy loadProgramCopy,
             YukonUserContext userContext) {
         int paoId = loadProgramService.copy(id, loadProgramCopy, userContext.getYukonUser());
         HashMap<String, Integer> paoIdMap = new HashMap<>();
@@ -75,7 +71,7 @@ public class LoadProgramSetupApiController {
 
     @PutMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
-    public ResponseEntity<Object> update(@Valid @RequestBody LoadProgram loadProgram, @PathVariable int id,
+    public ResponseEntity<Object> update(@PathVariable int id, @Valid @RequestBody LoadProgram loadProgram,
             YukonUserContext userContext) {
         LoadProgram updateLoadProgram = loadProgramService.update(id, loadProgram, userContext.getYukonUser());
         return new ResponseEntity<>(updateLoadProgram, HttpStatus.OK);

@@ -31,6 +31,11 @@ using Cti::Logging::Range::Hex::operator<<;
 
 namespace {
 std::unique_ptr<DnpSlave> dnpSlaveInterface;
+constexpr unsigned DefaultPriority_AnalogOutput = 14;
+constexpr unsigned DefaultPriority_DnpTimesync  = 12;
+constexpr unsigned DefaultPriority_Operate      = 14;
+constexpr unsigned DefaultPriority_Other        = 14;
+constexpr unsigned DefaultPriority_Scan         = 11;
 }
 
 extern "C" {
@@ -68,7 +73,13 @@ DnpSlave::DnpSlave() :
     CtiFDRSocketServer("DNPSLAVE"),
     _staleDataTimeout(0),
     _porterTimeout(30),
-    _porterPriority(14),
+    _porterPriorities {
+        DefaultPriority_AnalogOutput,
+        DefaultPriority_DnpTimesync,
+        DefaultPriority_Operate,
+        DefaultPriority_Other,
+        DefaultPriority_Scan,
+    },
     _porterConnection(Cti::Messaging::ActiveMQ::Queue::porter)
 {
     _porterConnection.setName("FDR DNP Slave to Porter");
@@ -123,15 +134,19 @@ std::unique_ptr<CtiPointRegistrationMsg> DnpSlave::buildRegistrationPointList()
 */
 bool DnpSlave::readConfig()
 {
-    const char *KEY_LISTEN_PORT_NUMBER          = "FDR_DNPSLAVE_PORT_NUMBER";
-    const char *KEY_DB_RELOAD_RATE              = "FDR_DNPSLAVE_DB_RELOAD_RATE";
-    const char *KEY_FDR_DNPSLAVE_SERVER_NAMES   = "FDR_DNPSLAVE_SERVER_NAMES";
-    const char *KEY_LINK_TIMEOUT                = "FDR_DNPSLAVE_LINK_TIMEOUT_SECONDS";
-    const char *KEY_STALEDATA_TIMEOUT           = "FDR_DNPSLAVE_STALEDATA_TIMEOUT";
-    const char *KEY_PORTER_TIMEOUT              = "FDR_DNPSLAVE_PORTER_TIMEOUT";
-    const char *KEY_PORTER_PRIORITY             = "FDR_DNPSLAVE_PORTER_PRIORITY";
+    constexpr char* KEY_LISTEN_PORT_NUMBER          = "FDR_DNPSLAVE_PORT_NUMBER";
+    constexpr char* KEY_DB_RELOAD_RATE              = "FDR_DNPSLAVE_DB_RELOAD_RATE";
+    constexpr char* KEY_FDR_DNPSLAVE_SERVER_NAMES   = "FDR_DNPSLAVE_SERVER_NAMES";
+    constexpr char* KEY_LINK_TIMEOUT                = "FDR_DNPSLAVE_LINK_TIMEOUT_SECONDS";
+    constexpr char* KEY_STALEDATA_TIMEOUT           = "FDR_DNPSLAVE_STALEDATA_TIMEOUT";
+    constexpr char* KEY_PORTER_TIMEOUT              = "FDR_DNPSLAVE_PORTER_TIMEOUT";
+    constexpr char* KEY_PORTER_PRIORITY             = "FDR_DNPSLAVE_PORTER_PRIORITY";
+    constexpr char* KEY_PORTER_PRIORITY_ANALOG_OUTPUT   = "FDR_DNPSLAVE_PORTER_PRIORITY_ANALOG_OUTPUT";
+    constexpr char* KEY_PORTER_PRIORITY_DNP_TIMESYNC    = "FDR_DNPSLAVE_PORTER_PRIORITY_DNP_TIMESYNC";
+    constexpr char* KEY_PORTER_PRIORITY_OPERATE         = "FDR_DNPSLAVE_PORTER_PRIORITY_OPERATE";
+    constexpr char* KEY_PORTER_PRIORITY_SCAN            = "FDR_DNPSLAVE_PORTER_PRIORITY_SCAN";
 
-    const int DNPSLAVE_PORTNUMBER = 2085;
+    constexpr int DNPSLAVE_PORTNUMBER = 2085;
 
     // load up the base class
     CtiFDRSocketServer::readConfig();
@@ -151,8 +166,23 @@ bool DnpSlave::readConfig()
     _porterTimeout =
             gConfigParms.getValueAsInt(KEY_PORTER_TIMEOUT, 30);
 
-    _porterPriority =
-            gConfigParms.getValueAsInt(KEY_PORTER_PRIORITY, 14);
+    _porterPriorities = {
+            gConfigParms.getValueAsUnsigned(
+                    KEY_PORTER_PRIORITY_ANALOG_OUTPUT, 
+                    DefaultPriority_AnalogOutput),
+            gConfigParms.getValueAsUnsigned(
+                    KEY_PORTER_PRIORITY_DNP_TIMESYNC, 
+                    DefaultPriority_DnpTimesync),
+            gConfigParms.getValueAsUnsigned(
+                    KEY_PORTER_PRIORITY_OPERATE,
+                    DefaultPriority_Operate),
+            gConfigParms.getValueAsUnsigned(
+                    KEY_PORTER_PRIORITY,
+                    DefaultPriority_Other),
+            gConfigParms.getValueAsUnsigned(
+                    KEY_PORTER_PRIORITY_SCAN,
+                    DefaultPriority_Scan),
+    };
 
     const std::string serverNames =
             gConfigParms.getValueAsString(KEY_FDR_DNPSLAVE_SERVER_NAMES);
@@ -1050,7 +1080,23 @@ ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_requ
                 commandString,
                 userMessageId);
 
-    requestMsg->setMessagePriority(_porterPriority);
+    if( boost::istarts_with(commandString, "putconfig ")
+        && boost::icontains(commandString, " timesync") )
+    {
+        requestMsg->setMessagePriority(_porterPriorities.dnpTimesync);
+    }
+    else if( boost::istarts_with(commandString, "scan ") )
+    {
+        requestMsg->setMessagePriority(_porterPriorities.scan);
+    }
+    else if( boost::istarts_with(commandString, "control ") )
+    {
+        requestMsg->setMessagePriority(_porterPriorities.operate);
+    }
+    else
+    {
+        requestMsg->setMessagePriority(_porterPriorities.other);
+    }
 
     if( const auto error = writePorterConnection(requestMsg.release(), Timing::Chrono::seconds(5)) )
     {
@@ -1303,7 +1349,7 @@ ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_
                 commandString,
                 userMessageId);
 
-    requestMsg->setMessagePriority(_porterPriority);
+    requestMsg->setMessagePriority(_porterPriorities.analogOutput);
 
     if( const auto error = writePorterConnection(requestMsg.release(), Timing::Chrono::seconds(5)) )
     {

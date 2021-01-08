@@ -143,6 +143,7 @@
       <WarningLevel>Level1</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;WINDOWS;_CONSOLE;_DEBUG;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=scanner;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -152,7 +153,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;advapi32.lib;winmm.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctimsg.lib;..\lib-debug\service.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctipntdb.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\cticonfig.lib;..\lib-debug\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;advapi32.lib;winmm.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctimsg.lib;..\lib-debug\service.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctipntdb.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\cticonfig.lib;..\lib-debug\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
@@ -192,6 +193,7 @@
       <WarningLevel>Level1</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;WINDOWS;_CONSOLE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=scanner;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -201,7 +203,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;advapi32.lib;winmm.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;..\lib\service.lib;..\lib\ctidevdb.lib;..\lib\ctipntdb.lib;..\lib\ctidbsrc.lib;..\lib\cticonfig.lib;..\lib\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;advapi32.lib;winmm.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;..\lib\service.lib;..\lib\ctidevdb.lib;..\lib\ctipntdb.lib;..\lib\ctidbsrc.lib;..\lib\cticonfig.lib;..\lib\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -253,7 +255,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;advapi32.lib;winmm.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctimsg.lib;..\lib-debug\lib-debug\service.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctipntdb.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\cticonfig.lib;..\lib-debug\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;advapi32.lib;winmm.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctimsg.lib;..\lib-debug\lib-debug\service.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctipntdb.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\cticonfig.lib;..\lib-debug\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>
       </ProgramDatabaseFile>
@@ -311,7 +313,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;advapi32.lib;winmm.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;..\lib\service.lib;..\lib\ctidevdb.lib;..\lib\ctipntdb.lib;..\lib\ctidbsrc.lib;..\lib\cticonfig.lib;..\lib\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;advapi32.lib;winmm.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;..\lib\service.lib;..\lib\ctidevdb.lib;..\lib\ctipntdb.lib;..\lib\ctidbsrc.lib;..\lib\cticonfig.lib;..\lib\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

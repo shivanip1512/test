@@ -49,7 +49,7 @@ public class ControlScenarioSetupApiController {
 
     @PutMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
-    public ResponseEntity<Object> update(@Valid @RequestBody ControlScenario controlScenario, @PathVariable int id,
+    public ResponseEntity<Object> update(@PathVariable int id, @Valid @RequestBody ControlScenario controlScenario,
             YukonUserContext userContext) {
         ControlScenario updateControlScenario = controlScenarioService.update(id, controlScenario, userContext.getYukonUser());
         return new ResponseEntity<>(updateControlScenario, HttpStatus.OK);

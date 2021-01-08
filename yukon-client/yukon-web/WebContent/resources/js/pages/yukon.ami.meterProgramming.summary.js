@@ -18,7 +18,7 @@ yukon.ami.meterProgramming.summary = (function () {
                 $.ajax(yukon.url('/amr/meterProgramming/' + deviceId + '/refreshDeviceRow'))
                 .done(function (rowData) {
                     var deviceRow = $('#summary-table').find('tr[data-device-id=' + deviceId + ']');
-                    deviceRow.html(rowData);
+                    deviceRow.html(rowData).flash();
                 });
             }
             yukon.ui.alertSuccess(data.successMsg);
@@ -142,7 +142,7 @@ yukon.ami.meterProgramming.summary = (function () {
                         $.ajax(yukon.url('/amr/meterProgramming/' + deviceId + '/refreshDeviceRow'))
                         .done(function (rowData) {
                             var deviceRow = $('#summary-table').find('tr[data-device-id=' + deviceId + ']');
-                            deviceRow.html(rowData);
+                            deviceRow.html(rowData).flash();
                             //stop data updaters
                             if (isUploadFinished) {
                                 var idMap = {isInProgress : "METER_PROGRAMMING/" + deviceId + "/IS_IN_PROGRESS"};

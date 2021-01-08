@@ -99,7 +99,7 @@ yukon.tools.tdc = (function () {
                 $('#tdc-popup').load(url, data, function () {
                     $('#tdc-popup').dialog({
                         title : popupTitle,
-                        width : 700,
+                        width : 750,
                         autoOpen : true
                     });
                 });

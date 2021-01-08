@@ -59,11 +59,15 @@ public class HighChartServiceImpl implements HighChartService {
         xaxisOptions.put(HighChartOptionKey.MAX.getKey(), xAxisMax);
         
         Duration duration = new Duration(start.getMillis(), stop.getMillis());
+        String dateTimeFormat = HighChartOptionKey.DATE_FORMAT_MONTH_DATE.getKey();
         if (duration.getStandardDays() > 365) {
-            xaxisOptions.put("datetimeFormat", HighChartOptionKey.DATE_FORMAT_MONTH_YEAR.getKey());
-        } else {
-            xaxisOptions.put("datetimeFormat", HighChartOptionKey.DATE_FORMAT_MONTH_DATE.getKey());
+            dateTimeFormat = HighChartOptionKey.DATE_FORMAT_MONTH_YEAR.getKey();
+        } else if (duration.getStandardDays() <= 1) {
+            dateTimeFormat = HighChartOptionKey.DATE_TIME_FORMAT_HOUR_MINUTE.getKey();
+        } else if (duration.getStandardDays() > 1 && duration.getStandardDays() <= 31) {
+            dateTimeFormat = HighChartOptionKey.DATE_TIME_FORMAT_DATE_MONTH_HOUR_MINUTE.getKey();
         }
+        xaxisOptions.put("datetimeFormat", dateTimeFormat);
         
         Map<String, Object> dataAndOptions = Maps.newHashMap();
         dataAndOptions.put("seriesDetails", seriesList);

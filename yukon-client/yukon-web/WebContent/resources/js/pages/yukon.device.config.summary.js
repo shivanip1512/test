@@ -27,9 +27,16 @@ yukon.deviceConfig.summary = (function () {
                 $.ajax({
                     url: yukon.url('/deviceConfiguration/summary/' + deviceId + '/' + action),
                     type: 'post'
-                }).done(function () {
-                    $(document).scrollTop(0);
-                    window.location.reload();
+                }).done(function (data) {
+                    if (data.successMessage) {
+                        yukon.ui.alertSuccess(yukon.escapeXml(data.successMessage));
+                        //refresh row
+                        $.ajax(yukon.url('/deviceConfiguration/summary/' + deviceId + '/refreshDeviceRow'))
+                        .done(function (rowData) {
+                            var deviceRow = $('#summary-table').find('tr[data-device-id=' + deviceId + ']');
+                            deviceRow.html(rowData).flash();
+                        });
+                    }
                 });
             });
             
@@ -69,6 +76,23 @@ yukon.deviceConfig.summary = (function () {
             
             _initialized = true;
 
+        },
+        
+        refreshCheck: function (deviceId) {
+            return function (data) {
+                var isActionFinished = data.isInProgress === 'false';
+                if (isActionFinished) {
+                    //refresh row
+                    $.ajax(yukon.url('/deviceConfiguration/summary/' + deviceId + '/refreshDeviceRow'))
+                    .done(function (rowData) {
+                        var deviceRow = $('#summary-table').find('tr[data-device-id=' + deviceId + ']');
+                        deviceRow.html(rowData).flash();
+                        //stop data updaters
+                        var idMap = {isInProgress : "DEVICE_CONFIG_SUMMARY/" + deviceId + "/IS_IN_PROGRESS"};
+                        yukon.dataUpdater.unRegisterCallback(idMap);
+                    });
+                }
+            }
         },
 
     };

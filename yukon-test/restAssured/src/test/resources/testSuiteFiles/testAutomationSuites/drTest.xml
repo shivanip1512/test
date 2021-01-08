@@ -8,7 +8,7 @@
             <class name="com.cannontech.rest.api.dr.loadgroup.MeterDisconnectLoadGroupApiTest" />
             <class name="com.cannontech.rest.api.dr.loadgroup.EmetconLoadGroupApiTest" />
             <class name="com.cannontech.rest.api.dr.loadgroup.ExpresscomLoadGroupApiTest" />
-            <!-- <class name="com.cannontech.rest.api.dr.loadgroup.DigiSepLoadGroupApiTest" /> -->
+            <class name="com.cannontech.rest.api.dr.loadgroup.DigiSepLoadGroupApiTest" />
             <class name="com.cannontech.rest.api.dr.loadgroup.EcobeeLoadGroupApiTest" />
             <class name="com.cannontech.rest.api.dr.loadgroup.HoneywellLoadGroupApiTest" />
             <class name="com.cannontech.rest.api.dr.loadgroup.VersacomLoadGroupApiTest" />
@@ -52,17 +52,17 @@
         </classes>
     </test>
     
-    <!--     <test name="Control Scenario Test">
+    <test name="Control Scenario Test">
         <classes>       
             <class name="com.cannontech.rest.api.dr.controlScenario.ControlScenarioApiTest" />
         </classes>
-    </test> -->
+    </test>
     
-    <!--     <test name="Control Area Test">
+    <test name="Control Area Test">
         <classes>       
             <class name="com.cannontech.rest.api.dr.controlarea.ControlAreaApiTest" />
         </classes>
-    </test>  -->
+    </test>
     
     <test name="Program Constraint Test">
         <classes>       

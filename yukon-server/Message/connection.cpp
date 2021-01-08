@@ -50,13 +50,19 @@ CtiConnection::CtiConnection( const string& title, Que_t *inQ, int termSeconds )
     CTILOG_DEBUG( dout, who() << " - CtiConnection::CtiConnection() @0x" << std::hex << this );
 
     // create message listener and register function and caller
-    _messageListener.reset(
-            new MessageListener(
-                    boost::bind(&CtiConnection::onMessage, this, _1)));
+    _messageListener =
+            std::make_unique<MessageListener>(
+                [this]( const cms::Message* msg )
+                {
+                    onMessage(msg);
+                } );
     // create advisory message listener and register function and caller
-    _advisoryListener.reset(
-            new MessageListener(
-                    boost::bind(&CtiConnection::onAdvisoryMessage, this, _1)));
+    _advisoryListener =
+            std::make_unique<MessageListener>(
+                [this]( const cms::Message* msg )
+                {
+                    onAdvisoryMessage(msg);
+                } );
 }
 
 CtiConnection::~CtiConnection()

@@ -144,7 +144,13 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
         ServerNameMap _serverNameLookup;
         int _staleDataTimeout;
         unsigned _porterTimeout;
-        unsigned _porterPriority;
+        struct {
+            unsigned analogOutput;
+            unsigned dnpTimesync;
+            unsigned operate;
+            unsigned other;
+            unsigned scan;
+        } _porterPriorities;
         RandomGenerator<long> _porterUserMsgIdGenerator;
 
         AttributeService _attributeService;

@@ -867,7 +867,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
     BOOST_AUTO_TEST_CASE(test_dev_mct410_getvalue_outage_old)
     {
-        Cti::Test::set_to_central_timezone();
+        const auto tz_override = Cti::Test::set_to_central_timezone();
 
         mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         1029);
         mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 7);     //  set the device to SSPEC revision 0.7
@@ -947,7 +947,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
     BOOST_AUTO_TEST_CASE(test_dev_mct410_getvalue_outage)
     {
-        Cti::Test::set_to_central_timezone();
+        const auto tz_override = Cti::Test::set_to_central_timezone();
 
         mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         1029);
         mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 17);  //  set the device to SSPEC revision 1.7
@@ -1026,6 +1026,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
     BOOST_AUTO_TEST_CASE(test_dev_mct410_getvalue_peak_frozen_scheduled_freeze)
     {
+        const auto tzOverride = Cti::Test::set_to_central_timezone();
+
         CtiTime configTime(CtiDate(1, 10, 2009), 1, 2, 3);
         CtiTime timeNow(CtiDate(1, 1, 2010), 1, 2, 3);
 
@@ -3815,6 +3817,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_aligned_read)
     {
+        const auto tzOverride = Cti::Test::set_to_central_timezone();
+
         test_Mct410IconDevice mct410;
 
         //  set the expected period of interest
@@ -3884,6 +3888,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_single_interval)
     {
+        const auto tzOverride = Cti::Test::set_to_central_timezone();
+
         test_Mct410IconDevice mct410;
         const CtiTime timeBegin(CtiDate(18, 3, 2011), 12, 34, 56);
 
@@ -4163,6 +4169,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_single_day)
     {
+        const auto tzOverride = Cti::Test::set_to_central_timezone();
+
         test_Mct410IconDevice mct410;
         mct410.test_loadProfileInterval = 3600;  //  so it only takes 4 requests to get the whole day
 
@@ -4938,6 +4946,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_single_retry)
     {
+        const auto tzOverride = Cti::Test::set_to_central_timezone();
+
         test_Mct410IconDevice mct410;
         const CtiTime timeBegin(CtiDate(18, 3, 2011), 12, 34, 56);
 
@@ -5275,6 +5285,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     }
     BOOST_AUTO_TEST_CASE(test_getvalue_lp_failure)
     {
+        const auto tzOverride = Cti::Test::set_to_central_timezone();
+
         test_Mct410IconDevice mct410;
         const CtiTime timeBegin(CtiDate(18, 3, 2011), 12, 34, 56);
 
@@ -5791,8 +5803,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             BOOST_CHECK( ! ret->ExpectMore() );
         }
     }
-    BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak_overlap)
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak_no_overlap)
     {
+        const auto tzOverride = Cti::Test::set_to_central_timezone();
+
         Cti::Test::Override_CtiDate_Now overrideDate(CtiDate(17, 3, 2014));
 
         const CtiTime timeBegin(CtiDate(18, 3, 2014), 12, 34, 56);
@@ -5870,8 +5884,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     results_begin, results_end);
         }
     }
-    BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak_no_overlap)
+    BOOST_AUTO_TEST_CASE(test_getvalue_lp_peak_overlap)
     {
+        const auto tzOverride = Cti::Test::set_to_central_timezone();
+
         const CtiDate dateBegin { 4, 4, 2016 };
         const CtiTime timeBegin { dateBegin, 17, 24, 36 };
 
