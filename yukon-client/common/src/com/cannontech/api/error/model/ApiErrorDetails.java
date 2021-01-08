@@ -15,9 +15,9 @@ public enum ApiErrorDetails {
     DATABASE_ERROR(104, "Database Error", "Database error occured while performing this transaction."), // code : 100104
     METHOD_ARGUMENT_MISMATCH(105, "Method Argument Mismatch", "Method arguments are not matching."), // code : 100105
     BAD_REQUEST(106, "Bad Request", "Bad Request."), // code : 100106
-    AUTHENTICATION_REQUIRED(107, "Authentication required", "Expired or invalid token"),
-    NO_HANDLER_FOUND(108, "No handler found", "No handler found."),
-    HTTP_REQUEST_METHOD_NOT_SUPPORTED(109, "HTTP request method not supported", "HTTP request method not supported."),
+    AUTHENTICATION_REQUIRED(107, "Authentication required", "Expired or invalid token"), // code : 100107
+    NO_HANDLER_FOUND(108, "No handler found", "No handler found."), // code : 100108
+    HTTP_REQUEST_METHOD_NOT_SUPPORTED(109, "HTTP request method not supported", "HTTP request method not supported."), // code : 100109
 
 
     // Validation Errors
@@ -25,9 +25,7 @@ public enum ApiErrorDetails {
     FIELD_REQUIRED(ApiErrorCategory.VALIDATION_FAILED, 102, "Required field", "Field is required."), // code : 101102
     MAX_LENGTH_EXCEEDED(ApiErrorCategory.VALIDATION_FAILED, 103, "Max Length Exceeded", "Max length exceeded."), // code : 101103
     ILLEGAL_CHARACTERS(ApiErrorCategory.VALIDATION_FAILED, 104, "Illegal Characters", "Invalid characters."), // code : 101104
-    VALUE_OUTSIDE_VALID_RANGE(ApiErrorCategory.VALIDATION_FAILED, 105, "Invalid Range", "Provided value is out of range."), // code
-                                                                                                                            // :
-                                                                                                                            // 101105
+    VALUE_OUTSIDE_VALID_RANGE(ApiErrorCategory.VALIDATION_FAILED, 105, "Invalid Range", "Provided value is out of range."), // code : 101105
     ALREADY_EXISTS(ApiErrorCategory.VALIDATION_FAILED, 106, "Already exists", "Already exists."), // code : 101106
     DOES_NOT_EXISTS(ApiErrorCategory.VALIDATION_FAILED, 107, "Does not exists", "Does not exists."), // code : 101107
     NOT_SUPPORTED(ApiErrorCategory.VALIDATION_FAILED, 108, "Not Supported", "Provided type not supported."), // code : 101108

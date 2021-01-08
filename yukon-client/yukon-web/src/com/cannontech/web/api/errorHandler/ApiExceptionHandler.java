@@ -39,7 +39,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.cannontech.api.error.model.ApiErrorCategory;
 import com.cannontech.api.error.model.ApiErrorDetails;
-import com.cannontech.api.exception.NotSupportedException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.exception.LMObjectDeletionFailureException;
