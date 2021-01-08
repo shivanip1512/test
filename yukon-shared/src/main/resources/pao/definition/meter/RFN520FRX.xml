@@ -42,7 +42,7 @@
         <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
         <pointInfo name="Delivered kWh" init="true" attributes="USAGE,DELIVERED_KWH"/>
         <pointInfo name="Delivered kWh per Interval" init="true" attributes="DELIVERED_KWH_PER_INTERVAL"/>
-        <pointInfo name="Delivered Peak kVA" attributes="PEAK_KVA"/>
+        <pointInfo name="Delivered Peak kVA" attributes="KVA_LAGGING_PEAK"/>
         <pointInfo name="Delivered Peak kVAr" attributes="PEAK_KVAR"/>
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
         <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
