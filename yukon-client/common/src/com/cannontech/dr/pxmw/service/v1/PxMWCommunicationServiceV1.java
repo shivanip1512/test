@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.dr.pxmw.model.PxMWException;
 import com.cannontech.dr.pxmw.model.v1.PxMWChannelValueV1;
+import com.cannontech.dr.pxmw.model.v1.PxMWCommandRequestV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWCommunicationExceptionV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceProfileV1;
 import com.cannontech.dr.pxmw.model.v1.PxMWDeviceTimeseriesLatestV1;
@@ -62,4 +63,19 @@ public interface PxMWCommunicationServiceV1 {
      * The value "true" enables the device and the "false" disables the device.
      */
     void cloudEnable(String deviceGuid, boolean enable) throws PxMWCommunicationExceptionV1, PxMWException;
+
+    /**
+     * Sends a command to a device.
+     * 
+     * Meaning return errors statuses
+     * 
+     * 400 Invalid input parameter
+     * 401 User is not authorized to send the command
+     * 404 Device or device profile not defined    
+     * 501 Device is not configured for IoT Hub or is not direct_method capable
+     * 503 Error communicating with the device
+     * 
+     * PxMWCommunicationExceptionV1 contains the status
+     */
+    void sendCommand(String deviceGuid, String commandGuid, PxMWCommandRequestV1 request) throws PxMWCommunicationExceptionV1, PxMWException;
 }
