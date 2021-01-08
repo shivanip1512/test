@@ -42,14 +42,7 @@ public class HighChartServiceImpl implements HighChartService {
         graphs.forEach(graph -> {
             seriesList.add(getSeriesDetails(graph, graphType));
         });
-        
-        
-        int noOfTemperaturePoints = 0;
-        for (Graph<ChartValue<Double>> graph : graphs) {
-            if (isTemperaturePoint(graph.getPointId())) {
-                noOfTemperaturePoints++;
-            }
-        }
+
         boolean isTemperatureAxisDetailsAdded = false;
         List<Map<String, Object>> yAxesOptions = Lists.newArrayList();
         for (GraphDetail graphDetail : graphDetails) {
@@ -58,13 +51,14 @@ public class HighChartServiceImpl implements HighChartService {
             String titleTxt;
             int rotation = 270;
             if (isTemperaturePoint(graphDetail.getPointId())) {
-                if (noOfTemperaturePoints == 2 && isTemperatureAxisDetailsAdded) {
+                if (isTemperatureAxisDetailsAdded) {
                     titleTxt = "";
                 } else {
                     titleTxt = graphDetail.getyLabelUnits();
                     rotation = -270;
                     isTemperatureAxisDetailsAdded = true;
                 }
+                yAxes.put(HighChartOptionKey.OPPOSITE.getKey(), true);
             } else {
                 titleTxt = graphDetail.getyLabelUnits();
             }
@@ -77,9 +71,6 @@ public class HighChartServiceImpl implements HighChartService {
             }
             if (yMax != null) {
                 yAxes.put(HighChartOptionKey.MAX.getKey(), yMax);
-            }
-            if (isTemperaturePoint(graphDetail.getPointId())) {
-                yAxes.put(HighChartOptionKey.OPPOSITE.getKey(), true);
             }
             yAxesOptions.add(yAxes);
         }
@@ -121,6 +112,7 @@ public class HighChartServiceImpl implements HighChartService {
             seriesDetails.put(HighChartOptionKey.MARKER.getKey(), Collections.singletonMap("enabled", true));
             seriesDetails.put(HighChartOptionKey.SERIES_GRAPH_TYPE.getKey(), graphType.getHighChartType());
             if (graphType == GraphType.COLUMN) {
+                //TODO: Bar width will be calculated in YUK-23481.
                 seriesDetails.put(HighChartOptionKey.POINT_WIDTH.getKey(), 10);
             }
         }
