@@ -236,7 +236,7 @@
             <fileset dir="${client.bag}/exampleXml"/>
         </copy>
         
-        <!-- Add CMEP template file -->
+        <!-- Add data export template folder and template files.-->
         <copy todir="${install.bag}/Common Directories/Config/DataExportTemplates" preservelastmodified="true">
             <fileset dir="${basedir}/yukon-shared/src/main/resources/DataExportTemplates/" includes="*.yaml,*.yml" casesensitive="false"/>
         </copy>
