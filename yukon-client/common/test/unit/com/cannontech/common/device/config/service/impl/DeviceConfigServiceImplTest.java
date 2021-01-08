@@ -117,19 +117,19 @@ public class DeviceConfigServiceImplTest {
     @Test
     public final void build_new_states_for_unassign_action() throws Exception {
         // device is not in states table -> NO CHANGE
-        checkStateUnassign("buildNewStatesForUnassignAction", one, null);
+        checkStateUnassigned("buildNewStatesForUnassignAction", one, null);
         // was UNKNOWN -> NO CHANGE
-        checkStateUnassign("buildNewStatesForUnassignAction", two, null);
+        checkStateUnassigned("buildNewStatesForUnassignAction", two, null);
         // was UNREAD -> UNKNOWN
-        checkStateUnassign("buildNewStatesForUnassignAction", three, UNKNOWN);
+        checkStateUnassigned("buildNewStatesForUnassignAction", three, UNKNOWN);
         // was IN_SYNC -> UNASSIGNED
-        checkStateUnassign("buildNewStatesForUnassignAction", four, UNASSIGNED);
+        checkStateUnassigned("buildNewStatesForUnassignAction", four, UNASSIGNED);
         // was OUT_OF_SYNC -> UNASSIGNED
-        checkStateUnassign("buildNewStatesForUnassignAction", five, UNASSIGNED);
+        checkStateUnassigned("buildNewStatesForUnassignAction", five, UNASSIGNED);
         // was UNASSIGNED -> send verify
-        checkStateUnassign("buildNewStatesForUnassignAction", six, null);
+        checkStateUnassigned("buildNewStatesForUnassignAction", six, null);
         // was UNCONFIRMED remains UNCONFIRMED
-        checkStateUnassign("buildNewStatesForUnassignAction", seven, UNCONFIRMED);
+        checkStateUnassigned("buildNewStatesForUnassignAction", seven, UNCONFIRMED);
     }
     
     @Test
@@ -195,7 +195,7 @@ public class DeviceConfigServiceImplTest {
     /**
      * Validates that stateAfterChange is the same as the new state returned by the service. If stateAfterChange is null, the state table will remain unchanged in the database.
      */
-    private void checkStateUnassign(String methodName, SimpleDevice device, ConfigState stateAfterChange)
+    private void checkStateUnassigned(String methodName, SimpleDevice device, ConfigState stateAfterChange)
             throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException {
         Set<DeviceConfigState> newStates = ReflectionTestUtils.<Set<DeviceConfigState>>invokeMethod(impl, methodName, List.of(device), statesInDatabase, Instant.now(), Instant.now());
         ConfigState newState = null;

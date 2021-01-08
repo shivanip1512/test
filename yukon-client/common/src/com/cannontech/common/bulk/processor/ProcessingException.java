@@ -18,10 +18,10 @@ public class ProcessingException extends DisplayableRuntimeException implements
         ProcessorCallbackException {
 
     private static final String keyBase = "yukon.exception.processingException.";
-    private CollectionActionDetail detail = CollectionActionDetail.FAILURE;
+    private CollectionActionDetail detail;
 
     public ProcessingException(String message) {
-        super(message);
+        this(message, CollectionActionDetail.FAILURE);
     }
     public ProcessingException(String message, CollectionActionDetail detail) {
         super(message);

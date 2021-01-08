@@ -271,11 +271,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         Set<DeviceConfigState> states = new HashSet<>();
         List<SimpleDevice> devicesToVerify = new ArrayList<>();
         if (action == ASSIGN) {
-            List<SimpleDevice> disabledDevices = deviceDao.getDisabledDevices(allDevices.stream()
-                    .map(SimpleDevice::getDeviceId)
-                    .collect(Collectors.toList()));
-            List<SimpleDevice> enabledDevices = new ArrayList<>();
-            enabledDevices.addAll(allDevices);
+            List<SimpleDevice> disabledDevices = deviceDao.getDisabledDevices(Lists.transform(allDevices, SimpleDevice::getDeviceId));
+            List<SimpleDevice> enabledDevices = List.copyOf(allDevices);
             enabledDevices.removeAll(disabledDevices);
             states = buildNewStatesForAssignAction(enabledDevices, deviceToState, startTime, stopTime, disabledDevices);
             devicesToVerify = getDevicesToVerify(enabledDevices, deviceToState, List.of(IN_SYNC, OUT_OF_SYNC, UNASSIGNED));
