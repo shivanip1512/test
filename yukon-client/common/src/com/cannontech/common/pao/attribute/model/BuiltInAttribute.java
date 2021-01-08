@@ -460,10 +460,26 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     REVERSE_CAPACITIVE_KVARH_PER_INTERVAL("Reverse Capacitive kVArh per Interval", AttributeGroup.REACTIVE, false),   //440 types only
 
     DELIVERED_KW_LOAD_PROFILE("Delivered kW Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    DELIVERED_KW_RATE_A_LOAD_PROFILE("Delivered kW Rate A Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    DELIVERED_KW_RATE_B_LOAD_PROFILE("Delivered kW Rate B Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    DELIVERED_KW_RATE_C_LOAD_PROFILE("Delivered kW Rate C Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    DELIVERED_KW_RATE_D_LOAD_PROFILE("Delivered kW Rate D Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     DELIVERED_KVAR_LOAD_PROFILE("Delivered kVAr Load Profile", AttributeGroup.PROFILE, false),//calculated, not readable
     RECEIVED_KW_LOAD_PROFILE("Received kW Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    RECEIVED_KW_RATE_A_LOAD_PROFILE("Received kW Rate A Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    RECEIVED_KW_RATE_B_LOAD_PROFILE("Received kW Rate A Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    RECEIVED_KW_RATE_C_LOAD_PROFILE("Received kW Rate A Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    RECEIVED_KW_RATE_D_LOAD_PROFILE("Received kW Rate A Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     SUM_KW_LOAD_PROFILE("Sum kW Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    SUM_KW_RATE_A_LOAD_PROFILE("Sum kW Rate A Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    SUM_KW_RATE_B_LOAD_PROFILE("Sum kW Rate B Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    SUM_KW_RATE_C_LOAD_PROFILE("Sum kW Rate C Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    SUM_KW_RATE_D_LOAD_PROFILE("Sum kW Rate D Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     NET_KW_LOAD_PROFILE("Net kW Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    NET_KW_RATE_A_LOAD_PROFILE("Net kW Rate A Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    NET_KW_RATE_B_LOAD_PROFILE("Net kW Rate B Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    NET_KW_RATE_C_LOAD_PROFILE("Net kW Rate C Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    NET_KW_RATE_D_LOAD_PROFILE("Net kW Rate D Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     SUM_KVA_LOAD_PROFILE("Sum kVA Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     SUM_KVAR_LOAD_PROFILE("Sum kVAr Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     KVA_LOAD_PROFILE("kVA Load Profile", AttributeGroup.PROFILE, false), //calculated, not readable
