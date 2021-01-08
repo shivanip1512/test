@@ -1,10 +1,12 @@
 package com.cannontech.common.util;
 
+import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.management.ManagementFactory;
@@ -25,10 +27,11 @@ import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.UUID;
-
+import java.util.function.Predicate;
 import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
 
@@ -681,6 +684,61 @@ public final class CtiUtilities {
         }
         return "unknown";
     }
+    
+    public static Optional<String> getSystemBootTime() {
+        try {
+            var wmic = Runtime.getRuntime().exec("wmic OS GET LastBootUpTime");
+            /**
+             * Returns data in the form:
+             *     C:\dev>wmic OS GET LastBootUpTime
+             *     LastBootUpTime
+             *     
+             *     20210105061204.500000-480
+             * 
+             * Note that the TZ offset is in minutes, not hours and minutes.
+             */
+            var in = new BufferedReader(new InputStreamReader(wmic.getInputStream()));
+            return in.lines()
+                    .map(String::strip)
+                    .filter(Predicate.not(String::isEmpty))
+                    .filter(s -> Character.isDigit(s.charAt(0)))
+                    .findFirst()
+                    .flatMap(s -> {
+                        final int timestampLen = 8 + 6;  //  Date + time, no separators
+                        final int tzPosition = 22;
+
+                        if (s.length() < timestampLen) {
+                            return Optional.empty();
+                        }
+
+                        var sb = new StringBuilder(s);
+
+                        //  Ensure it is long enough to have YYYYmmddhhmmss.mmmuuu+z...
+                        if (s.length() > tzPosition) {
+                            
+                            var tzMinutes = Integer.valueOf(s.substring(tzPosition));
+                            //  Truncate off the raw TZ minutes
+                            sb.setLength(tzPosition); 
+
+                            //  Append the hours and minutes version of the TZ offset
+                            var tzOffset = String.format("%02d%02d", tzMinutes / 60, tzMinutes % 60); 
+                            sb.append(tzOffset);
+                        }
+
+                        //  Insert the separators
+                        sb.insert(12, ":")
+                          .insert(10, ":")
+                          .insert(8, " ")
+                          .insert(6, "-")
+                          .insert(4, "-");
+
+                        return Optional.of(sb.toString());
+                    });
+                    
+        } catch (IOException e) {
+            return Optional.empty();
+        }
+    }
 
     public static Throwable getRootCause(Throwable e) {
         Throwable rc = ExceptionUtils.getRootCause(e);
@@ -699,6 +757,7 @@ public final class CtiUtilities {
         for (String buildInfoKey : buildInfo.keySet()) {
             out.println(buildInfoKey + ": " + buildInfo.get(buildInfoKey));
         }
+        out.println("OS boot time: " + getSystemBootTime().orElse("<unavailable>"));
         out.println("Local IP: " + getIPAddress());
         out.println("getYukonBase(): " + getYukonBase());
         out.println("USER_TIMEZONE: " + SystemUtils.USER_TIMEZONE);
