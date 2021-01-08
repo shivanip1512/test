@@ -137,6 +137,7 @@ INIT_ATTRIBUTE( ReceivedPeakDemandRateB,                            "RECEIVED_PE
 INIT_ATTRIBUTE( ReceivedPeakDemandRateC,                            "RECEIVED_PEAK_DEMAND_RATE_C" );
 INIT_ATTRIBUTE( ReceivedPeakDemandRateD,                            "RECEIVED_PEAK_DEMAND_RATE_D" );
 INIT_ATTRIBUTE( kVA,                                                "KVA" );
+INIT_ATTRIBUTE( KVALaggingPeak,                                     "KVA_LAGGING_PEAK" );
 INIT_ATTRIBUTE( DeliveredkVA,                                       "DELIVERED_KVA" );
 INIT_ATTRIBUTE( ReceivedkVA,                                        "RECEIVED_KVA" );
 INIT_ATTRIBUTE( SumkVA,                                             "SUM_KVA" );
