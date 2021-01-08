@@ -44,13 +44,14 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
     @Autowired private YukonJmsTemplate jmsTemplate;
     
     private RequestMultiReplyTemplate<RfnMetadataMultiRequest, RfnMetadataMultiResponse> multiReplyTemplate;
+    private RequestMultiReplyTemplate<RfnMetadataMultiRequest, RfnMetadataMultiResponse> extendedTimeoutMultiReplyTemplate;
     
     @Override
     public Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadataForDeviceRfnIdentifiers(Set<RfnIdentifier> identifiers,
             Set<RfnMetadataMulti> requests) throws NmCommunicationException {
         RfnMetadataMultiRequest request = getRequest(requests);
         request.getRfnIdentifiers().addAll(identifiers);
-        return sendMetadataRequest(request);
+        return sendMetadataRequest(request, false);
     }
     
     @Override
@@ -58,7 +59,7 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
             Set<RfnMetadataMulti> requests) throws NmCommunicationException {
         RfnMetadataMultiRequest request = getRequest(requests);
         request.setRfnIdentifiers(Sets.newHashSet(identifier));
-        return sendMetadataRequest(request);
+        return sendMetadataRequest(request, false);
     }
     
     @Override
@@ -66,13 +67,13 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
             Set<RfnMetadataMulti> requests) throws NmCommunicationException {
         RfnMetadataMultiRequest request = getRequest(requests);
         request.getPrimaryForwardNodesForGatewayRfnIdentifiers().addAll(identifiers);
-        return sendMetadataRequest(request);
+        return sendMetadataRequest(request, true);
     }
     
     /**
      * Returns meta data
      */
-    private Map<RfnIdentifier, RfnMetadataMultiQueryResult> sendMetadataRequest(RfnMetadataMultiRequest request)
+    private Map<RfnIdentifier, RfnMetadataMultiQueryResult> sendMetadataRequest(RfnMetadataMultiRequest request, Boolean extendedTimeout)
             throws NmCommunicationException {
         try {
             // Set up request
@@ -84,7 +85,11 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
             // Send request
             BlockingJmsMultiReplyHandler<RfnMetadataMultiResponse> replyHandler = 
                     new BlockingJmsMultiReplyHandler<>(RfnMetadataMultiResponse.class);
-            multiReplyTemplate.send(request, replyHandler);
+            if (extendedTimeout) {
+                extendedTimeoutMultiReplyTemplate.send(request, replyHandler);
+            } else {
+                multiReplyTemplate.send(request, replyHandler);
+            }
             
             // Receive and validate responses. Merge into a single map. 
             List<RfnMetadataMultiResponse> responses = replyHandler.waitForCompletion();
@@ -137,7 +142,10 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
         commsError = messageSourceAccessor.getMessage("yukon.web.error.nm.commsError");
         nmError = messageSourceAccessor.getMessage("yukon.web.error.nm.error");
         Duration timeout = configSource.getDuration("RFN_META_DATA_REPLY_TIMEOUT", Duration.standardMinutes(2));
+        Duration extendedTimeout = configSource.getDuration("RFN_META_DATA_REPLY_EXTENDED_TIMEOUT", Duration.standardMinutes(10));
         multiReplyTemplate = new RequestMultiReplyTemplate<>(jmsTemplate, null, JmsApiDirectory.RF_METADATA_MULTI,
                 timeout);
+        extendedTimeoutMultiReplyTemplate = new RequestMultiReplyTemplate<>(jmsTemplate, null,
+                JmsApiDirectory.RF_METADATA_MULTI, extendedTimeout);
     }
 }
