@@ -238,7 +238,7 @@
         
         <!-- Add CMEP template file -->
         <copy todir="${install.bag}/Common Directories/Config/DataExportTemplates" preservelastmodified="true">
-            <fileset dir="${basedir}/yukon-shared/src/main/resources/DataExportTemplates/" includes="*.yaml," casesensitive="false"/>
+            <fileset dir="${basedir}/yukon-shared/src/main/resources/DataExportTemplates/" includes="*.yaml,*.yml" casesensitive="false"/>
         </copy>
  
         <!-- JRE Component -->
