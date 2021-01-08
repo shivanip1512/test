@@ -399,10 +399,26 @@ public:
     static const Attribute  ReverseCapacitivekVArhperInterval;
 
     static const Attribute  DeliveredkWLoadProfile;
+    static const Attribute  DeliveredkWRateALoadProfile;
+    static const Attribute  DeliveredkWRateBLoadProfile;
+    static const Attribute  DeliveredkWRateCLoadProfile;
+    static const Attribute  DeliveredkWRateDLoadProfile;
     static const Attribute  DeliveredkVArLoadProfile;
     static const Attribute  ReceivedkWLoadProfile;
+    static const Attribute  ReceivedkWRateALoadProfile;
+    static const Attribute  ReceivedkWRateBLoadProfile;
+    static const Attribute  ReceivedkWRateCLoadProfile;
+    static const Attribute  ReceivedkWRateDLoadProfile;
     static const Attribute  SumkWLoadProfile;
+    static const Attribute  SumkWRateALoadProfile;
+    static const Attribute  SumkWRateBLoadProfile;
+    static const Attribute  SumkWRateCLoadProfile;
+    static const Attribute  SumkWRateDLoadProfile;
     static const Attribute  NetkWLoadProfile;
+    static const Attribute  NetkWRateALoadProfile;
+    static const Attribute  NetkWRateBLoadProfile;
+    static const Attribute  NetkWRateCLoadProfile;
+    static const Attribute  NetkWRateDLoadProfile;
     static const Attribute  SumkVALoadProfile;
     static const Attribute  SumkVArLoadProfile;
     static const Attribute  kVALoadProfile;
