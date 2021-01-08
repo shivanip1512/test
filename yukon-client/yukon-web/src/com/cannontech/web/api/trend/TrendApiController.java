@@ -60,7 +60,7 @@ public class TrendApiController {
 
     @PutMapping("/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.UPDATE)
-    public ResponseEntity<TrendModel> update(@Valid @RequestBody TrendModel trendModel, @PathVariable int id,
+    public ResponseEntity<TrendModel> update(@PathVariable int id, @Valid @RequestBody TrendModel trendModel,
             YukonUserContext userContext) {
         TrendModel trend = trendService.update(id, trendModel, userContext.getYukonUser());
         return new ResponseEntity<>(trend, HttpStatus.OK);

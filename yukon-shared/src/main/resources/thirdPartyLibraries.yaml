@@ -1211,6 +1211,20 @@ Java :
     jira : YUK-18347
     notes : 
   
+  - filename : javassist-3.26.0-GA.jar
+    yukon group : Unit Tests
+    project : Test API method signature
+    version : 3.26.0
+    project URL : "http://github.com/ronmamo/reflections"
+    license : Apache 2.0
+    license URLs : "http://www.apache.org/licenses/"
+    maven URL : "https://mvnrepository.com/artifact/org.javassist/javassist/3.26.0-GA"
+    md5 : 547690071a74a2aafb01896c9f42b37d
+    sha1 : bb2890849968d8d8311ffba8c37b0ce16ce284dc
+    updated : 2021-01-05
+    jira : YUK-23433
+    notes : 
+  
   - filename : javax.activation-1.2.0.jar
     yukon group : Azure
     project : Microsoft Azure SDK
@@ -2343,6 +2357,20 @@ Java :
     sha1 : 0e6b2e8dc1f6548ae216b2ecdee0c0a32176317a
     updated : 2020-12-23
     jira : YUK-22562
+    notes : 
+  
+  - filename : reflections-0.9.12.jar
+    yukon group : Unit Tests
+    project : Test API method signature
+    version : 0.9.12
+    project URL : "http://github.com/ronmamo/reflections"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/org.reflections/reflections/0.9.12"
+    md5 : 59386d63f168cbabb61cdece9fdd55a6
+    sha1 : 1c9d44c563eebe9b8a3afebd29ed5c4646db800c
+    updated : 2021-01-05
+    jira : YUK-23433
     notes : 
   
   - filename : retrofit-2.7.2.jar
