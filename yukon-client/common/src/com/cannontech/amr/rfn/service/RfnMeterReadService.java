@@ -144,7 +144,7 @@ public class RfnMeterReadService {
     
     @PostConstruct
     public void initialize() {
-        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ);
+        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ_LEGACY);
         rrrTemplate = new RequestReplyReplyTemplate<>("RFN_METER_READ", configurationSource, jmsTemplate);
     }
     

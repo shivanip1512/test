@@ -174,7 +174,7 @@ public class RfnMeterDisconnectService {
     
     @PostConstruct
     public void initialize() {
-        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_DISCONNECT);
+        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_DISCONNECT_LEGACY);
         rrrTemplate = new RequestReplyReplyTemplate<>(cparm, configurationSource, jmsTemplate);
     }
     
