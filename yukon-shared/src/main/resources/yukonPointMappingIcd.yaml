@@ -1531,10 +1531,10 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Time of Peak Total Var:               { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
     - Frozen Peak Total Var:                { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev  ], Models: *__-RX-23 }
     - Time of Frozen Peak Total Var:        { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23 }
-    - Peak Delivered VA:                    { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max              ], Models: *__-RX-23 }
-    - Time of Peak Delivered VA:            { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
-    - Frozen Peak Delivered VA:             { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *Prev       ], Models: *__-RX-23 }
-    - Time of Frozen Peak Delivered VA:     { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23 }
+    - Peak Volt-amperes Lagging:            { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max              ], Models: *__-RX-23 }
+    - Time of Peak Volt-amperes Lagging:    { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
+    - Frozen Peak Volt-amperes Lagging:     { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4, *Max, *Prev       ], Models: *__-RX-23 }
+    - Time of Frozen Peak Volt-amperes Lagging: { Unit: *s,  Modifiers: [ *Coin1, *Prev                    ], Models: *__-RX-23 }
     - Peak Total VA:                        { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max         ], Models: *__-RX-23 }
     - Time of Peak Total VA:                { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *__-RX-23 }
     - Frozen Peak Total VA:                 { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev  ], Models: *__-RX-23 }
