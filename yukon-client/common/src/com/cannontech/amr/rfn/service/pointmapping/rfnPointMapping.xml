@@ -4243,7 +4243,7 @@
                 <modifier>Previous</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Peak kVA" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Peak kVA Lagging" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -4254,7 +4254,7 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Peak kVA Frozen" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="Peak kVA Lagging Frozen" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>

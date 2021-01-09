@@ -162,7 +162,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     PEAK_KVA_FROZEN_RATE_C("Peak kVA Frozen Rate C", AttributeGroup.REACTIVE),
     PEAK_KVA_FROZEN_RATE_D("Peak kVA Frozen Rate D", AttributeGroup.REACTIVE),
     PEAK_KVA_COIN("Peak kVA Coincidental", AttributeGroup.REACTIVE),
-    DELIVERED_PEAK_KVA_LAGGING("Delivered Peak kVA", AttributeGroup.REACTIVE),
+    DELIVERED_PEAK_KVA_LAGGING("Delivered Peak kVA Lagging", AttributeGroup.REACTIVE),
     RECEIVED_PEAK_KVA("Received Peak kVA", AttributeGroup.REACTIVE),
     RECEIVED_PEAK_KVA_RATE_A("Received Peak kVA Rate A", AttributeGroup.REACTIVE),
     RECEIVED_PEAK_KVA_RATE_B("Received Peak kVA Rate B", AttributeGroup.REACTIVE),

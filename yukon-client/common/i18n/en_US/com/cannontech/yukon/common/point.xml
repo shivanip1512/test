@@ -501,7 +501,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_RATE_B">Peak kVA Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_RATE_C">Peak kVA Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_RATE_D">Peak kVA Rate D</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_PEAK_KVA_LAGGING">Delivered Peak kVA</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_PEAK_KVA_LAGGING">Delivered Peak kVA Lagging</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_PEAK_KVA">Received Peak kVA</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_PEAK_KVA_RATE_A">Received Peak kVA Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_PEAK_KVA_RATE_B">Received Peak kVA Rate B</entry>
