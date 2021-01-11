@@ -76,21 +76,21 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger log = YukonLogManager.getLogger(ApiExceptionHandler.class);
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-   private List<String> supportingUris = new ArrayList<String>();
+    private List<String> supportingUris = new ArrayList<String>();
 
-   /**
-    * Here, we are adding those URLs where new API Error model returned.
-    * When any new module updated with API Error Model , we need to add those URLs here.
-    * After updating all these changes, this method will be removed.
-    */
+    /**
+     * Here, we are adding those URLs where new API Error model returned.
+     * When any new module updated with API Error Model , we need to add those URLs here.
+     * After updating all these changes, this method will be removed.
+     */
     @PostConstruct
     public void init() {
-       // supportingUris.add(ApiURL.trendUrl);
-       // supportingUris.add(ApiURL.drLoadGroupUrl);
+        // supportingUris.add(ApiURL.trendUrl);
+        // supportingUris.add(ApiURL.drLoadGroupUrl);
     }
-    
+
     /**
-     * This method will return true in case of new API Error response otherwise false. 
+     * This method will return true in case of new API Error response otherwise false.
      */
     private boolean isNewApiErrorSupported(WebRequest request) {
         String url = ServletUtil.getFullURL(((ServletWebRequest) request).getRequest());
