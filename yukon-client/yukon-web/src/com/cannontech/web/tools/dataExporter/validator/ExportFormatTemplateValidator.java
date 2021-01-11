@@ -51,21 +51,32 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
         builder.add("timestampPattern");
         builder.add("padSide");
         builder.add("maxLength");
+        builder.add("missingAttribute");
         defaultedFieldNames = builder.build();
     }
 
+    /**
+     * Validate ExportFormat object with help of existing validators and validator dependent fields.
+     */
     @Override
     protected void doValidation(ExportFormat exportFormat, Errors errors) {
+        // Validate the fields using ExportFormatValidator class.
         super.doValidation(exportFormat, errors);
-        boolean isDynamicAttribute = exportFormat.getFormatType() == ArchivedValuesExportFormatType.DYNAMIC_ATTRIBUTE;
+
+        // Validate the ExportAttribute fields if present using ExportAttributeValidator class
         for (int i = 0; i < exportFormat.getAttributes().size(); i++) {
             errors.pushNestedPath("attributes[" + i + "]");
             exportAttributeValidator.doValidation(exportFormat.getAttributes().get(i), errors);
             errors.popNestedPath();
         }
+
+        // Validate the ExportFields using ExportFieldValidator class
+        boolean isDynamicAttribute = exportFormat.getFormatType() == ArchivedValuesExportFormatType.DYNAMIC_ATTRIBUTE;
         for (int i = 0; i < exportFormat.getFields().size(); i++) {
             errors.pushNestedPath("fields[" + i + "]");
             ExportField exportField = exportFormat.getFields().get(i);
+
+            // 1'st validate whether the fields provided in YAML are applicable for Export Format Type.
             if (isDynamicAttribute && !FieldType.DYNAMIC_ATTRIBUTE_FIELD_TYPES.contains(exportField.getField().getType())) {
                 errors.rejectValue("field.type", invalidKey, new Object[] { "dynamic attribute" }, "");
             } else if (!isDynamicAttribute && !FieldType.FIXED_ATTRIBUTE_FIELD_TYPES.contains(exportField.getField().getType())) {
@@ -75,11 +86,19 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
                 errors.popNestedPath();
                 continue;
             }
+
+            // Validate fields using ExportFieldValidator
             exportFieldValidator.doValidation(exportField, errors);
+
+            // If field type is ATTRIBUTE, Validate the data wit respect to Attribute Setup section. The selected attribute can
+            // only be used in field setup page. i.e if BLINK_COUNT is selected, BLINK_COUNT can be used in field setup.
             if (exportField.getField().getType() == FieldType.ATTRIBUTE) {
                 validateAttributeFields(exportField, exportFormat.getAttributes(), errors);
             }
+
+            // Validate the dependent fields.
             validateDependentFields(exportField, errors);
+
             errors.popNestedPath();
         }
     }
@@ -121,25 +140,26 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
         case POINT_STATE:
         case UNIT_OF_MEASURE:
         case POINT_QUALITY:
-            checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "missingAttribute");
+            checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "missingAttribute",
+                    "missingAttributeValue");
             break;
         case ATTRIBUTE:
             if (exportField.getAttributeField() == AttributeField.POINT_STATE
                     || exportField.getAttributeField() == AttributeField.UNIT_OF_MEASURE
                     || exportField.getAttributeField() == AttributeField.QUALITY) {
                 checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "missingAttribute",
-                        "attributeField");
+                        "missingAttributeValue", "attributeField");
             } else if (exportField.getAttributeField() == AttributeField.TIMESTAMP) {
                 checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "missingAttribute",
-                        "timestampPattern", "attributeField", "pattern");
+                        "missingAttributeValue", "timestampPattern", "attributeField", "pattern");
             } else if (exportField.getAttributeField() == AttributeField.VALUE) {
                 checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "missingAttribute",
-                        "readingPattern", "roundingMode", "attributeField", "pattern");
+                        "missingAttributeValue", "readingPattern", "roundingMode", "attributeField", "pattern");
             }
             break;
         case ATTRIBUTE_NAME:
             checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "missingAttribute",
-                    "fieldValue");
+                    "missingAttributeValue", "fieldValue");
             break;
         case DEVICE_TYPE:
             checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar");
@@ -149,11 +169,11 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
             break;
         case POINT_TIMESTAMP:
             checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "missingAttribute",
-                    "timestampPattern", "pattern");
+                    "missingAttributeValue", "timestampPattern", "pattern");
             break;
         case POINT_VALUE:
             checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "missingAttribute",
-                    "readingPattern", "roundingMode", "pattern");
+                    "missingAttributeValue", "readingPattern", "roundingMode", "pattern");
             break;
         case RUNTIME:
             checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "timestampPattern",
@@ -176,28 +196,31 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
                     field.setAccessible(true);
                     Object fieldValue = field.get(exportField);
                     String fieldName = field.getName();
-                    if (fieldName.equals("readingPattern")) {
+                    if (applicableFieldList.contains(fieldName) && fieldName.equals("readingPattern")) {
                         if (exportField.getReadingPattern() == ReadingPattern.CUSTOM
                                 && StringUtils.isEmpty(exportField.getPattern())) {
                             if (!errors.hasFieldErrors("pattern")) {
-                                errors.rejectValue("pattern", requiredKey, new Object[] { "pattern" }, "");
+                                errors.rejectValue("pattern", requiredKey, new Object[] { "pattern", type }, "");
                             }
                         }
                         continue;
                     }
-                    if (fieldName.equals("padSide") || fieldName.equals("padChar")) {
+
+                    if (applicableFieldList.contains(fieldName) && (fieldName.equals("padSide") || fieldName.equals("padChar"))) {
                         if (exportField.getPadSide() != PadSide.NONE && exportField.getPadChar() == null) {
                             if (!errors.hasFieldErrors("padChar")) {
-                                errors.rejectValue("padChar", requiredKey, new Object[] { "padChar" }, "");
+                                errors.rejectValue("padChar", requiredKey, new Object[] { "padChar", type }, "");
                             }
                         }
                         continue;
                     }
-                    if (fieldName.equals("missingAttribute") || fieldName.equals("missingAttributeValue")) {
+                    if (applicableFieldList.contains(fieldName)
+                            && (fieldName.equals("missingAttribute") || fieldName.equals("missingAttributeValue"))) {
                         if (exportField.getMissingAttribute() == MissingAttribute.FIXED_VALUE
                                 && exportField.getMissingAttributeValue() == null) {
                             if (!errors.hasFieldErrors("missingAttributeValue")) {
-                                errors.rejectValue("missingAttributeValue", requiredKey, new Object[] { "missingAttributeValue" },
+                                errors.rejectValue("missingAttributeValue", requiredKey,
+                                        new Object[] { "missingAttributeValue", type },
                                         "");
                             }
                         }
@@ -236,6 +259,9 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
                 return false;
             }
             if (fieldValue instanceof Integer && Integer.valueOf(fieldValue.toString()) == 0) {
+                return false;
+            }
+            if (fieldValue instanceof MissingAttribute && (MissingAttribute) fieldValue == MissingAttribute.LEAVE_BLANK) {
                 return false;
             }
         }
