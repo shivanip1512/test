@@ -238,7 +238,7 @@
         
         <!-- Add data export template folder and template files.-->
         <copy todir="${install.bag}/Common Directories/Config/DataExportTemplates" preservelastmodified="true">
-            <fileset dir="${basedir}/yukon-shared/src/main/resources/DataExportTemplates/" includes="*.yaml,*.yml" casesensitive="false"/>
+            <fileset dir="${basedir}/yukon-shared/src/main/resources/DataExportTemplates/" includes="*.yaml" casesensitive="false"/>
         </copy>
  
         <!-- JRE Component -->
