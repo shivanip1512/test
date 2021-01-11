@@ -74,6 +74,7 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.SimpleCallback;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -102,6 +103,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
     @Autowired private DeviceConfigurationService deviceConfigurationService;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private DeviceDao deviceDao;
 
     private static final BiMap<DeviceRequestType, String> commands = new ImmutableBiMap.Builder<DeviceRequestType, String>()
             .put(GROUP_DEVICE_CONFIG_VERIFY, "putconfig install all verify")
@@ -263,17 +265,21 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
     /**
      * Updates device config state for for devices based on last action and entry in DeviceConfigState
      */
-    private void updateConfigStateForAssignAndUnassign(List<SimpleDevice> devices, LastAction action, Instant startTime, Instant stopTime, LiteYukonUser user) {
-        log.debug("Updating status for devices:{}", devices.size());
-        Map<Integer, DeviceConfigState> deviceToState = deviceConfigurationDao.getDeviceConfigStatesByDeviceIds(getDeviceIds(devices));
+    private void updateConfigStateForAssignAndUnassign(List<SimpleDevice> allDevices, LastAction action, Instant startTime, Instant stopTime, LiteYukonUser user) {
+        log.debug("Updating status for devices:{}", allDevices.size());
+        Map<Integer, DeviceConfigState> deviceToState = deviceConfigurationDao.getDeviceConfigStatesByDeviceIds(getDeviceIds(allDevices));
         Set<DeviceConfigState> states = new HashSet<>();
         List<SimpleDevice> devicesToVerify = new ArrayList<>();
         if (action == ASSIGN) {
-            states = buildNewStatesForAssignAction(devices, deviceToState, startTime, stopTime);
-            devicesToVerify = getDevicesToVerify(devices, deviceToState, List.of(IN_SYNC, OUT_OF_SYNC, UNASSIGNED));
+            List<SimpleDevice> disabledDevices = deviceDao.getDisabledDevices(Lists.transform(allDevices, SimpleDevice::getDeviceId));
+            List<SimpleDevice> enabledDevices = new ArrayList<>();
+            enabledDevices.addAll(allDevices);
+            enabledDevices.removeAll(disabledDevices);
+            states = buildNewStatesForAssignAction(enabledDevices, deviceToState, startTime, stopTime, disabledDevices);
+            devicesToVerify = getDevicesToVerify(enabledDevices, deviceToState, List.of(IN_SYNC, OUT_OF_SYNC, UNASSIGNED));
         } else if (action == UNASSIGN) {
-            states = buildNewStatesForUnassignAction(devices, deviceToState,  startTime, stopTime);
-            devicesToVerify = getDevicesToVerify(devices, deviceToState, List.of(UNASSIGNED));
+            states = buildNewStatesForUnassignAction(allDevices, deviceToState,  startTime, stopTime);
+            devicesToVerify = getDevicesToVerify(allDevices, deviceToState, List.of(UNASSIGNED));
         }
         
         log.debug("{}",
@@ -298,16 +304,27 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         return states;
     }
 
-    private Set<DeviceConfigState> buildNewStatesForAssignAction(List<SimpleDevice> devices,
-            Map<Integer, DeviceConfigState> deviceToState, Instant stopTime, Instant startTime) {
+    private Set<DeviceConfigState> buildNewStatesForAssignAction(List<SimpleDevice> enabledDevices,
+            Map<Integer, DeviceConfigState> deviceToState, Instant stopTime, Instant startTime,
+            List<SimpleDevice> disabledDevices) {
         Set<DeviceConfigState> states = new HashSet<>();
-        states.addAll(devices.stream()
-                .filter(device -> deviceToState.get(device.getDeviceId()) == null)
-                .map(device -> new DeviceConfigState(device.getDeviceId(), UNREAD, ASSIGN, SUCCESS, startTime, stopTime, null))
-                .collect(Collectors.toList()));
-        states.addAll(buildConfigStateByCurrentState(UNREAD, ASSIGN, devices, deviceToState, startTime, stopTime, UNKNOWN));
-        states.addAll(buildConfigStateByCurrentState(UNREAD, ASSIGN, devices, deviceToState, startTime, stopTime, UNREAD));
-        states.addAll(buildConfigStateByCurrentState(UNCONFIRMED, ASSIGN, devices, deviceToState, startTime, stopTime, UNCONFIRMED));
+        if (!disabledDevices.isEmpty()) {
+            // add disabled devices with the state UNKNOWN
+            states.addAll(disabledDevices.stream()
+                    .map(device -> new DeviceConfigState(device.getDeviceId(), UNKNOWN, ASSIGN, SUCCESS, startTime, stopTime, null))
+                    .collect(Collectors.toList()));
+        }
+        
+        if(!enabledDevices.isEmpty()) {
+            states.addAll(enabledDevices.stream()
+                    .filter(device -> deviceToState.get(device.getDeviceId()) == null)
+                    .map(device -> new DeviceConfigState(device.getDeviceId(), UNREAD, ASSIGN, SUCCESS, startTime, stopTime, null))
+                    .collect(Collectors.toList()));
+            states.addAll(buildConfigStateByCurrentState(UNREAD, ASSIGN, enabledDevices, deviceToState, startTime, stopTime, UNKNOWN));
+            states.addAll(buildConfigStateByCurrentState(UNREAD, ASSIGN, enabledDevices, deviceToState, startTime, stopTime, UNREAD));
+            states.addAll(
+                    buildConfigStateByCurrentState(UNCONFIRMED, ASSIGN, enabledDevices, deviceToState, startTime, stopTime, UNCONFIRMED));
+        }
         return states;
     }
 
@@ -366,7 +383,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         
         logInitiated(summary.supported, logAction, context.getYukonUser());
         collectionActionService.addUnsupportedToResult(CollectionActionDetail.UNSUPPORTED, result, summary.unsupported);
-        collectionActionService.addUnsupportedToResult(CollectionActionDetail.UNSUPPORTED, result, summary.inProgress,
+        collectionActionService.addUnsupportedToResult(CollectionActionDetail.INVALID_STATE, result, summary.inProgress,
                 getInProgressMessage(context));
 
         if (summary.supported.isEmpty()) {

@@ -567,10 +567,26 @@
     <entry key="yukon.common.attribute.builtInAttribute.WATER_USAGE_PER_INTERVAL">Water Usage per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.GAS_USAGE_PER_INTERVAL">Gas Usage per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KW_LOAD_PROFILE">Delivered kW Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KW_RATE_A_LOAD_PROFILE">Delivered kW Rate A Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KW_RATE_B_LOAD_PROFILE">Delivered kW Rate B Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KW_RATE_C_LOAD_PROFILE">Delivered kW Rate C Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KW_RATE_D_LOAD_PROFILE">Delivered kW Rate D Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KVAR_LOAD_PROFILE">Delivered kVAr Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KW_LOAD_PROFILE">Received kW Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KW_RATE_A_LOAD_PROFILE">Received kW Rate A Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KW_RATE_B_LOAD_PROFILE">Received kW Rate B Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KW_RATE_C_LOAD_PROFILE">Received kW Rate C Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KW_RATE_D_LOAD_PROFILE">Received kW Rate D Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KW_LOAD_PROFILE">Sum kW Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SUM_KW_RATE_A_LOAD_PROFILE">Sum kW Rate A Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SUM_KW_RATE_B_LOAD_PROFILE">Sum kW Rate B Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SUM_KW_RATE_C_LOAD_PROFILE">Sum kW Rate C Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SUM_KW_RATE_D_LOAD_PROFILE">Sum kW Rate D Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KW_LOAD_PROFILE">Net kW Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NET_KW_RATE_A_LOAD_PROFILE">Net kW Rate A Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NET_KW_RATE_B_LOAD_PROFILE">Net kW Rate B Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NET_KW_RATE_C_LOAD_PROFILE">Net kW Rate C Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NET_KW_RATE_D_LOAD_PROFILE">Net kW Rate D Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVA_LOAD_PROFILE">Sum kVA Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVAR_LOAD_PROFILE">Sum kVAr Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVA_LOAD_PROFILE">kVA Load Profile</entry>
@@ -799,7 +815,11 @@
     <entry key="yukon.common.attribute.builtInAttribute.EVENT_STOPPED">Event Stopped</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOAD_STATUS">Load Status</entry>
 
-    
+    <entry key="yukon.common.attribute.builtInAttribute.COMMS_LOSS_COUNT">Comms Loss Count</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.FIRMWARE_UPDATE_STATUS">Firmware Update Status</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.FREQUENCY">Frequency</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_ACTIVATION_STATUS">Relay 1 Activation Status</entry>
+
     <!-- BuiltInAttribute see note above about changing values -->
 
     <entry key="yukon.common.point.manualEntry.title">Manual Entry</entry>

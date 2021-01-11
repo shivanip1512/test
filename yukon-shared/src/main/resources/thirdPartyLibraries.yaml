@@ -1211,6 +1211,20 @@ Java :
     jira : YUK-18347
     notes : 
   
+  - filename : javassist-3.26.0-GA.jar
+    yukon group : Unit Tests
+    project : Test API method signature
+    version : 3.26.0
+    project URL : "http://github.com/ronmamo/reflections"
+    license : Apache 2.0
+    license URLs : "http://www.apache.org/licenses/"
+    maven URL : "https://mvnrepository.com/artifact/org.javassist/javassist/3.26.0-GA"
+    md5 : 547690071a74a2aafb01896c9f42b37d
+    sha1 : bb2890849968d8d8311ffba8c37b0ce16ce284dc
+    updated : 2021-01-05
+    jira : YUK-23433
+    notes : 
+  
   - filename : javax.activation-1.2.0.jar
     yukon group : Azure
     project : Microsoft Azure SDK
@@ -2343,6 +2357,20 @@ Java :
     sha1 : 0e6b2e8dc1f6548ae216b2ecdee0c0a32176317a
     updated : 2020-12-23
     jira : YUK-22562
+    notes : 
+  
+  - filename : reflections-0.9.12.jar
+    yukon group : Unit Tests
+    project : Test API method signature
+    version : 0.9.12
+    project URL : "http://github.com/ronmamo/reflections"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/org.reflections/reflections/0.9.12"
+    md5 : 59386d63f168cbabb61cdece9fdd55a6
+    sha1 : 1c9d44c563eebe9b8a3afebd29ed5c4646db800c
+    updated : 2021-01-05
+    jira : YUK-23433
     notes : 
   
   - filename : retrofit-2.7.2.jar
@@ -5922,16 +5950,16 @@ C++ :
 
   - project : Boost 
     path : BOOST
-    version : 1.67.0
+    version : 1.75.0
     project URL : "https://www.boost.org/"
     license : Boost
     license URLs : "https://www.boost.org/users/license.html"
-    md5 : 1379d54d4f97136be465d39290c67d69
-    sha1 : e7cfb297d5831b7c38e2eb24dadd9586bb8e1687
-    fileCount : 13671
-    totalSize : 388382693
-    updated : 2018-05-17  
-    jira : YUK-18201
+    md5 : a9f4bf3096dc571006feb2e4dbec4709
+    sha1 : df11c4cf079ae0ca3f668d093d0280ecc239447f
+    fileCount : 14827
+    totalSize : 220779001
+    updated : 2021-01-07
+    jira : YUK-22174
     notes : 
 
   - project : Microsoft Debug Help 

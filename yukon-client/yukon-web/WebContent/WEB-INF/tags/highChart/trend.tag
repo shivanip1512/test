@@ -47,13 +47,32 @@
 
 <div id="js-chart-container-${uniqueId}"></div>
 
-<script>
-    $(function() {
-        $.ajax({
-            url: '${pageScope.chartUrl}',
-            dataType : 'json'
-        }).done(function (response, textStatus, jqXHR) {
-            yukon.highChart.buildChart($("#js-chart-container-${uniqueId}"), response, "${pageScope.title}", "${chartHeight}", "${chartWidth}");
-        });
-    });
-</script>
+<c:choose>
+    <c:when test="${not empty reloadInterval}">
+        <script>
+            $(function() {
+                var params = {
+                    containerIdentifier: "#js-chart-container-${uniqueId}",
+                    title: "${pageScope.title}",
+                    height: "${chartHeight}",
+                    width: "${chartWidth}",
+                    reloadInterval: "${pageScope.reloadInterval}",
+                    chartUrl: "${pageScope.chartUrl}"
+                };
+                yukon.highChart.reloadChartAtInterval(params);
+            });
+        </script>
+    </c:when>
+    <c:otherwise>
+        <script>
+            $(function() {
+                $.ajax({
+                    url: '${pageScope.chartUrl}',
+                    dataType : 'json'
+                }).done(function (response, textStatus, jqXHR) {
+                    yukon.highChart.buildChart($("#js-chart-container-${uniqueId}"), response, "${pageScope.title}", "${chartHeight}", "${chartWidth}");
+                });
+            });
+        </script>
+    </c:otherwise>
+</c:choose>

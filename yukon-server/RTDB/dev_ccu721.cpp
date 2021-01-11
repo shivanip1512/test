@@ -9,8 +9,6 @@
 #include "desolvers.h"
 #include "words.h"
 
-#include <boost/bind.hpp>
-
 using namespace std;
 
 using Cti::Protocols::KlondikeProtocol;
@@ -354,7 +352,10 @@ unsigned long Ccu721Device::getRequestCount(unsigned long requestID) const
 
     return std::count_if(_queued_outmessages.begin(),
                          _queued_outmessages.end(),
-                         boost::bind(findRequestIDMatch, reinterpret_cast<void *>(requestID), _1));
+                         [=]( OUTMESS* om )
+                         {
+                             return findRequestIDMatch(reinterpret_cast<void*>(requestID), om);
+                         } );
 }
 
 

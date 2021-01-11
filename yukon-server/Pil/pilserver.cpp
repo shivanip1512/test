@@ -52,7 +52,6 @@
 #include "message_factory.h"
 
 #include <boost/regex.hpp>
-#include <boost/bind.hpp>
 #include <boost/algorithm/cxx11/any_of.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/range/adaptor/indirected.hpp>

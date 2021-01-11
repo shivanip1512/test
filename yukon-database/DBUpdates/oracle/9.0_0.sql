@@ -197,6 +197,19 @@ ALTER TABLE LMConfigurableCycleGear
 INSERT INTO DBUpdates VALUES ('YUK-23348', '9.0.0', SYSDATE);
 /* @end YUK-23348 */
 
+/* @start YUK-23523 */
+UPDATE Point
+SET PointName = 'Peak kVA Lagging', PointOffset = 255
+WHERE PointType = 'Analog'
+AND PointOffset = 270
+AND PaObjectId IN (
+    SELECT DISTINCT PaObjectId FROM YukonPaObject
+    WHERE Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX')
+);
+
+INSERT INTO DBUpdates VALUES ('YUK-23523', '9.0.0', SYSDATE);
+/* @end YUK-23523 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

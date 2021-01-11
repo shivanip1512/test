@@ -460,10 +460,26 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     REVERSE_CAPACITIVE_KVARH_PER_INTERVAL("Reverse Capacitive kVArh per Interval", AttributeGroup.REACTIVE, false),   //440 types only
 
     DELIVERED_KW_LOAD_PROFILE("Delivered kW Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    DELIVERED_KW_RATE_A_LOAD_PROFILE("Delivered kW Rate A Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    DELIVERED_KW_RATE_B_LOAD_PROFILE("Delivered kW Rate B Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    DELIVERED_KW_RATE_C_LOAD_PROFILE("Delivered kW Rate C Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    DELIVERED_KW_RATE_D_LOAD_PROFILE("Delivered kW Rate D Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     DELIVERED_KVAR_LOAD_PROFILE("Delivered kVAr Load Profile", AttributeGroup.PROFILE, false),//calculated, not readable
     RECEIVED_KW_LOAD_PROFILE("Received kW Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    RECEIVED_KW_RATE_A_LOAD_PROFILE("Received kW Rate A Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    RECEIVED_KW_RATE_B_LOAD_PROFILE("Received kW Rate A Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    RECEIVED_KW_RATE_C_LOAD_PROFILE("Received kW Rate A Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    RECEIVED_KW_RATE_D_LOAD_PROFILE("Received kW Rate A Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     SUM_KW_LOAD_PROFILE("Sum kW Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    SUM_KW_RATE_A_LOAD_PROFILE("Sum kW Rate A Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    SUM_KW_RATE_B_LOAD_PROFILE("Sum kW Rate B Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    SUM_KW_RATE_C_LOAD_PROFILE("Sum kW Rate C Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    SUM_KW_RATE_D_LOAD_PROFILE("Sum kW Rate D Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     NET_KW_LOAD_PROFILE("Net kW Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    NET_KW_RATE_A_LOAD_PROFILE("Net kW Rate A Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    NET_KW_RATE_B_LOAD_PROFILE("Net kW Rate B Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    NET_KW_RATE_C_LOAD_PROFILE("Net kW Rate C Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    NET_KW_RATE_D_LOAD_PROFILE("Net kW Rate D Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     SUM_KVA_LOAD_PROFILE("Sum kVA Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     SUM_KVAR_LOAD_PROFILE("Sum kVAr Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     KVA_LOAD_PROFILE("kVA Load Profile", AttributeGroup.PROFILE, false), //calculated, not readable
@@ -747,6 +763,12 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     EVENT_SUPERSEDED("Event Superseded", AttributeGroup.ITRON, false),
     MEMORY_MAP_LOST("Memory Map Lost", AttributeGroup.ITRON, false),
     RADIO_LINK_QUALITY("Radio Link Quality", AttributeGroup.ITRON, false),
+
+    // Eaton Cloud attribute mapping for PXMiddleware / Cellular LCR
+    COMMS_LOSS_COUNT("Comms Loss Count", AttributeGroup.SYSTEM),
+    FIRMWARE_UPDATE_STATUS("Firmware Update Status", AttributeGroup.SYSTEM),
+    FREQUENCY("Frequency", AttributeGroup.OTHER),
+    RELAY_1_ACTIVATION_STATUS("Relay 1 Activation Status", AttributeGroup.RELAY)
     ;
 
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";
@@ -779,6 +801,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     private static Set<BuiltInAttribute> voltageAttributes;
     
     private static Set<BuiltInAttribute> itronLcrAttributes;
+    
+    private static Set<BuiltInAttribute> calculableAttributes;
 
     static {
 
@@ -802,6 +826,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         buildRelayDataAttributes();
         buildVoltageAttributes();
         buildItronLcrAttributes();
+        buildCalculableAttributes();
     }
 
     /**
@@ -1103,6 +1128,41 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                                             MEMORY_MAP_LOST);
     }
 
+    /*
+     * These attributes are used as the basis of several calculated points in Yukon
+     * If rfnMeteringContext is updated with more PerIntervalAndLoadProfileCalculator beans
+     * then this list must be updated with the basedOn attributes
+     */
+    private static void buildCalculableAttributes() {
+
+        calculableAttributes = ImmutableSet.of(SUM_KWH,
+                                               DELIVERED_KWH,
+                                               RECEIVED_KWH,
+                                               NET_KWH,
+                                               SUM_KVARH,
+                                               SUM_KVAH,
+                                               KVARH,
+                                               USAGE_WATER,
+                                               USAGE_GAS,
+                                               KVAH,
+                                               DELIVERED_KWH_RATE_A,
+                                               DELIVERED_KWH_RATE_B,
+                                               DELIVERED_KWH_RATE_C,
+                                               DELIVERED_KWH_RATE_D,
+                                               RECEIVED_KWH_RATE_A,
+                                               RECEIVED_KWH_RATE_B,
+                                               RECEIVED_KWH_RATE_C,
+                                               RECEIVED_KWH_RATE_D,
+                                               SUM_KWH_RATE_A,
+                                               SUM_KWH_RATE_B,
+                                               SUM_KWH_RATE_C,
+                                               SUM_KWH_RATE_D,
+                                               NET_KWH_RATE_A,
+                                               NET_KWH_RATE_B,
+                                               NET_KWH_RATE_C,
+                                               NET_KWH_RATE_D);
+    }
+
     private String defaultDescription;
     private AttributeGroup attributeGroup;
     private boolean isOnDemandReadable;
@@ -1200,6 +1260,13 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     
     public static Set<BuiltInAttribute> getItronLcrAttributes() {
         return itronLcrAttributes;
+    }
+
+    /**
+     * Returns the attributes that other calculated attributes are based upon
+     */
+    public static Set<BuiltInAttribute> getCalculableAttributes() {
+        return calculableAttributes;
     }
 
     @Override

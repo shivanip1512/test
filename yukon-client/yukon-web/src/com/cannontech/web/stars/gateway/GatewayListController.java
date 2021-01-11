@@ -1,6 +1,5 @@
 package com.cannontech.web.stars.gateway;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,11 +25,8 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.rfn.message.gateway.DataType;
-import com.cannontech.common.rfn.model.CertificateUpdate;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
-import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateSummary;
-import com.cannontech.common.rfn.service.RfnGatewayCertificateUpdateService;
 import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
@@ -43,7 +39,6 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.collect.Lists;
@@ -57,7 +52,6 @@ public class GatewayListController {
     private static final String json = MediaType.APPLICATION_JSON_VALUE;
     
     @Autowired private GatewayControllerHelper helper;
-    @Autowired private RfnGatewayCertificateUpdateService certificateUpdateService;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private ServerDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
@@ -81,42 +75,32 @@ public class GatewayListController {
 
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
     @GetMapping("/gateways/firmwareDetails")
-    public String firmwareDetails(ModelMap model, YukonUserContext userContext,
-            @DefaultSort(dir = Direction.desc, sort = "TIMESTAMP") SortingParameters sorting) {
-        List<RfnGatewayFirmwareUpdateSummary> firmwareUpdates = rfnGatewayFirmwareUpgradeService.getFirmwareUpdateSummaries();
-        Direction dir = sorting.getDirection();
-        FirmwareUpdatesSortBy sortBy = FirmwareUpdatesSortBy.valueOf(sorting.getSort());
-        Collections.sort(firmwareUpdates, GatewayControllerHelper.getFirmwareComparator(sorting, sortBy));
-        model.addAttribute("firmwareUpdates", firmwareUpdates);
-        helper.addGatewayMessages(model, userContext);
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        for (FirmwareUpdatesSortBy column : FirmwareUpdatesSortBy.values()) {
-            String text = accessor.getMessage(column);
-            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
-            model.addAttribute(column.name(), col);
-        }
+    public String firmwareDetails(ModelMap model) {
         Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
         model.addAttribute("dataExists", gateways.stream().anyMatch(gateway -> (gateway.getData() != null)));
         return "gateways/firmwareUpdates.jsp";
     }
 
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
+    @GetMapping("/gateways/firmwareDetailsList")
+    public String firmwareList(ModelMap model, YukonUserContext userContext, FlashScope flash,
+            @DefaultSort(dir = Direction.asc, sort = "NAME") SortingParameters sorting) {
+        helper.buildFirmwareListModel(model, userContext, sorting);
+        return "gateways/firmwareTable.jsp";
+    }
+
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
     @GetMapping("/gateways/certificateUpdates")
-    public String certificateUpdates(ModelMap model, YukonUserContext userContext,
-            @DefaultSort(dir = Direction.desc, sort = "TIMESTAMP") SortingParameters sorting) {
-        List<CertificateUpdate> certUpdates = certificateUpdateService.getAllCertificateUpdates();
-        Direction dir = sorting.getDirection();
-        CertificateUpdatesSortBy sortBy = CertificateUpdatesSortBy.valueOf(sorting.getSort());
-        Collections.sort(certUpdates, GatewayControllerHelper.getCertificateComparator(sorting, sortBy));
-        model.addAttribute("certUpdates", certUpdates);
-        helper.addGatewayMessages(model, userContext);
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        for (CertificateUpdatesSortBy column : CertificateUpdatesSortBy.values()) {
-            String text = accessor.getMessage(column);
-            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
-            model.addAttribute(column.name(), col);
-        }
+    public String certificateUpdates() {
         return "gateways/certificateUpdates.jsp";
+    }
+
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
+    @GetMapping("/gateways/certificateDetailsList")
+    public String certificateList(ModelMap model, YukonUserContext userContext,
+            @DefaultSort(dir = Direction.desc, sort = "TIMESTAMP") SortingParameters sorting) {
+        helper.buildCertificateListModel(model, userContext, sorting);
+        return "gateways/certificateTable.jsp";
     }
 
     @RequestMapping("/gateways/data")

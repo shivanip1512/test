@@ -5,6 +5,8 @@
 #include "yukon.h"
 #include "logger.h"
 
+#include <limits>
+
 using std::endl;
 
 
@@ -247,7 +249,7 @@ YukonError_t D_Words (
    const size_t Num = len / (DWORDLEN + 1);
 
    YukonError_t Code;
-   USHORT Dummy, Nack;
+   USHORT Dummy, Nack = std::numeric_limits<USHORT>::max();
 
    DSt->Length = 0;
    DSt->Alarm = 0;
