@@ -69,5 +69,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/reflections-0.9.12.jar"/>
+	<classpathentry kind="lib" path="/third-party/javassist-3.26.0-GA.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

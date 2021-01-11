@@ -1,7 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="highChart" tagdir="/WEB-INF/tags/highChart" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <c:forEach var="targetId" items="${targetIds}">
@@ -31,18 +31,18 @@
         </cti:simpleReportLinkFromNameTag>
 										
 	</div>
-	
-    <%-- LOOP PER GRAPH --%>
-	<c:forEach var="graph" items="${targetGraphs[targetId]}">
-		<div style="margin-left:20px;height: 250px">
-			<flot:trend title="${graph.pointName}" 
-						pointIds="${graph.pointIds}" 
-						startDate="${graph.startDateMillis}" 
-						endDate="${graph.endDateMillis}" 
-						interval="${graph.interval}" 
-						converterType="${graph.converterType}" 
-						graphType="${graph.graphType}"/>
-		</div>
-	</c:forEach>
 
+    <%-- LOOP PER GRAPH --%>
+    <c:forEach var="graph" items="${targetGraphs[targetId]}">
+        <div style="margin-left:20px;height: 250px">
+            <highChart:trend converterType="${graph.converterType}"
+                             interval="${graph.interval}"
+                             startDate="${graph.startDateMillis}"
+                             endDate="${graph.endDateMillis}"
+                             chartHeight="250"
+                             chartWidth="500" 
+                             pointIds="${graph.pointIds}"
+                             title="${graph.pointName}"/>
+        </div>
+    </c:forEach>
 </c:forEach>

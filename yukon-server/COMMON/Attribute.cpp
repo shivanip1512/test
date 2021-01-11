@@ -462,10 +462,26 @@ INIT_ATTRIBUTE( ReverseInductivekVArhperInterval,                   "REVERSE_IND
 INIT_ATTRIBUTE( ReverseCapacitivekVArhperInterval,                  "REVERSE_CAPACITIVE_KVARH_PER_INTERVAL" );
 
 INIT_ATTRIBUTE( DeliveredkWLoadProfile,                             "DELIVERED_KW_LOAD_PROFILE" );
+INIT_ATTRIBUTE( DeliveredkWRateALoadProfile,                        "DELIVERED_KW_RATE_A_LOAD_PROFILE" );
+INIT_ATTRIBUTE( DeliveredkWRateBLoadProfile,                        "DELIVERED_KW_RATE_B_LOAD_PROFILE" );
+INIT_ATTRIBUTE( DeliveredkWRateCLoadProfile,                        "DELIVERED_KW_RATE_C_LOAD_PROFILE" );
+INIT_ATTRIBUTE( DeliveredkWRateDLoadProfile,                        "DELIVERED_KW_RATE_D_LOAD_PROFILE" );
 INIT_ATTRIBUTE( DeliveredkVArLoadProfile,                           "DELIVERED_KVAR_LOAD_PROFILE" );
 INIT_ATTRIBUTE( ReceivedkWLoadProfile,                              "RECEIVED_KW_LOAD_PROFILE" );
+INIT_ATTRIBUTE( ReceivedkWRateALoadProfile,                         "RECEIVED_KW_RATE_A_LOAD_PROFILE" );
+INIT_ATTRIBUTE( ReceivedkWRateBLoadProfile,                         "RECEIVED_KW_RATE_B_LOAD_PROFILE" );
+INIT_ATTRIBUTE( ReceivedkWRateCLoadProfile,                         "RECEIVED_KW_RATE_C_LOAD_PROFILE" );
+INIT_ATTRIBUTE( ReceivedkWRateDLoadProfile,                         "RECEIVED_KW_RATE_D_LOAD_PROFILE" );
 INIT_ATTRIBUTE( SumkWLoadProfile,                                   "SUM_KW_LOAD_PROFILE" );
+INIT_ATTRIBUTE( SumkWRateALoadProfile,                              "SUM_KW_RATE_A_LOAD_PROFILE" );
+INIT_ATTRIBUTE( SumkWRateBLoadProfile,                              "SUM_KW_RATE_B_LOAD_PROFILE" );
+INIT_ATTRIBUTE( SumkWRateCLoadProfile,                              "SUM_KW_RATE_C_LOAD_PROFILE" );
+INIT_ATTRIBUTE( SumkWRateDLoadProfile,                              "SUM_KW_RATE_D_LOAD_PROFILE" );
 INIT_ATTRIBUTE( NetkWLoadProfile,                                   "NET_KW_LOAD_PROFILE" );
+INIT_ATTRIBUTE( NetkWRateALoadProfile,                              "NET_KW_RATE_A_LOAD_PROFILE" );
+INIT_ATTRIBUTE( NetkWRateBLoadProfile,                              "NET_KW_RATE_B_LOAD_PROFILE" );
+INIT_ATTRIBUTE( NetkWRateCLoadProfile,                              "NET_KW_RATE_C_LOAD_PROFILE" );
+INIT_ATTRIBUTE( NetkWRateDLoadProfile,                              "NET_KW_RATE_D_LOAD_PROFILE" );
 INIT_ATTRIBUTE( SumkVALoadProfile,                                  "SUM_KVA_LOAD_PROFILE" );
 INIT_ATTRIBUTE( SumkVArLoadProfile,                                 "SUM_KVAR_LOAD_PROFILE" );
 INIT_ATTRIBUTE( kVALoadProfile,                                     "KVA_LOAD_PROFILE" );
