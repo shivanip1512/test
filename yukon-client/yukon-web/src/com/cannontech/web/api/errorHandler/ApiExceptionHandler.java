@@ -94,7 +94,10 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
      */
     private boolean isNewApiErrorSupported(WebRequest request) {
         String url = ServletUtil.getFullURL(((ServletWebRequest) request).getRequest());
-        return supportingUris.stream().filter(s -> url.contains(s)).findFirst() != null ? true : false;
+        return supportingUris.stream()
+                             .filter(s -> url.contains(s))
+                             .findFirst()
+                             .isEmpty() ? false : true;
     }
 
     // 401
