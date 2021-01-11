@@ -129,7 +129,7 @@ const std::vector<std::string> allDescriptions {
         "Watts received, peak demand (Frozen) (10)",
         "Watt hour delivered (Frozen) (11)",
         "Watt hour received (Frozen) (12)",
-        "kVAh Lagging (17)"
+        "kVAh Lagging (17)",
         "Var hour delivered (21)",
         "Var hour received (22)",
         "Var hour total/sum (23)",
