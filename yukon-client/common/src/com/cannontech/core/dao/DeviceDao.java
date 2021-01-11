@@ -225,4 +225,9 @@ public interface DeviceDao {
      * Inserts guid.
      */
     void insertGuid(int deviceId, String guid);
+
+    /**
+     * Returns disabled devices
+     */
+    List<SimpleDevice> getDisabledDevices(Iterable<Integer> ids);
 }

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastActionStatus;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DeviceConfigState;
@@ -32,9 +33,10 @@ public class ProcessorFactoryImpl implements ProcessorFactory {
             @Override
             public void process(SimpleDevice device) throws ProcessingException {
                 DeviceConfigState state = deviceToState.get(device.getDeviceId());
-                if(state != null && state.getLastActionStatus() == LastActionStatus.IN_PROGRESS) {
+                if (state != null && state.getLastActionStatus() == LastActionStatus.IN_PROGRESS) {
                     MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-                    throw new ProcessingException(accessor.getMessage("yukon.web.widgets.configWidget.actionInProgress"));
+                    throw new ProcessingException(accessor.getMessage("yukon.web.widgets.configWidget.actionInProgress"),
+                            CollectionActionDetail.INVALID_STATE);
                 }
                 try {
                     String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
@@ -49,20 +51,22 @@ public class ProcessorFactoryImpl implements ProcessorFactory {
     }
 
     @Override
-    public Processor<SimpleDevice> createUnassignConfigurationToYukonDeviceProcessor(Map<Integer, DeviceConfigState> deviceToState, LiteYukonUser user) {
+    public Processor<SimpleDevice> createUnassignConfigurationToYukonDeviceProcessor(
+            Map<Integer, DeviceConfigState> deviceToState, LiteYukonUser user) {
         return new SingleProcessor<SimpleDevice>() {
             @Override
             public void process(SimpleDevice device) throws ProcessingException {
                 DeviceConfigState state = deviceToState.get(device.getDeviceId());
-                if(state != null && state.getLastActionStatus() == LastActionStatus.IN_PROGRESS) {
-                    throw new ProcessingException("Cannot unassign while config action is in progress.");
+                if (state != null && state.getLastActionStatus() == LastActionStatus.IN_PROGRESS) {
+                    throw new ProcessingException("Cannot unassign while config action is in progress.",
+                            CollectionActionDetail.INVALID_STATE);
                 }
                 try {
                     String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
                     deviceConfigurationService.unassignConfig(device, user, deviceName);
                 } catch (InvalidDeviceTypeException e) {
                     throw new ProcessingException(e.getMessage(), "deviceRequiresConfig", e, device.getDeviceType(),
-                        dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName());
+                            dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName());
                 }
             }
         };

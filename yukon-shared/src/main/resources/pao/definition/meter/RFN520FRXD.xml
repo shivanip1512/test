@@ -58,7 +58,7 @@
         <pointInfo name="Measurement Error" attributes="MEASUREMENT_ERROR"/>
         <pointInfo name="Min Voltage"/>
         <pointInfo name="Net kVAh"/>
-        <pointInfo name="Net kVArh" attributes="NET_DELIVERED_KVARH"/>
+        <pointInfo name="Net kVArh" attributes="NET_KVARH"/>
         <pointInfo name="Net kW Load Profile" attributes="NET_KW_LOAD_PROFILE"/>
         <pointInfo name="Net kWh" attributes="NET_KWH"/>
         <pointInfo name="Net kWh (Rate A kWh)" attributes="NET_KWH_RATE_A"/>
