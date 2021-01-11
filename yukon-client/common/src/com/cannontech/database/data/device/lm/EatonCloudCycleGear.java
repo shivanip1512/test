@@ -13,7 +13,7 @@ public class EatonCloudCycleGear extends com.cannontech.database.db.device.lm.LM
 
     public static final String SETTER_COLUMNS[] = { "CycleOption" };
     public static final String CONSTRAINT_COLUMNS[] = { "GearId" };
-    public static final String TABLE_NAME = "LMItronCycleGear";
+    public static final String TABLE_NAME = "LMConfigurableCycleGear";
 
     public EatonCloudCycleGear() {
         setControlMethod(GearControlMethod.EatonCloudCycle);

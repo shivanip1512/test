@@ -184,6 +184,26 @@ UPDATE ArchiveValuesExportField SET Pattern = 'DEFAULT' WHERE FieldType = 'ATTRI
 INSERT INTO DBUpdates VALUES ('YUK-23280', '9.0.0', GETDATE());
 /* @end YUK-23280 */
 
+/* @start YUK-23348 */
+ALTER TABLE LMItronCycleGear
+DROP CONSTRAINT FK_LMItronCycleGear_LMPDirGear;
+GO
+
+SP_RENAME 'LMItronCycleGear','LMConfigurableCycleGear';
+GO
+
+SP_RENAME 'PK_LMItronCycleGear','PK_LMConfigurableCycleGear';
+GO
+
+ALTER TABLE LMConfigurableCycleGear
+   ADD CONSTRAINT FK_LMConfigurableCycleGear_LMPDirGear FOREIGN KEY (GearId)
+      REFERENCES LMProgramDirectGear (GearID)
+         ON DELETE CASCADE;
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-23348', '9.0.0', GETDATE());
+/* @end YUK-23348 */
+
 /* @start YUK-23523 */
 UPDATE Point
 SET PointName = 'Peak kVA Lagging', PointOffset = 255

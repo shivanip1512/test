@@ -256,7 +256,7 @@ public class LMGearDaoImpl implements LMGearDao {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT CycleOption");
-        sql.append("FROM LMItronCycleGear");
+        sql.append("FROM LMConfigurableCycleGear");
         sql.append("WHERE GearId").eq(gearId);
 
         String itronCycle = jdbcTemplate.queryForString(sql);
@@ -269,7 +269,7 @@ public class LMGearDaoImpl implements LMGearDao {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT CycleOption");
-        sql.append("FROM LMItronCycleGear");
+        sql.append("FROM LMConfigurableCycleGear");
         sql.append("WHERE GearId").eq(gearId);
 
         String eatonCycle = jdbcTemplate.queryForString(sql);
