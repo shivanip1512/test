@@ -763,6 +763,12 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     EVENT_SUPERSEDED("Event Superseded", AttributeGroup.ITRON, false),
     MEMORY_MAP_LOST("Memory Map Lost", AttributeGroup.ITRON, false),
     RADIO_LINK_QUALITY("Radio Link Quality", AttributeGroup.ITRON, false),
+
+    // Eaton Cloud attribute mapping for PXMiddleware / Cellular LCR
+    COMMS_LOSS_COUNT("Comms Loss Count", AttributeGroup.SYSTEM),
+    FIRMWARE_UPDATE_STATUS("Firmware Update Status", AttributeGroup.SYSTEM),
+    FREQUENCY("Frequency", AttributeGroup.OTHER),
+    RELAY_1_ACTIVATION_STATUS("Relay 1 Activation Status", AttributeGroup.RELAY)
     ;
 
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";

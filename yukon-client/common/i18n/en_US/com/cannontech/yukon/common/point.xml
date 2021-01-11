@@ -815,7 +815,11 @@
     <entry key="yukon.common.attribute.builtInAttribute.EVENT_STOPPED">Event Stopped</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOAD_STATUS">Load Status</entry>
 
-    
+    <entry key="yukon.common.attribute.builtInAttribute.COMMS_LOSS_COUNT">Comms Loss Count</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.FIRMWARE_UPDATE_STATUS">Firmware Update Status</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.FREQUENCY">Frequency</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_ACTIVATION_STATUS">Relay 1 Activation Status</entry>
+
     <!-- BuiltInAttribute see note above about changing values -->
 
     <entry key="yukon.common.point.manualEntry.title">Manual Entry</entry>

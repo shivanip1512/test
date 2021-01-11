@@ -758,6 +758,11 @@ INIT_ATTRIBUTE( EventSuperseded,                                    "EVENT_SUPER
 INIT_ATTRIBUTE( MemoryMapLost,                                      "MEMORY_MAP_LOST" );
 INIT_ATTRIBUTE( RadioLinkQuality,                                   "RADIO_LINK_QUALITY" );
 
+INIT_ATTRIBUTE( CommsLossCount,                                     "COMMS_LOSS_COUNT" );
+INIT_ATTRIBUTE( FirmwareUpdateStatus,                               "FIRMWARE_UPDATE_STATUS" );
+INIT_ATTRIBUTE( Frequency,                                          "FREQUENCY" );
+INIT_ATTRIBUTE( Relay1ActivationStatus,                             "RELAY_1_ACTIVATION_STATUS" );
+
 AttributeNotFound::AttributeNotFound(const std::string &name)
 {
     desc = "Attribute not found: " + name;

@@ -748,6 +748,11 @@ public:
     static const Attribute  EventSuperseded;
     static const Attribute  MemoryMapLost;
     static const Attribute  RadioLinkQuality;
+
+    static const Attribute  CommsLossCount;
+    static const Attribute  FirmwareUpdateStatus;
+    static const Attribute  Frequency;
+    static const Attribute  Relay1ActivationState;
 };
 
 
