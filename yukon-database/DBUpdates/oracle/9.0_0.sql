@@ -185,7 +185,7 @@ INSERT INTO DBUpdates VALUES ('YUK-23280', '9.0.0', SYSDATE);
 ALTER TABLE LMItronCycleGear
 DROP CONSTRAINT FK_LMItronCycleGear_LMPDirGear;
 
-RENAME TABLE LMItronCycleGear TO LMConfigurableCycleGear;
+RENAME LMItronCycleGear TO LMConfigurableCycleGear;
 
 ALTER TABLE LMConfigurableCycleGear RENAME CONSTRAINT PK_LMItronCycleGear TO PK_LMConfigurableCycleGear;
 
