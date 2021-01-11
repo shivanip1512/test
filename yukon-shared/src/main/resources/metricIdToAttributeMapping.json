@@ -15,7 +15,7 @@
                 { "metricId" : 12, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KWH_FROZEN" },
 
                 { "metricId" : 13, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_DEMAND" },
-                { "metricId" : 17, "attributeMagnitude" : 3, "attribute" : "KVAH_Q124" },
+                { "metricId" : 17, "attributeMagnitude" : 3, "attribute" : "DELIVERED_KVAH_LAGGING" },
 
                 { "metricId" : 21, "attributeMagnitude" : 3, "attribute" : "KVARH" },
                 { "metricId" : 22, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KVARH" },

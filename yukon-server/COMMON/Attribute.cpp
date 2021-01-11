@@ -69,7 +69,7 @@ INIT_ATTRIBUTE( ForwardInductivekVArh,                              "FORWARD_IND
 INIT_ATTRIBUTE( GeneralAlarmFlag,                                   "GENERAL_ALARM_FLAG" );
 INIT_ATTRIBUTE( IEDDemandResetCount,                                "IED_DEMAND_RESET_COUNT" );
 INIT_ATTRIBUTE( kVAh,                                               "KVAH" );
-INIT_ATTRIBUTE( kVAhQ124,                                           "KVAH_Q124" );
+INIT_ATTRIBUTE( kVAhLagging,                                        "DELIVERED_KVAH_LAGGING" );
 INIT_ATTRIBUTE( kVAhRateA,                                          "KVAH_RATE_A" );
 INIT_ATTRIBUTE( kVAhRateB,                                          "KVAH_RATE_B" );
 INIT_ATTRIBUTE( kVAhRateC,                                          "KVAH_RATE_C" );

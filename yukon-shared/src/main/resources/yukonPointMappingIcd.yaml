@@ -1515,7 +1515,7 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Var-hours Received:                   { Unit: *Varh,   Modifiers: [ *Q3, *Q4                         ], Models: *__-RX-23 }
     - Var-hours Total:                      { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: *__-RX-23 }
     - Var -hours Net:                       { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: *__-RX-23 }
-    - VA-hours Delivered:                   { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q4                    ], Models: *__-RX-23 }
+    - VA-hours Lagging:                     { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q4                    ], Models: *__-RX-23 }
     - VA-hours Received:                    { Unit: *VAh,    Modifiers: [ *Q2, *Q3, *Q4                    ], Models: *__-RX-23 }
     - VA-hours Total:                       { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: *__-RX-23 }
     - VA-hours Net:                         { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: *__-RX-23 }

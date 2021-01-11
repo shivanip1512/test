@@ -4165,7 +4165,7 @@
                 <modifier>Net Flow</modifier>
             </modifiers>
         </point>
-        <point name="Delivered kVAh" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
+        <point name="kVAh Lagging" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>

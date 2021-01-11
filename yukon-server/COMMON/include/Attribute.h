@@ -60,7 +60,7 @@ public:
     static const Attribute  GeneralAlarmFlag;
     static const Attribute  IEDDemandResetCount;
     static const Attribute  kVAh;
-    static const Attribute  kVAhQ124;
+    static const Attribute  kVAhLagging;
     static const Attribute  kVAhRateA;
     static const Attribute  kVAhRateB;
     static const Attribute  kVAhRateC;

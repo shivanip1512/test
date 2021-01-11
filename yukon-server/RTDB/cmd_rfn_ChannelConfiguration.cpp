@@ -39,7 +39,7 @@ const MetricInfo metricInfos[] = {
         {  11,  TouRates,  "Watt hour delivered (Frozen)"          },
         {  12,  TouRates,  "Watt hour received (Frozen)"           },
         {  13,  TouRates,  "Watts, peak"                           },
-        {  17,  None,      "kVAh (Quadrants 1 2 4)"                },
+        {  17,  None,      "kVAh Lagging"                          },
 
         {  21,  TouRates,  "Var hour delivered"                    },
         {  22,  TouRates,  "Var hour received"                     },
