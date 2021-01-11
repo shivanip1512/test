@@ -67,7 +67,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     IED_DEMAND_RESET_COUNT("IED Demand Reset Count", AttributeGroup.DEMAND),
     // Treating "kVAh" as "Delivered kVAh". May need to created separate attributes in the future.
     KVAH("kVAh", AttributeGroup.USAGE),
-    KVAH_Q124("kVAH (Quadrants 1 2 4)", AttributeGroup.REACTIVE),
+    KVAH_Q124("kVAh (Quadrants 1 2 4)", AttributeGroup.REACTIVE),
     KVAH_RATE_A("kVAh Rate A", AttributeGroup.USAGE),
     KVAH_RATE_B("kVAh Rate B", AttributeGroup.USAGE),
     KVAH_RATE_C("kVAh Rate C", AttributeGroup.USAGE),

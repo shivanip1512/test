@@ -110,7 +110,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.FAULT_STATUS">Fault Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.GENERAL_ALARM_FLAG">General Alarm Flag</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAH">kVAh</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.KVAH_Q124">kVAH (Quadrants 1 2 4)</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KVAH_Q124">kVAh (Quadrants 1 2 4)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAH_RATE_A">kVAh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAH_RATE_B">kVAh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAH_RATE_C">kVAh Rate C</entry>
