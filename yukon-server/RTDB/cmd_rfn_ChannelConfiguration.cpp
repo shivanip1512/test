@@ -39,6 +39,7 @@ const MetricInfo metricInfos[] = {
         {  11,  TouRates,  "Watt hour delivered (Frozen)"          },
         {  12,  TouRates,  "Watt hour received (Frozen)"           },
         {  13,  TouRates,  "Watts, peak"                           },
+        {  17,  None,      "kVAH (Quadrants 1 2 4)"                },
 
         {  21,  TouRates,  "Var hour delivered"                    },
         {  22,  TouRates,  "Var hour received"                     },
@@ -151,7 +152,7 @@ const MetricInfo metricInfos[] = {
         { 202,  TouRates,  "VA"                                    },
 
         { 210,  TouRates,  "Sum Peak kVA"                          },
-
+        { 222,  None,      "Received kVAh (Quadrants 2 3 4)"       },
         { 233,  TouRates,  "Average Power Factor"                  },
         { 234,  TouRates,  "Average Power Factor Frozen"           },
 

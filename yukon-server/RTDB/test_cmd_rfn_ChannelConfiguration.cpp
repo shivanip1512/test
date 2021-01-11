@@ -75,13 +75,13 @@ const std::vector<int> allMetrics = [] {
 
     const std::vector<int> metrics {
         //  0                    10                   20                   30                   40                   50                   60                     70                 80                   90
-            _,X,X,X,X,X,X,X,X,X, X,X,X,a,_,_,_,_,_,_, _,X,X,X,X,X,X,X,X,X, X,X,X,X,X,X,X,X,_,_, _,X,X,X,X,X,X,X,X,X, X,X,X,X,X,o,_,_,_,_, _,X,X,X,X,X,X,X,X,X,X, _,_,_,_,_,_,_,o,o, _,X,X,X,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
+            _,X,X,X,X,X,X,X,X,X, X,X,X,a,_,_,_,o,_,_, _,X,X,X,X,X,X,X,X,X, X,X,X,X,X,X,X,X,_,_, _,X,X,X,X,X,X,X,X,X, X,X,X,X,X,o,_,_,_,_, _,X,X,X,X,X,X,X,X,X,X, _,_,_,_,_,_,_,o,o, _,X,X,X,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
         
         //  100                  110                  120                  130                  140                  150                  160                    170                180                  190
             X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, o,o,_,_,A,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
 
         //  200                  210                  220                  230                  240                  250                  260                    270                280                  290
-            _,_,_,_,_,_,_,_,_,_, A,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,X,X,_,_,_,_,_, o,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,X,o,_,_, _,_,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
+            _,_,_,_,_,_,_,_,_,_, A,_,_,_,_,_,_,_,_,_, _,_,o_,_,_,_,_,_,_,_, _,_,_,X,X,_,_,_,_,_, o,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,X,o,_,_, _,_,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
 
         //  300                  310                  320                  330                  340                  350
             _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, o,o,_,_,_,_,_,_,_,_, o,o,o,o,o,o,_,_,_,_, o,o,o,o,o,o
@@ -129,6 +129,7 @@ const std::vector<std::string> allDescriptions {
         "Watts received, peak demand (Frozen) (10)",
         "Watt hour delivered (Frozen) (11)",
         "Watt hour received (Frozen) (12)",
+        "kVAH (Quadrants 1 2 4) (17)"
         "Var hour delivered (21)",
         "Var hour received (22)",
         "Var hour total/sum (23)",
@@ -220,6 +221,7 @@ const std::vector<std::string> allDescriptions {
         "Peak kVAr (Quadrants 2 3) (181)",
         "Sum Peak kVAr (184)",
         "Sum Peak kVA (210)",
+        "Received kVAh (Quadrants 2 3 4)",
         "Average Power Factor (233)",
         "Average Power Factor Frozen (234)",
         "Peak Demand Daily (240)",

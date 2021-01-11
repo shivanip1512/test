@@ -110,6 +110,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.FAULT_STATUS">Fault Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.GENERAL_ALARM_FLAG">General Alarm Flag</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAH">kVAh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KVAH_Q124">kVAH (Quadrants 1 2 4)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAH_RATE_A">kVAh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAH_RATE_B">kVAh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAH_RATE_C">kVAh Rate C</entry>
@@ -605,6 +606,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.NET_DELIVERED_KVARH_RATE_D">Net Delivered kVArh Rate D</entry>
 
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVAH">Received kVAh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVAH_Q234">Received kVAh (Quadrants 2 3 4)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVARH">Received kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVARH_RATE_A">Received kVArh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVARH_RATE_B">Received kVArh Rate B</entry>
