@@ -149,12 +149,12 @@ yukon.tools.dataExporter = (function () {
                                {text: _config.text.create, 
                                     click: function() {
                                         var useTemplate = $('.js-use-template').is(':checked'),
-                                            templateId = -1,
+                                            fileName = "",
                                             selectedFormat = $('input[name=newFormatType]:checked').exists() ? $('input[name=newFormatType]:checked').val() : '';
                                         if (useTemplate) {
-                                            templateId = $(".js-avaliable-template-formats option:selected").val();
+                                            fileName = $(".js-avaliable-template-formats option:selected").val();
                                         }
-                                        window.location.href = 'format/create?formatType=' + selectedFormat + '&useTemplate=' + useTemplate + '&templateId=' + templateId;
+                                        window.location.href = 'format/create?formatType=' + selectedFormat + '&useTemplate=' + useTemplate + '&fileName=' + fileName;
                                     },
                                     'class': 'primary action'}
                                ];
@@ -206,9 +206,9 @@ yukon.tools.dataExporter = (function () {
                     $(".js-create-format-option.js-do-not-use-template").prop("checked", false);
                     $.getJSON(yukon.url("/tools/data-export/getAvaliableFormatTemplates"), function (json) {
                         $(".js-template-formats-dropdown").find("option").remove();
-                        if (json.hasOwnProperty('formatTemplates')) {
-                            $.each(json.formatTemplates, function (key, val) {
-                                $(".js-template-formats-dropdown").append(new Option(val.formatName, val.formatId));
+                        if (json.hasOwnProperty('templateFileNames')) {
+                            $.each(json.templateFileNames, function (key, val) {
+                                $(".js-template-formats-dropdown").append(new Option(val, val));
                             });
                         } else {
                             $("#create-format-dialog").find(".user-message").remove();

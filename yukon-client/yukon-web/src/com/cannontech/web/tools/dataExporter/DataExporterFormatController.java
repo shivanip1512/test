@@ -1,6 +1,7 @@
 package com.cannontech.web.tools.dataExporter;
 
 import java.beans.PropertyEditorSupport;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.RoundingMode;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -54,8 +56,10 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.TimeZoneFormat;
+import com.cannontech.common.util.YamlParserUtils;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -73,6 +77,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.tools.dataExporter.model.ArchivedValuesExporter;
 import com.cannontech.web.tools.dataExporter.validator.ExportAttributeValidator;
 import com.cannontech.web.tools.dataExporter.validator.ExportFieldValidator;
+import com.cannontech.web.tools.dataExporter.validator.ExportFormatTemplateValidator;
 import com.cannontech.web.tools.dataExporter.validator.ExportFormatValidator;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -85,6 +90,7 @@ public class DataExporterFormatController {
     
     public final static String BASE_KEY = "yukon.web.modules.tools.bulk.archivedValueExporter.";
     private final static Logger log = YukonLogManager.getLogger(DataExporterFormatController.class);
+    private final String templateDirectory = CtiUtilities.getYukonBase() + "\\Server\\Config\\DataExportTemplates";
 
     @Autowired private ArchiveValuesExportFormatDao archiveValuesExportFormatDao;
     @Autowired private ExportAttributeValidator exportAttributeValidator;
@@ -97,6 +103,7 @@ public class DataExporterFormatController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private AttributeService attributeService;
     @Autowired private AttributeType attributeTypeEditor;
+    @Autowired private ExportFormatTemplateValidator exportFormatTemplateValidator;
 
     @GetMapping(value = "/data-exporter/format/{id}")
     public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
@@ -113,21 +120,27 @@ public class DataExporterFormatController {
         return "data-exporter/format/format.jsp";
     }
     
-    @GetMapping(value = "/data-exporter/format/renderTemplatePreview/{id}")
-    public String renderTemplatePreview(ModelMap model, YukonUserContext userContext, FlashScope flashScope, @PathVariable int id) {
+    @GetMapping(value = "/data-exporter/format/renderTemplatePreview/{fileName}")
+    public String renderTemplatePreview(ModelMap model, YukonUserContext userContext, FlashScope flashScope,
+            @PathVariable String fileName, @ModelAttribute ExportFormat exportFormat, BindingResult result) {
         model.addAttribute("mode", PageEditMode.VIEW);
-        ExportFormat exportFormat = null;
         try {
-            exportFormat = mockExportFormatTemplateObject();
+            FileInputStream inputStream = new FileInputStream(templateDirectory + "\\" + fileName);
+            exportFormat = YamlParserUtils.parseToObject(inputStream, ExportFormat.class);
+            exportFormatTemplateValidator.validate(exportFormat, result);
+            if (result.hasErrors()) {
+                logValidationErrors(result, userContext);
+                flashScope.setError(new YukonMessageSourceResolvable(BASE_KEY + "parseTemplate.validationFailed"));
+            }
         } catch (Exception e) {
             exportFormat = setExportFormatForErrorScenario(flashScope, e);
         }
-        model.addAttribute("showAttributeSection", exportFormat.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
+        model.addAttribute("showAttributeSection",
+                exportFormat.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
         model.addAttribute("format", exportFormat);
         return "data-exporter/format/format.jsp";
     }
-    
-    
+
     @RequestMapping(value = "/data-exporter/format/{id}/copy", method = RequestMethod.GET)
     public String copy(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
         
@@ -145,30 +158,34 @@ public class DataExporterFormatController {
         
         return "data-exporter/format/format.jsp";
     }
-    
+
     @GetMapping(value = "/data-exporter/format/create")
     public String create(ModelMap model, YukonUserContext userContext, FlashScope flashScope,
             @RequestParam(required = false, name = "formatType", defaultValue = "FIXED_ATTRIBUTE") ArchivedValuesExportFormatType formatType,
-            @RequestParam("useTemplate") boolean useTemplate, @RequestParam("templateId") int templateId) {
+            @RequestParam("useTemplate") boolean useTemplate, @RequestParam("fileName") String fileName,
+            @ModelAttribute ExportFormat exportFormat, BindingResult result) {
 
         model.addAttribute("mode", PageEditMode.CREATE);
-        
-        ExportFormat format = null;
         if (useTemplate) {
             try {
-                //TODO: Remove this log statement and replace mockExportFormatTemplateObject() with service layer call.
-                log.info("Template Id : " + templateId);
-                format = mockExportFormatTemplateObject();
+                FileInputStream inputStream = new FileInputStream(templateDirectory + "\\" + fileName);
+                exportFormat = YamlParserUtils.parseToObject(inputStream, ExportFormat.class);
+                exportFormatTemplateValidator.validate(exportFormat, result);
+                if (result.hasErrors()) {
+                    logValidationErrors(result, userContext);
+                    flashScope.setError(new YukonMessageSourceResolvable(BASE_KEY + "parseTemplate.validationFailed"));
+                }
             } catch (Exception e) {
-                format = setExportFormatForErrorScenario(flashScope, e);
-                model.addAttribute("showAttributeSection", format.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
+                exportFormat = setExportFormatForErrorScenario(flashScope, e);
+                model.addAttribute("showAttributeSection",
+                        exportFormat.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
             }
         } else {
-            format = new ExportFormat();
-            format.setFormatType(formatType);
+            exportFormat = new ExportFormat();
+            exportFormat.setFormatType(formatType);
         }
-        model.addAttribute("format", format);
-        setupModel(model, userContext, format);
+        model.addAttribute("format", exportFormat);
+        setupModel(model, userContext, exportFormat);
         return "data-exporter/format/format.jsp";
     }
     
@@ -179,34 +196,6 @@ public class DataExporterFormatController {
         format.setDelimiter(null);
         format.setDateTimeZoneFormat(null);
         flashScope.setError(new YukonMessageSourceResolvable(BASE_KEY + "parseTemplate.error"));
-        return format;
-    }
-    
-    private ExportFormat mockExportFormatTemplateObject() throws Exception {
-        ExportFormat format = new ExportFormat();
-        format.setFormatName("Template Formate");
-        format.setHeader("Template Header");
-        format.setFooter("Template Footer");
-        format.setFormatType(ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
-        ExportAttribute attribute = new ExportAttribute();
-        attribute.setAttribute(BuiltInAttribute.BLINK_COUNT);
-        attribute.setDataSelection(DataSelection.MAX);
-        format.getAttributes().add(attribute);
-        ExportField exportField = new ExportField();
-        exportField.setAttributeField(AttributeField.POINT_STATE);
-        Field field = new Field();
-        field.setAttribute(attribute);
-        field.setType(FieldType.DEVICE_TYPE);
-        exportField.setField(field);
-        exportField.setMissingAttribute(MissingAttribute.LEAVE_BLANK);
-        exportField.setMissingAttributeValue("abab");
-        exportField.setPadChar(" ");
-        exportField.setPadSide(PadSide.LEFT);
-        exportField.setPattern("some pattern");
-        exportField.setReadingPattern(ReadingPattern.FIVE_ZERO);
-        exportField.setRoundingMode(YukonRoundingMode.CEILING);
-        exportField.setTimestampPattern(TimestampPattern.DAY_MONTH_YEAR);
-        format.getFields().add(exportField);
         return format;
     }
 
@@ -621,5 +610,26 @@ public class DataExporterFormatController {
                 }
             }
         });
+    }
+
+    /**
+     * Log all field validation errors and global errors.
+     */
+    private void logValidationErrors(BindingResult result, YukonUserContext userContext) {
+        if (result.hasFieldErrors()) {
+            List<FieldError> errors = result.getFieldErrors();
+            for (FieldError error : errors) {
+                MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+                log.info(error.getField() + " : " + accessor.getMessage(error.getCode(), error.getArguments()));
+            }
+        }
+        if (result.hasGlobalErrors()) {
+            List<ObjectError> errors = result.getGlobalErrors();
+            for (ObjectError error : errors) {
+                MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+                log.info(accessor.getMessage(error.getCode(), error.getArguments()));
+            }
+        }
+
     }
 }

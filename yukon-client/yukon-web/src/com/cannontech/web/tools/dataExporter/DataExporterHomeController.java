@@ -13,7 +13,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
@@ -268,9 +267,8 @@ public class DataExporterHomeController {
     public @ResponseBody Map<String, Object> getAvaliableFormatTemplates(YukonUserContext userContext) {
         Map<String, Object> json = Maps.newHashMap();
         try {
-            //TODO: to be replaced with actual service layer call
-            List<ExportFormat> formatTemplates = mockAvailableFormatTemplates();
-            json.put("formatTemplates", formatTemplates);
+            List<String> templateFileNames = scheduledFileExportService.getAvailableFormatTemplates();
+            json.put("templateFileNames", templateFileNames);
         } catch (Exception exception) {
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
             json.put("errorMessage", accessor.getMessage("yukon.web.modules.tools.bulk.archivedValueExporter.parseAvailableTemplates.error"));
@@ -291,16 +289,7 @@ public class DataExporterHomeController {
         }
     }
     
-    //TODO: to be replaced with actual service layer call
-    private List<ExportFormat> mockAvailableFormatTemplates() throws Exception {
-        List<ExportFormat> templates = Lists.newArrayList();
-        ExportFormat format = new ExportFormat();
-        format.setFormatId(1);
-        format.setFormatName("CEMP");
-        templates.add(format);
-        return templates;
-    }
-    
+
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         
