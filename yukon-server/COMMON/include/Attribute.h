@@ -752,7 +752,7 @@ public:
     static const Attribute  CommsLossCount;
     static const Attribute  FirmwareUpdateStatus;
     static const Attribute  Frequency;
-    static const Attribute  Relay1ActivationState;
+    static const Attribute  Relay1ActivationStatus;
 };
 
 
