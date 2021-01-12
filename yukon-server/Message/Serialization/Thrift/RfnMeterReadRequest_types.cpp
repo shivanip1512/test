@@ -512,6 +512,10 @@ DatedChannelData::~DatedChannelData() noexcept {
 }
 
 
+void DatedChannelData::__set_channelData(const ChannelData& val) {
+  this->channelData = val;
+}
+
 void DatedChannelData::__set_timeStamp(const  ::Cti::Messaging::Serialization::Thrift::Timestamp val) {
   this->timeStamp = val;
 }
@@ -538,6 +542,7 @@ uint32_t DatedChannelData::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_channelData = false;
   bool isset_timeStamp = false;
   bool isset_baseChannelData = false;
 
@@ -550,6 +555,14 @@ uint32_t DatedChannelData::read(::apache::thrift::protocol::TProtocol* iprot) {
     switch (fid)
     {
       case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->channelData.read(iprot);
+          isset_channelData = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->timeStamp);
           isset_timeStamp = true;
@@ -557,7 +570,7 @@ uint32_t DatedChannelData::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 2:
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->baseChannelData.read(iprot);
           isset_baseChannelData = true;
@@ -574,6 +587,8 @@ uint32_t DatedChannelData::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_channelData)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_timeStamp)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_baseChannelData)
@@ -586,11 +601,15 @@ uint32_t DatedChannelData::write(::apache::thrift::protocol::TProtocol* oprot) c
   ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
   xfer += oprot->writeStructBegin("DatedChannelData");
 
-  xfer += oprot->writeFieldBegin("timeStamp", ::apache::thrift::protocol::T_I64, 1);
+  xfer += oprot->writeFieldBegin("channelData", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += this->channelData.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("timeStamp", ::apache::thrift::protocol::T_I64, 2);
   xfer += oprot->writeI64(this->timeStamp);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("baseChannelData", ::apache::thrift::protocol::T_STRUCT, 2);
+  xfer += oprot->writeFieldBegin("baseChannelData", ::apache::thrift::protocol::T_STRUCT, 3);
   xfer += this->baseChannelData.write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -601,15 +620,18 @@ uint32_t DatedChannelData::write(::apache::thrift::protocol::TProtocol* oprot) c
 
 void swap(DatedChannelData &a, DatedChannelData &b) {
   using ::std::swap;
+  swap(a.channelData, b.channelData);
   swap(a.timeStamp, b.timeStamp);
   swap(a.baseChannelData, b.baseChannelData);
 }
 
 DatedChannelData::DatedChannelData(const DatedChannelData& other15) {
+  channelData = other15.channelData;
   timeStamp = other15.timeStamp;
   baseChannelData = other15.baseChannelData;
 }
 DatedChannelData& DatedChannelData::operator=(const DatedChannelData& other16) {
+  channelData = other16.channelData;
   timeStamp = other16.timeStamp;
   baseChannelData = other16.baseChannelData;
   return *this;
@@ -617,7 +639,8 @@ DatedChannelData& DatedChannelData::operator=(const DatedChannelData& other16) {
 void DatedChannelData::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
   out << "DatedChannelData(";
-  out << "timeStamp=" << to_string(timeStamp);
+  out << "channelData=" << to_string(channelData);
+  out << ", " << "timeStamp=" << to_string(timeStamp);
   out << ", " << "baseChannelData=" << to_string(baseChannelData);
   out << ")";
 }

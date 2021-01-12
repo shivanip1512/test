@@ -11,19 +11,22 @@ package com.cannontech.messaging.serialization.thrift.generated;
 public class DatedChannelData implements org.apache.thrift.TBase<DatedChannelData, DatedChannelData._Fields>, java.io.Serializable, Cloneable, Comparable<DatedChannelData> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("DatedChannelData");
 
-  private static final org.apache.thrift.protocol.TField TIME_STAMP_FIELD_DESC = new org.apache.thrift.protocol.TField("timeStamp", org.apache.thrift.protocol.TType.I64, (short)1);
-  private static final org.apache.thrift.protocol.TField BASE_CHANNEL_DATA_FIELD_DESC = new org.apache.thrift.protocol.TField("baseChannelData", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+  private static final org.apache.thrift.protocol.TField CHANNEL_DATA_FIELD_DESC = new org.apache.thrift.protocol.TField("channelData", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+  private static final org.apache.thrift.protocol.TField TIME_STAMP_FIELD_DESC = new org.apache.thrift.protocol.TField("timeStamp", org.apache.thrift.protocol.TType.I64, (short)2);
+  private static final org.apache.thrift.protocol.TField BASE_CHANNEL_DATA_FIELD_DESC = new org.apache.thrift.protocol.TField("baseChannelData", org.apache.thrift.protocol.TType.STRUCT, (short)3);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new DatedChannelDataStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new DatedChannelDataTupleSchemeFactory();
 
+  private @org.apache.thrift.annotation.Nullable ChannelData channelData; // required
   private long timeStamp; // required
   private @org.apache.thrift.annotation.Nullable ChannelData baseChannelData; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    TIME_STAMP((short)1, "timeStamp"),
-    BASE_CHANNEL_DATA((short)2, "baseChannelData");
+    CHANNEL_DATA((short)1, "channelData"),
+    TIME_STAMP((short)2, "timeStamp"),
+    BASE_CHANNEL_DATA((short)3, "baseChannelData");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -39,9 +42,11 @@ public class DatedChannelData implements org.apache.thrift.TBase<DatedChannelDat
     @org.apache.thrift.annotation.Nullable
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // TIME_STAMP
+        case 1: // CHANNEL_DATA
+          return CHANNEL_DATA;
+        case 2: // TIME_STAMP
           return TIME_STAMP;
-        case 2: // BASE_CHANNEL_DATA
+        case 3: // BASE_CHANNEL_DATA
           return BASE_CHANNEL_DATA;
         default:
           return null;
@@ -89,6 +94,8 @@ public class DatedChannelData implements org.apache.thrift.TBase<DatedChannelDat
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.CHANNEL_DATA, new org.apache.thrift.meta_data.FieldMetaData("channelData", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ChannelData.class)));
     tmpMap.put(_Fields.TIME_STAMP, new org.apache.thrift.meta_data.FieldMetaData("timeStamp", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "Timestamp")));
     tmpMap.put(_Fields.BASE_CHANNEL_DATA, new org.apache.thrift.meta_data.FieldMetaData("baseChannelData", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -101,10 +108,12 @@ public class DatedChannelData implements org.apache.thrift.TBase<DatedChannelDat
   }
 
   public DatedChannelData(
+    ChannelData channelData,
     long timeStamp,
     ChannelData baseChannelData)
   {
     this();
+    this.channelData = channelData;
     this.timeStamp = timeStamp;
     setTimeStampIsSet(true);
     this.baseChannelData = baseChannelData;
@@ -115,6 +124,9 @@ public class DatedChannelData implements org.apache.thrift.TBase<DatedChannelDat
    */
   public DatedChannelData(DatedChannelData other) {
     __isset_bitfield = other.__isset_bitfield;
+    if (other.isSetChannelData()) {
+      this.channelData = new ChannelData(other.channelData);
+    }
     this.timeStamp = other.timeStamp;
     if (other.isSetBaseChannelData()) {
       this.baseChannelData = new ChannelData(other.baseChannelData);
@@ -127,9 +139,34 @@ public class DatedChannelData implements org.apache.thrift.TBase<DatedChannelDat
 
   @Override
   public void clear() {
+    this.channelData = null;
     setTimeStampIsSet(false);
     this.timeStamp = 0;
     this.baseChannelData = null;
+  }
+
+  @org.apache.thrift.annotation.Nullable
+  public ChannelData getChannelData() {
+    return this.channelData;
+  }
+
+  public void setChannelData(@org.apache.thrift.annotation.Nullable ChannelData channelData) {
+    this.channelData = channelData;
+  }
+
+  public void unsetChannelData() {
+    this.channelData = null;
+  }
+
+  /** Returns true if field channelData is set (has been assigned a value) and false otherwise */
+  public boolean isSetChannelData() {
+    return this.channelData != null;
+  }
+
+  public void setChannelDataIsSet(boolean value) {
+    if (!value) {
+      this.channelData = null;
+    }
   }
 
   public long getTimeStamp() {
@@ -180,6 +217,14 @@ public class DatedChannelData implements org.apache.thrift.TBase<DatedChannelDat
 
   public void setFieldValue(_Fields field, @org.apache.thrift.annotation.Nullable java.lang.Object value) {
     switch (field) {
+    case CHANNEL_DATA:
+      if (value == null) {
+        unsetChannelData();
+      } else {
+        setChannelData((ChannelData)value);
+      }
+      break;
+
     case TIME_STAMP:
       if (value == null) {
         unsetTimeStamp();
@@ -202,6 +247,9 @@ public class DatedChannelData implements org.apache.thrift.TBase<DatedChannelDat
   @org.apache.thrift.annotation.Nullable
   public java.lang.Object getFieldValue(_Fields field) {
     switch (field) {
+    case CHANNEL_DATA:
+      return getChannelData();
+
     case TIME_STAMP:
       return getTimeStamp();
 
@@ -219,6 +267,8 @@ public class DatedChannelData implements org.apache.thrift.TBase<DatedChannelDat
     }
 
     switch (field) {
+    case CHANNEL_DATA:
+      return isSetChannelData();
     case TIME_STAMP:
       return isSetTimeStamp();
     case BASE_CHANNEL_DATA:
@@ -241,6 +291,15 @@ public class DatedChannelData implements org.apache.thrift.TBase<DatedChannelDat
       return false;
     if (this == that)
       return true;
+
+    boolean this_present_channelData = true && this.isSetChannelData();
+    boolean that_present_channelData = true && that.isSetChannelData();
+    if (this_present_channelData || that_present_channelData) {
+      if (!(this_present_channelData && that_present_channelData))
+        return false;
+      if (!this.channelData.equals(that.channelData))
+        return false;
+    }
 
     boolean this_present_timeStamp = true;
     boolean that_present_timeStamp = true;
@@ -267,6 +326,10 @@ public class DatedChannelData implements org.apache.thrift.TBase<DatedChannelDat
   public int hashCode() {
     int hashCode = 1;
 
+    hashCode = hashCode * 8191 + ((isSetChannelData()) ? 131071 : 524287);
+    if (isSetChannelData())
+      hashCode = hashCode * 8191 + channelData.hashCode();
+
     hashCode = hashCode * 8191 + org.apache.thrift.TBaseHelper.hashCode(timeStamp);
 
     hashCode = hashCode * 8191 + ((isSetBaseChannelData()) ? 131071 : 524287);
@@ -284,6 +347,16 @@ public class DatedChannelData implements org.apache.thrift.TBase<DatedChannelDat
 
     int lastComparison = 0;
 
+    lastComparison = java.lang.Boolean.valueOf(isSetChannelData()).compareTo(other.isSetChannelData());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetChannelData()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.channelData, other.channelData);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = java.lang.Boolean.valueOf(isSetTimeStamp()).compareTo(other.isSetTimeStamp());
     if (lastComparison != 0) {
       return lastComparison;
@@ -325,6 +398,14 @@ public class DatedChannelData implements org.apache.thrift.TBase<DatedChannelDat
     java.lang.StringBuilder sb = new java.lang.StringBuilder("DatedChannelData(");
     boolean first = true;
 
+    sb.append("channelData:");
+    if (this.channelData == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.channelData);
+    }
+    first = false;
+    if (!first) sb.append(", ");
     sb.append("timeStamp:");
     sb.append(this.timeStamp);
     first = false;
@@ -342,6 +423,10 @@ public class DatedChannelData implements org.apache.thrift.TBase<DatedChannelDat
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
+    if (!isSetChannelData()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'channelData' is unset! Struct:" + toString());
+    }
+
     if (!isSetTimeStamp()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'timeStamp' is unset! Struct:" + toString());
     }
@@ -351,6 +436,9 @@ public class DatedChannelData implements org.apache.thrift.TBase<DatedChannelDat
     }
 
     // check for sub-struct validity
+    if (channelData != null) {
+      channelData.validate();
+    }
     if (baseChannelData != null) {
       baseChannelData.validate();
     }
@@ -392,7 +480,16 @@ public class DatedChannelData implements org.apache.thrift.TBase<DatedChannelDat
           break;
         }
         switch (schemeField.id) {
-          case 1: // TIME_STAMP
+          case 1: // CHANNEL_DATA
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+              struct.channelData = new ChannelData();
+              struct.channelData.read(iprot);
+              struct.setChannelDataIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 2: // TIME_STAMP
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.timeStamp = iprot.readI64();
               struct.setTimeStampIsSet(true);
@@ -400,7 +497,7 @@ public class DatedChannelData implements org.apache.thrift.TBase<DatedChannelDat
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // BASE_CHANNEL_DATA
+          case 3: // BASE_CHANNEL_DATA
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.baseChannelData = new ChannelData();
               struct.baseChannelData.read(iprot);
@@ -422,6 +519,11 @@ public class DatedChannelData implements org.apache.thrift.TBase<DatedChannelDat
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
+      if (struct.channelData != null) {
+        oprot.writeFieldBegin(CHANNEL_DATA_FIELD_DESC);
+        struct.channelData.write(oprot);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldBegin(TIME_STAMP_FIELD_DESC);
       oprot.writeI64(struct.timeStamp);
       oprot.writeFieldEnd();
@@ -447,6 +549,7 @@ public class DatedChannelData implements org.apache.thrift.TBase<DatedChannelDat
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, DatedChannelData struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+      struct.channelData.write(oprot);
       oprot.writeI64(struct.timeStamp);
       struct.baseChannelData.write(oprot);
     }
@@ -454,6 +557,9 @@ public class DatedChannelData implements org.apache.thrift.TBase<DatedChannelDat
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, DatedChannelData struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+      struct.channelData = new ChannelData();
+      struct.channelData.read(iprot);
+      struct.setChannelDataIsSet(true);
       struct.timeStamp = iprot.readI64();
       struct.setTimeStampIsSet(true);
       struct.baseChannelData = new ChannelData();

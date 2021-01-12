@@ -220,8 +220,11 @@ class DatedChannelData : public virtual ::apache::thrift::TBase {
   }
 
   virtual ~DatedChannelData() noexcept;
+  ChannelData channelData;
    ::Cti::Messaging::Serialization::Thrift::Timestamp timeStamp;
   ChannelData baseChannelData;
+
+  void __set_channelData(const ChannelData& val);
 
   void __set_timeStamp(const  ::Cti::Messaging::Serialization::Thrift::Timestamp val);
 
@@ -229,6 +232,8 @@ class DatedChannelData : public virtual ::apache::thrift::TBase {
 
   bool operator == (const DatedChannelData & rhs) const
   {
+    if (!(channelData == rhs.channelData))
+      return false;
     if (!(timeStamp == rhs.timeStamp))
       return false;
     if (!(baseChannelData == rhs.baseChannelData))
