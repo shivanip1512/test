@@ -141,13 +141,15 @@ public class DeviceConfigurationSummaryController {
     
     @GetMapping("{id}/outOfSync")
     public String outOfSync(ModelMap model, YukonUserContext context, @PathVariable int id) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         SimpleDevice device = deviceDao.getYukonDevice(id);
         DeviceConfigState configState = deviceConfigurationDao.getDeviceConfigStateByDeviceId(id);
         if (configState != null && configState.getCurrentState() == ConfigState.OUT_OF_SYNC) {
             VerifyResult result = deviceConfigService.verifyConfig(device, context.getYukonUser());
             model.put("verifyResult", result);
+        } else if (configState != null && configState.getCurrentState() == ConfigState.UNREAD) {
+            model.put("needsUploadMessage", accessor.getMessage(baseKey + "needsUploadUnreadMessage"));
         } else {
-            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
             model.put("needsUploadMessage", accessor.getMessage(baseKey + "needsUploadMessage"));
         }
 
