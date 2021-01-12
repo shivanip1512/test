@@ -985,7 +985,7 @@ public final class CtiUtilities {
     }
 
     /**
-     * 
+     * Return Data Export Template directory path
      */
     public final static String getDataExportTemplatesDirPath() {
         final String sep = System.getProperty("file.separator");
