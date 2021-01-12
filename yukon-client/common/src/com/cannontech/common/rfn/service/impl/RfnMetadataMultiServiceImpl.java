@@ -73,7 +73,7 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
     /**
      * Returns meta data
      */
-    private Map<RfnIdentifier, RfnMetadataMultiQueryResult> sendMetadataRequest(RfnMetadataMultiRequest request, Boolean extendedTimeout)
+    private Map<RfnIdentifier, RfnMetadataMultiQueryResult> sendMetadataRequest(RfnMetadataMultiRequest request, boolean extendedTimeout)
             throws NmCommunicationException {
         try {
             // Set up request
