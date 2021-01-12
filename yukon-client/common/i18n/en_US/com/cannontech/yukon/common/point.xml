@@ -110,6 +110,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.FAULT_STATUS">Fault Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.GENERAL_ALARM_FLAG">General Alarm Flag</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAH">kVAh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KVAH_LAGGING">kVAh Lagging</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAH_RATE_A">kVAh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAH_RATE_B">kVAh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAH_RATE_C">kVAh Rate C</entry>
@@ -501,6 +502,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_RATE_B">Peak kVA Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_RATE_C">Peak kVA Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_RATE_D">Peak kVA Rate D</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_PEAK_KVA_LAGGING">Delivered Peak kVA Lagging</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_PEAK_KVA">Received Peak kVA</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_PEAK_KVA_RATE_A">Received Peak kVA Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_PEAK_KVA_RATE_B">Received Peak kVA Rate B</entry>
@@ -604,6 +606,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.NET_DELIVERED_KVARH_RATE_D">Net Delivered kVArh Rate D</entry>
 
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVAH">Received kVAh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVAH_Q234">Received kVAh (Quadrants 2 3 4)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVARH">Received kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVARH_RATE_A">Received kVArh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVARH_RATE_B">Received kVArh Rate B</entry>
@@ -815,7 +818,11 @@
     <entry key="yukon.common.attribute.builtInAttribute.EVENT_STOPPED">Event Stopped</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOAD_STATUS">Load Status</entry>
 
-    
+    <entry key="yukon.common.attribute.builtInAttribute.COMMS_LOSS_COUNT">Comms Loss Count</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.FIRMWARE_UPDATE_STATUS">Firmware Update Status</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.FREQUENCY">Frequency</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RELAY_1_ACTIVATION_STATUS">Relay 1 Activation Status</entry>
+
     <!-- BuiltInAttribute see note above about changing values -->
 
     <entry key="yukon.common.point.manualEntry.title">Manual Entry</entry>

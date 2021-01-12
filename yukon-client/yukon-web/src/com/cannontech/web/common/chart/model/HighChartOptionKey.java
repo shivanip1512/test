@@ -2,6 +2,7 @@ package com.cannontech.web.common.chart.model;
 
 public enum HighChartOptionKey {
     
+    ALIGN("align"),
     COLOR("color"),
     DATE_FORMAT_MONTH_DATE("%b %e"),
     DATE_FORMAT_MONTH_YEAR("%b '%y"),
@@ -11,11 +12,15 @@ public enum HighChartOptionKey {
     MARKER("marker"),
     MIN("min"),
     MAX("max"),
+    OPPOSITE("opposite"),
     POINT_TOOLTIP("tooltip"), // This is our custom option and not a standard highchart option.
+    POINT_WIDTH("pointWidth"),
+    ROTATION("rotation"),
     SERIES_DATA("data"),
     SERIES_GRAPH_TYPE("type"),
     SERIES_X_COORDINATE("x"),
     SERIES_Y_COORDINATE("y"),
+    SERIES_Y_AXIS("yAxis"),
     SHOW_IN_LEGEND("showInLegend"),
     TEXT("text"),
     TITLE("title"),

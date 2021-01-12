@@ -172,6 +172,7 @@
     <entry key="yukon.web.modules.tools.collectionActions.collectionActionDetail.CONFIRMED">Confirmed</entry>
     <entry key="yukon.web.modules.tools.collectionActions.collectionActionDetail.UNCONFIRMED">Unconfirmed</entry>
     <entry key="yukon.web.modules.tools.collectionActions.collectionActionDetail.ALREADY_CONFIGURED">Already Configured</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.collectionActionDetail.INVALID_STATE">Invalid State</entry>
         
     <!-- Email -->
     <entry key="yukon.web.modules.tools.collectionActions.emailMessage.action">Action</entry>

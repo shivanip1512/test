@@ -900,7 +900,7 @@ void CtiLMControlAreaStore::reset()
                                                "TSG.valuetb, TSG.valuetc, TSG.valuetd, TSG.valuete, TSG.valuetf, "
                                                "TSG.ramprate, BTPG.AlertLevel, "
                                                "NLSG.PreparationOption, NLSG.PeakOption, NLSG.PostPeakOption, "
-                                               "ICG.CycleOption "
+                                               "CCG.CycleOption "
                                            "FROM lmprogramdirectgear PDG "
                                            "LEFT OUTER JOIN lmthermostatgear TSG "
                                                "ON PDG.gearid = TSG.gearid "
@@ -908,8 +908,8 @@ void CtiLMControlAreaStore::reset()
                                                "ON PDG.gearid = BTPG.gearid "
                                            "LEFT OUTER JOIN LMNestLoadShapingGear NLSG "
                                                "ON PDG.GearID = NLSG.GearId "
-                                           "LEFT OUTER JOIN LMItronCycleGear ICG "
-                                               "ON PDG.GearID = ICG.GearId "
+                                           "LEFT OUTER JOIN LMConfigurableCycleGear CCG "
+                                               "ON PDG.GearID = CCG.GearId "
                                            "ORDER BY PDG.deviceid ASC, PDG.gearnumber ASC";
 
                 DatabaseReader rdr(connection);

@@ -40,7 +40,6 @@ yukon.highChart = (function () {
                     gridLineWidth = 1;
                 }
             });
-            
             var chartOptionsJSON = {
                     width: chartWidth,
                     height: chartHeight,
@@ -48,10 +47,6 @@ yukon.highChart = (function () {
                     plotBorderWidth: 2
                 },
                 yaxisOptionsJSON = {
-                    title: {
-                        align: 'middle',
-                        rotation: 270
-                    },
                     gridLineWidth: gridLineWidth
                 },
                 yaxesOptions = [];
@@ -95,7 +90,16 @@ yukon.highChart = (function () {
                     }
                 },
                 yAxis: jsonResponse.yaxis,
-                series: jsonResponse.seriesDetails
+                series: jsonResponse.seriesDetails,
+                plotOptions: {
+                    series: {
+                        states: {
+                            inactive: {
+                                opacity: 1
+                            }
+                        }
+                    }
+                }
             });
         },
 

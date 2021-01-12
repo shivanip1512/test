@@ -1183,12 +1183,6 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <unitofmeasure value="KVAR"/>
         <decimalplaces value="3"/>
     </point>
-    <point offset="270" type="Analog">
-        <name>Delivered Peak kVA</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVA"/>
-        <decimalplaces value="3"/>
-    </point>
     <point offset="271" type="Analog">
         <name>Received Peak kVA</name>
         <multiplier value="1"/>

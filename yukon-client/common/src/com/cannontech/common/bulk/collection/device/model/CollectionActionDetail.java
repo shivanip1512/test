@@ -15,6 +15,7 @@ public enum CollectionActionDetail implements DisplayableEnum {
     SUCCESS(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.GREEN),
     FAILURE(CollectionActionDetailSummary.FAILURE, null, YukonColorPalette.RED),
     UNSUPPORTED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.UNSUPPORTED, YukonColorPalette.GRAY),
+    INVALID_STATE(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.INVALID_STATE, YukonColorPalette.YELLOW),
     CONNECTED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.GREEN),
     ARMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.SAGE),
     DISCONNECTED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.ORANGE),
