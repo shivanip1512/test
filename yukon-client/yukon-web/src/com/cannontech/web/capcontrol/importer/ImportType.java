@@ -27,9 +27,10 @@ public enum ImportType implements DisplayableEnum {
     POINT_MAPPING(RegulatorPointMappingImportField.getRequiredFieldNames(),
                   RegulatorPointMappingImportField.getValueDependentFieldNames(),
                   RegulatorPointMappingImportField.getOptionalFieldNames() ),
-    IVVC_ZONE(CapControlIvvcZoneImportField.getRequiredFieldNames(),
+    // Will be added back in as part of YUK-23010 in 9.1.0
+/*    IVVC_ZONE(CapControlIvvcZoneImportField.getRequiredFieldNames(),
               CapControlIvvcZoneImportField.getValueDependentFieldNames(),
-              CapControlIvvcZoneImportField.getOptionalFieldNames())
+              CapControlIvvcZoneImportField.getOptionalFieldNames())*/
     ;
     
     private List<String> requiredColumns;

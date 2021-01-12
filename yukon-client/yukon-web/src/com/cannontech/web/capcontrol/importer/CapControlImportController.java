@@ -334,7 +334,8 @@ public class CapControlImportController {
         return "redirect:view";
     }
     
-    @PostMapping("ivvczoneFile")
+    // Will be added back in as part of YUK-23010 in 9.1.0
+/*    @PostMapping("ivvczoneFile")
     public String ivvcZoneFile(HttpServletRequest req, ModelMap model, FlashScope flash, YukonUserContext userContext) throws IOException {
         
         List<IvvcZoneImportResult> results = Lists.newArrayList();
@@ -347,10 +348,10 @@ public class CapControlImportController {
             FileUploadUtils.validateTabularDataUploadFileType(dataFile);
             importStarted(ImportType.IVVC_ZONE.getFormatKey(), userContext, dataFile.getOriginalFilename());
             //TODO: Create IVVC Zone replacements for these in YUK-22962
-/*            List<HierarchyImportData> hierarchyImportData =
+            List<HierarchyImportData> hierarchyImportData =
                 fileImporterDao.getHierarchyImportData(inputStream, results);
 
-            processHierarchyImport(hierarchyImportData, results);*/
+            processHierarchyImport(hierarchyImportData, results);
         } catch (FileImportException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(e.getMessage()));
@@ -385,7 +386,7 @@ public class CapControlImportController {
         flash.setConfirm(new YukonMessageSourceResolvable(key + "importIvvcZoneFileSuccess"));
         
         return "redirect:view";
-    }
+    }*/
     
     private List<ImportResult> getIvvcZoneResultResolvables(List<IvvcZoneImportResult> results) {
         
