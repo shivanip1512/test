@@ -60,6 +60,7 @@ public:
     static const Attribute  GeneralAlarmFlag;
     static const Attribute  IEDDemandResetCount;
     static const Attribute  kVAh;
+    static const Attribute  kVAhLagging;
     static const Attribute  kVAhRateA;
     static const Attribute  kVAhRateB;
     static const Attribute  kVAhRateC;
@@ -69,6 +70,7 @@ public:
     static const Attribute  NetkVAhRateB;
     static const Attribute  NetkVAhRateC;
     static const Attribute  NetkVAhRateD;
+    static const Attribute  ReceivedkVAhQ234;
     static const Attribute  ReceivedkVAhRateA;
     static const Attribute  ReceivedkVAhRateB;
     static const Attribute  ReceivedkVAhRateC;
@@ -144,6 +146,7 @@ public:
     static const Attribute  PeakkVAFrozenRateC;
     static const Attribute  PeakkVAFrozenRateD;
     static const Attribute  PeakkVACoincidental;
+    static const Attribute  DeliveredPeakkVALagging;
     static const Attribute  ReceivedPeakkVA;
     static const Attribute  ReceivedPeakkVARateA;
     static const Attribute  ReceivedPeakkVARateB;
