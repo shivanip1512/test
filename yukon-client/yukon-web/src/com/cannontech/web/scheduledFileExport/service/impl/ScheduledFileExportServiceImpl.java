@@ -1,14 +1,8 @@
 package com.cannontech.web.scheduledFileExport.service.impl;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -20,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.jobs.dao.JobStatusDao;
+import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.dao.impl.JobDisabledStatus;
 import com.cannontech.jobs.model.JobState;
 import com.cannontech.jobs.model.JobStatus;
@@ -48,6 +42,7 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
 
     @Autowired private JobManager jobManager;
     @Autowired private JobStatusDao jobStatusDao;
+    @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Resource(name="scheduledBillingFileExportJobDefinition")
         private YukonJobDefinition<ScheduledBillingFileExportTask> scheduledBillingFileExportJobDefinition;
@@ -58,8 +53,7 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
     @Resource(name="scheduledMeterEventsFileExportJobDefinition")
         private YukonJobDefinition<ScheduledMeterEventsFileExportTask> scheduledMeterEventsFileExportJobDefinition;
 
-    private Map<ScheduledExportType, YukonJobDefinition<? extends ScheduledFileExportTask>> typeToJobDefinitionMap;
-    private String templateDirectory;
+    private Map<ScheduledExportType, YukonJobDefinition<? extends ScheduledFileExportTask>> typeToJobDefinitionMap; 
 
     @PostConstruct
     public void init() {
@@ -68,7 +62,6 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
         typeToJobDefinitionMap.put(ScheduledExportType.ARCHIVED_DATA_EXPORT, scheduledArchivedDataFileExportJobDefinition);
         typeToJobDefinitionMap.put(ScheduledExportType.WATER_LEAK, scheduledWaterLeakFileExportJobDefinition);
         typeToJobDefinitionMap.put(ScheduledExportType.METER_EVENT, scheduledMeterEventsFileExportJobDefinition);
-        templateDirectory = CtiUtilities.getYukonBase() + "\\Server\\Config\\DataExportTemplates";
     }
 
     @Override
@@ -254,20 +247,5 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
             return jobState;
         }
 
-    }
-
-    @Override
-    public List<String> getAvailableFormatTemplates() {
-        List<String> templateFileNames = new ArrayList<String>();
-        try {
-            templateFileNames = Files.list(Paths.get(templateDirectory))
-                                     .filter(path -> path.toString().endsWith(".yaml") || path.toString().endsWith(".yml"))
-                                     .map(Path::getFileName)
-                                     .map(Path::toString)
-                                     .collect(Collectors.toList());
-        } catch (IOException e) {
-            log.error("Error occurred while loading template file names ", e);
-        }
-        return templateFileNames;
     }
 }

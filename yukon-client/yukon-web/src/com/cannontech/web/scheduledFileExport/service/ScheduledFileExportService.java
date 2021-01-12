@@ -53,9 +53,4 @@ public interface ScheduledFileExportService {
     ScheduledFileExportJobData getExportJobData(ScheduledRepeatingJob job);
 
     List<ScheduledFileExportJobData> getScheduledFileExportJobData(ScheduledExportType scheduleType);
-
-    /**
-     * Returns all available templates in the directory
-     */
-    List<String> getAvailableFormatTemplates();
 }

@@ -2,6 +2,7 @@ package com.cannontech.web.tools.dataExporter;
 
 import java.beans.PropertyEditorSupport;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.RoundingMode;
 import java.util.HashMap;
@@ -90,7 +91,6 @@ public class DataExporterFormatController {
     
     public final static String BASE_KEY = "yukon.web.modules.tools.bulk.archivedValueExporter.";
     private final static Logger log = YukonLogManager.getLogger(DataExporterFormatController.class);
-    private final String templateDirectory = CtiUtilities.getYukonBase() + "\\Server\\Config\\DataExportTemplates";
 
     @Autowired private ArchiveValuesExportFormatDao archiveValuesExportFormatDao;
     @Autowired private ExportAttributeValidator exportAttributeValidator;
@@ -125,13 +125,7 @@ public class DataExporterFormatController {
             @PathVariable String fileName, @ModelAttribute ExportFormat exportFormat, BindingResult result) {
         model.addAttribute("mode", PageEditMode.VIEW);
         try {
-            FileInputStream inputStream = new FileInputStream(templateDirectory + "\\" + fileName);
-            exportFormat = YamlParserUtils.parseToObject(inputStream, ExportFormat.class);
-            exportFormatTemplateValidator.validate(exportFormat, result);
-            if (result.hasErrors()) {
-                logValidationErrors(result, userContext);
-                flashScope.setError(new YukonMessageSourceResolvable(BASE_KEY + "parseTemplate.validationFailed"));
-            }
+            exportFormat = parseAndValidateTemplate(fileName, flashScope, result, userContext);
         } catch (Exception e) {
             exportFormat = setExportFormatForErrorScenario(flashScope, e);
         }
@@ -168,13 +162,7 @@ public class DataExporterFormatController {
         model.addAttribute("mode", PageEditMode.CREATE);
         if (useTemplate) {
             try {
-                FileInputStream inputStream = new FileInputStream(templateDirectory + "\\" + fileName);
-                exportFormat = YamlParserUtils.parseToObject(inputStream, ExportFormat.class);
-                exportFormatTemplateValidator.validate(exportFormat, result);
-                if (result.hasErrors()) {
-                    logValidationErrors(result, userContext);
-                    flashScope.setError(new YukonMessageSourceResolvable(BASE_KEY + "parseTemplate.validationFailed"));
-                }
+                exportFormat = parseAndValidateTemplate(fileName, flashScope, result, userContext);
             } catch (Exception e) {
                 exportFormat = setExportFormatForErrorScenario(flashScope, e);
                 model.addAttribute("showAttributeSection",
@@ -610,6 +598,23 @@ public class DataExporterFormatController {
                 }
             }
         });
+    }
+
+    /**
+     * Returns ExportFormat, after parsing and then validating fields for the specified template file name.
+     */
+    private ExportFormat parseAndValidateTemplate(String fileName, FlashScope flashScope, BindingResult result,
+            YukonUserContext userContext) throws FileNotFoundException, IOException {
+        String sep = System.getProperty("file.separator");
+        FileInputStream inputStream = new FileInputStream(
+                StringUtils.joinWith(sep, CtiUtilities.getDataExportTemplatesDirPath(), fileName));
+        ExportFormat exportFormat = YamlParserUtils.parseToObject(inputStream, ExportFormat.class);
+        exportFormatTemplateValidator.validate(exportFormat, result);
+        if (result.hasErrors()) {
+            logValidationErrors(result, userContext);
+            flashScope.setError(new YukonMessageSourceResolvable(BASE_KEY + "parseTemplate.validationFailed"));
+        }
+        return exportFormat;
     }
 
     /**
