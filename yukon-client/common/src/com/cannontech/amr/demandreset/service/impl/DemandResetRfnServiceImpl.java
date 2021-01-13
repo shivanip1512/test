@@ -163,7 +163,7 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
                 DeviceVerificationInfo verificationInfo = infoIterator.next();
                 // find devices that are waiting for verification with the same command request execution id
                 // as execution we are attempting to cancel
-                if (verificationInfo.verificationExecution.getId() == result.getVerificationExecution().getId()) {
+                if (verificationInfo.verificationExecution.getId().equals(result.getVerificationExecution().getId())) {
                     //remove devices from the waiting list
                     infoIterator.remove();
                     //mark devices as canceled
