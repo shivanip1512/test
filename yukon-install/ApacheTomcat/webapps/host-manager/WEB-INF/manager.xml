@@ -15,7 +15,13 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<Context antiResourceLocking="false" privileged="true" >
+<!--
+
+    Context configuration file for the Tomcat Manager Web App
+
+-->
+<Context docBase="${catalina.home}/webapps/manager"
+         privileged="true" antiResourceLocking="false" >
   <CookieProcessor className="org.apache.tomcat.util.http.Rfc6265CookieProcessor"
                    sameSiteCookies="strict" />
   <Valve className="org.apache.catalina.valves.RemoteAddrValve"

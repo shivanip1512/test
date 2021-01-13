@@ -178,15 +178,15 @@ Java :
   - filename : annotations-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-annotations-api/9.0.37"
-    md5 : 4231050ba3a1554c53f5a1c7cfb42e6b
-    sha1 : 888a1285ad5f3ac4055b2273f31d96e130e170a8
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-annotations-api/9.0.41"
+    md5 : eb37e193fde67946d992e31939ce2073
+    sha1 : d1c2d6ee82af84a22f10a47e023b36e0136e8729
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
     
   - filename : aopalliance-1.0.jar
@@ -458,85 +458,85 @@ Java :
   - filename : catalina.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina/9.0.37"
-    md5 : 436bfe6a2701a63741e63611e1726fdb
-    sha1 : ce4e8d5bc540b0cc6acd69bf81c885e0a1288067
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina/9.0.41"
+    md5 : ad65bd9f24b352cfc6e511b33d4e18c3
+    sha1 : 84a87e0fff26c403c21ef0a3e4049dd48db50357
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
   
   - filename : catalina-ant.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina-ant/9.0.37"
-    md5 : 4109ab54e42a37da96c98abc01e85ed7
-    sha1 : 5000ca6d0a124537997d771ae26a283925bf133f
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina-ant/9.0.41"
+    md5 : 56bbb468e2a7462c90c98170b766f413
+    sha1 : 2a186a04bf66469033d131560a4d9d5dec3dded1
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
   
   - filename : catalina-ha.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina-ha/9.0.37"
-    md5 : cb70d5408d4a60dd4a948bda5f5e6d84
-    sha1 : ec7cc685dabdcdfa5cf0b44b9b23c60ba9414f25
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina-ha/9.0.41"
+    md5 : 0bd62515832be187b0b9ec2a965fc7f6
+    sha1 : 48deb20d46b52940ace12f51c6b65be149e3bce4
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
     
   - filename : catalina-ssi.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/"
-    md5 : 721d9c6ab252846f56ff5f67f52a67f6
-    sha1 : 17e1c817486c544a24e1f133cf2411985436a285
-    updated : 2020-08-25
-    jira : YUK-22729
+    md5 : bf5f106117af5b1cd753a80d40b01ce2
+    sha1 : 8544db7ec702666b1e12a16c51c06cb8d86c54f0
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
   
   - filename : catalina-storeconfig.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-storeconfig/9.0.37"
-    md5 : 14e457d43edfc62686e2f775b6b37b56
-    sha1 : 7f4098424287e35fbce10ba7b5fa51aa5c5dadca
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-storeconfig/9.0.41"
+    md5 : c5c7bca24173c25f07fbcb21c0ab516b
+    sha1 : 8ef5e078cad114b67c4da218dbc8bbe48c842a31
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
   
   - filename : catalina-tribes.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-tribes/9.0.37"
-    md5 : 7f9579cd188bf5dbd0a6e37519d0a3cd
-    sha1 : a79c2867612cd4f1f9f83b2c091f9a33e1680dc7
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-tribes/9.0.41"
+    md5 : b03d875e7fccedc27bdede05e41bc489
+    sha1 : 8d6b80b00dc0b037eb36bac38c045b88c4936a3a
+    updated : 2021-01-11
+    jira : YUK-23077
     notes :
   
   - filename : cglib-2.1.3.jar
@@ -861,18 +861,18 @@ Java :
     jira : YUK-10008
     notes : 
   
-  - filename : ecj-4.15.jar
+  - filename : ecj-4.17.jar
     yukon group : Tomcat
     project : Eclipse JDT Core Batch Compiler
-    version : 4.15
+    version : 4.17
     project URL : "http://www.eclipse.org/jdt/"
     license : EPL 1.0
     license URLs : "http://www.eclipse.org/org/documents/epl-v10.php"
     maven URL : "https://mvnrepository.com/artifact/org.eclipse.jdt.core.compiler/ecj"
-    md5 : 4d1404f81be38fdf9186c9556c4ad3e9
-    sha1 : d06974eec06892e5594bdb8fbbc95cd81f1c57b2
-    updated : 2020-08-18
-    jira : YUK-22661
+    md5 : bab8ab4a41d1d5d90c39b0ab0854dab6
+    sha1 : 743df56c0233545f6c2cae1417c1a68014e621b6
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : Included in Tomcat install, not typically available or installed from Maven
   
   - filename : ecs-1.4.2.jar
@@ -892,15 +892,15 @@ Java :
   - filename : el-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-el-api/9.0.37"
-    md5 : 3cf6486480856aed9e92483515f9078a
-    sha1 : a837d2b64c33dcd7781917a345b9b0946bd43024
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-el-api/9.0.41"
+    md5 : 91fb329b09df20cfa98545097579668c
+    sha1 : a61a3693e24fce1047046cb893f849bc889e989b
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
   
   - filename : geojson-jackson-1.1.jar
@@ -1158,43 +1158,43 @@ Java :
   - filename : jasper-el.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jasper-el/9.0.37"
-    md5 : 90cec083961cb5b52043e2c7ee9ca319
-    sha1 : 848cfd1b46c9f1119f291686d4a83ba6edf80f2d
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jasper-el/9.0.41"
+    md5 : ba2832a7aa7ea91f7a6e9646da43acb1
+    sha1 : 70aff393a8c89e4794ff2148e497fba91c48369b
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
   
   - filename : jasper.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jasper/9.0.37"
-    md5 : 9f35aa8222c1158bf8e6ec48659365c3
-    sha1 : 2e212b807d6966f1577ed927b80f66c94c3a34cf
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jasper/9.0.41"
+    md5 : aec302d58cd46e7e3383318ee14061fb
+    sha1 : 9e6db01d94ffe97865c2cb056347834b7c6144d4
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
   
   - filename : jaspic-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jaspic-api/9.0.37"
-    md5 : af09ac9b07cfacd51e8597e75deaf576
-    sha1 : 1f9f1b8afafc281d3721b2aef120b50a9f2c8fd5
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jaspic-api/9.0.41"
+    md5 : d993febb4e758734286b38b5267196a9
+    sha1 : d461a3b8bb2c87a338f5a75f29ab8bf47138a0e5
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
   
   - filename : jasypt-1.9.2.jar
@@ -1662,15 +1662,15 @@ Java :
   - filename : jsp-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jsp-api/9.0.37"
-    md5 : 4769854fa58b9d15613aef009ca44188
-    sha1 : 2db6ce249fd97d1c679d65076a90d0c0e4201cbf
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jsp-api/9.0.41"
+    md5 : f749c01422b984cb5e4f83e0ec4d605d
+    sha1 : 970049e8f950b5b6d47bbf8351a7e81ecf805d79
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : Tomcat JSP API
   
   - filename : jtds-1.3.1.jar
@@ -2446,15 +2446,15 @@ Java :
   - filename : servlet-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0, CDDL 1.0
     license URLs : "https://opensource.org/licenses/Apache-2.0, http://www.opensource.org/licenses/cddl1.txt"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-servlet-api/9.0.37"
-    md5 : 4f1e7566937cdda21effe52a9de995c4
-    sha1 : 2a6243cc9f34698a58915f91c0b1ca573e01465c
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-servlet-api/9.0.41"
+    md5 : 2af4d06826b1f5e43a7dd4b6254794a2
+    sha1 : 09ecbe758e408ca635cdcdc04fb9353b56b0f3ab
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : Tomcat Servlet API
   
   - filename : slf4j-api-1.7.25.jar
@@ -2937,253 +2937,253 @@ Java :
   - filename : tomcat-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-api/9.0.37"
-    md5 : c5477431ce12bd9e3dc9889378ba521b
-    sha1 : 6f0839e1a9e2d3d562d40067844b1d18cb47ebef
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-api/9.0.41"
+    md5 : fd4e4ef703138565fe01d6fe1ab9e46a
+    sha1 : d374ff633770f8e8634fb66b067a5bf6754d2e8f
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : Tomcat API
   
   - filename : tomcat-coyote.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-coyote/9.0.37"
-    md5 : d642161b9cd5d6455c34c1c7f01b8577
-    sha1 : af21be1f849915bc386de305f26fd894e5767247
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-coyote/9.0.41"
+    md5 : 419f73098469415f94bfa276af89dab9
+    sha1 : ae935a6c363887be0b1002732b1aeee9e0cb1597
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
   
   - filename : tomcat-dbcp.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-dbcp/9.0.37"
-    md5 : 8143a9cfa5bfb01e75bfe43c4237fdc6
-    sha1 : 1f8575dc3babad915f6e178efad1538fea13a61b
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-dbcp/9.0.41"
+    md5 : 9486e743c11de862882cc460ca6c81c0
+    sha1 : c23747b98283b20792899a079ae8c76d53fdc028
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
     
   - filename : tomcat-i18n-cs.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-cs/9.0.37"
-    md5 : 67a66a38399697424b52ca134d61f844
-    sha1 : d5474473d6a041afeb54614320138316b8f42806
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-cs/9.0.41"
+    md5 : 5e3d8dafa5a0024d989ecf9e4684049b
+    sha1 : 09614efbe6d25409e7050cdc30e138e18317d1f0
+    updated : 2021-01-11
+    jira : YUK-23077
     notes :
     
   - filename : tomcat-i18n-de.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-de/9.0.37"
-    md5 : c0b3aa48bf64418cf663a51e53135618
-    sha1 : ffaf198c39d7c18b96adec85ea40e9596affd1f4
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-de/9.0.41"
+    md5 : b501b36f5dda73cbfffb4caf77908499
+    sha1 : 2a6d12275fbb22512429bf9f2bc5bb13ed41cc63
+    updated : 2021-01-11
+    jira : YUK-23077
     notes :
   
   - filename : tomcat-i18n-es.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-es/9.0.37"
-    md5 : 237be82ab0d96982f4eef5036cc83e7f
-    sha1 : 9e7e147330511838c4a403206a3d084175314fc6
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-es/9.0.41"
+    md5 : 820829e3097267fadaac4a5bd1203d6f
+    sha1 : 8c8d9653c517947252d2294c1e0eb31db197cc35
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
   
   - filename : tomcat-i18n-fr.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-fr/9.0.37"
-    md5 : 6abc9cbc9bc271094a4588258166bc08
-    sha1 : 1f9f4d6f60b2bb2e0303ed8f02cbd48ff7f0fb95
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-fr/9.0.41"
+    md5 : 8245df9acdb8095b8f521407f4271893
+    sha1 : ec454f6aaa1364e98218ecc67a0ecf0e819640cb
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
   
   - filename : tomcat-i18n-ja.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-ja/9.0.37"
-    md5 : d4cc8a232229d56bd42a5cde9c56ae29
-    sha1 : be8b5b1c7948d59ff76bba4b48fb55c499d213b2
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-ja/9.0.41"
+    md5 : f6cb83389a3ce0c7da66d64e3695dab2
+    sha1 : f70a698dd064e48345e8812ccf808efa66505e41
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
     
   - filename : tomcat-i18n-ko.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-ko/9.0.37"
-    md5 : 019266169bfbc163e319ed064cffe570
-    sha1 : 56ca48697bb35268ffe0aa326cce0b018536e083
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-ko/9.0.41"
+    md5 : 91fcf4b931a5a4ae4e4763b7d6915627
+    sha1 : 3c63478f8ff04094fbe854060c1178b95bc12dc4
+    updated : 2021-01-11
+    jira : YUK-23077
     notes :   
     
   - filename : tomcat-i18n-pt-BR.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-pt-BR/9.0.37"
-    md5 : 72dbddbae6c378bc77e243b2684a89eb
-    sha1 : dff89afdc2bbbd3b234769abb312a7b42696a2e5
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-pt-BR/9.0.41"
+    md5 : b2472c30bf22576699705d4a8f804185
+    sha1 : b5bc98a944c0aea488d012c9dbee1b89e10ae2f9
+    updated : 2021-01-11
+    jira : YUK-23077
     notes :    
   
   - filename : tomcat-i18n-ru.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-ru/9.0.37"
-    md5 : fcc7428d096c9a3642aaa3ea40cabe2d
-    sha1 : 8f9fe5e8b1ee49237d786eef24ad53d6ee0ec517
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-ru/9.0.41"
+    md5 : 33abd10ee4f85885709d903547d51fd3
+    sha1 : a37ca19cd1d5b2eb2158e5a372d49b2c78dd48df
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
     
   - filename : tomcat-i18n-zh-CN.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-zh-CN/9.0.37"
-    md5 : 57b62e173e8ea62c42034b31079a091a
-    sha1 : 35b50fd7cdec1cbed7f936770c8b1ef364d27da8
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-zh-CN/9.0.41"
+    md5 : 34bd66fa8ce2928920fe5b22988fc28b
+    sha1 : d62e11134fd59ddd5c1b37dda97e0abd29a9daa9
+    updated : 2021-01-11
+    jira : YUK-23077
     notes :    
   
   - filename : tomcat-jdbc.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jdbc/9.0.37"
-    md5 : 9eaad1e396dc87c55a6cbb78f15752fe
-    sha1 : 8eb8854d22a003d88348d39608b1638933b9bdfe
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jdbc/9.0.41"
+    md5 : 98a9a8c86dfa3b2afd55611ef3e4eeaa
+    sha1 : 36e952acf29aba9f30fbaf8e97bab816f3c93168
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
   
   - filename : tomcat-jni.jar
     yukon group : Tomcat
     project : Apache Tomcat 
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jni/9.0.37"
-    md5 : 2a3ba0d3cf39839b0dd41076c1db1aac
-    sha1 : 35d43c37ceb599b19d70eacdc45619061d6eb2cd
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jni/9.0.41"
+    md5 : 5a444a0206792a61c0a1ac91ef299a93
+    sha1 : 46cb68195f2fa7b4168c2ef1dfbeadef47ec96ff
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
   
-  - filename : tomcat-juli-9.0.37.jar
+  - filename : tomcat-juli-9.0.41.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-juli/9.0.37"
-    md5 : 11972e561822ab613e1a0b5310c5fa12
-    sha1 : 5112dae6d0295717ab8fcc9b100af612d5486663
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-juli/9.0.41"
+    md5 : 0933e016150e4ccccf93bb8b0bcd39ba
+    sha1 : ea26a9f55448e19158c24d78075d16ca62306c27
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
   
   - filename : tomcat-util.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-util/9.0.37"
-    md5 : dd30cac5e6ed24e16725a8c8349eb32f
-    sha1 : 7fd158293f4787be31eb3e16457da89d9a0fb35f
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-util/9.0.41"
+    md5 : 1bb51626ded520a545f59045ee50e2d3
+    sha1 : 332fb925a00381fce1edfed094109b29f99e919e
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
   
   - filename : tomcat-util-scan.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-util-scan/9.0.37"
-    md5 : 78262a9da3fc49af046d0b85665f9959
-    sha1 : 18122c4ac58e9bc910b70c817bd8038291f39513
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-util-scan/9.0.41"
+    md5 : 6d24499b3ac7f2e57229a79f36aae5ec
+    sha1 : 695fd0d95be195229d327b1179903b5e8586fb63
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
   
   - filename : tomcat-websocket.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-websocket/9.0.37"
-    md5 : a5084cb17ae5a226cc0d3c8d0f6e006e
-    sha1 : 387d137218fdd12b8507f6f5153fcfd86fd60572
-    updated : 2020-08-25
-    jira : YUK-22729
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-websocket/9.0.41"
+    md5 : df918338c7fe51fae810e9f82b602a24
+    sha1 : 10122337c21930e24bcd506d47cee6fe90c3d445
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
 
   - filename : validation-api-2.0.1.Final.jar
@@ -3203,15 +3203,15 @@ Java :
   - filename : websocket-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.37
+    version : 9.0.41
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-websocket-api/9.0.37"
-    md5 : c0ea1ad364dbe68cbadc5369704a6057
-    sha1 : 041845ec4cf2ed269e643e5ab684132dd696b656
-    updated : 2020-08-25
-    jira : YUK-22729
+    md5 : a069abcdfb2f955f51113ea05c562341
+    sha1 : e2df81e658d069b9d4079c4061a312537b1428c6
+    updated : 2021-01-11
+    jira : YUK-23077
     notes : 
   
   - filename : wrapper.jar
@@ -3302,7 +3302,7 @@ Java :
     yukon group : XML parsing
     project : Apache Xerces2 XML parser
     version : 2.11.0
-    project URL : "	https://xerces.apache.org/xerces2-j/"
+    project URL : " https://xerces.apache.org/xerces2-j/"
     license : Apache 2.0
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.txt"
     maven URL : "https://mvnrepository.com/artifact/xerces/xercesImpl/2.12.0"
