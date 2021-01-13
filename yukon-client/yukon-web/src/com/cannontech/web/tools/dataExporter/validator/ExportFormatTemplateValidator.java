@@ -56,7 +56,9 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
     }
 
     /**
-     * Validate ExportFormat object with help of existing validators and validator dependent fields.
+     * Validate data export templates with help of existing validators and then validate the dependent fields. For detail
+     * information about template fields, follow the Confluence page :
+     * https://confluence-prod.tcc.etn.com/display/EEST/Data+Export+Format+-+Template
      */
     @Override
     protected void doValidation(ExportFormat exportFormat, Errors errors) {
@@ -151,10 +153,10 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
                         "missingAttributeValue", "attributeField");
             } else if (exportField.getAttributeField() == AttributeField.TIMESTAMP) {
                 checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "missingAttribute",
-                        "missingAttributeValue", "timestampPattern", "attributeField", "pattern");
+                        "missingAttributeValue", "timestampPattern", "attributeField");
             } else if (exportField.getAttributeField() == AttributeField.VALUE) {
                 checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "missingAttribute",
-                        "missingAttributeValue", "readingPattern", "roundingMode", "attributeField", "pattern");
+                        "missingAttributeValue", "readingPattern", "roundingMode", "attributeField");
             }
             break;
         case ATTRIBUTE_NAME:
@@ -165,19 +167,18 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
             checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar");
             break;
         case PLAIN_TEXT:
-            checkIfFieldApplicable(exportField, errors, "field", "pattern");
+            checkIfFieldApplicable(exportField, errors, "field");
             break;
         case POINT_TIMESTAMP:
             checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "missingAttribute",
-                    "missingAttributeValue", "timestampPattern", "pattern");
+                    "missingAttributeValue", "timestampPattern");
             break;
         case POINT_VALUE:
             checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "missingAttribute",
-                    "missingAttributeValue", "readingPattern", "roundingMode", "pattern");
+                    "missingAttributeValue", "readingPattern", "roundingMode");
             break;
         case RUNTIME:
-            checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "timestampPattern",
-                    "pattern");
+            checkIfFieldApplicable(exportField, errors, "field", "maxLength", "padSide", "padChar", "timestampPattern");
             break;
         }
 
@@ -231,7 +232,8 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
                             errors.rejectValue(fieldName, requiredKey, new Object[] { fieldName, type }, "");
                         }
                     } else {
-                        if (fieldValue != null && !fieldValue.toString().isBlank() && isNotDefaultValue(fieldValue, fieldName)) {
+                        if (fieldValue != null && !fieldValue.toString().isBlank() && isNotDefaultValue(fieldValue, fieldName)
+                                && isNotAutoPopulatedField(fieldName, exportField)) {
                             errors.rejectValue(fieldName, notApplicableKey, new Object[] { fieldName, type }, "");
                         }
                     }
@@ -240,6 +242,26 @@ public class ExportFormatTemplateValidator extends ExportFormatValidator {
                 }
             }
         }
+    }
+
+    /**
+     * As of now pattern field get auto populated ReadingPattern, TimestampPattern and empty for PLAIN_TEXT(i.e if kept empty).
+     * So even if user not provided pattern field, it will be available in POJO. So added added this method to check whether
+     * pattern is auto populated or not.
+     */
+    private boolean isNotAutoPopulatedField(String fieldName, ExportField exportField) {
+        if (fieldName.equals("pattern")) {
+            return !(exportField.getField().getType() == FieldType.POINT_TIMESTAMP
+                    || exportField.getField().getType() == FieldType.POINT_VALUE
+                    || exportField.getField().getType() == FieldType.RUNTIME
+                    || exportField.getField().getType() == FieldType.ATTRIBUTE_NAME
+                    || exportField.getField().getType() == FieldType.PLAIN_TEXT
+                    || (exportField.getField().getType() == FieldType.ATTRIBUTE
+                            && exportField.getAttributeField() == AttributeField.VALUE)
+                    || (exportField.getField().getType() == FieldType.ATTRIBUTE
+                            && exportField.getAttributeField() == AttributeField.TIMESTAMP));
+        }
+        return true;
     }
 
     /**

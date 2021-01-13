@@ -156,10 +156,25 @@ public class ExportField implements Displayable {
     }
 
     public FieldValue getFieldValue() {
+        boolean patternFound = false;
+        if (field.isAttributeName()) {
+            for (FieldValue value : FieldValue.values()) {
+                if (value.name().equals(pattern)) {
+                    fieldValue = value;
+                    patternFound = true;
+                    break;
+                }
+            }
+            if (!patternFound)
+                fieldValue = FieldValue.valueOf("DEFAULT");
+        }
         return fieldValue;
     }
 
     public void setFieldValue(FieldValue fieldValue) {
+        if (field.isAttributeName()) {
+            this.pattern = fieldValue.name();
+        }
         this.fieldValue = fieldValue;
     }
 
