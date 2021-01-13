@@ -59,30 +59,44 @@ public class ApiRequestHelper {
     private static final String authToken = "authToken";
     @Autowired private RestTemplate apiRestTemplate;
     @Autowired private GlobalSettingDao settingDao;
+    
+    public static volatile boolean isSSLConfigInitialized = false;
     private static final Logger log = YukonLogManager.getLogger(ApiRequestHelper.class);
 
     public synchronized void setProxyAndSslConfig() {
-        try {
-            TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
-    
-            SSLConnectionSocketFactory connectionSocketFactory = new SSLConnectionSocketFactory(SSLContexts.custom()
-                                                                                                           .loadTrustMaterial(acceptingTrustStrategy)
-                                                                                                           .build(),
-                                                                                                NoopHostnameVerifier.INSTANCE);
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+        YukonHttpProxy.fromGlobalSetting(settingDao).ifPresent(httpProxy -> {
+            HttpHost proxyHost = new HttpHost(httpProxy.getHost(), httpProxy.getPort());
+            HttpClient httpClient = HttpClientBuilder.create()
+                                                     .setProxy(proxyHost)
+                                                     .setSSLSocketFactory(getSSLConnectionSocketFactory())
+                                                     .build();
+            factory.setHttpClient(httpClient);
+        });
+        apiRestTemplate.setRequestFactory(factory);
+    }
 
-            HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-            YukonHttpProxy.fromGlobalSetting(settingDao).ifPresent(httpProxy -> {
-                HttpHost proxyHost = new HttpHost(httpProxy.getHost(), httpProxy.getPort());
-                HttpClient httpClient = HttpClientBuilder.create()
-                        .setProxy(proxyHost)
-                        .setSSLSocketFactory(connectionSocketFactory)
-                        .build();
-                factory.setHttpClient(httpClient);
-            });
-            apiRestTemplate.setRequestFactory(factory);
+    public synchronized void setSslConfig() {
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+        HttpClient httpClient = HttpClientBuilder.create()
+                                                 .setSSLSocketFactory(getSSLConnectionSocketFactory())
+                                                 .build();
+        factory.setHttpClient(httpClient);
+        apiRestTemplate.setRequestFactory(factory);
+        isSSLConfigInitialized = true;
+    }
+
+    private SSLConnectionSocketFactory getSSLConnectionSocketFactory() {
+        TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
+        SSLConnectionSocketFactory connectionSocketFactory = null;
+        try {
+            connectionSocketFactory = new SSLConnectionSocketFactory(SSLContexts.custom()
+                                                                                .loadTrustMaterial(acceptingTrustStrategy)
+                                                                                .build(), NoopHostnameVerifier.INSTANCE);
         } catch (KeyManagementException|NoSuchAlgorithmException|KeyStoreException e) {
-            log.error("Error setting up SSL support", e);
+            log.error("Error setting up Proxy and SSL support", e);
         }
+        return connectionSocketFactory;
     }
 
     @SuppressWarnings("rawtypes")
