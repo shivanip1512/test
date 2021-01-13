@@ -104,7 +104,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
         public CollectionActionTerminate mapRow(YukonResultSet rs) throws SQLException {
             int key = rs.getInt("CollectionActionId");
             CollectionAction action = rs.getEnum("Action", CollectionAction.class);
-            //termination on startup is not supported 
+            //termination on startup is not supported for none CRE collection actions
             return buildCreTerminateResult(action, key);      
         }
     };
