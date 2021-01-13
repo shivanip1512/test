@@ -1,7 +1,7 @@
 # CMEP Format
 # Do overwrite this provided template file as future updates will overwrite this file. Custom templates should be saved in a new file.
 formatName : CMEP Electric 
-delimiter: (,)
+delimiter: ','
 header : 
 footer :
 formatType : DYNAMIC_ATTRIBUTE
@@ -16,7 +16,7 @@ fields :
     pattern: 19970819
   - field:
       type: PLAIN_TEXT
-    pattern: CANNON
+    pattern: EATON
   - field:
       type: PLAIN_TEXT
   - field:
@@ -35,23 +35,23 @@ fields :
     pattern : E
   - field:
       type: ATTRIBUTE_NAME
-    pattern: CMEP  
+    fieldValue: CMEP  
   - field:
       type: PLAIN_TEXT
-    pattern: '1'
+    pattern: 1
   - field:
       type: PLAIN_TEXT
-    pattern: '100'
+    pattern: 100
   - field:
       type: PLAIN_TEXT
-    pattern: '1' 
+    pattern: 1 
   - field:
       type: PLAIN_TEXT
     pattern: yyyyMMddHHmm
   - field:
       type: PLAIN_TEXT
-    pattern: R 00 00
+    pattern: R
   - field:
       type: POINT_VALUE
-    pattern: "#####.###"
-    roundingMode: HALF_EVEN
+    pattern: '###.###'
+    roundingMode: DOWN
