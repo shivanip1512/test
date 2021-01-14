@@ -1,6 +1,6 @@
 package com.cannontech.web.api.validation;
 
-import static com.cannontech.web.SSLSettingsInitializer.isHttpsSettingInitialized;
+import static com.cannontech.web.api.ApiRequestHelper.isSSLConfigInitialized;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -29,7 +29,6 @@ import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.SSLSettingsInitializer;
 import com.cannontech.web.api.ApiRequestHelper;
 
 /**
@@ -152,8 +151,8 @@ public class ApiControllerHelper {
             if (!getYukonInternalUrl().isEmpty()) {
                 webUrl = getYukonInternalUrl();
                 boolean isHttps = StringUtils.startsWithIgnoreCase(webUrl, "https");
-                if (isHttps && !isHttpsSettingInitialized) {
-                    SSLSettingsInitializer.initializeHttpsSetting();
+                if (isHttps && !isSSLConfigInitialized) {
+                    apiRequestHelper.setSslConfig();
                 }
                 responseCode = checkUrl(userContext, request, webUrl);
             }
@@ -169,8 +168,8 @@ public class ApiControllerHelper {
                     webUrl = webUrl + request.getContextPath();
                 }
 
-                if (request.isSecure() && !isHttpsSettingInitialized) {
-                    SSLSettingsInitializer.initializeHttpsSetting();
+                if (request.isSecure() && !isSSLConfigInitialized) {
+                    apiRequestHelper.setSslConfig();
                 }
                 responseCode = checkUrl(userContext, request, webUrl);
             }
@@ -188,8 +187,8 @@ public class ApiControllerHelper {
                         webUrl = webUrl + request.getContextPath();
                     }
 
-                    if (request.isSecure() && !isHttpsSettingInitialized) {
-                        SSLSettingsInitializer.initializeHttpsSetting();
+                    if (request.isSecure() && !isSSLConfigInitialized) {
+                        apiRequestHelper.setSslConfig();
                     }
 
                     responseCode = checkUrl(userContext, request, webUrl);
