@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     1/7/2021 2:38:38 PM                          */
+/* Created on:     1/14/2021 2:13:52 PM                         */
 /*==============================================================*/
 
 
@@ -3128,7 +3128,6 @@ create table DeviceAddress (
    DeviceID             numeric              not null,
    MasterAddress        numeric              not null,
    SlaveAddress         numeric              not null,
-   PostCommWait         numeric              not null,
    constraint PK_DEVICEADDRESS primary key (DeviceID)
 )
 go
@@ -8615,6 +8614,7 @@ create table PortTiming (
    POSTTXWAIT           numeric              not null,
    RECEIVEDATAWAIT      numeric              not null,
    EXTRATIMEOUT         numeric              not null,
+   PostCommWait         numeric              not null,
    constraint PK_PORTTIMING primary key (PORTID)
 )
 go

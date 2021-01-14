@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/7/2021 2:42:28 PM                          */
+/* Created on:     1/14/2021 2:14:42 PM                         */
 /*==============================================================*/
 
 
@@ -2932,7 +2932,6 @@ create table DeviceAddress  (
    DeviceID             NUMBER                          not null,
    MasterAddress        NUMBER                          not null,
    SlaveAddress         NUMBER                          not null,
-   PostCommWait         NUMBER                          not null,
    constraint PK_DEVICEADDRESS primary key (DeviceID)
 );
 
@@ -8106,6 +8105,7 @@ create table PortTiming  (
    POSTTXWAIT           NUMBER                          not null,
    RECEIVEDATAWAIT      NUMBER                          not null,
    EXTRATIMEOUT         NUMBER                          not null,
+   PostCommWait         NUMBER                          not null,
    constraint PK_PORTTIMING primary key (PORTID)
 );
 

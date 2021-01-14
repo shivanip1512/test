@@ -210,6 +210,16 @@ AND PaObjectId IN (
 INSERT INTO DBUpdates VALUES ('YUK-23523', '9.0.0', SYSDATE);
 /* @end YUK-23523 */
 
+/* @start YUK-23502 */
+ALTER TABLE DeviceAddress
+DROP COLUMN PostCommWait;
+
+ALTER TABLE PortTiming
+ADD PostCommWait NUMBER NOT NULL DEFAULT '0';
+
+INSERT INTO DBUpdates VALUES ('YUK-23502', '9.0.0', SYSDATE);
+/* @end YUK-23502 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
