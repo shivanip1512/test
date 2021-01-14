@@ -1,9 +1,6 @@
 package com.cannontech.common.validator;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.springframework.validation.Errors;
@@ -15,7 +12,7 @@ import com.cannontech.common.util.Range;
 public class YukonApiValidationUtils extends ValidationUtils {
 
     public static boolean checkExceedsMaxLength(Errors errors, String field, String fieldValue, int max) {
-        if (fieldValue != null && fieldValue.length() > max) {
+        if (YukonValidationUtilsCommon.checkExceedsMaxLength(fieldValue, max)) {
             errors.rejectValue(field, ApiErrorDetails.MAX_LENGTH_EXCEEDED.getCodeString(), new Object[] { max },
                     "Exceeds maximum length of " + max);
             return true;
@@ -24,26 +21,15 @@ public class YukonApiValidationUtils extends ValidationUtils {
     }
 
     public static boolean checkBlacklistedCharacter(Errors errors, String field, String fieldValue) {
-
-        if (fieldValue != null) {
-            Matcher hasBlacklistedChar = Pattern.compile(YukonValidationUtils.BASIC_BLACKLISTED_CHAR_LIST).matcher(fieldValue);
-            if (hasBlacklistedChar.find()) {
-                errors.rejectValue(field, ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString());
-                return true;
-            }
+        if (YukonValidationUtilsCommon.checkBlacklistedCharacter(fieldValue)) {
+            errors.rejectValue(field, ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString());
+            return true;
         }
         return false;
     }
 
-    /**
-     * @deprecated - Use {LINK #checkIsBlank(Errors errors, String field, String fieldValue, String messageArg, boolean
-     *             fieldAllowsNull)}
-     */
-    // @Deprecated(since="7.5", forRemoval=true)
     public static boolean checkIsBlank(Errors errors, String field, String fieldValue, boolean fieldAllowsNull) {
-        // Skips error message when the field allows null and the field value is null,
-        // otherwise validates using isBlank.
-        if (!(fieldAllowsNull && fieldValue == null) && StringUtils.isBlank(fieldValue)) {
+        if (YukonValidationUtilsCommon.checkIsBlank(fieldValue, fieldAllowsNull)) {
             errors.rejectValue(field, ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { fieldValue }, "");
             return true;
         }
@@ -61,28 +47,28 @@ public class YukonApiValidationUtils extends ValidationUtils {
     }
 
     public static void checkIsPositiveShort(Errors errors, String field, Short fieldValue) {
-        if (fieldValue == null || fieldValue < 0) {
+        if (YukonValidationUtilsCommon.checkIsPositiveShort(fieldValue)) {
             errors.rejectValue(field, ApiErrorDetails.IS_NOT_POSITIVE.getCodeString(), new Object[] { "whole" },
                     "must be a positive whole number.");
         }
     }
 
     public static void checkIsPositiveInt(Errors errors, String field, Integer fieldValue) {
-        if (fieldValue == null || fieldValue < 0) {
+        if (YukonValidationUtilsCommon.checkIsPositiveInt(fieldValue)) {
             errors.rejectValue(field, ApiErrorDetails.IS_NOT_POSITIVE.getCodeString(), new Object[] { "whole" },
                     "must be a positive whole number.");
         }
     }
 
     public static void checkIsPositiveDouble(Errors errors, String field, Double fieldValue) {
-        if (checkIsValidDouble(errors, field, fieldValue) && fieldValue < 0) {
+        if (YukonValidationUtilsCommon.checkIsPositiveDouble(fieldValue)) {
             errors.rejectValue(field, ApiErrorDetails.IS_NOT_POSITIVE.getCodeString(), new Object[] { "" },
                     "must be a positive number.");
         }
     }
 
     public static boolean checkIsValidDouble(Errors errors, String field, Double fieldValue) {
-        if (fieldValue == null || Double.isNaN(fieldValue) || Double.isInfinite(fieldValue)) {
+        if (!YukonValidationUtilsCommon.checkIsValidDouble(fieldValue)) {
             errors.rejectValue(field, ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { fieldValue }, "");
             return false;
         }
@@ -92,16 +78,12 @@ public class YukonApiValidationUtils extends ValidationUtils {
     public static void checkIsValidNumber(Errors errors, String field, Number fieldValue) {
         if (fieldValue == null) {
             errors.rejectValue(field, ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { fieldValue }, "");
-        } else if (fieldValue instanceof Double) {
-            if (checkIsValidDouble(errors, field, fieldValue.doubleValue()) && fieldValue.doubleValue() < 0) {
-                errors.rejectValue(field, ApiErrorDetails.IS_NOT_POSITIVE.getCodeString(), new Object[] { "" },
-                        "must be a positive number.");
-            }
-        } else if (fieldValue instanceof Integer) {
-            if (fieldValue.intValue() < 0) {
-                errors.rejectValue(field, ApiErrorDetails.IS_NOT_POSITIVE.getCodeString(), new Object[] { "whole" },
-                        "must be a positive whole number.");
-            }
+        } else if (!YukonValidationUtilsCommon.checkIsValidNumberDouble(fieldValue)) {
+            errors.rejectValue(field, ApiErrorDetails.IS_NOT_POSITIVE.getCodeString(), new Object[] { "" },
+                    "must be a positive number.");
+        } else if (!YukonValidationUtilsCommon.checkIsValidNumberInt(fieldValue)) {
+            errors.rejectValue(field, ApiErrorDetails.IS_NOT_POSITIVE.getCodeString(), new Object[] { "whole" },
+                    "must be a positive whole number.");
         }
     }
 
@@ -138,7 +120,7 @@ public class YukonApiValidationUtils extends ValidationUtils {
             return;
         }
 
-        if (fieldValue == null || (fieldValue != null && !range.intersects(fieldValue))) {
+        if (YukonValidationUtilsCommon.checkRange(fieldValue, range)) {
             errors.rejectValue(field, ApiErrorDetails.VALUE_OUTSIDE_VALID_RANGE.getCodeString(),
                     new Object[] { fieldname, range.getMin(),
                             range.getMax() },
@@ -147,14 +129,10 @@ public class YukonApiValidationUtils extends ValidationUtils {
     }
 
     public static void ipHostNameValidator(Errors errors, String field, String fieldValue) {
-        Pattern ipHostNameMatcher = Pattern.compile(
-                "^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])(\\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9]))*$");
         errors.rejectValue(field, ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { "IP Address" }, "IP Address");
-        if (!errors.hasFieldErrors(field)) {
-            if (!ipHostNameMatcher.matcher(fieldValue).matches()) {
-                errors.rejectValue(field, ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "IP Address" },
-                        "IP Address");
-            }
+        if (YukonValidationUtilsCommon.ipHostNameValidator(errors, field, fieldValue)) {
+            errors.rejectValue(field, ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "IP Address" },
+                    "IP Address");
         }
     }
 
@@ -178,21 +156,21 @@ public class YukonApiValidationUtils extends ValidationUtils {
     /* Validate string for exact length. */
     public static void checkExactLength(String field, Errors errors, String fieldValue, String fieldName,
             int stringLength) {
-        if (fieldValue != null && fieldValue.length() != stringLength) {
+        if (!YukonValidationUtilsCommon.checkExactLength(fieldValue, stringLength)) {
             errors.rejectValue(field, ApiErrorDetails.INVALID_STRING_LENGTH.getCodeString(), new Object[] { fieldName }, "");
         }
     }
 
     /* Validate a required list is empty */
     public static void checkIfListRequired(String field, Errors errors, List<?> fieldValue, String fieldName) {
-        if (fieldValue == null || fieldValue.isEmpty()) {
+        if (YukonValidationUtilsCommon.checkIfListRequired(fieldValue)) {
             errors.rejectValue(field, ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { fieldName }, "");
         }
     }
 
     /* Validate field is required */
     public static void checkIfFieldRequired(String field, Errors errors, Object fieldValue, String fieldName) {
-        if (fieldValue == null) {
+        if (YukonValidationUtilsCommon.checkIfFieldRequired(fieldValue)) {
             errors.rejectValue(field, ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { fieldName }, "");
         }
     }
@@ -207,7 +185,7 @@ public class YukonApiValidationUtils extends ValidationUtils {
      */
     public static boolean checkIsBlank(Errors errors, String field, String fieldValue, String messageArg,
             boolean fieldAllowsNull) {
-        if (!(fieldAllowsNull && fieldValue == null) && StringUtils.isBlank(fieldValue)) {
+        if (YukonValidationUtilsCommon.checkIsBlank(fieldValue, fieldAllowsNull)) {
             errors.rejectValue(field, ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { messageArg }, "");
             return true;
         }
@@ -224,7 +202,7 @@ public class YukonApiValidationUtils extends ValidationUtils {
      */
     public static void checkIsFieldValueGreaterThenTargetValueInt(String field, Integer fieldValue, int targetValue,
             Errors errors) {
-        if (fieldValue == null || fieldValue <= targetValue) {
+        if (YukonValidationUtilsCommon.checkIsFieldValueGreaterThenTargetValueInt(fieldValue, targetValue)) {
             errors.rejectValue(field, ApiErrorDetails.VALUE_BELOW_MINIMUM.getCodeString(), new Object[] { targetValue }, "");
         }
     }
@@ -239,15 +217,12 @@ public class YukonApiValidationUtils extends ValidationUtils {
      */
     public static void checkIfEndDateGreaterThenStartDate(String startField, Instant startDate, Instant endDate,
             boolean includeEqualTo, Errors errors) {
-        if ((startDate.isEqual(endDate) && !includeEqualTo) || endDate.isBefore(startDate)) {
-            if (includeEqualTo) {
-                errors.rejectValue(startField, ApiErrorDetails.START_DATE_BEFORE_END_DATE.getCodeString(), new Object[] { "" },
-                        "");
-
-            }
-            errors.rejectValue(startField, ApiErrorDetails.START_DATE_BEFORE_END_DATE.getCodeString(),
-                    new Object[] { "or equal to" }, "");
+        if (YukonValidationUtilsCommon.checkIfEndDateGreaterThenStartDate(startDate, endDate, includeEqualTo)) {
+            errors.rejectValue(startField, ApiErrorDetails.START_DATE_BEFORE_END_DATE.getCodeString(), new Object[] { "" },
+                    "");
         }
+        errors.rejectValue(startField, ApiErrorDetails.START_DATE_BEFORE_END_DATE.getCodeString(),
+                new Object[] { "or equal to" }, "");
     }
 
 }

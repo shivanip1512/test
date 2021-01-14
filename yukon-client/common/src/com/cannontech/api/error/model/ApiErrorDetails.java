@@ -1,6 +1,7 @@
 package com.cannontech.api.error.model;
 
 import java.util.Map;
+import java.util.Optional;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -96,7 +97,8 @@ public enum ApiErrorDetails {
      * Returns ApiErrorDetails for the specified code.
      */
     public static ApiErrorDetails getError(String code) {
-        return apiErrorDetails.get(Integer.valueOf(code));
+        Integer codeValue = Optional.ofNullable(code).map(Integer::valueOf).orElse(null);
+        return apiErrorDetails.get(codeValue);
     }
 
     /**

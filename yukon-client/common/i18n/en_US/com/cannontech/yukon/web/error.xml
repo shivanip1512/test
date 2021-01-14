@@ -63,7 +63,7 @@
     
     <!-- Api Error Detail Exception -->
     <entry key="yukon.web.error.100101">{0} must be unique.</entry>
-    <entry key="yukon.web.error.100102">Authentication required: 401 - unauthorized.</entry>
+    <entry key="yukon.web.error.100102">Authentication required - unauthorized.</entry>
     <entry key="yukon.web.error.100103">User not authorized to perform this transaction.</entry>
     <entry key="yukon.web.error.100104">Database error occurred while performing this transaction.</entry>
     <entry key="yukon.web.error.100105">Method arguments are not matching.</entry>
