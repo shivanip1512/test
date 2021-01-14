@@ -54,6 +54,13 @@ public class CacheManagementController {
         flash.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Collection Actions cache has been cleared."));
         return "redirect:cacheManagement";
     }
+    
+    @RequestMapping("terminateCollectionActions")
+    public String terminateCollectionActions(FlashScope flash) {
+        int result = collectionActionService.terminate();
+        flash.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode(result + " Collection Actions cache has been terminated."));
+        return "redirect:cacheManagement";
+    }
 
     @RequestMapping("correlatePointData")
     public String correlatePointData(String[] deviceSubGroups, FlashScope flash,
