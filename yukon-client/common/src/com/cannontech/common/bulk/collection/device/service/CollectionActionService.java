@@ -81,4 +81,10 @@ public interface CollectionActionService {
      */
     void addUnsupportedToResult(CollectionActionDetail detail, CollectionActionResult result, List<? extends YukonPao> devices,
             String deviceErrorText);
+
+    /**
+     * Terminates CRE collections actions that didn't complete. Called on startup.
+     * @return number of collection actions terminated
+     */
+    int terminate();
 }
