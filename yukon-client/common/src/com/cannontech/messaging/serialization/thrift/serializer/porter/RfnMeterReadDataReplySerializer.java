@@ -4,8 +4,8 @@ import com.cannontech.amr.rfn.message.read.ChannelData;
 import com.cannontech.amr.rfn.message.read.DatedChannelData;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadDataReply;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingData;
-import com.cannontech.common.util.jms.RfnSerializationHelper;
 import com.cannontech.messaging.serialization.thrift.ThriftByteDeserializer;
+import com.cannontech.messaging.serialization.thrift.serializer.RfnSerializationHelper;
 import com.cannontech.messaging.serialization.thrift.util.ThriftEnumHelper;
 
 public class RfnMeterReadDataReplySerializer extends RfnSerializationHelper implements ThriftByteDeserializer<RfnMeterReadDataReply> {
@@ -39,7 +39,7 @@ public class RfnMeterReadDataReplySerializer extends RfnSerializationHelper impl
         return msg;
     }
 
-    private RfnMeterReadingData convert(com.cannontech.messaging.serialization.thrift.generated.RfnMeterReadingData tdata) {
+    private static RfnMeterReadingData convert(com.cannontech.messaging.serialization.thrift.generated.RfnMeterReadingData tdata) {
         var data = new RfnMeterReadingData();
         
         data.setChannelDataList(convertList(tdata.getChannelDataList(), RfnMeterReadDataReplySerializer::channelDataConverter));

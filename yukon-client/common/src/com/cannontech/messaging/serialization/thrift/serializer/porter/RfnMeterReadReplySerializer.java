@@ -1,8 +1,8 @@
 package com.cannontech.messaging.serialization.thrift.serializer.porter;
 
 import com.cannontech.amr.rfn.message.read.RfnMeterReadReply;
-import com.cannontech.common.util.jms.RfnSerializationHelper;
 import com.cannontech.messaging.serialization.thrift.ThriftByteDeserializer;
+import com.cannontech.messaging.serialization.thrift.serializer.RfnSerializationHelper;
 import com.cannontech.messaging.serialization.thrift.util.ThriftEnumHelper;
 
 public class RfnMeterReadReplySerializer extends RfnSerializationHelper implements ThriftByteDeserializer<RfnMeterReadReply> {

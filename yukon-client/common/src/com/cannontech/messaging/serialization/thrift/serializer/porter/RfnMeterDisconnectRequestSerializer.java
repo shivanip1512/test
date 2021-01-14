@@ -1,8 +1,8 @@
 package com.cannontech.messaging.serialization.thrift.serializer.porter;
 
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectRequest;
-import com.cannontech.common.util.jms.RfnSerializationHelper;
 import com.cannontech.messaging.serialization.thrift.ThriftByteSerializer;
+import com.cannontech.messaging.serialization.thrift.serializer.RfnSerializationHelper;
 
 public class RfnMeterDisconnectRequestSerializer extends RfnSerializationHelper implements ThriftByteSerializer<RfnMeterDisconnectRequest> {
 
