@@ -1827,46 +1827,46 @@ Java :
     jira : YUK-22559
     notes :       
   
-  - filename : lucene-analyzers-common-6.0.0.jar
+  - filename : lucene-analyzers-common-8.7.0.jar
     yukon group : Lucene
     project : Apache Lucene
-    version : 6.0.0
+    version : 8.7.0
     project URL : "http://lucene.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-common/6.0.0"
-    md5 : 2ddc0a28b114e947932fd21d6a51db08
-    sha1 : abb404e5a429f92f6b43ce11bef81e95e9bac6ab
-    updated : 2016-04-13
-    jira : YUK-15262
+    maven URL : "https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-common/8.7.0"
+    md5 : b76ca76a7e20ad3262dcbce0b9f0bc2d
+    sha1 : fc219a023416a6fe6172f61d0d7bf64ed3645969
+    updated : 2020-01-14
+    jira : YUK-22561
     notes : Apache Lucene Additional Analyzers
   
-  - filename : lucene-core-6.0.0.jar
+  - filename : lucene-core-8.7.0.jar
     yukon group : Lucene
     project : Apache Lucene
-    version : 6.0.0
+    version : 8.7.0
     project URL : "http://lucene.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.lucene/lucene-core/6.0.0"
-    md5 : 9c0cda152d4df481328ee2c644ec5194
-    sha1 : 3aa09d24a630d2249fdd7056ce569a72ff54ebcf
-    updated : 2016-04-13
-    jira : YUK-15262
+    maven URL : "https://mvnrepository.com/artifact/org.apache.lucene/lucene-core/8.7.0"
+    md5 : 3290130c054f5be59c05609ebe0bd171
+    sha1 : ed64084a1502c2a6a411cbd9826131b81e0bf07f
+    updated : 2020-01-14
+    jira : YUK-22561
     notes : Apache Lucene Core
   
-  - filename : lucene-queryparser-6.0.0.jar
+  - filename : lucene-queryparser-8.7.0.jar
     yukon group : Lucene
     project : Apache Lucene
-    version : 6.0.0
+    version : 8.7.0
     project URL : "http://lucene.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.lucene/lucene-queryparser/6.0.0"
-    md5 : b3af3e8bcf438bc640389b8bb2285f9c
-    sha1 : 89ac493f4bc038632abc1b4df9737bc6d433b052
-    updated : 2016-04-13
-    jira : YUK-15262
+    maven URL : "https://mvnrepository.com/artifact/org.apache.lucene/lucene-queryparser/8.7.0"
+    md5 : 63977e7c45166c8816d549686bc07d74
+    sha1 : 66ae10cb549dea23346a4f5230de9f2f4880def4
+    updated : 2020-01-14
+    jira : YUK-22561
     notes : Apache Lucene Query Parser
   
   - filename : mail-1.4.5.jar

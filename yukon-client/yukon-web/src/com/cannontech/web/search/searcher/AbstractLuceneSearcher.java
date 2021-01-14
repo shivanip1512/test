@@ -57,7 +57,8 @@ public abstract class AbstractLuceneSearcher<E> {
                     @Override
                     public SearchResults<E> processHits(TopDocs topDocs, IndexSearcher indexSearcher)
                             throws IOException {
-                        final int stop = Math.min(start + count, topDocs.totalHits);
+                        int totalHitsInInt = Math.toIntExact(topDocs.totalHits.value);
+                        final int stop = Math.min(start + count, totalHitsInInt);
                         final List<E> list = Lists.newArrayListWithCapacity(stop - start);
                         
                         for (int i = start; i < stop; ++i) {
@@ -67,7 +68,7 @@ public abstract class AbstractLuceneSearcher<E> {
                         }
                         
                         SearchResults<E> result = new SearchResults<>();
-                        result.setBounds(start, count, topDocs.totalHits);
+                        result.setBounds(start, count, totalHitsInInt);
                         result.setResultList(list);
                         return result;
                     }
@@ -108,7 +109,7 @@ public abstract class AbstractLuceneSearcher<E> {
         }
         
         Query criteriaQuery = criteria.getCriteria();
-        BooleanQuery.Builder finalQuery = new BooleanQuery.Builder().setDisableCoord(false);
+        BooleanQuery.Builder finalQuery = new BooleanQuery.Builder();
         finalQuery.add(originalQuery, BooleanClause.Occur.MUST);
         finalQuery.add(criteriaQuery, BooleanClause.Occur.MUST);
         return finalQuery.build();
