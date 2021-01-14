@@ -60,6 +60,9 @@ public class CollectionActionResult {
     private DeviceMemoryCollectionProducer producer;
     private boolean loadedFromDatabase;
 
+    public CollectionActionResult() {
+    }
+
     public CollectionActionResult(CollectionAction action, List<? extends YukonPao> allDevices,
             LinkedHashMap<String, String> inputs, CommandRequestExecution execution,
             DeviceGroupMemberEditorDao editorDao, TemporaryDeviceGroupService tempGroupService,

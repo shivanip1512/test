@@ -4,10 +4,16 @@
 <cti:standardPage module="dev" page="cacheManagement">
 
     <tags:sectionContainer title="Collection Actions">
-    Click on the Clear Cache button to clear all Collection Actions from cache.
        <form action="clearCollectionActionCache">
             <div class="page-action-area stacked">
+             Click on the Clear Cache button to clear all Collection Actions from cache.
                 <cti:button label="Clear Cache" type="Submit" />
+            </div>
+        </form>
+        <form action="terminateCollectionActions">
+            <div class="page-action-area stacked">
+            Terminate started Collection Actions.
+                <cti:button label="Terminate" type="Submit" />
             </div>
         </form>
     </tags:sectionContainer>
