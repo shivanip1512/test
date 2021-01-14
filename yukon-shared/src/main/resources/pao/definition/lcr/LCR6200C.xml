@@ -8,20 +8,20 @@
         <tag name="DB_EDITOR_INCOMPATIBLE"/>
     </tags>
     <pointInfos>
-        <pointInfo name="Blink Count" init="true" attributes="BLINK_COUNT"/>
-        <pointInfo name="Comms Loss Count" init="true" attributes="COMMS_LOSS_COUNT"/>
+        <pointInfo name="Blink Count" attributes="BLINK_COUNT"/>
+        <pointInfo name="Comms Loss Count" attributes="COMMS_LOSS_COUNT"/>
         <pointInfo name="Firmware Version" attributes="FIRMWARE_VERSION"/>
         <pointInfo name="Firmware Update Status" attributes="FIRMWARE_UPDATE_STATUS"/>
         <pointInfo name="Frequency" attributes="FREQUENCY"/>
-        <pointInfo name="Voltage" init="true" attributes="VOLTAGE"/>
+        <pointInfo name="Voltage" attributes="VOLTAGE"/>
         <pointInfo name="RSSI" attributes="RADIO_SIGNAL_STRENGTH_INDICATOR"/>
         <pointInfo name="Total LUF Event Count" attributes="TOTAL_LUF_COUNT"/>
         <pointInfo name="Total LUV Event Count" attributes="TOTAL_LUV_COUNT"/>
         
-        <pointInfo name="Relay 1 Activation Status" init="true" attributes="RELAY_1_ACTIVATION_STATUS"/> //
+        <pointInfo name="Relay 1 Activation Status" attributes="RELAY_1_ACTIVATION_STATUS"/>
         <pointInfo name="Relay 1 Load State" attributes="RELAY_1_LOAD_STATE"/>
         <pointInfo name="Relay 1 Run Time Data Log" attributes="RELAY_1_RUN_TIME_DATA_LOG"/>
-        <pointInfo name="Relay 1 Shed Status" init="true" attributes="RELAY_1_SHED_STATUS"/>
+        <pointInfo name="Relay 1 Shed Status" attributes="RELAY_1_SHED_STATUS"/>
         <pointInfo name="Relay 1 Shed Time Data Log" attributes="RELAY_1_SHED_TIME_DATA_LOG"/>
     </pointInfos>
 </pao>
