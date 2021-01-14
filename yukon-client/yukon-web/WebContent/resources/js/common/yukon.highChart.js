@@ -44,16 +44,9 @@ yukon.highChart = (function () {
                     width: chartWidth,
                     height: chartHeight,
                     zoomType: 'x',
-                    plotBorderWidth: 2
-                },
-                yaxisOptionsJSON = {
-                    gridLineWidth: gridLineWidth
+                    plotBorderWidth: 2,
                 },
                 yaxesOptions = [];
-
-            $.each(jsonResponse.yaxis, function (index, item) {
-                $.extend(true, jsonResponse.yaxis[index], yaxisOptionsJSON)
-            });
             
             chartContainer.highcharts({
                 plotOptions: {
@@ -98,6 +91,9 @@ yukon.highChart = (function () {
                                 opacity: 1
                             }
                         }
+                    },
+                    column: {
+                        grouping: false,
                     }
                 }
             });
