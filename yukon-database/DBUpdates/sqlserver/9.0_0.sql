@@ -218,11 +218,11 @@ INSERT INTO DBUpdates VALUES ('YUK-23523', '9.0.0', GETDATE());
 /* @end YUK-23523 */
 
 /* @start YUK-23540 */
-INSERT INTO StateGroup VALUES(-30, 'Firmware Update Status', 'Status');
-INSERT INTO State VALUES(-30, 0, 'Received and Waiting', 0, 6, 0);
-INSERT INTO State VALUES(-30, 1, 'Nothing Pending', 1, 6, 0);
-INSERT INTO State VALUES(-30, 2, 'Success', 2, 6, 0);
-INSERT INTO State VALUES(-30, 3, 'Failed', 3, 6, 0);
+INSERT INTO StateGroup VALUES(-30, 'LCR Firmware Update Status', 'Status');
+INSERT INTO State VALUES(-30, 0, 'Received and Waiting', 7, 6, 0);
+INSERT INTO State VALUES(-30, 1, 'Nothing Pending', 9, 6, 0);
+INSERT INTO State VALUES(-30, 2, 'Success', 0, 6, 0);
+INSERT INTO State VALUES(-30, 3, 'Failed', 1, 6, 0);
 
 INSERT INTO DBUpdates VALUES ('YUK-23540', '9.0.0', GETDATE());
 /* @end YUK-23540 */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     1/12/2021 2:42:03 PM                         */
+/* Created on:     1/14/2021 10:33:51 AM                        */
 /*==============================================================*/
 
 
@@ -9264,10 +9264,10 @@ create table State (
 )
 go
 
-INSERT INTO State VALUES(-30, 0, 'Received and Waiting', 0, 6, 0);
-INSERT INTO State VALUES(-30, 1, 'Nothing Pending', 1, 6, 0);
-INSERT INTO State VALUES(-30, 2, 'Success', 2, 6, 0);
-INSERT INTO State VALUES(-30, 3, 'Failed', 3, 6, 0);
+INSERT INTO State VALUES(-30, 0, 'Received and Waiting', 7, 6, 0);
+INSERT INTO State VALUES(-30, 1, 'Nothing Pending', 9, 6, 0);
+INSERT INTO State VALUES(-30, 2, 'Success', 0, 6, 0);
+INSERT INTO State VALUES(-30, 3, 'Failed', 1, 6, 0);
 INSERT INTO State VALUES(-29, 0, 'Success', 0, 6, 0);
 INSERT INTO State VALUES(-29, 1, 'Failure', 1, 6, 0);
 INSERT INTO State VALUES(-28, 0, 'Heat', 1, 6, 0);
@@ -9452,7 +9452,7 @@ create table StateGroup (
 )
 go
 
-INSERT INTO StateGroup VALUES(-30, 'Firmware Update Status', 'Status');
+INSERT INTO StateGroup VALUES(-30, 'LCR Firmware Update Status', 'Status');
 INSERT INTO StateGroup VALUES(-29, 'Meter Programming', 'Status');
 INSERT INTO StateGroup VALUES(-28, 'RelayState', 'Status');
 INSERT INTO StateGroup VALUES(-27, 'NoYes', 'Status');
