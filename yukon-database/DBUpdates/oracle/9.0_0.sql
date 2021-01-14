@@ -215,9 +215,9 @@ UPDATE Point
 SET PointName = 'kVAh Lagging', PointOffset = 245
 WHERE PointType = 'Analog'
 AND PointOffset = 150
-AND PaObjectId IN (    
+AND PaObjectId IN (
     SELECT DISTINCT PaObjectId FROM YukonPaObject
-    WHERE Type IN ('RFN520FRX','RFN520FRXD','RFN530FRX')
+    WHERE Type IN ('RFN520FRX', 'RFN520FRXD', 'RFN530FRX')
 );  
 
 INSERT INTO DBUpdates VALUES ('YUK-23532', '9.0.0', SYSDATE);
